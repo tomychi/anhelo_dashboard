@@ -28,7 +28,7 @@ export const CardItem = ({
 	return (
 		<div
 			onClick={() => setShowModal(true)}
-			className="cursor-pointer h-full font-antonio font-black bg-custom-red"
+			className="cursor-pointer h-full font-antonio font-black bg-custom-red flex flex-col justify-between"
 		>
 			<div className="p-6">
 				<img
@@ -41,14 +41,15 @@ export const CardItem = ({
 			<div className="p-4">
 				<div className="text-center">
 					<h5 className="text-sm font-black text-black uppercase">{name}</h5>
-					<hr className="my-2 border-t-2 border-black" />
-					<div className="flex items-center justify-center ">
+					<hr className="my-2 border-t-2 w-full border-black" />
+					<div className="flex items-center justify-center">
 						<span className="text-sm font-black text-black">
 							{currencyFormat(price)}
 						</span>
 					</div>
 				</div>
 			</div>
+
 			{showModal && (
 				<ModalItem
 					setShowModal={setShowModal}
