@@ -5,8 +5,8 @@ import { Bar } from "react-chartjs-2";
 Chart.register(...registerables);
 
 const hamburguesasVendidas = {};
-
 const toppingsVendidos = {};
+const extrasVendidos = {};
 
 const palabrasClaveToppings = [
 	"- bacon",
@@ -20,7 +20,7 @@ const palabrasClaveToppings = [
 	"- tomate",
 ];
 
-const palabrasClave = [
+const palabrasClaveBurgers = [
 	"anhelo classic",
 	"bbq bcn cheeseburger",
 	"bcn cheeseburger",
@@ -29,14 +29,17 @@ const palabrasClave = [
 	"doble cheeseburger",
 	"easter egg",
 	"mario inspired",
+	"simple cheeseburger",
+	"triple cheeseburger",
+];
+
+const palabrasClaveExtras = [
 	"papas anhelo ®",
 	"papas con cheddar ®",
 	"pepsi",
 	"pote de cheddar",
 	"pote de mayonesa",
 	"pote de salsa anhelo",
-	"simple cheeseburger",
-	"triple cheeseburger",
 ];
 
 info.forEach((pedido) => {
@@ -44,22 +47,26 @@ info.forEach((pedido) => {
 	pedidos.forEach((elemento) => {
 		const [nombre, cantidad] = elemento.split("x ").reverse();
 		const cleanNombre = nombre.toLowerCase().trim();
-
-		// Convertir a mayúsculas
 		const nombreMayusculas = cleanNombre.toUpperCase();
 
-		if (palabrasClave.includes(cleanNombre)) {
+		if (palabrasClaveBurgers.includes(cleanNombre)) {
 			hamburguesasVendidas[nombreMayusculas] =
 				(hamburguesasVendidas[nombreMayusculas] || 0) + parseInt(cantidad, 10);
 		}
 
 		palabrasClaveToppings.forEach((topping) => {
-			// Convertir a mayúsculas
 			const toppingMayusculas = topping.toUpperCase();
-
 			if (cleanNombre.includes(topping)) {
 				toppingsVendidos[toppingMayusculas] =
 					(toppingsVendidos[toppingMayusculas] || 0) + 1;
+			}
+		});
+
+		palabrasClaveExtras.forEach((extra) => {
+			const extraMayusculas = extra.toUpperCase();
+			if (cleanNombre.includes(extra)) {
+				extrasVendidos[extraMayusculas] =
+					(extrasVendidos[extraMayusculas] || 0) + 1;
 			}
 		});
 	});
@@ -72,13 +79,16 @@ export const Dashboard = () => {
 	const nombresToppings = Object.keys(toppingsVendidos);
 	const cantidadToppings = Object.values(toppingsVendidos);
 
+	const nombresExtras = Object.keys(extrasVendidos); // Nuevos nombres y cantidades para extras
+	const cantidadExtras = Object.values(extrasVendidos);
+
 	const dataBurgers = {
 		labels: nombresHamburguesas,
 		datasets: [
 			{
 				label: "BURGER BEST SELLER",
 				data: cantidadesHamburguesas,
-				backgroundColor: "rgba(0, 0 ,0)", // Color para las barras
+				backgroundColor: "rgba(0, 0, 0)",
 			},
 		],
 	};
@@ -89,7 +99,19 @@ export const Dashboard = () => {
 			{
 				label: "TOPPING BEST SELLER",
 				data: cantidadToppings,
-				backgroundColor: "rgba(0, 0 ,0)", // Color para las barras
+				backgroundColor: "rgba(0, 0, 0)",
+			},
+		],
+	};
+
+	const dataExtras = {
+		// Nuevo objeto de datos para extras
+		labels: nombresExtras,
+		datasets: [
+			{
+				label: "EXTRA BEST SELLER",
+				data: cantidadExtras,
+				backgroundColor: "rgba(0, 0, 0)",
 			},
 		],
 	};
@@ -100,7 +122,7 @@ export const Dashboard = () => {
 			const { ctx } = chart;
 			ctx.save();
 			ctx.globalCompositeOperation = "destination-over";
-			ctx.fillStyle = "rgba(254, 0, 0)"; // Fondo rojo
+			ctx.fillStyle = "rgba(254, 0, 0)";
 			ctx.fillRect(0, 0, chart.width, chart.height);
 			ctx.restore();
 		},
@@ -117,12 +139,11 @@ export const Dashboard = () => {
 					font: {
 						family: "Antonio",
 					},
-					boxWidth: 0, // Establecer el ancho de la caja de la leyenda a 0 para eliminar el rectángulo
+					boxWidth: 0,
 				},
 			},
 			title: {
 				display: false,
-				// text: "ANHELO PRODUCTS ®",
 			},
 		},
 		scales: {
@@ -147,12 +168,18 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className=" p-4 gap-4 grid grid-cols-2 grid-rows-2">
+		<div className=" p-4 gap-4 grid grid-cols-3 grid-rows-1">
+			{" "}
+			{/* Cambiado a 3 columnas para el nuevo gráfico */}
 			<div className="col-span-1 row-span-1">
 				<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 			</div>
 			<div className="col-span-1 row-span-1">
 				<Bar data={dataToppings} options={options} plugins={[plugin]} />
+			</div>
+			<div className="col-span-1 row-span-1">
+				<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
+				{/* Nuevo gráfico para extras */}
 			</div>
 		</div>
 	);
