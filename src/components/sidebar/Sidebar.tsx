@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import Logo from "../../assets/anheloLogo.png";
+import Absolute from "../../assets/absoluteIsologo.png";
 
 export const Sidebar = () => {
 	return (
@@ -30,8 +31,17 @@ export const Sidebar = () => {
       </button> */}
 			<div className="h-full flex bg-custom-red flex-col p-2 justify-between">
 				<>
-					<NavLink to={"/"} className="flex items-center justify-center">
+					<NavLink
+						to={"/"}
+						className="flex flex-col items-center justify-center"
+					>
 						<img src={Logo} className="h-6 sm:h-7 mx-auto" alt="anhelo Logo" />
+						<span className="text-xs">x</span>
+						<img
+							src={Absolute}
+							className="h-6 sm:h-7 p-1 mx-auto"
+							alt="absolute Logo"
+						/>
 					</NavLink>
 				</>
 
