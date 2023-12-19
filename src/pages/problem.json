@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "locations": [
+    {
+      "name": "Warehouse",
+      "coordinates": [-122.1234, 37.812]
+    },
+    {
+      "name": "Cocina",
+      "coordinates": [-64.333731, -33.095653]
+    }
+  ],
+  "vehicles": [
+    {
+      "name": "Truck-1",
+      "routing_profile": "mapbox/driving",
+      "start_location": "Warehouse",
+      "end_location": "Cocina",
+      "capacities": {
+        "volume": 3000,
+        "weight": 1000,
+        "boxes": 100
+      },
+      "capabilities": ["ladder", "refrigeration"],
+      "earliest_start": "2022-05-31T09:00:00Z",
+      "latest_end": "2022-05-31T17:00:00Z",
+      "breaks": [
+        {
+          "earliest_start": "2022-05-31T12:00:00Z",
+          "latest_end": "2022-05-31T13:00:00Z",
+          "duration": 1800
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "name": "Work-Order-1234",
+      "location": "Warehouse",
+      "duration": 300,
+      "requirements": ["ladder"],
+      "service_times": [
+        {
+          "earliest": "2022-05-31T13:00:00Z",
+          "latest": "2022-05-31T14:00:00Z",
+          "type": "soft"
+        }
+      ]
+    }
+  ],
+  "shipments": [
+    {
+      "name": "Order-1234",
+      "from": "Warehouse",
+      "to": "Cocina",
+      "size": {
+        "weight": 30,
+        "volume": 100,
+        "boxes": 3
+      },
+      "requirements": ["refrigeration"],
+      "pickup_duration": 60,
+      "dropoff_duration": 60,
+      "pickup_times": [
+        {
+          "earliest": "2022-05-31T09:15:00Z",
+          "latest": "2022-05-31T09:30:00Z",
+          "type": "strict"
+        }
+      ],
+      "dropoff_times": [
+        {
+          "earliest": "2022-05-31T10:15:00Z",
+          "latest": "2022-05-31T10:30:00Z",
+          "type": "soft_end"
+        }
+      ]
+    }
+  ],
+  "options": {
+    "objectives": ["min-schedule-completion-time"]
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "numeroPedido": "33",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue\n- salsa anhelo",
+    "aclaraciones": "sin mayonesa a la doble",
+    "direccion": "isabel la católica 635 (+54 9 358 429-2340)",
+    "hora": "23:50",
+    "fecha": "11-12-2023",
+    "total": "$3650",
+    "elaborado": false
+  }
+]
