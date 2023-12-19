@@ -36,7 +36,7 @@ export const Sidebar = () => {
 						className="flex flex-col items-center justify-center"
 					>
 						<img src={Logo} className="h-6 sm:h-7 mx-auto" alt="anhelo Logo" />
-						<span className="text-xs">x</span>
+						<span className=" text-xs">x</span>
 						<img
 							src={Absolute}
 							className="h-6 sm:h-7 p-1 mx-auto"
