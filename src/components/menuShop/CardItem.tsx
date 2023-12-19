@@ -29,16 +29,19 @@ export const CardItem = ({
 		<>
 			<div
 				onClick={() => setShowModal(true)}
-				className="cursor-pointer font-antonio font-black w-full max-w-sm  -lg shadow bg-custom-red"
+				className="cursor-pointer font-antonio font-black w-full max-w-sm mx-auto shadow bg-custom-red"
 			>
-				<img className="-t-lg h-20" src={`/menu/${img}`} alt="product image" />
-				<div className="">
-					<h5 className="text-sm font-semibold tracking-tight texk-black 900 text-black">
+				<img
+					className="mx-auto h-20"
+					src={`/menu/${img}`}
+					alt="product image"
+				/>
+				<div className="text-center">
+					<h5 className="text-sm font-semibold tracking-tight text-black uppercase">
 						{name}
 					</h5>
-					<div className="flex items-center"></div>
-					<div className="flex items-center justify-between">
-						<span className="text-sm font-bold texk-black 900 text-black">
+					<div className="flex items-center justify-center mt-2">
+						<span className="text-sm font-bold text-black">
 							{currencyFormat(price)}
 						</span>
 					</div>
