@@ -13,10 +13,10 @@ export const MyTextInput = ({ label, ...props }: Props) => {
 	//en el meta los errores
 
 	return (
-		<div className="relative z-0 w-full mb-2 group mt-10 ml-2">
+		<div className="relative z-0 w-11/12 mb-2 mt-4 ">
 			<input
 				id="floating_first_name"
-				className="block py-2.5 px-0 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+				className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 				placeholder=" "
 				required
 				{...field}

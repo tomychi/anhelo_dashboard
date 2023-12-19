@@ -148,12 +148,14 @@ export const DynamicForm = () => {
 								formJson.map(({ type, name, placeholder, label, options }) => {
 									if (type === "text" || type === "tel" || type === "number") {
 										return (
-											<MyTextInput
-												key={name}
-												type={type as any}
-												name={name}
-												label={label}
-											/>
+											<div className="flex flex-col items-center justify-center">
+												<MyTextInput
+													key={name}
+													type={type as any}
+													name={name}
+													label={label}
+												/>
+											</div>
 										);
 									} else if (type === "select") {
 										return (
