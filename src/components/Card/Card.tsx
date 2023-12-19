@@ -25,6 +25,7 @@ export const Card = ({ comanda }: any) => {
 			console.error("Error en la solicitud:", error);
 		}
 	};
+
 	return (
 		<div
 			className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden shadow-lg ${
@@ -37,21 +38,20 @@ export const Card = ({ comanda }: any) => {
 				</p>
 				<div className="mb-4">
 					<p className={`text-2xl  text-white font-bold`}>{hora}</p>
-					<p className="text-white text-2xl">{aclaraciones}</p>
+					<p className="text-white mt-4 text-2xl text-center">
+						{" "}
+						{/* Agregar clase text-center aquí */}
+						{aclaraciones}
+					</p>
 				</div>
 				{lineasCuerpoPedido.map((linea: any, index) => (
-					<p
-						key={index}
-						className={`text-${
-							comanda.elaborado ? "green" : "black"
-						} text-base font-semibold`}
-					>
+					<p key={index} className={`text-black text-base font-semibold`}>
 						{linea}
 						{linea.startsWith("toppings") ? <br /> : null}
 					</p>
 				))}
 			</div>
-			<div className="px-6 py-4">
+			<div className="px-6 py-4 text-center">
 				<p
 					className={`text-base ${
 						comanda.elaborado ? "text-green-700" : "texk-black 700"
