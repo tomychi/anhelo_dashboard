@@ -38,19 +38,23 @@ export const Comandera = () => {
 
 	return (
 		<div>
-			<div className="flex justify-center my-4">
+			<div className="flex justify-center font-antonio  my-4">
 				<button
 					className={`mx-2 py-2 px-4 ${
-						seccionActiva === "porHacer" ? "bg-blue-500" : "bg-gray-300"
-					} text-black font-semibold `}
+						seccionActiva === "porHacer"
+							? "bg-custom-red"
+							: "border border-red-700 text-custom-red"
+					} text-black font-black uppercase `}
 					onClick={() => setSeccionActiva("porHacer")}
 				>
 					Por Hacer
 				</button>
 				<button
 					className={`mx-2 py-2 px-4 ${
-						seccionActiva === "hechos" ? "bg-blue-500" : "bg-gray-300"
-					} text-black font-semibold `}
+						seccionActiva === "hechos"
+							? "bg-custom-red"
+							: "border border-red-700 text-custom-red"
+					} text-black font-black uppercase `}
 					onClick={() => setSeccionActiva("hechos")}
 				>
 					Hechos
