@@ -168,7 +168,7 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className=" p-4 gap-4 grid grid-cols-3 grid-rows-1">
+		<div className=" p-4 grid grid-cols-4 gap-4 grid-rows-1">
 			{" "}
 			{/* Cambiado a 3 columnas para el nuevo gráfico */}
 			<div className="col-span-1 row-span-1">
