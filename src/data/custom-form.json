@@ -56,7 +56,7 @@
 		"name": "envio",
 		"placeholder": "Ingrese el envio del pedido",
 		"label": "Envio",
-		"value": 700
+		"value": 1000
 	},
 
 	{
