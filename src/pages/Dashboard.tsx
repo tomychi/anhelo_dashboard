@@ -208,8 +208,6 @@ export const Dashboard = () => {
 					INSTAGRAM KPIs
 				</h1>
 				<div className="grid grid-cols-4 grid-rows-1">
-					{" "}
-					{/* Cambiado a 3 columnas para el nuevo gráfico */}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
