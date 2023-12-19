@@ -175,7 +175,6 @@ export const Dashboard = () => {
 				</h1>
 				<div className="grid grid-cols-4 grid-rows-1">
 					{" "}
-					{/* Cambiado a 3 columnas para el nuevo gráfico */}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
@@ -184,7 +183,6 @@ export const Dashboard = () => {
 					</div>
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
-						{/* Nuevo gráfico para extras */}
 					</div>
 				</div>
 			</div>
@@ -194,7 +192,6 @@ export const Dashboard = () => {
 				</h1>
 				<div className="grid grid-cols-4 grid-rows-1">
 					{" "}
-					{/* Cambiado a 3 columnas para el nuevo gráfico */}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
@@ -203,13 +200,12 @@ export const Dashboard = () => {
 					</div>
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
-						{/* Nuevo gráfico para extras */}
 					</div>
 				</div>
 			</div>
 			<div>
 				<h1 className="text-custom-red  font-black font-antonio text-2xl mb-4">
-					SM KPIs
+					INSTAGRAM KPIs
 				</h1>
 				<div className="grid grid-cols-4 grid-rows-1">
 					{" "}
@@ -222,7 +218,6 @@ export const Dashboard = () => {
 					</div>
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
-						{/* Nuevo gráfico para extras */}
 					</div>
 				</div>
 			</div>
