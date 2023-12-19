@@ -168,18 +168,23 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className=" p-4 grid grid-cols-4 gap-4 grid-rows-1">
-			{" "}
-			{/* Cambiado a 3 columnas para el nuevo gráfico */}
-			<div className="col-span-1 row-span-1">
-				<Bar data={dataBurgers} options={options} plugins={[plugin]} />
-			</div>
-			<div className="col-span-1 row-span-1">
-				<Bar data={dataToppings} options={options} plugins={[plugin]} />
-			</div>
-			<div className="col-span-1 row-span-1">
-				<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
-				{/* Nuevo gráfico para extras */}
+		<div className="p-4">
+			<h1 className="text-custom-red p-4 uppercase font-black font-antonio mb-4">
+				Product data
+			</h1>
+			<div className="grid grid-cols-4 gap-4 grid-rows-1">
+				{" "}
+				{/* Cambiado a 3 columnas para el nuevo gráfico */}
+				<div className="col-span-1 row-span-1">
+					<Bar data={dataBurgers} options={options} plugins={[plugin]} />
+				</div>
+				<div className="col-span-1 row-span-1">
+					<Bar data={dataToppings} options={options} plugins={[plugin]} />
+				</div>
+				<div className="col-span-1 row-span-1">
+					<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
+					{/* Nuevo gráfico para extras */}
+				</div>
 			</div>
 		</div>
 	);
