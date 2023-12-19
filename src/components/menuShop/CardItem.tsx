@@ -32,7 +32,7 @@ export const CardItem = ({
 		>
 			<div className="p-6">
 				<img
-					className="mx-auto h-max"
+					className="mx-auto h-16"
 					src={`/menu/${img}`}
 					alt="product image"
 				/>
