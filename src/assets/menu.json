@@ -117,7 +117,7 @@
     "img": "sprite.png"
   },
   {
-    "name": "Papas Anhelo ®",
+    "name": "Papas Anhelo",
     "description": "Porción de papas.",
     "price": 1500,
     "id": "4564GDS8",
@@ -126,7 +126,7 @@
     "img": "papas.png"
   },
   {
-    "name": "Papas con Cheddar ®",
+    "name": "Papas con Cheddar",
     "description": "Porción de papas con cheddar.",
     "price": 1800,
     "id": "GUI32IASD",

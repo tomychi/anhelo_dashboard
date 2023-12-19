@@ -89,7 +89,7 @@ export const DynamicForm = () => {
   console.log(dataBurger);
 
   return (
-    <div className='grid grid-cols-2 md:grid-cols-2 gap-4"'>
+    <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
       {dataBurger && <CartShop burgerSelection={dataBurger.burgerSelection} />}
       <MenuGallery handleFormBurger={handleFormBurger} />
 
