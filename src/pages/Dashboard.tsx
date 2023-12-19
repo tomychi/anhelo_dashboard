@@ -54,8 +54,12 @@ info.forEach((pedido) => {
 		}
 
 		palabrasClaveToppings.forEach((topping) => {
+			// Convertir a mayúsculas
+			const toppingMayusculas = topping.toUpperCase();
+
 			if (cleanNombre.includes(topping)) {
-				toppingsVendidos[topping] = (toppingsVendidos[topping] || 0) + 1;
+				toppingsVendidos[toppingMayusculas] =
+					(toppingsVendidos[toppingMayusculas] || 0) + 1;
 			}
 		});
 	});
@@ -113,6 +117,7 @@ export const Dashboard = () => {
 					font: {
 						family: "Antonio",
 					},
+					boxWidth: 0, // Establecer el ancho de la caja de la leyenda a 0 para eliminar el rectángulo
 				},
 			},
 			title: {
