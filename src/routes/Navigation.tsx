@@ -11,12 +11,12 @@ import { Sidebar } from "../components/sidebar";
 export const Navigation = () => {
 	return (
 		<HashRouter basename={"/"}>
-			<div className="flex  h-screen overflow-hidden">
+			<div className="flex h-screen bg-black overflow-x-hidden">
 				{/* Contenedor principal con display flex */}
 
 				<Sidebar />
-				<div className="">
-					{/* Este div se expandirá para ocupar el espacio restante */}
+				<div className="flex-grow overflow-y-auto">
+					{/* Este div se expandirá para ocupar el espacio restante y permitirá el scroll */}
 					<Routes>
 						<Route path="/pedidos" element={<DynamicForm />} />
 						<Route path="/comandas" element={<Comandera />} />

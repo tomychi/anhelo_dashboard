@@ -89,7 +89,7 @@ export const DynamicForm = () => {
 	console.log(dataBurger);
 
 	return (
-		<div className="grid bg-black p-4 grid-cols-2 gap-2 ">
+		<div className="grid p-4 grid-cols-2 gap-2 ">
 			{dataBurger && <CartShop burgerSelection={dataBurger.burgerSelection} />}
 			<MenuGallery handleFormBurger={handleFormBurger} />
 
@@ -117,7 +117,10 @@ export const DynamicForm = () => {
 				}}
 			>
 				{(formik) => (
-					<Form noValidate className="grid z-0 h-max group ml-2 bg-custom-red">
+					<Form
+						noValidate
+						className="grid z-0 h-max group font-antonio font-black ml-2 bg-custom-red"
+					>
 						<div className="flex flex-col">
 							<div className="flex justify-center my-2">
 								<div
@@ -125,7 +128,7 @@ export const DynamicForm = () => {
 										seccionActiva === "elaborar"
 											? "bg-black text-custom-red"
 											: "bg-custom-red text-black"
-									} text-black font-semibold `}
+									} text-black  `}
 									onClick={() => setSeccionActiva("elaborar")}
 								>
 									TOMAR PEDIDO

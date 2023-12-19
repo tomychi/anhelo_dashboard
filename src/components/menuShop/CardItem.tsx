@@ -29,7 +29,7 @@ export const CardItem = ({
 		<>
 			<div
 				onClick={() => setShowModal(true)}
-				className="cursor-pointer w-full max-w-sm  -lg shadow bg-custom-red"
+				className="cursor-pointer font-antonio font-black w-full max-w-sm  -lg shadow bg-custom-red"
 			>
 				<img className="-t-lg h-20" src={`/menu/${img}`} alt="product image" />
 				<div className="">

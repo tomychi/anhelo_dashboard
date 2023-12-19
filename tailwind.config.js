@@ -9,6 +9,11 @@ module.exports = {
 			textColor: {
 				"custom-red": "#FE0000",
 			},
+			fontFamily: {
+				oswald: ["Oswald", "sans-serif"],
+				antonio: ["Antonio", "sans-serif"],
+				kotch: ["Koch Fette Deutsche Schrift", "sans-serif"],
+			},
 		},
 	},
 	plugins: [],
