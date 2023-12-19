@@ -67,12 +67,14 @@ export const Comandera = () => {
 							<Card key={i} comanda={comanda} />
 						))
 					) : (
-						<p>No hay pedidos por hacer.</p>
+						<p className="text-white font-antonio p-4">
+							No hay pedidos por hacer.
+						</p>
 					)
 				) : Array.isArray(pedidosHechos) && pedidosHechos.length > 0 ? (
 					pedidosHechos.map((comanda, i) => <Card key={i} comanda={comanda} />)
 				) : (
-					<p>No hay pedidos hechos.</p>
+					<p className="text-white font-antonio p-4">No hay pedidos hechos.</p>
 				)}
 			</div>
 		</div>
