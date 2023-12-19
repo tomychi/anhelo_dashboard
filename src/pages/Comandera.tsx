@@ -42,7 +42,7 @@ export const Comandera = () => {
 				<button
 					className={`mx-2 py-2 px-4 ${
 						seccionActiva === "porHacer" ? "bg-blue-500" : "bg-gray-300"
-					} text-white font-semibold `}
+					} text-black font-semibold `}
 					onClick={() => setSeccionActiva("porHacer")}
 				>
 					Por Hacer
@@ -50,7 +50,7 @@ export const Comandera = () => {
 				<button
 					className={`mx-2 py-2 px-4 ${
 						seccionActiva === "hechos" ? "bg-blue-500" : "bg-gray-300"
-					} text-white font-semibold `}
+					} text-black font-semibold `}
 					onClick={() => setSeccionActiva("hechos")}
 				>
 					Hechos

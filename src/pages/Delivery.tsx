@@ -93,13 +93,13 @@ export const Delivery = () => {
 		<div>
 			<button
 				onClick={handleGetSolution}
-				className="flex bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent "
+				className="flex bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-black py-2 px-4 border border-blue-500 hover:border-transparent "
 			>
 				Obtener Solución
 			</button>
 			<button
 				onClick={handleGetProcessStatus}
-				className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent "
+				className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-black py-2 px-4 border border-blue-500 hover:border-transparent "
 			>
 				Ver Estados de Procesos
 			</button>

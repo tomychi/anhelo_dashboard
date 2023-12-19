@@ -90,11 +90,11 @@ export const ModalItem = ({
 															role="group"
 															aria-labelledby="checkbox-group"
 															key={name}
-															className=" flex items-center pl-4 border border-red-200  dark:border-red-700"
+															className=" flex items-center pl-4 border border-red-200  border-red-700"
 														>
-															<label className="cursor-pointer w-full py-4 ml-2 text-3xl font-medium text-red-900 dark:text-red-300">
+															<label className="cursor-pointer w-full py-4 ml-2 text-3xl font-medium text-red-900 text-red-300">
 																<Field
-																	className="w-8 h-8 text-red-600 bg-red-100 border-red-300  focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-red-800 focus:ring-2 dark:bg-red-700 dark:border-red-600"
+																	className="w-8 h-8 text-red-600 bg-red-100 border-red-300  focus:ring-red-500 focus:ring-red-600 ring-offset-red-800 focus:ring-2 bg-red-700 border-red-600"
 																	type="checkbox"
 																	name="toppings"
 																	value={name}
@@ -141,7 +141,7 @@ export const ModalItem = ({
 													</button>
 												</div>
 												<button
-													className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-white active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+													className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-black active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
 													type="submit"
 												>
 													Guardar
@@ -154,7 +154,7 @@ export const ModalItem = ({
 							<p className="my-4 text-blueGray-500 text-lg leading-relaxed"></p>
 						</div>
 						<button
-							className="h-16 text-4xl hover:bg-red-500 hover:text-white text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 border border-red-500"
+							className="h-16 text-4xl hover:bg-red-500 hover:text-black text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 border border-red-500"
 							type="button"
 							onClick={() => setShowModal(false)}
 						>

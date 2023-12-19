@@ -5,13 +5,13 @@ export const Sidebar = () => {
 	return (
 		<aside
 			id="drawer-navigation"
-			className=" top-0 left-0 z-50 w-12 h-screen transition-transform  sm:translate-x-0 bg-gray-50 dark:bg-gray-800"
+			className=" top-0 left-0 z-50 w-12 h-screen transition-transform  sm:translate-x-0 bg-gray-50 bg-gray-800"
 		>
 			{/* <button
         type="button"
         data-drawer-hide="drawer-navigation"
         aria-controls="drawer-navigation"
-        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 -lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 -lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center hover:bg-gray-600 hover:text-black"
       >
         <svg
           aria-hidden="true"
@@ -40,10 +40,10 @@ export const Sidebar = () => {
 						<li>
 							<NavLink
 								to={"/pedidos"}
-								className="flex items-center p-2 text-black dark:text-black hover:bg-black dark:hover:bg-black group"
+								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
-									className="w-5 h-5 text-black transition duration-75 dark:text-black group-hover:text-black dark:group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
 									aria-hidden="true"
 									xmlns="http://www.w3.org/2000/svg"
 									fill="currentColor"
@@ -56,13 +56,13 @@ export const Sidebar = () => {
 						<li>
 							<NavLink
 								to={"/comandas"}
-								className="flex items-center p-2 text-black dark:text-black hover:bg-black dark:hover:bg-black group"
+								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="w-5 h-5 text-black transition duration-75 dark:text-black group-hover:text-black dark:group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
 								>
 									<path
 										fillRule="evenodd"
@@ -75,10 +75,10 @@ export const Sidebar = () => {
 						<li>
 							<NavLink
 								to="/dashboard"
-								className="flex items-center p-2 text-black dark:text-black hover:bg-black dark:hover:bg-black group"
+								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
-									className="w-5 h-5 text-black transition duration-75 dark:text-black group-hover:text-black dark:group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
 									aria-hidden="true"
 									xmlns="http://www.w3.org/2000/svg"
 									fill="currentColor"
@@ -93,13 +93,13 @@ export const Sidebar = () => {
 						<li>
 							<NavLink
 								to="/delivery"
-								className="flex items-center p-2 text-black dark:text-black hover:bg-black dark:hover:bg-black group"
+								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="w-5 h-5 text-black transition duration-75 dark:text-black group-hover:text-black dark:group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
 								>
 									<path
 										fillRule="evenodd"
@@ -113,13 +113,13 @@ export const Sidebar = () => {
 						<li>
 							<NavLink
 								to="/map"
-								className="flex items-center p-2 text-black dark:text-black hover:bg-black dark:hover:bg-black group"
+								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="w-5 h-5 text-black transition duration-75 dark:text-black group-hover:text-black dark:group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
 								>
 									<path
 										fillRule="evenodd"

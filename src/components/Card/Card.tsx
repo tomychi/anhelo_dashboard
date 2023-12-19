@@ -43,7 +43,7 @@ export const Card = ({ comanda }: any) => {
 				</p>
 				<p
 					className={`text-2xl ${
-						comanda.elaborado ? "text-green-500" : "text-white"
+						comanda.elaborado ? "text-green-500" : "text-black"
 					} font-bold`}
 				>
 					{hora}

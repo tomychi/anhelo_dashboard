@@ -89,7 +89,7 @@ export const DynamicForm = () => {
 	console.log(dataBurger);
 
 	return (
-		<div className="grid p-4 grid-cols-2 md:grid-cols-2 gap-4">
+		<div className="grid bg-black p-4 grid-cols-2 gap-2 ">
 			{dataBurger && <CartShop burgerSelection={dataBurger.burgerSelection} />}
 			<MenuGallery handleFormBurger={handleFormBurger} />
 
@@ -117,21 +117,25 @@ export const DynamicForm = () => {
 				}}
 			>
 				{(formik) => (
-					<Form noValidate className="grid z-0 h-max group ml-2 bg-gray-800">
+					<Form noValidate className="grid z-0 h-max group ml-2 bg-custom-red">
 						<div className="flex flex-col">
 							<div className="flex justify-center my-2">
 								<div
 									className={`mx-2 py-2 px-4 ${
-										seccionActiva === "elaborar" ? "bg-blue-500" : "bg-gray-300"
-									} text-white font-semibold `}
+										seccionActiva === "elaborar"
+											? "bg-black text-custom-red"
+											: "bg-custom-red text-black"
+									} text-black font-semibold `}
 									onClick={() => setSeccionActiva("elaborar")}
 								>
 									TOMAR PEDIDO
 								</div>
 								<div
 									className={`mx-2 py-2 px-4 ${
-										seccionActiva === "hechos" ? "bg-blue-500" : "bg-gray-300"
-									} text-white font-semibold `}
+										seccionActiva === "elaborar"
+											? "bg-custom-red text-black"
+											: "bg-black text-custom-red"
+									} font-semibold `}
 									onClick={() => setSeccionActiva("hechos")}
 								>
 									HECHOS POR LA WEB
@@ -175,7 +179,7 @@ export const DynamicForm = () => {
 							)}
 						</div>
 						<button
-							className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-white active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+							className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-black active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
 							type="submit"
 						>
 							Guardar
