@@ -1,88 +1,84 @@
 [
-  {
-    "type": "text",
-    "name": "id",
-    "placeholder": "Ingrese un ID",
-    "label": "ID",
-    "value": ""
-  },
-  {
-    "type": "text",
-    "name": "aclaraciones",
-    "placeholder": "Ingrese cualquier aclaración adicional",
-    "label": "Aclaraciones",
-    "value": ""
-  },
-  {
-    "type": "text",
-    "name": "direccion",
-    "placeholder": "Ingrese la dirección",
-    "label": "Dirección",
-    "value": "",
-    "validations": [
-      {
-        "type": "required",
-        "message": "La dirección es requerida"
-      },
-      {
-        "type": "minLength",
-        "message": "Debe tener al menos 3 caracteres",
-        "value": 3
-      }
-    ]
-  },
-  {
-    "type": "tel",
-    "name": "telefono",
-    "placeholder": "123-45-678",
-    "label": "Telefono",
-    "value": "",
-    "validations": [
-      {
-        "type": "required",
-        "message": "El telefono es requerido"
-      }
-    ]
-  },
-  {
-    "type": "text",
-    "name": "hora",
-    "placeholder": "Ingrese la hora",
-    "label": "Hora",
-    "value": ""
-  },
-  {
-    "type": "number",
-    "name": "envio",
-    "placeholder": "Ingrese el envio del pedido",
-    "label": "Envio",
-    "value": 700
-  },
+	{
+		"type": "text",
+		"name": "id",
+		"placeholder": "Ingrese un ID",
+		"label": "ID",
+		"value": ""
+	},
+	{
+		"type": "text",
+		"name": "aclaraciones",
+		"placeholder": "Ingrese cualquier aclaración adicional",
+		"label": "Aclaraciones",
+		"value": ""
+	},
+	{
+		"type": "text",
+		"name": "direccion",
+		"placeholder": "Ingrese la dirección",
+		"label": "Dirección",
+		"value": "",
+		"validations": [
+			{
+				"type": "required",
+				"message": "La dirección es requerida"
+			},
+			{
+				"type": "minLength",
+				"message": "Debe tener al menos 3 caracteres",
+				"value": 3
+			}
+		]
+	},
+	{
+		"type": "tel",
+		"name": "telefono",
+		"placeholder": "123-45-678",
+		"label": "Telefono",
+		"value": "",
+		"validations": [
+			{
+				"type": "required",
+				"message": "El telefono es requerido"
+			}
+		]
+	},
+	{
+		"type": "text",
+		"name": "hora",
+		"placeholder": "Ingrese la hora",
+		"label": "Hora",
+		"value": ""
+	},
+	{
+		"type": "number",
+		"name": "envio",
+		"placeholder": "Ingrese el envio del pedido",
+		"label": "Envio",
+		"value": 700
+	},
 
-  {
-    "type": "select",
-    "name": "metodoPago",
-    "label": "Metodo de Pago",
-    "value": "",
-    "validations": [
-      {
-        "type": "required",
-        "message": "Metodo de pago requerido"
-      }
-    ],
-    "options": [
-      {
-        "label": "Efectivo",
-        "id": "efectivo"
-      },
-      {
-        "label": "Mercadopago",
-        "id": "mercadopago"
-      },
-      {
-        "label": "Transferencia",
-        "id": "transferencia"
-      }
-    ]
-  }
+	{
+		"type": "select",
+		"name": "metodoPago",
+		"label": "Metodo de Pago",
+		"value": "",
+		"validations": [
+			{
+				"type": "required",
+				"message": "Método de pago requerido"
+			}
+		],
+		"options": [
+			{
+				"label": "EFECTIVO",
+				"id": "efectivo"
+			},
+			{
+				"label": "MERCADOPAGO",
+				"id": "mercadopago"
+			}
+		]
+	}
 ]

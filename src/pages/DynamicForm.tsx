@@ -168,9 +168,6 @@ export const DynamicForm = () => {
 													color: "#FE0000",
 												}}
 											>
-												<option defaultValue={"efectivo"}>
-													MÉTODO DE PAGO
-												</option>
 												{options?.map(({ id, label }) => (
 													<option
 														className="h-16 hover:bg-red-700"
