@@ -9,27 +9,39 @@ function obtenerFechaActual() {
 	const anio = String(fecha.getFullYear());
 	return `${dia}-${mes}-${anio}`;
 }
-
 export const Comandera = () => {
-	const [seccionActiva, setSeccionActiva] = useState("porHacer"); // porHacer o hechos
+	const [seccionActiva, setSeccionActiva] = useState("porHacer");
 	const [pedidosHoy, setPedidosHoy] = useState([]);
 
 	useEffect(() => {
 		const fechaActual = obtenerFechaActual();
 
-		// Filtrar los pedidos por la fecha de hoy
-		const pedidosFechaActual = pedidos.filter(
-			(pedido) => pedido.fecha === fechaActual
-		);
+		// Copia del arreglo actual de pedidosHoy
+		const nuevosPedidosHoy = [...pedidosHoy];
+
+		// Agregar el nuevo pedido a la lista
+		const nuevoPedido = {
+			numeroPedido: "34", // Actualiza el número del pedido según sea necesario
+			pedido:
+				"1x triple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue\n- salsa anhelo",
+			aclaraciones: "sin mayonesa a la doble",
+			direccion: "isabel la católica 635 (+54 9 358 429-2340)",
+			hora: "23:50",
+			fecha: fechaActual,
+			total: "$3650",
+			elaborado: false,
+		};
+
+		nuevosPedidosHoy.push(nuevoPedido);
 
 		// Ordenar los pedidos filtrados por hora
-		pedidosFechaActual.sort((a, b) => {
-			const horaA = new Date(`2023-10-22 ${a.hora}`);
-			const horaB = new Date(`2023-10-22 ${b.hora}`);
+		nuevosPedidosHoy.sort((a, b) => {
+			const horaA = new Date(`2023-12-11 ${a.hora}`);
+			const horaB = new Date(`2023-12-11 ${b.hora}`);
 			return horaA - horaB;
 		});
 
-		setPedidosHoy(pedidosFechaActual);
+		setPedidosHoy(nuevosPedidosHoy);
 	}, []);
 
 	// Filtra los pedidos según la sección activa
@@ -60,7 +72,7 @@ export const Comandera = () => {
 					Hechos
 				</button>
 			</div>
-			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+			<div className="grid grid-cols-2 p-4 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
 				{seccionActiva === "porHacer" ? (
 					Array.isArray(pedidosPorHacer) && pedidosPorHacer.length > 0 ? (
 						pedidosPorHacer.map((comanda, i) => (

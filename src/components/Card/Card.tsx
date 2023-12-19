@@ -27,27 +27,18 @@ export const Card = ({ comanda }: any) => {
 	};
 	return (
 		<div
-			className={`flex flex-col justify-between max-w-sm  overflow-hidden shadow-lg ${
-				comanda.elaborado
-					? "bg-green-500 hover:bg-green-600"
-					: "bg-red-400 hover:bg-red-600"
+			className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden shadow-lg ${
+				comanda.elaborado ? "bg-green-500 hover:bg-green-600" : "bg-custom-red"
 			}`}
 		>
-			<div className="px-6 py-4">
-				<p
-					className={`text-lg ${
-						comanda.elaborado ? "text-green-900" : "texk-black 900"
-					} font-bold float-right`}
-				>
+			<div className="p-4">
+				<p className={`text-2xl  text-white font-bold float-right`}>
 					{numeroPedido}
 				</p>
-				<p
-					className={`text-2xl ${
-						comanda.elaborado ? "text-green-500" : "text-black"
-					} font-bold`}
-				>
-					{hora}
-				</p>
+				<div className="mb-4">
+					<p className={`text-2xl  text-white font-bold`}>{hora}</p>
+					<p className="text-white text-2xl">{aclaraciones}</p>
+				</div>
 				{lineasCuerpoPedido.map((linea: any, index) => (
 					<p
 						key={index}
@@ -59,7 +50,6 @@ export const Card = ({ comanda }: any) => {
 						{linea.startsWith("toppings") ? <br /> : null}
 					</p>
 				))}
-				<p className="text-purple-800">{aclaraciones}</p>
 			</div>
 			<div className="px-6 py-4">
 				<p
@@ -72,19 +62,13 @@ export const Card = ({ comanda }: any) => {
 				<p
 					className={`text-lg ${
 						comanda.elaborado ? "text-green-500" : "text-black"
-					} font-bold float-right`}
+					} font-bold`}
 				>
 					{total}
 				</p>
 				<button
 					onClick={() => imprimirTicket(comanda)}
-					className={`mt-8 ${
-						comanda.elaborado
-							? "bg-gray-300 hover:bg-gray-400"
-							: "bg-gray-300 hover:bg-gray-400"
-					} text-${
-						comanda.elaborado ? "green-800" : "gray-800"
-					} font-bold py-2 px-4  inline-flex items-center`}
+					className={`mt-8 bg-black text-custom-red font-bold py-2 px-4  inline-flex items-center`}
 				>
 					<svg
 						className={`fill-current w-4 h-4 mr-2 ${
@@ -95,7 +79,7 @@ export const Card = ({ comanda }: any) => {
 					>
 						<path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
 					</svg>
-					<span>Imprimir ticket</span>
+					<span>IMPRIMIR TICKET</span>
 				</button>
 			</div>
 		</div>
