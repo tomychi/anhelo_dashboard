@@ -157,9 +157,17 @@ export const DynamicForm = () => {
 										);
 									} else if (type === "select") {
 										return (
-											<MySelect key={name} label={label} name={name}>
+											<MySelect
+												key={name}
+												label={label}
+												name={name}
+												style={{
+													backgroundColor: "black",
+													color: "#FE0000",
+												}}
+											>
 												<option defaultValue={"efectivo"}>
-													Metodo de pago
+													MÉTODO DE PAGO
 												</option>
 												{options?.map(({ id, label }) => (
 													<option
@@ -182,7 +190,7 @@ export const DynamicForm = () => {
 							)}
 						</div>
 						<button
-							className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-black active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+							className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
 							type="submit"
 						>
 							Guardar
