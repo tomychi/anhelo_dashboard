@@ -173,7 +173,7 @@ export const Dashboard = () => {
 				<h1 className="text-custom-red uppercase font-black font-antonio text-2xl mb-4">
 					Product data
 				</h1>
-				<div className="grid grid-cols-4 grid-rows-1">
+				<div className="grid grid-cols-4 gap-4 grid-rows-1">
 					{" "}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
@@ -190,7 +190,7 @@ export const Dashboard = () => {
 				<h1 className="text-custom-red  font-black font-antonio text-2xl mb-4">
 					BUSINESS KPIs
 				</h1>
-				<div className="grid grid-cols-4 grid-rows-1">
+				<div className="grid grid-cols-4 gap-4 grid-rows-1">
 					{" "}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
@@ -207,7 +207,7 @@ export const Dashboard = () => {
 				<h1 className="text-custom-red  font-black font-antonio text-2xl mb-4">
 					INSTAGRAM KPIs
 				</h1>
-				<div className="grid grid-cols-4 grid-rows-1">
+				<div className="grid grid-cols-4 gap-4 grid-rows-1">
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
