@@ -28,7 +28,7 @@ export const Card = ({ comanda }: any) => {
 
 	return (
 		<div
-			className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden shadow-lg ${
+			className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden ${
 				comanda.elaborado ? "bg-green-500 hover:bg-green-600" : "bg-custom-red"
 			}`}
 		>
