@@ -197,7 +197,6 @@ export const DynamicForm = () => {
 						>
 							Guardar
 						</button>
-						;
 					</Form>
 				)}
 			</Formik>
