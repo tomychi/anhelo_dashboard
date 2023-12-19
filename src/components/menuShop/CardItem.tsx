@@ -26,41 +26,38 @@ export const CardItem = ({
 	};
 
 	return (
-		<div className="">
-			<div
-				onClick={() => setShowModal(true)}
-				className="cursor-pointer h-full font-antonio font-black bg-custom-red"
-			>
-				<div className="p-4">
-					<img
-						className="mx-auto h-20"
-						src={`/menu/${img}`}
-						alt="product image"
-					/>
-				</div>
+		<div
+			onClick={() => setShowModal(true)}
+			className="cursor-pointer h-full font-antonio font-black bg-custom-red"
+		>
+			<div className="p-6">
+				<img
+					className="mx-auto h-max"
+					src={`/menu/${img}`}
+					alt="product image"
+				/>
+			</div>
 
-				<div className="p-4">
-					<div className="text-center">
-						<h5 className="text-sm font-semibold tracking-tight text-black uppercase">
-							{name}
-						</h5>
-						<div className="flex items-center justify-center ">
-							<span className="text-sm font-bold text-black">
-								{currencyFormat(price)}
-							</span>
-						</div>
+			<div className="p-4">
+				<div className="text-center">
+					<h5 className="text-sm font-black text-black uppercase">{name}</h5>
+					<hr className="my-2 border-t-2 border-black" />
+					<div className="flex items-center justify-center ">
+						<span className="text-sm font-black text-black">
+							{currencyFormat(price)}
+						</span>
 					</div>
 				</div>
-				{showModal && (
-					<ModalItem
-						setShowModal={setShowModal}
-						name={name}
-						price={price}
-						type={type}
-						handleFormBurger={handleFormBurger}
-					/>
-				)}
 			</div>
+			{showModal && (
+				<ModalItem
+					setShowModal={setShowModal}
+					name={name}
+					price={price}
+					type={type}
+					handleFormBurger={handleFormBurger}
+				/>
+			)}
 		</div>
 	);
 };
