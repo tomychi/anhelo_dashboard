@@ -36,7 +36,7 @@ export const Card = ({ comanda }: any) => {
 			<div className="px-6 py-4">
 				<p
 					className={`text-lg ${
-						comanda.elaborado ? "text-green-900" : "text-gray-900"
+						comanda.elaborado ? "text-green-900" : "texk-black 900"
 					} font-bold float-right`}
 				>
 					{numeroPedido}
@@ -64,7 +64,7 @@ export const Card = ({ comanda }: any) => {
 			<div className="px-6 py-4">
 				<p
 					className={`text-base ${
-						comanda.elaborado ? "text-green-700" : "text-gray-700"
+						comanda.elaborado ? "text-green-700" : "texk-black 700"
 					}`}
 				>
 					{direccion}
@@ -88,7 +88,7 @@ export const Card = ({ comanda }: any) => {
 				>
 					<svg
 						className={`fill-current w-4 h-4 mr-2 ${
-							comanda.elaborado ? "text-green-800" : "text-gray-800"
+							comanda.elaborado ? "text-green-800" : "texk-black 800"
 						}`}
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 20 20"

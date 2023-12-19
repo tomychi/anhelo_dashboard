@@ -11,7 +11,7 @@ export const Sidebar = () => {
         type="button"
         data-drawer-hide="drawer-navigation"
         aria-controls="drawer-navigation"
-        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 -lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center hover:bg-gray-600 hover:text-black"
+        className="texk-black 400 bg-transparent hover:bg-gray-200 hover:texk-black 900 -lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center hover:bg-gray-600 hover:text-black"
       >
         <svg
           aria-hidden="true"
