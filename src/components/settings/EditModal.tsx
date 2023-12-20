@@ -1,4 +1,38 @@
-export const EditModal = ({ closeModal, item }) => {
+import { useState } from 'react';
+import { ConfirmationModal } from './ConfirmationModal';
+// Importa tu lógica para actualizar datos en Firebase Firestore
+import Swal from 'sweetalert2';
+import { updateDataInFirestore } from './Update';
+
+export const EditModal = ({ closeModal, item, id, collectionName }) => {
+  // Establece el estado para los valores del formulario
+  const [formData, setFormData] = useState({
+    name: item.name,
+    img: item.img,
+    price: item.price,
+    type: item.type,
+    description: item.description,
+  });
+
+  // Maneja los cambios en el formulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Maneja la confirmación para actualizar los datos
+  const handleConfirmation = () => {
+    // Llama a la función para actualizar los datos en Firebase Firestore con formData
+    updateDataInFirestore(id, collectionName, formData);
+
+    // Cierra el modal o muestra un mensaje de éxito, etc.
+    Swal.fire('¡Datos actualizados!', '', 'success');
+    closeModal();
+  };
+
   return (
     <div
       id="crud-modal"
@@ -34,7 +68,7 @@ export const EditModal = ({ closeModal, item }) => {
               <span className="sr-only">Close modal</span>
             </button>
           </div>
-          <form className="p-4 md:p-5">
+          <div className="p-4 md:p-5">
             <div className="grid gap-4 mb-4 grid-cols-2">
               <div className="col-span-2">
                 <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -44,7 +78,8 @@ export const EditModal = ({ closeModal, item }) => {
                   type="text"
                   name="name"
                   id="name"
-                  defaultValue={item.name}
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Type product name"
                 />
@@ -57,7 +92,8 @@ export const EditModal = ({ closeModal, item }) => {
                   type="text"
                   name="name"
                   id="name"
-                  defaultValue={item.img}
+                  value={formData.img}
+                  onChange={handleInputChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Image"
                 />
@@ -70,7 +106,8 @@ export const EditModal = ({ closeModal, item }) => {
                   type="number"
                   name="price"
                   id="price"
-                  defaultValue={item.price}
+                  value={formData.price}
+                  onChange={handleInputChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="$2999"
                 />
@@ -84,7 +121,8 @@ export const EditModal = ({ closeModal, item }) => {
                   type="text"
                   name="type"
                   id="type"
-                  defaultValue={item.type}
+                  value={formData.type}
+                  onChange={handleInputChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="$2999"
                 />
@@ -96,24 +134,15 @@ export const EditModal = ({ closeModal, item }) => {
                 <textarea
                   id="description"
                   rows={4}
-                  defaultValue={item.description}
+                  value={formData.description}
+                  onChange={handleInputChange}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Write product description here"
                 ></textarea>
               </div>
             </div>
-            <button className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-              </svg>
-              Edit
-            </button>
-          </form>
+            <ConfirmationModal handleConfirmation={handleConfirmation} />
+          </div>
         </div>
       </div>
     </div>
