@@ -89,114 +89,126 @@ export const DynamicForm = () => {
 	console.log(dataBurger);
 
 	return (
-		<div className="grid p-4 grid-cols-2 gap-2 ">
-			{dataBurger && <CartShop burgerSelection={dataBurger.burgerSelection} />}
-			<MenuGallery handleFormBurger={handleFormBurger} />
-
-			<Formik
-				initialValues={initialValues}
-				validationSchema={validationSchema}
-				onSubmit={(values, { resetForm }) => {
-					const subTotal = dataBurger.burgerSelection.reduce(
-						(acc, burger) => acc + burger.subTotal,
-						0
-					);
-
-					const orderDetail = {
-						...values,
-						subTotal,
-						total: subTotal + values.envio,
-						burgerSelection: dataBurger.burgerSelection,
-					};
-
-					console.log(orderDetail);
-
-					setDataBurger({ burgerSelection: [] });
-
-					resetForm();
-				}}
-			>
-				{(formik) => (
-					<Form
-						noValidate
-						className="grid z-0 h-max group font-antonio font-black ml-2 bg-custom-red"
-					>
-						<div className="flex flex-col">
-							<div className="flex justify-center my-2">
-								<div
-									className={`mx-2 py-2 px-4 ${
-										seccionActiva === "elaborar"
-											? "bg-black text-custom-red"
-											: "bg-custom-red text-black"
-									} text-black  `}
-									onClick={() => setSeccionActiva("elaborar")}
-								>
-									TOMAR PEDIDO
-								</div>
-								<div
-									className={`mx-2 py-2 px-4 ${
-										seccionActiva === "elaborar"
-											? "bg-custom-red text-black"
-											: "bg-black text-custom-red"
-									} font-semibold `}
-									onClick={() => setSeccionActiva("hechos")}
-								>
-									HECHOS POR LA WEB
-								</div>
-							</div>
-							{seccionActiva === "elaborar" ? (
-								formJson.map(({ type, name, placeholder, label, options }) => {
-									if (type === "text" || type === "tel" || type === "number") {
-										return (
-											<div className="flex flex-col items-center justify-center">
-												<MyTextInput
-													key={name}
-													type={type as any}
-													name={name}
-													label={label}
-												/>
-											</div>
-										);
-									} else if (type === "select") {
-										return (
-											<MySelect
-												key={name}
-												label={label}
-												name={name}
-												style={{
-													backgroundColor: "black",
-													color: "#FE0000",
-												}}
-											>
-												{options?.map(({ id, label }) => (
-													<option
-														className="h-16 hover:bg-red-700"
-														key={id}
-														value={id}
-														defaultValue={"efectivo"}
-													>
-														{label}
-													</option>
-												))}
-											</MySelect>
-										);
-									}
-
-									throw new Error(`Invalid type: ${type}`);
-								})
-							) : (
-								<PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
-							)}
-						</div>
-						<button
-							className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
-							type="submit"
-						>
-							Guardar
-						</button>
-					</Form>
+		<div className="p-4 w-3/5">
+			<div>
+				{dataBurger && (
+					<CartShop burgerSelection={dataBurger.burgerSelection} />
 				)}
-			</Formik>
+				<MenuGallery handleFormBurger={handleFormBurger} />
+			</div>
+
+			<div>
+				<Formik
+					initialValues={initialValues}
+					validationSchema={validationSchema}
+					onSubmit={(values, { resetForm }) => {
+						const subTotal = dataBurger.burgerSelection.reduce(
+							(acc, burger) => acc + burger.subTotal,
+							0
+						);
+
+						const orderDetail = {
+							...values,
+							subTotal,
+							total: subTotal + values.envio,
+							burgerSelection: dataBurger.burgerSelection,
+						};
+
+						console.log(orderDetail);
+
+						setDataBurger({ burgerSelection: [] });
+
+						resetForm();
+					}}
+				>
+					{(formik) => (
+						<Form
+							noValidate
+							className="grid fixed right-10 top-4 z-0 w-1/3 font-antonio font-black ml-2 bg-custom-red"
+						>
+							<div className="flex flex-col">
+								<div className="flex justify-center my-2">
+									<div
+										className={`mx-2 py-2 px-4 ${
+											seccionActiva === "elaborar"
+												? "bg-black text-custom-red"
+												: "bg-custom-red text-black"
+										} text-black  `}
+										onClick={() => setSeccionActiva("elaborar")}
+									>
+										TOMAR PEDIDO
+									</div>
+									<div
+										className={`mx-2 py-2 px-4 ${
+											seccionActiva === "elaborar"
+												? "bg-custom-red text-black"
+												: "bg-black text-custom-red"
+										} font-semibold `}
+										onClick={() => setSeccionActiva("hechos")}
+									>
+										HECHOS POR LA WEB
+									</div>
+								</div>
+								{seccionActiva === "elaborar" ? (
+									formJson.map(
+										({ type, name, placeholder, label, options }) => {
+											if (
+												type === "text" ||
+												type === "tel" ||
+												type === "number"
+											) {
+												return (
+													<div className="flex flex-col items-center justify-center">
+														<MyTextInput
+															key={name}
+															type={type as any}
+															name={name}
+															label={label}
+														/>
+													</div>
+												);
+											} else if (type === "select") {
+												return (
+													<MySelect
+														key={name}
+														label={label}
+														name={name}
+														style={{
+															backgroundColor: "black",
+															color: "#FE0000",
+														}}
+													>
+														{options?.map(({ id, label }) => (
+															<option
+																className="h-16 hover:bg-red-700"
+																key={id}
+																value={id}
+																defaultValue={"efectivo"}
+															>
+																{label}
+															</option>
+														))}
+													</MySelect>
+												);
+											}
+
+											throw new Error(`Invalid type: ${type}`);
+										}
+									)
+								) : (
+									<PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
+								)}
+							</div>
+							<button
+								className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
+								type="submit"
+							>
+								Guardar
+							</button>
+						</Form>
+					)}
+				</Formik>
+			</div>
 		</div>
 	);
 };

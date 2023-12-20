@@ -16,7 +16,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 			<h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">
 				ORIGINALS
 			</h1>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+			<div className="grid grid-cols-6 md:grid-cols-6  gap-4 mb-4">
 				{/* Render all items side by side */}
 				{originals.map(({ name, img, id, price, type }) => (
 					<CardItem
@@ -32,7 +32,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 			<h1 className="text-custom-red font-antonio text-2xl mb-4 font-black">
 				MASTERPIECES
 			</h1>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+			<div className="grid grid-cols-6 md:grid-cols-6 gap-4 mb-4">
 				{ourItems.map(({ name, img, id, price, type }) => (
 					<CardItem
 						key={id}
@@ -47,7 +47,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 			<h1 className="text-custom-red font-antonio text-2xl mb-4 font-black">
 				PAPAS
 			</h1>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+			<div className="grid grid-cols-6 md:grid-cols-6 gap-4 mb-4">
 				{papas.map(({ name, img, id, price, type }) => (
 					<CardItem
 						key={id}
@@ -62,7 +62,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 			<h1 className="text-custom-red font-antonio text-2xl mb-4 font-black">
 				GASEOSAS
 			</h1>
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div className="grid grid-cols-6 md:grid-cols-6 gap-4">
 				{gaseosas.map(({ name, img, id, price, type }) => (
 					<CardItem
 						key={id}
