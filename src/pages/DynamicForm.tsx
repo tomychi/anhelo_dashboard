@@ -111,6 +111,7 @@ export const DynamicForm = () => {
 
     console.log(detallesPedido);
   };
+  console.log(detallePedido);
 
   return (
     <div className="p-4 w-3/5">
