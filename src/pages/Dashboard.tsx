@@ -303,6 +303,20 @@ export const Dashboard = () => {
 							plugins={[plugin]}
 						/>
 					</div>
+					<div className="col-span-1 row-span-1">
+						<Line
+							data={dataFacturacionSemana}
+							options={options}
+							plugins={[plugin]}
+						/>
+					</div>
+					<div className="col-span-1 row-span-1">
+						<Line
+							data={dataFacturacionSemana}
+							options={options}
+							plugins={[plugin]}
+						/>
+					</div>
 				</div>
 			</div>
 			<div>
