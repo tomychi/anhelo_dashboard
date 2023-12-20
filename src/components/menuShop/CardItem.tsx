@@ -30,7 +30,7 @@ export const CardItem = ({
 			onClick={() => setShowModal(true)}
 			className="cursor-pointer h-full font-antonio font-black bg-custom-red flex flex-col justify-between"
 		>
-			<div className="p-6">
+			<div className="pt-4">
 				<img
 					className="mx-auto h-16"
 					src={`/menu/${img}`}
