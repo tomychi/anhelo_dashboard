@@ -73,7 +73,7 @@ info.forEach((pedido) => {
 	});
 });
 
-const fechasBurgers = [
+const fechas = [
 	"30/7/2023",
 	"6/8/2023",
 	"13/8/2023",
@@ -97,17 +97,67 @@ const fechasBurgers = [
 	"17/12/2023",
 ];
 
+const fechasFacturacion = [
+	"8/10/2023",
+	"15/10/2023",
+	"22/10/2023",
+	"29/10/2023",
+	"5/11/2023",
+	"12/11/2023",
+	"19/11/2023",
+	"26/11/2023",
+	"3/12/2023",
+	"10/12/2023",
+	"17/12/2023",
+];
+
 const cantidadesBurgers = [
 	0, 100, 55, 54, 78, 91, 104, 132, 97, 100, 105, 102, 126, 175, 188, 226, 215,
 	278, 316, 307, 324,
 ];
 
+const cantidadesVentas = [
+	0, 22, 17, 18, 30, 35, 43, 55, 46, 45, 53, 43, 59, 84, 90, 106, 91, 116, 151,
+	139, 136,
+];
+
+const facturacion = [
+	295750, 236010, 348440, 482710, 697340, 584980, 642400, 858990, 1020070,
+	971390, 1116610,
+];
+
 const dataBurgersSemana = {
-	labels: fechasBurgers,
+	labels: fechas,
 	datasets: [
 		{
 			label: "BURGERS VENDIDAS",
 			data: cantidadesBurgers,
+			borderColor: "rgba(0, 0, 0)",
+			backgroundColor: "rgba(0, 0, 0, 0.2)",
+			fill: true,
+		},
+	],
+};
+
+const dataFacturacionSemana = {
+	labels: fechasFacturacion,
+	datasets: [
+		{
+			label: "FACTURACIÓN",
+			data: facturacion,
+			borderColor: "rgba(0, 0, 0)",
+			backgroundColor: "rgba(0, 0, 0, 0.2)",
+			fill: true,
+		},
+	],
+};
+
+const dataVentasSemana = {
+	labels: fechas,
+	datasets: [
+		{
+			label: "N° DE VENTAS",
+			data: cantidadesVentas,
 			borderColor: "rgba(0, 0, 0)",
 			backgroundColor: "rgba(0, 0, 0, 0.2)",
 			fill: true,
@@ -241,16 +291,17 @@ export const Dashboard = () => {
 					</div>
 					<div className="col-span-1 row-span-1">
 						<Line
-							data={dataBurgersSemana}
+							data={dataVentasSemana}
 							options={options}
 							plugins={[plugin]}
 						/>
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataToppings} options={options} plugins={[plugin]} />
-					</div>
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />
+						<Line
+							data={dataFacturacionSemana}
+							options={options}
+							plugins={[plugin]}
+						/>
 					</div>
 				</div>
 			</div>
