@@ -1,6 +1,7 @@
-import { Chart, registerables } from "chart.js";
+import React from "react";
 import info from "../assets/combined_addresses.json";
-import { Bar } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
 
 Chart.register(...registerables);
 
@@ -72,6 +73,99 @@ info.forEach((pedido) => {
 	});
 });
 
+const fechasBurgers = [
+	"30/7/2023",
+	"6/8/2023",
+	"13/8/2023",
+	"20/8/2023",
+	"27/8/2023",
+	"3/9/2023",
+	"10/9/2023",
+	"17/9/2023",
+	"24/9/2023",
+	"1/10/2023",
+	"8/10/2023",
+	"15/10/2023",
+	"22/10/2023",
+	"29/10/2023",
+	"5/11/2023",
+	"12/11/2023",
+	"19/11/2023",
+	"26/11/2023",
+	"3/12/2023",
+	"10/12/2023",
+	"17/12/2023",
+];
+
+const cantidadesBurgers = [
+	0, 100, 55, 54, 78, 91, 104, 132, 97, 100, 105, 102, 126, 175, 188, 226, 215,
+	278, 316, 307, 324,
+];
+
+const dataBurgersSemana = {
+	labels: fechasBurgers,
+	datasets: [
+		{
+			label: "Burgers vendidas semana a semana",
+			data: cantidadesBurgers,
+			borderColor: "rgba(0, 0, 0)",
+			backgroundColor: "rgba(0, 0, 0, 0.2)",
+			fill: true,
+		},
+	],
+};
+
+const plugin = {
+	id: "customCanvasBackgroundColor",
+	beforeDraw: (chart, args, options) => {
+		const { ctx } = chart;
+		ctx.save();
+		ctx.globalCompositeOperation = "destination-over";
+		ctx.fillStyle = "rgba(254, 0, 0)";
+		ctx.fillRect(0, 0, chart.width, chart.height);
+		ctx.restore();
+	},
+};
+
+const options = {
+	responsive: true,
+	plugins: {
+		legend: {
+			position: "top",
+			display: true,
+			labels: {
+				color: "rgb(0, 0, 0)",
+				font: {
+					family: "Antonio",
+				},
+				boxWidth: 0,
+			},
+		},
+		title: {
+			display: false,
+		},
+	},
+	scales: {
+		y: {
+			beginAtZero: true,
+			ticks: {
+				color: "rgb(0, 0, 0)",
+				font: {
+					family: "Antonio",
+				},
+			},
+		},
+		x: {
+			ticks: {
+				color: "rgb(0, 0, 0)",
+				font: {
+					family: "Antonio",
+				},
+			},
+		},
+	},
+};
+
 export const Dashboard = () => {
 	const nombresHamburguesas = Object.keys(hamburguesasVendidas);
 	const cantidadesHamburguesas = Object.values(hamburguesasVendidas);
@@ -79,7 +173,7 @@ export const Dashboard = () => {
 	const nombresToppings = Object.keys(toppingsVendidos);
 	const cantidadToppings = Object.values(toppingsVendidos);
 
-	const nombresExtras = Object.keys(extrasVendidos); // Nuevos nombres y cantidades para extras
+	const nombresExtras = Object.keys(extrasVendidos);
 	const cantidadExtras = Object.values(extrasVendidos);
 
 	const dataBurgers = {
@@ -105,7 +199,6 @@ export const Dashboard = () => {
 	};
 
 	const dataExtras = {
-		// Nuevo objeto de datos para extras
 		labels: nombresExtras,
 		datasets: [
 			{
@@ -116,57 +209,6 @@ export const Dashboard = () => {
 		],
 	};
 
-	const plugin = {
-		id: "customCanvasBackgroundColor",
-		beforeDraw: (chart, args, options) => {
-			const { ctx } = chart;
-			ctx.save();
-			ctx.globalCompositeOperation = "destination-over";
-			ctx.fillStyle = "rgba(254, 0, 0)";
-			ctx.fillRect(0, 0, chart.width, chart.height);
-			ctx.restore();
-		},
-	};
-
-	const options = {
-		responsive: true,
-		plugins: {
-			legend: {
-				position: "top",
-				display: true,
-				labels: {
-					color: "rgb(0, 0, 0)",
-					font: {
-						family: "Antonio",
-					},
-					boxWidth: 0,
-				},
-			},
-			title: {
-				display: false,
-			},
-		},
-		scales: {
-			y: {
-				beginAtZero: true,
-				ticks: {
-					color: "rgb(0, 0, 0)",
-					font: {
-						family: "Antonio",
-					},
-				},
-			},
-			x: {
-				ticks: {
-					color: "rgb(0, 0, 0)",
-					font: {
-						family: "Antonio",
-					},
-				},
-			},
-		},
-	};
-
 	return (
 		<div className="p-4 flex flex-col gap-4">
 			<div>
@@ -174,7 +216,6 @@ export const Dashboard = () => {
 					Product data
 				</h1>
 				<div className="grid grid-cols-4 gap-4 grid-rows-1">
-					{" "}
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
@@ -182,7 +223,7 @@ export const Dashboard = () => {
 						<Bar data={dataToppings} options={options} plugins={[plugin]} />
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
+						<Bar data={dataExtras} options={options} plugins={[plugin]} />
 					</div>
 				</div>
 			</div>
@@ -191,7 +232,13 @@ export const Dashboard = () => {
 					BUSINESS KPIs
 				</h1>
 				<div className="grid grid-cols-4 gap-4 grid-rows-1">
-					{" "}
+					<div className="col-span-1 row-span-1">
+						<Line
+							data={dataBurgersSemana}
+							options={options}
+							plugins={[plugin]}
+						/>
+					</div>
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
@@ -199,7 +246,7 @@ export const Dashboard = () => {
 						<Bar data={dataToppings} options={options} plugins={[plugin]} />
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
+						<Bar data={dataExtras} options={options} plugins={[plugin]} />
 					</div>
 				</div>
 			</div>
@@ -215,7 +262,7 @@ export const Dashboard = () => {
 						<Bar data={dataToppings} options={options} plugins={[plugin]} />
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />{" "}
+						<Bar data={dataExtras} options={options} plugins={[plugin]} />
 					</div>
 				</div>
 			</div>
