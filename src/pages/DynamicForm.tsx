@@ -2,6 +2,7 @@ import { CartShop, MenuGallery } from '../components/menuShop';
 import { useState } from 'react';
 import { PedidosWeb } from '../components/forms/PedidosWeb';
 import { UploadOrder } from '../components/forms/UploadOrder';
+import Swal from 'sweetalert2';
 
 const obtenerFechaActual = () => {
   const fechaActual = new Date(); // Obtiene la fecha y hora actuales
@@ -21,6 +22,7 @@ export const DynamicForm = () => {
     aclaraciones: '',
     metodoPago: '',
     direccion: '',
+    telefono: '',
     envio: 0,
     hora: '',
   });
@@ -35,6 +37,25 @@ export const DynamicForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Aquí puedes manejar la lógica para enviar los datos del formulario
+
+    if (detallePedido.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, agrega al menos una hamburguesa.',
+      });
+      return;
+    }
+
+    // Validar que los campos requeridos estén llenos
+    if (!formData.metodoPago || !formData.direccion) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Por favor, completa los campos requeridos.',
+      });
+      return;
+    }
 
     const subTotal = detallePedido.reduce(
       (acc, burger) => acc + burger.subTotal,
@@ -63,9 +84,10 @@ export const DynamicForm = () => {
       direccion: '',
       envio: 0,
       hora: '',
+      telefono: '',
     });
 
-    setDetallePedido({});
+    setDetallePedido([]);
   };
 
   const [seccionActiva, setSeccionActiva] = useState('elaborar');
@@ -139,6 +161,22 @@ export const DynamicForm = () => {
                       className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                     >
                       Aclaraciones:
+                    </label>
+                  </div>
+
+                  <div className="relative z-0 w-11/12 mb-2 mt-4 ">
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      id="telefono"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="aclaraciones"
+                      className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >
+                      Telefono:
                     </label>
                   </div>
 
