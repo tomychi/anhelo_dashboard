@@ -1,66 +1,72 @@
-import { Formik, Form } from 'formik';
-
-import formJson from '../data/custom-form.json';
-import * as Yup from 'yup';
-import { MySelect, MyTextInput } from '../components/forms';
 import { CartShop, MenuGallery } from '../components/menuShop';
 import { useState } from 'react';
 import { PedidosWeb } from '../components/forms/PedidosWeb';
+import { UploadOrder } from '../components/forms/UploadOrder';
 
-const initialValues: { [key: string]: any } = {};
-const requiredFields: { [key: string]: any } = {};
+const obtenerFechaActual = () => {
+  const fechaActual = new Date(); // Obtiene la fecha y hora actuales
 
-for (const input of formJson) {
-  initialValues[input.name] = input.value;
+  const dia = fechaActual.getDate();
+  const mes = fechaActual.getMonth() + 1; // Los meses comienzan desde 0
+  const anio = fechaActual.getFullYear();
 
-  if (!input.validations) continue;
+  // Formatea la fecha como "DD/MM/AAAA"
+  const fechaFormateada = `${dia}/${mes}/${anio}`;
 
-  let schema = Yup.string();
-
-  for (const rule of input.validations) {
-    if (rule.type === 'required') {
-      schema = schema.required(rule.message);
-    }
-
-    if (rule.type === 'minLength') {
-      schema = schema.min((rule as any).value || 1, rule.message);
-    }
-
-    if (rule.type === 'email') {
-      schema = schema.email(rule.message);
-    }
-
-    // otras reglas..
-  }
-
-  requiredFields[input.name] = schema;
-}
-
-const validationSchema = Yup.object().shape({ ...requiredFields });
-
-interface ClienteProps {
-  aclaraciones: string;
-  direccion: string;
-  hora: string;
-  id: string;
-  metodoPago: string;
-  telefono: string;
-  total: number;
-}
-
-export interface BurgerProps {
-  burger: string;
-  quantity: number;
-  toppings: string[];
-  priceBurger: number;
-  priceToppings: number;
-  subTotal: number;
-}
+  return fechaFormateada;
+};
 
 export const DynamicForm = () => {
-  const [dataBurger, setDataBurger] = useState({
-    burgerSelection: [] as BurgerProps[],
+  const [formData, setFormData] = useState({
+    aclaraciones: '',
+    metodoPago: '',
+    direccion: '',
+    envio: 0,
+    hora: '',
   });
+
+  const [detallePedido, setDetallePedido] = useState([]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Aquí puedes manejar la lógica para enviar los datos del formulario
+
+    const subTotal = detallePedido.reduce(
+      (acc, burger) => acc + burger.subTotal,
+      0
+    );
+
+    const envio = parseFloat(formData.envio); // Convertir envio a número
+
+    const info = {
+      ...formData,
+      envio,
+      detallePedido,
+      subTotal,
+      total: subTotal + envio,
+      fecha: obtenerFechaActual(),
+    };
+
+    console.log('Datos del formulario:', info);
+    // Puedes enviar los datos a tu backend, realizar validaciones, etc.
+    UploadOrder(info);
+
+    // Limpia los datos del formulario después de procesarlos
+    setFormData({
+      aclaraciones: '',
+      metodoPago: '',
+      direccion: '',
+      envio: 0,
+      hora: '',
+    });
+
+    setDetallePedido({});
+  };
 
   const [seccionActiva, setSeccionActiva] = useState('elaborar');
 
@@ -75,10 +81,7 @@ export const DynamicForm = () => {
       subTotal: (values.priceBurger + values.priceToppings) * values.quantity,
     };
 
-    setDataBurger((prevData) => ({
-      ...prevData,
-      burgerSelection: [...prevData.burgerSelection, burger],
-    }));
+    setDetallePedido((prevData) => [...prevData, burger]);
   };
 
   const handlePedidoWebAnalizado = (detallesPedido: any) => {
@@ -86,128 +89,123 @@ export const DynamicForm = () => {
 
     console.log(detallesPedido);
   };
-  console.log(dataBurger);
+  console.log(detallePedido);
 
   return (
     <div className="p-4 w-3/5">
       <div>
-        {dataBurger && (
-          <CartShop burgerSelection={dataBurger.burgerSelection} />
-        )}
+        {/* {detallePedido && <CartShop />} */}
         <MenuGallery handleFormBurger={handleFormBurger} />
       </div>
 
       <div>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={(values, { resetForm }) => {
-            const subTotal = dataBurger.burgerSelection.reduce(
-              (acc, burger) => acc + burger.subTotal,
-              0
-            );
-
-            const orderDetail = {
-              ...values,
-              subTotal,
-              total: subTotal + values.envio,
-              burgerSelection: dataBurger.burgerSelection,
-            };
-
-            console.log(orderDetail);
-
-            setDataBurger({ burgerSelection: [] });
-
-            resetForm();
-          }}
-        >
-          {(formik) => (
-            <Form
-              noValidate
-              className="grid fixed right-6 top-4 z-0 w-1/3 font-antonio font-black ml-2 bg-custom-red"
-            >
-              <div className="flex flex-col">
-                <div className="flex justify-center my-2">
-                  <div
-                    className={`mx-2 py-2 px-4 ${
-                      seccionActiva === 'elaborar'
-                        ? 'bg-black text-custom-red'
-                        : 'bg-custom-red text-black'
-                    } text-black  `}
-                    onClick={() => setSeccionActiva('elaborar')}
-                  >
-                    TOMAR PEDIDO
-                  </div>
-                  <div
-                    className={`mx-2 py-2 px-4 ${
-                      seccionActiva === 'elaborar'
-                        ? 'bg-custom-red text-black'
-                        : 'bg-black text-custom-red'
-                    } font-semibold `}
-                    onClick={() => setSeccionActiva('hechos')}
-                  >
-                    HECHOS POR LA WEB
-                  </div>
-                </div>
-                {seccionActiva === 'elaborar' ? (
-                  formJson.map(
-                    ({ type, name, placeholder, label, options }) => {
-                      if (
-                        type === 'text' ||
-                        type === 'tel' ||
-                        type === 'number'
-                      ) {
-                        return (
-                          <div className="flex flex-col items-center justify-center">
-                            <MyTextInput
-                              key={name}
-                              type={type as any}
-                              name={name}
-                              label={label}
-                            />
-                          </div>
-                        );
-                      } else if (type === 'select') {
-                        return (
-                          <MySelect
-                            key={name}
-                            label={label}
-                            name={name}
-                            style={{
-                              backgroundColor: 'black',
-                              color: '#FE0000',
-                            }}
-                          >
-                            {options?.map(({ id, label }) => (
-                              <option
-                                className="h-16 hover:bg-red-700"
-                                key={id}
-                                value={id}
-                                defaultValue={'efectivo'}
-                              >
-                                {label}
-                              </option>
-                            ))}
-                          </MySelect>
-                        );
-                      }
-
-                      throw new Error(`Invalid type: ${type}`);
-                    }
-                  )
-                ) : (
-                  <PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
-                )}
-              </div>
-              <button
-                className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
-                type="submit"
+        <div className="grid fixed right-6 top-4 z-0 w-1/3 font-antonio font-black ml-2 bg-custom-red">
+          <div className="flex flex-col">
+            <div className="flex justify-center my-2">
+              <div
+                className={`mx-2 py-2 px-4 ${
+                  seccionActiva === 'elaborar'
+                    ? 'bg-black text-custom-red'
+                    : 'bg-custom-red text-black'
+                } text-black  `}
+                onClick={() => setSeccionActiva('elaborar')}
               >
-                Guardar
-              </button>
-            </Form>
-          )}
-        </Formik>
+                TOMAR PEDIDO
+              </div>
+              <div
+                className={`mx-2 py-2 px-4 ${
+                  seccionActiva === 'elaborar'
+                    ? 'bg-custom-red text-black'
+                    : 'bg-black text-custom-red'
+                } font-semibold `}
+                onClick={() => setSeccionActiva('hechos')}
+              >
+                HECHOS POR LA WEB
+              </div>
+            </div>
+            {seccionActiva === 'elaborar' ? (
+              <div className="flex flex-col items-center justify-center">
+                <div>
+                  <div className="relative z-0 w-11/12 mb-2 mt-4 ">
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      id="aclaraciones"
+                      name="aclaraciones"
+                      value={formData.aclaraciones}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="aclaraciones"
+                      className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >
+                      Aclaraciones:
+                    </label>
+                  </div>
+
+                  <div className="relative z-0 w-11/12 mb-2 mt-4 ">
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      type="text"
+                      id="direccion"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="direccion"
+                      className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >
+                      Dirección:
+                    </label>
+                  </div>
+                  <div>
+                    <label htmlFor="envio">Costo de envío:</label>
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      type="number"
+                      id="envio"
+                      name="envio"
+                      value={formData.envio}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="hora">Hora:</label>
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      type="time"
+                      id="hora"
+                      name="hora"
+                      value={formData.hora}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <select
+                      id="metodoPago"
+                      name="metodoPago"
+                      value={formData.metodoPago}
+                      onChange={handleChange}
+                      className="h-12 bg-red-300 hover:bg-red-700"
+                    >
+                      <option value="">Selecciona un método de pago</option>
+                      <option value="efectivo">Efectivo</option>
+                      <option value="transferencia">Transferencia</option>
+                    </select>
+                  </div>
+                  <button
+                    className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
+                    onClick={(e) => handleSubmit(e)}
+                  >
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
