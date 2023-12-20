@@ -106,7 +106,7 @@ const dataBurgersSemana = {
 	labels: fechasBurgers,
 	datasets: [
 		{
-			label: "Burgers vendidas semana a semana",
+			label: "BURGERS VENDIDAS",
 			data: cantidadesBurgers,
 			borderColor: "rgba(0, 0, 0)",
 			backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -240,7 +240,11 @@ export const Dashboard = () => {
 						/>
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
+						<Line
+							data={dataBurgersSemana}
+							options={options}
+							plugins={[plugin]}
+						/>
 					</div>
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataToppings} options={options} plugins={[plugin]} />
