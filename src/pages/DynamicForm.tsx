@@ -124,7 +124,7 @@ export const DynamicForm = () => {
 					{(formik) => (
 						<Form
 							noValidate
-							className="grid fixed right-10 top-4 z-0 w-1/3 font-antonio font-black ml-2 bg-custom-red"
+							className="grid fixed right-6 top-4 z-0 w-1/3 font-antonio font-black ml-2 bg-custom-red"
 						>
 							<div className="flex flex-col">
 								<div className="flex justify-center my-2">
