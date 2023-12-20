@@ -1,137 +1,137 @@
 [
-  {
-    "name": "Simple Chessburger",
-    "description": "Smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 1860,
-    "id": "TIS213231",
-    "category": "burger",
-    "type": "originals",
-    "img": "simple.png"
-  },
-  {
-    "name": "Doble Cheeseburger",
-    "description": "Doble smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 2610,
-    "id": "TASD4444",
-    "category": "burger",
-    "type": "originals",
-    "img": "doble.png"
-  },
-  {
-    "name": "Triple Cheeseburger",
-    "description": "Triple smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 3360,
-    "id": "ASD134212",
-    "category": "burger",
-    "type": "originals",
-    "img": "triple.png"
-  },
-  {
-    "name": "Cuadruple Cheeseburger",
-    "description": "Cuadruple smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 4110,
-    "id": "GFDYH3245",
-    "category": "burger",
-    "type": "originals",
-    "img": "cuadruple.png"
-  },
-  {
-    "name": "Crispy BCN",
-    "description": "Doble smash burger de 90gr, cheddar, cebolla crispy, bacon y salsa barbecue envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 3070,
-    "id": "35135ASFA",
-    "category": "burger",
-    "type": "our",
-    "img": "crispy.png"
-  },
-  {
-    "description": "Doble smash burger de 90gr, cheddar, tomate, lechuga y salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
-    "name": "ANHELO Classic",
-    "price": 2870,
-    "id": "JUYTTR32",
-    "category": "burger",
-    "type": "our",
-    "img": "classic.png"
-  },
-  {
-    "name": "BCN Cheeseburger",
-    "description": "Doble smash burger de 90gr, cheddar, bacon y salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 3070,
-    "id": "SADA231424",
-    "category": "burger",
-    "type": "our",
-    "img": "baconCheeseburger.png"
-  },
-  {
-    "name": "BBQ BCN Cheeseburger",
-    "description": "Doble smash burger de 90gr, cheddar, bacon, cebolla caramelizada y salsa barbecue envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 3090,
-    "id": "GERCV45",
-    "category": "burger",
-    "type": "our",
-    "img": "bbqBcnCheeseburger.png"
-  },
-  {
-    "name": "Easter Egg",
-    "description": "Doble smash burger de 90gr, cheddar, bacon, huevo frito y  salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 2810,
-    "id": "154525FAS",
-    "category": "burger",
-    "type": "our",
-    "img": "easterEgg.png"
-  },
-  {
-    "name": "Mario Inspired",
-    "description": "Doble smash burger de 90gr, cheddar, cebolla caramelizada y salsa de champiñones envuelto en un pan de papa. Incluye porción de papas.",
-    "price": 3270,
-    "id": "151A2A5ASFAS",
-    "category": "burger",
-    "type": "our",
-    "img": "marioInspired.png"
-  },
-  {
-    "name": "Coca-Cola (310 ml.)",
-    "description": "",
-    "price": 500,
-    "id": "ADAZ214",
-    "category": "drink",
-    "type": "coca",
-    "img": "coca.png"
-  },
-  {
-    "name": "Fanta de naranja (310 ml.)",
-    "description": "",
-    "price": 500,
-    "id": "421ASFA",
-    "category": "drink",
-    "type": "fanta",
-    "img": "fanta.png"
-  },
-  {
-    "name": "Sprite (310 ml.)",
-    "description": "",
-    "price": 500,
-    "id": "NDUS9GN987",
-    "category": "drink",
-    "type": "sprite",
-    "img": "sprite.png"
-  },
-  {
-    "name": "Papas Anhelo",
-    "description": "Porción de papas.",
-    "price": 1500,
-    "id": "4564GDS8",
-    "category": "papa",
-    "type": "papas",
-    "img": "papas.png"
-  },
-  {
-    "name": "Papas con Cheddar",
-    "description": "Porción de papas con cheddar.",
-    "price": 1800,
-    "id": "GUI32IASD",
-    "category": "papa",
-    "type": "papas con cheddar",
-    "img": "papasCheddar.png"
-  }
+	{
+		"name": "Simple Chessburger",
+		"description": "Smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 1860,
+		"id": "TIS213231",
+		"category": "burger",
+		"type": "originals",
+		"img": "simple.png"
+	},
+	{
+		"name": "Doble Cheeseburger",
+		"description": "Doble smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 2610,
+		"id": "TASD4444",
+		"category": "burger",
+		"type": "originals",
+		"img": "doble.png"
+	},
+	{
+		"name": "Triple Cheeseburger",
+		"description": "Triple smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 3360,
+		"id": "ASD134212",
+		"category": "burger",
+		"type": "originals",
+		"img": "triple.png"
+	},
+	{
+		"name": "Cuadruple Cheeseburger",
+		"description": "Cuadruple smash burger de 90gr, cheddar y toppings a elección envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 4110,
+		"id": "GFDYH3245",
+		"category": "burger",
+		"type": "originals",
+		"img": "cuadruple.png"
+	},
+	{
+		"name": "Crispy BCN",
+		"description": "Doble smash burger de 90gr, cheddar, cebolla crispy, bacon y salsa barbecue envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 3070,
+		"id": "35135ASFA",
+		"category": "burger",
+		"type": "our",
+		"img": "crispy.png"
+	},
+	{
+		"description": "Doble smash burger de 90gr, cheddar, tomate, lechuga y salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
+		"name": "ANHELO Classic",
+		"price": 2870,
+		"id": "JUYTTR32",
+		"category": "burger",
+		"type": "our",
+		"img": "classic.png"
+	},
+	{
+		"name": "BCN Cheeseburger",
+		"description": "Doble smash burger de 90gr, cheddar, bacon y salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 3070,
+		"id": "SADA231424",
+		"category": "burger",
+		"type": "our",
+		"img": "baconCheeseburger.png"
+	},
+	{
+		"name": "BBQ BCN Cheeseburger",
+		"description": "Doble smash burger de 90gr, cheddar, bacon, cebolla caramelizada y salsa barbecue envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 3090,
+		"id": "GERCV45",
+		"category": "burger",
+		"type": "our",
+		"img": "bbqBcnCheeseburger.png"
+	},
+	{
+		"name": "Easter Egg",
+		"description": "Doble smash burger de 90gr, cheddar, bacon, huevo frito y  salsa ANHELO envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 2810,
+		"id": "154525FAS",
+		"category": "burger",
+		"type": "our",
+		"img": "easterEgg.png"
+	},
+	{
+		"name": "Mario Inspired",
+		"description": "Doble smash burger de 90gr, cheddar, cebolla caramelizada y salsa de champiñones envuelto en un pan de papa. Incluye porción de papas.",
+		"price": 3270,
+		"id": "151A2A5ASFAS",
+		"category": "burger",
+		"type": "our",
+		"img": "marioInspired.png"
+	},
+	{
+		"name": "Coca-Cola (310 ml.)",
+		"description": "",
+		"price": 500,
+		"id": "ADAZ214",
+		"category": "drink",
+		"type": "gaseosas",
+		"img": "coca.png"
+	},
+	{
+		"name": "Fanta de naranja (310 ml.)",
+		"description": "",
+		"price": 500,
+		"id": "421ASFA",
+		"category": "drink",
+		"type": "gaseosas",
+		"img": "fanta.png"
+	},
+	{
+		"name": "Sprite (310 ml.)",
+		"description": "",
+		"price": 500,
+		"id": "NDUS9GN987",
+		"category": "drink",
+		"type": "gaseosas",
+		"img": "sprite.png"
+	},
+	{
+		"name": "Papas Anhelo",
+		"description": "Porción de papas.",
+		"price": 1500,
+		"id": "4564GDS8",
+		"category": "papa",
+		"type": "papas",
+		"img": "papas.png"
+	},
+	{
+		"name": "Papas con Cheddar",
+		"description": "Porción de papas con cheddar.",
+		"price": 1800,
+		"id": "GUI32IASD",
+		"category": "papa",
+		"type": "papas",
+		"img": "papasCheddar.png"
+	}
 ]
