@@ -124,7 +124,7 @@ export const Sidebar = () => {
 						</li>
 						<li>
 							<NavLink
-								to="/dashboard"
+								to="/"
 								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
