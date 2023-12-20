@@ -1,7 +1,7 @@
 import { CartShop, MenuGallery } from '../components/menuShop';
 import { useState } from 'react';
 import { PedidosWeb } from '../components/forms/PedidosWeb';
-import { UploadOrder } from '../components/forms/UploadOrder';
+import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 
 const obtenerFechaActual = () => {
