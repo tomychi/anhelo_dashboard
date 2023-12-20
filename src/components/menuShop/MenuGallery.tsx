@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import items from '../../assets/menu.json';
 import { CardItem } from './CardItem';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
