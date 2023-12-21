@@ -1,64 +1,36 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
-import pedidos from '../assets/pedidos.json';
 import { ReadOrder } from '../firebase/ReadData';
 
-function obtenerFechaActual() {
-  const fecha = new Date();
-  const dia = String(fecha.getDate()).padStart(2, '0');
-  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-  const anio = String(fecha.getFullYear());
-  return `${dia}-${mes}-${anio}`;
-}
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
   const [pedidosHoy, setPedidosHoy] = useState([]);
 
   useEffect(() => {
-    const fechaActual = obtenerFechaActual();
-
-    // Copia del arreglo actual de pedidosHoy
-    const nuevosPedidosHoy = [...pedidosHoy];
-
-    // Agregar el nuevo pedido a la lista
-    const nuevoPedido = {
-      numeroPedido: '34', // Actualiza el número del pedido según sea necesario
-      pedido:
-        '1x triple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue\n- salsa anhelo',
-      aclaraciones: 'sin mayonesa a la doble',
-      direccion: 'isabel la católica 635 (+54 9 358 429-2340)',
-      hora: '23:50',
-      fecha: fechaActual,
-      total: '$3650',
-      elaborado: false,
-    };
-
-    nuevosPedidosHoy.push(nuevoPedido);
-
-    // Ordenar los pedidos filtrados por hora
-    nuevosPedidosHoy.sort((a, b) => {
-      const horaA = new Date(`2023-12-11 ${a.hora}`);
-      const horaB = new Date(`2023-12-11 ${b.hora}`);
-      return horaA - horaB;
-    });
-
     const obtenerPedidos = async () => {
       try {
         const pedidos = await ReadOrder();
-        console.log('Pedidos:', pedidos);
-        // Aquí puedes manejar los datos de los pedidos, como establecerlos en el estado de tu componente
+        setPedidosHoy(pedidos);
       } catch (error) {
         console.error('Error al obtener pedidos:', error);
       }
     };
-
     obtenerPedidos();
-    setPedidosHoy(nuevosPedidosHoy);
   }, []);
 
+  useEffect(() => {
+    // Ordenar los pedidos filtrados por hora
+    pedidosHoy.sort((a, b) => {
+      const horaA = new Date(`2023-12-11 ${a.hora}`);
+      const horaB = new Date(`2023-12-11 ${b.hora}`);
+      return horaA - horaB;
+    });
+    // Realizar otras operaciones con pedidosHoy después de la actualización
+  }, [pedidosHoy]);
+
   // Filtra los pedidos según la sección activa
-  const pedidosPorHacer = pedidosHoy.filter((comanda) => !comanda.elaborado);
-  const pedidosHechos = pedidosHoy.filter((comanda) => comanda.elaborado);
+  const pedidosPorHacer = pedidosHoy.filter(({ data }) => !data.elaborado);
+  const pedidosHechos = pedidosHoy.filter(({ data }) => data.elaborado);
 
   return (
     <div>

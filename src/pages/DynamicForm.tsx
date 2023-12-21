@@ -117,6 +117,7 @@ export const DynamicForm = () => {
     <div className="p-4 w-3/5">
       <div>
         {/* {detallePedido && <CartShop />} */}
+
         <MenuGallery handleFormBurger={handleFormBurger} />
       </div>
 
