@@ -261,6 +261,25 @@ export const Dashboard = () => {
 
 	return (
 		<div className="p-4 flex flex-col gap-4">
+			<div className="flex flex-row gap-4">
+				{/* Recuadros rojos con el mismo tamaño y ancho completo */}
+				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
+					<p className="text-sm">Facturacion</p>
+					<p className="text-lg font-bold">1234</p>
+				</div>
+				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
+					<p className="text-sm">Items sales</p>
+					<p className="text-lg font-bold">5678</p>
+				</div>
+				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
+					<p className="text-sm">N° de ventas</p>
+					<p className="text-lg font-bold">91011</p>
+				</div>
+				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
+					<p className="text-sm">New clients</p>
+					<p className="text-lg font-bold">121314</p>
+				</div>
+			</div>
 			<div>
 				<h1 className="text-custom-red uppercase font-black font-antonio text-2xl mb-4">
 					Product data
