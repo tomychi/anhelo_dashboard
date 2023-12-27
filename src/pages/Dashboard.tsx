@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import info from "../assets/combined_addresses.json";
 import { Chart, registerables } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
@@ -217,6 +217,11 @@ const options = {
 };
 
 export const Dashboard = () => {
+	const [selectedInterval, setSelectedInterval] = useState("weekly");
+
+	const handleIntervalChange = (interval) => {
+		setSelectedInterval(interval);
+	};
 	const nombresHamburguesas = Object.keys(hamburguesasVendidas);
 	const cantidadesHamburguesas = Object.values(hamburguesasVendidas);
 
@@ -262,25 +267,18 @@ export const Dashboard = () => {
 	return (
 		<div className="p-4 flex flex-col gap-4">
 			<div className="flex items-center">
-				<h1 className="text-custom-red font-black font-antonio text-2xl ">
-					WEEKLY KPIs
-				</h1>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					strokeWidth="5"
-					stroke="currentColor"
-					className="font-black w-4 ml-2 mt-2 text-custom-red"
-				>
-					<path
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
-					/>
-				</svg>
+				<div className="">
+					<select
+						value={selectedInterval}
+						onChange={(e) => handleIntervalChange(e.target.value)}
+						className=" text-custom-red bg-black p-4 text-4xl font-black  font-antonio "
+					>
+						<option value="weekly">WEEKLY KPIs</option>
+						<option value="monthly">MONTHLY KPIs</option>
+						<option value="all">ALL KPIs</option>
+					</select>
+				</div>
 			</div>
-
 			<div className="flex flex-row gap-4">
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
@@ -571,9 +569,9 @@ export const Dashboard = () => {
 			</div>
 
 			<div className="flex flex-row gap-4">
-				<div>
-					<div className="flex items-center ">
-						<h1 className="text-custom-red font-black font-antonio text-2xl ">
+				<div className="p-4 text-4xl">
+					<div className="flex items-center  ">
+						<h1 className="text-custom-red font-black font-antonio  ">
 							PRODUCT CHARTS
 						</h1>
 						<svg
@@ -604,8 +602,8 @@ export const Dashboard = () => {
 				</div> */}
 				</div>
 				<div>
-					<div className="flex items-center ">
-						<h1 className="text-custom-red font-black font-antonio text-2xl ">
+					<div className="flex items-center p-4 text-4xl">
+						<h1 className="text-custom-red font-black font-antonio  ">
 							KPIs TRACKING
 						</h1>
 						<svg
