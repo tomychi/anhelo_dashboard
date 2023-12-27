@@ -263,21 +263,55 @@ export const Dashboard = () => {
 		<div className="p-4 flex flex-col gap-4">
 			<div className="flex flex-row gap-4">
 				{/* Recuadros rojos con el mismo tamaño y ancho completo */}
-				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-lg font-black font-antonio text-black">1234</p>
-					<p className="text-sm font-antonio text-black">Facturacion</p>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
+						<p>+5%</p>
+					</div>
+					<div className="absolute top-4 left-4 text-black  p-1">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth="1.5"
+								stroke="currentColor"
+								className="w-6 h-6"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">$4.320.210</p>
+					<p className="text-sm mt-auto">FACTURACIÓN</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-lg font-antonio text-black">5678</p>
-					<p className="text-sm font-antonio text-black">Items sales</p>
+
+				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
+					<div className="flex items-center">
+						{/* Cambia el ícono según tus necesidades */}
+						<p className="text-lg font-bold">5678</p>
+					</div>
+					<p className="text-sm">Items sales</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-lg  font-antonio text-black">91011</p>
-					<p className="text-sm font-antonio text-black">N° de ventas</p>
+				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
+					<div className="flex items-center">
+						{/* Cambia el ícono según tus necesidades */}
+						<p className="text-lg font-bold">91011</p>
+					</div>
+					<p className="text-sm">N° de ventas</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-lg  font-antonio text-black">121314</p>
-					<p className="text-sm font-antonio text-black">New clients</p>
+				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
+					<div className="flex items-center">
+						{/* Cambia el ícono según tus necesidades */}
+						<p className="text-lg font-bold">121314</p>
+					</div>
+					<p className="text-sm">New clients</p>
 				</div>
 			</div>
 			<div>
