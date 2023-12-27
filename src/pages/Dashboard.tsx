@@ -515,7 +515,7 @@ export const Dashboard = () => {
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>+14</p>
+						<p>+6</p>
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -531,14 +531,42 @@ export const Dashboard = () => {
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+									d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
 								/>
 							</svg>
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">24</p>
-					<p className="text-sm mt-auto">NUEVOS CLIENTES</p>
+					<p className=" text-4xl font-bold mt-auto">13</p>
+					<p className="text-sm mt-auto">PROMEDIO DE COMENTARIOS</p>
+				</div>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
+						<p>+6</p>
+					</div>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">13</p>
+					<p className="text-sm mt-auto">PROMEDIO DE COMPARTIDOS</p>
 				</div>
 			</div>
 
