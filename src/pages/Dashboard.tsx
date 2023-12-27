@@ -344,7 +344,7 @@ export const Dashboard = () => {
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>x1,87</p>
+						<p>+31</p>
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -394,7 +394,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">136</p>
+					<p className=" text-4xl font-bold mt-auto">+16</p>
 					<p className="text-sm mt-auto">VENTAS</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
