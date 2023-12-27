@@ -580,7 +580,7 @@ export const Dashboard = () => {
 							viewBox="0 0 24 24"
 							strokeWidth="5"
 							stroke="currentColor"
-							className="font-black w-4 ml-2 mt-2 text-custom-red"
+							className="font-black w-4 ml-2 mt-5 text-custom-red"
 						>
 							<path
 								strokeLinecap="round"
@@ -612,7 +612,7 @@ export const Dashboard = () => {
 							viewBox="0 0 24 24"
 							strokeWidth="5"
 							stroke="currentColor"
-							className="font-black w-4 ml-2 mt-2 text-custom-red"
+							className="font-black w-4 ml-2 mt-5 text-custom-red"
 						>
 							<path
 								strokeLinecap="round"
