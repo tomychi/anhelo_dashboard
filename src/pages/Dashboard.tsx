@@ -271,7 +271,7 @@ export const Dashboard = () => {
 					<select
 						value={selectedInterval}
 						onChange={(e) => handleIntervalChange(e.target.value)}
-						className="text-custom-red bg-black p-4 text-4xl font-black font-antonio focus:outline-none"
+						className="text-custom-red  bg-black p-4 text-4xl font-black font-antonio focus:outline-none "
 					>
 						<option value="weekly" className="bg-black text-2xl">
 							WEEKLY KPIs
