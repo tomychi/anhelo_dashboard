@@ -287,7 +287,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">$4.320.210</p>
+					<p className=" text-4xl font-bold mt-auto">$623.920</p>
 					<p className="text-sm mt-auto">FACTURACIÓN</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -315,7 +315,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">$1.638.195</p>
+					<p className=" text-4xl font-bold mt-auto">$352.520</p>
 					<p className="text-sm mt-auto">GANANCIA</p>
 				</div>
 			</div>
