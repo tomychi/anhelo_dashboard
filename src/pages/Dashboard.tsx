@@ -265,7 +265,7 @@ export const Dashboard = () => {
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>x1,98</p>
+						<p>x1,15</p>
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -287,13 +287,13 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">$623.920</p>
+					<p className=" text-4xl font-bold mt-auto">$1.116.610</p>
 					<p className="text-sm mt-auto">FACTURACIÓN</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>57%</p>
+						<p>46%</p>
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -315,7 +315,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">$352.520</p>
+					<p className=" text-4xl font-bold mt-auto">$406.830</p>
 					<p className="text-sm mt-auto">GANANCIA</p>
 				</div>
 			</div>
@@ -346,7 +346,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">1.320</p>
+					<p className=" text-4xl font-bold mt-auto">324</p>
 					<p className="text-sm mt-auto">PRODUCTOS VENDIDOS</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -374,7 +374,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">182</p>
+					<p className=" text-4xl font-bold mt-auto">136</p>
 					<p className="text-sm mt-auto">VENTAS</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
