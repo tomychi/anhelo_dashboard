@@ -267,15 +267,21 @@ export const Dashboard = () => {
 	return (
 		<div className="p-4 flex flex-col gap-4">
 			<div className="flex items-center">
-				<div className="">
+				<div className="relative inline-block">
 					<select
 						value={selectedInterval}
 						onChange={(e) => handleIntervalChange(e.target.value)}
-						className=" text-custom-red bg-black p-4 text-4xl font-black  font-antonio "
+						className="text-custom-red bg-black p-4 text-4xl font-black font-antonio focus:outline-none"
 					>
-						<option value="weekly">WEEKLY KPIs</option>
-						<option value="monthly">MONTHLY KPIs</option>
-						<option value="all">ALL-TIME KPIs</option>
+						<option value="weekly" className="bg-black text-2xl">
+							WEEKLY KPIs
+						</option>
+						<option value="monthly" className="bg-black text-2xl">
+							MONTHLY KPIs
+						</option>
+						<option value="all" className="bg-black text-2xl">
+							ALL-TIME KPIs
+						</option>
 					</select>
 				</div>
 			</div>
