@@ -264,20 +264,20 @@ export const Dashboard = () => {
 			<div className="flex flex-row gap-4">
 				{/* Recuadros rojos con el mismo tamaño y ancho completo */}
 				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-sm">Facturacion</p>
-					<p className="text-lg font-bold">1234</p>
+					<p className="text-lg font-black font-antonio text-black">1234</p>
+					<p className="text-sm font-antonio text-black">Facturacion</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-sm">Items sales</p>
-					<p className="text-lg font-bold">5678</p>
+					<p className="text-lg font-antonio text-black">5678</p>
+					<p className="text-sm font-antonio text-black">Items sales</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-sm">N° de ventas</p>
-					<p className="text-lg font-bold">91011</p>
+					<p className="text-lg  font-antonio text-black">91011</p>
+					<p className="text-sm font-antonio text-black">N° de ventas</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-16 flex flex-col justify-center items-center text-white">
-					<p className="text-sm">New clients</p>
-					<p className="text-lg font-bold">121314</p>
+					<p className="text-lg  font-antonio text-black">121314</p>
+					<p className="text-sm font-antonio text-black">New clients</p>
 				</div>
 			</div>
 			<div>
