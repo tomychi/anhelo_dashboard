@@ -422,8 +422,8 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl font-bold mt-auto">2.518</p>
-					<p className="text-sm mt-auto">CLIENTES</p>
+					<p className=" text-4xl font-bold mt-auto">24</p>
+					<p className="text-sm mt-auto">NUEVOS CLIENTES</p>
 				</div>
 			</div>
 			<div className="flex flex-row gap-4">
