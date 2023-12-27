@@ -275,7 +275,7 @@ export const Dashboard = () => {
 					>
 						<option value="weekly">WEEKLY KPIs</option>
 						<option value="monthly">MONTHLY KPIs</option>
-						<option value="all">ALL KPIs</option>
+						<option value="all">ALL-TIME KPIs</option>
 					</select>
 				</div>
 			</div>
