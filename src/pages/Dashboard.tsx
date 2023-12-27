@@ -263,7 +263,7 @@ export const Dashboard = () => {
 		<div className="p-4 flex flex-col gap-4">
 			<div className="flex items-center">
 				<h1 className="text-custom-red font-black font-antonio text-2xl ">
-					KPIs SEMANALES
+					WEEKLY KPIs
 				</h1>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -430,7 +430,7 @@ export const Dashboard = () => {
 				<div>
 					<div className="flex items-center ">
 						<h1 className="text-custom-red font-black font-antonio text-2xl ">
-							PRODUCT DATA
+							PRODUCT CHARTS
 						</h1>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
