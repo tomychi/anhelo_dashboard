@@ -22,26 +22,3 @@ export const ReadData = async () => {
 
   return fetchedData.flat();
 };
-
-export const ReadOrder = async () => {
-  const firestore = getFirestore();
-
-  const collections = ['pedidos'];
-
-  const fetchedData = await Promise.all(
-    collections.map(async (collectionName) => {
-      const collectionRef = collection(firestore, collectionName);
-      const snapshot = await getDocs(collectionRef);
-
-      const dataWithIds = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-        collectionName: collectionName,
-      }));
-
-      return dataWithIds;
-    })
-  );
-
-  return fetchedData.flat();
-};

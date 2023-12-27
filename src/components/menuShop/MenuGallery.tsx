@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { CardItem } from './CardItem';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { ReadData } from '../../firebase/ReadData';
 
 interface Props {

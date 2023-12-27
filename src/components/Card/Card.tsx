@@ -1,7 +1,6 @@
 export const Card = ({ comanda }: any) => {
   const { id, data } = comanda;
 
-  console.log(data);
   const {
     aclaraciones,
     direccion,
