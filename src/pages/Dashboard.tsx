@@ -130,7 +130,7 @@ const dataBurgersSemana = {
 	labels: fechas,
 	datasets: [
 		{
-			label: "BURGERS VENDIDAS",
+			label: "PRODUCTOS VENDIDOS",
 			data: cantidadesBurgers,
 			borderColor: "rgba(0, 0, 0)",
 			backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -317,7 +317,7 @@ export const Dashboard = () => {
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>46%</p>
+						<p>36,4%</p>
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -630,6 +630,13 @@ export const Dashboard = () => {
 					<div className="grid grid-cols-4 gap-4 grid-rows-1">
 						<div className="col-span-1 row-span-1">
 							<Line
+								data={dataFacturacionSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Line
 								data={dataBurgersSemana}
 								options={options}
 								plugins={[plugin]}
@@ -638,13 +645,6 @@ export const Dashboard = () => {
 						<div className="col-span-1 row-span-1">
 							<Line
 								data={dataVentasSemana}
-								options={options}
-								plugins={[plugin]}
-							/>
-						</div>
-						<div className="col-span-1 row-span-1">
-							<Line
-								data={dataFacturacionSemana}
 								options={options}
 								plugins={[plugin]}
 							/>
