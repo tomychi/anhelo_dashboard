@@ -1,4 +1,9 @@
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  onSnapshot,
+} from 'firebase/firestore';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -21,4 +26,17 @@ export const ReadData = async () => {
   );
 
   return fetchedData.flat();
+};
+
+export const ReadOrder = (callback) => {
+  const firestore = getFirestore();
+  const collectionRef = collection(firestore, 'pedidos');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const fetchedData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data(),
+    }));
+    callback(fetchedData);
+  });
 };

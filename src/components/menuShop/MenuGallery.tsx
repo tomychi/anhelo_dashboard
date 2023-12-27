@@ -8,57 +8,73 @@ interface Props {
 
 export const MenuGallery = ({ handleFormBurger }: Props) => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const getData = async () => {
+    setLoading(true);
     if (data.length === 0) {
       const info = await ReadData();
       setData(info);
     }
+    setLoading(false);
   };
+
+  useEffect(() => {
+    getData();
+  });
 
   return (
     <div className="flex flex-col">
-      <button
-        onClick={getData}
-        className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red bg-red-800"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          data-slot="icon"
+      {loading ? (
+        <div
+          role="status "
+          className="fixed overflow-y-auto overflow-x-hidden inset-0 flex items-center justify-center z-50 w-full"
         >
-          <path
-            fillRule="evenodd"
-            d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
-            className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red bg-red-800"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {['originals', 'masterpieces', 'papas', 'drink'].map((sectionName) => (
-        <div key={sectionName}>
-          <h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">
-            {sectionName.toUpperCase()}
-          </h1>
-          <div className="grid grid-cols-6 md:grid-cols-6 gap-4 mb-4">
-            {/* Renderizar items de la sección correspondiente */}
-            {data
-              .filter((item) => item.data.type === sectionName)
-              .map(({ id, data }) => (
-                <CardItem
-                  key={id}
-                  img={data.img}
-                  name={data.name}
-                  price={data.price}
-                  type={data.type}
-                  handleFormBurger={handleFormBurger}
-                />
-              ))}
-          </div>
+          <svg
+            className="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
+            viewBox="0 0 100 101"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="currentColor"
+            />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentFill"
+            />
+          </svg>
+          <span className="sr-only">Loading...</span>
         </div>
-      ))}
+      ) : (
+        <div>
+          {['originals', 'masterpieces', 'papas', 'drink'].map(
+            (sectionName) => (
+              <div key={sectionName}>
+                <h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">
+                  {sectionName.toUpperCase()}
+                </h1>
+                <div className="grid grid-cols-6 md:grid-cols-6 gap-4 mb-4">
+                  {/* Renderizar items de la sección correspondiente */}
+                  {data
+                    .filter((item) => item.data.type === sectionName)
+                    .map(({ id, data }) => (
+                      <CardItem
+                        key={id}
+                        img={data.img}
+                        name={data.name}
+                        price={data.price}
+                        type={data.type}
+                        handleFormBurger={handleFormBurger}
+                      />
+                    ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };

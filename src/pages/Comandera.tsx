@@ -1,21 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders } from '../redux/slices/orders/ordersAction';
+import { ReadOrder } from '../firebase/ReadData';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
-  const dispatch = useDispatch();
-  const { orders } = useSelector((state: any) => state.ordersState);
+  const [pedidosHoy, setPedidosHoy] = useState([]);
+
   useEffect(() => {
-    if (!orders.length) {
-      dispatch(fetchOrders());
-    }
-  }, [orders, dispatch]);
+    const unsubscribe = ReadOrder((pedidos) => {
+      setPedidosHoy(pedidos);
+    });
+
+    return () => {
+      unsubscribe(); // Detiene la suscripción cuando el componente se desmonta
+    };
+  }, []);
+
+  useEffect(() => {
+    // Ordenar los pedidos filtrados por hora
+    pedidosHoy.sort((a, b) => {
+      const horaA = new Date(`2023-12-11 ${a.hora}`);
+      const horaB = new Date(`2023-12-11 ${b.hora}`);
+      return horaA - horaB;
+    });
+    // Realizar otras operaciones con pedidosHoy después de la actualización
+  }, [pedidosHoy]);
 
   // Filtra los pedidos según la sección activa
-  const pedidosPorHacer = orders.filter(({ data }) => !data.elaborado);
-  const pedidosHechos = orders.filter(({ data }) => data.elaborado);
+  const pedidosPorHacer = pedidosHoy.filter(({ data }) => !data.elaborado);
+  const pedidosHechos = pedidosHoy.filter(({ data }) => data.elaborado);
 
   return (
     <div>

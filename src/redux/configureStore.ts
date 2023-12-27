@@ -4,15 +4,17 @@ import storage from 'redux-persist/lib/storage';
 import { thunk } from 'redux-thunk';
 
 import orders from '../redux/slices/orders/ordersSlices';
+import data from '../redux/slices/data/dataSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ordersState'],
+  whitelist: ['ordersState', 'dataState'],
 };
 
 const rootReducer = combineReducers({
   ordersState: orders,
+  dataState: data,
   // ACA VAN LOS ESTADOS
 });
 
