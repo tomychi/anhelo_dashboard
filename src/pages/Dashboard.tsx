@@ -261,9 +261,26 @@ export const Dashboard = () => {
 
 	return (
 		<div className="p-4 flex flex-col gap-4">
-			<h1 className="text-custom-red  font-black font-antonio text-2xl ">
-				KPIs SEMANALES
-			</h1>
+			<div className="flex items-center">
+				<h1 className="text-custom-red font-black font-antonio text-2xl ">
+					KPIs SEMANALES
+				</h1>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth="5"
+					stroke="currentColor"
+					className="font-black w-4 ml-2 mt-2 text-custom-red"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+					/>
+				</svg>
+			</div>
+
 			<div className="flex flex-row gap-4">
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
