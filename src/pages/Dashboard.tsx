@@ -262,13 +262,12 @@ export const Dashboard = () => {
 	return (
 		<div className="p-4 flex flex-col gap-4">
 			<div className="flex flex-row gap-4">
-				{/* Recuadros rojos con el mismo tamaño y ancho completo */}
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
 						<p>+5%</p>
 					</div>
-					<div className="absolute top-4 left-4 text-black  p-1">
+					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
 						<div className="flex flex-col">
 							<svg
@@ -291,27 +290,120 @@ export const Dashboard = () => {
 					<p className=" text-4xl font-bold mt-auto">$4.320.210</p>
 					<p className="text-sm mt-auto">FACTURACIÓN</p>
 				</div>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
+						<p>57%</p>
+					</div>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">$1.638.195</p>
+					<p className="text-sm mt-auto">GANANCIA</p>
+				</div>
+			</div>
 
-				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
-					<div className="flex items-center">
-						{/* Cambia el ícono según tus necesidades */}
-						<p className="text-lg font-bold">5678</p>
+			<div className="flex flex-row gap-4">
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
+						<p>x1,87</p>
 					</div>
-					<p className="text-sm">Items sales</p>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">1.320</p>
+					<p className="text-sm mt-auto">PRODUCTOS VENDIDOS</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
-					<div className="flex items-center">
-						{/* Cambia el ícono según tus necesidades */}
-						<p className="text-lg font-bold">91011</p>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
+						<p>+14</p>
 					</div>
-					<p className="text-sm">N° de ventas</p>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke-width="1.5"
+								stroke="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">2.518</p>
+					<p className="text-sm mt-auto">CLIENTES</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-16 flex flex-col items-start text-white p-4">
-					<div className="flex items-center">
-						{/* Cambia el ícono según tus necesidades */}
-						<p className="text-lg font-bold">121314</p>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-1">
+						<p>+5%</p>
 					</div>
-					<p className="text-sm">New clients</p>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth="1.5"
+								stroke="currentColor"
+								className="w-6 h-6"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl font-bold mt-auto">$4.320.210</p>
+					<p className="text-sm mt-auto">FACTURACIÓN</p>
 				</div>
 			</div>
 			<div>
