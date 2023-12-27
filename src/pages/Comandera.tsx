@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
-import { ReadOrder } from '../firebase/ReadData';
+import { ReadOrdersForToday } from '../firebase/ReadData';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
   const [pedidosHoy, setPedidosHoy] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = ReadOrder((pedidos) => {
+    const unsubscribe = ReadOrdersForToday((pedidos) => {
       setPedidosHoy(pedidos);
     });
 
