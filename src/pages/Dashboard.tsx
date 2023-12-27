@@ -574,9 +574,9 @@ export const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-row gap-4">
-				<div className="p-4 text-4xl">
-					<div className="flex items-center  ">
+			<div className="flex flex-col gap-4">
+				<div className="">
+					<div className="flex items-center mb-4 p-4 text-4xl ">
 						<h1 className="text-custom-red font-black font-antonio  ">
 							PRODUCT CHARTS
 						</h1>
@@ -595,20 +595,20 @@ export const Dashboard = () => {
 							/>
 						</svg>
 					</div>
-					{/* <div className="grid grid-cols-4 gap-4 grid-rows-1">
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
+					<div className="grid grid-cols-3 gap-4 grid-rows-1">
+						<div className="col-span-1 row-span-1">
+							<Bar data={dataBurgers} options={options} plugins={[plugin]} />
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Bar data={dataToppings} options={options} plugins={[plugin]} />
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Bar data={dataExtras} options={options} plugins={[plugin]} />
+						</div>
 					</div>
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataToppings} options={options} plugins={[plugin]} />
-					</div>
-					<div className="col-span-1 row-span-1">
-					<Bar data={dataExtras} options={options} plugins={[plugin]} />
-					</div>
-				</div> */}
 				</div>
 				<div>
-					<div className="flex items-center p-4 text-4xl">
+					<div className="flex items-center p-4 mb-4 text-4xl">
 						<h1 className="text-custom-red font-black font-antonio  ">
 							KPIs TRACKING
 						</h1>
@@ -627,43 +627,43 @@ export const Dashboard = () => {
 							/>
 						</svg>
 					</div>
-					{/* <div className="grid grid-cols-4 gap-4 grid-rows-1">
-					<div className="col-span-1 row-span-1">
-						<Line
-							data={dataBurgersSemana}
-							options={options}
-							plugins={[plugin]}
-						/>
-						</div>
-					<div className="col-span-1 row-span-1">
-						<Line
-							data={dataVentasSemana}
-							options={options}
-							plugins={[plugin]}
-							/>
-							</div>
-							<div className="col-span-1 row-span-1">
+					<div className="grid grid-cols-4 gap-4 grid-rows-1">
+						<div className="col-span-1 row-span-1">
 							<Line
-							data={dataFacturacionSemana}
-							options={options}
-							plugins={[plugin]}
-						/>
+								data={dataBurgersSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Line
+								data={dataVentasSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Line
+								data={dataFacturacionSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Line
+								data={dataFacturacionSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
+						<div className="col-span-1 row-span-1">
+							<Line
+								data={dataFacturacionSemana}
+								options={options}
+								plugins={[plugin]}
+							/>
+						</div>
 					</div>
-					<div className="col-span-1 row-span-1">
-						<Line
-							data={dataFacturacionSemana}
-							options={options}
-							plugins={[plugin]}
-						/>
-					</div>
-					<div className="col-span-1 row-span-1">
-					<Line
-							data={dataFacturacionSemana}
-							options={options}
-							plugins={[plugin]}
-						/>
-					</div>
-				</div> */}
 				</div>
 			</div>
 		</div>
