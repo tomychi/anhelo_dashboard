@@ -426,11 +426,28 @@ export const Dashboard = () => {
 					<p className="text-sm mt-auto">CLIENTES</p>
 				</div>
 			</div>
-			<div>
-				<h1 className="text-custom-red uppercase font-black font-antonio text-2xl mb-4">
-					Product data
-				</h1>
-				<div className="grid grid-cols-4 gap-4 grid-rows-1">
+			<div className="flex flex-row gap-4">
+				<div>
+					<div className="flex items-center ">
+						<h1 className="text-custom-red font-black font-antonio text-2xl ">
+							PRODUCT DATA
+						</h1>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth="5"
+							stroke="currentColor"
+							className="font-black w-4 ml-2 mt-2 text-custom-red"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+							/>
+						</svg>
+					</div>
+					{/* <div className="grid grid-cols-4 gap-4 grid-rows-1">
 					<div className="col-span-1 row-span-1">
 						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
 					</div>
@@ -438,31 +455,47 @@ export const Dashboard = () => {
 						<Bar data={dataToppings} options={options} plugins={[plugin]} />
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />
+					<Bar data={dataExtras} options={options} plugins={[plugin]} />
 					</div>
+				</div> */}
 				</div>
-			</div>
-			<div>
-				<h1 className="text-custom-red  font-black font-antonio text-2xl mb-4">
-					BUSINESS KPIs
-				</h1>
-				<div className="grid grid-cols-4 gap-4 grid-rows-1">
+				<div>
+					<div className="flex items-center ">
+						<h1 className="text-custom-red font-black font-antonio text-2xl ">
+							KPIs TRACKING
+						</h1>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth="5"
+							stroke="currentColor"
+							className="font-black w-4 ml-2 mt-2 text-custom-red"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+							/>
+						</svg>
+					</div>
+					{/* <div className="grid grid-cols-4 gap-4 grid-rows-1">
 					<div className="col-span-1 row-span-1">
 						<Line
 							data={dataBurgersSemana}
 							options={options}
 							plugins={[plugin]}
 						/>
-					</div>
+						</div>
 					<div className="col-span-1 row-span-1">
 						<Line
 							data={dataVentasSemana}
 							options={options}
 							plugins={[plugin]}
-						/>
-					</div>
-					<div className="col-span-1 row-span-1">
-						<Line
+							/>
+							</div>
+							<div className="col-span-1 row-span-1">
+							<Line
 							data={dataFacturacionSemana}
 							options={options}
 							plugins={[plugin]}
@@ -476,28 +509,13 @@ export const Dashboard = () => {
 						/>
 					</div>
 					<div className="col-span-1 row-span-1">
-						<Line
+					<Line
 							data={dataFacturacionSemana}
 							options={options}
 							plugins={[plugin]}
 						/>
 					</div>
-				</div>
-			</div>
-			<div>
-				<h1 className="text-custom-red  font-black font-antonio text-2xl mb-4">
-					INSTAGRAM KPIs
-				</h1>
-				<div className="grid grid-cols-4 gap-4 grid-rows-1">
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataBurgers} options={options} plugins={[plugin]} />
-					</div>
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataToppings} options={options} plugins={[plugin]} />
-					</div>
-					<div className="col-span-1 row-span-1">
-						<Bar data={dataExtras} options={options} plugins={[plugin]} />
-					</div>
+				</div> */}
 				</div>
 			</div>
 		</div>
