@@ -1,3 +1,5 @@
+import currencyFormat from '../../helpers/currencyFormat';
+
 export const Card = ({ comanda }: any) => {
   const { id, data } = comanda;
 
@@ -70,11 +72,25 @@ export const Card = ({ comanda }: any) => {
           {direccion}
         </p>
         <p
+          className={`text-base ${
+            comanda.elaborado ? 'text-green-700' : 'texk-black 700'
+          }`}
+        >
+          {telefono}
+        </p>
+        <p
+          className={`text-base ${
+            comanda.elaborado ? 'text-green-700' : 'texk-black 700'
+          }`}
+        >
+          {metodoPago}
+        </p>
+        <p
           className={`text-lg ${
             comanda.elaborado ? 'text-green-500' : 'text-black'
           } font-bold`}
         >
-          {total}
+          {currencyFormat(total)}
         </p>
         <button
           onClick={() => imprimirTicket(comanda)}
