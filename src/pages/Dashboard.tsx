@@ -261,6 +261,9 @@ export const Dashboard = () => {
 
 	return (
 		<div className="p-4 flex flex-col gap-4">
+			<h1 className="text-custom-red  font-black font-antonio text-2xl ">
+				KPIs SEMANALES
+			</h1>
 			<div className="flex flex-row gap-4">
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
