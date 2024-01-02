@@ -7,10 +7,10 @@ import { DashboardMainPage } from '../pages/DashboardMainPage';
 export const Navigation = () => {
   return (
     <Router>
-      <div className="flex h-screen bg-black overflow-x-hidden">
+      <div className="h-screen  overflow-x-hidden">
         <Routes>
           {/* Rutas para el cliente */}
-          <Route path="/" element={<ClientMainPage />} />
+          <Route path="/*" element={<ClientMainPage />} />
           <Route path="/authentication" element={<Authentication />} />
 
           {/* Rutas para el dashboard */}

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Papas Anhelo ®",
+    "description": "Porción de papas.",
+    "price": 2000,
+    "id": "4564GDS8",
+    "img": "papas.png"
+  },
+  {
+    "name": "Papas con Cheddar ®",
+    "description": "Porción de papas con cheddar.",
+    "price": 2500,
+    "id": "GUI32IASD",
+    "img": "papasCheddar.png"
+  },
+  {
+    "name": "Papas con Cheddar con Bacon y verdeo®",
+    "description": "Porción de papas con cheddar, bacon y cebolla de verdeo.",
+    "price": 0,
+    "id": "GUI32IASD",
+    "img": "proximamente"
+  }
+]

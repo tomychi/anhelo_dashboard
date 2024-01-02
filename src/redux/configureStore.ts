@@ -6,17 +6,19 @@ import { thunk } from 'redux-thunk';
 import orders from '../redux/slices/orders/ordersSlices';
 import data from '../redux/slices/data/dataSlice';
 import authReducer from './auth/authReducer';
+import cart from '../redux/cart/cartSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ordersState', 'dataState'],
+  whitelist: ['ordersState', 'dataState', 'cartState'],
 };
 
 const rootReducer = combineReducers({
   ordersState: orders,
   dataState: data,
   auth: authReducer,
+  cartState: cart,
   // ACA VAN LOS ESTADOS
 });
 
