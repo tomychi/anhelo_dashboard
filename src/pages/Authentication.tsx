@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Login } from '../components/auth/Login';
 
 export const Authentication = () => {

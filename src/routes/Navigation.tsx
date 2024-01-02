@@ -1,43 +1,27 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import {
-  Comandera,
-  Dashboard,
-  Delivery,
-  DynamicForm,
-  MapStats,
-  Settings,
-} from '../pages';
-import { Sidebar } from '../components/sidebar';
-import { Authentication } from '../pages/Authentication';
-import { Error } from '../pages/Error';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Authentication, Error } from '../pages';
 import { PrivateRoutesLayout } from '../layouts/PrivateRoutesLayout';
+import { ClientMainPage } from '../pages/ClientMainPage';
+import { DashboardMainPage } from '../pages/DashboardMainPage';
 
 export const Navigation = () => {
   return (
-    <HashRouter>
+    <Router>
       <div className="flex h-screen bg-black overflow-x-hidden">
-        {/* Contenedor principal con display flex */}
+        <Routes>
+          {/* Rutas para el cliente */}
+          <Route path="/" element={<ClientMainPage />} />
+          <Route path="/authentication" element={<Authentication />} />
 
-        <Sidebar />
-        <div className="flex-grow overflow-y-auto">
-          {/* Este div se expandirá para ocupar el espacio restante y permitirá el scroll */}
-          <Routes>
-            {/* public route */}
-            <Route path="/authentication" element={<Authentication />} />
+          {/* Rutas para el dashboard */}
+          <Route element={<PrivateRoutesLayout />}>
+            <Route path="/dashboard/*" element={<DashboardMainPage />} />
+          </Route>
 
-            {/* private route */}
-            <Route element={<PrivateRoutesLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/pedidos" element={<DynamicForm />} />
-              <Route path="/comandas" element={<Comandera />} />
-              <Route path="/delivery" element={<Delivery />} />
-              <Route path="/map" element={<MapStats />} />
-              <Route path="/settings" element={<Settings />} />
-            </Route>
-            <Route path="*" element={<Error />} />
-          </Routes>
-        </div>
+          {/* Manejo de cualquier ruta no encontrada */}
+          <Route path="*" element={<Error />} />
+        </Routes>
       </div>
-    </HashRouter>
+    </Router>
   );
 };

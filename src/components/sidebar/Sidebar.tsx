@@ -32,7 +32,7 @@ export const Sidebar = () => {
       <div className="h-full flex bg-custom-red flex-col p-2 justify-between">
         <>
           <NavLink
-            to={'/authentication'}
+            to={'/'}
             className="flex flex-col items-center justify-center"
           >
             <img src={Logo} className="h-6 sm:h-7 mx-auto" alt="anhelo Logo" />
@@ -49,7 +49,7 @@ export const Sidebar = () => {
           <ul className="space-y-2 font-medium">
             <li>
               <NavLink
-                to={'/pedidos'}
+                to={'/dashboard/pedidos'}
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -65,7 +65,7 @@ export const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to={'/comandas'}
+                to={'/dashboard/comandas'}
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -85,7 +85,7 @@ export const Sidebar = () => {
 
             <li>
               <NavLink
-                to="/delivery"
+                to="/dashboard/delivery"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -104,7 +104,7 @@ export const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to="/map"
+                to="/dashboard/map"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -141,7 +141,7 @@ export const Sidebar = () => {
 
             <li>
               <NavLink
-                to="/"
+                to="/dashboard"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -162,7 +162,7 @@ export const Sidebar = () => {
 
             <li>
               <NavLink
-                to="/settings"
+                to="/dashboard/settings"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
