@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import userLogin from '../../auth/userLogin';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../redux/auth/authAction';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +11,7 @@ export const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -16,9 +19,15 @@ export const Login = () => {
 
   const handleLogin = async (e: Event) => {
     e.preventDefault();
-    await login(email, password);
+    const res = await login(email, password);
 
     if (!error) {
+      dispatch(
+        loginSuccess({
+          uid: res?.user?.uid,
+          displayName: res?.user?.displayName,
+        })
+      );
       navigate(from, { replace: true });
       setEmail('');
       setPassword('');

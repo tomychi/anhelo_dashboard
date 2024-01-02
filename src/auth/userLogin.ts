@@ -9,8 +9,6 @@ const login = async (email, password) => {
     const res = await projectAuth.signInWithEmailAndPassword(email, password);
     error = null;
 
-    console.log(res.user);
-
     return res;
   } catch (err) {
     error = err.message;

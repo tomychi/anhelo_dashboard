@@ -5,6 +5,7 @@ import { thunk } from 'redux-thunk';
 
 import orders from '../redux/slices/orders/ordersSlices';
 import data from '../redux/slices/data/dataSlice';
+import authReducer from './auth/authReducer';
 
 const persistConfig = {
   key: 'root',
@@ -15,6 +16,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   ordersState: orders,
   dataState: data,
+  auth: authReducer,
   // ACA VAN LOS ESTADOS
 });
 
