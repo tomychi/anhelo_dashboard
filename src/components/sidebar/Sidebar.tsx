@@ -32,7 +32,7 @@ export const Sidebar = () => {
       <div className="h-full flex bg-custom-red flex-col p-2 justify-between">
         <>
           <NavLink
-            to={'/'}
+            to={'/authentication'}
             className="flex flex-col items-center justify-center"
           >
             <img src={Logo} className="h-6 sm:h-7 mx-auto" alt="anhelo Logo" />
