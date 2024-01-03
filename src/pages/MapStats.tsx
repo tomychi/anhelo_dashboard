@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import data from '../assets/pedidos.json';
 
-const accessToken =
-  'pk.eyJ1IjoidG9teWNoaTEwIiwiYSI6ImNscGo1bDlsdDA1eTkyb240cmM3N2k4MGQifQ.o_0Lb8CoKuxI5PD5ETsOSg';
+const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
 export const MapStats = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
