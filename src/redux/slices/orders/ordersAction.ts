@@ -1,8 +1,9 @@
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { setOrders } from './ordersSlices';
+import { Dispatch } from 'redux';
 
 export const fetchOrders = () => {
-  return async (dispatch) => {
+  return async (dispatch: Dispatch) => {
     const firestore = getFirestore();
     const collections = ['pedidos'];
 

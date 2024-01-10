@@ -1,8 +1,9 @@
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { setData } from './dataSlice';
+import { Dispatch } from 'redux';
 
 export const fetchData = () => {
-  return async (dispatch) => {
+  return async (dispatch: Dispatch) => {
     const firestore = getFirestore();
     const collections = ['burgers', 'drinks', 'fries', 'toppings'];
 

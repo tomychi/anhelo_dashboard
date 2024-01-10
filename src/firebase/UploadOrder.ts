@@ -1,7 +1,21 @@
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { DetallePedidoProps } from '../pages/DynamicForm';
 // Agregar orderDetail a la colección 'pedidos'
 
-export const UploadOrder = (orderDetail) => {
+interface OrderDetailProps {
+  envio: number;
+  detallePedido: DetallePedidoProps[];
+  subTotal: number;
+  total: number;
+  fecha: string;
+  aclaraciones: string;
+  metodoPago: string;
+  direccion: string;
+  telefono: string;
+  hora: string;
+}
+
+export const UploadOrder = (orderDetail: OrderDetailProps) => {
   const firestore = getFirestore();
   const pedidosCollection = collection(firestore, 'pedidos');
 

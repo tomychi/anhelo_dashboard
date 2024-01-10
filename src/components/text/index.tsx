@@ -1,6 +1,16 @@
 import { useState } from 'react';
 
-const MyTextChange = ({ nameOne, nameTwo, position }) => {
+interface TextChangeProps {
+  nameOne: string;
+  nameTwo: string;
+  position: string;
+}
+
+export const MyTextChange = ({
+  nameOne,
+  nameTwo,
+  position,
+}: TextChangeProps) => {
   const [isShown, setIsShown] = useState(false);
 
   return (
@@ -30,5 +40,3 @@ const MyTextChange = ({ nameOne, nameTwo, position }) => {
     </div>
   );
 };
-
-export default MyTextChange;

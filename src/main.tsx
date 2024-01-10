@@ -7,9 +7,9 @@ import './firebase/config';
 import { Provider } from 'react-redux';
 import store from './redux/configureStore';
 import { PersistGate } from 'redux-persist/integration/react';
-import { persistStore } from 'redux-persist';
+import { persistStore, Persistor } from 'redux-persist';
 
-const persistor = persistStore(store);
+const persistor: Persistor = persistStore(store);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <PersistGate persistor={persistor}>

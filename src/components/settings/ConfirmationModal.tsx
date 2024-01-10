@@ -1,6 +1,11 @@
 import Swal from 'sweetalert2';
+interface ConfirmationModalProps {
+  handleConfirmation: () => void;
+}
 
-export const ConfirmationModal = ({ handleConfirmation }) => {
+export const ConfirmationModal = ({
+  handleConfirmation,
+}: ConfirmationModalProps) => {
   const showConfirmation = () => {
     Swal.fire({
       title: '¿Estás seguro?',

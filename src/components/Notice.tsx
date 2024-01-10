@@ -1,4 +1,3 @@
-import React from 'react';
 import 'animate.css/animate.min.css';
 
 const Notice = () => {

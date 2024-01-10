@@ -1,6 +1,18 @@
 import MyTextInput from './MyTextInput';
 
-const DeliveryDetails = ({ getFieldProps, envio }) => {
+import { FieldInputProps, FieldConfig } from 'formik';
+
+interface MyFormData {
+  isFlat: boolean;
+  name: string;
+}
+interface DeliveryDetailsProps {
+  getFieldProps: (
+    nameOrOptions: string | FieldConfig<MyFormData>
+  ) => FieldInputProps<MyFormData>;
+}
+
+const DeliveryDetails = ({ getFieldProps }: DeliveryDetailsProps) => {
   return (
     <>
       <hr className="my-6 border border-black border-opacity-50 md:w-6/12" />
@@ -24,8 +36,9 @@ const DeliveryDetails = ({ getFieldProps, envio }) => {
               type="checkbox"
               name="isFlat"
               id="isFlat"
-              className="mr-2  cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              {...getFieldProps('isFlat')}
+              className="mr-2 cursor-pointer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              checked={!!getFieldProps('isFlat').value} // Utiliza !! para convertir MyFormData a un booleano
+              onChange={getFieldProps('isFlat').onChange}
             />
             ES UN DEPARTAMENTO
           </div>

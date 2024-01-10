@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
-import data from '../assets/combined_addresses.json';
+// import data from '../assets/combined_addresses.json';
 
 const accessToken =
   'pk.eyJ1IjoidG9teWNoaTEwIiwiYSI6ImNscGo1bDlsdDA1eTkyb240cmM3N2k4MGQifQ.o_0Lb8CoKuxI5PD5ETsOSg';

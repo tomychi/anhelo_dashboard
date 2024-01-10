@@ -1,6 +1,5 @@
-import { CartShop, MenuGallery } from '../components/menuShop';
-import { useState } from 'react';
-import { PedidosWeb } from '../components/forms/PedidosWeb';
+import { MenuGallery } from '../components/menuShop';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 
@@ -17,24 +16,44 @@ const obtenerFechaActual = () => {
   return fechaFormateada;
 };
 
+interface FormDataProps {
+  aclaraciones: string;
+  metodoPago: string;
+  direccion: string;
+  telefono: string;
+  envio: string;
+  hora: string;
+}
+
+export interface DetallePedidoProps {
+  burger?: string;
+  toppings?: string[];
+  quantity?: number;
+  priceBurger?: number;
+  priceToppings?: number;
+  subTotal?: number;
+}
+
 export const DynamicForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataProps>({
     aclaraciones: '',
     metodoPago: '',
     direccion: '',
     telefono: '',
-    envio: 0,
+    envio: '',
     hora: '',
   });
 
-  const [detallePedido, setDetallePedido] = useState([]);
+  const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Aquí puedes manejar la lógica para enviar los datos del formulario
 
@@ -57,12 +76,14 @@ export const DynamicForm = () => {
       return;
     }
 
-    const subTotal = detallePedido.reduce(
-      (acc, burger) => acc + burger.subTotal,
-      0
-    );
+    const subTotal = detallePedido.reduce((acc, burger) => {
+      if (burger.subTotal !== undefined) {
+        return acc + burger.subTotal;
+      }
+      return acc;
+    }, 0);
 
-    const envio = parseFloat(formData.envio); // Convertir envio a número
+    const envio = parseInt(formData.envio);
 
     const info = {
       ...formData,
@@ -82,7 +103,7 @@ export const DynamicForm = () => {
       aclaraciones: '',
       metodoPago: '',
       direccion: '',
-      envio: 0,
+      envio: '',
       hora: '',
       telefono: '',
     });
@@ -93,25 +114,23 @@ export const DynamicForm = () => {
   const [seccionActiva, setSeccionActiva] = useState('elaborar');
 
   // si es el formulario de la seccion burgers
-  const handleFormBurger = (values: any) => {
+  const handleFormBurger = (values: DetallePedidoProps) => {
+    const quantity = values.quantity !== undefined ? values.quantity : 0;
+    const priceToppings =
+      values.priceToppings !== undefined ? values.priceToppings : 0;
+    const priceBurger =
+      values.priceBurger !== undefined ? values.priceBurger : 0;
+
     const burger = {
       burger: values.burger,
       toppings: values.toppings,
-      quantity: values.quantity,
+      quantity: quantity,
       priceBurger: values.priceBurger,
       priceToppings: values.priceToppings,
-      subTotal: (values.priceBurger + values.priceToppings) * values.quantity,
+      subTotal: (priceBurger + priceToppings) * quantity,
     };
-
     setDetallePedido((prevData) => [...prevData, burger]);
   };
-
-  const handlePedidoWebAnalizado = (detallesPedido: any) => {
-    // Aquí puedes agregar lógica adicional según sea necesario
-
-    console.log(detallesPedido);
-  };
-  console.log(detallePedido);
 
   return (
     <div className="p-4 w-3/5">
@@ -148,7 +167,7 @@ export const DynamicForm = () => {
             </div>
             {seccionActiva === 'elaborar' ? (
               <div className="flex flex-col items-center justify-center">
-                <div>
+                <form onSubmit={handleSubmit}>
                   <div className="relative z-0 w-11/12 mb-2 mt-4 ">
                     <input
                       className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
@@ -233,16 +252,15 @@ export const DynamicForm = () => {
                     </select>
                   </div>
                   <button
+                    type="submit"
                     className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
-                    onClick={(e) => handleSubmit(e)}
                   >
                     Guardar
                   </button>
-                </div>
+                </form>
               </div>
-            ) : (
-              <PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
-            )}
+            ) : // <PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
+            null}
           </div>
         </div>
       </div>

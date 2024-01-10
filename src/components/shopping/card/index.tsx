@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
 import currencyFormat from '../../../helpers/currencyFormat';
 
-const Card = ({ name, description, price, img, path, id }) => {
+interface CardProps {
+  name: string;
+  description: string;
+  price: number;
+  img: string;
+  path: string;
+  id: string;
+}
+
+const Card = ({ name, description, price, img, path, id }: CardProps) => {
   if (img === 'proximamente') {
     return (
       <Link

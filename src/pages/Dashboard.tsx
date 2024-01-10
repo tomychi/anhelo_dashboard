@@ -5,9 +5,13 @@ import { Bar, Line } from 'react-chartjs-2';
 
 Chart.register(...registerables);
 
-const hamburguesasVendidas = {};
-const toppingsVendidos = {};
-const extrasVendidos = {};
+interface Vendidos {
+  [key: string]: number;
+}
+
+const hamburguesasVendidas: Vendidos = {};
+const toppingsVendidos: Vendidos = {};
+const extrasVendidos: Vendidos = {};
 
 const palabrasClaveToppings = [
   '- bacon',
@@ -167,7 +171,7 @@ const dataVentasSemana = {
 
 const plugin = {
   id: 'customCanvasBackgroundColor',
-  beforeDraw: (chart, args, options) => {
+  beforeDraw: (chart: Chart) => {
     const { ctx } = chart;
     ctx.save();
     ctx.globalCompositeOperation = 'destination-over';
@@ -181,7 +185,7 @@ const options = {
   responsive: true,
   plugins: {
     legend: {
-      position: 'top',
+      position: 'top' as const,
       display: true,
       labels: {
         color: 'rgb(0, 0, 0)',
@@ -219,7 +223,7 @@ const options = {
 export const Dashboard = () => {
   const [selectedInterval, setSelectedInterval] = useState('weekly');
 
-  const handleIntervalChange = (interval) => {
+  const handleIntervalChange = (interval: string) => {
     setSelectedInterval(interval);
   };
   const nombresHamburguesas = Object.keys(hamburguesasVendidas);

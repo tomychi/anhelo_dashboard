@@ -1,6 +1,7 @@
 import currencyFormat from '../../helpers/currencyFormat';
+import { ComandaRareProps } from '../../types/types';
 
-export const Card = ({ comanda }: any) => {
+export const Card = ({ comanda }: ComandaRareProps) => {
   const { id, data } = comanda;
 
   const {
@@ -11,20 +12,21 @@ export const Card = ({ comanda }: any) => {
     total,
     telefono,
     detallePedido,
+    elaborado,
   } = data;
 
-  const imprimirTicket = async (nuevoPedido: any) => {
+  const imprimirTicket = async () => {
     try {
       const response = await fetch('http://localhost:3000/imprimir', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nuevoPedido }),
+        body: JSON.stringify({ comanda }),
       });
 
       if (response.ok) {
-        nuevoPedido.elaborado = true;
+        comanda.data.elaborado = true;
         console.log('Impresión exitosa');
       } else {
         console.error('Error al imprimir');
@@ -37,7 +39,7 @@ export const Card = ({ comanda }: any) => {
   return (
     <div
       className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden ${
-        comanda.elaborado ? 'bg-green-500 hover:bg-green-600' : 'bg-custom-red'
+        elaborado ? 'bg-green-500 hover:bg-green-600' : 'bg-custom-red'
       }`}
     >
       <div className="p-4">
@@ -46,59 +48,63 @@ export const Card = ({ comanda }: any) => {
           <p className={`text-2xl  text-white font-bold`}>{hora}</p>
           <p className="text-white mt-4 text-2xl text-center">
             {' '}
-            {/* Agregar clase text-center aquí */}
             {aclaraciones}
           </p>
         </div>
-        {detallePedido.map(({ burger, toppings }: any, index) => (
-          <div key={index} className={`text-black text-base font-semibold`}>
-            {burger}
-            <p>
-              {toppings.map((topping: any, toppingIndex: number) => (
-                <span key={toppingIndex} className="text-sm block">
-                  - {topping}
-                </span>
-              ))}
-            </p>
-          </div>
-        ))}
+        {detallePedido.map(
+          (
+            { burger, toppings }: { burger: string; toppings: string[] },
+            i: number
+          ) => (
+            <div key={i} className={`text-black text-base font-semibold`}>
+              {burger}
+              <p>
+                {toppings.map((topping: string, toppingIndex: number) => (
+                  <span key={toppingIndex} className="text-sm block">
+                    - {topping}
+                  </span>
+                ))}
+              </p>
+            </div>
+          )
+        )}
       </div>
       <div className="px-6 py-4 text-center">
         <p
           className={`text-base ${
-            comanda.elaborado ? 'text-green-700' : 'texk-black 700'
+            elaborado ? 'text-green-700' : 'texk-black 700'
           }`}
         >
           {direccion}
         </p>
         <p
           className={`text-base ${
-            comanda.elaborado ? 'text-green-700' : 'texk-black 700'
+            elaborado ? 'text-green-700' : 'texk-black 700'
           }`}
         >
           {telefono}
         </p>
         <p
           className={`text-base ${
-            comanda.elaborado ? 'text-green-700' : 'texk-black 700'
+            elaborado ? 'text-green-700' : 'texk-black 700'
           }`}
         >
           {metodoPago}
         </p>
         <p
           className={`text-lg ${
-            comanda.elaborado ? 'text-green-500' : 'text-black'
+            elaborado ? 'text-green-500' : 'text-black'
           } font-bold`}
         >
           {currencyFormat(total)}
         </p>
         <button
-          onClick={() => imprimirTicket(comanda)}
+          onClick={imprimirTicket}
           className={`mt-8 bg-black text-custom-red font-bold py-2 px-4  inline-flex items-center`}
         >
           <svg
             className={`fill-current w-4 h-4 mr-2 ${
-              comanda.elaborado ? 'text-green-800' : 'texk-black 800'
+              elaborado ? 'text-green-800' : 'texk-black 800'
             }`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"

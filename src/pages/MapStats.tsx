@@ -4,9 +4,14 @@ import data from '../assets/pedidos.json';
 
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
+interface DataMapsProps {
+  address: string;
+  coordinates: number[];
+}
+
 export const MapStats = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
-
+  console.log(mapLoaded);
   const tuCiudadCoordinates = [-64.347558, -33.117876];
 
   const ciudadLongitud = tuCiudadCoordinates[0];
@@ -28,7 +33,7 @@ export const MapStats = () => {
       return storedData ? JSON.parse(storedData) : null;
     };
 
-    const saveMapData = (data: any) => {
+    const saveMapData = (data: DataMapsProps[]) => {
       localStorage.setItem('mapData', JSON.stringify(data));
     };
 
@@ -41,7 +46,7 @@ export const MapStats = () => {
         zoom: 9,
       });
 
-      if (storedMapData) {
+      if (!storedMapData) {
         for (const item of storedMapData) {
           new mapboxgl.Marker({
             color: '#ff0000',
@@ -84,7 +89,6 @@ export const MapStats = () => {
             console.error('Error al obtener coordenadas:', error);
           }
         }
-
         saveMapData(geocodedData);
         setMapLoaded(true);
       }

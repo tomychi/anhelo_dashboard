@@ -1,23 +1,28 @@
 import { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { EditModal } from './EditModal';
+import { InfoDataProps, InfoItemProps } from '../../types/types';
 
 export const EditDataComponent = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<InfoDataProps[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null); // Para mantener los detalles del elemento seleccionado
-  const [id, setId] = useState(null); // Para mantener los detalles del elemento seleccionado
-  const [collectionName, setCollectionName] = useState(null); // Para mantener los detalles del elemento seleccionado
+  const [selectedItem, setSelectedItem] = useState<InfoItemProps>({
+    description: '',
+    img: '',
+    name: '',
+    price: 0,
+    type: '',
+  }); // Para mantener los detalles del elemento seleccionado
+  const [id, setId] = useState<string>(''); // Para mantener los detalles del elemento seleccionado
+  const [collectionName, setCollectionName] = useState<string>(''); // Para mantener los detalles del elemento seleccionado
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   useEffect(() => {
-    // Función para cargar los datos iniciales desde Firestore
     const fetchDataFromFirestore = async () => {
       setLoading(true);
       const firestore = getFirestore();
-
       const collections = ['burgers', 'drinks', 'fries', 'toppings'];
 
       const fetchedData = await Promise.all(
@@ -35,9 +40,21 @@ export const EditDataComponent = () => {
         })
       );
 
-      setData(fetchedData.flat());
+      const transformedData = fetchedData.flat().map((item) => ({
+        id: item.id,
+        data: {
+          description: item.data.description || '',
+          img: item.data.img || '',
+          name: item.data.name || '',
+          price: item.data.price || 0,
+          type: item.data.type || '',
+        },
+        collectionName: item.collectionName,
+      }));
+
+      setData(transformedData);
       setLoading(false);
-      setInitialLoadComplete(true); // Establecer la carga inicial como completa
+      setInitialLoadComplete(true);
     };
 
     // Solo cargamos datos si aún no se ha realizado la carga inicial
@@ -46,11 +63,16 @@ export const EditDataComponent = () => {
     }
   }, [initialLoadComplete]);
 
-  const handleUpdateData = () => {
-    fetchDataFromFirestore();
-  };
+  // const handleUpdateData = () => {
+  //   fetchDataFromFirestore();
+  // };
 
-  const handleEditClick = (item, id, collectionName) => {
+  const handleEditClick = (
+    item: InfoItemProps,
+    id: string,
+    collectionName: string
+  ) => {
+    console.log(item);
     setIsModalOpen(true);
     setId(id);
     setCollectionName(collectionName);
@@ -130,7 +152,11 @@ export const EditDataComponent = () => {
                 <td className="px-6 py-4 ">{data.description}</td>
                 <td className="px-6 py-4 text-right">
                   <div
-                    onClick={() => handleEditClick(data, id, collectionName)}
+                    onClick={() => {
+                      if (data && id && collectionName) {
+                        handleEditClick(data, id, collectionName);
+                      }
+                    }}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
                     Edit

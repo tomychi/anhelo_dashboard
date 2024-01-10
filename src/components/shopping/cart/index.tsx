@@ -5,6 +5,8 @@ import {
   removeOneItem,
   clearCart,
   removeItem,
+  ProductsState,
+  ProductProp,
 } from '../../../redux/cart/cartSlice';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -13,12 +15,15 @@ import Swal from 'sweetalert2';
 import fire from '../../../assets/icon-fire.gif';
 
 const CartItems = () => {
-  const { cart, total } = useSelector((state) => state.cartState);
+  const { cart, total } = useSelector(
+    (state: { cartState: ProductsState }) => state.cartState
+  );
+
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  const deleteItem = (i) => {
+  const deleteItem = (i: number) => {
     Swal.fire({
       html: ` 
       <div>
@@ -80,13 +85,13 @@ const CartItems = () => {
     }
   }, [cart]);
 
-  const decrementQuantity = (index, quantity) => {
+  const decrementQuantity = (index: number, quantity: number) => {
     if (quantity > 1) {
       dispatch(removeOneItem(index));
     }
   };
 
-  const incrementQuantity = (index) => {
+  const incrementQuantity = (index: number) => {
     dispatch(addOneItem(index));
   };
 
@@ -134,7 +139,7 @@ const CartItems = () => {
         {cart.length > 0 ? (
           <div>
             <div className="flex flex-col gap-4 font-antonio">
-              {cart.map((item, i) => (
+              {cart.map((item: ProductProp, i: number) => (
                 <div
                   key={i}
                   className="flex items-center p-4 gap-4 flex-row  bg-red-main  text-white w-full"
@@ -148,7 +153,7 @@ const CartItems = () => {
                     <p className="font-bold mb-2 text-2xl">
                       {item.name.toUpperCase()}
                     </p>
-                    {item.toppings.length > 0 ? (
+                    {item.toppings && item.toppings.length > 0 ? (
                       <div className="toppings-container">
                         {item.toppings.map((topping) => (
                           <p
@@ -165,10 +170,13 @@ const CartItems = () => {
                     <p className="text-white font-bold mt-1">
                       {currencyFormat(
                         (item.price +
-                          item.toppings.reduce(
-                            (total, topping) => total + topping.price,
-                            0
-                          )) *
+                          (item.toppings
+                            ? item.toppings.reduce(
+                                (total, topping) =>
+                                  total + (topping.price || 0),
+                                0
+                              )
+                            : 0)) *
                           item.quantity
                       )}
                     </p>

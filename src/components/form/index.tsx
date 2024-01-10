@@ -9,8 +9,9 @@ import fire from '../../assets/icon-fire.gif';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addLastCart, clearCart } from '../../redux/cart/cartSlice';
+import { FormCustomProps } from '../../types/types';
 
-const FormCustom = ({ cart, total }) => {
+const FormCustom = ({ cart, total }: FormCustomProps) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -88,7 +89,7 @@ const FormCustom = ({ cart, total }) => {
               </div>
 
               {getFieldProps('deliveryMethod').value === 'delivery' && (
-                <DeliveryDetails getFieldProps={getFieldProps} envio={envio} />
+                <DeliveryDetails getFieldProps={getFieldProps} />
               )}
 
               {getFieldProps('paymentMethod').value === 'efectivo' && (

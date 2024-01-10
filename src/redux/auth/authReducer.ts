@@ -6,7 +6,17 @@ const initialState = {
   // Otros campos relacionados con la autenticación
 };
 
-const authReducer = (state = initialState, action) => {
+export interface UserAuth {
+  uid?: string;
+  displayName?: string | null | undefined;
+}
+interface AuthAction {
+  type: string;
+  payload?: UserAuth;
+  // Otros campos específicos de tu acción, si los hay
+}
+
+const authReducer = (state = initialState, action: AuthAction) => {
   switch (action.type) {
     case 'LOGIN_SUCCESS':
       return {

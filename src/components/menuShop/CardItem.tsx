@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import currencyFormat from '../../helpers/currencyFormat';
 import { ModalItem } from './ModalItem';
+import { DetallePedidoProps } from '../../pages/DynamicForm';
 
 interface Props {
   img: string;
@@ -9,7 +10,7 @@ interface Props {
   category?: string;
   type: string;
   description?: string;
-  handleFormBurger: (value: any) => void;
+  handleFormBurger: (value: DetallePedidoProps) => void;
 }
 
 export const CardItem = ({
@@ -21,7 +22,7 @@ export const CardItem = ({
 }: Props) => {
   const [showModal, setShowModal] = useState(false);
 
-  const closeModal = () => {
+  const closeModal: () => void = () => {
     setShowModal(false);
   };
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import routingProblem from './problem.json';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 // {
 //   "name": "cocina",
 //   "coordinates": [-64.333731 , -33.095653]

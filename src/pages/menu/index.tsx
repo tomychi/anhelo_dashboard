@@ -17,7 +17,7 @@ const MenuPage = () => {
   const [selectedItem, setSelectedItem] = useState('');
   const [locationMenu, setLocationMenu] = useState(true);
 
-  const handleItemClick = (item) => {
+  const handleItemClick = (item: string) => {
     setSelectedItem(item);
   };
 

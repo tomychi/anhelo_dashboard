@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import toppings from '../../../assets/toppings.json';
-import { addItem } from '../../../redux/cart/cartSlice';
+import { ToppingProp, addItem } from '../../../redux/cart/cartSlice';
 import currencyFormat from '../../../helpers/currencyFormat';
 import ArrowBack from '../../back';
 import fire from '../../../assets/icon-fire.gif';
@@ -11,14 +11,28 @@ const toppingsArray = Object.values(toppings);
 const toppingsFree = toppingsArray.filter((t) => t.price === 0);
 const toppings100 = toppingsArray.filter((t) => t.price === 150);
 
-const DetailCard = ({ products, type }) => {
+interface ProductoProps {
+  description?: string;
+  id: string;
+  img?: string;
+  name: string;
+  price: number;
+  type?: string;
+}
+
+interface DetailCardProps {
+  products: ProductoProps[];
+  type: string;
+}
+
+const DetailCard = ({ products, type }: DetailCardProps) => {
   const { id } = useParams();
 
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const [disable, setDisable] = useState(false);
-  const [dataTopping, setDataTopping] = useState([]);
+  const [dataTopping, setDataTopping] = useState<ToppingProp[]>([]);
   const [quantity, setQuantity] = useState(1);
 
   const [product] = products.filter((p) => p.id === id);
@@ -27,9 +41,9 @@ const DetailCard = ({ products, type }) => {
     window.scrollTo(0, 0);
   }, [window]);
 
-  const handleToppingChange = (event) => {
-    const toppingName = event.target.value;
-    const isChecked = event.target.checked;
+  const handleToppingChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const toppingName = e.target.value;
+    const isChecked = e.target.checked;
 
     const selectedTopping = toppingsArray.find((t) => t.name === toppingName);
 
@@ -42,7 +56,7 @@ const DetailCard = ({ products, type }) => {
     }
   };
 
-  const addToCart = (name, price, img) => {
+  const addToCart = (name: string, price: number, img: string) => {
     setDisable(true);
 
     const burgerObject = {
@@ -75,12 +89,11 @@ const DetailCard = ({ products, type }) => {
 
           <div className="my-auto w-full sm:w-11/12">
             <ArrowBack category={type} />
-
             <h4 className="font-antonio font-bold text-6xl sm:text-6xl leading-none text-black text-left mb-4">
               {product.name.toUpperCase()}
             </h4>
             <p className="font-bold font-antonio text-xs  w-full mb-2 text-black text-left">
-              {product.description.toUpperCase()}
+              {product.description!.toUpperCase()}
             </p>
             <p className="text-left  font-bold font-antonio text-xl text-black">
               {currencyFormat(product.price)}
@@ -158,17 +171,21 @@ const DetailCard = ({ products, type }) => {
                 </button>
               </div>
             </div>
-
+            product && (
             <button
-              className="w-full flex justify-center mx-auto mt-7 mb-7 sm:mb-0 py-4 text-white font-bold font-kotch text-xl bg-red-main focus:outline-none hover:bg-black hover:text-red-main  gap-1"
+              className="w-full flex justify-center mx-auto mt-7 mb-7 sm:mb-0 py-4 text-white font-bold font-kotch text-xl bg-red-main focus:outline-none hover:bg-black hover:text-red-main gap-1"
               onClick={() =>
-                addToCart(product.name, product.price, product.img)
+                addToCart(
+                  product?.name ?? '',
+                  product?.price ?? 0,
+                  product?.img ?? ''
+                )
               }
               disabled={disable}
             >
-              agregar
               <img src={fire} className="h-6" />
             </button>
+            )
           </div>
         </div>
       </div>

@@ -1,20 +1,46 @@
 import { useEffect, useState } from 'react';
 import { CardItem } from './CardItem';
 import { ReadData } from '../../firebase/ReadData';
+import { DetallePedidoProps } from '../../pages/DynamicForm';
 
 interface Props {
-  handleFormBurger: (value: any) => void;
+  handleFormBurger: (value: DetallePedidoProps) => void;
+}
+
+interface DataProps {
+  description: string;
+  img: string;
+  name: string;
+  price: number;
+  type: string;
+}
+interface DataStateProps {
+  data: DataProps;
+  id: string;
+  collectionName?: string;
 }
 
 export const MenuGallery = ({ handleFormBurger }: Props) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<DataStateProps[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getData = async () => {
     setLoading(true);
     if (data.length === 0) {
-      const info = await ReadData();
-      setData(info);
+      const rawData = await ReadData();
+      const formattedData: DataStateProps[] = rawData.map((item) => {
+        return {
+          id: item.id,
+          data: {
+            description: item.data.description,
+            img: item.data.img,
+            name: item.data.name,
+            price: item.data.price,
+            type: item.data.type,
+          },
+        };
+      });
+      setData(formattedData);
     }
     setLoading(false);
   };

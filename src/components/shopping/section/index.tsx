@@ -1,17 +1,31 @@
 import { items } from '../../../pages/menu';
-import MyTextChange from '../../text';
+import { MyTextChange } from '../../text';
 import Card from '../card';
 
-const Section = ({ products = [], path }) => {
-  let originalsBurgers = [];
-  let ourCollection = [];
+interface ProductoProps {
+  description?: string;
+  id: string;
+  img?: string;
+  name: string;
+  price: number;
+  type?: string;
+}
+
+interface SectionProps {
+  products: ProductoProps[];
+  path: string;
+}
+
+const Section = ({ products = [], path }: SectionProps) => {
+  let originalsBurgers: ProductoProps[] = [];
+  let ourCollection: ProductoProps[] = [];
 
   if (items.burgers === path) {
     originalsBurgers = products.filter((product) => {
-      return product.type.includes('originals');
+      return product.type!.includes('originals');
     });
     ourCollection = products.filter((product) => {
-      return product.type.includes('our');
+      return product.type!.includes('our');
     });
   } else {
     ourCollection = products;
@@ -42,12 +56,12 @@ const Section = ({ products = [], path }) => {
                   ({ name, description, price, id, img }, i) => (
                     <Card
                       key={i}
-                      img={img}
-                      name={name}
-                      description={description}
-                      price={price}
-                      path={path}
-                      id={id}
+                      img={img || ''}
+                      name={name || ''}
+                      description={description || ''}
+                      price={price || 0}
+                      path={path || ''}
+                      id={id || ''}
                     />
                   )
                 )}
@@ -72,12 +86,12 @@ const Section = ({ products = [], path }) => {
                   ({ name, description, price, id, img }, i) => (
                     <Card
                       key={i}
-                      img={img}
-                      name={name}
-                      description={description}
-                      price={price}
-                      path={path}
-                      id={id}
+                      img={img || ''}
+                      name={name || ''}
+                      description={description || ''}
+                      price={price || 0}
+                      path={path || ''}
+                      id={id || ''}
                     />
                   )
                 )}
@@ -91,12 +105,12 @@ const Section = ({ products = [], path }) => {
             products.map(({ name, description, price, id, img }, i) => (
               <Card
                 key={i}
-                img={img}
-                name={name}
-                description={description}
-                price={price}
-                path={path}
-                id={id}
+                img={img || ''}
+                name={name || ''}
+                description={description || ''}
+                price={price || 0}
+                path={path || ''}
+                id={id || ''}
               />
             ))
           ) : (

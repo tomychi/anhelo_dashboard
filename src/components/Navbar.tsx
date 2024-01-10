@@ -1,11 +1,12 @@
-import React from 'react';
 import Logo from '../assets/anheloTMblack.png';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { changeLastCart } from '../redux/cart/cartSlice';
+import { ProductsState, changeLastCart } from '../redux/cart/cartSlice';
 
 const Navbar = () => {
-  const { cart, lastCart } = useSelector((state) => state.cartState);
+  const { cart, lastCart } = useSelector(
+    (state: { cartState: ProductsState }) => state.cartState
+  );
   const dispatch = useDispatch();
   const totalQuantity = cart.reduce((acc, item) => acc + item.quantity, 0);
   return (

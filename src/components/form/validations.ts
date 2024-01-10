@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-const validations = (total) =>
+const validations = (total: number) =>
   Yup.object({
     fullName: Yup.string()
       .required('Necesitamos tu nombre')

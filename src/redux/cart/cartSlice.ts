@@ -1,6 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const getTotal = (cart) => {
+export interface ToppingProp {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  type: string;
+  price: number;
+  img: string;
+}
+
+export interface ProductProp {
+  name: string;
+  price: number;
+  img: string;
+  quantity: number;
+  toppings: ToppingProp[];
+  id?: string;
+  description?: string;
+  type?: string;
+}
+
+export interface ProductsState {
+  cart: ProductProp[]; // Reemplaza 'any[]' con el tipo específico de los elementos del carrito
+  lastCart: ProductProp[]; // Reemplaza 'any[]' con el tipo específico de los elementos del carrito
+  total: number;
+}
+
+const getTotal = (cart: ProductProp[]) => {
   let total = 0;
   let totalToppings = 0;
   cart.forEach(({ price, quantity, toppings }) => {
@@ -21,7 +48,7 @@ export const cartSlices = createSlice({
   },
 
   reducers: {
-    addItem: (state, action) => {
+    addItem: (state: ProductsState, action: { payload: ProductProp }) => {
       const item = action.payload;
       const existingItemIndex = state.cart.findIndex(
         (cartItem) =>
@@ -38,21 +65,20 @@ export const cartSlices = createSlice({
       state.total = getTotal(state.cart);
     },
 
-    removeOneItem: (state, action) => {
+    removeOneItem: (state: ProductsState, action) => {
       const index = action.payload;
       state.cart[index].quantity -= 1;
       state.total = getTotal(state.cart);
     },
 
-    addOneItem: (state, action) => {
+    addOneItem: (state: ProductsState, action) => {
       const index = action.payload;
       state.cart[index].quantity += 1;
       state.total = getTotal(state.cart);
     },
 
-    removeItem: (state, action) => {
+    removeItem: (state: ProductsState, action) => {
       const index = action.payload;
-      const itemToRemove = state.cart[index];
       state.cart.splice(index, 1);
       state.total = getTotal(state.cart);
     },

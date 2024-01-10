@@ -1,10 +1,10 @@
-import { doc, updateDoc, getFirestore } from 'firebase/firestore';
+import { doc, updateDoc, getFirestore, DocumentData } from 'firebase/firestore';
 
 // Esta función actualiza los datos en Firestore para un documento específico
 export const updateDataInFirestore = async (
-  documentId,
-  collectionName,
-  newData
+  documentId: string,
+  collectionName: string,
+  newData: DocumentData
 ) => {
   const firestore = getFirestore();
 

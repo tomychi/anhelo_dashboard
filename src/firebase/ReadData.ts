@@ -6,6 +6,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { ComandaProps } from '../types/types';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -31,10 +32,6 @@ export const ReadData = async () => {
 };
 
 // Función para convertir la cadena "DD/MM/YYYY" a un objeto Date
-const parseDate = (dateString) => {
-  const [day, month, year] = dateString.split('/');
-  return new Date(`${year}-${month}-${day}`);
-};
 
 const obtenerFechaActual = () => {
   const fechaActual = new Date(); // Obtiene la fecha y hora actuales
@@ -49,8 +46,10 @@ const obtenerFechaActual = () => {
   return fechaFormateada;
 };
 
+type OrdersCallback = (pedidos: ComandaProps[]) => void;
+
 // Obtener pedidos para la fecha actual
-export const ReadOrdersForToday = (callback) => {
+export const ReadOrdersForToday = (callback: OrdersCallback) => {
   const firestore = getFirestore();
   const ordersCollectionRef = collection(firestore, 'pedidos');
 
@@ -65,7 +64,7 @@ export const ReadOrdersForToday = (callback) => {
     const fetchedData = snapshot.docs.map((doc) => ({
       id: doc.id,
       data: doc.data(),
-    }));
+    })) as ComandaProps[]; // Asegúrate de ajustar DocumentData según los datos reales
     callback(fetchedData);
   });
 };

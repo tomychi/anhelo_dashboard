@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { ConfirmationModal } from './ConfirmationModal';
 // Importa tu lógica para actualizar datos en Firebase Firestore
 import Swal from 'sweetalert2';
 import { updateDataInFirestore } from './Update';
+import { InfoItemProps } from '../../types/types';
 
-export const EditModal = ({ closeModal, item, id, collectionName }) => {
+interface EditModalProps {
+  closeModal: () => void;
+  item: InfoItemProps;
+  id: string;
+  collectionName: string;
+}
+
+export const EditModal = ({
+  closeModal,
+  item,
+  id,
+  collectionName,
+}: EditModalProps) => {
   // Establece el estado para los valores del formulario
   const [formData, setFormData] = useState({
     name: item.name,
@@ -15,7 +28,9 @@ export const EditModal = ({ closeModal, item, id, collectionName }) => {
   });
 
   // Maneja los cambios en el formulario
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,

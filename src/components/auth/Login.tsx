@@ -7,7 +7,7 @@ import { loginSuccess } from '../../redux/auth/authAction';
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,7 +17,7 @@ export const Login = () => {
 
   const { error, login } = userLogin();
 
-  const handleLogin = async (e: Event) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await login(email, password);
 
@@ -38,7 +38,10 @@ export const Login = () => {
   };
 
   return (
-    <form onSubmit={(e) => handleLogin(e)} className="max-w-sm mx-auto">
+    <form
+      onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
+      className="max-w-sm mx-auto"
+    >
       <div className="mb-5">
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Your email

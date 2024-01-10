@@ -1,6 +1,13 @@
+import { ItemProps, ValuesProps } from '../../types/types';
+
 const phone = '5493584306832';
 
-const handleSubmit = (values, cart, total, envio) => {
+const handleSubmit = (
+  values: ValuesProps,
+  cart: ItemProps[],
+  total: number,
+  envio: number
+) => {
   let message =
     `¡Hola! Quiero hacer un pedido:\n\n` +
     `- *Nombre:* ${values.fullName}\n` +
@@ -21,7 +28,7 @@ const handleSubmit = (values, cart, total, envio) => {
 
   let items = '';
 
-  cart.forEach((item) => {
+  cart.forEach((item: ItemProps) => {
     items += `${item.quantity}x ${item.name}\n`;
 
     if (item.toppings.length > 0) {

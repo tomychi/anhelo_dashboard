@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 
-const Items = ({ selectedItem, img, name, handleItemClick }) => {
+interface ItemsProps {
+  selectedItem: string;
+  img: string;
+  name: string;
+  handleItemClick: (selectedItem: string) => void;
+}
+
+const Items = ({ selectedItem, img, name, handleItemClick }: ItemsProps) => {
   return (
     <li>
       <Link
@@ -15,7 +22,7 @@ const Items = ({ selectedItem, img, name, handleItemClick }) => {
             src={img}
             alt={name}
             className={`${
-              name === 'bebidas' || 'burgers' ? 'h-16' : 'h-16 w-16'
+              name === 'bebidas' || name === 'burgers' ? 'h-16' : 'h-16 w-16'
             } mb-2 md:h-20 md:mb-4  flex-shrink-0`}
           />
           <span className="text-xs font-bold whitespace-nowrap  font-antonio">

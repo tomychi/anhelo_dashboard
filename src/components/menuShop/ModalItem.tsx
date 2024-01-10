@@ -1,12 +1,13 @@
 import { Field, Formik, Form } from 'formik';
 import toppingsJson from '../../assets/toppings.json';
+import { DetallePedidoProps } from '../../pages/DynamicForm';
 
 interface Props {
-  closeModal: any;
+  closeModal: () => void;
   name: string;
   price?: number;
   type: string;
-  handleFormBurger: (value: any) => any;
+  handleFormBurger: (value: DetallePedidoProps) => void;
 }
 
 export const ModalItem = ({
@@ -70,9 +71,16 @@ export const ModalItem = ({
                     0
                   );
 
+                  const totalOrderPrice = values.priceBurger
+                    ? values.priceBurger + priceToppings
+                    : 0;
+
+                  const subTotal = totalOrderPrice * values.quantity;
+
                   // Agrega el precio total al objeto de valores antes de enviarlo
                   const updatedValues = {
                     ...values,
+                    subTotal: subTotal, // Agrega el subtotal calculado
                     priceToppings: priceToppings,
                   };
 

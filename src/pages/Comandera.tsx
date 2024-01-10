@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import { ReadOrdersForToday } from '../firebase/ReadData';
+import { ComandaProps } from '../types/types';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
-  const [pedidosHoy, setPedidosHoy] = useState([]);
+  const [pedidosHoy, setPedidosHoy] = useState<ComandaProps[]>([]);
 
   useEffect(() => {
-    const unsubscribe = ReadOrdersForToday((pedidos) => {
+    const unsubscribe = ReadOrdersForToday((pedidos: ComandaProps[]) => {
       setPedidosHoy(pedidos);
     });
 
@@ -19,9 +20,9 @@ export const Comandera = () => {
   useEffect(() => {
     // Ordenar los pedidos filtrados por hora
     pedidosHoy.sort((a, b) => {
-      const horaA = new Date(`2023-12-11 ${a.hora}`);
-      const horaB = new Date(`2023-12-11 ${b.hora}`);
-      return horaA - horaB;
+      const horaA = new Date(`2023-12-11 ${a.data.hora}`);
+      const horaB = new Date(`2023-12-11 ${b.data.hora}`);
+      return horaA.getTime() - horaB.getTime();
     });
     // Realizar otras operaciones con pedidosHoy después de la actualización
   }, [pedidosHoy]);
@@ -58,7 +59,9 @@ export const Comandera = () => {
         {seccionActiva === 'porHacer' ? (
           Array.isArray(pedidosPorHacer) && pedidosPorHacer.length > 0 ? (
             pedidosPorHacer.map((comanda, i) => (
-              <Card key={i} comanda={comanda} />
+              <div key={i}>
+                <Card comanda={comanda} />
+              </div>
             ))
           ) : (
             <p className="text-custom-red font-antonio p-4">
@@ -66,7 +69,11 @@ export const Comandera = () => {
             </p>
           )
         ) : Array.isArray(pedidosHechos) && pedidosHechos.length > 0 ? (
-          pedidosHechos.map((comanda, i) => <Card key={i} comanda={comanda} />)
+          pedidosHechos.map((comanda, i) => (
+            <div key={i}>
+              <Card comanda={comanda} />
+            </div>
+          ))
         ) : (
           <p className="text-custom-red font-antonio p-4">
             No hay pedidos hechos.

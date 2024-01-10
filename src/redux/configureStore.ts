@@ -14,7 +14,7 @@ const persistConfig = {
   whitelist: ['ordersState', 'dataState', 'cartState'],
 };
 
-const rootReducer = combineReducers({
+const RootReducer = combineReducers({
   ordersState: orders,
   dataState: data,
   auth: authReducer,
@@ -22,7 +22,7 @@ const rootReducer = combineReducers({
   // ACA VAN LOS ESTADOS
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer<any, any>(persistConfig, RootReducer);
 
 const store = configureStore({
   reducer: persistedReducer,
@@ -33,3 +33,4 @@ const store = configureStore({
 });
 
 export default store;
+export type RootState = ReturnType<typeof RootReducer>;
