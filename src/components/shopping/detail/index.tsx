@@ -171,21 +171,21 @@ const DetailCard = ({ products, type }: DetailCardProps) => {
                 </button>
               </div>
             </div>
-            product && (
-            <button
-              className="w-full flex justify-center mx-auto mt-7 mb-7 sm:mb-0 py-4 text-white font-bold font-kotch text-xl bg-red-main focus:outline-none hover:bg-black hover:text-red-main gap-1"
-              onClick={() =>
-                addToCart(
-                  product?.name ?? '',
-                  product?.price ?? 0,
-                  product?.img ?? ''
-                )
-              }
-              disabled={disable}
-            >
-              <img src={fire} className="h-6" />
-            </button>
-            )
+            {product && (
+              <button
+                className="w-full flex justify-center mx-auto mt-7 mb-7 sm:mb-0 py-4 text-white font-bold font-kotch text-xl bg-red-main focus:outline-none hover:bg-black hover:text-red-main gap-1"
+                onClick={() =>
+                  addToCart(
+                    product?.name ?? '',
+                    product?.price ?? 0,
+                    product?.img ?? ''
+                  )
+                }
+                disabled={disable}
+              >
+                <img src={fire} className="h-6" />
+              </button>
+            )}
           </div>
         </div>
       </div>
