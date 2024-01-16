@@ -14,7 +14,7 @@ interface DataProps {
   price: number;
   type: string;
 }
-interface DataStateProps {
+export interface DataStateProps {
   data: DataProps;
   id: string;
   collectionName?: string;
@@ -22,6 +22,7 @@ interface DataStateProps {
 
 export const MenuGallery = ({ handleFormBurger }: Props) => {
   const [data, setData] = useState<DataStateProps[]>([]);
+  const [toppings, setToppings] = useState<DataStateProps[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getData = async () => {
@@ -41,6 +42,11 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
         };
       });
       setData(formattedData);
+      // Filtrar elementos con type igual a "topping"
+      const toppingsData: DataStateProps[] = formattedData.filter(
+        (item) => item.data.type === 'topping'
+      );
+      setToppings(toppingsData);
     }
     setLoading(false);
   };
@@ -88,6 +94,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
                     .map(({ id, data }) => (
                       <CardItem
                         key={id}
+                        toppings={toppings}
                         img={data.img}
                         name={data.name}
                         price={data.price}

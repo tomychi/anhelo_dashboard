@@ -13,7 +13,7 @@ export const Navigation = () => {
 
           {/* Rutas para el dashboard */}
           <Route element={<PrivateRoutesLayout />}>
-            <Route path="/" element={<DashboardMainPage />} />
+            <Route path="/*" element={<DashboardMainPage />} />
           </Route>
 
           {/* Manejo de cualquier ruta no encontrada */}

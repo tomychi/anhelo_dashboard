@@ -49,7 +49,7 @@ export const Sidebar = () => {
           <ul className="space-y-2 font-medium">
             <li>
               <NavLink
-                to={'/dashboard/pedidos'}
+                to={'/pedidos'}
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -65,7 +65,7 @@ export const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to={'/dashboard/comandas'}
+                to={'/comandas'}
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -85,7 +85,7 @@ export const Sidebar = () => {
 
             <li>
               <NavLink
-                to="/dashboard/delivery"
+                to="/delivery"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -104,7 +104,7 @@ export const Sidebar = () => {
             </li>
             <li>
               <NavLink
-                to="/dashboard/map"
+                to="/map"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg
@@ -162,7 +162,7 @@ export const Sidebar = () => {
 
             <li>
               <NavLink
-                to="/dashboard/settings"
+                to="/settings"
                 className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
               >
                 <svg

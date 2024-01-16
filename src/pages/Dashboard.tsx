@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import info from '../assets/combined_addresses.json';
 import { Chart, registerables } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
+import { ReadOrdersAll } from '../firebase/ReadData';
+import { ComandaProps } from '../types/types';
+import currencyFormat from '../helpers/currencyFormat';
 
 Chart.register(...registerables);
 
@@ -222,6 +225,7 @@ const options = {
 
 export const Dashboard = () => {
   const [selectedInterval, setSelectedInterval] = useState('weekly');
+  const [ordersData, setOrdersData] = useState<ComandaProps[]>([]);
 
   const handleIntervalChange = (interval: string) => {
     setSelectedInterval(interval);
@@ -267,6 +271,32 @@ export const Dashboard = () => {
       },
     ],
   };
+
+  const getOrdersData = () => {
+    ReadOrdersAll((fetchedData) => {
+      setOrdersData(fetchedData);
+    });
+  };
+
+  useEffect(() => {
+    getOrdersData();
+  }, []); // Asegúrate de pasar un array vacío como dependencia para que solo se ejecute una vez
+
+  const calcularTotalFacturacion = (ordersData: ComandaProps[]) => {
+    if (ordersData.length === 0) {
+      return 0; // Devuelve 0 si no hay pedidos
+    }
+
+    const totalFacturacion = ordersData.reduce((accumulator, order) => {
+      // Asegúrate de ajustar la propiedad según los datos reales
+      const totalPedido = order.data.total || 0;
+      return accumulator + totalPedido;
+    }, 0);
+
+    return totalFacturacion;
+  };
+
+  const facturacionTotal = calcularTotalFacturacion(ordersData);
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -315,7 +345,9 @@ export const Dashboard = () => {
             </div>
             {/* Puedes cambiar el ícono según tus necesidades */}
           </div>
-          <p className=" text-4xl font-bold mt-auto">$1.116.610</p>
+          <p className=" text-4xl font-bold mt-auto">
+            {currencyFormat(facturacionTotal)}
+          </p>
           <p className="text-sm mt-auto">FACTURACIÓN</p>
         </div>
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">

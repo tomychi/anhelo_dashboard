@@ -1,12 +1,14 @@
 import { Field, Formik, Form } from 'formik';
-import toppingsJson from '../../assets/toppings.json';
+// import toppingsJson from '../../assets/toppings.json';
 import { DetallePedidoProps } from '../../pages/DynamicForm';
+import { DataStateProps } from './MenuGallery';
 
 interface Props {
   closeModal: () => void;
   name: string;
   price?: number;
   type: string;
+  toppings: DataStateProps[];
   handleFormBurger: (value: DetallePedidoProps) => void;
 }
 
@@ -15,6 +17,7 @@ export const ModalItem = ({
   name,
   price,
   type,
+  toppings,
   handleFormBurger,
 }: Props) => {
   return (
@@ -61,11 +64,12 @@ export const ModalItem = ({
                   // Calcula el precio de los toppings seleccionados
                   const priceToppings = values.toppings.reduce(
                     (total, topping) => {
-                      const selectedTopping = toppingsJson.find(
-                        (t) => t.name === topping
+                      const selectedTopping = toppings.find(
+                        ({ data }) => data.name === topping
                       );
                       return (
-                        total + (selectedTopping ? selectedTopping.price : 0)
+                        total +
+                        (selectedTopping ? selectedTopping.data.price : 0)
                       );
                     },
                     0
@@ -91,7 +95,8 @@ export const ModalItem = ({
                 {(formik) => (
                   <Form noValidate className="">
                     <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
-                      {toppingsJson.map(({ name, price }) => {
+                      {toppings.map(({ data }) => {
+                        const { price, name } = data;
                         if (type === 'originals') {
                           return (
                             <div

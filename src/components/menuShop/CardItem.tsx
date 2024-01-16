@@ -2,6 +2,7 @@ import { useState } from 'react';
 import currencyFormat from '../../helpers/currencyFormat';
 import { ModalItem } from './ModalItem';
 import { DetallePedidoProps } from '../../pages/DynamicForm';
+import { DataStateProps } from './MenuGallery';
 
 interface Props {
   img: string;
@@ -10,6 +11,7 @@ interface Props {
   category?: string;
   type: string;
   description?: string;
+  toppings: DataStateProps[];
   handleFormBurger: (value: DetallePedidoProps) => void;
 }
 
@@ -18,6 +20,7 @@ export const CardItem = ({
   name,
   price,
   type,
+  toppings,
   handleFormBurger,
 }: Props) => {
   const [showModal, setShowModal] = useState(false);
@@ -25,7 +28,6 @@ export const CardItem = ({
   const closeModal: () => void = () => {
     setShowModal(false);
   };
-
   return (
     <>
       <div
@@ -54,6 +56,7 @@ export const CardItem = ({
       </div>
       {showModal && (
         <ModalItem
+          toppings={toppings}
           closeModal={closeModal}
           name={name}
           price={price}

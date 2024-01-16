@@ -68,3 +68,16 @@ export const ReadOrdersForToday = (callback: OrdersCallback) => {
     callback(fetchedData);
   });
 };
+
+export const ReadOrdersAll = (callback: OrdersCallback) => {
+  const firestore = getFirestore();
+  const ordersCollectionRef = collection(firestore, 'pedidos');
+
+  return onSnapshot(ordersCollectionRef, (snapshot) => {
+    const fetchedData = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data(),
+    })) as ComandaProps[]; // Asegúrate de ajustar DocumentData según los datos reales
+    callback(fetchedData);
+  });
+};
