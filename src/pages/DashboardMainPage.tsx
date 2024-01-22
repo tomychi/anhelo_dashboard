@@ -7,6 +7,7 @@ import {
   MapStats,
   Settings,
   Dashboard,
+  Gastos,
 } from '../pages';
 
 export const DashboardMainPage = () => {
@@ -23,6 +24,7 @@ export const DashboardMainPage = () => {
             <Route path="delivery" element={<Delivery />} />
             <Route path="map" element={<MapStats />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="gastos" element={<Gastos />} />
           </Route>
         </Routes>
       </div>

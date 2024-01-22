@@ -92,6 +92,7 @@ export const DynamicForm = () => {
       subTotal,
       total: subTotal + envio,
       fecha: obtenerFechaActual(),
+      elaborado: false,
     };
 
     console.log('Datos del formulario:', info);

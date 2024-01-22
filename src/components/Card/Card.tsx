@@ -1,5 +1,64 @@
+import React, { useRef } from 'react';
 import currencyFormat from '../../helpers/currencyFormat';
-import { ComandaRareProps } from '../../types/types';
+import { ComandaRareProps, PedidoProps } from '../../types/types';
+import { useReactToPrint } from 'react-to-print';
+import imgTicket from '../../assets/ticketAnhelo.png';
+
+const CardPrintComponent = React.forwardRef<
+  HTMLDivElement,
+  { data: PedidoProps }
+>(({ data }, ref) => {
+  const {
+    aclaraciones,
+    direccion,
+    metodoPago,
+    total,
+    telefono,
+    detallePedido,
+  } = data;
+
+  return (
+    <div ref={ref} className="hidden print:block">
+      <img src={imgTicket} alt="ANHELO" />
+      <div>
+        <p style={{ fontWeight: 'bold' }}>PEDIDO:</p>
+        {detallePedido.map(({ burger, toppings }, index) => (
+          <div key={index}>
+            <p>{burger}</p>
+            <ul>
+              {toppings.map((topping, i) => (
+                <li key={i}>{topping}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <p style={{ fontWeight: 'bold' }}>ACLARACIONES:</p>
+        <p>{aclaraciones.toUpperCase()}</p>
+      </div>
+
+      <div>
+        <p style={{ fontWeight: 'bold' }}>
+          DIRECCION: {direccion.toUpperCase()}
+        </p>
+      </div>
+
+      <div>
+        <p style={{ fontWeight: 'bold' }}>TELEFONO: {telefono.toUpperCase()}</p>
+      </div>
+
+      <div>
+        <p style={{ fontWeight: 'bold' }}>METODO: {metodoPago.toUpperCase()}</p>
+      </div>
+
+      <div>
+        <p style={{ fontWeight: 'bold' }}>TOTAL: {currencyFormat(total)}</p>
+      </div>
+    </div>
+  );
+});
 
 export const Card = ({ comanda }: ComandaRareProps) => {
   const { id, data } = comanda;
@@ -15,26 +74,11 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     elaborado,
   } = data;
 
-  const imprimirTicket = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/imprimir', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comanda }),
-      });
+  const componentRef = useRef<HTMLDivElement>(null);
 
-      if (response.ok) {
-        comanda.data.elaborado = true;
-        console.log('Impresión exitosa');
-      } else {
-        console.error('Error al imprimir');
-      }
-    } catch (error) {
-      console.error('Error en la solicitud:', error);
-    }
-  };
+  const imprimirTicket = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   return (
     <div
@@ -42,6 +86,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         elaborado ? 'bg-green-500 hover:bg-green-600' : 'bg-custom-red'
       }`}
     >
+      <CardPrintComponent ref={componentRef} data={data} />
       <div className="p-4">
         <p className={`text-2xl  text-white font-bold float-right`}>{id}</p>
         <div className="mb-4">

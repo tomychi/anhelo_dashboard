@@ -1,3 +1,5 @@
+export { Gastos } from './Gastos';
+
 export { Error } from './Error';
 
 export { Authentication } from './Authentication';
