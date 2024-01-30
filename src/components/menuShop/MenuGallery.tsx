@@ -87,7 +87,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
                 <h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">
                   {sectionName.toUpperCase()}
                 </h1>
-                <div className="grid grid-cols-6 md:grid-cols-6 gap-4 mb-4">
+                <div className="grid grid-cols-4 md:grid-cols-4 gap-4 mb-4">
                   {/* Renderizar items de la sección correspondiente */}
                   {data
                     .filter((item) => item.data.type === sectionName)

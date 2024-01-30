@@ -1,4 +1,4 @@
-import { MenuGallery } from '../components/menuShop';
+import { CartShop, MenuGallery } from '../components/menuShop';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
@@ -83,9 +83,21 @@ export const DynamicForm = () => {
       elaborado: false,
     };
 
-    console.log('Datos del formulario:', info);
     // Puedes enviar los datos a tu backend, realizar validaciones, etc.
-    UploadOrder(info);
+    const check = UploadOrder(info);
+    if (check) {
+      Swal.fire({
+        icon: 'success',
+        title: `Pedido cargado`,
+        text: 'El pedido se cargo correctamente',
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al cargar el pedido',
+      });
+    }
 
     // Limpia los datos del formulario después de procesarlos
     setFormData({
@@ -124,7 +136,7 @@ export const DynamicForm = () => {
   return (
     <div className="p-4 w-3/5">
       <div>
-        {/* {detallePedido && <CartShop />} */}
+        {detallePedido && <CartShop detallePedido={detallePedido} />}
 
         <MenuGallery handleFormBurger={handleFormBurger} />
       </div>

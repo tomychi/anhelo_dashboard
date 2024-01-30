@@ -18,13 +18,15 @@ interface OrderDetailProps {
 export const UploadOrder = (orderDetail: OrderDetailProps) => {
   const firestore = getFirestore();
   const pedidosCollection = collection(firestore, 'pedidos');
-
+  let check = false;
   addDoc(pedidosCollection, orderDetail)
     .then((docRef) => {
       console.log('Documento agregado con ID:', docRef.id);
-      // Lógica adicional después de agregar el documento
+      check = true;
     })
     .catch((error) => {
       console.error('Error al agregar documento:', error);
+      check = false;
     });
+  return check;
 };
