@@ -5,8 +5,11 @@ import {
   onSnapshot,
   query,
   where,
+  doc,
+  updateDoc,
 } from 'firebase/firestore';
 import { ComandaProps } from '../types/types';
+import { obtenerFechaActual } from '../helpers/dateToday';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -29,21 +32,6 @@ export const ReadData = async () => {
   );
 
   return fetchedData.flat();
-};
-
-// Función para convertir la cadena "DD/MM/YYYY" a un objeto Date
-
-const obtenerFechaActual = () => {
-  const fechaActual = new Date(); // Obtiene la fecha y hora actuales
-
-  const dia = fechaActual.getDate();
-  const mes = fechaActual.getMonth() + 1; // Los meses comienzan desde 0
-  const anio = fechaActual.getFullYear();
-
-  // Formatea la fecha como "DD/MM/AAAA"
-  const fechaFormateada = `${dia}/${mes}/${anio}`;
-
-  return fechaFormateada;
 };
 
 type OrdersCallback = (pedidos: ComandaProps[]) => void;
@@ -80,4 +68,21 @@ export const ReadOrdersAll = (callback: OrdersCallback) => {
     })) as ComandaProps[]; // Asegúrate de ajustar DocumentData según los datos reales
     callback(fetchedData);
   });
+};
+
+// Función para marcar un pedido como elaborado en Firestore
+export const marcarPedidoComoElaborado = async (pedidoId: string) => {
+  try {
+    // Obtener referencia al documento del pedido en Firestore
+    const pedidoRef = doc(getFirestore(), 'pedidos', pedidoId);
+
+    // Actualizar el documento para marcarlo como elaborado
+    await updateDoc(pedidoRef, {
+      elaborado: true,
+    });
+
+    console.log('Pedido marcado como elaborado en Firestore');
+  } catch (error) {
+    console.error('Error al marcar pedido como elaborado en Firestore:', error);
+  }
 };

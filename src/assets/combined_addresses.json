@@ -51,7 +51,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "san juan 256 1d (llamar, no funciona el timbre) (+54 9 379 426-2433)",
     "hora": "21:00",
@@ -71,7 +71,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "santiago del estero 1788 (piso 2, dpto a) (+54 9 358 601-2721)",
     "hora": "21:00",
@@ -91,7 +91,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x bcn cheeseburger\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bcn cheeseburger\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "cabrera 1556 7d (+54 9 358 490-3366)",
     "hora": "21:10",
@@ -131,7 +131,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n- salsa anhelo\n\n1x pote de cheddar",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n- salsa anhelo\n\n1x pote de cheddar",
     "aclaraciones": "medallones vegetarianos",
     "direccion": "ituzaingo 910 (+54 9 11 2664-1465)",
     "hora": "21:20",
@@ -181,7 +181,7 @@
   },
   {
     "numeroPedido": "19",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "marcelo t de alvear 1277 (arriba del lubricentro) (+54 9 358 411-7752)",
     "hora": "21:30",
@@ -191,7 +191,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x easter egg",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x easter egg",
     "aclaraciones": "",
     "direccion": "mendoza 1882 (planta alta) (+54 9 358 417-1438)",
     "hora": "21:30",
@@ -221,7 +221,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa\n- ketchup\n- salsa barbecue",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa\n- ketchup\n- bbq",
     "aclaraciones": "",
     "direccion": "los alerces 89 (no hay timbre. tocar bocina o llamar.) (+54 9 2657 58-5595)",
     "hora": "21:30",
@@ -241,7 +241,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x anhelo classic\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x anhelo classic\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "juana azurduy de padilla 953 (+54 9 358 513-7239)",
     "hora": "21:40",
@@ -251,7 +251,7 @@
   },
   {
     "numeroPedido": "26",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "panamá 53 ( casa beige rejas negras) (+54 9 358 483-5412)",
     "hora": "21:40",
@@ -281,7 +281,7 @@
   },
   {
     "numeroPedido": "29",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "sobremonte 745 10 b (+54 9 358 548-9052)",
     "hora": "21:50",
@@ -341,7 +341,7 @@
   },
   {
     "numeroPedido": "34",
-    "pedido": "1x bcn cheeseburger\n\n1x salsa barbecue bcn cheeseburger\n\n1x pote de salsa anhelo",
+    "pedido": "1x bcn cheeseburger\n\n1x bbq bcn cheeseburger\n\n1x pote de salsa anhelo",
     "aclaraciones": "",
     "direccion": "sebastian vera 550 (no tengo portero, avisame y bajo) (+54 9 358 512-0999)",
     "hora": "22:10",
@@ -391,7 +391,7 @@
   },
   {
     "numeroPedido": "40",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n\n1x crispy bcn",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n\n1x crispy bcn",
     "aclaraciones": "",
     "direccion": "san martín 1045  2 i hovenia 4 (+54 9 3582 43-4562)",
     "hora": "23:20",
@@ -421,7 +421,7 @@
   },
   {
     "numeroPedido": "43",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "hipolito irigoyen 452 (+54 9 358 600-3389)",
     "hora": "23:40",
@@ -431,7 +431,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "dr. francisco muñiz 1920 2c (3584376275)",
     "hora": "20:30",
@@ -458,7 +458,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- cebolla caramelizada\n: $ 3360\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- cebolla caramelizada\n: $ 3360\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "lamadrid 854 4e (3385683243)",
     "hora": "21:00",
@@ -512,7 +512,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n: $ 2610\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n: $ 2610\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup",
     "aclaraciones": "",
     "direccion": "calle 20 n°53 barrio universidad piso 1 depto 6 (3537685715)",
     "hora": "22:00",
@@ -548,7 +548,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- salsa anhelo\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- salsa anhelo\n- cebolla caramelizada\n- bacon",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- salsa anhelo\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- salsa anhelo\n- cebolla caramelizada\n- bacon",
     "aclaraciones": "",
     "direccion": "ubaldo garimaldi 2626  (3584023386)",
     "hora": "21:20",
@@ -557,7 +557,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- ketchup\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- ketchup\n- bbq\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "chile 55  (3584286052)",
     "hora": "22:00",
@@ -566,7 +566,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "1x doble cheeseburger\n\n4x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\n\n4x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- bbq",
     "aclaraciones": "",
     "direccion": "barrio el reparo duplex 9 (3585074786)",
     "hora": "21:30",
@@ -584,7 +584,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "1x doble cheeseburger\n\n1x doble cheeseburger\n\n4x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\n\n1x doble cheeseburger\n\n4x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- bbq",
     "aclaraciones": "",
     "direccion": "barrio el reparo duplex 9 (3585074786)",
     "hora": "21:30",
@@ -602,7 +602,7 @@
   },
   {
     "numeroPedido": "18",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "pasaje jefferson 1852 (3813483033)",
     "hora": "21:40",
@@ -611,7 +611,7 @@
   },
   {
     "numeroPedido": "19",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- bbq",
     "aclaraciones": "",
     "direccion": "psj amado nervo 1274, entre mártires riocuartenses y arturo m bas (+54 9 358 570-3733)",
     "hora": "21:40",
@@ -638,7 +638,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n\n2x salsa barbecue bcn cheeseburger",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n\n2x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "urquiza 942 (3585069945)",
     "hora": "22:00",
@@ -647,7 +647,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "1x papas con cheddar ®\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- lechuga\n- tomate",
+    "pedido": "1x papas con cheddar ®\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- lechuga\n- tomate",
     "aclaraciones": "",
     "direccion": "zona rural tranquera que dice \"el tuyuti\" (+54 9 358 429-9194)",
     "hora": "22:00",
@@ -665,7 +665,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n: $ 2610\n\n1x papas con cheddar ®",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n: $ 2610\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "gobernador guzmán 1330 (3584377900)",
     "hora": "22:20",
@@ -701,7 +701,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "3x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon",
+    "pedido": "3x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "vasco zacarias 1345 (3586029970)",
     "hora": "20:30",
@@ -710,7 +710,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "3x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon",
+    "pedido": "3x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "vasco zacarias 1345 (3586029970)",
     "hora": "20:30",
@@ -719,7 +719,7 @@
   },
   {
     "numeroPedido": "4",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "hipólito irigoyen 605 4e (3584113398)",
     "hora": "20:30",
@@ -755,7 +755,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo\n\n1x triple cheeseburger\ntoppings:\n- ketchup\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo\n\n1x triple cheeseburger\ntoppings:\n- ketchup\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "pasaje soco soco 1471 entre nicaragua y neri guerra (3585609279)",
     "hora": "21:00",
@@ -773,7 +773,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x triple cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada\n- bacon\n\n1x easter egg",
+    "pedido": "1x triple cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada\n- bacon\n\n1x easter egg",
     "aclaraciones": "",
     "direccion": "pueyrredón 2047 (3585044216)",
     "hora": "21:30",
@@ -782,7 +782,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- bacon\n- lechuga\n- tomate\n- salsa anhelo\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- bacon\n- lechuga\n- tomate\n- salsa anhelo\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "falucho 1215 (3584152609)",
     "hora": "22:00",
@@ -791,7 +791,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- bbq",
     "aclaraciones": "",
     "direccion": "9 de julio 1550  (+54 9 358 601-6608)",
     "hora": "21:30",
@@ -800,7 +800,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "antonio ferrer 914  (3584321211)",
     "hora": "22:00",
@@ -818,7 +818,7 @@
   },
   {
     "numeroPedido": "16",
-    "pedido": "3x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa anhelo\n- tomate\n- bacon\n- mayonesa\n- ketchup\n- salsa barbecue\n\n2x papas con cheddar ®",
+    "pedido": "3x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa anhelo\n- tomate\n- bacon\n- mayonesa\n- ketchup\n- bbq\n\n2x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "de las postas 842 (3585018571)",
     "hora": "22:00",
@@ -836,7 +836,7 @@
   },
   {
     "numeroPedido": "18",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "buenos aires 1523 (3586013990)",
     "hora": "22:10",
@@ -863,7 +863,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x anhelo classic\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue",
+    "pedido": "1x anhelo classic\n\n1x simple cheeseburger\ntoppings:\n- bbq",
     "aclaraciones": "",
     "direccion": "velez sarfield 544 2d (+54 9 358 485-6260)",
     "hora": "22:20",
@@ -872,7 +872,7 @@
   },
   {
     "numeroPedido": "21",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n\n1x papas anhelo ®",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n\n1x papas anhelo ®",
     "aclaraciones": "",
     "direccion": "calle 10 casa número 4 barrio universidad (358509478)",
     "hora": "22:20",
@@ -908,7 +908,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa barbecue\n- tomate\n- lechuga",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bbq\n- tomate\n- lechuga",
     "aclaraciones": "",
     "direccion": "alberdi 845 7g (portero 077 y campanita)",
     "hora": "23:00",
@@ -926,7 +926,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 torre 2, dpto 17 a (cardinales) (3584013615)",
     "hora": "20:20",
@@ -946,7 +946,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- tomate\n- lechuga\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- tomate\n- lechuga\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "panama 143 (3585126207)",
     "hora": "20:40",
@@ -976,7 +976,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "cuba 33 (3755641097)",
     "hora": "20:50",
@@ -986,7 +986,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "jose maria serrano 380 (+54 9 358 415-3087)",
     "hora": "21:00",
@@ -996,7 +996,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "yaravi 409 f (3875291935)",
     "hora": "21:00",
@@ -1006,7 +1006,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "general paz 271 8a (3385439398)",
     "hora": "21:00",
@@ -1076,7 +1076,7 @@
   },
   {
     "numeroPedido": "16",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa barbecue\n\n1x papas con cheddar ®",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- bbq\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "pje elias moyano 1073 (+54 9 358 420-3286)",
     "hora": "21:40",
@@ -1086,7 +1086,7 @@
   },
   {
     "numeroPedido": "17",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n- bbq",
     "aclaraciones": "",
     "direccion": "eduardo jenner 1369 (3584228718)",
     "hora": "21:40",
@@ -1136,7 +1136,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- lechuga\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- lechuga\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "las heras 360  higueras (3584202883)",
     "hora": "22:10",
@@ -1146,7 +1146,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- lechuga\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n\n1x papas con cheddar ®",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- lechuga\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "las heras 360  higueras (3584202883)",
     "hora": "22:10",
@@ -1156,7 +1156,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "3x salsa barbecue bcn cheeseburger",
+    "pedido": "3x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "jujuy 1887 (3584862732)",
     "hora": "22:20",
@@ -1196,7 +1196,7 @@
   },
   {
     "numeroPedido": "2",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "constitución 983 piso 4 departamento 4049 (3582407579)",
     "hora": "20:30",
@@ -1276,7 +1276,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n\n1x mario inspired\n\n2x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- salsa anhelo\n- lechuga",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n\n1x mario inspired\n\n2x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- salsa anhelo\n- lechuga",
     "aclaraciones": "",
     "direccion": "estados unidos 398 (3584252642)",
     "hora": "21:30",
@@ -1286,7 +1286,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- tomate\n- salsa anhelo\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- tomate\n- salsa anhelo\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "panama 143 (3585126207)",
     "hora": "21:40",
@@ -1326,7 +1326,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon",
     "aclaraciones": "",
     "direccion": "san martin 1071 departamento 12a (2657680172)",
     "hora": "22:30",
@@ -1336,7 +1336,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "general paz 369 (+54 9 3584 44-7027)",
     "hora": "22:30",
@@ -1406,7 +1406,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "dr. francisco muñiz 1920 2c (3584376275)",
     "hora": "21:10",
@@ -1426,7 +1426,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq",
     "aclaraciones": "",
     "direccion": "m t de alvear 1277 (+54 9 358 436-2703)",
     "hora": "21:30",
@@ -1456,7 +1456,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x crispy bcn\n\n4x salsa barbecue bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- ketchup",
+    "pedido": "1x crispy bcn\n\n4x bbq bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- ketchup",
     "aclaraciones": "",
     "direccion": "fernando fader 429 (3586029259)",
     "hora": "22.00",
@@ -1476,7 +1476,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue\n- mayonesa\n- ketchup\n- salsa anhelo",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- bacon\n- bbq\n- mayonesa\n- ketchup\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "pje los guaraníes 581 (+54 9 358 561-8820)",
     "hora": "22.00",
@@ -1486,7 +1486,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- bacon\n- salsa barbecue\n\n1x easter egg\n\n1x papas anhelo ®",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa anhelo\n- bacon\n- bbq\n\n1x easter egg\n\n1x papas anhelo ®",
     "aclaraciones": "",
     "direccion": "patagones 3201 (+54 9 358 402-5330)",
     "hora": "22.00",
@@ -1526,7 +1526,7 @@
   },
   {
     "numeroPedido": "18",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- lechuga\n- tomate\n\n1x papas anhelo ®",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- lechuga\n- tomate\n\n1x papas anhelo ®",
     "aclaraciones": "",
     "direccion": "avenida italia 1643 (+54 9 358 512-6662)",
     "hora": "22.20",
@@ -1546,7 +1546,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- tomate\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n- lechuga\n- tomate\n\n1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n2x papas con cheddar ®",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- tomate\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n- lechuga\n- tomate\n\n1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n2x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "avenida cacique cafulcura 2185 los casiques (+54 9 358 561-4577)",
     "hora": "22.40",
@@ -1566,7 +1566,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n- bacon\n- salsa anhelo\n- tomate\n- lechuga",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq\n- cebolla caramelizada\n- bacon\n- salsa anhelo\n- tomate\n- lechuga",
     "aclaraciones": "",
     "direccion": "maría olguin 1336 6c (+54 9 3472 50-1351)",
     "hora": "23.10",
@@ -1576,7 +1576,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "jose verde 1135 (+54 9 358 518-0070)",
     "hora": "20:40",
@@ -1586,7 +1586,7 @@
   },
   {
     "numeroPedido": "2",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n\n1x papas con cheddar ®",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "calle 3 altura 46 depto 8 barrio universidad (+54 9 11 2682-8293)",
     "hora": "21:40",
@@ -1646,7 +1646,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n\n1x crispy bcn\n\n1x simple cheeseburger\ntoppings:\n- mayonesa",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada\n\n1x crispy bcn\n\n1x simple cheeseburger\ntoppings:\n- mayonesa",
     "aclaraciones": "",
     "direccion": "roma 1519 (+54 9 358 485-0101)",
     "hora": "21.30",
@@ -1656,7 +1656,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- ketchup\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- ketchup\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "gral paz 1809 3f (+54 9 358 434-1985)",
     "hora": "21.30",
@@ -1676,7 +1676,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa anhelo\n- salsa barbecue\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa anhelo\n- bbq\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon",
     "aclaraciones": "",
     "direccion": "san martín 1364 depto 1 c 103 (+54 9 358 506-7417)",
     "hora": "21.40",
@@ -1686,7 +1686,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- bacon\n\n1x simple cheeseburger\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup\n- salsa barbecue\n\n1x doble cheeseburger\ntoppings:\n- bacon",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n\n1x simple cheeseburger\ntoppings:\n- bacon\n\n1x simple cheeseburger\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup\n- bbq\n\n1x doble cheeseburger\ntoppings:\n- bacon",
     "aclaraciones": "",
     "direccion": "fontanarrosa 1752 barrio castelli 1, venir por juan filloy hasta fontanarrosa y doblar a la derecha. casa marron al lado de una casa naranja  (+39 348 166 4321)",
     "hora": "21.50",
@@ -1736,7 +1736,7 @@
   },
   {
     "numeroPedido": "18",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- cebolla caramelizada\n- bacon\n- salsa anhelo\n- salsa barbecue",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- cebolla caramelizada\n- bacon\n- salsa anhelo\n- bbq",
     "aclaraciones": "",
     "direccion": "mendoza 609 (+54 9 388 513-8520)",
     "hora": "22.00",
@@ -1786,7 +1786,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "mártires riocuartenses 1086 el portero no funciona, llamar (+54 9 358 401-9697)",
     "hora": "23.00",
@@ -1826,7 +1826,7 @@
   },
   {
     "numeroPedido": "27",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa anhelo\n- tomate\n\n1x doble cheeseburger\ntoppings:\n- ketchup\n- salsa barbecue\n- mayonesa\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa anhelo\n- tomate\n\n1x doble cheeseburger\ntoppings:\n- ketchup\n- bbq\n- mayonesa\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "colombia 175 (+54 9 358 430-0721)",
     "hora": "23.10",
@@ -1846,7 +1846,7 @@
   },
   {
     "numeroPedido": "99",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "mártires riocuartenses 1086 el portero no funciona, llamar (+54 9 358 401-9697)",
     "hora": "23.00",
@@ -1956,7 +1956,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- cebolla caramelizada\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- cebolla caramelizada\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "alberdi 1757 (+54 9 280 482-2061)",
     "hora": "21:10",
@@ -1966,7 +1966,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- cebolla caramelizada\n- salsa barbecue\n\n2x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- mayonesa",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- cebolla caramelizada\n- bbq\n\n2x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- mayonesa",
     "aclaraciones": "",
     "direccion": "pedro zanni 14 1d (no anda el timbre, toquen bocina o mandenme un mensaje por favor. gracias!) (+54 9 358 600-2557)",
     "hora": "21:20",
@@ -1976,7 +1976,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- lechuga\n\n1x crispy bcn\n\n1x bcn cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- lechuga\n\n1x crispy bcn\n\n1x bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "santiago del estero 1788 5a ( santiago del estero, esquina con urquiza) (+54 9 3385 40-1225)",
     "hora": "21:20",
@@ -1996,7 +1996,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- lechuga\n\n1x crispy bcn\n\n1x bcn cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- lechuga\n\n1x crispy bcn\n\n1x bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "santiago del estero 1788 5a ( santiago del estero, esquina con urquiza) (+54 9 3385 40-1225)",
     "hora": "21:20",
@@ -2056,7 +2056,7 @@
   },
   {
     "numeroPedido": "21",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x mario inspired",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x mario inspired",
     "aclaraciones": "",
     "direccion": "cabrera 1556 5a (+54 9 358 424-7280)",
     "hora": "21:30",
@@ -2116,7 +2116,7 @@
   },
   {
     "numeroPedido": "27",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n\n1x crispy bcn\n\n1x salsa barbecue bcn cheeseburger\n\n1x easter egg\n\n1x simple cheeseburger\ntoppings:\n- mayonesa",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n\n1x crispy bcn\n\n1x bbq bcn cheeseburger\n\n1x easter egg\n\n1x simple cheeseburger\ntoppings:\n- mayonesa",
     "aclaraciones": "",
     "direccion": "misiones 1142 ( tocar bocina ) (+54 9 358 402-5162)",
     "hora": "21:50",
@@ -2146,7 +2146,7 @@
   },
   {
     "numeroPedido": "30",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon",
     "aclaraciones": "",
     "direccion": "peron oeste 585 (la puerta al lado de la fiambreria... llamar por celular o avisar al ws porfavorrr) (+54 9 358 500-2865)",
     "hora": "22:00",
@@ -2186,7 +2186,7 @@
   },
   {
     "numeroPedido": "34",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "av. marconi 1115 2 b (timbre 202) (+54 9 358 518-1696)",
     "hora": "22:40",
@@ -2226,7 +2226,7 @@
   },
   {
     "numeroPedido": "38",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- lechuga\n- salsa anhelo\n\n1x anhelo classic\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- lechuga\n- salsa anhelo\n\n1x anhelo classic\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "alameda 2559. barrio bimaco. portón doble negro. (+54 9 3541 57-9646)",
     "hora": "22:40",
@@ -2266,7 +2266,7 @@
   },
   {
     "numeroPedido": "43",
-    "pedido": "1x crispy bcn\n: $ 3070\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- crispy",
+    "pedido": "1x crispy bcn\n: $ 3070\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- crispy",
     "aclaraciones": "",
     "direccion": "leopoldo lugones 2045 ( entre cervantes y tejerina) (+54 9 358 483-3657)",
     "hora": "23:15",
@@ -2286,7 +2286,7 @@
   },
   {
     "numeroPedido": "45",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- ketchup\n- cebolla caramelizada\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- ketchup\n- cebolla caramelizada\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa",
     "aclaraciones": "",
     "direccion": "sebastian vera 450 ( dpto interno timbre 3) (+54 9 358 430-1000)",
     "hora": "23:20",
@@ -2326,7 +2326,7 @@
   },
   {
     "numeroPedido": "49",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- salsa anhelo\n- tomate\n- lechuga\n- bacon",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- salsa anhelo\n- tomate\n- lechuga\n- bacon",
     "aclaraciones": "",
     "direccion": "paunero 145 (+54 9 3385 43-6751)",
     "hora": "23:40",
@@ -2346,7 +2346,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- tomate\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n- cebolla caramelizada\n- salsa anhelo\n- bacon",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- tomate\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n- cebolla caramelizada\n- salsa anhelo\n- bacon",
     "aclaraciones": "",
     "direccion": "mosconi este y azopardo (esquina, abrimos por el garaje) (+54 9 358 422-5396)",
     "hora": "21:40",
@@ -2366,7 +2366,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "santiago del estero 830 (+54 9 358 425-2855)",
     "hora": "20:30",
@@ -2376,7 +2376,7 @@
   },
   {
     "numeroPedido": "4",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n\n1x doble cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n\n1x doble cheeseburger",
     "aclaraciones": "",
     "direccion": "ecuador 851 (+54 9 358 601-3856)",
     "hora": "20:50",
@@ -2386,7 +2386,7 @@
   },
   {
     "numeroPedido": "5",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n- cebolla caramelizada\n: $ 2610\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n- cebolla caramelizada\n: $ 2610\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- tomate\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "rio de la plata norte 373 dpto 7 es rio de la plata norte para el lado del colegio san ignacio (+54 9 358 436-2440)",
     "hora": "22:00",
@@ -2396,7 +2396,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- tomate\n- salsa anhelo\n\n1x easter egg",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- tomate\n- salsa anhelo\n\n1x easter egg",
     "aclaraciones": "",
     "direccion": "sadi carnot 1370 (casa 2 duplex de la esquina) (+54 9 358 401-9192)",
     "hora": "20:50",
@@ -2406,7 +2406,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "bolivar 280 19g (por favor llamar por teléfono, el portero no anda) (+54 9 3582 43-1265)",
     "hora": "21.00",
@@ -2446,7 +2446,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x crispy bcn",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x crispy bcn",
     "aclaraciones": "",
     "direccion": "chile 250 dpto 11 (en el timbre marcar 111 y tocar ok) (+54 9 358 437-6972)",
     "hora": "21.10",
@@ -2456,7 +2456,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x crispy bcn\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x crispy bcn\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "san esteban lote 19 (+54 9 358 485-1170)",
     "hora": "21.10",
@@ -2476,7 +2476,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "3x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- salsa anhelo",
+    "pedido": "3x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "misiones 869 (+54 9 358 481-5045)",
     "hora": "21.10",
@@ -2506,7 +2506,7 @@
   },
   {
     "numeroPedido": "17",
-    "pedido": "1x mario inspired\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue",
+    "pedido": "1x mario inspired\n\n1x triple cheeseburger\ntoppings:\n- bbq",
     "aclaraciones": "",
     "direccion": "gobernador busto 1044 (puerta chiquita al lado del garaje,con portero) (+54 9 358 429-6480)",
     "hora": "21.20",
@@ -2546,7 +2546,7 @@
   },
   {
     "numeroPedido": "21",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "francisco muñiz 656 (+54 9 358 431-0117)",
     "hora": "21.30",
@@ -2556,7 +2556,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "guemes 1135 (+54 9 358 432-6276)",
     "hora": "21.30",
@@ -2566,7 +2566,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- lechuga\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- tomate\n- salsa anhelo",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n- lechuga\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- tomate\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "calle 5 526 golf club (+54 9 358 420-8680)",
     "hora": "21.40",
@@ -2576,7 +2576,7 @@
   },
   {
     "numeroPedido": "24",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "leyes obreras 660 (+54 9 358 487-4750)",
     "hora": "21.40",
@@ -2606,7 +2606,7 @@
   },
   {
     "numeroPedido": "27",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate\n- salsa anhelo\n- ketchup",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate\n- salsa anhelo\n- ketchup",
     "aclaraciones": "",
     "direccion": "san martin 6b (+54 9 2336 49-6299)",
     "hora": "22.20",
@@ -2626,7 +2626,7 @@
   },
   {
     "numeroPedido": "30",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "costa ríca 825 (+54 9 358 487-8155)",
     "hora": "22.20",
@@ -2636,7 +2636,7 @@
   },
   {
     "numeroPedido": "29",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate\n- salsa anhelo\n- ketchup\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate\n- salsa anhelo\n- ketchup\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- cebolla caramelizada\n- lechuga\n- tomate",
     "aclaraciones": "",
     "direccion": "san martin 6b (+54 9 2336 49-6299)",
     "hora": "22.20",
@@ -2666,7 +2666,7 @@
   },
   {
     "numeroPedido": "33",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue\n\n1x simple cheeseburger",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq\n\n1x simple cheeseburger",
     "aclaraciones": "",
     "direccion": "intendente daguerre 368 (+54 9 358 510-6788)",
     "hora": "22.30",
@@ -2676,7 +2676,7 @@
   },
   {
     "numeroPedido": "34",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n\n1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- lechuga\n- mayonesa\n- salsa barbecue\n\n1x simple cheeseburger\ntoppings:\n- bacon\n- salsa anhelo\n- lechuga\n- mayonesa\n- ketchup\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- lechuga\n\n1x papas con cheddar ®",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n\n1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bacon\n- lechuga\n- mayonesa\n- bbq\n\n1x simple cheeseburger\ntoppings:\n- bacon\n- salsa anhelo\n- lechuga\n- mayonesa\n- ketchup\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- lechuga\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "urquiza 610 (+54 9 358 500-3906)",
     "hora": "22.30",
@@ -2776,7 +2776,7 @@
   },
   {
     "numeroPedido": "2",
-    "pedido": "2x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "2x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (cardinales) torre 2, dpto 17 a (+54 9 358 401-3615)",
     "hora": "21:10",
@@ -2806,7 +2806,7 @@
   },
   {
     "numeroPedido": "5",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n: $ 3360\n\n1x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- mayonesa",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n: $ 3360\n\n1x doble cheeseburger\ntoppings:\n- cebolla caramelizada\n- mayonesa",
     "aclaraciones": "",
     "direccion": "córdoba 1474 (+54 9 358 416-3885)",
     "hora": "20:40",
@@ -2826,7 +2826,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n- bacon\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n- bacon\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "chiclana 246 (+54 9 2477 67-0194)",
     "hora": "20:50",
@@ -2846,7 +2846,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n2x easter egg",
+    "pedido": "1x bbq bcn cheeseburger\n\n2x easter egg",
     "aclaraciones": "",
     "direccion": "alberdi 1140 132ok (+54 9 358 438-5797)",
     "hora": "21:20",
@@ -2876,7 +2876,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x cuadruple cheeseburger\ntoppings:\n- ketchup\n- salsa anhelo\n\n1x papas con cheddar ®",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n\n1x cuadruple cheeseburger\ntoppings:\n- ketchup\n- salsa anhelo\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "roberto payro y rosa pecile, en una esquina, casa de ladrillo vistos, aberturas blanca  (+54 9 358 437-9135)",
     "hora": "21:30",
@@ -2896,7 +2896,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "constitucion 564 2a (+54 9 358 504-1349)",
     "hora": "21:40",
@@ -2906,7 +2906,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n: $ 2610\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n: $ 2610\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "thomas jefferson 1582 1b (+54 9 358 485-0807)",
     "hora": "21:50",
@@ -2916,7 +2916,7 @@
   },
   {
     "numeroPedido": "16",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- salsa barbecue\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- bbq\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "calle 20, n53 barrio universidad 1 n 8 entre calle 1 y 3 (+54 9 3537 68-5715)",
     "hora": "22:10",
@@ -2946,7 +2946,7 @@
   },
   {
     "numeroPedido": "19",
-    "pedido": "1x mario inspired\n\n1x salsa barbecue bcn cheeseburger\n\n1x papas con cheddar ®",
+    "pedido": "1x mario inspired\n\n1x bbq bcn cheeseburger\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "anibal ponce 269 (+54 9 358 602-9267)",
     "hora": "22:30",
@@ -2956,7 +2956,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo\n- ketchup",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo\n- ketchup",
     "aclaraciones": "",
     "direccion": "colombia 138 2c (+54 9 358 426-6896)",
     "hora": "22:40",
@@ -2976,7 +2976,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- tomate\n- salsa anhelo\n\n1x mario inspired",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- tomate\n- salsa anhelo\n\n1x mario inspired",
     "aclaraciones": "",
     "direccion": "panama 143 (+54 9 358 512-6207)",
     "hora": "23:20",
@@ -2996,7 +2996,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup",
     "aclaraciones": "",
     "direccion": "alvear 185 pb b (+54 9 3582 40-4486)",
     "hora": "20:10",
@@ -3006,7 +3006,7 @@
   },
   {
     "numeroPedido": "2",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x papas con cheddar ®",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "irigoyen 968 (puerta de madera y centro de vidrio, casa planta alta.) (+54 9 291 475-6731)",
     "hora": "20:40",
@@ -3036,7 +3036,7 @@
   },
   {
     "numeroPedido": "5",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- tomate\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- tomate\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "jose verdi 1135 (+54 9 358 518-0070)",
     "hora": "21:10",
@@ -3046,7 +3046,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon\n- salsa anhelo\n- lechuga\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- lechuga",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- tomate\n- cebolla caramelizada\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon\n- salsa anhelo\n- lechuga\n\n1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- lechuga",
     "aclaraciones": "",
     "direccion": "retira por casa (+54 9 358 600-2157)",
     "hora": "21:10",
@@ -3056,7 +3056,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "angela martínez 1152 (+54 9 358 561-3157)",
     "hora": "21:20",
@@ -3066,7 +3066,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x bcn cheeseburger\n\n2x easter egg\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bcn cheeseburger\n\n2x easter egg\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "bolivia 403  (+54 9 358 439-7605)",
     "hora": "21:20",
@@ -3096,7 +3096,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "ecuador 360 ( el frente es una puerta de vidrio con rejas grises) (+54 9 358 483-8240)",
     "hora": "21:40",
@@ -3106,7 +3106,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- salsa barbecue\n- bacon\n\n1x crispy bcn",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- bbq\n- bacon\n\n1x crispy bcn",
     "aclaraciones": "",
     "direccion": "maipú 720 3er piso b (+54 9 358 482-0445)",
     "hora": "21:40",
@@ -3126,7 +3126,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "santa rosa 888 (+54 9 358 502-8251)",
     "hora": "21:40",
@@ -3286,7 +3286,7 @@
   },
   {
     "numeroPedido": "30",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- tomate\n- lechuga\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- bacon",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- tomate\n- lechuga\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- bacon",
     "aclaraciones": "",
     "direccion": "madre mercedes del niño jesus 960 (+54 9 3757 33-1453)",
     "hora": "23:20",
@@ -3326,7 +3326,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x mario inspired",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x mario inspired",
     "aclaraciones": "",
     "direccion": "lote 19 country san esteban (+54 9 358 600-0034)",
     "hora": "20:40",
@@ -3356,7 +3356,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "urquiza 945 (segunda casa de rejas negras, en un pasillo al frente de negocio \"buenoplast\", esta mal numerada la cuadra) (+54 9 358 436-9003)",
     "hora": "21:10",
@@ -3396,7 +3396,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- tomate\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- tomate\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "retira por casa",
     "hora": "21:30",
@@ -3416,7 +3416,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "francisco muñiz 656 (+54 9 358 431-0117)",
     "hora": "21:50",
@@ -3476,7 +3476,7 @@
   },
   {
     "numeroPedido": "19",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- mayonesa",
     "aclaraciones": "",
     "direccion": "belgrano 463 5 d ( tocar 54 ok) (+54 9 358 401-8889)",
     "hora": "22:30",
@@ -3516,7 +3516,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "dr. francisco muñiz 1920 (3584376275)",
     "hora": "20:15",
@@ -3543,7 +3543,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- lechuga\n- cebolla caramelizada\n- salsa anhelo\n- tomate\n- bacon",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- lechuga\n- cebolla caramelizada\n- salsa anhelo\n- tomate\n- bacon",
     "aclaraciones": "",
     "direccion": "lamadrid 861 (3582594945)",
     "hora": "21:00",
@@ -3597,7 +3597,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n- cebolla caramelizada\n- tomate\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- ketchup\n- bacon\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n- cebolla caramelizada\n- tomate\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n\n1x triple cheeseburger\ntoppings:\n- ketchup\n- bacon\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "guardias nacionales 1795 (3585004963)",
     "hora": "22:20",
@@ -3615,7 +3615,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "3x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n\n1x papas con cheddar ®",
+    "pedido": "3x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n\n1x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "pasaje santiago drago 3426  (3585613427)",
     "hora": "22:30",
@@ -3624,7 +3624,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n: $ 2610\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- tomate\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n: $ 2610\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- tomate\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "trabajo y previsión 1082 (3584870412)",
     "hora": "23:00",
@@ -3701,7 +3701,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- tomate\n- lechuga",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- salsa anhelo\n- tomate\n- lechuga",
     "aclaraciones": "",
     "direccion": "presidente peron este 1062 esquina malavia (+54 9 358 600-0065)",
     "hora": "21.00",
@@ -3711,7 +3711,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (cardinales) (torre 2, dpto 17 a) (+54 9 358 401-3615)",
     "hora": "20.30",
@@ -3741,7 +3741,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada\n- salsa anhelo\n- bacon\n\n1x papas con cheddar ®",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada\n- salsa anhelo\n- bacon\n\n1x papas con cheddar ®",
     "aclaraciones": "una de las burgers es sin cheddar",
     "direccion": "pasaje público 3575 barrio 400 viviendas (+54 9 358 412-9792)",
     "hora": "21.00",
@@ -3751,7 +3751,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "urquiza 945 (+54 9 358 436-9003)",
     "hora": "20.50",
@@ -3801,7 +3801,7 @@
   },
   {
     "numeroPedido": "17",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- tomate\n- cebolla caramelizada\n: $ 2610\n\n1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- tomate\n- cebolla caramelizada\n: $ 2610\n\n1x triple cheeseburger\ntoppings:\n- salsa anhelo\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "alejandro roca 447 (casa blanca con rejas verdes  timbre del lado de adentro de la reja, lado de la pared) (+54 9 358 483-2112)",
     "hora": "21.00",
@@ -3831,7 +3831,7 @@
   },
   {
     "numeroPedido": "21",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x mario inspired",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x mario inspired",
     "aclaraciones": "",
     "direccion": "alvear 1509 4c (+54 9 387 508-9900)",
     "hora": "21.20",
@@ -3851,7 +3851,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "3x bcn cheeseburger\n\n3x salsa barbecue bcn cheeseburger",
+    "pedido": "3x bcn cheeseburger\n\n3x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "bolívar 280 19 g el portero no funciona, llamar a mi numero (+54 9 3582 41-6506)",
     "hora": "21.30",
@@ -3871,7 +3871,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- cebolla caramelizada\n- mayonesa\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "francisco muñiz 470 torre 2 piso 5 depto 3 (+54 9 358 420-2017)",
     "hora": "21.30",
@@ -3891,7 +3891,7 @@
   },
   {
     "numeroPedido": "27",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "alberdi 1117 piso 2 depto d (+54 9 358 654-6348)",
     "hora": "21.50",
@@ -3921,7 +3921,7 @@
   },
   {
     "numeroPedido": "30",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "francisco muñiz 656 (+54 9 358 431-0117)",
     "hora": "21.50",
@@ -4011,7 +4011,7 @@
   },
   {
     "numeroPedido": "39",
-    "pedido": "1x crispy bcn\n\n1x salsa barbecue bcn cheeseburger\n\n2x papas con cheddar ®",
+    "pedido": "1x crispy bcn\n\n1x bbq bcn cheeseburger\n\n2x papas con cheddar ®",
     "aclaraciones": "",
     "direccion": "juana azurduy de padilla 414 (+54 9 358 431-7858)",
     "hora": "22.40",
@@ -4021,7 +4021,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "dr. francisco muñiz 1920 2c (es al lado de un kiosco de cartel naranja que se ve desde la calle.) (+54 9 358 437-6275)",
     "hora": "20:30",
@@ -4061,7 +4061,7 @@
   },
   {
     "numeroPedido": "5",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n3x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n- tomate\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x bbq bcn cheeseburger\n\n3x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n- tomate\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "9 de julio 1074 (+54 9 3462 52-2920)",
     "hora": "20:50",
@@ -4111,7 +4111,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "av presidente perón oeste 137 (+54 9 358 481-6989)",
     "hora": "21:50",
@@ -4121,7 +4121,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "alberdi 1117 2do piso departamento d (+54 9 358 401-3879)",
     "hora": "21:50",
@@ -4141,7 +4141,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon",
     "aclaraciones": "",
     "direccion": "gaudard 1389 2do piso a (+54 9 358 437-7542)",
     "hora": "22:00",
@@ -4151,7 +4151,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- lechuga\n\n1x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- lechuga\n- tomate\n- bacon\n- salsa barbecue\n- ketchup\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- lechuga\n- cebolla caramelizada\n: $ 3360\n\n1x simple cheeseburger",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- lechuga\n\n1x triple cheeseburger\ntoppings:\n- cebolla caramelizada\n- lechuga\n- tomate\n- bacon\n- bbq\n- ketchup\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- bacon\n- lechuga\n- cebolla caramelizada\n: $ 3360\n\n1x simple cheeseburger",
     "aclaraciones": "",
     "direccion": "manzana 90 lote 5, barrio soles del oeste (en las garitas de gas están los números de lote y manzana. puerta marrón con manija plateada larga) (+54 9 358 420-3314)",
     "hora": "22:00",
@@ -4201,7 +4201,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "costa rica 825 (+54 9 358 510-0580)",
     "hora": "21:00",
@@ -4210,7 +4210,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "costa rica 825 (+54 9 358 510-0580)",
     "hora": "21:00",
@@ -4219,7 +4219,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "costa rica 825 (+54 9 358 510-0580)",
     "hora": "21:00",
@@ -4228,7 +4228,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "costa rica 825 (+54 9 358 510-0580)",
     "hora": "21:00",
@@ -4246,7 +4246,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa",
     "aclaraciones": "",
     "direccion": "los alerces 89 barrio universitario (2657585595)",
     "hora": "21.30",
@@ -4291,7 +4291,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n: $ 1860\n\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n: $ 1860\n\n1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "general paz 271 8a (3385439398)",
     "hora": "21.30",
@@ -4309,7 +4309,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x anhelo classic",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x anhelo classic",
     "aclaraciones": "",
     "direccion": "velez sarfield 544  (2336496624)",
     "hora": "22.00",
@@ -4318,7 +4318,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (cardinales) (3584813615)",
     "hora": "22.00",
@@ -4381,7 +4381,7 @@
   },
   {
     "numeroPedido": "17",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo\n: $ 2610\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo\n: $ 2610\n\n1x simple cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo",
     "aclaraciones": "-",
     "direccion": "werfil pineiro 1232 (3585146432)",
     "hora": "22.20",
@@ -4399,7 +4399,7 @@
   },
   {
     "numeroPedido": "18",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- ketchup\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x papas con cheddar ®",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- ketchup\n- lechuga\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x papas con cheddar ®",
     "aclaraciones": "-",
     "direccion": "entre ríos 1908 (3585628458)",
     "hora": "22.20",
@@ -4408,7 +4408,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n: $ 3090\n\n1x simple cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger\n: $ 3090\n\n1x simple cheeseburger",
     "aclaraciones": "-",
     "direccion": "pasaje juarez ávila 889 (3584924100)",
     "hora": "22.20",
@@ -4435,7 +4435,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- salsa barbecue\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n- cebolla caramelizada",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- ketchup\n- bbq\n- bacon\n- tomate\n- salsa anhelo\n- lechuga\n- cebolla caramelizada",
     "aclaraciones": "-",
     "direccion": "san lorenzo 2380 (3584016773)",
     "hora": "22.40",
@@ -4444,7 +4444,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq",
     "aclaraciones": "-",
     "direccion": "paunero 115 6b (3585132296)",
     "hora": "22.40",
@@ -4453,7 +4453,7 @@
   },
   {
     "numeroPedido": "24",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- ketchup\n- tomate\n- lechuga\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- salsa anhelo",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- ketchup\n- tomate\n- lechuga\n\n1x simple cheeseburger\ntoppings:\n- bbq\n- salsa anhelo",
     "aclaraciones": "-",
     "direccion": "cid campeador 2677 (3584111293)",
     "hora": "23.00",
@@ -4462,7 +4462,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "-",
     "direccion": "av. italia 1242 (3584301114)",
     "hora": "23.00",
@@ -4489,7 +4489,7 @@
   },
   {
     "numeroPedido": "27",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n: $ 3090",
+    "pedido": "1x bbq bcn cheeseburger\n: $ 3090",
     "aclaraciones": "-",
     "direccion": "francisco muñiz 656 (3584310117)",
     "hora": "23.30",
@@ -4498,7 +4498,7 @@
   },
   {
     "numeroPedido": "28",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- tomate\n- cebolla caramelizada\n\n1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "-",
     "direccion": "mitre 845 (3586028596)",
     "hora": "23.30",
@@ -4525,7 +4525,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- bbq",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (2964613324)",
     "hora": "20:20",
@@ -4534,7 +4534,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- bbq",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (2964613324)",
     "hora": "20:20",
@@ -4552,7 +4552,7 @@
   },
   {
     "numeroPedido": "1",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- salsa barbecue",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bacon\n- bbq",
     "aclaraciones": "",
     "direccion": "av. guillermo marconi 750 (2964613324)",
     "hora": "20:20",
@@ -4561,7 +4561,7 @@
   },
   {
     "numeroPedido": "3",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- salsa anhelo",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo\n1x simple cheeseburger\ntoppings:\n- bbq\n- bacon\n- salsa anhelo",
     "aclaraciones": "",
     "direccion": "werfil pineiro 1232 (3585146432)",
     "hora": "23:00",
@@ -4606,7 +4606,7 @@
   },
   {
     "numeroPedido": "7",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- ketchup\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- ketchup\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup",
     "aclaraciones": "",
     "direccion": "paunero 344 (3585161794)",
     "hora": "21:00",
@@ -4615,7 +4615,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x easter egg\n2x salsa barbecue bcn cheeseburger",
+    "pedido": "1x easter egg\n2x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "bolivia 403 (3584336443)",
     "hora": "21:15",
@@ -4633,7 +4633,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada\n- lechuga\n- tomate",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- lechuga\n1x doble cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada\n- lechuga\n- tomate",
     "aclaraciones": "",
     "direccion": "humberto primo 162 3d (3585083257)",
     "hora": "21:30",
@@ -4660,7 +4660,7 @@
   },
   {
     "numeroPedido": "2",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- salsa barbecue\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- ketchup\n- bbq\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup",
     "aclaraciones": "",
     "direccion": "guaycurues 2336 (2974149359)",
     "hora": "21:00",
@@ -4723,7 +4723,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "marconi 750 (los cardinales torre 2 depto 17a) (3584013615)",
     "hora": "21:30",
@@ -4741,7 +4741,7 @@
   },
   {
     "numeroPedido": "11",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "francisco muñiz 656 (3584310117)",
     "hora": "21:30",
@@ -4750,7 +4750,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "2x salsa barbecue bcn cheeseburger",
+    "pedido": "2x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "rio turbio norte 512  barrio cispren 2, cerca del colegio san ignacio (3584308309)",
     "hora": "21:40",
@@ -4759,7 +4759,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "pje abraham lincoln 1067 piso 2 - dpto 6 (3584174756)",
     "hora": "22:00",
@@ -4768,7 +4768,7 @@
   },
   {
     "numeroPedido": "13",
-    "pedido": "1x bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x bcn cheeseburger\n\n1x triple cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "pje abraham lincoln 1067 piso 2 - dpto 6 (3584174756)",
     "hora": "22:00",
@@ -4777,7 +4777,7 @@
   },
   {
     "numeroPedido": "12",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- mayonesa\n\n1x easter egg\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n- bacon",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- mayonesa\n\n1x easter egg\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n- bacon",
     "aclaraciones": "",
     "direccion": "avenida marconi 515 6c es el edificio al frente de la oil y la cancha de atenas (3585164656)",
     "hora": "22:00",
@@ -4786,7 +4786,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- tomate\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- tomate\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "avenida italia 1351 (3584129274)",
     "hora": "22:00",
@@ -4795,7 +4795,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n\n1x triple cheeseburger\ntoppings:\n- mayonesa\n- ketchup\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- ketchup",
     "aclaraciones": "",
     "direccion": "teresa frua 1480 (3584407517)",
     "hora": "22:10",
@@ -4899,7 +4899,7 @@
   },
   {
     "numeroPedido": "6",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "san juan 256 1d (llamar, no funciona el timbre) (+54 9 379 426-2433)",
     "hora": "21:00",
@@ -4919,7 +4919,7 @@
   },
   {
     "numeroPedido": "8",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "santiago del estero 1788 (piso 2, dpto a) (+54 9 358 601-2721)",
     "hora": "21:00",
@@ -4939,7 +4939,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x bcn cheeseburger\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bcn cheeseburger\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "cabrera 1556 7d (+54 9 358 490-3366)",
     "hora": "21:10",
@@ -4979,7 +4979,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- cebolla caramelizada\n- salsa anhelo\n\n1x pote de cheddar",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- cebolla caramelizada\n- salsa anhelo\n\n1x pote de cheddar",
     "aclaraciones": "medallones vegetarianos",
     "direccion": "ituzaingo 910 (+54 9 11 2664-1465)",
     "hora": "21:20",
@@ -5029,7 +5029,7 @@
   },
   {
     "numeroPedido": "19",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "marcelo t de alvear 1277 (arriba del lubricentro) (+54 9 358 411-7752)",
     "hora": "21:30",
@@ -5039,7 +5039,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x salsa barbecue bcn cheeseburger\n\n1x easter egg",
+    "pedido": "1x bbq bcn cheeseburger\n\n1x easter egg",
     "aclaraciones": "",
     "direccion": "mendoza 1882 (planta alta) (+54 9 358 417-1438)",
     "hora": "21:30",
@@ -5069,7 +5069,7 @@
   },
   {
     "numeroPedido": "23",
-    "pedido": "2x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa\n- ketchup\n- salsa barbecue",
+    "pedido": "2x doble cheeseburger\ntoppings:\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- mayonesa\n- ketchup\n- bbq",
     "aclaraciones": "",
     "direccion": "los alerces 89 (no hay timbre. tocar bocina o llamar.) (+54 9 2657 58-5595)",
     "hora": "21:30",
@@ -5089,7 +5089,7 @@
   },
   {
     "numeroPedido": "25",
-    "pedido": "1x anhelo classic\n\n1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x anhelo classic\n\n1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "juana azurduy de padilla 953 (+54 9 358 513-7239)",
     "hora": "21:40",
@@ -5099,7 +5099,7 @@
   },
   {
     "numeroPedido": "26",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- mayonesa\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon\n- cebolla caramelizada",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n- mayonesa\n- bacon\n- salsa anhelo\n\n1x simple cheeseburger\ntoppings:\n- bbq\n- bacon\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "panamá 53 ( casa beige rejas negras) (+54 9 358 483-5412)",
     "hora": "21:40",
@@ -5129,7 +5129,7 @@
   },
   {
     "numeroPedido": "29",
-    "pedido": "1x salsa barbecue bcn cheeseburger",
+    "pedido": "1x bbq bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "sobremonte 745 10 b (+54 9 358 548-9052)",
     "hora": "21:50",
@@ -5189,7 +5189,7 @@
   },
   {
     "numeroPedido": "34",
-    "pedido": "1x bcn cheeseburger\n\n1x salsa barbecue bcn cheeseburger\n\n1x pote de salsa anhelo",
+    "pedido": "1x bcn cheeseburger\n\n1x bbq bcn cheeseburger\n\n1x pote de salsa anhelo",
     "aclaraciones": "",
     "direccion": "sebastian vera 550 (no tengo portero, avisame y bajo) (+54 9 358 512-0999)",
     "hora": "22:10",
@@ -5239,7 +5239,7 @@
   },
   {
     "numeroPedido": "40",
-    "pedido": "1x simple cheeseburger\ntoppings:\n- salsa barbecue\n\n1x crispy bcn",
+    "pedido": "1x simple cheeseburger\ntoppings:\n- bbq\n\n1x crispy bcn",
     "aclaraciones": "",
     "direccion": "san martín 1045  2 i hovenia 4 (+54 9 3582 43-4562)",
     "hora": "23:20",
@@ -5270,7 +5270,7 @@
   },
   {
     "numeroPedido": "43",
-    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- salsa barbecue",
+    "pedido": "2x simple cheeseburger\ntoppings:\n- ketchup\n- mayonesa\n- bbq",
     "aclaraciones": "",
     "direccion": "hipolito irigoyen 452 (+54 9 358 600-3389)",
     "hora": "23:40",
@@ -5350,7 +5350,7 @@
   },
   {
     "numeroPedido": "9",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "buenos aires 1648 (+54 9 358 422-3954)",
     "hora": "21:20",
@@ -5370,7 +5370,7 @@
   },
   {
     "numeroPedido": "10",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- tomate\n- lechuga",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- tomate\n- lechuga",
     "aclaraciones": "",
     "direccion": "urquiza 945 segunda casa de rejas negras en un pasillo al frente de negocio (+54 9 358 436-9003)",
     "hora": "21:20",
@@ -5410,7 +5410,7 @@
   },
   {
     "numeroPedido": "14",
-    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- ketchup\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- salsa barbecue\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
+    "pedido": "1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- ketchup\n- cebolla caramelizada\n\n1x doble cheeseburger\ntoppings:\n- mayonesa\n- bbq\n- bacon\n- salsa anhelo\n- cebolla caramelizada",
     "aclaraciones": "",
     "direccion": "gral paz 1809 3f (+54 9 358 434-1985)",
     "hora": "22:50",
@@ -5440,7 +5440,7 @@
   },
   {
     "numeroPedido": "15",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- salsa barbecue\n- bacon",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bbq\n- bacon",
     "aclaraciones": "",
     "direccion": "pedernera 428 depto con salida a la calle puerta blanca frente al contenedor (+54 9 358 422-5396)",
     "hora": "22.00",
@@ -5470,7 +5470,7 @@
   },
   {
     "numeroPedido": "20",
-    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- tomate\n- lechuga\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- salsa barbecue\n- mayonesa\n- ketchup\n\n1x bcn cheeseburger",
+    "pedido": "1x cuadruple cheeseburger\ntoppings:\n- tomate\n- lechuga\n- bacon\n- cebolla caramelizada\n- salsa anhelo\n- bbq\n- mayonesa\n- ketchup\n\n1x bcn cheeseburger",
     "aclaraciones": "",
     "direccion": "paso 264  portero julian (+54 9 358 602-2036)",
     "hora": "22.10",
@@ -5480,7 +5480,7 @@
   },
   {
     "numeroPedido": "21",
-    "pedido": "2x triple cheeseburger\ntoppings:\n- salsa barbecue\n- cebolla caramelizada\n- bacon\n\n1x anhelo classic\n\n1x mario inspired",
+    "pedido": "2x triple cheeseburger\ntoppings:\n- bbq\n- cebolla caramelizada\n- bacon\n\n1x anhelo classic\n\n1x mario inspired",
     "aclaraciones": "",
     "direccion": "general de la quintana 41 (+54 9 358 504-4216)",
     "hora": "22.10",
@@ -5490,7 +5490,7 @@
   },
   {
     "numeroPedido": "22",
-    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup\n- salsa barbecue",
+    "pedido": "1x triple cheeseburger\ntoppings:\n- bacon\n- mayonesa\n- ketchup\n- bbq",
     "aclaraciones": "",
     "direccion": "estados unidos 7 (+54 9 358 513-1566)",
     "hora": "22.30",

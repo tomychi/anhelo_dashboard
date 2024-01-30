@@ -2,19 +2,7 @@ import { MenuGallery } from '../components/menuShop';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
-
-const obtenerFechaActual = () => {
-  const fechaActual = new Date(); // Obtiene la fecha y hora actuales
-
-  const dia = fechaActual.getDate();
-  const mes = fechaActual.getMonth() + 1; // Los meses comienzan desde 0
-  const anio = fechaActual.getFullYear();
-
-  // Formatea la fecha como "DD/MM/AAAA"
-  const fechaFormateada = `${dia}/${mes}/${anio}`;
-
-  return fechaFormateada;
-};
+import { obtenerFechaActual } from '../helpers/dateToday';
 
 interface FormDataProps {
   aclaraciones: string;

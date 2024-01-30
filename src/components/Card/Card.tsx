@@ -1,64 +1,7 @@
-import React, { useRef } from 'react';
+import Swal from 'sweetalert2';
 import currencyFormat from '../../helpers/currencyFormat';
 import { ComandaRareProps, PedidoProps } from '../../types/types';
-import { useReactToPrint } from 'react-to-print';
-import imgTicket from '../../assets/ticketAnhelo.png';
-
-const CardPrintComponent = React.forwardRef<
-  HTMLDivElement,
-  { data: PedidoProps }
->(({ data }, ref) => {
-  const {
-    aclaraciones,
-    direccion,
-    metodoPago,
-    total,
-    telefono,
-    detallePedido,
-  } = data;
-
-  return (
-    <div ref={ref} className="hidden print:block">
-      <img src={imgTicket} alt="ANHELO" />
-      <div>
-        <p style={{ fontWeight: 'bold' }}>PEDIDO:</p>
-        {detallePedido.map(({ burger, toppings }, index) => (
-          <div key={index}>
-            <p>{burger}</p>
-            <ul>
-              {toppings.map((topping, i) => (
-                <li key={i}>{topping}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div>
-        <p style={{ fontWeight: 'bold' }}>ACLARACIONES:</p>
-        <p>{aclaraciones.toUpperCase()}</p>
-      </div>
-
-      <div>
-        <p style={{ fontWeight: 'bold' }}>
-          DIRECCION: {direccion.toUpperCase()}
-        </p>
-      </div>
-
-      <div>
-        <p style={{ fontWeight: 'bold' }}>TELEFONO: {telefono.toUpperCase()}</p>
-      </div>
-
-      <div>
-        <p style={{ fontWeight: 'bold' }}>METODO: {metodoPago.toUpperCase()}</p>
-      </div>
-
-      <div>
-        <p style={{ fontWeight: 'bold' }}>TOTAL: {currencyFormat(total)}</p>
-      </div>
-    </div>
-  );
-});
+import { marcarPedidoComoElaborado } from '../../firebase/ReadData';
 
 export const Card = ({ comanda }: ComandaRareProps) => {
   const { id, data } = comanda;
@@ -74,11 +17,44 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     elaborado,
   } = data;
 
-  const componentRef = useRef<HTMLDivElement>(null);
+  const imprimirTicket = async (nuevoPedido: PedidoProps) => {
+    try {
+      const response = await fetch('http://localhost:3000/imprimir', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nuevoPedido }),
+      });
 
-  const imprimirTicket = useReactToPrint({
-    content: () => componentRef.current,
-  });
+      if (response.ok) {
+        nuevoPedido.elaborado = true;
+        Swal.fire({
+          icon: 'success',
+          title: 'Impresión exitosa',
+          text: 'El ticket se imprimió correctamente',
+        });
+
+        if (!nuevoPedido.elaborado) {
+          await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
+        }
+      } else {
+        console.error('Error al imprimir');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al imprimir el ticket',
+        });
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error en la solicitud',
+      });
+    }
+  };
 
   return (
     <div
@@ -86,7 +62,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         elaborado ? 'bg-green-500 hover:bg-green-600' : 'bg-custom-red'
       }`}
     >
-      <CardPrintComponent ref={componentRef} data={data} />
       <div className="p-4">
         <p className={`text-2xl  text-white font-bold float-right`}>{id}</p>
         <div className="mb-4">
@@ -144,7 +119,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           {currencyFormat(total)}
         </p>
         <button
-          onClick={imprimirTicket}
+          onClick={() => imprimirTicket(data)}
           className={`mt-8 bg-black text-custom-red font-bold py-2 px-4  inline-flex items-center`}
         >
           <svg
