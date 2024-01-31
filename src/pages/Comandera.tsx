@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Card } from '../components/Card';
 import { ReadOrdersForToday } from '../firebase/ReadData';
-import { ComandaProps } from '../types/types';
+import { PedidoProps } from '../types/types';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
-  const [pedidosHoy, setPedidosHoy] = useState<ComandaProps[]>([]);
+  const [pedidosHoy, setPedidosHoy] = useState<PedidoProps[]>([]);
 
   useEffect(() => {
-    const unsubscribe = ReadOrdersForToday((pedidos: ComandaProps[]) => {
+    const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
       setPedidosHoy(pedidos);
     });
 
@@ -20,16 +20,16 @@ export const Comandera = () => {
   useEffect(() => {
     // Ordenar los pedidos filtrados por hora
     pedidosHoy.sort((a, b) => {
-      const horaA = new Date(`2023-12-11 ${a.data.hora}`);
-      const horaB = new Date(`2023-12-11 ${b.data.hora}`);
+      const horaA = new Date(`2023-12-11 ${a.hora}`);
+      const horaB = new Date(`2023-12-11 ${b.hora}`);
       return horaA.getTime() - horaB.getTime();
     });
     // Realizar otras operaciones con pedidosHoy después de la actualización
   }, [pedidosHoy]);
 
   // Filtra los pedidos según la sección activa
-  const pedidosPorHacer = pedidosHoy.filter(({ data }) => !data.elaborado);
-  const pedidosHechos = pedidosHoy.filter(({ data }) => data.elaborado);
+  const pedidosPorHacer = pedidosHoy.filter((data) => !data.elaborado);
+  const pedidosHechos = pedidosHoy.filter((data) => data.elaborado);
 
   return (
     <div>

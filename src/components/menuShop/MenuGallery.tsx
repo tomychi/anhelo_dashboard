@@ -1,60 +1,19 @@
-import { useEffect, useState } from 'react';
 import { CardItem } from './CardItem';
-import { ReadData } from '../../firebase/ReadData';
-import { DetallePedidoProps } from '../../pages/DynamicForm';
+import { DataStateProps, DetallePedidoProps } from '../../pages/DynamicForm';
 
 interface Props {
   handleFormBurger: (value: DetallePedidoProps) => void;
+  loading: boolean;
+  toppings: DataStateProps[];
+  data: DataStateProps[];
 }
 
-interface DataProps {
-  description: string;
-  img: string;
-  name: string;
-  price: number;
-  type: string;
-}
-export interface DataStateProps {
-  data: DataProps;
-  id: string;
-  collectionName?: string;
-}
-
-export const MenuGallery = ({ handleFormBurger }: Props) => {
-  const [data, setData] = useState<DataStateProps[]>([]);
-  const [toppings, setToppings] = useState<DataStateProps[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const getData = async () => {
-    setLoading(true);
-    if (data.length === 0) {
-      const rawData = await ReadData();
-      const formattedData: DataStateProps[] = rawData.map((item) => {
-        return {
-          id: item.id,
-          data: {
-            description: item.data.description,
-            img: item.data.img,
-            name: item.data.name,
-            price: item.data.price,
-            type: item.data.type,
-          },
-        };
-      });
-      setData(formattedData);
-      // Filtrar elementos con type igual a "topping"
-      const toppingsData: DataStateProps[] = formattedData.filter(
-        (item) => item.data.type === 'topping'
-      );
-      setToppings(toppingsData);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getData();
-  });
-
+export const MenuGallery = ({
+  handleFormBurger,
+  loading,
+  toppings,
+  data,
+}: Props) => {
   return (
     <div className="flex flex-col">
       {loading ? (

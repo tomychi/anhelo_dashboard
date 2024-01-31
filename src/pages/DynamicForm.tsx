@@ -1,16 +1,19 @@
-import { CartShop, MenuGallery } from '../components/menuShop';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 import { obtenerFechaActual } from '../helpers/dateToday';
+import { ReadData } from '../firebase/ReadData';
 
-interface FormDataProps {
+export interface FormDataProps {
   aclaraciones: string;
   metodoPago: string;
   direccion: string;
   telefono: string;
   envio: string;
   hora: string;
+  piso: string;
+  referencias: string;
 }
 
 export interface DetallePedidoProps {
@@ -19,7 +22,19 @@ export interface DetallePedidoProps {
   quantity?: number;
   priceBurger?: number;
   priceToppings?: number;
-  subTotal?: number;
+  subTotal: number;
+}
+interface DataProps {
+  description: string;
+  img: string;
+  name: string;
+  price: number;
+  type: string;
+}
+export interface DataStateProps {
+  data: DataProps;
+  id: string;
+  collectionName?: string;
 }
 
 export const DynamicForm = () => {
@@ -30,9 +45,55 @@ export const DynamicForm = () => {
     telefono: '',
     envio: '',
     hora: '',
+    piso: '',
+    referencias: '',
   });
 
+  const handleFormClient = (clienteInfo: FormDataProps) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      ...clienteInfo,
+    }));
+  };
+
+  const limpiarDetallePedido = () => {
+    setDetallePedido([]);
+  };
+
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
+  const [data, setData] = useState<DataStateProps[]>([]);
+  const [toppings, setToppings] = useState<DataStateProps[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const getData = async () => {
+    setLoading(true);
+    if (data.length === 0) {
+      const rawData = await ReadData();
+      const formattedData: DataStateProps[] = rawData.map((item) => {
+        return {
+          id: item.id,
+          data: {
+            description: item.data.description,
+            img: item.data.img,
+            name: item.data.name,
+            price: item.data.price,
+            type: item.data.type,
+          },
+        };
+      });
+      setData(formattedData);
+      // Filtrar elementos con type igual a "topping"
+      const toppingsData: DataStateProps[] = formattedData.filter(
+        (item) => item.data.type === 'topping'
+      );
+      setToppings(toppingsData);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getData();
+  });
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -83,21 +144,21 @@ export const DynamicForm = () => {
       elaborado: false,
     };
 
-    // Puedes enviar los datos a tu backend, realizar validaciones, etc.
-    const check = UploadOrder(info);
-    if (check) {
-      Swal.fire({
-        icon: 'success',
-        title: `Pedido cargado`,
-        text: 'El pedido se cargo correctamente',
+    UploadOrder(info)
+      .then((result) => {
+        Swal.fire({
+          icon: 'success',
+          title: `Pedido cargado`,
+          text: `El pedido ${result.id} se cargo correctamente`,
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Hubo un error al cargar el pedido: ${error}`,
+        });
       });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un error al cargar el pedido',
-      });
-    }
 
     // Limpia los datos del formulario después de procesarlos
     setFormData({
@@ -107,6 +168,8 @@ export const DynamicForm = () => {
       envio: '',
       hora: '',
       telefono: '',
+      referencias: '',
+      piso: '',
     });
 
     setDetallePedido([]);
@@ -136,9 +199,19 @@ export const DynamicForm = () => {
   return (
     <div className="p-4 w-3/5">
       <div>
-        {detallePedido && <CartShop detallePedido={detallePedido} />}
+        {detallePedido && (
+          <CartShop
+            limpiarDetallePedido={limpiarDetallePedido}
+            detallePedido={detallePedido}
+          />
+        )}
 
-        <MenuGallery handleFormBurger={handleFormBurger} />
+        <MenuGallery
+          handleFormBurger={handleFormBurger}
+          loading={loading}
+          toppings={toppings}
+          data={data}
+        />
       </div>
 
       <div>
@@ -217,15 +290,48 @@ export const DynamicForm = () => {
                       Dirección:
                     </label>
                   </div>
+                  <div className="relative z-0 w-11/12 mb-2 mt-4 ">
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      type="text"
+                      id="piso"
+                      name="piso"
+                      value={formData.piso}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="piso"
+                      className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >
+                      Piso:
+                    </label>
+                  </div>
+                  <div className="relative z-0 w-11/12 mb-2 mt-4 ">
+                    <input
+                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      type="text"
+                      id="referencias"
+                      name="referencias"
+                      value={formData.referencias}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="referencias"
+                      className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                    >
+                      Referencias:
+                    </label>
+                  </div>
                   <div>
                     <label htmlFor="envio">Costo de envío:</label>
                     <input
-                      className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                      className="block py-2.5 px-2 w-full text-sm text-black bg-transparent border-0 border-b-2 border-black appearance-none focus:outline-none focus:ring-0 peer"
                       type="number"
                       id="envio"
                       name="envio"
                       value={formData.envio}
                       onChange={handleChange}
+                      required // Agregar el atributo required
                     />
                   </div>
                   <div>
@@ -260,8 +366,13 @@ export const DynamicForm = () => {
                   </button>
                 </form>
               </div>
-            ) : // <PedidosWeb onPedidoAnalizado={handlePedidoWebAnalizado} />
-            null}
+            ) : (
+              <PedidosWeb
+                toppingsInfo={toppings}
+                handleFormBurger={handleFormBurger}
+                handleFormClient={handleFormClient}
+              />
+            )}
           </div>
         </div>
       </div>
