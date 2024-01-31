@@ -136,7 +136,7 @@ export const ModalItem = ({
 														type="number"
 														name="quantity"
 														min="1"
-														className="w-24 h-24 border border-black text-black text-4xl "
+														className="w-24 h-24 border bg-black text-custom-red border-black text-black text-4xl "
 													/>
 													<button
 														className="w-24 h-24 border border-black text-black text-4xl"
