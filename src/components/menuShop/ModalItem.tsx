@@ -1,7 +1,7 @@
 import { Field, Formik, Form } from 'formik';
 // import toppingsJson from '../../assets/toppings.json';
 import { DetallePedidoProps } from '../../pages/DynamicForm';
-import { DataStateProps } from './MenuGallery';
+import { DataStateProps } from '../../pages/DynamicForm';
 
 interface Props {
   closeModal: () => void;

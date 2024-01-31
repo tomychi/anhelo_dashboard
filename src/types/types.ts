@@ -19,6 +19,11 @@ export interface PedidoProps {
   subTotal: number;
   telefono: string;
   total: number;
+  id?: string;
+}
+
+export interface ReadDataProps {
+  comanda: PedidoProps;
 }
 
 export interface ComandaProps {
@@ -27,7 +32,7 @@ export interface ComandaProps {
 }
 
 export interface ComandaRareProps {
-  comanda: ComandaProps;
+  comanda: PedidoProps;
 }
 
 export interface ToppingsProps {

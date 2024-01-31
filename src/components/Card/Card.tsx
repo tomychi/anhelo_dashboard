@@ -4,8 +4,6 @@ import { ComandaRareProps, PedidoProps } from '../../types/types';
 import { marcarPedidoComoElaborado } from '../../firebase/ReadData';
 
 export const Card = ({ comanda }: ComandaRareProps) => {
-  const { id, data } = comanda;
-
   const {
     aclaraciones,
     direccion,
@@ -15,7 +13,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     telefono,
     detallePedido,
     elaborado,
-  } = data;
+    id,
+  } = comanda;
 
   const imprimirTicket = async (nuevoPedido: PedidoProps) => {
     try {
@@ -36,7 +35,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         });
 
         if (!nuevoPedido.elaborado) {
-          await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
+          if (id) {
+            await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
+          }
         }
       } else {
         console.error('Error al imprimir');
@@ -55,7 +56,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
     }
   };
-
   return (
     <div
       className={`flex font-antonio uppercase flex-col justify-between max-w-sm  overflow-hidden ${
@@ -73,11 +73,15 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         </div>
         {detallePedido.map(
           (
-            { burger, toppings }: { burger: string; toppings: string[] },
+            {
+              burger,
+              toppings,
+              quantity,
+            }: { burger: string; toppings: string[]; quantity: number },
             i: number
           ) => (
             <div key={i} className={`text-black text-base font-semibold`}>
-              {burger}
+              {quantity}X {burger}
               <p>
                 {toppings.map((topping: string, toppingIndex: number) => (
                   <span key={toppingIndex} className="text-sm block">
@@ -119,7 +123,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           {currencyFormat(total)}
         </p>
         <button
-          onClick={() => imprimirTicket(data)}
+          onClick={() => imprimirTicket(comanda)}
           className={`mt-8 bg-black text-custom-red font-bold py-2 px-4  inline-flex items-center`}
         >
           <svg

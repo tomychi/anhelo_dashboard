@@ -2,7 +2,7 @@ import { useState } from 'react';
 import currencyFormat from '../../helpers/currencyFormat';
 import { ModalItem } from './ModalItem';
 import { DetallePedidoProps } from '../../pages/DynamicForm';
-import { DataStateProps } from './MenuGallery';
+import { DataStateProps } from '../../pages/DynamicForm';
 
 interface Props {
   img: string;
