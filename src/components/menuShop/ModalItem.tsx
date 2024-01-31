@@ -117,11 +117,11 @@ export const ModalItem = ({
 												}
 											})}
 										</div>
-										<div className=" w-full p-6 border-t border-solid border-blueGray-200 -b">
-											<div className="flex justify-around w-full">
+										<div className="pt-4">
+											<div className="flex justify-between w-full">
 												<div className="flex items-center">
 													<button
-														className="w-24 h-24 border border-red-500 -full text-red-500 p-2 text-8xl"
+														className="w-24 h-24 border border-black text-black text-8xl"
 														type="button"
 														onClick={() =>
 															formik.setFieldValue(
@@ -136,10 +136,10 @@ export const ModalItem = ({
 														type="number"
 														name="quantity"
 														min="1"
-														className="w-24 h-24 text-center border border-gray-400  p-2 text-8xl"
+														className="w-24 h-24 border border-black text-black text-8xl "
 													/>
 													<button
-														className="w-24 h-24 border border-emerald-500 -full text-emerald-500 p-2 text-8xl"
+														className="w-24 h-24 border border-black text-black text-8xl"
 														type="button"
 														onClick={() =>
 															formik.setFieldValue(
@@ -164,13 +164,6 @@ export const ModalItem = ({
 							</Formik>
 							<p className="my-4 text-blueGray-500 text-lg leading-relaxed"></p>
 						</div>
-						<button
-							className="h-16 text-4xl hover:bg-red-500 hover:text-black text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 border border-red-500"
-							type="button"
-							onClick={closeModal}
-						>
-							Cancelar
-						</button>
 					</div>
 				</div>
 			</div>
