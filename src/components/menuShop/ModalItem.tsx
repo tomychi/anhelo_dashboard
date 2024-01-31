@@ -27,7 +27,7 @@ export const ModalItem = ({
 					<div className=" bg-custom-red flex flex-col font-antonio p-4">
 						{/*header*/}
 						<div className=" flex flex-col">
-							<h3 className="text-3xl p-4 flex justify-center uppercase font-black">
+							<h3 className="text-4xl p-4 flex justify-center uppercase font-black">
 								{name}
 							</h3>
 							<button className="pb-4" onClick={closeModal}>
@@ -101,11 +101,11 @@ export const ModalItem = ({
 															role="group"
 															aria-labelledby="checkbox-group"
 															key={name}
-															className=" flex items-center pl-4 border border-red-200  border-red-700"
+															className=" flex uppercase  items-center  border border-black"
 														>
-															<label className="cursor-pointer w-full py-4 ml-2 text-3xl font-medium text-red-900 text-red-300">
+															<label className="cursor-pointer w-full p-4  text-2xl font-medium flex items-center gap-4 text-black">
 																<Field
-																	className="w-8 h-8 text-red-600 bg-red-100 border-red-300  focus:ring-red-500 focus:ring-red-600 ring-offset-red-800 focus:ring-2 bg-red-700 border-red-600"
+																	className=" h-4 w-4 "
 																	type="checkbox"
 																	name="toppings"
 																	value={name}
