@@ -22,7 +22,7 @@ export const ModalItem = ({
 }: Props) => {
 	return (
 		<>
-			<div className=" flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+			<div className=" flex overflow-x-hidden overflow-y-auto fixed inset-0  outline-none focus:outline-none z-50 bg-black">
 				<div className=" p-4 mx-auto">
 					<div className=" bg-custom-red flex flex-col font-antonio p-4">
 						{/*header*/}
