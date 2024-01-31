@@ -8,7 +8,7 @@ import {
   Unsubscribe,
   getDoc,
 } from 'firebase/firestore';
-import { ComandaProps, PedidoProps } from '../types/types';
+import { PedidoProps } from '../types/types';
 import { obtenerFechaActual } from '../helpers/dateToday';
 
 export const ReadData = async () => {
@@ -65,21 +65,6 @@ export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
   );
 };
 
-type OrdersCallback2 = (pedidos: ComandaProps[]) => void;
-
-export const ReadOrdersAll = (callback: OrdersCallback2) => {
-  const firestore = getFirestore();
-  const ordersCollectionRef = collection(firestore, 'pedidos');
-
-  return onSnapshot(ordersCollectionRef, (snapshot) => {
-    const fetchedData = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      data: doc.data(),
-    })) as ComandaProps[]; // Asegúrate de ajustar DocumentData según los datos reales
-    callback(fetchedData);
-  });
-};
-
 // Función para marcar un pedido como elaborado en Firestore
 export const marcarPedidoComoElaborado = async (pedidoId: string) => {
   const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
@@ -123,4 +108,70 @@ export const marcarPedidoComoElaborado = async (pedidoId: string) => {
   } catch (error) {
     console.error('Error al marcar pedido como elaborado en Firestore:', error);
   }
+};
+
+// Función para eliminar un pedido de la base de datos en Firestore
+export const eliminarPedido = async (pedidoId: string) => {
+  try {
+    const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
+
+    // Obtener el año, mes y día actual
+    const [dia, mes, anio] = todayDateString.split('/');
+    // Obtener referencia al documento del día dentro de la colección de pedidos en Firestore
+    const pedidoDocRef = doc(getFirestore(), 'pedidos', anio, mes, dia);
+
+    // Obtener el documento del día
+    const pedidoDocSnapshot = await getDoc(pedidoDocRef);
+
+    if (pedidoDocSnapshot.exists()) {
+      // Si el documento existe, obtener el arreglo de pedidos
+      const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
+
+      // Filtrar el arreglo de pedidos para excluir el pedido que se va a eliminar
+      const pedidosActualizados = pedidosDelDia.filter(
+        (pedido: PedidoProps) => pedido.id !== pedidoId
+      );
+
+      // Actualizar el documento del día con el arreglo de pedidos actualizado
+      await updateDoc(pedidoDocRef, {
+        pedidos: pedidosActualizados,
+      });
+
+      console.log('Pedido eliminado de Firestore');
+    } else {
+      console.error('No se encontró el documento del día en Firestore');
+    }
+  } catch (error) {
+    console.error('Error al eliminar pedido de Firestore:', error);
+  }
+};
+
+// Función para obtener los pedidos para una fecha específica
+export const ReadOrdersForDate = (
+  year: string,
+  month: string,
+  day: string,
+  callback: OrdersCallback
+) => {
+  const firestore = getFirestore();
+  const ordersDocRef = doc(firestore, 'pedidos', year, month, day);
+
+  // Obtener una vez los datos del documento para la fecha especificada
+  getDoc(ordersDocRef)
+    .then((docSnapshot) => {
+      if (docSnapshot.exists()) {
+        // Si el documento existe, obtener el arreglo de pedidos
+        const pedidosDelDia = docSnapshot.data()?.pedidos || [];
+        callback(pedidosDelDia as PedidoProps[]); // Llamar a la función de devolución de llamada con los pedidos encontrados
+      } else {
+        // Si el documento no existe, no hay pedidos para la fecha especificada
+        callback([]); // Llamar a la función de devolución de llamada con un arreglo vacío
+      }
+    })
+    .catch((error) => {
+      console.error(
+        'Error al obtener los pedidos para la fecha especificada:',
+        error
+      );
+    });
 };
