@@ -146,7 +146,6 @@ export const eliminarPedido = async (pedidoId: string) => {
   }
 };
 
-// Función para obtener los pedidos para una fecha específica
 export const ReadOrdersForDate = (
   year: string,
   month: string,
@@ -174,4 +173,73 @@ export const ReadOrdersForDate = (
         error
       );
     });
+};
+
+export const ReadOrdersForDateRange = (
+  startYear: string,
+  startMonth: string,
+  startDay: string,
+  endYear: string,
+  endMonth: string,
+  endDay: string,
+  callback: OrdersCallback
+) => {
+  const firestore = getFirestore();
+
+  // Convertir las fechas de inicio y fin a objetos Date
+  const startDate = new Date(`${startYear}-${startMonth}-${startDay}`);
+  const endDate = new Date(`${endYear}-${endMonth}-${endDay}`);
+
+  // Inicializar un objeto para almacenar los pedidos
+  const allOrders: { [key: string]: PedidoProps[] } = {};
+
+  // Función para obtener los pedidos para una fecha específica
+  const getOrdersForDate = async (date: Date) => {
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+
+    // Obtener la referencia al documento del día actual
+    const ordersDocRef = doc(firestore, 'pedidos', year, month, day);
+
+    try {
+      // Obtener los pedidos para el día actual
+      const docSnapshot = await getDoc(ordersDocRef);
+      if (docSnapshot.exists()) {
+        // Si el documento existe, obtener el arreglo de pedidos y almacenarlos en el objeto
+        const pedidosDelDia = docSnapshot.data()?.pedidos || [];
+        allOrders[`${year}-${month}-${day}`] = pedidosDelDia as PedidoProps[];
+      } else {
+        // Si el documento no existe, asignar un arreglo vacío para la fecha actual
+        allOrders[`${year}-${month}-${day}`] = [];
+      }
+    } catch (error) {
+      console.error(
+        `Error al obtener los pedidos para la fecha ${year}-${month}-${day}:`,
+        error
+      );
+    }
+  };
+
+  // Generar un arreglo de todas las fechas dentro del rango
+  const datesInRange = [];
+  const currentDate = new Date(startDate);
+  while (currentDate <= endDate) {
+    datesInRange.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // Obtener los pedidos para cada fecha dentro del rango
+  const getOrdersPromises = datesInRange.map((date) => getOrdersForDate(date));
+
+  // Esperar a que todas las consultas se completen
+  Promise.all(getOrdersPromises).then(() => {
+    // Concatenar todos los pedidos en un arreglo único
+    const mergedOrders = Object.values(allOrders).reduce(
+      (merged, pedidos) => [...merged, ...pedidos],
+      []
+    );
+    // Llamar a la función de devolución de llamada con todos los pedidos recopilados
+    callback(mergedOrders);
+  });
 };
