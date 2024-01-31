@@ -120,36 +120,42 @@ export const ModalItem = ({
 										<div className="pt-4">
 											<div className="flex justify-between gap-4 w-full">
 												<div className="flex items-center">
-													<button
-														className="w-24 h-24 border border-black text-black text-4xl"
-														type="button"
-														onClick={() =>
-															formik.setFieldValue(
-																"quantity",
-																Math.max(formik.values.quantity - 1, 1)
-															)
-														}
-													>
-														-
-													</button>
-													<Field
-														type="number"
-														name="quantity"
-														min="1"
-														className="w-24 h-24 border bg-black text-custom-red border-black text-black text-4xl "
-													/>
-													<button
-														className="w-24 h-24 border border-black text-black text-4xl"
-														type="button"
-														onClick={() =>
-															formik.setFieldValue(
-																"quantity",
-																formik.values.quantity + 1
-															)
-														}
-													>
-														+
-													</button>
+													<div className="w-24 h-24 border  text-black  border-black text-4xl flex items-center justify-center">
+														<button
+															className="w-24 h-24  text-black text-4xl"
+															type="button"
+															onClick={() =>
+																formik.setFieldValue(
+																	"quantity",
+																	Math.max(formik.values.quantity - 1, 1)
+																)
+															}
+														>
+															-
+														</button>
+													</div>
+													<div className="w-24 h-24 border bg-black text-custom-red border-black text-4xl flex items-center justify-center">
+														<Field
+															type="number"
+															name="quantity"
+															min="1"
+															className="w-full bg-black h-full text-center"
+														/>
+													</div>
+													<div className="w-24 h-24 border  text-black border-black text-4xl flex items-center justify-center">
+														<button
+															className="w-24 h-24 text-black text-4xl"
+															type="button"
+															onClick={() =>
+																formik.setFieldValue(
+																	"quantity",
+																	formik.values.quantity + 1
+																)
+															}
+														>
+															+
+														</button>
+													</div>
 												</div>
 												<button
 													className=" text-4xl h-24 bg-black text-custom-red font-black uppercase w-full  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
