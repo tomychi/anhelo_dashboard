@@ -103,7 +103,7 @@ export const ModalItem = ({
 															key={name}
 															className=" flex uppercase  items-center  border border-black"
 														>
-															<label className="cursor-pointer w-full p-4  text-2xl font-medium flex items-center gap-4 text-black">
+															<label className="cursor-pointer w-full p-4  text-base font-medium flex items-center gap-4 text-black">
 																<Field
 																	className=" h-4 w-4 "
 																	type="checkbox"
@@ -118,10 +118,10 @@ export const ModalItem = ({
 											})}
 										</div>
 										<div className="pt-4">
-											<div className="flex justify-between w-full">
+											<div className="flex justify-between gap-4 w-full">
 												<div className="flex items-center">
 													<button
-														className="w-24 h-24 border border-black text-black text-8xl"
+														className="w-24 h-24 border border-black text-black text-4xl"
 														type="button"
 														onClick={() =>
 															formik.setFieldValue(
@@ -136,10 +136,10 @@ export const ModalItem = ({
 														type="number"
 														name="quantity"
 														min="1"
-														className="w-24 h-24 border border-black text-black text-8xl "
+														className="w-24 h-24 border border-black text-black text-4xl "
 													/>
 													<button
-														className="w-24 h-24 border border-black text-black text-8xl"
+														className="w-24 h-24 border border-black text-black text-4xl"
 														type="button"
 														onClick={() =>
 															formik.setFieldValue(
@@ -152,7 +152,7 @@ export const ModalItem = ({
 													</button>
 												</div>
 												<button
-													className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-black active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+													className=" text-4xl h-24 bg-black text-custom-red font-black uppercase w-full  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
 													type="submit"
 												>
 													Guardar
