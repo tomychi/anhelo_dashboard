@@ -19,7 +19,7 @@ export interface PedidoProps {
   subTotal: number;
   telefono: string;
   total: number;
-  id?: string;
+  id: string;
 }
 
 export interface ReadDataProps {
