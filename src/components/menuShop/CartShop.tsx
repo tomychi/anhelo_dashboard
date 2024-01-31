@@ -11,25 +11,21 @@ export const CartShop = ({
 	const total = detallePedido.reduce((acc, d) => acc + (d.subTotal || 0), 0);
 
 	return (
-		<div className="flex flex-row justify-between p-4 bg-custom-red">
+		<div className="flex flex-row font-antonio justify-between p-4  bg-custom-red">
 			<div>
 				{detallePedido.map((p, index) => (
-					<div key={index}>
-						<h3 className="text-3xl font-semibold">
-							{p.quantity}x{p.burger}
-							<br />
+					<div className=" flex flex-row  pb-4" key={index}>
+						<h3 className="text-2xl  font-black uppercase">
+							{p.quantity}x {p.burger}
+							{p.toppings?.map((t, i) => (
+								<div key={i}>: {t}</div>
+							))}
+							: {currencyFormat(p.subTotal)}
 						</h3>
-						{p.toppings?.map((t, i) => (
-							<div key={i}>
-								<b>-{t}</b>
-								<br />
-							</div>
-						))}
-						{currencyFormat(p.subTotal)}
 					</div>
 				))}
 				<hr />
-				<b className="text-6xl">{currencyFormat(total)}</b>
+				<b className="text-6xl ">{currencyFormat(total)}</b>
 			</div>
 			<div>
 				<svg
