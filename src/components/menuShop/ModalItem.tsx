@@ -26,11 +26,11 @@ export const ModalItem = ({
 				<div className=" p-4 mx-auto">
 					<div className=" bg-custom-red flex flex-col font-antonio p-4">
 						{/*header*/}
-						<div className=" flex flex-col">
-							<h3 className="text-4xl p-4 flex justify-center uppercase font-black">
+						<div className=" flex flex-row pb-4 justify-between">
+							<h3 className="text-4xl flex justify-center uppercase font-black">
 								{name}
 							</h3>
-							<button className="pb-4" onClick={closeModal}>
+							<button className="" onClick={closeModal}>
 								<span className=" flex justify-center">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@ export const ModalItem = ({
 										viewBox="0 0 24 24"
 										strokeWidth="1.5"
 										stroke="currentColor"
-										className=" border  border-black w-6 h-6"
+										className=" border  border-black w-9 h-9"
 									>
 										<path
 											strokeLinecap="round"
