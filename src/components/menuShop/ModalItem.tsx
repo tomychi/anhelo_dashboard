@@ -26,11 +26,11 @@ export const ModalItem = ({
 				<div className=" p-4 mx-auto">
 					<div className=" bg-custom-red flex flex-col font-antonio p-4">
 						{/*header*/}
-						<div className=" flex flex-col">
-							<h3 className="text-3xl p-4 flex justify-center uppercase font-black">
+						<div className=" flex flex-row pb-4 justify-between">
+							<h3 className="text-4xl flex justify-center uppercase font-black">
 								{name}
 							</h3>
-							<button className="pb-4" onClick={closeModal}>
+							<button className="" onClick={closeModal}>
 								<span className=" flex justify-center">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +38,7 @@ export const ModalItem = ({
 										viewBox="0 0 24 24"
 										strokeWidth="1.5"
 										stroke="currentColor"
-										className=" border  border-black w-6 h-6"
+										className=" border  border-black w-9 h-9"
 									>
 										<path
 											strokeLinecap="round"
@@ -101,11 +101,11 @@ export const ModalItem = ({
 															role="group"
 															aria-labelledby="checkbox-group"
 															key={name}
-															className=" flex items-center pl-4 border border-red-200  border-red-700"
+															className=" flex uppercase  items-center  border border-black"
 														>
-															<label className="cursor-pointer w-full py-4 ml-2 text-3xl font-medium text-red-900 text-red-300">
+															<label className="cursor-pointer w-full p-4  text-base font-medium flex items-center gap-4 text-black">
 																<Field
-																	className="w-8 h-8 text-red-600 bg-red-100 border-red-300  focus:ring-red-500 focus:ring-red-600 ring-offset-red-800 focus:ring-2 bg-red-700 border-red-600"
+																	className=" h-4 w-4 "
 																	type="checkbox"
 																	name="toppings"
 																	value={name}
@@ -117,42 +117,48 @@ export const ModalItem = ({
 												}
 											})}
 										</div>
-										<div className=" w-full p-6 border-t border-solid border-blueGray-200 -b">
-											<div className="flex justify-around w-full">
+										<div className="pt-4">
+											<div className="flex justify-between gap-4 w-full">
 												<div className="flex items-center">
-													<button
-														className="w-24 h-24 border border-red-500 -full text-red-500 p-2 text-8xl"
-														type="button"
-														onClick={() =>
-															formik.setFieldValue(
-																"quantity",
-																Math.max(formik.values.quantity - 1, 1)
-															)
-														}
-													>
-														-
-													</button>
-													<Field
-														type="number"
-														name="quantity"
-														min="1"
-														className="w-24 h-24 text-center border border-gray-400  p-2 text-8xl"
-													/>
-													<button
-														className="w-24 h-24 border border-emerald-500 -full text-emerald-500 p-2 text-8xl"
-														type="button"
-														onClick={() =>
-															formik.setFieldValue(
-																"quantity",
-																formik.values.quantity + 1
-															)
-														}
-													>
-														+
-													</button>
+													<div className="w-24 h-24 border  text-black  border-black text-4xl flex items-center justify-center">
+														<button
+															className="w-24 h-24  text-black text-4xl"
+															type="button"
+															onClick={() =>
+																formik.setFieldValue(
+																	"quantity",
+																	Math.max(formik.values.quantity - 1, 1)
+																)
+															}
+														>
+															-
+														</button>
+													</div>
+													<div className="w-24 h-24 border bg-black text-custom-red border-black text-4xl flex items-center justify-center">
+														<Field
+															type="number"
+															name="quantity"
+															min="1"
+															className="w-full bg-black h-full text-center"
+														/>
+													</div>
+													<div className="w-24 h-24 border  text-black border-black text-4xl flex items-center justify-center">
+														<button
+															className="w-24 h-24 text-black text-4xl"
+															type="button"
+															onClick={() =>
+																formik.setFieldValue(
+																	"quantity",
+																	formik.values.quantity + 1
+																)
+															}
+														>
+															+
+														</button>
+													</div>
 												</div>
 												<button
-													className="text-4xl hover:bg-emerald-700 w-34 h-24 bg-emerald-400 text-black active:bg-emerald-600 font-bold uppercase text-sm px-4 py-2  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+													className=" text-4xl h-24 bg-black text-custom-red font-black uppercase w-full  shadow-lg hover:shadow-xl outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
 													type="submit"
 												>
 													Guardar
@@ -164,13 +170,6 @@ export const ModalItem = ({
 							</Formik>
 							<p className="my-4 text-blueGray-500 text-lg leading-relaxed"></p>
 						</div>
-						<button
-							className="h-16 text-4xl hover:bg-red-500 hover:text-black text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 border border-red-500"
-							type="button"
-							onClick={closeModal}
-						>
-							Cancelar
-						</button>
 					</div>
 				</div>
 			</div>
