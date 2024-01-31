@@ -356,7 +356,10 @@ export const Dashboard = () => {
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						{Math.ceil(((facturacionTotal / 2.2) * 100) / facturacionTotal)}%
+						{Math.ceil(
+							(((facturacionTotal - 20000) / 2.2) * 100) / facturacionTotal
+						)}
+						%
 					</div>
 					<div className="absolute top-4 left-4 text-black ">
 						{/* Contenido principal */}
@@ -379,7 +382,7 @@ export const Dashboard = () => {
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
 					<p className=" text-4xl font-bold mt-auto">
-						{currencyFormat(Math.ceil(facturacionTotal / 2.2))}
+						{currencyFormat(Math.ceil((facturacionTotal - 20000) / 2.2))}
 					</p>
 					<p className="text-sm mt-auto">GANANCIA</p>
 				</div>
