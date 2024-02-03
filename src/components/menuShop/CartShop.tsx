@@ -31,7 +31,7 @@ export const CartShop = ({
 					/>
 				</svg>
 			</div>
-			<hr className="my-2 border-t-2 w-full border-black" />
+			<hr className=" border-t-2 w-full border-black" />
 
 			<div className="grid  grid-cols-4 p-4 p  gap-4 ">
 				{detallePedido.map((p, index) => (
