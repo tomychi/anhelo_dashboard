@@ -25,7 +25,8 @@ export const CartShop = ({
 						</h3>
 					</div>
 				))}
-				<hr />
+				<hr className="border-t-2 w-full border-black" />
+
 				<div className="flex flex-row gap-4 pt-2 items-center justify-between">
 					<h2 className="text-6xl font-black">{currencyFormat(total)}</h2>
 					<svg
