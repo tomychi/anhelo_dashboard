@@ -416,7 +416,7 @@ export const Dashboard = () => {
           <p className=" text-4xl font-bold mt-auto">
             {currencyFormat(gastosTotal)}
           </p>
-          <p className="text-sm mt-auto">FACTURACIÓN</p>
+          <p className="text-sm mt-auto">GASTOS</p>
         </div>
 
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
