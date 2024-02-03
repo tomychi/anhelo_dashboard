@@ -374,7 +374,7 @@ export const DynamicForm = () => {
 											onChange={handleChange}
 											className="p-4 w-full bg-black text-custom-red"
 										>
-											<option> Selecciona un método de pago</option>
+											<option> SELECCIONAR METODO DE PAGO</option>
 											<option value="efectivo">Efectivo</option>
 											<option value="mercadopago">Mercadopago</option>
 										</select>
