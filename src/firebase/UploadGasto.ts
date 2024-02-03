@@ -6,6 +6,7 @@ import {
   getDoc,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ExpenseProps {
   descripcion: string;
@@ -19,6 +20,7 @@ export interface ExpenseProps {
 
 export const UploadExpense = async (gasto: ExpenseProps) => {
   const firestore = getFirestore();
+  const gastoId = uuidv4();
 
   // Obtener la fecha formateada
   const fechaFormateada = obtenerFechaActual();
@@ -41,7 +43,7 @@ export const UploadExpense = async (gasto: ExpenseProps) => {
     const gastosDelDia = existingData.gastos || [];
 
     // Agregar el nuevo gasto al arreglo
-    gastosDelDia.push(gasto);
+    gastosDelDia.push({ ...gasto, id: gastoId });
 
     // Actualizar los datos del documento con el nuevo arreglo de gastos
     await setDoc(gastoDocRef, {

@@ -1,0 +1,1 @@
+export { FormGasto } from './FormGasto';

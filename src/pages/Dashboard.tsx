@@ -4,10 +4,7 @@ import { Chart, registerables } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
 import { PedidoProps } from '../types/types';
 import currencyFormat from '../helpers/currencyFormat';
-import {
-  ReadOrdersForDate,
-  ReadOrdersForDateRange,
-} from '../firebase/ReadData';
+import { ReadDataForDateRange } from '../firebase/ReadData';
 
 Chart.register(...registerables);
 
@@ -276,20 +273,22 @@ export const Dashboard = () => {
   };
 
   const getOrdersData = () => {
-    ReadOrdersForDate('2024', '01', '31', (pedidos) => {
-      console.log('Pedidos para el 31 de enero de 2024:', pedidos);
-      setOrdersData(pedidos);
-    });
+    // ReadOrdersForDate('2024', '01', '31', (pedidos) => {
+    //   console.log('Pedidos para el 31 de enero de 2024:', pedidos);
+    //   setOrdersData(pedidos);
+    // });
 
-    ReadOrdersForDateRange(
+    ReadDataForDateRange<PedidoProps>(
+      'pedidos',
       '2024',
-      '01',
-      '31',
+      '2',
+      '1',
       '2024',
-      '02',
-      '30',
+      '2',
+      '3',
       (pedidos) => {
         console.log('Pedidos por rango:', pedidos);
+        setOrdersData(pedidos);
       }
     );
   };
