@@ -278,7 +278,7 @@ export const DynamicForm = () => {
 											onChange={handleChange}
 										/>
 										<label
-											htmlFor="aclaraciones"
+											htmlFor="telefono"
 											className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
 										>
 											Telefono:
@@ -344,7 +344,7 @@ export const DynamicForm = () => {
 											required // Agregar el atributo required
 										/>
 										<label
-											htmlFor="referencias"
+											htmlFor="envio"
 											className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
 										>
 											Precio del envio:
@@ -360,7 +360,7 @@ export const DynamicForm = () => {
 											onChange={handleChange}
 										/>
 										<label
-											htmlFor="referencias"
+											htmlFor="hora"
 											className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
 										>
 											Hora:
