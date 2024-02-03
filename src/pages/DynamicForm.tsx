@@ -225,13 +225,12 @@ export const DynamicForm = () => {
 
 			{/* Sección form */}
 			<div className="w-1/3">
-				{" "}
 				{/* Establecer el ancho de la sección */}
 				<div className="font-antonio font-black bg-custom-red">
 					<div className="flex flex-col">
-						<div className="flex justify-center my-2">
+						<div className="flex justify-center p-4">
 							<div
-								className={`mx-2 py-2 px-4 ${
+								className={`p-4 ${
 									seccionActiva === "elaborar"
 										? "bg-black text-custom-red"
 										: "bg-custom-red text-black"
@@ -241,7 +240,7 @@ export const DynamicForm = () => {
 								TOMAR PEDIDO
 							</div>
 							<div
-								className={`mx-2 py-2 px-4 ${
+								className={`p-4 ${
 									seccionActiva === "elaborar"
 										? "bg-custom-red text-black"
 										: "bg-black text-custom-red"
@@ -253,10 +252,10 @@ export const DynamicForm = () => {
 						</div>
 						{seccionActiva === "elaborar" ? (
 							<div className="flex flex-col items-center justify-center">
-								<form onSubmit={handleSubmit}>
-									<div className="relative z-0 w-11/12 mb-2 mt-4 ">
+								<form onSubmit={handleSubmit} className="w-full p-4">
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											id="aclaraciones"
 											name="aclaraciones"
 											value={formData.aclaraciones}
@@ -270,9 +269,9 @@ export const DynamicForm = () => {
 										</label>
 									</div>
 
-									<div className="relative z-0 w-11/12 mb-2 mt-4 ">
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											id="telefono"
 											name="telefono"
 											value={formData.telefono}
@@ -286,9 +285,9 @@ export const DynamicForm = () => {
 										</label>
 									</div>
 
-									<div className="relative z-0 w-11/12 mb-2 mt-4 ">
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											type="text"
 											id="direccion"
 											name="direccion"
@@ -302,9 +301,9 @@ export const DynamicForm = () => {
 											Dirección:
 										</label>
 									</div>
-									<div className="relative z-0 w-11/12 mb-2 mt-4 ">
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											type="text"
 											id="piso"
 											name="piso"
@@ -318,9 +317,9 @@ export const DynamicForm = () => {
 											Piso:
 										</label>
 									</div>
-									<div className="relative z-0 w-11/12 mb-2 mt-4 ">
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											type="text"
 											id="referencias"
 											name="referencias"
@@ -334,10 +333,9 @@ export const DynamicForm = () => {
 											Referencias:
 										</label>
 									</div>
-									<div>
-										<label htmlFor="envio">Costo de envío:</label>
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm text-black bg-transparent border-0 border-b-2 border-black appearance-none focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											type="number"
 											id="envio"
 											name="envio"
@@ -345,17 +343,28 @@ export const DynamicForm = () => {
 											onChange={handleChange}
 											required // Agregar el atributo required
 										/>
+										<label
+											htmlFor="referencias"
+											className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+										>
+											Precio del envio:
+										</label>
 									</div>
-									<div>
-										<label htmlFor="hora">Hora:</label>
+									<div className="relative z-0 mt-4 ">
 										<input
-											className="block py-2.5 px-2 w-full text-sm texk-black 900 bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+											className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
 											type="time"
 											id="hora"
 											name="hora"
 											value={formData.hora}
 											onChange={handleChange}
 										/>
+										<label
+											htmlFor="referencias"
+											className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+										>
+											Hora:
+										</label>
 									</div>
 									<div className="mb-4">
 										<select
