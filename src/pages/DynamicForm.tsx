@@ -366,22 +366,22 @@ export const DynamicForm = () => {
 											Hora:
 										</label>
 									</div>
-									<div className="mb-4">
+									<div className="py-4">
 										<select
 											id="metodoPago"
 											name="metodoPago"
 											value={formData.metodoPago}
 											onChange={handleChange}
-											className="h-12 bg-red-300 hover:bg-red-700"
+											className="h-12 w-full bg-black text-custom-red"
 										>
-											<option value="">Selecciona un método de pago</option>
+											<option> Selecciona un método de pago</option>
 											<option value="efectivo">Efectivo</option>
 											<option value="mercadopago">Mercadopago</option>
 										</select>
 									</div>
 									<button
 										type="submit"
-										className="  text-custom-red p-4 bg-black font-black uppercase text-4x1 outline-none "
+										className="  text-custom-red w-full p-4 bg-black font-black uppercase text-4x1 outline-none "
 									>
 										Guardar
 									</button>
