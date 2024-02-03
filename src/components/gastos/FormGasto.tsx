@@ -1,20 +1,18 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { obtenerFechaActual } from '../../helpers/dateToday';
 import { UploadExpense, ExpenseProps } from '../../firebase/UploadGasto';
+import Swal from 'sweetalert2';
 
-interface FormGastoProp {
-  expenseData: ExpenseProps[];
-}
-
-export const FormGasto = ({ expenseData }: FormGastoProp) => {
+export const FormGasto = () => {
   const [formData, setFormData] = useState<ExpenseProps>({
-    descripcion: '',
+    description: '',
     total: 0,
-    categoria: '',
+    category: '',
     fecha: obtenerFechaActual(),
-    nombre: '',
-    cantidad: 0,
-    unidad: '',
+    name: '',
+    quantity: 0,
+    unit: '',
+    id: '',
   });
 
   const handleChange = (
@@ -23,51 +21,77 @@ export const FormGasto = ({ expenseData }: FormGastoProp) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'total' ? parseInt(value) : value,
     }));
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    UploadExpense(formData);
-    // Aquí puedes enviar el objeto formData a tu backend o hacer lo que necesites
+    UploadExpense(formData)
+      .then((result) => {
+        Swal.fire({
+          icon: 'success',
+          title: `Gasto cargado`,
+          text: `El gasto ${result.id} se cargó correctamente`,
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Hubo un error al cargar el gasto: ${error}`,
+        });
+      });
+
+    setFormData({
+      description: '',
+      total: 0,
+      category: '',
+      fecha: obtenerFechaActual(),
+      name: '',
+      quantity: 0,
+      unit: '',
+      id: '',
+    });
   };
 
-  console.log(formData);
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid fixed font-antonio font-black ml-2 bg-custom-red"
+      className="grid font-antonio font-black ml-2 bg-custom-red"
     >
       <div className="item-section">
         <div className="section">
-          <label htmlFor="nombre">Nombre del Ítem:</label>
+          <label htmlFor="name">Nombre del Ítem:</label>
           <input
             type="text"
-            id="nombre"
-            name="nombre"
-            value={formData.nombre}
+            id="name"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="section">
-          <label htmlFor="cantidad">Cantidad:</label>
+          <label htmlFor="quantity">Cantidad:</label>
           <input
             type="number"
-            id="cantidad"
-            name="cantidad"
-            value={formData.cantidad}
+            id="quantity"
+            name="quantity"
+            value={formData.quantity}
             onChange={handleChange}
+            required
           />
         </div>
         <div className="section">
-          <label htmlFor="unidad">Unidad de Medida:</label>
+          <label htmlFor="unit">Unidad de Medida:</label>
           <input
             type="text"
-            id="unidad"
-            name="unidad"
-            value={formData.unidad}
+            id="unit"
+            name="unit"
+            value={formData.unit}
             onChange={handleChange}
+            required
           />
         </div>
       </div>
@@ -80,27 +104,29 @@ export const FormGasto = ({ expenseData }: FormGastoProp) => {
           name="total"
           value={formData.total}
           onChange={handleChange}
+          required
         />
       </div>
       <div className="section">
-        <label htmlFor="descripcion">Descripción:</label>
+        <label htmlFor="description">Descripción:</label>
         <input
           type="text"
-          id="descripcion"
-          name="descripcion"
-          value={formData.descripcion}
+          id="description"
+          name="description"
+          value={formData.description}
           onChange={handleChange}
         />
       </div>
 
       <div className="section">
-        <label htmlFor="categoria">Categoría:</label>
+        <label htmlFor="category">Categoría:</label>
         <input
           type="text"
-          id="categoria"
-          name="categoria"
-          value={formData.categoria}
+          id="category"
+          name="category"
+          value={formData.category}
           onChange={handleChange}
+          required
         />
       </div>
 
@@ -112,6 +138,7 @@ export const FormGasto = ({ expenseData }: FormGastoProp) => {
           name="fecha"
           value={formData.fecha}
           onChange={handleChange}
+          required
         />
       </div>
 

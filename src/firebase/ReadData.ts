@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { PedidoProps } from '../types/types';
 import { obtenerFechaActual } from '../helpers/dateToday';
+import { ExpenseProps } from './UploadGasto';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -111,38 +112,44 @@ export const marcarPedidoComoElaborado = async (pedidoId: string) => {
 };
 
 // Función para eliminar un pedido de la base de datos en Firestore
-export const eliminarPedido = async (pedidoId: string) => {
+export const eliminarDocumento = async (
+  dbName: string,
+  documentoId: string
+) => {
   try {
     const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
 
     // Obtener el año, mes y día actual
     const [dia, mes, anio] = todayDateString.split('/');
-    // Obtener referencia al documento del día dentro de la colección de pedidos en Firestore
-    const pedidoDocRef = doc(getFirestore(), 'pedidos', anio, mes, dia);
+
+    // Obtener referencia al documento del día dentro de la colección en Firestore
+    const docRef = doc(getFirestore(), dbName, anio, mes, dia);
 
     // Obtener el documento del día
-    const pedidoDocSnapshot = await getDoc(pedidoDocRef);
+    const docSnapshot = await getDoc(docRef);
 
-    if (pedidoDocSnapshot.exists()) {
-      // Si el documento existe, obtener el arreglo de pedidos
-      const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
+    if (docSnapshot.exists()) {
+      // Si el documento existe, obtener el arreglo de pedidos o gastos
+      const data = docSnapshot.data()?.[dbName] || [];
 
-      // Filtrar el arreglo de pedidos para excluir el pedido que se va a eliminar
-      const pedidosActualizados = pedidosDelDia.filter(
-        (pedido: PedidoProps) => pedido.id !== pedidoId
+      // Filtrar el arreglo para excluir el documento que se va a eliminar
+      const dataActualizado = data.filter(
+        (item: ExpenseProps | PedidoProps) => item.id !== documentoId
       );
 
-      // Actualizar el documento del día con el arreglo de pedidos actualizado
-      await updateDoc(pedidoDocRef, {
-        pedidos: pedidosActualizados,
+      // Actualizar el documento del día con el arreglo actualizado
+      await updateDoc(docRef, {
+        [dbName]: dataActualizado,
       });
 
-      console.log('Pedido eliminado de Firestore');
+      console.log(`${dbName} eliminado de Firestore`);
     } else {
-      console.error('No se encontró el documento del día en Firestore');
+      console.error(
+        `No se encontró el documento del día en Firestore para ${dbName}`
+      );
     }
   } catch (error) {
-    console.error('Error al eliminar pedido de Firestore:', error);
+    console.error(`Error al eliminar ${dbName} de Firestore:`, error);
   }
 };
 

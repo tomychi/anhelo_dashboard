@@ -4,22 +4,28 @@ import {
   doc,
   setDoc,
   getDoc,
+  DocumentReference,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ExpenseProps {
-  descripcion: string;
+  description: string;
   total: number;
-  categoria: string;
+  category: string;
   fecha: string;
-  nombre: string;
-  cantidad: number;
-  unidad: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  id: string;
 }
 
-export const UploadExpense = async (gasto: ExpenseProps) => {
+export const UploadExpense = (
+  expenseDetail: ExpenseProps
+): Promise<DocumentReference> => {
   const firestore = getFirestore();
+
+  // Generar un ID único para el gasto
   const gastoId = uuidv4();
 
   // Obtener la fecha formateada
@@ -34,26 +40,29 @@ export const UploadExpense = async (gasto: ExpenseProps) => {
   // Crear la referencia a un documento con el ID igual al día
   const gastoDocRef = doc(gastosCollectionRef, dia);
 
-  try {
+  // Retorna una promesa
+  return new Promise((resolve, reject) => {
     // Obtener los datos actuales del documento
-    const docSnap = await getDoc(gastoDocRef);
-    const existingData = docSnap.exists() ? docSnap.data() : {};
+    getDoc(gastoDocRef)
+      .then((docSnap) => {
+        const existingData = docSnap.exists() ? docSnap.data() : {};
 
-    // Obtener o inicializar el arreglo de gastos para el día
-    const gastosDelDia = existingData.gastos || [];
+        // Obtener o inicializar el arreglo de gastos para el día
+        const gastosDelDia = existingData.gastos || [];
 
-    // Agregar el nuevo gasto al arreglo
-    gastosDelDia.push({ ...gasto, id: gastoId });
+        // Agregar el nuevo gasto al arreglo
+        gastosDelDia.push({ ...expenseDetail, id: gastoId });
 
-    // Actualizar los datos del documento con el nuevo arreglo de gastos
-    await setDoc(gastoDocRef, {
-      ...existingData,
-      gastos: gastosDelDia,
-    });
-
-    console.log('Gasto agregado para el día:', dia);
-    // Lógica adicional después de agregar el documento
-  } catch (error) {
-    console.error('Error al agregar gasto para el día:', dia, error);
-  }
+        // Actualizar los datos del documento con el nuevo arreglo de gastos
+        setDoc(gastoDocRef, {
+          ...existingData,
+          gastos: gastosDelDia,
+        }).then(() => {
+          resolve(gastoDocRef); // Resuelve la promesa con la referencia al documento
+        });
+      })
+      .catch((error) => {
+        reject(error); // Rechaza la promesa con el error
+      });
+  });
 };

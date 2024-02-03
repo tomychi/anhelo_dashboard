@@ -2,7 +2,7 @@ import Swal from 'sweetalert2';
 import currencyFormat from '../../helpers/currencyFormat';
 import { ComandaRareProps, PedidoProps } from '../../types/types';
 import {
-  eliminarPedido,
+  eliminarDocumento,
   marcarPedidoComoElaborado,
 } from '../../firebase/ReadData';
 
@@ -57,7 +57,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       <div className="relative p-4">
         <div className="absolute top-0 right-0 p-2">
           <svg
-            onClick={() => eliminarPedido(id)}
+            onClick={() => eliminarDocumento('pedidos', id)}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"

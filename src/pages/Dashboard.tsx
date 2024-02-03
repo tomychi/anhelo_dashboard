@@ -5,6 +5,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import { PedidoProps } from '../types/types';
 import currencyFormat from '../helpers/currencyFormat';
 import { ReadDataForDateRange } from '../firebase/ReadData';
+import { ExpenseProps } from '../firebase/UploadGasto';
 
 Chart.register(...registerables);
 
@@ -226,6 +227,7 @@ const options = {
 export const Dashboard = () => {
   const [selectedInterval, setSelectedInterval] = useState('weekly');
   const [ordersData, setOrdersData] = useState<PedidoProps[]>([]);
+  const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
 
   const handleIntervalChange = (interval: string) => {
     setSelectedInterval(interval);
@@ -291,13 +293,29 @@ export const Dashboard = () => {
         setOrdersData(pedidos);
       }
     );
+
+    ReadDataForDateRange<ExpenseProps>(
+      'gastos',
+      '2024',
+      '2',
+      '1',
+      '2024',
+      '2',
+      '3',
+      (gastos) => {
+        console.log('Gastos por rango:', gastos);
+        setExpenseData(gastos);
+      }
+    );
   };
 
   useEffect(() => {
     getOrdersData();
   }, []); // Asegúrate de pasar un array vacío como dependencia para que solo se ejecute una vez
 
-  const calcularTotalFacturacion = (ordersData: PedidoProps[]) => {
+  const calcularTotalFacturacion = (
+    ordersData: PedidoProps[] | ExpenseProps[]
+  ) => {
     if (ordersData.length === 0) {
       return 0; // Devuelve 0 si no hay pedidos
     }
@@ -312,6 +330,7 @@ export const Dashboard = () => {
   };
 
   const facturacionTotal = calcularTotalFacturacion(ordersData);
+  const gastosTotal = calcularTotalFacturacion(expenseData);
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -368,11 +387,44 @@ export const Dashboard = () => {
           </p>
           <p className="text-sm mt-auto">FACTURACIÓN</p>
         </div>
+
+        <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+          {/* Recuadro chiquito arriba a la derecha */}
+          <div className="absolute top-4 right-4 bg-black text-custom-red p-4">
+            <p>x1,90</p>
+          </div>
+          <div className="absolute top-4 left-4 text-black ">
+            {/* Contenido principal */}
+            <div className="flex flex-col">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"
+                />
+              </svg>
+            </div>
+            {/* Puedes cambiar el ícono según tus necesidades */}
+          </div>
+          <p className=" text-4xl font-bold mt-auto">
+            {currencyFormat(gastosTotal)}
+          </p>
+          <p className="text-sm mt-auto">FACTURACIÓN</p>
+        </div>
+
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
           {/* Recuadro chiquito arriba a la derecha */}
           <div className="absolute top-4 right-4 bg-black text-custom-red p-4">
             {Math.ceil(
-              (((facturacionTotal - 20000) / 2.2) * 100) / facturacionTotal
+              (((facturacionTotal - gastosTotal) / 2.2) * 100) /
+                facturacionTotal
             )}
             %
           </div>
@@ -397,7 +449,7 @@ export const Dashboard = () => {
             {/* Puedes cambiar el ícono según tus necesidades */}
           </div>
           <p className=" text-4xl font-bold mt-auto">
-            {currencyFormat(Math.ceil((facturacionTotal - 20000) / 2.2))}
+            {currencyFormat(Math.ceil((facturacionTotal - gastosTotal) / 2.2))}
           </p>
           <p className="text-sm mt-auto">GANANCIA</p>
         </div>
