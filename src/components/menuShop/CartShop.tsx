@@ -47,7 +47,7 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4">El carrito esta vacio.</h2>
+				<h2 className="p-4 text-left w-full">El carrito esta vacio.</h2>
 			)}
 		</div>
 	);
