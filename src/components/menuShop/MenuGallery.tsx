@@ -40,7 +40,7 @@ export const MenuGallery = ({
         </div>
       ) : (
         <div>
-          {['originals', 'masterpieces', 'papas', 'drink'].map(
+          {['satisfyer', 'originals', 'masterpieces', 'papas', 'drink'].map(
             (sectionName) => (
               <div key={sectionName}>
                 <h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">

@@ -30,16 +30,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
 
       if (response.ok) {
-        nuevoPedido.elaborado = true;
-        Swal.fire({
-          icon: 'success',
-          title: 'Impresión exitosa',
-          text: 'El ticket se imprimió correctamente',
-        });
-
-        if (!nuevoPedido.elaborado) {
-          await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
-        }
+        await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
       } else {
         console.error('Error al imprimir');
         Swal.fire({
@@ -79,10 +70,10 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             />
           </svg>
         </div>
-        <p className={`text-2xl  text-white font-bold float-right`}>{id}</p>
+        <p className={`text-sm  text-white `}>{id}</p>
         <div className="mb-4">
-          <p className={`text-2xl  text-white font-bold`}>{hora}</p>
-          <p className="text-white mt-4 text-2xl text-center">
+          <p className={`text-2xl text-white font-bold`}>{hora}</p>
+          <p className="bg-black  text-2xl text-center text-green-500">
             {' '}
             {aclaraciones}
           </p>
@@ -96,8 +87,10 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             }: { burger: string; toppings: string[]; quantity: number },
             i: number
           ) => (
-            <div key={i} className={`text-black text-base font-semibold`}>
-              {quantity}X {burger}
+            <div key={i}>
+              <p className="text-black text-base font-bold">
+                {quantity}X {burger}
+              </p>
               <p>
                 {toppings.map((topping: string, toppingIndex: number) => (
                   <span key={toppingIndex} className="text-sm block">
