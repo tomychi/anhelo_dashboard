@@ -230,19 +230,19 @@ export const DynamicForm = () => {
 					<div className="flex flex-col">
 						<div className="flex justify-center p-4">
 							<div
-								className={`p-4 ${
+								className={`p-4 text-2xl font-black ${
 									seccionActiva === "elaborar"
 										? "bg-black text-custom-red"
-										: "bg-custom-red text-black"
+										: "bg-custom-red text-black border-black border-2"
 								} text-black  `}
 								onClick={() => setSeccionActiva("elaborar")}
 							>
 								TOMAR PEDIDO
 							</div>
 							<div
-								className={`p-4 ${
+								className={`p-4 text-2xl font-black ${
 									seccionActiva === "elaborar"
-										? "bg-custom-red text-black"
+										? "bg-custom-red text-black border-black border-2"
 										: "bg-black text-custom-red"
 								} font-semibold `}
 								onClick={() => setSeccionActiva("hechos")}
