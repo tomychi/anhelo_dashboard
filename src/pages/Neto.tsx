@@ -1,32 +1,31 @@
-import { useEffect, useState } from 'react';
-import { ReadDataForDateRange } from '../firebase/ReadData';
-import { ExpenseProps } from '../firebase/UploadGasto';
-
+import { useEffect, useState } from "react";
+import { ReadDataForDateRange } from "../firebase/ReadData";
+import { ExpenseProps } from "../firebase/UploadGasto";
+import currencyFormat from "../helpers/currencyFormat";
 export const Neto = () => {
-  const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
-  const [loading, setLoading] = useState(false);
+	const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
+	const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
+	useEffect(() => {
+		setLoading(true);
 
-    ReadDataForDateRange<ExpenseProps>(
-      'gastos',
-      '2024',
-      '2',
-      '1',
-      '2024',
-      '2',
-      '3',
-      (gastos) => {
-        console.log('Gastos por rango:', gastos);
-        setExpenseData(gastos);
-      }
-    );
+		ReadDataForDateRange<ExpenseProps>(
+			"gastos",
+			"2024",
+			"2",
+			"1",
+			"2024",
+			"2",
+			"3",
+			(gastos) => {
+				console.log("Gastos por rango:", gastos);
+				setExpenseData(gastos);
+			}
+		);
 
-    setLoading(false);
-  }, []);
+		setLoading(false);
+	}, []);
 
-<<<<<<< HEAD
 	const productos = {
 		originals: [
 			{
@@ -248,3 +247,4 @@ export const Neto = () => {
 			</table>
 		</div>
 	);
+};
