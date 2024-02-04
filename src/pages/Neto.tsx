@@ -154,31 +154,81 @@ export const Neto = () => {
 	};
 
 	return (
-		<div className="flex p-4 gap-4 justify-between flex-row">
-			<table className="w-4/5 h-min font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							Product name
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Category
-						</th>
-						<th scope="col" className="px-6 py-3">
-							costo
-						</th>
-						<th scope="col" className="px-6 py-3">
-							precio venta
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Ganancia
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{/* Mapeo de datos de productos */}
-					{Object.keys(productos).map((categoria) =>
-						productos[categoria].map((producto, index) => (
+		<div className="flex p-4 gap-4 justify-between flex-row w-full">
+			<div className="w-4/5 flex flex-col gap-4">
+				<table className=" h-min font-antonio text-sm text-left rtl:text-right text-black">
+					<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
+						<tr>
+							<th scope="col" className="px-6 py-3">
+								Product name
+							</th>
+							<th scope="col" className="px-6 py-3">
+								Category
+							</th>
+							<th scope="col" className="px-6 py-3">
+								costo
+							</th>
+							<th scope="col" className="px-6 py-3">
+								precio venta
+							</th>
+							<th scope="col" className="px-6 py-3">
+								Ganancia
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{/* Mapeo de datos de productos */}
+						{Object.keys(productos).map((categoria) =>
+							productos[categoria].map((producto, index) => (
+								<tr
+									key={index}
+									className="bg-black text-custom-red uppercase font-black border border-red-main"
+								>
+									<th
+										scope="row"
+										className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+									>
+										{producto.nombre}
+									</th>
+									<td className="px-6 py-4">{categoria}</td>
+									<td className="px-6 py-4">
+										{currencyFormat(producto.costo)}
+									</td>
+									<td className="px-6 py-4">
+										{currencyFormat(producto.precioVenta)}
+									</td>
+									<td className="px-6 py-4">
+										{currencyFormat(producto.ganancia)}
+									</td>
+								</tr>
+							))
+						)}
+					</tbody>
+				</table>
+				<h1 className="text-custom-red font-antonio text-8xl font-black">
+					ENVIOS:
+				</h1>
+				<h2 className="text-custom-red font-antonio text-2xl font-black">
+					JUEVES $20.000 <br />
+					VIERNES, SABADO & DOMINGO $30.000
+				</h2>
+			</div>
+			<div className="w-1/5">
+				<table className=" h-min font-antonio text-sm text-left rtl:text-right text-black">
+					<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
+						{/* Encabezados de la tabla */}
+						<tr>
+							<th scope="col" className="px-6 py-3">
+								materiales
+							</th>
+							<th scope="col" className="px-6 py-3">
+								precio
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{/* Mapeo de datos de materiales */}
+						{Object.entries(materialesInfo).map(([material, precio], index) => (
 							<tr
 								key={index}
 								className="bg-black text-custom-red uppercase font-black border border-red-main"
@@ -187,51 +237,14 @@ export const Neto = () => {
 									scope="row"
 									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
 								>
-									{producto.nombre}
+									{material}
 								</th>
-								<td className="px-6 py-4">{categoria}</td>
-								<td className="px-6 py-4">{currencyFormat(producto.costo)}</td>
-								<td className="px-6 py-4">
-									{currencyFormat(producto.precioVenta)}
-								</td>
-								<td className="px-6 py-4">
-									{currencyFormat(producto.ganancia)}
-								</td>
+								<td className="px-6 py-4">{currencyFormat(precio)}</td>
 							</tr>
-						))
-					)}
-				</tbody>
-			</table>
-			<table className="w-1/5 h-min font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-					{/* Encabezados de la tabla */}
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							materiales
-						</th>
-						<th scope="col" className="px-6 py-3">
-							precio
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{/* Mapeo de datos de materiales */}
-					{Object.entries(materialesInfo).map(([material, precio], index) => (
-						<tr
-							key={index}
-							className="bg-black text-custom-red uppercase font-black border border-red-main"
-						>
-							<th
-								scope="row"
-								className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-							>
-								{material}
-							</th>
-							<td className="px-6 py-4">{currencyFormat(precio)}</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
+						))}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	);
 };
