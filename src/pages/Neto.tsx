@@ -1,153 +1,71 @@
-import { useEffect, useState } from "react";
-import { FormGasto } from "../components/gastos";
-import { ReadDataForDateRange } from "../firebase/ReadData";
-import { ExpenseProps } from "../firebase/UploadGasto";
-import currencyFormat from "../helpers/currencyFormat";
+import { useEffect, useState } from 'react';
+import { ReadDataForDateRange } from '../firebase/ReadData';
+import { ExpenseProps } from '../firebase/UploadGasto';
 
 export const Neto = () => {
-	const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
-	const [loading, setLoading] = useState(false);
+  const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
+  const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		setLoading(true);
+  useEffect(() => {
+    setLoading(true);
 
-		ReadDataForDateRange<ExpenseProps>(
-			"gastos",
-			"2024",
-			"2",
-			"1",
-			"2024",
-			"2",
-			"3",
-			(gastos) => {
-				console.log("Gastos por rango:", gastos);
-				setExpenseData(gastos);
-			}
-		);
+    ReadDataForDateRange<ExpenseProps>(
+      'gastos',
+      '2024',
+      '2',
+      '1',
+      '2024',
+      '2',
+      '3',
+      (gastos) => {
+        console.log('Gastos por rango:', gastos);
+        setExpenseData(gastos);
+      }
+    );
 
-		setLoading(false);
-	}, []);
+    setLoading(false);
+  }, []);
 
-	return (
-		<div className="flex p-4 gap-4 justify-between flex-row">
-			<table className="w-1/2 font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-					{/* Encabezados de la tabla */}
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							Product name
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Category
-						</th>
-						<th scope="col" className="px-6 py-3">
-							costo
-						</th>
-						<th scope="col" className="px-6 py-3">
-							precio venta
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{/* Mapeo de datos de burgers */}
-					{expenseData.map(
-						({
-							quantity,
-							fecha,
-							category,
-							name,
-							total,
-							unit,
-							description,
-							id,
-						}) => (
-							<tr
-								key={id}
-								className="bg-black text-custom-red uppercase font-black border border-red-main"
-							>
-								<th
-									scope="row"
-									className="px-6 py-4 font-black text-custom-red whitespace-nowrap "
-								>
-									{name}
-								</th>
-								<td className="px-6 py-4">{category}</td>
-								<td className="px-6 py-4">{fecha}</td>
-								<td className="px-6 py-4">{currencyFormat(total)}</td>
-							</tr>
-						)
-					)}
-				</tbody>
-			</table>
-			<table className="w-1/2 font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-					{/* Encabezados de la tabla */}
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							Product name
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Category
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Fecha
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Descripcion
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Cantidad
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Unidad
-						</th>
-						<th scope="col" className="px-6 py-3">
-							Total
-						</th>
-						<th scope="col" className="px-6 py-3">
-							<span className="sr-only">Edit</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{/* Mapeo de datos de burgers */}
-					{expenseData.map(
-						({
-							quantity,
-							fecha,
-							category,
-							name,
-							total,
-							unit,
-							description,
-							id,
-						}) => (
-							<tr
-								key={id}
-								className="bg-black text-custom-red uppercase font-black border border-red-main"
-							>
-								<th
-									scope="row"
-									className="px-6 py-4 font-black text-custom-red whitespace-nowrap "
-								>
-									{name}
-								</th>
-								<td className="px-6 py-4">{category}</td>
-								<td className="px-6 py-4">{fecha}</td>
-								<td className="px-6 py-4 ">{description}</td>
-								<td className="px-6 py-4 ">{quantity}</td>
-								<td className="px-6 py-4 ">{unit}</td>
-								<td className="px-6 py-4">{currencyFormat(total)}</td>
-								<td className="px-6 py-4 text-center">
-									<div className="font-black border border-red-main text-custom-red hover:underline">
-										Borrar
-									</div>
-								</td>
-							</tr>
-						)
-					)}
-				</tbody>
-			</table>
-		</div>
-	);
+  const materialesYPrecios = {
+    'Bolsa kraft + Sticker': 169.1,
+    Aluminio: 100.0,
+    'Sticker ADVISORY': 40.0,
+    'Bolsita papas': 10.0,
+    'Papas 130 gr': 507.0,
+    // Agrega más materiales y precios según sea necesario
+  };
+
+  return (
+    <div className="">
+      {loading ? (
+        <div>Loading....</div>
+      ) : (
+        <div className="flex p-4 gap-4 justify-between flex-row">
+          <table className="w-1/2 font-antonio text-sm text-left rtl:text-right text-black">
+            <thead className="text-xs uppercase text-black border border-red-main bg-custom-red">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Material
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Precio
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(materialesYPrecios).map(([material, precio]) => (
+                <tr
+                  key={material}
+                  className="bg-black text-custom-red uppercase font-black border border-red-main"
+                >
+                  <td className="px-6 py-4">{material}</td>
+                  <td className="px-6 py-4">${precio.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
 };
