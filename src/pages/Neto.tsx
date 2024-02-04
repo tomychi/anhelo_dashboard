@@ -154,9 +154,9 @@ export const Neto = () => {
 	};
 
 	return (
-		<div className="flex p-4 gap-4 justify-between flex-row w-full">
+		<div className="flex p-4 gap-4  justify-between flex-row w-full">
 			<div className="w-4/5 flex flex-col gap-4">
-				<table className=" h-min font-antonio text-sm text-left rtl:text-right text-black">
+				<table className=" h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
 						<tr>
 							<th scope="col" className="px-6 py-3">
@@ -214,7 +214,7 @@ export const Neto = () => {
 				</h2>
 			</div>
 			<div className="w-1/5">
-				<table className=" h-min font-antonio text-sm text-left rtl:text-right text-black">
+				<table className=" h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
 						{/* Encabezados de la tabla */}
 						<tr>
