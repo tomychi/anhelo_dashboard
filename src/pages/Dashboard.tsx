@@ -1,85 +1,13 @@
 import { useEffect, useState } from 'react';
-import info from '../assets/combined_addresses.json';
 import { Chart, registerables } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
 import { PedidoProps } from '../types/types';
 import currencyFormat from '../helpers/currencyFormat';
 import { ReadDataForDateRange } from '../firebase/ReadData';
 import { ExpenseProps } from '../firebase/UploadGasto';
+import { BurgersPedidas, calcularTotales } from '../helpers/calculator';
 
 Chart.register(...registerables);
-
-interface Vendidos {
-  [key: string]: number;
-}
-
-const hamburguesasVendidas: Vendidos = {};
-const toppingsVendidos: Vendidos = {};
-const extrasVendidos: Vendidos = {};
-
-const palabrasClaveToppings = [
-  '- bacon',
-  '- cebolla caramelizada',
-  '- crispy',
-  '- ketchup',
-  '- lechuga',
-  '- mayonesa',
-  '- salsa anhelo',
-  '- salsa barbecue',
-  '- tomate',
-];
-
-const palabrasClaveBurgers = [
-  'anhelo classic',
-  'bbq bcn cheeseburger',
-  'bcn cheeseburger',
-  'crispy bcn',
-  'cuadruple cheeseburger',
-  'doble cheeseburger',
-  'easter egg',
-  'mario inspired',
-  'simple cheeseburger',
-  'triple cheeseburger',
-];
-
-const palabrasClaveExtras = [
-  'papas anhelo ®',
-  'papas con cheddar ®',
-  'pepsi',
-  'pote de cheddar',
-  'pote de mayonesa',
-  'pote de salsa anhelo',
-];
-
-info.forEach((pedido) => {
-  const pedidos = pedido.pedido.split('\n');
-  pedidos.forEach((elemento) => {
-    const [nombre, cantidad] = elemento.split('x ').reverse();
-    const cleanNombre = nombre.toLowerCase().trim();
-    const nombreMayusculas = cleanNombre.toUpperCase();
-
-    if (palabrasClaveBurgers.includes(cleanNombre)) {
-      hamburguesasVendidas[nombreMayusculas] =
-        (hamburguesasVendidas[nombreMayusculas] || 0) + parseInt(cantidad, 10);
-    }
-
-    palabrasClaveToppings.forEach((topping) => {
-      const toppingMayusculas = topping.toUpperCase();
-      if (cleanNombre.includes(topping)) {
-        toppingsVendidos[toppingMayusculas] =
-          (toppingsVendidos[toppingMayusculas] || 0) + 1;
-      }
-    });
-
-    palabrasClaveExtras.forEach((extra) => {
-      const extraMayusculas = extra.toUpperCase();
-      if (cleanNombre.includes(extra)) {
-        extrasVendidos[extraMayusculas] =
-          (extrasVendidos[extraMayusculas] || 0) + 1;
-      }
-    });
-  });
-});
 
 const fechas = [
   '30/7/2023',
@@ -228,51 +156,49 @@ export const Dashboard = () => {
   const [selectedInterval, setSelectedInterval] = useState('weekly');
   const [ordersData, setOrdersData] = useState<PedidoProps[]>([]);
   const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
+  const [hamburguesasPedidas, setHamburguesasPedidas] = useState<
+    BurgersPedidas[]
+  >([]);
+  const [facturacionTotal, setFacturacionTotal] = useState<number>(0);
+  const [gastosTotal, setGastosTotal] = useState<number>(0);
+  const [productosVendidosTotal, setProductosVendidosTotal] =
+    useState<number>(0);
 
   const handleIntervalChange = (interval: string) => {
     setSelectedInterval(interval);
   };
-  const nombresHamburguesas = Object.keys(hamburguesasVendidas);
-  const cantidadesHamburguesas = Object.values(hamburguesasVendidas);
-
-  const nombresToppings = Object.keys(toppingsVendidos);
-  const cantidadToppings = Object.values(toppingsVendidos);
-
-  const nombresExtras = Object.keys(extrasVendidos);
-  const cantidadExtras = Object.values(extrasVendidos);
-
   const dataBurgers = {
-    labels: nombresHamburguesas,
+    labels: hamburguesasPedidas.map((b) => b.burger),
     datasets: [
       {
         label: 'BURGER BEST SELLER',
-        data: cantidadesHamburguesas,
+        data: hamburguesasPedidas.map((q) => q.quantity),
         backgroundColor: 'rgba(0, 0, 0)',
       },
     ],
   };
 
-  const dataToppings = {
-    labels: nombresToppings,
-    datasets: [
-      {
-        label: 'TOPPING BEST SELLER',
-        data: cantidadToppings,
-        backgroundColor: 'rgba(0, 0, 0)',
-      },
-    ],
-  };
+  // const dataToppings = {
+  //   labels: nombresToppings,
+  //   datasets: [
+  //     {
+  //       label: 'TOPPING BEST SELLER',
+  //       data: cantidadToppings,
+  //       backgroundColor: 'rgba(0, 0, 0)',
+  //     },
+  //   ],
+  // };
 
-  const dataExtras = {
-    labels: nombresExtras,
-    datasets: [
-      {
-        label: 'EXTRA BEST SELLER',
-        data: cantidadExtras,
-        backgroundColor: 'rgba(0, 0, 0)',
-      },
-    ],
-  };
+  // const dataExtras = {
+  //   labels: nombresExtras,
+  //   datasets: [
+  //     {
+  //       label: 'EXTRA BEST SELLER',
+  //       data: cantidadExtras,
+  //       backgroundColor: 'rgba(0, 0, 0)',
+  //     },
+  //   ],
+  // };
 
   const getOrdersData = () => {
     // ReadOrdersForDate('2024', '01', '31', (pedidos) => {
@@ -287,9 +213,8 @@ export const Dashboard = () => {
       '1',
       '2024',
       '2',
-      '3',
+      '5',
       (pedidos) => {
-        console.log('Pedidos por rango:', pedidos);
         setOrdersData(pedidos);
       }
     );
@@ -301,9 +226,8 @@ export const Dashboard = () => {
       '1',
       '2024',
       '2',
-      '3',
+      '5',
       (gastos) => {
-        console.log('Gastos por rango:', gastos);
         setExpenseData(gastos);
       }
     );
@@ -311,26 +235,21 @@ export const Dashboard = () => {
 
   useEffect(() => {
     getOrdersData();
-  }, []); // Asegúrate de pasar un array vacío como dependencia para que solo se ejecute una vez
+  }, []); // Array de dependencias vacío para que se ejecute una vez al montar el componente
 
-  const calcularTotalFacturacion = (
-    ordersData: PedidoProps[] | ExpenseProps[]
-  ) => {
-    if (ordersData.length === 0) {
-      return 0; // Devuelve 0 si no hay pedidos
-    }
+  useEffect(() => {
+    const {
+      totalFacturacion: facturacionTotal,
+      totalProductosVendidos: productosVendidosTotal,
+      hamburguesasPedidas,
+    } = calcularTotales(ordersData);
+    const { totalFacturacion: gastosTotal } = calcularTotales(expenseData);
 
-    const totalFacturacion = ordersData.reduce((accumulator, order) => {
-      // Asegúrate de ajustar la propiedad según los datos reales
-      const totalPedido = order.total || 0;
-      return accumulator + totalPedido;
-    }, 0);
-
-    return totalFacturacion;
-  };
-
-  const facturacionTotal = calcularTotalFacturacion(ordersData);
-  const gastosTotal = calcularTotalFacturacion(expenseData);
+    setFacturacionTotal(facturacionTotal);
+    setProductosVendidosTotal(productosVendidosTotal);
+    setGastosTotal(gastosTotal);
+    setHamburguesasPedidas(hamburguesasPedidas);
+  }, [ordersData, expenseData]); // Dependencias que deben provocar la ejecución del efecto
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -481,7 +400,9 @@ export const Dashboard = () => {
             </div>
             {/* Puedes cambiar el ícono según tus necesidades */}
           </div>
-          <p className=" text-4xl font-bold mt-auto">324</p>
+          <p className=" text-4xl font-bold mt-auto">
+            {productosVendidosTotal}
+          </p>
           <p className="text-sm mt-auto">PRODUCTOS VENDIDOS</p>
         </div>
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -509,7 +430,7 @@ export const Dashboard = () => {
             </div>
             {/* Puedes cambiar el ícono según tus necesidades */}
           </div>
-          <p className=" text-4xl font-bold mt-auto">136</p>
+          <p className=" text-4xl font-bold mt-auto">{ordersData.length}</p>
           <p className="text-sm mt-auto">VENTAS</p>
         </div>
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -706,15 +627,15 @@ export const Dashboard = () => {
               />
             </svg>
           </div>
-          <div className="grid grid-cols-3 gap-4 grid-rows-1">
-            <div className="col-span-1 row-span-1">
+          <div className="">
+            <div className="">
               <Bar data={dataBurgers} options={options} plugins={[plugin]} />
             </div>
             <div className="col-span-1 row-span-1">
-              <Bar data={dataToppings} options={options} plugins={[plugin]} />
+              {/* <Bar data={dataToppings} options={options} plugins={[plugin]} /> */}
             </div>
             <div className="col-span-1 row-span-1">
-              <Bar data={dataExtras} options={options} plugins={[plugin]} />
+              {/* <Bar data={dataExtras} options={options} plugins={[plugin]} /> */}
             </div>
           </div>
         </div>
