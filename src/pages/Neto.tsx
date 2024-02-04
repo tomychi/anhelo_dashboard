@@ -160,10 +160,10 @@ export const Neto = () => {
 					<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
 						<tr>
 							<th scope="col" className="px-6 py-3">
-								Product name
+								Productos
 							</th>
 							<th scope="col" className="px-6 py-3">
-								Category
+								Categoria
 							</th>
 							<th scope="col" className="px-6 py-3">
 								costo
