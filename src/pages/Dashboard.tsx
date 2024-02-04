@@ -6,6 +6,7 @@ import { PedidoProps } from "../types/types";
 import currencyFormat from "../helpers/currencyFormat";
 import { ReadDataForDateRange } from "../firebase/ReadData";
 import { ExpenseProps } from "../firebase/UploadGasto";
+import { NavLink } from "react-router-dom";
 
 Chart.register(...registerables);
 
@@ -388,7 +389,10 @@ export const Dashboard = () => {
 					<p className="text-sm mt-auto">FACTURACIÓN BRUTA</p>
 				</div>
 
-				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+				<NavLink
+					to={"/neto"}
+					className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative"
+				>
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 						{Math.ceil(
@@ -420,8 +424,10 @@ export const Dashboard = () => {
 					<p className=" text-4xl font-bold mt-auto">
 						{currencyFormat(Math.ceil((facturacionTotal - gastosTotal) / 2.2))}
 					</p>
-					<p className="text-sm mt-auto"> FACTURACION NETA *Estimado</p>
-				</div>
+					<p className="text-sm mt-auto">
+						FACTURACION NETA ESTIMADO: Ver costos
+					</p>
+				</NavLink>
 			</div>
 
 			<div className="flex flex-row gap-4">
