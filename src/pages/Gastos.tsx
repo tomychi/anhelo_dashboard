@@ -3,35 +3,38 @@ import { FormGasto } from '../components/gastos';
 import { ReadDataForDateRange } from '../firebase/ReadData';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import currencyFormat from '../helpers/currencyFormat';
+import Calendar from '../components/Calendar';
+import { formatDate } from '../helpers/dateToday';
+import { DateValueType } from 'react-tailwindcss-datepicker';
 
 export const Gastos = () => {
   const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [valueDate, setValueDate] = useState<DateValueType>({
+    startDate: formatDate(new Date()),
+    endDate: formatDate(new Date()), // Último día de diciembre del año actual
+  });
+
+  const handleValueDate = (value: DateValueType) => {
+    setValueDate(value);
+  };
+
   useEffect(() => {
     setLoading(true);
 
-    ReadDataForDateRange<ExpenseProps>(
-      'gastos',
-      '2024',
-      '2',
-      '1',
-      '2024',
-      '2',
-      '4',
-      (gastos) => {
-        console.log('Gastos por rango:', gastos);
-        setExpenseData(gastos);
-      }
-    );
+    ReadDataForDateRange<ExpenseProps>('gastos', valueDate, (gastos) => {
+      setExpenseData(gastos);
+    });
 
     setLoading(false);
-  }, []);
+  }, [valueDate]);
 
   return (
     <div className="">
       <div className="p-4">
         <FormGasto />
+        <Calendar handleValueDate={handleValueDate} valueDate={valueDate} />
       </div>
       <div className="shadow-md sm:rounded-lg">
         {loading ? (
