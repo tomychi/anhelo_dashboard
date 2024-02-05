@@ -46,7 +46,9 @@ export const Login = () => {
 			<img src={Sticker} className="w-full mx-auto" alt="anhelo Logo" />
 
 			<div className="mb-4">
-				<label className="block mb-2 text-sm ">CORREO</label>
+				<label className="block mb-2 text-sm ">
+					BIENVENIDO, POR FAVOR TU CORREO
+				</label>
 
 				<input
 					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
@@ -58,7 +60,7 @@ export const Login = () => {
 				/>
 			</div>
 			<div className="mb-5">
-				<label className="block mb-2 text-sm  ">CONTRASEÑA</label>
+				<label className="block mb-2 text-sm  ">TU CONTRASEÑA</label>
 
 				<input
 					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
@@ -75,7 +77,7 @@ export const Login = () => {
 				type="submit"
 				className=" text-custom-red w-full p-4 bg-black font-black uppercase  outline-none"
 			>
-				Login
+				INGRESAR
 			</button>
 		</form>
 	);
