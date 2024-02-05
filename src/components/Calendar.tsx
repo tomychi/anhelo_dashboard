@@ -16,14 +16,20 @@ const Calendar = () => {
 		<Datepicker
 			//     Use the startFrom props to change the default startFrom value.
 			// By default the value is new Date()
-			startFrom={new Date("2022-01-01")}
+			startFrom={new Date("2024-02-05")}
 			//       Use the separator props to change the default separator value.
 			// By default the value is ~.
-			separator={""}
+			separator={"hasta"}
 			//       Use showShortcuts and showFooter to display or not the shortcuts and footer respectively.
 			// By default both have the value false.
 			showShortcuts={true}
-			toggleClassName="absolute bg-blue-300 rounded-r-lg text-white right-0 h-full px-3 text-gray-400 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+			inputClassName="w-full uppercase rounded-none border border-2 border-red-main focus:ring-0 font-antonio text-custom-red p-4 font-black bg-black"
+			toggleClassName="absolute rounded-none bg-custom-red font-antonio
+text-black
+font-black right-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+			containerClassName="relative rounded-none font-antonio
+text-custom-red
+font-black"
 			showFooter={true}
 			value={value}
 			onChange={handleValueChange}
