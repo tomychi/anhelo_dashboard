@@ -23,6 +23,7 @@ const Calendar = () => {
 			//       Use showShortcuts and showFooter to display or not the shortcuts and footer respectively.
 			// By default both have the value false.
 			showShortcuts={true}
+			toggleClassName="absolute bg-blue-300 rounded-r-lg text-white right-0 h-full px-3 text-gray-400 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
 			showFooter={true}
 			value={value}
 			onChange={handleValueChange}
