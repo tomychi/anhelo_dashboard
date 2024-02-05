@@ -51,7 +51,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 	};
 	return (
 		<div
-			className={`flex  justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
+			className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
 				elaborado ? "bg-green-500 hover:bg-green-600" : "bg-custom-red"
 			}`}
 		>
@@ -71,7 +71,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						/>
 					</svg>
 				</div>
-				<div className="mb-4 flex justify-center">
+				<div className="mb-8 flex justify-center">
 					<p className={`text-2xl text-white font-bold`}>{hora}</p>
 					<p className="bg-black mt-4  text-2xl text-center text-green-500">
 						{aclaraciones}
@@ -92,7 +92,10 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 							</p>
 							<p>
 								{toppings.map((topping: string, toppingIndex: number) => (
-									<span key={toppingIndex} className="text-sm block">
+									<span
+										key={toppingIndex}
+										className="text-sm flex justify-center"
+									>
 										- {topping}
 									</span>
 								))}
@@ -101,7 +104,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 					)
 				)}
 			</div>
-			<div className=" mt-4 text-center">
+			<div className=" mt-8 text-center">
 				<p
 					className={`text-base ${
 						elaborado ? "text-green-700" : "text-black 700"
@@ -139,7 +142,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				</p>
 				<button
 					onClick={() => imprimirTicket(comanda)}
-					className={` bg-black mt-4 ${
+					className={` bg-black w-full flex justify-center mt-4 ${
 						elaborado ? "text-green-500" : "text-custom-red"
 					} font-bold p-4  inline-flex items-center`}
 				>
