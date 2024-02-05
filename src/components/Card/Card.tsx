@@ -131,7 +131,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						elaborado ? "text-green-700" : "text-black 700"
 					}`}
 				>
-					Metodo de pago:{metodoPago}
+					Metodo de pago: {metodoPago}
 				</p>
 				<p
 					className={`text-lg ${
