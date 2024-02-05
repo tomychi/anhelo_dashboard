@@ -6,6 +6,26 @@ import {
 	marcarPedidoComoElaborado,
 } from "../../firebase/ReadData";
 
+const copyToClipboard = (textToCopy) => {
+	navigator.clipboard
+		.writeText(textToCopy)
+		.then(() => {
+			Swal.fire({
+				icon: "success",
+				title: "Copiado",
+				text: "Texto copiado al portapapeles",
+			});
+		})
+		.catch((error) => {
+			console.error("Error copying to clipboard:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un error al copiar al portapapeles",
+			});
+		});
+};
+
 export const Card = ({ comanda }: ComandaRareProps) => {
 	const {
 		aclaraciones,
@@ -19,7 +39,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 		referencias,
 		id,
 	} = comanda;
-	console.log(comanda);
+
 	const imprimirTicket = async (nuevoPedido: PedidoProps) => {
 		try {
 			const response = await fetch("http://localhost:3000/imprimir", {
@@ -31,7 +51,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 			});
 
 			if (response.ok) {
-				await marcarPedidoComoElaborado(id); // Llamamos a la función para marcar el pedido como elaborado
+				await marcarPedidoComoElaborado(id);
 			} else {
 				console.error("Error al imprimir");
 				Swal.fire({
@@ -49,6 +69,16 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 			});
 		}
 	};
+
+	const handleCopyIconClick = (textToCopy) => {
+		copyToClipboard(textToCopy);
+		Swal.fire({
+			icon: "success",
+			title: "Copiado",
+			text: "Texto copiado al portapapeles",
+		});
+	};
+
 	return (
 		<div
 			className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
@@ -63,6 +93,13 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 							viewBox="0 0 24 24"
 							fill="currentColor"
 							className="w-6 h-6 cursor-pointer"
+							onClick={() =>
+								handleCopyIconClick(
+									`Hora: ${hora}\nAclaraciones: ${aclaraciones}\nDireccion: ${direccion}\nReferencias: ${referencias}\nTelefono: ${telefono}\nMetodo de pago: ${metodoPago}\nTotal: ${currencyFormat(
+										total
+									)}`
+								)
+							}
 						>
 							<path
 								fillRule="evenodd"
@@ -75,6 +112,13 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 							viewBox="0 0 24 24"
 							fill="currentColor"
 							className="w-6 h-6 cursor-pointer"
+							onClick={() =>
+								handleCopyIconClick(
+									`Hora: ${hora}\nAclaraciones: ${aclaraciones}\nDireccion: ${direccion}\nReferencias: ${referencias}\nTelefono: ${telefono}\nMetodo de pago: ${metodoPago}\nTotal: ${currencyFormat(
+										total
+									)}`
+								)
+							}
 						>
 							<path d="M15.73 5.5h1.035A7.465 7.465 0 0 1 18 9.625a7.465 7.465 0 0 1-1.235 4.125h-.148c-.806 0-1.534.446-2.031 1.08a9.04 9.04 0 0 1-2.861 2.4c-.723.384-1.35.956-1.653 1.715a4.499 4.499 0 0 0-.322 1.672v.633A.75.75 0 0 1 9 22a2.25 2.25 0 0 1-2.25-2.25c0-1.152.26-2.243.723-3.218.266-.558-.107-1.282-.725-1.282H3.622c-1.026 0-1.945-.694-2.054-1.715A12.137 12.137 0 0 1 1.5 12.25c0-2.848.992-5.464 2.649-7.521C4.537 4.247 5.136 4 5.754 4H9.77a4.5 4.5 0 0 1 1.423.23l3.114 1.04a4.5 4.5 0 0 0 1.423.23ZM21.669 14.023c.536-1.362.831-2.845.831-4.398 0-1.22-.182-2.398-.52-3.507-.26-.85-1.084-1.368-1.973-1.368H19.1c-.445 0-.72.498-.523.898.591 1.2.924 2.55.924 3.977a8.958 8.958 0 0 1-1.302 4.666c-.245.403.028.959.5.959h1.053c.832 0 1.612-.453 1.918-1.227Z" />
 						</svg>
