@@ -10,7 +10,7 @@ import authReducer from './auth/authReducer';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ordersState', 'dataState'],
+  whitelist: ['auth'],
 };
 
 const RootReducer = combineReducers({

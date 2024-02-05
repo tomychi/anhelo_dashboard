@@ -184,16 +184,17 @@ export const ReadOrdersForDate = (
 
 type DataCallback<T> = (data: T[]) => void;
 
+interface DateProps {
+  startDate: Date;
+  endDate: Date;
+}
+
 export const ReadDataForDateRange = <T>(
   dbName: string,
-  startYear: string,
-  startMonth: string,
-  startDay: string,
-  endYear: string,
-  endMonth: string,
-  endDay: string,
+  valueDate: DateProps,
   callback: DataCallback<T>
 ) => {
+  const { startDate, endDate } = valueDate;
   const firestore = getFirestore();
 
   const allData: { [key: string]: T[] } = {};
@@ -222,10 +223,10 @@ export const ReadDataForDateRange = <T>(
   };
 
   const datesInRange = [];
-  const currentDate = new Date(`${startYear}-${startMonth}-${startDay}`);
-  const endDate = new Date(`${endYear}-${endMonth}-${endDay}`);
+  const currentDate = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T00:00:00`);
 
-  while (currentDate <= endDate) {
+  while (currentDate <= end) {
     datesInRange.push(new Date(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
