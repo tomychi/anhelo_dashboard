@@ -51,12 +51,12 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 	};
 	return (
 		<div
-			className={`flex  justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden ${
+			className={`flex  justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
 				elaborado ? "bg-green-500 hover:bg-green-600" : "bg-custom-red"
 			}`}
 		>
-			<div className="relative p-4">
-				<div className="absolute top-2 right-2 p-2">
+			<div className="relative">
+				<div className="absolute top-1 right-1">
 					<svg
 						onClick={() => eliminarDocumento("pedidos", id)}
 						xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				</div>
 				<div className="mb-4 flex justify-center">
 					<p className={`text-2xl text-white font-bold`}>{hora}</p>
-					<p className="bg-black  text-2xl text-center text-green-500">
+					<p className="bg-black mt-4  text-2xl text-center text-green-500">
 						{aclaraciones}
 					</p>
 				</div>
@@ -86,7 +86,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						}: { burger: string; toppings: string[]; quantity: number },
 						i: number
 					) => (
-						<div key={i} className="flex items-center flex-col">
+						<div key={i} className="flex mt-4 items-center flex-col">
 							<p className="text-black text-base  font-bold">
 								{quantity}X {burger}
 							</p>
@@ -101,47 +101,47 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 					)
 				)}
 			</div>
-			<div className="px-6 py-4 text-center">
+			<div className=" mt-4 text-center">
 				<p
 					className={`text-base ${
-						elaborado ? "text-green-700" : "texk-black 700"
+						elaborado ? "text-green-700" : "text-black 700"
 					}`}
 				>
 					Direccion: {direccion}
 				</p>
 				<p
 					className={`text-base ${
-						elaborado ? "text-green-700" : "texk-black 700"
+						elaborado ? "text-green-700" : "text-black 700"
 					}`}
 				>
 					Referencias: {referencias}
 				</p>
 				<p
 					className={`text-base ${
-						elaborado ? "text-green-700" : "texk-black 700"
+						elaborado ? "text-green-700" : "text-black 700"
 					}`}
 				>
 					TELEFONO: {telefono}
 				</p>
 				<p
 					className={`text-base ${
-						elaborado ? "text-green-700" : "texk-black 700"
+						elaborado ? "text-green-700" : "text-black 700"
 					}`}
 				>
 					Metodo de pago:{metodoPago}
 				</p>
 				<p
 					className={`text-lg ${
-						elaborado ? "text-green-500" : "text-black"
+						elaborado ? "text-green-700" : "text-black"
 					} font-bold`}
 				>
 					{currencyFormat(total)}
 				</p>
 				<button
 					onClick={() => imprimirTicket(comanda)}
-					className={`mt-8 bg-black ${
+					className={` bg-black mt-4 ${
 						elaborado ? "text-green-500" : "text-custom-red"
-					} font-bold py-2 px-4  inline-flex items-center`}
+					} font-bold p-4  inline-flex items-center`}
 				>
 					<svg
 						className={`fill-current w-4 h-4 mr-2 ${
