@@ -3,11 +3,12 @@ import { ExpenseProps } from '../firebase/UploadGasto';
 import currencyFormat from '../helpers/currencyFormat';
 
 interface ProductoMaterial {
-  precioVenta: number;
   nombre: string;
   categoria: string;
   costo: number;
-  ganancia: number;
+  unit: string;
+  precioVenta?: number;
+  ganancia?: number;
 }
 
 export const Neto = () => {
@@ -121,31 +122,152 @@ export const Neto = () => {
     ],
   };
 
-  const materialesInfo = {
-    'Bolsa kraft + Sticker': 169.1,
-    Aluminio: 100.0,
-    'Sticker ADVISORY': 40.0,
-    'Bolsita papas': 10.0,
-    'Papas 130 gr': 507.0,
-    'Bollo de pan': 230.0,
-    'Medallon 90gr': 225.02,
-    'Cheddar feta': 78.6,
-    Mayonesa: 24.6,
-    'Bacon feta x2': 199.36,
-    Huevo: 100.0,
-    Alioli: 30.0,
-    BBQ: 30.0,
-    Ketchup: 30.0,
-    'Crema de leche': 100.0,
-    Cebolla: 70.0,
-    Harina: 10.0,
-    Champis: 200.0,
-    Lechuga: 70.0,
-    'Tomate feta': 70.0,
-    'Pote cheddar': 46.46,
-    'Cheddar liquido': 233.33,
-    Caja: 357.0,
-  };
+  const materiales: ProductoMaterial[] = [
+    {
+      nombre: 'bolsa kraft',
+      categoria: 'packaging',
+      costo: 169.1,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'sticker largo',
+      categoria: 'packaging',
+      costo: 72,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'aluminio',
+      categoria: 'packaging',
+      costo: 100.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'sticker ADVISORY',
+      categoria: 'packaging',
+      costo: 40.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'bolsita papas',
+      categoria: 'packaging',
+      costo: 10.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'papas',
+      categoria: 'ingredientes',
+      costo: 507.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'pan',
+      categoria: 'ingredientes',
+      costo: 230.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'medallon',
+      categoria: 'ingredientes',
+      costo: 225.02,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'cheddar feta',
+      categoria: 'ingredientes',
+      costo: 78.6,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'mayonesa',
+      categoria: 'ingredientes',
+      costo: 24.6,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'bacon',
+      categoria: 'ingredientes',
+      costo: 199.36,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'huevo',
+      categoria: 'ingredientes',
+      costo: 100.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'alioli',
+      categoria: 'ingredientes',
+      costo: 30.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'barbecue',
+      categoria: 'ingredientes',
+      costo: 30.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'ketchup',
+      categoria: 'ingredientes',
+      costo: 30.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'crema de leche',
+      categoria: 'ingredientes',
+      costo: 100.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'cebolla',
+      categoria: 'ingredientes',
+      costo: 70.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'harina',
+      categoria: 'ingredientes',
+      costo: 10.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'champis',
+      categoria: 'ingredientes',
+      costo: 200.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'lechuga',
+      categoria: 'ingredientes',
+      costo: 70.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'tomate',
+      categoria: 'ingredientes',
+      costo: 70.0,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'pote cheddar',
+      categoria: 'packaging',
+      costo: 46.46,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'cheddar liquido',
+      categoria: 'ingredientes',
+      costo: 233.33,
+      unit: 'unidad',
+    },
+    {
+      nombre: 'caja',
+      categoria: 'packaging',
+      costo: 357.0,
+      unit: 'unidad',
+    },
+  ];
 
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -222,23 +344,7 @@ export const Neto = () => {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {/* Mapeo de datos de materiales */}
-            {Object.entries(materialesInfo).map(([material, precio], index) => (
-              <tr
-                key={index}
-                className="bg-black text-custom-red uppercase font-black border border-red-main"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-                >
-                  {material}
-                </th>
-                <td className="px-6 py-4">{currencyFormat(precio)}</td>
-              </tr>
-            ))}
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </div>
