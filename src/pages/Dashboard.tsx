@@ -580,6 +580,8 @@ export const Dashboard = () => {
 						dataFacturacionSemana,
 						dataFacturacionSemana,
 						dataFacturacionSemana,
+						dataFacturacionSemana,
+						dataFacturacionSemana,
 					].map((data, index) => (
 						<div key={index}>
 							<Line data={data} options={options} plugins={[plugin]} />
