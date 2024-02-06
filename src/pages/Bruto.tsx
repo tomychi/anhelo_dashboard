@@ -34,7 +34,7 @@ export const Bruto = () => {
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
 			<Calendar />
-			<div className="w-2/5 flex flex-col gap-4">
+			<div className="w-full flex flex-col gap-4">
 				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
 						<tr>
