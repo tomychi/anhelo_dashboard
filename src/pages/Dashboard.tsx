@@ -317,7 +317,10 @@ export const Dashboard = () => {
 			</div>
 
 			<div className="flex flex-row gap-4">
-				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+				<NavLink
+					to={"/productosVendidos"}
+					className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative"
+				>
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 						<p>+31</p>
@@ -346,7 +349,7 @@ export const Dashboard = () => {
 						{productosVendidosTotal}
 					</p>
 					<p className="text-sm mt-auto">PRODUCTOS VENDIDOS</p>
-				</div>
+				</NavLink>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
