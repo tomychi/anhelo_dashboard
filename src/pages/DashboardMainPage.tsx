@@ -10,6 +10,7 @@ import {
 	Gastos,
 	Neto,
 	Bruto,
+	ProductosVendidos,
 } from "../pages";
 
 export const DashboardMainPage = () => {
@@ -29,6 +30,7 @@ export const DashboardMainPage = () => {
 						<Route path="gastos" element={<Gastos />} />
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
+						<Route path="productosVendidos" element={<ProductosVendidos />} />
 					</Route>
 				</Routes>
 			</div>

@@ -1,6 +1,7 @@
 export { Gastos } from "./Gastos";
 export { Neto } from "./Neto";
 export { Bruto } from "./Bruto";
+export { ProductosVendidos } from "./ProductosVendidos";
 
 export { Error } from "./Error";
 
