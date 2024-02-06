@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ReadDataForDateRange } from "../firebase/ReadData";
 import { ExpenseProps } from "../firebase/UploadGasto";
 import currencyFormat from "../helpers/currencyFormat";
-export const Neto = () => {
+export const Bruto = () => {
 	const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
 	const [loading, setLoading] = useState(false);
 
