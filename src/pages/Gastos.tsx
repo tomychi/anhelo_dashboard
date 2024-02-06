@@ -30,11 +30,11 @@ export const Gastos = () => {
   }, [valueDate]);
 
   return (
-    <div className="">
-      <div className="p-4">
+    <div className="p-4 flex flex-col gap-4">
+      <div className="">
         <FormGasto />
-        <Calendar handleValueDate={handleValueDate} valueDate={valueDate} />
       </div>
+      <Calendar handleValueDate={handleValueDate} valueDate={valueDate} />
       <div className="shadow-md sm:rounded-lg">
         {loading ? (
           <div
@@ -59,7 +59,7 @@ export const Gastos = () => {
             <span className="sr-only">Loading...</span>
           </div>
         ) : (
-          <div className="p-4 font-antonio">
+          <div className=" font-antonio">
             <table className="w-full  text-sm text-left rtl:text-right text-black">
               <thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
                 {/* Encabezados de la tabla */}
