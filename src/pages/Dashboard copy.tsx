@@ -158,13 +158,10 @@ const options = {
 
 export const Dashboard = () => {
 	const [ordersData, setOrdersData] = useState<PedidoProps[]>([]);
-
 	const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
-
 	const [hamburguesasPedidas, setHamburguesasPedidas] = useState<
 		BurgersPedidas[]
 	>([]);
-
 	const [facturacionTotal, setFacturacionTotal] = useState<number>(0);
 	const [gastosTotal, setGastosTotal] = useState<number>(0);
 	const [productosVendidosTotal, setProductosVendidosTotal] =
