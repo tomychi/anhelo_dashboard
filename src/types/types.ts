@@ -19,6 +19,7 @@ export interface PedidoProps {
   subTotal: number;
   telefono: string;
   total: number;
+  referencias: string;
   id: string;
 }
 

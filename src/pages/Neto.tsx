@@ -1,27 +1,21 @@
 import { useEffect, useState } from "react";
-import { ReadDataForDateRange } from "../firebase/ReadData";
 import { ExpenseProps } from "../firebase/UploadGasto";
 import currencyFormat from "../helpers/currencyFormat";
+
+interface ProductoMaterial {
+	precioVenta: number;
+	nombre: string;
+	categoria: string;
+	costo: number;
+	ganancia: number;
+}
+
 export const Neto = () => {
 	const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		setLoading(true);
-
-		ReadDataForDateRange<ExpenseProps>(
-			"gastos",
-			"2024",
-			"2",
-			"1",
-			"2024",
-			"2",
-			"3",
-			(gastos) => {
-				console.log("Gastos por rango:", gastos);
-				setExpenseData(gastos);
-			}
-		);
 
 		setLoading(false);
 	}, []);
@@ -178,31 +172,33 @@ export const Neto = () => {
 					</thead>
 					<tbody>
 						{/* Mapeo de datos de productos */}
-						{Object.keys(productos).map((categoria) =>
-							productos[categoria].map((producto, index) => (
-								<tr
-									key={index}
-									className="bg-black text-custom-red uppercase font-black border border-red-main"
-								>
-									<th
-										scope="row"
-										className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-									>
-										{producto.nombre}
-									</th>
-									<td className="px-6 py-4">{categoria}</td>
-									<td className="px-6 py-4">
-										{currencyFormat(producto.costo)}
-									</td>
-									<td className="px-6 py-4">
-										{currencyFormat(producto.precioVenta)}
-									</td>
-									<td className="px-6 py-4">
-										{currencyFormat(producto.ganancia)}
-									</td>
-								</tr>
-							))
-						)}
+						{/* {Object.keys(productos).map((categoria) =>
+              productos[categoria].map(
+                (producto: ProductoMaterial, index: number) => (
+                  <tr
+                    key={index}
+                    className="bg-black text-custom-red uppercase font-black border border-red-main"
+                  >
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+                    >
+                      {producto.nombre}
+                    </th>
+                    <td className="px-6 py-4">{categoria}</td>
+                    <td className="px-6 py-4">
+                      {currencyFormat(producto.costo)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {currencyFormat(producto.precioVenta)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {currencyFormat(producto.ganancia)}
+                    </td>
+                  </tr>
+                )
+              )
+            )} */}
 					</tbody>
 				</table>
 				<h1 className="text-custom-red font-antonio text-8xl font-black">
