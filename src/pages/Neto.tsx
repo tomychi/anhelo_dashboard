@@ -2,272 +2,74 @@ import { useEffect, useState } from 'react';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import currencyFormat from '../helpers/currencyFormat';
 
-interface ProductoMaterial {
-  nombre: string;
-  categoria: string;
-  costo: number;
-  unit: string;
-  precioVenta?: number;
-  ganancia?: number;
-}
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  DocumentReference,
+} from 'firebase/firestore';
+import { ProductoMaterial } from '../types/types';
+import { ReadMateriales } from '../firebase/Materiales';
+import { DataProps, DataStateProps } from './DynamicForm';
+import { ReadData } from '../firebase/ReadData';
+export const UploadMateriales = (
+  materiales: ProductoMaterial[]
+): Promise<DocumentReference[]> => {
+  const firestore = getFirestore();
+  const materialesCollectionRef = collection(firestore, 'materiales');
+
+  // Mapear cada material para subirlo a la base de datos
+  const uploadPromises: Promise<DocumentReference>[] = materiales.map(
+    async (material) => {
+      try {
+        // Agregar el material a la colección 'materiales'
+        const docRef = await addDoc(materialesCollectionRef, material);
+        return docRef;
+      } catch (error) {
+        console.error('Error al subir el material:', error);
+        throw error;
+      }
+    }
+  );
+
+  return Promise.all(uploadPromises);
+};
 
 export const Neto = () => {
   const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
   const [loading, setLoading] = useState(false);
+  const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
+  const [prodcutos, setProdcutos] = useState<DataProps[]>([]);
 
-  useEffect(() => {
-    setLoading(true);
-
-    setLoading(false);
-  }, []);
-
-  const productos = {
-    originals: [
-      {
-        nombre: 'Simple',
-        costo: 1497.62,
-        precioVenta: 3444.53,
-        ganancia: 1942.38,
-      },
-      {
-        nombre: 'Doble',
-        costo: 1801.25,
-        precioVenta: 4142.87,
-        ganancia: 2338.75,
-      },
-      {
-        nombre: 'Triple',
-        costo: 2104.87,
-        precioVenta: 4841.2,
-        ganancia: 2735.13,
-      },
-      {
-        nombre: 'Cuadruple',
-        costo: 2408.49,
-        precioVenta: 5539.54,
-        ganancia: 3131.51,
-      },
-    ],
-    masterpieces: [
-      {
-        nombre: 'ANHELO Classic',
-        costo: 1971.25,
-        precioVenta: 4533.87,
-        ganancia: 2558.75,
-      },
-      {
-        nombre: 'BBQ BCN Cheeseburger',
-        costo: 2070.61,
-        precioVenta: 4762.4,
-        ganancia: 2689.39,
-      },
-      {
-        nombre: 'BCN Cheeseburger',
-        costo: 2060.61,
-        precioVenta: 4739.4,
-        ganancia: 2679.39,
-      },
-      {
-        nombre: 'Mario Inspired',
-        costo: 2171.25,
-        precioVenta: 4993.87,
-        ganancia: 2818.75,
-      },
-      {
-        nombre: 'Easter Egg',
-        costo: 1931.25,
-        precioVenta: 4441.87,
-        ganancia: 2508.75,
-      },
-      {
-        nombre: 'Crispy BCN',
-        costo: 2080.61,
-        precioVenta: 4785.4,
-        ganancia: 2709.39,
-      },
-    ],
-    papas: [
-      {
-        nombre: 'Papas cheddar (2 bolsas)',
-        costo: 1376.13,
-        precioVenta: 3165.09,
-        ganancia: 1793.87,
-      },
-      {
-        nombre: 'Papas ANHELO (2 bolsas)',
-        costo: 1034.0,
-        precioVenta: 2378.2,
-        ganancia: 1346.0,
-      },
-    ],
-    satifyers: [
-      {
-        nombre: 'ANHELO Classic',
-        costo: 1002.72,
-        precioVenta: 2005.44,
-        ganancia: 1007.28,
-      },
-      {
-        nombre: 'BCN Cheeseburger',
-        costo: 1062.08,
-        precioVenta: 2124.16,
-        ganancia: 1057.92,
-      },
-      {
-        nombre: 'Easter Egg',
-        costo: 1162.08,
-        precioVenta: 2324.16,
-        ganancia: 1157.92,
-      },
-    ],
+  const readMateriales = async () => {
+    const rawData = await ReadMateriales();
+    setMateriales(rawData);
   };
 
-  const materiales: ProductoMaterial[] = [
-    {
-      nombre: 'bolsa kraft',
-      categoria: 'packaging',
-      costo: 169.1,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'sticker largo',
-      categoria: 'packaging',
-      costo: 72,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'aluminio',
-      categoria: 'packaging',
-      costo: 100.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'sticker ADVISORY',
-      categoria: 'packaging',
-      costo: 40.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'bolsita papas',
-      categoria: 'packaging',
-      costo: 10.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'papas',
-      categoria: 'ingredientes',
-      costo: 507.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'pan',
-      categoria: 'ingredientes',
-      costo: 230.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'medallon',
-      categoria: 'ingredientes',
-      costo: 225.02,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'cheddar feta',
-      categoria: 'ingredientes',
-      costo: 78.6,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'mayonesa',
-      categoria: 'ingredientes',
-      costo: 24.6,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'bacon',
-      categoria: 'ingredientes',
-      costo: 199.36,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'huevo',
-      categoria: 'ingredientes',
-      costo: 100.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'alioli',
-      categoria: 'ingredientes',
-      costo: 30.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'barbecue',
-      categoria: 'ingredientes',
-      costo: 30.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'ketchup',
-      categoria: 'ingredientes',
-      costo: 30.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'crema de leche',
-      categoria: 'ingredientes',
-      costo: 100.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'cebolla',
-      categoria: 'ingredientes',
-      costo: 70.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'harina',
-      categoria: 'ingredientes',
-      costo: 10.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'champis',
-      categoria: 'ingredientes',
-      costo: 200.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'lechuga',
-      categoria: 'ingredientes',
-      costo: 70.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'tomate',
-      categoria: 'ingredientes',
-      costo: 70.0,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'pote cheddar',
-      categoria: 'packaging',
-      costo: 46.46,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'cheddar liquido',
-      categoria: 'ingredientes',
-      costo: 233.33,
-      unit: 'unidad',
-    },
-    {
-      nombre: 'caja',
-      categoria: 'packaging',
-      costo: 357.0,
-      unit: 'unidad',
-    },
-  ];
+  const getData = async () => {
+    setLoading(true);
+    if (prodcutos.length === 0) {
+      const rawData = await ReadData();
+      const formattedData: DataProps[] = rawData.map((item) => {
+        return {
+          description: item.data.description,
+          img: item.data.img,
+          name: item.data.name,
+          price: item.data.price,
+          type: item.data.type,
+        };
+      });
+      setProdcutos(formattedData);
+      readMateriales();
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getData();
+  });
+
+  console.log(prodcutos);
 
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -293,34 +95,20 @@ export const Neto = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Mapeo de datos de productos */}
-            {/* {Object.keys(productos).map((categoria) =>
-              productos[categoria].map(
-                (producto: ProductoMaterial, index: number) => (
-                  <tr
-                    key={index}
-                    className="bg-black text-custom-red uppercase font-black border border-red-main"
-                  >
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-                    >
-                      {producto.nombre}
-                    </th>
-                    <td className="px-6 py-4">{categoria}</td>
-                    <td className="px-6 py-4">
-                      {currencyFormat(producto.costo)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {currencyFormat(producto.precioVenta)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {currencyFormat(producto.ganancia)}
-                    </td>
-                  </tr>
-                )
-              )
-            )} */}
+            {prodcutos.map((p: DataProps, index: number) => (
+              <tr
+                key={index}
+                className="bg-black text-custom-red uppercase font-black border border-red-main"
+              >
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+                >
+                  {p.name}
+                </th>
+                <td className="px-6 py-4">{p.type}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <h1 className="text-custom-red font-antonio text-8xl font-black">
@@ -344,7 +132,22 @@ export const Neto = () => {
               </th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            {materiales.map((m: ProductoMaterial, index: number) => (
+              <tr
+                key={index}
+                className="bg-black text-custom-red uppercase font-black border border-red-main"
+              >
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+                >
+                  {m.nombre}
+                </th>
+                <td className="px-6 py-4">{currencyFormat(m.costo)}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
