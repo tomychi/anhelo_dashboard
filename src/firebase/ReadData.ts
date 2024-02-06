@@ -11,6 +11,7 @@ import {
 import { PedidoProps } from '../types/types';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { ExpenseProps } from './UploadGasto';
+import { DateValueType } from 'react-tailwindcss-datepicker';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -184,16 +185,16 @@ export const ReadOrdersForDate = (
 
 type DataCallback<T> = (data: T[]) => void;
 
-interface DateProps {
-  startDate: Date;
-  endDate: Date;
-}
-
 export const ReadDataForDateRange = <T>(
   dbName: string,
-  valueDate: DateProps,
+  valueDate: DateValueType,
   callback: DataCallback<T>
 ) => {
+  // Validación para asegurar que valueDate no sea null ni undefined
+  if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
+    console.error('Fecha de inicio o fin no especificada.');
+    return;
+  }
   const { startDate, endDate } = valueDate;
   const firestore = getFirestore();
 

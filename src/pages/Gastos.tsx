@@ -26,7 +26,6 @@ export const Gastos = () => {
     ReadDataForDateRange<ExpenseProps>('gastos', valueDate, (gastos) => {
       setExpenseData(gastos);
     });
-
     setLoading(false);
   }, [valueDate]);
 

@@ -13,6 +13,7 @@ const Calendar = ({ handleValueDate, valueDate }: CalendarProps) => {
       //       Use the separator props to change the default separator value.
       // By default the value is ~.
       separator={'hasta'}
+      primaryColor={'red'}
       //       Use showShortcuts and showFooter to display or not the shortcuts and footer respectively.
       // By default both have the value false.
       showShortcuts={true}
