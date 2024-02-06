@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 import { ProductoMaterial } from '../types/types';
 import { ReadMateriales } from '../firebase/Materiales';
-import { DataProps, DataStateProps } from './DynamicForm';
+import { DataProps } from './DynamicForm';
 import { ReadData } from '../firebase/ReadData';
 export const UploadMateriales = (
   materiales: ProductoMaterial[]
