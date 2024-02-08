@@ -58,13 +58,13 @@ export const Seguidores = () => {
 					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
 						<tr>
 							<th scope="col" className="px-6 py-3">
-								METODO DE PAGO
+								CREATIVOS
 							</th>
 							<th scope="col" className="px-6 py-3">
-								MONTO
+								$/LEAD
 							</th>
 							<th scope="col" className="px-6 py-3">
-								PORCENTAJES
+								FOLLOWERS GANADOS
 							</th>
 						</tr>
 					</thead>
