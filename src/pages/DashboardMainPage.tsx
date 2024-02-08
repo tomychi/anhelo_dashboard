@@ -9,6 +9,7 @@ import {
 	Gastos,
 	Neto,
 	Bruto,
+	Seguidores,
 	ProductosVendidos,
 } from "../pages";
 
@@ -28,6 +29,7 @@ export const DashboardMainPage = () => {
 						<Route path="gastos" element={<Gastos />} />
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
+						<Route path="seguidores" element={<Seguidores />} />
 						<Route path="productosVendidos" element={<ProductosVendidos />} />
 					</Route>
 				</Routes>

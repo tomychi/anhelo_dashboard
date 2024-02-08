@@ -33,7 +33,26 @@ export const Seguidores = () => {
 
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
-			<Calendar />
+			<div className="flex items-center   text-4xl">
+				<h1 className="text-custom-red uppercase font-black font-antonio  ">
+					FOLLOWME ADS
+				</h1>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth="5"
+					stroke="currentColor"
+					className="font-black w-4 ml-2 mt-5 text-custom-red"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+					/>
+				</svg>
+			</div>
+
 			<div className="w-full flex flex-col gap-4">
 				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
