@@ -27,8 +27,7 @@ export const Seguidores = () => {
 	}, []);
 
 	const metodosDePago = {
-		Efectivo: 10000,
-		Virtual: 10000,
+		"Presentacion de las satisfyer": 13,
 	};
 
 	return (
@@ -80,8 +79,8 @@ export const Seguidores = () => {
 								>
 									{metodo}
 								</th>
-								<td className="px-6 py-4">{monto}</td>
-								<td className="px-6 py-4">50%</td>
+								<td className="px-6 py-4">${monto}</td>
+								<td className="px-6 py-4"></td>
 							</tr>
 						))}
 					</tbody>
