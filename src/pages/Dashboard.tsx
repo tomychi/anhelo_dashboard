@@ -129,7 +129,7 @@ const options = {
 				font: {
 					family: "Antonio",
 				},
-				boxWidth: 0,
+				boxWidth: 2,
 			},
 		},
 		title: {
@@ -575,7 +575,7 @@ export const Dashboard = () => {
 						/>
 					</svg>
 				</div>
-				<div className="grid-cols-2 grid gap-4 w-full ">
+				<div className="grid-cols-2 grid gap-4  w-full  ">
 					{[
 						dataBurgersSemana,
 						dataVentasSemana,
