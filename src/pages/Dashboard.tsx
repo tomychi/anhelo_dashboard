@@ -441,7 +441,10 @@ export const Dashboard = () => {
 					<p className=" text-4xl font-bold mt-auto">38.537</p>
 					<p className="text-sm mt-auto">VISUALIZACIÓN LOCAL</p>
 				</div>
-				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+				<NavLink
+					to={"/seguidores"}
+					className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative"
+				>
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 						<p>-73</p>
@@ -468,7 +471,7 @@ export const Dashboard = () => {
 					</div>
 					<p className=" text-4xl font-bold mt-auto">203</p>
 					<p className="text-sm mt-auto">NUEVOS SEGUIDORES</p>
-				</div>
+				</NavLink>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
 					{/* Recuadro chiquito arriba a la derecha */}
 					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
