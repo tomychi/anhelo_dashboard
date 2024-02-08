@@ -83,7 +83,7 @@ export const Sidebar = () => {
 							</NavLink>
 						</li>
 
-						<li>
+						{/* <li>
 							<NavLink
 								to="/delivery"
 								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
@@ -101,7 +101,7 @@ export const Sidebar = () => {
 									/>
 								</svg>
 							</NavLink>
-						</li>
+						</li> */}
 
 						<li>
 							<NavLink
@@ -143,7 +143,7 @@ export const Sidebar = () => {
 							</NavLink>
 						</li>
 
-						<li>
+						{/* <li>
 							<NavLink
 								to="/dashboard"
 								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
@@ -162,7 +162,7 @@ export const Sidebar = () => {
 									/>
 								</svg>
 							</NavLink>
-						</li>
+						</li> */}
 
 						<li>
 							<NavLink
