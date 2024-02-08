@@ -4,7 +4,6 @@ import {
 	DynamicForm,
 	Comandera,
 	Delivery,
-	MapStats,
 	Settings,
 	Dashboard,
 	Gastos,
@@ -25,7 +24,6 @@ export const DashboardMainPage = () => {
 						<Route path="pedidos" element={<DynamicForm />} />
 						<Route path="comandas" element={<Comandera />} />
 						<Route path="delivery" element={<Delivery />} />
-						<Route path="map" element={<MapStats />} />
 						<Route path="settings" element={<Settings />} />
 						<Route path="gastos" element={<Gastos />} />
 						<Route path="neto" element={<Neto />} />

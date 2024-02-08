@@ -10,6 +10,7 @@ import { NavLink } from "react-router-dom";
 import Calendar from "../components/Calendar";
 import { DateValueType } from "react-tailwindcss-datepicker";
 import { formatDate } from "../helpers/dateToday";
+import { MapStats } from "./MapStats";
 
 Chart.register(...registerables);
 
@@ -243,7 +244,7 @@ export const Dashboard = () => {
 	}, [ordersData, expenseData]); // Dependencias que deben provocar la ejecución del efecto
 
 	return (
-		<div className="p-4 flex flex-col gap-4">
+		<div className="p-4 overflow-x-hidden flex flex-col gap-4">
 			<Calendar handleValueDate={handleValueDate} valueDate={valueDate} />
 			<div className="flex flex-row gap-4">
 				<NavLink
@@ -594,6 +595,28 @@ export const Dashboard = () => {
 						</div>
 					))}
 				</div>
+			</div>
+			<div className="w-full flex flex-col gap-4">
+				<div className="flex items-center   text-4xl">
+					<h1 className="text-custom-red font-black font-antonio uppercase ">
+						zonas de influencia
+					</h1>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						strokeWidth="5"
+						stroke="currentColor"
+						className="font-black w-4 ml-2 mt-5 text-custom-red"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+						/>
+					</svg>
+				</div>
+				<MapStats />
 			</div>
 		</div>
 	);
