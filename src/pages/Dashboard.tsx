@@ -555,7 +555,7 @@ export const Dashboard = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-4 ">
+			<div className="flex w-full flex-col gap-4 ">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black font-antonio  ">
 						KPIs TRACKING
@@ -575,7 +575,7 @@ export const Dashboard = () => {
 						/>
 					</svg>
 				</div>
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid-cols-2 grid gap-4 w-full ">
 					{[
 						dataBurgersSemana,
 						dataVentasSemana,
@@ -590,7 +590,7 @@ export const Dashboard = () => {
 						dataFacturacionSemana,
 						dataFacturacionSemana,
 					].map((data, index) => (
-						<div key={index}>
+						<div className="" key={index}>
 							<Line data={data} options={options} plugins={[plugin]} />
 						</div>
 					))}
