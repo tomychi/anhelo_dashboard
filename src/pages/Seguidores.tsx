@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ReadDataForDateRange } from "../firebase/ReadData";
 import { ExpenseProps } from "../firebase/UploadGasto";
-import Calendar from "../components/Calendar";
 
 export const Seguidores = () => {
 	const [loading, setLoading] = useState(false);
@@ -26,8 +25,12 @@ export const Seguidores = () => {
 		setLoading(false);
 	}, []);
 
-	const metodosDePago = {
-		"Presentacion de las satisfyer": 13,
+	const creativos = {
+		"Presentacion de las satisfyer": {
+			inversion: 1666,
+			costoPorLead: 13.66,
+			followersGanados: 352,
+		},
 	};
 
 	return (
@@ -60,6 +63,9 @@ export const Seguidores = () => {
 								CREATIVOS
 							</th>
 							<th scope="col" className="px-6 py-3">
+								INVERSION
+							</th>
+							<th scope="col" className="px-6 py-3">
 								$/LEAD
 							</th>
 							<th scope="col" className="px-6 py-3">
@@ -68,19 +74,20 @@ export const Seguidores = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{Object.entries(metodosDePago).map(([metodo, monto]) => (
+						{Object.entries(creativos).map(([creativo, datos]) => (
 							<tr
-								key={metodo}
+								key={creativo}
 								className="bg-black text-custom-red uppercase font-black border border-red-main"
 							>
 								<th
 									scope="row"
 									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
 								>
-									{metodo}
+									{creativo}
 								</th>
-								<td className="px-6 py-4">${monto}</td>
-								<td className="px-6 py-4"></td>
+								<td className="px-6 py-4">${datos.inversion}</td>
+								<td className="px-6 py-4">${datos.costoPorLead}</td>
+								<td className="px-6 py-4">{datos.followersGanados}</td>
 							</tr>
 						))}
 					</tbody>
