@@ -88,3 +88,12 @@ export interface InfoDataProps {
   id: string;
   collectionName?: string;
 }
+
+export interface ProductoMaterial {
+  nombre: string;
+  categoria: string;
+  costo: number;
+  unit: string;
+  precioVenta?: number;
+  ganancia?: number;
+}
