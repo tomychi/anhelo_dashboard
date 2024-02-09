@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ReadDataForDateRange } from "../firebase/ReadData";
 import { ExpenseProps } from "../firebase/UploadGasto";
+import LineChart from "../components/LineChart"; // Asegúrate de importar el componente LineChart desde su ubicación correcta
 
 export const Seguidores = () => {
 	const [loading, setLoading] = useState(false);
@@ -90,8 +91,8 @@ export const Seguidores = () => {
 
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
-			<div className="flex items-center   text-4xl">
-				<h1 className="text-custom-red uppercase font-black font-antonio  ">
+			<div className="flex items-center text-4xl">
+				<h1 className="text-custom-red uppercase font-black font-antonio">
 					COMPETENCIA TRACKING MOMENTANEO
 				</h1>
 				<svg
@@ -112,7 +113,7 @@ export const Seguidores = () => {
 			<div className="w-full flex flex-col gap-4">
 				<div className="w-full flex flex-col gap-4">
 					<table className="w-full border-collapse font-antonio text-sm text-left rtl:text-right text-black">
-						<thead className="text-xs uppercase text-black bg-custom-red ">
+						<thead className="text-xs uppercase text-black bg-custom-red">
 							<tr>
 								<th scope="col" className="px-6 py-3">
 									Ranking
@@ -167,8 +168,11 @@ export const Seguidores = () => {
 					</table>
 				</div>
 			</div>
-			<div className="flex items-center   text-4xl">
-				<h1 className="text-custom-red uppercase font-black font-antonio  ">
+			<div className="w-full">
+				<LineChart data={fakeDatabase} />
+			</div>
+			<div className="flex items-center text-4xl">
+				<h1 className="text-custom-red uppercase font-black font-antonio">
 					FOLLOWME ADS
 				</h1>
 				<svg
@@ -189,7 +193,7 @@ export const Seguidores = () => {
 
 			<div className="w-full flex flex-col gap-4">
 				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
-					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
+					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red">
 						<tr>
 							<th scope="col" className="px-6 py-3">
 								CREATIVOS
@@ -228,3 +232,5 @@ export const Seguidores = () => {
 		</div>
 	);
 };
+
+export default Seguidores;
