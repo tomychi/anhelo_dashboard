@@ -38,6 +38,21 @@ export const Seguidores = () => {
 				likes: 1400,
 				comentarios: 45,
 			},
+			"Santa Burger": {
+				followers: 15969,
+				likes: 200,
+				comentarios: 10,
+			},
+			"Desperta con esta burger": {
+				followers: 10579,
+				likes: 800,
+				comentarios: 5,
+			},
+			"Burger Pig": {
+				followers: 5781,
+				likes: 100,
+				comentarios: 3,
+			},
 		},
 		"2024-01-02": {
 			Anhelo: {
@@ -49,6 +64,48 @@ export const Seguidores = () => {
 				followers: 95500,
 				likes: 1450,
 				comentarios: 48,
+			},
+			"Santa Burger": {
+				followers: 16000,
+				likes: 210,
+				comentarios: 11,
+			},
+			"Desperta con esta burger": {
+				followers: 10600,
+				likes: 810,
+				comentarios: 6,
+			},
+			"Burger Pig": {
+				followers: 5790,
+				likes: 105,
+				comentarios: 4,
+			},
+		},
+		"2024-01-03": {
+			Anhelo: {
+				followers: 102000,
+				likes: 1600,
+				comentarios: 60,
+			},
+			Burgerfan: {
+				followers: 96000,
+				likes: 1475,
+				comentarios: 50,
+			},
+			"Santa Burger": {
+				followers: 16100,
+				likes: 215,
+				comentarios: 13,
+			},
+			"Desperta con esta burger": {
+				followers: 10650,
+				likes: 820,
+				comentarios: 8,
+			},
+			"Burger Pig": {
+				followers: 5805,
+				likes: 110,
+				comentarios: 5,
 			},
 		},
 	};
