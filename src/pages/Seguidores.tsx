@@ -39,6 +39,11 @@ export const Seguidores = () => {
 			promedioDeLikesUltimasDosSemanas: 64,
 			promedioDeComentariosUltimasDosSemanas: 0,
 		},
+		"Santa Burger": {
+			followers: 15969,
+			promedioDeLikesUltimasDosSemanas: 0,
+			promedioDeComentariosUltimasDosSemanas: 0,
+		},
 		"Desperta con esta burger": {
 			followers: 10579,
 			promedioDeLikesUltimasDosSemanas: 753,
@@ -49,13 +54,18 @@ export const Seguidores = () => {
 			promedioDeLikesUltimasDosSemanas: 0,
 			promedioDeComentariosUltimasDosSemanas: 0,
 		},
+		Anhelo: {
+			followers: 4992,
+			promedioDeLikesUltimasDosSemanas: 119,
+			promedioDeComentariosUltimasDosSemanas: 1.5,
+		},
 	};
 
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
 			<div className="flex items-center   text-4xl">
 				<h1 className="text-custom-red uppercase font-black font-antonio  ">
-					COMPETENCIA TRACKING
+					COMPETENCIA TRACKING MOMENTANEO
 				</h1>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -73,50 +83,52 @@ export const Seguidores = () => {
 				</svg>
 			</div>
 			<div className="w-full flex flex-col gap-4">
-				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
-					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
-						<tr>
-							<th scope="col" className="px-6 py-3">
-								Competidores
-							</th>
-							<th scope="col" className="px-6 py-3">
-								Ranking
-							</th>
-							<th scope="col" className="px-6 py-3">
-								Followers
-							</th>
-							<th scope="col" className="px-6 py-3">
-								P/Likes ultimas dos semanas
-							</th>
-							<th scope="col" className="px-6 py-3">
-								P/Comentarios ultimas dos semanas
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{Object.entries(competencia).map(([competencia, datos]) => (
-							<tr
-								key={competencia}
-								className="bg-black text-custom-red uppercase font-black border border-red-main"
-							>
-								<th
-									scope="row"
-									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-								>
-									{competencia}
+				<div className="w-full flex flex-col gap-4">
+					<table className="w-full border-collapse font-antonio text-sm text-left rtl:text-right text-black">
+						<thead className="text-xs uppercase text-black bg-custom-red ">
+							<tr>
+								<th scope="col" className="px-6 py-3">
+									Ranking
 								</th>
-								<td className="px-6 py-4">{datos.inversion}</td>
-								<td className="px-6 py-4">{datos.followers}</td>
-								<td className="px-6 py-4">
-									{datos.promedioDeLikesUltimasDosSemanas}
-								</td>
-								<td className="px-6 py-4">
-									{datos.promedioDeComentariosUltimasDosSemanas}
-								</td>
+								<th scope="col" className="px-6 py-3">
+									Competidor
+								</th>
+								<th scope="col" className="px-6 py-3">
+									Followers
+								</th>
+								<th scope="col" className="px-6 py-3">
+									P/Likes últimas dos semanas
+								</th>
+								<th scope="col" className="px-6 py-3">
+									P/Comentarios últimas dos semanas
+								</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{Object.entries(competencia)
+								.sort(
+									([, datosA], [, datosB]) =>
+										datosB.followers - datosA.followers
+								)
+								.map(([competencia, datos], index) => (
+									<tr
+										key={competencia}
+										className="bg-black text-custom-red uppercase font-black border border-red-main"
+									>
+										<td className="px-6 py-4">{index + 1}</td>
+										<td className="px-6 py-4">{competencia}</td>
+										<td className="px-6 py-4">{datos.followers}</td>
+										<td className="px-6 py-4">
+											{datos.promedioDeLikesUltimasDosSemanas}
+										</td>
+										<td className="px-6 py-4">
+											{datos.promedioDeComentariosUltimasDosSemanas}
+										</td>
+									</tr>
+								))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div className="flex items-center   text-4xl">
 				<h1 className="text-custom-red uppercase font-black font-antonio  ">
