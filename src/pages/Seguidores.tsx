@@ -91,6 +91,9 @@ export const Seguidores = () => {
 
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
+			<div className="w-full">
+				<LineChart data={fakeDatabase} />
+			</div>
 			<div className="flex items-center text-4xl">
 				<h1 className="text-custom-red uppercase font-black font-antonio">
 					COMPETENCIA TRACKING MOMENTANEO
@@ -168,9 +171,7 @@ export const Seguidores = () => {
 					</table>
 				</div>
 			</div>
-			<div className="w-full">
-				<LineChart data={fakeDatabase} />
-			</div>
+
 			<div className="flex items-center text-4xl">
 				<h1 className="text-custom-red uppercase font-black font-antonio">
 					FOLLOWME ADS
