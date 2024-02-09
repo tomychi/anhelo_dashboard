@@ -33,8 +33,91 @@ export const Seguidores = () => {
 		},
 	};
 
+	const competencia = {
+		"Burger Fan": {
+			followers: 19186,
+			promedioDeLikesUltimasDosSemanas: 64,
+			promedioDeComentariosUltimasDosSemanas: 0,
+		},
+		"Desperta con esta burger": {
+			followers: 10579,
+			promedioDeLikesUltimasDosSemanas: 753,
+			promedioDeComentariosUltimasDosSemanas: 0.33,
+		},
+		"Burger Pig": {
+			followers: 5781,
+			promedioDeLikesUltimasDosSemanas: 0,
+			promedioDeComentariosUltimasDosSemanas: 0,
+		},
+	};
+
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
+			<div className="flex items-center   text-4xl">
+				<h1 className="text-custom-red uppercase font-black font-antonio  ">
+					COMPETENCIA TRACKING
+				</h1>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth="5"
+					stroke="currentColor"
+					className="font-black w-4 ml-2 mt-5 text-custom-red"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="m4.5 4.5 15 15m0 0V8.25m0 11.25H8.25"
+					/>
+				</svg>
+			</div>
+			<div className="w-full flex flex-col gap-4">
+				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
+						<tr>
+							<th scope="col" className="px-6 py-3">
+								Competidores
+							</th>
+							<th scope="col" className="px-6 py-3">
+								Ranking
+							</th>
+							<th scope="col" className="px-6 py-3">
+								Followers
+							</th>
+							<th scope="col" className="px-6 py-3">
+								P/Likes ultimas dos semanas
+							</th>
+							<th scope="col" className="px-6 py-3">
+								P/Comentarios ultimas dos semanas
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{Object.entries(competencia).map(([competencia, datos]) => (
+							<tr
+								key={competencia}
+								className="bg-black text-custom-red uppercase font-black border border-red-main"
+							>
+								<th
+									scope="row"
+									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+								>
+									{competencia}
+								</th>
+								<td className="px-6 py-4">{datos.inversion}</td>
+								<td className="px-6 py-4">{datos.followers}</td>
+								<td className="px-6 py-4">
+									{datos.promedioDeLikesUltimasDosSemanas}
+								</td>
+								<td className="px-6 py-4">
+									{datos.promedioDeComentariosUltimasDosSemanas}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
 			<div className="flex items-center   text-4xl">
 				<h1 className="text-custom-red uppercase font-black font-antonio  ">
 					FOLLOWME ADS
