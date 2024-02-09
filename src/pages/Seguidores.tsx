@@ -156,6 +156,7 @@ export const Seguidores = () => {
 												(datos.promedioDeLikesUltimasDosSemanas * 100) /
 												datos.followers
 											).toFixed(1)}
+											%
 										</td>
 										<td className="px-6 py-4">
 											{datos.promedioDeComentariosUltimasDosSemanas}
