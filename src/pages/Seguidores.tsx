@@ -25,6 +25,33 @@ export const Seguidores = () => {
 		setLoading(false);
 	}, []);
 
+	const fakeDatabase = {
+		"2024-01-01": {
+			Anhelo: {
+				followers: 100000,
+				likes: 1500,
+				comentarios: 50,
+			},
+			Burgerfan: {
+				followers: 95000,
+				likes: 1400,
+				comentarios: 45,
+			},
+		},
+		"2024-01-02": {
+			Anhelo: {
+				followers: 101000,
+				likes: 1550,
+				comentarios: 55,
+			},
+			Burgerfan: {
+				followers: 95500,
+				likes: 1450,
+				comentarios: 48,
+			},
+		},
+	};
+
 	const creativos = {
 		"Presentacion de las satisfyer": {
 			inversion: 1666,
@@ -100,6 +127,9 @@ export const Seguidores = () => {
 									P/Likes últimas dos semanas
 								</th>
 								<th scope="col" className="px-6 py-3">
+									Ratio
+								</th>
+								<th scope="col" className="px-6 py-3">
 									P/Comentarios últimas dos semanas
 								</th>
 							</tr>
@@ -120,6 +150,10 @@ export const Seguidores = () => {
 										<td className="px-6 py-4">{datos.followers}</td>
 										<td className="px-6 py-4">
 											{datos.promedioDeLikesUltimasDosSemanas}
+										</td>
+										<td className="px-6 py-4">
+											{(datos.promedioDeLikesUltimasDosSemanas * 100) /
+												datos.followers}
 										</td>
 										<td className="px-6 py-4">
 											{datos.promedioDeComentariosUltimasDosSemanas}
