@@ -27,7 +27,7 @@ export const Seguidores = () => {
 	}, []);
 
 	const fakeDatabase = {
-		"2024-01-01": {
+		"2024-02-09": {
 			Anhelo: {
 				followers: 4992,
 				likes: 1500,
@@ -54,9 +54,9 @@ export const Seguidores = () => {
 				comentarios: 3,
 			},
 		},
-		"2024-01-02": {
+		"2024-03-09": {
 			Anhelo: {
-				followers: 4992,
+				followers: 5001,
 				likes: 1500,
 				comentarios: 50,
 			},
@@ -81,7 +81,7 @@ export const Seguidores = () => {
 				comentarios: 3,
 			},
 		},
-		"2024-01-03": {
+		"2024-04-09": {
 			Anhelo: {
 				followers: 4992,
 				likes: 1500,
@@ -148,6 +148,9 @@ export const Seguidores = () => {
 
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
+			<h1 className="text-custom-red uppercase flex items-center text-4xl font-black font-antonio">
+				FOLLOWERS GROWTH
+			</h1>
 			<div className="w-full">
 				<LineChart data={fakeDatabase} />
 			</div>
