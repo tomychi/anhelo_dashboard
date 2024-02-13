@@ -2,7 +2,10 @@ import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
-import { obtenerFechaActual } from '../helpers/dateToday';
+import {
+  obtenerFechaActual,
+  obtenerHoraActualMas5Minutos,
+} from '../helpers/dateToday';
 import { ReadData } from '../firebase/ReadData';
 
 export interface FormDataProps {
@@ -44,7 +47,7 @@ export const DynamicForm = () => {
     direccion: '',
     telefono: '',
     envio: '1000',
-    hora: '',
+    hora: obtenerHoraActualMas5Minutos(),
     piso: '',
     referencias: '',
   });

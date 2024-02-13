@@ -37,7 +37,6 @@ export const UploadMateriales = (
 
 export const Neto = () => {
   const [expenseData, setExpenseData] = useState<ExpenseProps[]>([]);
-  const [loading, setLoading] = useState(false);
   const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
   const [prodcutos, setProdcutos] = useState<DataProps[]>([]);
 
@@ -47,7 +46,6 @@ export const Neto = () => {
   };
 
   const getData = async () => {
-    setLoading(true);
     if (prodcutos.length === 0) {
       const rawData = await ReadData();
       const formattedData: DataProps[] = rawData.map((item) => {
@@ -62,7 +60,6 @@ export const Neto = () => {
       setProdcutos(formattedData);
       readMateriales();
     }
-    setLoading(false);
   };
 
   useEffect(() => {

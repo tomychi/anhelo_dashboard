@@ -67,3 +67,31 @@ export const calcularTotales = (
 
   return { totalFacturacion, totalProductosVendidos, hamburguesasPedidas };
 };
+
+export const calculateUnitCost = (
+  total: number,
+  quantity: number,
+  unidadPorPrecio: number,
+  unit: string,
+  name: string
+): number => {
+  if (name === 'tomate') {
+    // Para el caso del tomate, simplemente dividimos el total por la cantidad de fetas
+    return Math.ceil(total / (quantity * unidadPorPrecio));
+  }
+
+  // Si la unidad es 'kg', convertimos la cantidad a gramos
+  if (unit === 'kg') {
+    quantity *= 1000; // Convertimos kg a gramos
+    // Calculamos la cantidad de hamburguesas que se pueden hacer con la cantidad de ingrediente proporcionada
+    const hamburguesasPorCantidad = quantity / unidadPorPrecio;
+
+    // Calculamos el costo unitario dividiendo el total pagado por la cantidad de hamburguesas que se pueden hacer
+    const costoUnitario = total / hamburguesasPorCantidad;
+
+    // Redondeamos hacia arriba y devolvemos el costo unitario
+    return Math.ceil(costoUnitario);
+  }
+
+  return Math.ceil(total / quantity / unidadPorPrecio);
+};
