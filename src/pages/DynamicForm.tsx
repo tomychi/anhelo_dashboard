@@ -33,6 +33,8 @@ export interface DataProps {
   name: string;
   price: number;
   type: string;
+  ingredients: Record<string, number>; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
+  costo: number; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
 }
 export interface DataStateProps {
   data: DataProps;
@@ -88,6 +90,8 @@ export const DynamicForm = () => {
             name: item.data.name,
             price: item.data.price,
             type: item.data.type,
+            ingredients: item.data.ingredients,
+            costo: item.data.costo,
           },
         };
       });

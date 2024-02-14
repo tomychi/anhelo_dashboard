@@ -36,6 +36,29 @@ export const ReadData = async () => {
   return fetchedData.flat();
 };
 
+export const ReadDataSell = async () => {
+  const firestore = getFirestore();
+
+  const collections = ['burgers', 'fries'];
+
+  const fetchedData = await Promise.all(
+    collections.map(async (collectionName) => {
+      const collectionRef = collection(firestore, collectionName);
+      const snapshot = await getDocs(collectionRef);
+
+      const dataWithIds = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+        collectionName: collectionName,
+      }));
+
+      return dataWithIds;
+    })
+  );
+
+  return fetchedData.flat();
+};
+
 type OrdersCallback = (pedidos: PedidoProps[]) => void;
 
 export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
@@ -241,4 +264,27 @@ export const ReadDataForDateRange = <T>(
     );
     callback(mergedData);
   });
+};
+
+// Función para actualizar la propiedad "ingredients" en un documento de la colección "burgers"
+export const addIngredientsToBurger = async (
+  burgerId: string,
+  ingredientes: Map<string, number>
+) => {
+  const firestore = getFirestore();
+  const burgerDocRef = doc(firestore, 'burgers', burgerId);
+
+  try {
+    // Convertir el objeto Map a un objeto JavaScript plano
+    const ingredientesPlano = Object.fromEntries(ingredientes.entries());
+
+    // Actualizar la propiedad "ingredients" en el documento de la hamburguesa
+    await updateDoc(burgerDocRef, {
+      ingredients: ingredientesPlano,
+    });
+    console.log('Ingredients added to burger successfully');
+  } catch (error) {
+    console.error('Error adding ingredients to burger: ', error);
+    throw new Error('Failed to add ingredients to burger');
+  }
 };

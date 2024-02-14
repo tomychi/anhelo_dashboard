@@ -1,5 +1,5 @@
 import { ExpenseProps } from '../firebase/UploadGasto';
-import { PedidoProps } from '../types/types';
+import { PedidoProps, ProductoMaterial } from '../types/types';
 
 export interface BurgersPedidas {
   burger: string;
@@ -94,4 +94,33 @@ export const calculateUnitCost = (
   }
 
   return Math.ceil(total / quantity / unidadPorPrecio);
+};
+
+export const calcularCostoHamburguesa = (
+  materiales: ProductoMaterial[],
+  ingredientes: Record<string, number>
+): number => {
+  if (!ingredientes) {
+    console.error("El objeto 'ingredientes' es null o undefined.");
+    return 0;
+  }
+
+  let costoTotal = 0;
+
+  // Iterar sobre las entradas del objeto ingredientes
+  for (const [nombre, cantidad] of Object.entries(ingredientes)) {
+    // Buscar el ingrediente en la lista de materiales
+    const ingrediente = materiales.find((item) => item.nombre === nombre);
+    if (ingrediente) {
+      // Calcular el costo del ingrediente y sumarlo al costo total
+      const costoIngrediente = ingrediente.costo * cantidad;
+      costoTotal += costoIngrediente;
+    } else {
+      console.error(
+        `No se encontró el ingrediente ${nombre} en la lista de materiales.`
+      );
+    }
+  }
+
+  return costoTotal;
 };
