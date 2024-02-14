@@ -12,6 +12,7 @@ import { ReadMateriales } from '../firebase/Materiales';
 import { DataProps } from './DynamicForm';
 import { ReadDataSell } from '../firebase/ReadData';
 import { calcularCostoHamburguesa } from '../helpers/calculator';
+import { Ingredients } from '../components/gastos';
 export const UploadMateriales = (
   materiales: ProductoMaterial[]
 ): Promise<DocumentReference[]> => {
@@ -43,42 +44,54 @@ export const Neto = () => {
   const [selectedProduct, setSelectedProduct] = useState<DataProps | null>(
     null
   );
-
-  const readMateriales = async () => {
-    const rawData = await ReadMateriales();
-    setMateriales(rawData);
-  };
+  const [materialesCargados, setMaterialesCargados] = useState(false);
 
   const openModal = (product: DataProps) => {
     setSelectedProduct(product);
     setModalOpen(true);
   };
+  const readMateriales = async () => {
+    const rawData = await ReadMateriales();
+    setMateriales(rawData);
+  };
 
   useEffect(() => {
     const getData = async () => {
       await readMateriales();
-      if (productos.length === 0 && materiales.length > 0) {
-        const rawData = await ReadDataSell();
-        const formattedData: DataProps[] = rawData.map((item) => {
-          return {
-            description: item.data.description,
-            img: item.data.img,
-            name: item.data.name,
-            price: item.data.price,
-            type: item.data.type,
-            ingredients: item.data.ingredients,
-            costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
-          };
-        });
-        setProductos(formattedData);
-      }
-      setIsLoading(false);
+      setMaterialesCargados(true);
     };
-    getData();
-  }, [productos, materiales]);
+
+    if (!materialesCargados) {
+      getData();
+    }
+  }, [materialesCargados]);
+
+  useEffect(() => {
+    const cargarProductos = async () => {
+      if (materialesCargados && productos.length === 0) {
+        const rawData = await ReadDataSell();
+        const formattedData: DataProps[] = rawData.map((item) => ({
+          description: item.data.description,
+          img: item.data.img,
+          name: item.data.name,
+          price: item.data.price,
+          type: item.data.type,
+          ingredients: item.data.ingredients,
+          id: item.id,
+          costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
+        }));
+        setProductos(formattedData);
+        setIsLoading(false);
+      }
+    };
+
+    cargarProductos();
+  }, [productos, materialesCargados, materiales]);
+
   if (isLoading) {
     return <p>Cargando...</p>;
   }
+
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
       <div className="w-4/5 flex flex-col gap-4">
@@ -115,7 +128,10 @@ export const Neto = () => {
                   {p.name}
                 </th>
                 <td className="px-6 py-4">{p.type}</td>
-                <td className="px-6 py-4" onClick={() => openModal(p)}>
+                <td
+                  className="px-6 py-4 cursor-pointer hover:bg-custom-red hover:text-black"
+                  onClick={() => openModal(p)}
+                >
                   {currencyFormat(p.costo)}
                 </td>
 
@@ -123,36 +139,18 @@ export const Neto = () => {
                   {currencyFormat(Math.ceil(p.costo * 2.3))}
                 </td>
                 <td className="px-6 py-4">
-                  {currencyFormat(Math.round(p.costo * 2.3 - p.costo))}
+                  {currencyFormat(p.costo * 2.3 - p.costo)}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
         {modalOpen && selectedProduct && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg">
-              <h2 className="text-2xl font-bold mb-4">
-                {selectedProduct.name}
-              </h2>
-              <p>Ingredientes:</p>
-              <ul>
-                {Object.entries(selectedProduct.ingredients).map(
-                  ([ingredient, quantity]) => (
-                    <li key={ingredient}>
-                      {ingredient}: {quantity}
-                    </li>
-                  )
-                )}
-              </ul>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md mt-4"
-                onClick={() => setModalOpen(false)}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
+          <Ingredients
+            selectedProduct={selectedProduct}
+            setModalOpen={setModalOpen}
+            materiales={materiales}
+          />
         )}
         <h1 className="text-custom-red font-antonio text-8xl font-black">
           ENVIOS:
@@ -179,7 +177,11 @@ export const Neto = () => {
             {materiales.map((m: ProductoMaterial, index: number) => (
               <tr
                 key={index}
-                className="bg-black text-custom-red uppercase font-black border border-red-main"
+                // className="bg-black text-custom-red uppercase font-black border border-red-main"
+                draggable
+                className={
+                  'bg-black text-custom-red uppercase font-black border border-red-main cursor-pointer'
+                }
               >
                 <th
                   scope="row"

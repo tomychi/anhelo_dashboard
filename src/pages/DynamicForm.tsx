@@ -33,6 +33,7 @@ export interface DataProps {
   name: string;
   price: number;
   type: string;
+  id: string;
   ingredients: Record<string, number>; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
   costo: number; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
 }
@@ -92,6 +93,7 @@ export const DynamicForm = () => {
             type: item.data.type,
             ingredients: item.data.ingredients,
             costo: item.data.costo,
+            id: item.id,
           },
         };
       });
@@ -107,7 +109,7 @@ export const DynamicForm = () => {
 
   useEffect(() => {
     getData();
-  });
+  }, []);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>

@@ -270,21 +270,31 @@ export const ReadDataForDateRange = <T>(
 export const addIngredientsToBurger = async (
   burgerId: string,
   ingredientes: Map<string, number>
-) => {
+): Promise<Record<string, number>> => {
   const firestore = getFirestore();
   const burgerDocRef = doc(firestore, 'burgers', burgerId);
+  const friesDocRef = doc(firestore, 'fries', burgerId); // Usar el mismo ID para buscar en "fries"
 
   try {
-    // Convertir el objeto Map a un objeto JavaScript plano
-    const ingredientesPlano = Object.fromEntries(ingredientes.entries());
-
-    // Actualizar la propiedad "ingredients" en el documento de la hamburguesa
+    // Intentar actualizar el documento en la colección "burgers"
     await updateDoc(burgerDocRef, {
-      ingredients: ingredientesPlano,
+      ingredients: Object.fromEntries(ingredientes.entries()),
     });
-    console.log('Ingredients added to burger successfully');
+
+    // Devolver algún valor si es necesario
+    return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
   } catch (error) {
-    console.error('Error adding ingredients to burger: ', error);
-    throw new Error('Failed to add ingredients to burger');
+    // Si ocurre un error, intentar actualizar el documento en la colección "fries"
+    try {
+      await updateDoc(friesDocRef, {
+        ingredients: Object.fromEntries(ingredientes.entries()),
+      });
+
+      // Devolver algún valor si es necesario
+      return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
+    } catch (error) {
+      console.error('Error adding ingredients: ', error);
+      throw new Error('Failed to add ingredients to burger or fries');
+    }
   }
 };
