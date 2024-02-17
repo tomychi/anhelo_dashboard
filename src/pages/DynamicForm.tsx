@@ -2,7 +2,10 @@ import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
-import { obtenerFechaActual } from '../helpers/dateToday';
+import {
+  obtenerFechaActual,
+  obtenerHoraActualMas5Minutos,
+} from '../helpers/dateToday';
 import { ReadData } from '../firebase/ReadData';
 
 export interface FormDataProps {
@@ -30,6 +33,9 @@ export interface DataProps {
   name: string;
   price: number;
   type: string;
+  id: string;
+  ingredients: Record<string, number>; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
+  costo: number; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
 }
 export interface DataStateProps {
   data: DataProps;
@@ -44,7 +50,7 @@ export const DynamicForm = () => {
     direccion: '',
     telefono: '',
     envio: '1000',
-    hora: '',
+    hora: obtenerHoraActualMas5Minutos(),
     piso: '',
     referencias: '',
   });
@@ -85,6 +91,9 @@ export const DynamicForm = () => {
             name: item.data.name,
             price: item.data.price,
             type: item.data.type,
+            ingredients: item.data.ingredients,
+            costo: item.data.costo,
+            id: item.id,
           },
         };
       });
@@ -100,7 +109,7 @@ export const DynamicForm = () => {
 
   useEffect(() => {
     getData();
-  });
+  }, []);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>

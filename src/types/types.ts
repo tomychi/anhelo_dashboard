@@ -90,10 +90,12 @@ export interface InfoDataProps {
 }
 
 export interface ProductoMaterial {
+  id: string;
   nombre: string;
   categoria: string;
   costo: number;
   unit: string;
   precioVenta?: number;
   ganancia?: number;
+  unidadPorPrecio: number;
 }

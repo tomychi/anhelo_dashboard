@@ -1,5 +1,5 @@
 import { ExpenseProps } from '../firebase/UploadGasto';
-import { PedidoProps } from '../types/types';
+import { PedidoProps, ProductoMaterial } from '../types/types';
 
 export interface BurgersPedidas {
   burger: string;
@@ -66,4 +66,61 @@ export const calcularTotales = (
   );
 
   return { totalFacturacion, totalProductosVendidos, hamburguesasPedidas };
+};
+
+export const calculateUnitCost = (
+  total: number,
+  quantity: number,
+  unidadPorPrecio: number,
+  unit: string,
+  name: string
+): number => {
+  if (name === 'tomate') {
+    // Para el caso del tomate, simplemente dividimos el total por la cantidad de fetas
+    return Math.ceil(total / (quantity * unidadPorPrecio));
+  }
+
+  // Si la unidad es 'kg', convertimos la cantidad a gramos
+  if (unit === 'kg') {
+    quantity *= 1000; // Convertimos kg a gramos
+    // Calculamos la cantidad de hamburguesas que se pueden hacer con la cantidad de ingrediente proporcionada
+    const hamburguesasPorCantidad = quantity / unidadPorPrecio;
+
+    // Calculamos el costo unitario dividiendo el total pagado por la cantidad de hamburguesas que se pueden hacer
+    const costoUnitario = total / hamburguesasPorCantidad;
+
+    // Redondeamos hacia arriba y devolvemos el costo unitario
+    return Math.ceil(costoUnitario);
+  }
+
+  return Math.ceil(total / quantity / unidadPorPrecio);
+};
+
+export const calcularCostoHamburguesa = (
+  materiales: ProductoMaterial[],
+  ingredientes: Record<string, number>
+): number => {
+  if (!ingredientes) {
+    console.error("El objeto 'ingredientes' es null o undefined.");
+    return 0;
+  }
+
+  let costoTotal = 0;
+
+  // Iterar sobre las entradas del objeto ingredientes
+  for (const [nombre, cantidad] of Object.entries(ingredientes)) {
+    // Buscar el ingrediente en la lista de materiales
+    const ingrediente = materiales.find((item) => item.nombre === nombre);
+    if (ingrediente) {
+      // Calcular el costo del ingrediente y sumarlo al costo total
+      const costoIngrediente = ingrediente.costo * cantidad;
+      costoTotal += costoIngrediente;
+    } else {
+      console.error(
+        `No se encontró el ingrediente ${nombre} en la lista de materiales.`
+      );
+    }
+  }
+
+  return costoTotal;
 };

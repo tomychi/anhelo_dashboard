@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FormGasto } from '../components/gastos';
-import { ReadDataForDateRange } from '../firebase/ReadData';
+import { ReadDataForDateRange, eliminarDocumento } from '../firebase/ReadData';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import currencyFormat from '../helpers/currencyFormat';
 import Calendar from '../components/Calendar';
@@ -120,7 +120,10 @@ export const Gastos = () => {
                       <td className="px-6 py-4 ">{unit}</td>
                       <td className="px-6 py-4">{currencyFormat(total)}</td>
                       <td className="px-6 py-4 text-center">
-                        <div className="font-black border border-red-main text-custom-red hover:underline">
+                        <div
+                          className="font-black border border-red-main text-custom-red hover:underline"
+                          onClick={() => eliminarDocumento('gastos', id)}
+                        >
                           Borrar
                         </div>
                       </td>

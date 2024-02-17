@@ -36,6 +36,29 @@ export const ReadData = async () => {
   return fetchedData.flat();
 };
 
+export const ReadDataSell = async () => {
+  const firestore = getFirestore();
+
+  const collections = ['burgers', 'fries'];
+
+  const fetchedData = await Promise.all(
+    collections.map(async (collectionName) => {
+      const collectionRef = collection(firestore, collectionName);
+      const snapshot = await getDocs(collectionRef);
+
+      const dataWithIds = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+        collectionName: collectionName,
+      }));
+
+      return dataWithIds;
+    })
+  );
+
+  return fetchedData.flat();
+};
+
 type OrdersCallback = (pedidos: PedidoProps[]) => void;
 
 export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
@@ -241,4 +264,37 @@ export const ReadDataForDateRange = <T>(
     );
     callback(mergedData);
   });
+};
+
+// Función para actualizar la propiedad "ingredients" en un documento de la colección "burgers"
+export const addIngredientsToBurger = async (
+  burgerId: string,
+  ingredientes: Map<string, number>
+): Promise<Record<string, number>> => {
+  const firestore = getFirestore();
+  const burgerDocRef = doc(firestore, 'burgers', burgerId);
+  const friesDocRef = doc(firestore, 'fries', burgerId); // Usar el mismo ID para buscar en "fries"
+
+  try {
+    // Intentar actualizar el documento en la colección "burgers"
+    await updateDoc(burgerDocRef, {
+      ingredients: Object.fromEntries(ingredientes.entries()),
+    });
+
+    // Devolver algún valor si es necesario
+    return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
+  } catch (error) {
+    // Si ocurre un error, intentar actualizar el documento en la colección "fries"
+    try {
+      await updateDoc(friesDocRef, {
+        ingredients: Object.fromEntries(ingredientes.entries()),
+      });
+
+      // Devolver algún valor si es necesario
+      return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
+    } catch (error) {
+      console.error('Error adding ingredients: ', error);
+      throw new Error('Failed to add ingredients to burger or fries');
+    }
+  }
 };

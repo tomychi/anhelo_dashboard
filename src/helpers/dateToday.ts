@@ -16,3 +16,19 @@ export const formatDate = (date: Date): string => {
   const day = date.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
+
+export const obtenerHoraActualMas5Minutos = (): string => {
+  // Obtener la hora actual
+  const ahora = new Date();
+
+  // Sumar 5 minutos
+  ahora.setMinutes(ahora.getMinutes() + 5);
+
+  // Formatear la hora con dos dígitos para los minutos
+  const minutos = ahora.getMinutes().toString().padStart(2, '0');
+
+  // Formatear la hora como 'HH:mm'
+  const horaFormateada = ahora.getHours() + ':' + minutos;
+
+  return horaFormateada;
+};
