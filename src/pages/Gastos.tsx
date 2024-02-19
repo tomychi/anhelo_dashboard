@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FormGasto } from '../components/gastos';
-import { ReadDataForDateRange, eliminarDocumento } from '../firebase/ReadData';
+import { eliminarDocumento } from '../firebase/ReadData';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import currencyFormat from '../helpers/currencyFormat';
 import Calendar from '../components/Calendar';
@@ -23,9 +23,9 @@ export const Gastos = () => {
   useEffect(() => {
     setLoading(true);
 
-    ReadDataForDateRange<ExpenseProps>('gastos', valueDate, (gastos) => {
-      setExpenseData(gastos);
-    });
+    // ReadDataForDateRange<ExpenseProps>('gastos', valueDate, (gastos) => {
+    //   setExpenseData(gastos);
+    // });
     setLoading(false);
   }, [valueDate]);
 

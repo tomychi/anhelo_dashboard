@@ -9,13 +9,13 @@ export interface BurgersPedidas {
 export const calcularTotales = (
   ordersData: (PedidoProps | ExpenseProps)[]
 ): {
-  totalFacturacion: number;
+  facturacionTotal: number;
   totalProductosVendidos: number;
   hamburguesasPedidas: BurgersPedidas[];
 } => {
   if (ordersData.length === 0) {
     return {
-      totalFacturacion: 0,
+      facturacionTotal: 0,
       totalProductosVendidos: 0,
       hamburguesasPedidas: [],
     }; // Devuelve 0 si no hay pedidos
@@ -34,11 +34,11 @@ export const calcularTotales = (
   };
 
   // Iterar sobre los pedidos y gastos para calcular los totales y las hamburguesas pedidas
-  const { totalFacturacion, totalProductosVendidos } = ordersData.reduce(
+  const { facturacionTotal, totalProductosVendidos } = ordersData.reduce(
     (totals, order) => {
       if ('detallePedido' in order) {
         // Si es un PedidoProps, suma el total de facturación y la cantidad de productos vendidos en el detalle del pedido
-        totals.totalFacturacion += order.total || 0;
+        totals.facturacionTotal += order.total || 0;
         totals.totalProductosVendidos += order.detallePedido.reduce(
           (accumulator, detail) => {
             // Acumula la cantidad de productos vendidos y agrega cada hamburguesa al objeto hamburguesasMap
@@ -49,12 +49,12 @@ export const calcularTotales = (
         );
       } else {
         // Si es un ExpenseProps, suma el total de facturación y la cantidad directamente
-        totals.totalFacturacion += order.total || 0;
+        totals.facturacionTotal += order.total || 0;
         totals.totalProductosVendidos += order.quantity || 0;
       }
       return totals;
     },
-    { totalFacturacion: 0, totalProductosVendidos: 0 }
+    { facturacionTotal: 0, totalProductosVendidos: 0 }
   );
 
   // Crear un arreglo con los objetos de hamburguesas y cantidades acumuladas
@@ -65,7 +65,7 @@ export const calcularTotales = (
     })
   );
 
-  return { totalFacturacion, totalProductosVendidos, hamburguesasPedidas };
+  return { facturacionTotal, totalProductosVendidos, hamburguesasPedidas };
 };
 
 export const calculateUnitCost = (

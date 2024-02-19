@@ -3,19 +3,21 @@ import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { thunk } from 'redux-thunk';
 
-import orders from '../redux/slices/orders/ordersSlices';
-import data from '../redux/slices/data/dataSlice';
-import authReducer from './auth/authReducer';
+import dataReducer, { DataState } from './data/dataReducer';
+import authReducer, { UserState } from './auth/authReducer';
 
 const persistConfig = {
   key: 'root',
   storage,
   whitelist: ['auth'],
 };
+export interface RootState {
+  data: DataState; // Ajusta esto según la estructura de tu estado de pedidos
+  auth: UserState; // Ajusta esto según la estructura de tu estado de autenticación
+}
 
 const RootReducer = combineReducers({
-  ordersState: orders,
-  dataState: data,
+  data: dataReducer,
   auth: authReducer,
   // ACA VAN LOS ESTADOS
 });
@@ -31,4 +33,6 @@ const store = configureStore({
 });
 
 export default store;
-export type RootState = ReturnType<typeof RootReducer>;
+// export type RootState = ReturnType<typeof RootReducer>;
+
+// Define el tipo de tu estado global

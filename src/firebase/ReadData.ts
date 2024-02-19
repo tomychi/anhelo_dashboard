@@ -206,66 +206,6 @@ export const ReadOrdersForDate = (
     });
 };
 
-type DataCallback<T> = (data: T[]) => void;
-
-export const ReadDataForDateRange = <T>(
-  dbName: string,
-  valueDate: DateValueType,
-  callback: DataCallback<T>
-) => {
-  // Validación para asegurar que valueDate no sea null ni undefined
-  if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
-    console.error('Fecha de inicio o fin no especificada.');
-    return;
-  }
-  const { startDate, endDate } = valueDate;
-  const firestore = getFirestore();
-
-  const allData: { [key: string]: T[] } = {};
-
-  const getDataForDate = async (date: Date) => {
-    const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-
-    const docRef = doc(firestore, dbName, year, month, day);
-
-    try {
-      const docSnapshot = await getDoc(docRef);
-      if (docSnapshot.exists()) {
-        const data = docSnapshot.data()?.[dbName] || []; // Cambia 'pedidos' por el nombre correcto del campo
-        allData[`${year}-${month}-${day}`] = data;
-      } else {
-        allData[`${year}-${month}-${day}`] = [];
-      }
-    } catch (error) {
-      console.error(
-        `Error al obtener los datos para la fecha ${year}-${month}-${day}:`,
-        error
-      );
-    }
-  };
-
-  const datesInRange = [];
-  const currentDate = new Date(`${startDate}T00:00:00`);
-  const end = new Date(`${endDate}T00:00:00`);
-
-  while (currentDate <= end) {
-    datesInRange.push(new Date(currentDate));
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  const getDataPromises = datesInRange.map((date) => getDataForDate(date));
-
-  Promise.all(getDataPromises).then(() => {
-    const mergedData = Object.values(allData).reduce(
-      (merged, data) => [...merged, ...data],
-      []
-    );
-    callback(mergedData);
-  });
-};
-
 // Función para actualizar la propiedad "ingredients" en un documento de la colección "burgers"
 export const addIngredientsToBurger = async (
   burgerId: string,
@@ -297,4 +237,67 @@ export const addIngredientsToBurger = async (
       throw new Error('Failed to add ingredients to burger or fries');
     }
   }
+};
+export const ReadDataForDateRange = <T>(
+  dbName: string,
+  valueDate: DateValueType
+): Promise<T[]> => {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
+        throw new Error('Fecha de inicio o fin no especificada.');
+      }
+      const { startDate, endDate } = valueDate;
+      const firestore = getFirestore();
+
+      const allData: { [key: string]: T[] } = {};
+
+      const getDataForDate = async (date: Date) => {
+        const year = date.getFullYear().toString();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+
+        const docRef = doc(firestore, dbName, year, month, day);
+
+        try {
+          const docSnapshot = await getDoc(docRef);
+          if (docSnapshot.exists()) {
+            const data = docSnapshot.data()?.[dbName] || [];
+            allData[`${year}-${month}-${day}`] = data;
+          } else {
+            allData[`${year}-${month}-${day}`] = [];
+          }
+        } catch (error) {
+          throw new Error(
+            `Error al obtener los datos para la fecha ${year}-${month}-${day}: ${error}`
+          );
+        }
+      };
+
+      const datesInRange = [];
+      const currentDate = new Date(`${startDate}T00:00:00`);
+      const end = new Date(`${endDate}T00:00:00`);
+
+      while (currentDate <= end) {
+        datesInRange.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      const getDataPromises = datesInRange.map((date) => getDataForDate(date));
+
+      Promise.all(getDataPromises)
+        .then(() => {
+          const mergedData = Object.values(allData).reduce(
+            (merged, data) => [...merged, ...data],
+            []
+          );
+          resolve(mergedData);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
