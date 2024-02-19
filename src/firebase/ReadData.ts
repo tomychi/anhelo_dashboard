@@ -39,7 +39,7 @@ export const ReadData = async () => {
 export const ReadDataSell = async () => {
   const firestore = getFirestore();
 
-  const collections = ['burgers', 'fries'];
+  const collections = ['burgers', 'fries', 'toppings', 'drinks'];
 
   const fetchedData = await Promise.all(
     collections.map(async (collectionName) => {
@@ -206,7 +206,6 @@ export const ReadOrdersForDate = (
     });
 };
 
-// Función para actualizar la propiedad "ingredients" en un documento de la colección "burgers"
 export const addIngredientsToBurger = async (
   burgerId: string,
   ingredientes: Map<string, number>
@@ -214,6 +213,8 @@ export const addIngredientsToBurger = async (
   const firestore = getFirestore();
   const burgerDocRef = doc(firestore, 'burgers', burgerId);
   const friesDocRef = doc(firestore, 'fries', burgerId); // Usar el mismo ID para buscar en "fries"
+  const drinksDocRef = doc(firestore, 'drinks', burgerId); // Usar el mismo ID para buscar en "drinks"
+  const toppingsDocRef = doc(firestore, 'toppings', burgerId); // Usar el mismo ID para buscar en "toppings"
 
   try {
     // Intentar actualizar el documento en la colección "burgers"
@@ -233,8 +234,30 @@ export const addIngredientsToBurger = async (
       // Devolver algún valor si es necesario
       return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
     } catch (error) {
-      console.error('Error adding ingredients: ', error);
-      throw new Error('Failed to add ingredients to burger or fries');
+      // Si ocurre un error, intentar actualizar el documento en la colección "drinks"
+      try {
+        await updateDoc(drinksDocRef, {
+          ingredients: Object.fromEntries(ingredientes.entries()),
+        });
+
+        // Devolver algún valor si es necesario
+        return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
+      } catch (error) {
+        // Si ocurre un error, intentar actualizar el documento en la colección "toppings"
+        try {
+          await updateDoc(toppingsDocRef, {
+            ingredients: Object.fromEntries(ingredientes.entries()),
+          });
+
+          // Devolver algún valor si es necesario
+          return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
+        } catch (error) {
+          console.error('Error adding ingredients: ', error);
+          throw new Error(
+            'Failed to add ingredients to burger, fries, drinks, or toppings'
+          );
+        }
+      }
     }
   }
 };

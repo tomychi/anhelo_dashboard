@@ -12,6 +12,7 @@ import { ReadDataForDateRange } from '../firebase/ReadData';
 import { PedidoProps } from '../types/types';
 import { readExpensesData, readOrdersData } from '../redux/data/dataAction';
 import { ExpenseProps } from '../firebase/UploadGasto';
+import { RootState } from '../redux/configureStore';
 
 Chart.register(...registerables);
 
@@ -168,7 +169,7 @@ export const Dashboard = () => {
     expenseData,
     gastosTotal,
     error,
-  } = useSelector((state) => state.data);
+  } = useSelector((state: RootState) => state.data);
 
   const [valueDate, setValueDate] = useState<DateValueType>({
     startDate: formatDate(new Date()),

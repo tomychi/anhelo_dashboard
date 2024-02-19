@@ -13,6 +13,8 @@ import { DataProps } from './DynamicForm';
 import { ReadDataSell } from '../firebase/ReadData';
 import { calcularCostoHamburguesa } from '../helpers/calculator';
 import { Ingredients } from '../components/gastos';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/configureStore';
 export const UploadMateriales = (
   materiales: ProductoMaterial[]
 ): Promise<DocumentReference[]> => {
@@ -45,6 +47,56 @@ export const Neto = () => {
     null
   );
   const [materialesCargados, setMaterialesCargados] = useState(false);
+
+  const { orders, facturacionTotal } = useSelector(
+    (state: RootState) => state.data
+  );
+
+  const productosPedidos = orders.flatMap((order) =>
+    order.detallePedido.map((detail) => ({
+      burger: detail.burger,
+      quantity: detail.quantity,
+      subTotal: detail.subTotal,
+    }))
+  );
+  interface VentaDiaria {
+    quantity: number;
+    totalCost: number;
+  }
+
+  const ventasDiarias: { [key: string]: VentaDiaria } = {};
+
+  productosPedidos.forEach((pedido) => {
+    const producto = productos.find(
+      (producto) => producto.name === pedido.burger
+    );
+
+    if (producto) {
+      const costoHamburguesa = producto.costo;
+      const costoTotal = costoHamburguesa * pedido.quantity;
+
+      if (!ventasDiarias[pedido.burger]) {
+        ventasDiarias[pedido.burger] = {
+          quantity: pedido.quantity,
+          totalCost: costoTotal,
+        };
+      } else {
+        ventasDiarias[pedido.burger].quantity += pedido.quantity;
+        ventasDiarias[pedido.burger].totalCost += costoTotal;
+      }
+    }
+  });
+
+  let costoTotalVentas = 0;
+
+  Object.values(ventasDiarias).forEach((venta) => {
+    costoTotalVentas += venta.totalCost;
+  });
+
+  console.log(
+    'Costo total de todas las hamburguesas vendidas en el día:',
+    facturacionTotal - costoTotalVentas
+  );
 
   const openModal = (product: DataProps) => {
     setSelectedProduct(product);
