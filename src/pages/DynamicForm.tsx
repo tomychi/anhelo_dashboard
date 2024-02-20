@@ -7,6 +7,8 @@ import {
   obtenerHoraActualMas5Minutos,
 } from '../helpers/dateToday';
 import { ReadData } from '../firebase/ReadData';
+import { useDispatch } from 'react-redux';
+import { readProductsAll } from '../redux/products/productAction';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -74,42 +76,19 @@ export const DynamicForm = () => {
   };
 
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
-  const [data, setData] = useState<DataStateProps[]>([]);
-  const [toppings, setToppings] = useState<DataStateProps[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const getData = async () => {
-    setLoading(true);
-    if (data.length === 0) {
-      const rawData = await ReadData();
-      const formattedData: DataStateProps[] = rawData.map((item) => {
-        return {
-          id: item.id,
-          data: {
-            description: item.data.description,
-            img: item.data.img,
-            name: item.data.name,
-            price: item.data.price,
-            type: item.data.type,
-            ingredients: item.data.ingredients,
-            costo: item.data.costo,
-            id: item.id,
-          },
-        };
-      });
-      setData(formattedData);
-      // Filtrar elementos con type igual a "topping"
-      const toppingsData: DataStateProps[] = formattedData.filter(
-        (item) => item.data.type === 'topping'
-      );
-      setToppings(toppingsData);
-    }
-    setLoading(false);
-  };
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    setLoading(true);
+    const getData = async () => {
+      const rawData = await ReadData();
+      dispatch(readProductsAll(rawData));
+    };
     getData();
-  }, []);
+    setLoading(false);
+  }, [dispatch]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -224,12 +203,7 @@ export const DynamicForm = () => {
             />
           </div>
         )}
-        <MenuGallery
-          handleFormBurger={handleFormBurger}
-          loading={loading}
-          toppings={toppings}
-          data={data}
-        />
+        <MenuGallery handleFormBurger={handleFormBurger} loading={loading} />
       </div>
 
       {/* Sección form */}
@@ -238,7 +212,7 @@ export const DynamicForm = () => {
         <div className="font-antonio font-black bg-custom-red">
           <div className="flex flex-col">
             <div className="flex justify-center p-4">
-              <div
+              <button
                 className={`p-4 text-2xl font-black ${
                   seccionActiva === 'elaborar'
                     ? 'bg-black text-custom-red'
@@ -247,8 +221,8 @@ export const DynamicForm = () => {
                 onClick={() => setSeccionActiva('elaborar')}
               >
                 TOMAR PEDIDO
-              </div>
-              <div
+              </button>
+              <button
                 className={`p-4 text-2xl font-black ${
                   seccionActiva === 'elaborar'
                     ? 'bg-custom-red text-black border-black border-2'
@@ -257,7 +231,7 @@ export const DynamicForm = () => {
                 onClick={() => setSeccionActiva('hechos')}
               >
                 HECHOS POR LA WEB
-              </div>
+              </button>
             </div>
             {seccionActiva === 'elaborar' ? (
               <div className="flex flex-col items-center justify-center">
@@ -398,9 +372,9 @@ export const DynamicForm = () => {
               </div>
             ) : (
               <PedidosWeb
-                toppingsInfo={toppings}
                 handleFormBurger={handleFormBurger}
                 handleFormClient={handleFormClient}
+                setSeccionActiva={setSeccionActiva}
               />
             )}
           </div>

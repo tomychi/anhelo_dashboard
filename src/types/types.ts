@@ -21,6 +21,7 @@ export interface PedidoProps {
   total: number;
   referencias: string;
   id: string;
+  piso: string;
 }
 
 export interface ReadDataProps {

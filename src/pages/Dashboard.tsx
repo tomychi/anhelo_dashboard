@@ -166,9 +166,6 @@ export const Dashboard = () => {
     facturacionTotal,
     hamburguesasPedidas,
     totalProductosVendidos,
-    expenseData,
-    gastosTotal,
-    error,
   } = useSelector((state: RootState) => state.data);
 
   const [valueDate, setValueDate] = useState<DateValueType>({
