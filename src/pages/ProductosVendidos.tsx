@@ -54,14 +54,27 @@ const plugin = {
 };
 
 export const ProductosVendidos = () => {
-  const { hamburguesasPedidas } = useSelector((state: RootState) => state.data);
+  const { hamburguesasPedidas, toppingsData } = useSelector(
+    (state: RootState) => state.data
+  );
 
   const dataBurgers = {
     labels: hamburguesasPedidas.map((b) => b.burger),
     datasets: [
       {
         label: 'BURGER BEST SELLER',
-        data: hamburguesasPedidas.map((q) => q.quantity),
+        data: hamburguesasPedidas.map((b) => b.quantity),
+        backgroundColor: 'rgba(0, 0, 0)',
+      },
+    ],
+  };
+
+  const dataToppings = {
+    labels: toppingsData.map((t) => t.name),
+    datasets: [
+      {
+        label: 'TOPPINGS SELL',
+        data: toppingsData.map((t) => t.quantity),
         backgroundColor: 'rgba(0, 0, 0)',
       },
     ],
@@ -69,8 +82,8 @@ export const ProductosVendidos = () => {
 
   return (
     <div className="flex p-4 gap-4 justify-between flex-col w-full">
-      <div className="grid-cols-2 grid gap-4  w-full  ">
-        {[dataBurgers].map((data, index) => (
+      <div className="grid-cols-1 grid gap-2  w-full  ">
+        {[dataBurgers, dataToppings].map((data, index) => (
           <div className="" key={index}>
             <Bar data={data} options={options} plugins={[plugin]} />
           </div>

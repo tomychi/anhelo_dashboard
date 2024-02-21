@@ -1,17 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ExpenseProps } from '../firebase/UploadGasto';
-import LineChart from '../components/LineChart'; // Asegúrate de importar el componente LineChart desde su ubicación correcta
+import LineChart, { FakeDatabase } from '../components/LineChart'; // Asegúrate de importar el componente LineChart desde su ubicación correcta
 
 export const Seguidores = () => {
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-
-    setLoading(false);
-  }, []);
-
-  const fakeDatabase = {
+  const fakeDatabase: FakeDatabase = {
     '2024-02-09': {
       Anhelo: {
         followers: 4992,

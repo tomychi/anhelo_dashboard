@@ -11,6 +11,10 @@ export interface DataState {
   hamburguesasPedidas: BurgersPedidas[];
   gastosTotal: number;
   neto: number;
+  toppingsData: {
+    name: string;
+    quantity: number;
+  }[];
 }
 
 interface DataAction {
@@ -19,7 +23,7 @@ interface DataAction {
   // Otros campos específicos de tu acción, si los hay
 }
 
-const initialState = {
+const initialState: DataState = {
   orders: [],
   expenseData: [],
   error: null,
@@ -28,6 +32,7 @@ const initialState = {
   hamburguesasPedidas: [],
   gastosTotal: 0,
   neto: 0,
+  toppingsData: [],
 };
 
 const dataReducer = (state = initialState, action: DataAction) => {
@@ -55,9 +60,29 @@ const dataReducer = (state = initialState, action: DataAction) => {
         return total + costoBurgerOrden;
       }, 0); // Comenzamos el total en 0
 
+      // Obtener todos los toppings de todas las órdenes
+      const allToppings = orders.flatMap((o) =>
+        o.detallePedido.flatMap((d) => d.toppings)
+      );
+
+      // Contar la cantidad de cada topping
+      const toppingCounts = allToppings.reduce((acc, topping) => {
+        topping = topping.toLowerCase();
+        acc[topping] = (acc[topping] || 0) + 1;
+        return acc;
+      }, {} as { [topping: string]: number });
+
+      // Construir el objeto con la cantidad y el nombre de cada topping
+      const toppingsData = Object.entries(toppingCounts).map(
+        ([name, quantity]) => ({
+          name,
+          quantity,
+        })
+      );
       return {
         ...state,
         orders,
+        toppingsData,
         neto: facturacionTotal - totalCostoBurger,
         facturacionTotal: facturacionTotal ?? state.facturacionTotal,
         totalProductosVendidos:
