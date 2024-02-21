@@ -1,16 +1,40 @@
 import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
 import { RootState } from '../redux/configureStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { setValueDate } from '../redux/data/dataAction';
+import {
+  readExpensesData,
+  readOrdersData,
+  setValueDate,
+} from '../redux/data/dataAction';
 import { useEffect } from 'react';
 import { formatDate } from '../helpers/dateToday';
+import { ReadDataForDateRange } from '../firebase/ReadData';
+import { PedidoProps } from '../types/types';
+import { ExpenseProps } from '../firebase/UploadGasto';
 
 const Calendar = () => {
   const dispatch = useDispatch();
   const { valueDate } = useSelector((state: RootState) => state.data);
-
-  const handleValueDate = (value: DateValueType) => {
+  const handleValueDate = async (value: DateValueType) => {
     dispatch(setValueDate(value));
+
+    // Eliminar los datos del mapa del localStorage si existen
+    localStorage.removeItem('mapData');
+
+    try {
+      // Leer datos de pedidos y gastos
+      const [ordersData, expensesData] = await Promise.all([
+        ReadDataForDateRange<PedidoProps>('pedidos', value),
+        ReadDataForDateRange<ExpenseProps>('gastos', value),
+      ]);
+
+      // Despachar acciones para actualizar los datos de pedidos y gastos
+      dispatch(readOrdersData(ordersData));
+      dispatch(readExpensesData(expensesData));
+    } catch (error) {
+      // Manejar el error si ocurre algún problema al leer los datos
+      console.error('Se produjo un error al leer los datos:', error);
+    }
   };
 
   useEffect(() => {

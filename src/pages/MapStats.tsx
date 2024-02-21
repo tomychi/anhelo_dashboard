@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { RootState } from '../redux/configureStore';
 import { useSelector } from 'react-redux';
@@ -9,11 +9,12 @@ interface DataMapsProps {
   address: string;
   coordinates: number[];
 }
+
 export const MapStats = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const { orders } = useSelector((state: RootState) => state.data);
 
-  const tuCiudadCoordinates = [-64.347558, -33.117876];
+  const tuCiudadCoordinates = useMemo(() => [-64.347558, -33.117876], []);
   const ciudadLongitud = tuCiudadCoordinates[0];
   const ciudadLatitud = tuCiudadCoordinates[1];
   const radio = 0.1;
@@ -90,14 +91,17 @@ export const MapStats = () => {
         }
       }
 
-      saveMapData(geocodedData);
-      setMapLoaded(true);
+      saveMapData(geocodedData); // Guardar los datos del mapa en el localStorage
+      setMapLoaded(true); // Marcar el mapa como cargado
     };
 
     geocodeAddresses();
   }, [orders]);
 
   return (
-    <div id="map" className="h-[80vh] w-full border-2 border-red-main"></div>
+    <div>
+      {mapLoaded ? <div>Cargando..</div> : null}
+      <div id="map" className="h-[80vh] w-full border-2 border-red-main"></div>
+    </div>
   );
 };

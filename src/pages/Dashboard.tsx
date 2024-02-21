@@ -1,15 +1,10 @@
-import { useEffect } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import currencyFormat from '../helpers/currencyFormat';
 import { NavLink } from 'react-router-dom';
 import Calendar from '../components/Calendar';
 import { MapStats } from './MapStats';
-import { useDispatch, useSelector } from 'react-redux';
-import { ReadDataForDateRange } from '../firebase/ReadData';
-import { PedidoProps } from '../types/types';
-import { readExpensesData, readOrdersData } from '../redux/data/dataAction';
-import { ExpenseProps } from '../firebase/UploadGasto';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 
 Chart.register(...registerables);
@@ -158,8 +153,7 @@ const options = {
 };
 
 export const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { orders, facturacionTotal, totalProductosVendidos, neto, valueDate } =
+  const { orders, facturacionTotal, totalProductosVendidos, neto } =
     useSelector((state: RootState) => state.data);
 
   // const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
@@ -186,33 +180,6 @@ export const Dashboard = () => {
   //   ],
   // };
 
-  useEffect(() => {
-    if (valueDate) {
-      ReadDataForDateRange<PedidoProps>('pedidos', valueDate)
-        .then((data) => {
-          dispatch(readOrdersData(data));
-        })
-        .catch((error) => {
-          // Manejar el error si ocurre algún problema al leer los datos
-          console.error(
-            'Se produjo un error al leer los datos:',
-            error.message
-          );
-        });
-
-      ReadDataForDateRange<ExpenseProps>('gastos', valueDate)
-        .then((data) => {
-          dispatch(readExpensesData(data));
-        })
-        .catch((error) => {
-          // Manejar el error si ocurre algún problema al leer los datos
-          console.error(
-            'Se produjo un error al leer los datos:',
-            error.message
-          );
-        });
-    }
-  }, [valueDate, dispatch]);
   return (
     <div className="p-4 overflow-x-hidden flex flex-col gap-4">
       <Calendar />
