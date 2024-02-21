@@ -172,17 +172,18 @@ export const Dashboard = () => {
   const handleValueDate = (value: DateValueType) => {
     setValueDate(value);
   };
+  const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
 
-  // const dataToppings = {
-  //   labels: nombresToppings,
-  //   datasets: [
-  //     {
-  //       label: 'TOPPING BEST SELLER',
-  //       data: cantidadToppings,
-  //       backgroundColor: 'rgba(0, 0, 0)',
-  //     },
-  //   ],
-  // };
+  const url = `https://graph.instagram.com/me?fields=id,username&access_token=${token}`;
+
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data.data);
+    })
+    .catch((err) => {
+      console.log('err', err);
+    });
 
   // const dataExtras = {
   //   labels: nombresExtras,

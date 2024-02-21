@@ -77,7 +77,7 @@ export const calculateUnitCost = (
 ): number => {
   if (name === 'tomate') {
     // Para el caso del tomate, simplemente dividimos el total por la cantidad de fetas
-    return Math.ceil(total / (quantity * unidadPorPrecio));
+    return Math.ceil((total / (quantity * unidadPorPrecio)) * 2);
   }
 
   // Si la unidad es 'kg', convertimos la cantidad a gramos
