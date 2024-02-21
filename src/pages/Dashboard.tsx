@@ -166,6 +166,7 @@ export const Dashboard = () => {
     facturacionTotal,
     hamburguesasPedidas,
     totalProductosVendidos,
+    neto,
   } = useSelector((state: RootState) => state.data);
 
   const [valueDate, setValueDate] = useState<DateValueType>({
@@ -273,9 +274,7 @@ export const Dashboard = () => {
         >
           {/* Recuadro chiquito arriba a la derecha */}
           <div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-            {(Math.ceil(facturacionTotal - facturacionTotal / 2.5) * 100) /
-              facturacionTotal}
-            %
+            {Math.ceil((neto * 100) / facturacionTotal)}%
           </div>
           <div className="absolute top-4 left-4 text-black ">
             {/* Contenido principal */}
@@ -298,9 +297,7 @@ export const Dashboard = () => {
             {/* Puedes cambiar el ícono según tus necesidades */}
           </div>
           <p className=" text-4xl font-bold mt-auto">
-            {currencyFormat(
-              Math.ceil(facturacionTotal - facturacionTotal / 2.5)
-            )}
+            {neto ? currencyFormat(neto) : 0}
           </p>
           <p className="text-sm mt-auto"> FACTURACION NETA *Estimado</p>
         </NavLink>

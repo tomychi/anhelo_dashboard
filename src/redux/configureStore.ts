@@ -10,7 +10,7 @@ import productReducer, { ProductState } from './products/productReducer';
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['auth', 'product'],
+  whitelist: ['auth', 'product', 'data'],
 };
 export interface RootState {
   data: DataState; // Ajusta esto según la estructura de tu estado de pedidos

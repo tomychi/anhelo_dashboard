@@ -10,10 +10,9 @@ import {
 import { ProductoMaterial } from '../types/types';
 import { ReadMateriales } from '../firebase/Materiales';
 import { DataProps } from './DynamicForm';
+import { ReadDataSell } from '../firebase/ReadData';
 import { calcularCostoHamburguesa } from '../helpers/calculator';
 import { Ingredients } from '../components/gastos';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/configureStore';
 export const UploadMateriales = (
   materiales: ProductoMaterial[]
 ): Promise<DocumentReference[]> => {
@@ -39,15 +38,13 @@ export const UploadMateriales = (
 
 export const Neto = () => {
   const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
+  const [productos, setProductos] = useState<DataProps[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<DataProps | null>(
     null
   );
   const [materialesCargados, setMaterialesCargados] = useState(false);
-
-  const { orders, facturacionTotal } = useSelector(
-    (state: RootState) => state.data
-  );
 
   const openModal = (product: DataProps) => {
     setSelectedProduct(product);
@@ -68,6 +65,32 @@ export const Neto = () => {
       getData();
     }
   }, [materialesCargados]);
+
+  useEffect(() => {
+    const cargarProductos = async () => {
+      if (materialesCargados && productos.length === 0) {
+        const rawData = await ReadDataSell();
+        const formattedData: DataProps[] = rawData.map((item) => ({
+          description: item.data.description,
+          img: item.data.img,
+          name: item.data.name,
+          price: item.data.price,
+          type: item.data.type,
+          ingredients: item.data.ingredients,
+          id: item.id,
+          costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
+        }));
+        setProductos(formattedData);
+        setIsLoading(false);
+      }
+    };
+
+    cargarProductos();
+  }, [productos, materialesCargados, materiales]);
+
+  if (isLoading) {
+    return <p>Cargando...</p>;
+  }
 
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -93,7 +116,7 @@ export const Neto = () => {
             </tr>
           </thead>
           <tbody>
-            {/* {productos.map((p: DataProps, index: number) => (
+            {productos.map((p: DataProps, index: number) => (
               <tr
                 key={index}
                 className="bg-black text-custom-red uppercase font-black border border-red-main"
@@ -119,7 +142,7 @@ export const Neto = () => {
                   {currencyFormat(p.costo * 2.3 - p.costo)}
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </table>
         {modalOpen && selectedProduct && (

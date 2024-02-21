@@ -14,3 +14,10 @@ export const readExpensesData = (expenseData: ExpenseProps[]) => {
     payload: expenseData ? { expenseData } : undefined,
   };
 };
+
+export const updateNeto = (value: number) => {
+  return {
+    type: 'UPDATE_NETO',
+    payload: value,
+  };
+};

@@ -2,13 +2,13 @@ import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
-import {
-  obtenerFechaActual,
-  obtenerHoraActualMas5Minutos,
-} from '../helpers/dateToday';
-import { ReadData } from '../firebase/ReadData';
+import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
+import { ReadData, ReadDataSell } from '../firebase/ReadData';
 import { useDispatch } from 'react-redux';
 import { readProductsAll } from '../redux/products/productAction';
+import { calcularCostoHamburguesa } from '../helpers/calculator';
+import { ReadMateriales } from '../firebase/Materiales';
+import { ProductoMaterial } from '../types/types';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -23,7 +23,7 @@ export interface FormDataProps {
 
 export interface DetallePedidoProps {
   burger?: string;
-  toppings?: string[];
+  toppings: string[];
   quantity?: number;
   priceBurger?: number;
   priceToppings?: number;
@@ -52,7 +52,7 @@ export const DynamicForm = () => {
     direccion: '',
     telefono: '',
     envio: '1000',
-    hora: obtenerHoraActualMas5Minutos(),
+    hora: obtenerHoraActual(),
     piso: '',
     referencias: '',
   });
@@ -77,8 +77,27 @@ export const DynamicForm = () => {
 
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
   const [loading, setLoading] = useState(false);
+  const [productos, setProductos] = useState<DataProps[]>([]);
+  const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
+  const [materialesCargados, setMaterialesCargados] = useState(false);
 
   const dispatch = useDispatch();
+
+  const readMateriales = async () => {
+    const rawData = await ReadMateriales();
+    setMateriales(rawData);
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      await readMateriales();
+      setMaterialesCargados(true);
+    };
+
+    if (!materialesCargados) {
+      getData();
+    }
+  }, [materialesCargados]);
 
   useEffect(() => {
     setLoading(true);
@@ -87,8 +106,29 @@ export const DynamicForm = () => {
       dispatch(readProductsAll(rawData));
     };
     getData();
+
+    const cargarProductos = async () => {
+      if (materialesCargados && productos.length === 0) {
+        const rawData = await ReadDataSell();
+        const formattedData: DataProps[] = rawData.map((item) => ({
+          description: item.data.description,
+          img: item.data.img,
+          name: item.data.name,
+          price: item.data.price,
+          type: item.data.type,
+          ingredients: item.data.ingredients,
+          id: item.id,
+          costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
+        }));
+        setProductos(formattedData);
+      }
+    };
+
+    cargarProductos();
+
     setLoading(false);
-  }, [dispatch]);
+    console.log('pedilooo');
+  }, [dispatch, materialesCargados, productos, materiales]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -180,6 +220,32 @@ export const DynamicForm = () => {
     const priceBurger =
       values.priceBurger !== undefined ? values.priceBurger : 0;
 
+    // Buscar el producto que coincide con el nombre de la hamburguesa seleccionada
+    const productoSeleccionado = productos.find(
+      (producto) => producto.name === values.burger
+    );
+    const toppingsSeleccionados = values.toppings;
+
+    // Inicializar el costo total de los toppings
+    let costoToppings = 0;
+
+    // Recorrer los toppings seleccionados y calcular su costo total
+    toppingsSeleccionados.forEach((topping) => {
+      // Buscar el material que coincide con el nombre del topping seleccionado
+      const materialTopping = materiales.find(
+        (material) => material.nombre.toLowerCase() === topping.toLowerCase()
+      );
+
+      // Si se encuentra el material, sumar su costo al costo total de los toppings
+      if (materialTopping) {
+        costoToppings += materialTopping.costo;
+      }
+    });
+    // Verificar si se encontró el producto y obtener su costo
+    const costoBurger = productoSeleccionado
+      ? (productoSeleccionado.costo + costoToppings) * quantity
+      : 0;
+
     const burger = {
       burger: values.burger,
       toppings: values.toppings,
@@ -187,6 +253,7 @@ export const DynamicForm = () => {
       priceBurger: values.priceBurger,
       priceToppings: values.priceToppings,
       subTotal: (priceBurger + priceToppings) * quantity,
+      costoBurger,
     };
     setDetallePedido((prevData) => [...prevData, burger]);
   };

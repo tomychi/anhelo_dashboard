@@ -5,6 +5,7 @@ export interface DetallePedidoItem {
   quantity: number;
   subTotal: number;
   toppings: string[];
+  costoBurger: number;
 }
 
 export interface PedidoProps {

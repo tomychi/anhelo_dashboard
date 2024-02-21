@@ -3,7 +3,7 @@ import { DetallePedidoProps, FormDataProps } from '../../pages/DynamicForm';
 import { RootState } from '../../redux/configureStore';
 import { useSelector } from 'react-redux';
 import { ProductStateProps } from '../../redux/products/productReducer';
-import { obtenerHoraActualMas5Minutos } from '../../helpers/dateToday';
+import { obtenerHoraActual } from '../../helpers/dateToday';
 
 const procesarToppings = (bloque: string) => {
   // Buscar los toppings usando una expresión regular
@@ -131,7 +131,7 @@ const parsearMensajePedido = (
       referencias,
       aclaraciones: '',
       envio: '',
-      hora: obtenerHoraActualMas5Minutos(),
+      hora: obtenerHoraActual(),
     };
   } else {
     console.log('No se pudo encontrar el detalle del pedido en el mensaje.');
