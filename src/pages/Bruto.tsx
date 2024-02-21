@@ -1,13 +1,31 @@
-import { useEffect, useState } from 'react';
-import { ExpenseProps } from '../firebase/UploadGasto';
-import Calendar from '../components/Calendar';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/configureStore';
+import currencyFormat from '../helpers/currencyFormat';
 
 export const Bruto = () => {
-  const [loading, setLoading] = useState(false);
+  const { orders } = useSelector((state: RootState) => state.data);
+
+  // Función para sumar el total según el método de pago
+  const sumarTotalPorMetodoPago = (metodoPago: string) => {
+    return orders.reduce((total, order) => {
+      if (order.metodoPago === metodoPago) {
+        return total + order.total;
+      }
+      return total;
+    }, 0);
+  };
+
+  const totalEfectivo = sumarTotalPorMetodoPago('efectivo');
+  const totalVirtual = sumarTotalPorMetodoPago('mercadopago');
+
+  const totalGeneral = totalEfectivo + totalVirtual;
+
+  const porcentajeEfectivo = (totalEfectivo * 100) / totalGeneral;
+  const porcentajeVirtual = (totalVirtual * 100) / totalGeneral;
 
   const metodosDePago = {
-    Efectivo: 10000,
-    Virtual: 10000,
+    Efectivo: totalEfectivo,
+    Virtual: totalVirtual,
   };
 
   return (
@@ -29,21 +47,25 @@ export const Bruto = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(metodosDePago).map(([metodo, monto]) => (
-              <tr
-                key={metodo}
-                className="bg-black text-custom-red uppercase font-black border border-red-main"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+            {Object.entries(metodosDePago).map(([metodo, monto]) => {
+              const porcentaje =
+                metodo === 'Efectivo' ? porcentajeEfectivo : porcentajeVirtual;
+              return (
+                <tr
+                  key={metodo}
+                  className="bg-black text-custom-red uppercase font-black border border-red-main"
                 >
-                  {metodo}
-                </th>
-                <td className="px-6 py-4">{monto}</td>
-                <td className="px-6 py-4">50%</td>
-              </tr>
-            ))}
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+                  >
+                    {metodo}
+                  </th>
+                  <td className="px-6 py-4">{currencyFormat(monto)}</td>
+                  <td className="px-6 py-4">{porcentaje.toFixed(2)}%</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

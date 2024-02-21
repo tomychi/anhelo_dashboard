@@ -46,7 +46,6 @@ const dataReducer = (state = initialState, action: DataAction) => {
         const costoBurgerOrden = order.detallePedido.reduce(
           (subtotal, pedido) => {
             // Sumamos el costoBurger de este pedido al subtotal
-            console.log(pedido.costoBurger, total);
             return total + pedido.costoBurger;
           },
           0

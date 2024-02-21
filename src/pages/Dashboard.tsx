@@ -161,13 +161,8 @@ const options = {
 
 export const Dashboard = () => {
   const dispatch = useDispatch();
-  const {
-    orders,
-    facturacionTotal,
-    hamburguesasPedidas,
-    totalProductosVendidos,
-    neto,
-  } = useSelector((state: RootState) => state.data);
+  const { orders, facturacionTotal, totalProductosVendidos, neto } =
+    useSelector((state: RootState) => state.data);
 
   const [valueDate, setValueDate] = useState<DateValueType>({
     startDate: formatDate(new Date()),
@@ -176,17 +171,6 @@ export const Dashboard = () => {
 
   const handleValueDate = (value: DateValueType) => {
     setValueDate(value);
-  };
-
-  const dataBurgers = {
-    labels: hamburguesasPedidas.map((b) => b.burger),
-    datasets: [
-      {
-        label: 'BURGER BEST SELLER',
-        data: hamburguesasPedidas.map((q) => q.quantity),
-        backgroundColor: 'rgba(0, 0, 0)',
-      },
-    ],
   };
 
   // const dataToppings = {
