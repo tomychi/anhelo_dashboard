@@ -1,6 +1,8 @@
+import { DateValueType } from 'react-tailwindcss-datepicker';
 import { ExpenseProps } from '../../firebase/UploadGasto';
 import { BurgersPedidas, calcularTotales } from '../../helpers/calculator';
 import { PedidoProps } from '../../types/types';
+import { formatDate } from '../../helpers/dateToday';
 
 export interface DataState {
   orders: PedidoProps[];
@@ -15,6 +17,7 @@ export interface DataState {
     name: string;
     quantity: number;
   }[];
+  valueDate: DateValueType;
 }
 
 interface DataAction {
@@ -33,10 +36,22 @@ const initialState: DataState = {
   gastosTotal: 0,
   neto: 0,
   toppingsData: [],
+  valueDate: {
+    startDate: formatDate(new Date()),
+    endDate: formatDate(new Date()), // Último día de diciembre del año actual
+  },
 };
 
 const dataReducer = (state = initialState, action: DataAction) => {
   switch (action.type) {
+    case 'SET_VALUEDATE': {
+      const valueDate = action.payload;
+      return {
+        ...state,
+        valueDate,
+      };
+    }
+
     case 'READ_ORDERS': {
       const orders = action.payload?.orders;
       if (!orders) return state; // Si orders es undefined, retornar el estado actual

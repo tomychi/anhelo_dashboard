@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import currencyFormat from '../helpers/currencyFormat';
 import { NavLink } from 'react-router-dom';
 import Calendar from '../components/Calendar';
-import { DateValueType } from 'react-tailwindcss-datepicker';
-import { formatDate } from '../helpers/dateToday';
 import { MapStats } from './MapStats';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReadDataForDateRange } from '../firebase/ReadData';
@@ -161,29 +159,21 @@ const options = {
 
 export const Dashboard = () => {
   const dispatch = useDispatch();
-  const { orders, facturacionTotal, totalProductosVendidos, neto } =
+  const { orders, facturacionTotal, totalProductosVendidos, neto, valueDate } =
     useSelector((state: RootState) => state.data);
 
-  const [valueDate, setValueDate] = useState<DateValueType>({
-    startDate: formatDate(new Date()),
-    endDate: formatDate(new Date()), // Último día de diciembre del año actual
-  });
+  // const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
 
-  const handleValueDate = (value: DateValueType) => {
-    setValueDate(value);
-  };
-  const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
+  // const url = `https://graph.instagram.com/me?fields=id,username&access_token=${token}`;
 
-  const url = `https://graph.instagram.com/me?fields=id,username&access_token=${token}`;
-
-  fetch(url)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data.data);
-    })
-    .catch((err) => {
-      console.log('err', err);
-    });
+  // fetch(url)
+  //   .then((res) => res.json())
+  //   .then((data) => {
+  //     console.log(data.data);
+  //   })
+  //   .catch((err) => {
+  //     console.log('err', err);
+  //   });
 
   // const dataExtras = {
   //   labels: nombresExtras,
@@ -197,27 +187,35 @@ export const Dashboard = () => {
   // };
 
   useEffect(() => {
-    ReadDataForDateRange<PedidoProps>('pedidos', valueDate)
-      .then((data) => {
-        dispatch(readOrdersData(data));
-      })
-      .catch((error) => {
-        // Manejar el error si ocurre algún problema al leer los datos
-        console.error('Se produjo un error al leer los datos:', error.message);
-      });
+    if (valueDate) {
+      ReadDataForDateRange<PedidoProps>('pedidos', valueDate)
+        .then((data) => {
+          dispatch(readOrdersData(data));
+        })
+        .catch((error) => {
+          // Manejar el error si ocurre algún problema al leer los datos
+          console.error(
+            'Se produjo un error al leer los datos:',
+            error.message
+          );
+        });
 
-    ReadDataForDateRange<ExpenseProps>('gastos', valueDate)
-      .then((data) => {
-        dispatch(readExpensesData(data));
-      })
-      .catch((error) => {
-        // Manejar el error si ocurre algún problema al leer los datos
-        console.error('Se produjo un error al leer los datos:', error.message);
-      });
+      ReadDataForDateRange<ExpenseProps>('gastos', valueDate)
+        .then((data) => {
+          dispatch(readExpensesData(data));
+        })
+        .catch((error) => {
+          // Manejar el error si ocurre algún problema al leer los datos
+          console.error(
+            'Se produjo un error al leer los datos:',
+            error.message
+          );
+        });
+    }
   }, [valueDate, dispatch]);
   return (
     <div className="p-4 overflow-x-hidden flex flex-col gap-4">
-      <Calendar handleValueDate={handleValueDate} valueDate={valueDate} />
+      <Calendar />
       <div className="flex flex-row gap-4">
         <NavLink
           to={'/bruto'}

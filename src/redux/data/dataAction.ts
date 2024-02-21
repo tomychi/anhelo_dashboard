@@ -1,3 +1,4 @@
+import { DateValueType } from 'react-tailwindcss-datepicker';
 import { ExpenseProps } from '../../firebase/UploadGasto';
 import { PedidoProps } from '../../types/types';
 
@@ -19,5 +20,12 @@ export const updateNeto = (value: number) => {
   return {
     type: 'UPDATE_NETO',
     payload: value,
+  };
+};
+
+export const setValueDate = (valueDate: DateValueType) => {
+  return {
+    type: 'SET_VALUEDATE',
+    payload: valueDate,
   };
 };

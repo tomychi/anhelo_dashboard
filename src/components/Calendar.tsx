@@ -1,11 +1,29 @@
 import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import { RootState } from '../redux/configureStore';
+import { useDispatch, useSelector } from 'react-redux';
+import { setValueDate } from '../redux/data/dataAction';
+import { useEffect } from 'react';
+import { formatDate } from '../helpers/dateToday';
 
-interface CalendarProps {
-  handleValueDate: (value: DateValueType) => void;
-  valueDate: DateValueType;
-}
+const Calendar = () => {
+  const dispatch = useDispatch();
+  const { valueDate } = useSelector((state: RootState) => state.data);
 
-const Calendar = ({ handleValueDate, valueDate }: CalendarProps) => {
+  const handleValueDate = (value: DateValueType) => {
+    dispatch(setValueDate(value));
+  };
+
+  useEffect(() => {
+    if (valueDate === undefined) {
+      dispatch(
+        setValueDate({
+          startDate: formatDate(new Date()),
+          endDate: formatDate(new Date()), // Último día de diciembre del año actual
+        })
+      );
+    }
+  }, [dispatch, valueDate]);
+
   return (
     <Datepicker
       //     Use the startFrom props to change the default startFrom value.
