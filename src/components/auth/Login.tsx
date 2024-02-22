@@ -40,10 +40,14 @@ export const Login = () => {
 
 	return (
 		<form
-			className="font-antonio w-full p-4 md:p-0 md:w-1/3 mx-auto text-black font-black"
+			className="font-antonio  w-full p-4 md:p-0 md:w-1/3 mx-auto text-black font-black"
 			onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
 		>
-			<img src={Sticker} className="w-full mx-auto" alt="anhelo Logo" />
+			<img
+				src={Sticker}
+				className="w-2/3 md:w-full mb-4 md:mb-0 mx-auto"
+				alt="anhelo Logo"
+			/>
 			<div className="mb-4">
 				<label className="block mb-2 text-sm ">
 					BIENVENIDO, POR FAVOR TU CORREO
