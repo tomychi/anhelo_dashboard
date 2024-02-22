@@ -4,10 +4,7 @@ import Absolute from "../../assets/absoluteIsologo.png";
 
 export const Sidebar = () => {
 	return (
-		<aside
-			id="drawer-navigation"
-			className=" top-0 left-0 z-50 w-12 h-screen transition-transform  sm:translate-x-0 bg-gray-50 bg-gray-800"
-		>
+		<aside id="drawer-navigation" className=" top-0 left-0 z-50 w-12 h-screen ">
 			{/* <button
         type="button"
         data-drawer-hide="drawer-navigation"
@@ -29,14 +26,12 @@ export const Sidebar = () => {
         </svg>
         <span className="sr-only">Close menu</span>
       </button> */}
-			<div className="h-full flex bg-custom-red flex-col p-2 justify-between">
+			<div className="h-screen flex bg-custom-red flex-col p-2 gap-2">
 				<>
 					<NavLink
 						to={"/"}
 						className="flex flex-col items-center justify-center"
 					>
-						<img src={Logo} className="h-6 sm:h-7 mx-auto" alt="anhelo Logo" />
-						<span className=" text-xs">x</span>
 						<img
 							src={Absolute}
 							className="h-6 sm:h-7 p-1 mx-auto"
@@ -44,7 +39,6 @@ export const Sidebar = () => {
 						/>
 					</NavLink>
 				</>
-
 				<>
 					<ul className="space-y-2 font-medium">
 						<li>
