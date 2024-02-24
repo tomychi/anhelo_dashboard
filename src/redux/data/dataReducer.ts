@@ -1,133 +1,134 @@
-import { DateValueType } from 'react-tailwindcss-datepicker';
-import { ExpenseProps } from '../../firebase/UploadGasto';
-import { BurgersPedidas, calcularTotales } from '../../helpers/calculator';
-import { PedidoProps } from '../../types/types';
-import { formatDate } from '../../helpers/dateToday';
+import { DateValueType } from "react-tailwindcss-datepicker";
+import { ExpenseProps } from "../../firebase/UploadGasto";
+import { BurgersPedidas, calcularTotales } from "../../helpers/calculator";
+import { PedidoProps } from "../../types/types";
+import { formatDate } from "../../helpers/dateToday";
 
 export interface DataState {
-  orders: PedidoProps[];
-  expenseData: ExpenseProps[];
-  error: string | null; // Cambia 'string' por el tipo adecuado del mensaje de error
-  facturacionTotal: number;
-  totalProductosVendidos: number;
-  hamburguesasPedidas: BurgersPedidas[];
-  gastosTotal: number;
-  neto: number;
-  toppingsData: {
-    name: string;
-    quantity: number;
-  }[];
-  valueDate: DateValueType;
+	orders: PedidoProps[];
+	expenseData: ExpenseProps[];
+	error: string | null; // Cambia 'string' por el tipo adecuado del mensaje de error
+	facturacionTotal: number;
+	totalProductosVendidos: number;
+	hamburguesasPedidas: BurgersPedidas[];
+	gastosTotal: number;
+	neto: number;
+	toppingsData: {
+		name: string;
+		quantity: number;
+	}[];
+	valueDate: DateValueType;
 }
 
 interface DataAction {
-  type: string;
-  payload?: DataState;
-  // Otros campos específicos de tu acción, si los hay
+	type: string;
+	payload?: DataState;
+	// Otros campos específicos de tu acción, si los hay
 }
 
 const initialState: DataState = {
-  orders: [],
-  expenseData: [],
-  error: null,
-  facturacionTotal: 0,
-  totalProductosVendidos: 0,
-  hamburguesasPedidas: [],
-  gastosTotal: 0,
-  neto: 0,
-  toppingsData: [],
-  valueDate: {
-    startDate: formatDate(new Date()),
-    endDate: formatDate(new Date()), // Último día de diciembre del año actual
-  },
+	orders: [],
+	expenseData: [],
+	error: null,
+	facturacionTotal: 0,
+	totalProductosVendidos: 0,
+	hamburguesasPedidas: [],
+	gastosTotal: 0,
+	neto: 0,
+	toppingsData: [],
+	valueDate: {
+		startDate: formatDate(new Date()),
+		endDate: formatDate(new Date()), // Último día de diciembre del año actual
+	},
 };
 
 const dataReducer = (state = initialState, action: DataAction) => {
-  switch (action.type) {
-    case 'SET_VALUEDATE': {
-      const valueDate = action.payload;
-      return {
-        ...state,
-        valueDate,
-      };
-    }
+	switch (action.type) {
+		case "SET_VALUEDATE": {
+			const valueDate = action.payload;
+			return {
+				...state,
+				valueDate,
+			};
+		}
 
-    case 'READ_ORDERS': {
-      const orders = action.payload?.orders;
-      if (!orders) return state; // Si orders es undefined, retornar el estado actual
+		case "READ_ORDERS": {
+			const orders = action.payload?.orders;
+			if (!orders) return state; // Si orders es undefined, retornar el estado actual
 
-      // Calcular totales basados en las nuevas órdenes
-      const { facturacionTotal, totalProductosVendidos, hamburguesasPedidas } =
-        calcularTotales(orders);
+			// Calcular totales basados en las nuevas órdenes
+			const { facturacionTotal, totalProductosVendidos, hamburguesasPedidas } =
+				calcularTotales(orders);
 
-      // Sumar todos los valores de costoBurger en todos los elementos de orders.detallePedido
-      const totalCostoBurger = orders.reduce((total, order) => {
-        // Para cada orden, sumamos el costoBurger de cada elemento en su detallePedido
-        const costoBurgerOrden = order.detallePedido.reduce(
-          (subtotal, pedido) => {
-            // Sumamos el costoBurger de este pedido al subtotal
-            return total + pedido.costoBurger;
-          },
-          0
-        ); // Comenzamos el subtotal en 0 para esta orden
+			// Sumar todos los valores de costoBurger en todos los elementos de orders.detallePedido
+			const totalCostoBurger = orders.reduce((total, order) => {
+				// Para cada orden, sumamos el costoBurger de cada elemento en su detallePedido
+				const costoBurgerOrden = order.detallePedido.reduce(
+					(subtotal, pedido) => {
+						// Sumamos el costoBurger de este pedido al subtotal
+						return subtotal + pedido.costoBurger;
+					},
+					0
+				); // Comenzamos el subtotal en 0 para esta orden
+				console.log(costoBurgerOrden);
 
-        // Sumamos el costoBurger de esta orden al total
-        return total + costoBurgerOrden;
-      }, 0); // Comenzamos el total en 0
+				// Sumamos el costoBurger de esta orden al total
+				return total + costoBurgerOrden;
+			}, 0); // Comenzamos el total en 0
 
-      // Obtener todos los toppings de todas las órdenes
-      const allToppings = orders.flatMap((o) =>
-        o.detallePedido.flatMap((d) => d.toppings)
-      );
+			// Obtener todos los toppings de todas las órdenes
+			const allToppings = orders.flatMap((o) =>
+				o.detallePedido.flatMap((d) => d.toppings)
+			);
 
-      // Contar la cantidad de cada topping
-      const toppingCounts = allToppings.reduce((acc, topping) => {
-        topping = topping.toLowerCase();
-        acc[topping] = (acc[topping] || 0) + 1;
-        return acc;
-      }, {} as { [topping: string]: number });
+			// Contar la cantidad de cada topping
+			const toppingCounts = allToppings.reduce((acc, topping) => {
+				topping = topping.toLowerCase();
+				acc[topping] = (acc[topping] || 0) + 1;
+				return acc;
+			}, {} as { [topping: string]: number });
 
-      // Construir el objeto con la cantidad y el nombre de cada topping
-      const toppingsData = Object.entries(toppingCounts).map(
-        ([name, quantity]) => ({
-          name,
-          quantity,
-        })
-      );
-      return {
-        ...state,
-        orders,
-        toppingsData,
-        neto: facturacionTotal - totalCostoBurger,
-        facturacionTotal: facturacionTotal ?? state.facturacionTotal,
-        totalProductosVendidos:
-          totalProductosVendidos ?? state.totalProductosVendidos,
-        hamburguesasPedidas: hamburguesasPedidas ?? state.hamburguesasPedidas,
-      };
-    }
+			// Construir el objeto con la cantidad y el nombre de cada topping
+			const toppingsData = Object.entries(toppingCounts).map(
+				([name, quantity]) => ({
+					name,
+					quantity,
+				})
+			);
+			return {
+				...state,
+				orders,
+				toppingsData,
+				neto: facturacionTotal - totalCostoBurger,
+				facturacionTotal: facturacionTotal ?? state.facturacionTotal,
+				totalProductosVendidos:
+					totalProductosVendidos ?? state.totalProductosVendidos,
+				hamburguesasPedidas: hamburguesasPedidas ?? state.hamburguesasPedidas,
+			};
+		}
 
-    case 'READ_EXPENSES': {
-      const expenses = action.payload?.expenseData;
-      if (!expenses) return state;
-      const { facturacionTotal: gastosTotals } = calcularTotales(expenses);
+		case "READ_EXPENSES": {
+			const expenses = action.payload?.expenseData;
+			if (!expenses) return state;
+			const { facturacionTotal: gastosTotals } = calcularTotales(expenses);
 
-      return {
-        ...state,
-        expenseData: expenses,
-        gastosTotal: gastosTotals,
-      };
-    }
+			return {
+				...state,
+				expenseData: expenses,
+				gastosTotal: gastosTotals,
+			};
+		}
 
-    case 'UPDATE_NETO': {
-      return {
-        ...state,
-        neto: action.payload?.neto,
-      };
-    }
-    // Otros casos para manejar acciones adicionales, como cierre de sesión, etc.
-    default:
-      return state;
-  }
+		case "UPDATE_NETO": {
+			return {
+				...state,
+				neto: action.payload?.neto,
+			};
+		}
+		// Otros casos para manejar acciones adicionales, como cierre de sesión, etc.
+		default:
+			return state;
+	}
 };
 
 export default dataReducer;
