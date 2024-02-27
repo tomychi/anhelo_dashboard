@@ -23,6 +23,7 @@ export interface PedidoProps {
   referencias: string;
   id: string;
   piso: string;
+  cadete?: string;
 }
 
 export interface ReadDataProps {

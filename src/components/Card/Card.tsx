@@ -5,6 +5,9 @@ import {
   eliminarDocumento,
   marcarPedidoComoElaborado,
 } from '../../firebase/ReadData';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { updateCadeteForOrder } from '../../firebase/UploadOrder';
+import { addCadete, readCadetes } from '../../firebase/Cadetes';
 
 const copyToClipboard = (textToCopy: string) => {
   navigator.clipboard
@@ -39,8 +42,79 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     referencias,
     id,
     piso,
+    fecha,
+    cadete,
   } = comanda;
+  const [selectedCadete, setSelectedCadete] = useState(cadete);
+  const [nuevoCadete, setNuevoCadete] = useState('');
+  const [cadetes, setCadetes] = useState<string[]>([]);
 
+  useEffect(() => {
+    const getCadetes = async () => {
+      const cade = await readCadetes();
+      setCadetes(cade);
+    };
+    getCadetes();
+  }, []);
+
+  const handleNuevoCadeteChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setNuevoCadete(event.target.value);
+  };
+
+  const agregarNuevoCadete = () => {
+    // Aquí puedes agregar la lógica para crear un nuevo cadete con el valor de nuevoCadete
+    addCadete(nuevoCadete)
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'CADETE AGREGADO',
+          text: `SE AGREGO: ${nuevoCadete} `,
+        });
+        setCadetes((prev) => [...prev, nuevoCadete]);
+      })
+      .catch(() => {
+        console.error('Error al crear el cadete:');
+      });
+    setNuevoCadete('');
+  };
+
+  // Manejar el cambio en el select
+  const handleCadeteChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nuevoCadete = event.target.value;
+
+    if (nuevoCadete === 'default') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Elegi un cadete',
+      });
+      setSelectedCadete('default');
+
+      return;
+    }
+
+    if (nuevoCadete === 'nuevo') {
+      // El usuario eligió agregar un nuevo cadete, restablecer el estado para el nuevo cadete
+      setSelectedCadete('nuevo');
+      return;
+    }
+    setSelectedCadete(nuevoCadete);
+
+    // Aquí debes obtener la fecha del pedido y el ID del pedido según tu implementación
+
+    // Luego llama a la función para actualizar el cadete en la base de datos
+    updateCadeteForOrder(fecha, id, nuevoCadete)
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'CADETE ASIGNADO',
+          text: `El viaje lo lleva: ${nuevoCadete} `,
+        });
+      })
+      .catch(() => {
+        console.error('Error al actualizar el cadete del pedido:');
+      });
+  };
   const imprimirTicket = async (nuevoPedido: PedidoProps) => {
     try {
       const response = await fetch('http://localhost:3000/imprimir', {
@@ -224,6 +298,39 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         >
           {currencyFormat(total)}
         </p>
+        <div>
+          <label htmlFor="cadete">Selecciona el cadete:</label>
+          <select
+            id="cadete"
+            name="cadete"
+            value={selectedCadete}
+            onChange={handleCadeteChange}
+          >
+            <option value={cadete} defaultValue={cadete}>
+              {cadete}
+            </option>
+            {cadetes.map((c, i) => {
+              if (c === cadete) return null;
+              return (
+                <option value={c} key={i}>
+                  {c}
+                </option>
+              );
+            })}
+            <option value="nuevo">Agregar nuevo cadete</option>
+          </select>
+          {/* Agregar campo para ingresar el nombre del nuevo cadete */}
+          {selectedCadete === 'nuevo' && (
+            <div>
+              <input
+                type="text"
+                value={nuevoCadete}
+                onChange={handleNuevoCadeteChange}
+              />
+              <button onClick={agregarNuevoCadete}>Agregar</button>
+            </div>
+          )}
+        </div>
         <button
           onClick={() => imprimirTicket(comanda)}
           className={` bg-black w-full flex justify-center mt-4 ${

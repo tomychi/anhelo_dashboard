@@ -4,14 +4,14 @@ import {
   getDocs,
   doc,
   updateDoc,
-  onSnapshot,
-  Unsubscribe,
   getDoc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { PedidoProps } from '../types/types';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { ExpenseProps } from './UploadGasto';
 import { DateValueType } from 'react-tailwindcss-datepicker';
+import { Unsubscribe } from 'redux';
 
 export const ReadData = async () => {
   const firestore = getFirestore();
