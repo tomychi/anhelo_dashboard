@@ -71,7 +71,7 @@ export const Comandera = () => {
 					Hechos
 				</button>
 			</div>
-			<div className="text-custom-red font-antonio font-black   flex flex-col gap-4 items-center">
+			<div className="text-custom-red uppercase font-antonio font-black   flex flex-col gap-4 items-center">
 				<p className="border-b-2 border-red-main ">
 					Customer success: {customerSuccess}%
 				</p>
@@ -81,7 +81,7 @@ export const Comandera = () => {
 					<select
 						value={cadeteSeleccionado}
 						onChange={handleCadeteChange}
-						className="bg-black"
+						className="bg-black uppercase"
 					>
 						<option value="">Todos los cadetes</option>
 						{cadetesUnicos.map((cadete, index) => {
