@@ -43,16 +43,26 @@ export const Comandera = () => {
     setCadeteSeleccionado(nuevoCadeteSeleccionado);
   };
 
+  const customerSuccess =
+    100 -
+    (orders.filter((order) => order.dislike || order.delay).length * 100) /
+      orders.length;
   return (
     <div>
+      <div className="bg-red-500">
+        <p>bien: {customerSuccess}%</p>
+      </div>
       <div className="flex justify-center font-antonio my-4">
         <select value={cadeteSeleccionado} onChange={handleCadeteChange}>
           <option value="">Todos los cadetes</option>
-          {cadetesUnicos.map((cadete, index) => (
-            <option key={index} value={cadete}>
-              {cadete}
-            </option>
-          ))}
+          {cadetesUnicos.map((cadete, index) => {
+            if (cadete === undefined) return;
+            return (
+              <option key={index} value={cadete}>
+                {cadete}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div className="flex justify-center font-antonio my-4">

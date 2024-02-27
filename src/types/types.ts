@@ -24,6 +24,8 @@ export interface PedidoProps {
   id: string;
   piso: string;
   cadete?: string;
+  dislike?: boolean;
+  delay?: boolean;
 }
 
 export interface ReadDataProps {

@@ -10,7 +10,7 @@ export interface DataState {
   error: string | null; // Cambia 'string' por el tipo adecuado del mensaje de error
   facturacionTotal: number;
   totalProductosVendidos: number;
-  hamburguesasPedidas: BurgersPedidas[];
+  productosPedidos: BurgersPedidas[];
   gastosTotal: number;
   neto: number;
   toppingsData: {
@@ -32,7 +32,7 @@ const initialState: DataState = {
   error: null,
   facturacionTotal: 0,
   totalProductosVendidos: 0,
-  hamburguesasPedidas: [],
+  productosPedidos: [],
   gastosTotal: 0,
   neto: 0,
   toppingsData: [],
@@ -55,9 +55,8 @@ const dataReducer = (state = initialState, action: DataAction) => {
     case 'READ_ORDERS': {
       const orders = action.payload?.orders;
       if (!orders) return state; // Si orders es undefined, retornar el estado actual
-
       // Calcular totales basados en las nuevas órdenes
-      const { facturacionTotal, totalProductosVendidos, hamburguesasPedidas } =
+      const { facturacionTotal, totalProductosVendidos, productosPedidos } =
         calcularTotales(orders);
 
       // Sumar todos los valores de costoBurger en todos los elementos de orders.detallePedido
@@ -102,7 +101,7 @@ const dataReducer = (state = initialState, action: DataAction) => {
         facturacionTotal: facturacionTotal ?? state.facturacionTotal,
         totalProductosVendidos:
           totalProductosVendidos ?? state.totalProductosVendidos,
-        hamburguesasPedidas: hamburguesasPedidas ?? state.hamburguesasPedidas,
+        productosPedidos: productosPedidos ?? state.productosPedidos,
       };
     }
 

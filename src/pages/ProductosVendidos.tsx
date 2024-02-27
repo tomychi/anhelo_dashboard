@@ -54,16 +54,16 @@ const plugin = {
 };
 
 export const ProductosVendidos = () => {
-  const { hamburguesasPedidas, toppingsData } = useSelector(
-    (state: RootState) => state.data
-  );
+  const { productosPedidos, toppingsData, totalProductosVendidos } =
+    useSelector((state: RootState) => state.data);
 
+  const { burgers } = useSelector((state: RootState) => state.product);
   const dataBurgers = {
-    labels: hamburguesasPedidas.map((b) => b.burger),
+    labels: productosPedidos.map((b) => b.burger),
     datasets: [
       {
         label: 'BURGER BEST SELLER',
-        data: hamburguesasPedidas.map((b) => b.quantity),
+        data: productosPedidos.map((b) => b.quantity),
         backgroundColor: 'rgba(0, 0, 0)',
       },
     ],
@@ -79,9 +79,58 @@ export const ProductosVendidos = () => {
       },
     ],
   };
+  const hamburguesasPedidas = productosPedidos.reduce((total, producto) => {
+    // Verificar si el producto es una hamburguesa
+    const hamburguesa = burgers.find(
+      (burger) => burger.data.name === producto.burger
+    );
+    if (hamburguesa) {
+      return total + producto.quantity;
+    } else {
+      return total;
+    }
+  }, 0);
 
   return (
     <div className="flex p-4 gap-4 justify-between flex-col w-full">
+      <div
+        className="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+        role="alert"
+      >
+        <svg
+          className="flex-shrink-0 inline w-4 h-4 me-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span className="sr-only">Info</span>
+        <div>
+          <span className="font-medium">Info alert!</span> Se vendieron{' '}
+          {hamburguesasPedidas} hamburguesas
+        </div>
+      </div>
+      <div
+        className="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+        role="alert"
+      >
+        <svg
+          className="flex-shrink-0 inline w-4 h-4 me-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span className="sr-only">Info</span>
+        <div>
+          <span className="font-medium">Info alert!</span> Se vendieron{' '}
+          {totalProductosVendidos} prodcutos
+        </div>
+      </div>
       <div className="grid-cols-1 grid gap-2  w-full  ">
         {[dataBurgers, dataToppings].map((data, index) => (
           <div className="" key={index}>

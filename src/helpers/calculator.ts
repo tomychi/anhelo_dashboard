@@ -11,13 +11,13 @@ export const calcularTotales = (
 ): {
   facturacionTotal: number;
   totalProductosVendidos: number;
-  hamburguesasPedidas: BurgersPedidas[];
+  productosPedidos: BurgersPedidas[];
 } => {
   if (ordersData.length === 0) {
     return {
       facturacionTotal: 0,
       totalProductosVendidos: 0,
-      hamburguesasPedidas: [],
+      productosPedidos: [],
     }; // Devuelve 0 si no hay pedidos
   }
 
@@ -58,14 +58,14 @@ export const calcularTotales = (
   );
 
   // Crear un arreglo con los objetos de hamburguesas y cantidades acumuladas
-  const hamburguesasPedidas = Object.entries(hamburguesasMap).map(
+  const productosPedidos = Object.entries(hamburguesasMap).map(
     ([burger, quantity]) => ({
       burger,
       quantity,
     })
   );
 
-  return { facturacionTotal, totalProductosVendidos, hamburguesasPedidas };
+  return { facturacionTotal, totalProductosVendidos, productosPedidos };
 };
 
 export const calculateUnitCost = (

@@ -117,3 +117,95 @@ export const updateCadeteForOrder = (
       });
   });
 };
+
+export const updateDislikeForOrder = (
+  fechaPedido: string,
+  pedidoId: string,
+  dislike: boolean
+): Promise<void> => {
+  const firestore = getFirestore();
+
+  return new Promise((resolve, reject) => {
+    const [dia, mes, anio] = fechaPedido.split('/');
+
+    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+    getDoc(pedidoDocRef)
+      .then((docSnap) => {
+        if (docSnap.exists()) {
+          const existingData = docSnap.data();
+          const pedidosDelDia = existingData.pedidos || [];
+
+          // Buscar el pedido por su ID y actualizar el cadete
+          const pedidosActualizados = pedidosDelDia.map(
+            (pedido: PedidoProps) => {
+              if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
+                return { ...pedido, dislike };
+              } else {
+                return pedido;
+              }
+            }
+          );
+
+          setDoc(pedidoDocRef, {
+            ...existingData,
+            pedidos: pedidosActualizados,
+          }).then(() => {
+            resolve();
+          });
+        } else {
+          reject(new Error('El pedido no existe para la fecha especificada.'));
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const updateDelayForOrder = (
+  fechaPedido: string,
+  pedidoId: string,
+  delay: boolean
+): Promise<void> => {
+  const firestore = getFirestore();
+
+  return new Promise((resolve, reject) => {
+    const [dia, mes, anio] = fechaPedido.split('/');
+
+    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+    getDoc(pedidoDocRef)
+      .then((docSnap) => {
+        if (docSnap.exists()) {
+          const existingData = docSnap.data();
+          const pedidosDelDia = existingData.pedidos || [];
+
+          // Buscar el pedido por su ID y actualizar el cadete
+          const pedidosActualizados = pedidosDelDia.map(
+            (pedido: PedidoProps) => {
+              if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
+                return { ...pedido, delay };
+              } else {
+                return pedido;
+              }
+            }
+          );
+
+          setDoc(pedidoDocRef, {
+            ...existingData,
+            pedidos: pedidosActualizados,
+          }).then(() => {
+            resolve();
+          });
+        } else {
+          reject(new Error('El pedido no existe para la fecha especificada.'));
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
