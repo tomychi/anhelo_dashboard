@@ -366,14 +366,14 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				>
 					{currencyFormat(total)}
 				</p>
-				<div className="pt-4 uppercase font-black gap-2 flex flex-row justify-center">
-					<label htmlFor="cadete">Selecciona el cadete:</label>
+				<div className="mt-8 uppercase font-black gap-2 flex flex-row justify-center">
+					<label htmlFor="cadete">Cadete:</label>
 					<select
 						id="cadete"
 						name="cadete"
 						value={selectedCadete}
 						onChange={handleCadeteChange}
-						className="bg-black text-custom-red uppercase"
+						className="bg-black text-custom-red  uppercase"
 					>
 						<option value={cadete} defaultValue={cadete}>
 							{cadete}
