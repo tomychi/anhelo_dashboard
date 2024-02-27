@@ -91,7 +91,10 @@ export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
 };
 
 // Función para marcar un pedido como elaborado en Firestore
-export const marcarPedidoComoElaborado = async (pedidoId: string) => {
+export const marcarPedidoComoElaborado = async (
+  pedidoId: string,
+  tiempo: string
+) => {
   const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
 
   // Obtener el año, mes y día actual
@@ -115,6 +118,7 @@ export const marcarPedidoComoElaborado = async (pedidoId: string) => {
       if (index !== -1) {
         // Si se encuentra el pedido en el arreglo, marcarlo como elaborado
         pedidosDelDia[index].elaborado = true;
+        pedidosDelDia[index].hora = tiempo;
 
         // Actualizar el documento del día con el arreglo de pedidos modificado
         await updateDoc(pedidoDocRef, {
