@@ -118,7 +118,7 @@ export const marcarPedidoComoElaborado = async (
       if (index !== -1) {
         // Si se encuentra el pedido en el arreglo, marcarlo como elaborado
         pedidosDelDia[index].elaborado = true;
-        pedidosDelDia[index].hora = tiempo;
+        pedidosDelDia[index].tiempoElaborado = tiempo;
 
         // Actualizar el documento del día con el arreglo de pedidos modificado
         await updateDoc(pedidoDocRef, {

@@ -49,6 +49,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     piso,
     fecha,
     cadete,
+    tiempoElaborado,
   } = comanda;
   const [selectedCadete, setSelectedCadete] = useState(cadete);
   const [nuevoCadete, setNuevoCadete] = useState('');
@@ -132,7 +133,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 
       if (response.ok) {
         const tiempo = obtenerDiferenciaHoraria(hora);
-
         await marcarPedidoComoElaborado(id, tiempo);
       } else {
         console.error('Error al imprimir');
@@ -203,7 +203,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="w-6 h-6 cursor-pointer"
+              className="w-6 h-6 cursor-pointer bg-red-500"
               onClick={() =>
                 updateDislikeForOrder(fecha, id, true)
                   .then(() => {
@@ -292,7 +292,28 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           </svg>
         </div>
         <div className="mb-8 flex justify-center">
-          <p className={`text-2xl text-white font-black`}>{hora}</p>
+          <p className={`text-2xl text-white font-black block`}>{hora}</p>
+          {tiempoElaborado ? (
+            <div className="top-1 flex flex-row gap-4 items-center">
+              <p
+                className={`text-2xl text-white font-black block flex items-center`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-6 h-6 block"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {tiempoElaborado}
+              </p>
+            </div>
+          ) : null}
           <p className="bg-black mt-4  text-2xl text-center text-green-500">
             {aclaraciones}
           </p>

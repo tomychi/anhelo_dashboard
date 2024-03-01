@@ -26,6 +26,7 @@ export interface PedidoProps {
   cadete?: string;
   dislike?: boolean;
   delay?: boolean;
+  tiempoElaborado: string;
 }
 
 export interface ReadDataProps {

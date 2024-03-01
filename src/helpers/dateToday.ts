@@ -1,3 +1,5 @@
+import { PedidoProps } from '../types/types';
+
 export const obtenerFechaActual = () => {
   const fechaActual = new Date();
   const dia = String(fechaActual.getDate()).padStart(2, '0');
@@ -62,4 +64,30 @@ export const obtenerDiferenciaHoraria = (hora: string): string => {
     .padStart(2, '0')}:${minutosDiferencia.toString().padStart(2, '0')}`;
 
   return horaFormateada;
+};
+
+const obtenerMinutosDesdeTiempo = (tiempo: string) => {
+  const [horas, minutos] = tiempo.split(':').map(Number);
+  return horas * 60 + minutos;
+};
+
+export const calcularPromedioTiempoElaboracion = (pedidos: PedidoProps[]) => {
+  // Filtrar los pedidos que tienen la propiedad tiempoElaborado
+  const pedidosConTiempo = pedidos.filter((pedido) => pedido.tiempoElaborado);
+
+  // Verificar si hay pedidos con tiempo de elaboración
+  if (pedidosConTiempo.length === 0) {
+    return 0; // Si no hay pedidos con tiempo de elaboración, devolver 0 como promedio
+  }
+
+  // Calcular el promedio del tiempo de elaboración
+  const totalTiempoElaboracion = pedidosConTiempo.reduce((total, pedido) => {
+    const tiempoEnMinutos = obtenerMinutosDesdeTiempo(pedido.tiempoElaborado);
+    return total + tiempoEnMinutos;
+  }, 0);
+
+  const cantidadPedidos = pedidosConTiempo.length;
+  const promedio = totalTiempoElaboracion / cantidadPedidos;
+
+  return promedio;
 };

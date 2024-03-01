@@ -267,36 +267,42 @@ export const Dashboard = () => {
           </p>
           <p className="text-sm mt-auto">PRODUCTOS VENDIDOS</p>
         </NavLink>
-        <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
-          {/* Recuadro chiquito arriba a la derecha */}
+        <NavLink
+          to={'/ventas'}
+          className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative"
+        >
           <div className="absolute top-4 right-4 bg-black text-custom-red p-4">
             <p>-3</p>
           </div>
-          <div className="absolute top-4 left-4 text-black ">
-            {/* Contenido principal */}
-            <div className="flex flex-col">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
-                />
-              </svg>
+          <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+            {/* Recuadro chiquito arriba a la derecha */}
+            <div className="absolute top-4 left-4 text-black ">
+              {/* Contenido principal */}
+              <div className="flex flex-col">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
+                  />
+                </svg>
+              </div>
+              {/* Puedes cambiar el ícono según tus necesidades */}
             </div>
-            {/* Puedes cambiar el ícono según tus necesidades */}
+            <p className=" text-4xl pt-8 pb-4 font-bold mt-auto">
+              {orders.length}
+            </p>
+            <p className="text-sm mt-auto">VENTAS</p>
           </div>
-          <p className=" text-4xl pt-8 pb-4 font-bold mt-auto">
-            {orders.length}
-          </p>
-          <p className="text-sm mt-auto">VENTAS</p>
-        </div>
+        </NavLink>
+
         <div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
           {/* Recuadro chiquito arriba a la derecha */}
           <div className="absolute top-4 right-4 bg-black text-custom-red p-4">
