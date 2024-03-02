@@ -457,7 +457,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">38.537</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">VISUALIZACIÓN LOCAL</p>
 				</div>
 				<NavLink
@@ -487,7 +487,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">203</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">NUEVOS SEGUIDORES</p>
 				</NavLink>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -509,7 +509,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">83</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">PROMEDIO DE LIKES</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -535,7 +535,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">13</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">PROMEDIO DE COMENTARIOS</p>
 				</div>
 				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
@@ -561,7 +561,7 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">128</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">PROMEDIO DE COMPARTIDOS</p>
 				</div>
 			</div>
