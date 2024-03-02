@@ -110,7 +110,7 @@ export const ModalItem = ({
 																	name="toppings"
 																	value={name}
 																/>
-																{`${name} $${price}`}
+																{`${name}: $${price}`}
 															</label>
 														</div>
 													);
