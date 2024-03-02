@@ -92,7 +92,7 @@ export const ModalItem = ({
 							>
 								{(formik) => (
 									<Form noValidate className="">
-										<div className="grid grid-cols-2 md:grid-cols-2 gap-6">
+										<div className="grid grid-cols-2 gap-4 pb-4">
 											{toppings.map(({ data }) => {
 												const { price, name } = data;
 												if (type === "originals") {
@@ -101,9 +101,9 @@ export const ModalItem = ({
 															role="group"
 															aria-labelledby="checkbox-group"
 															key={name}
-															className=" flex uppercase  items-center  border-2border-black"
+															className=" flex uppercase  items-center  border-2 border-black p-4"
 														>
-															<label className="cursor-pointer w-full p-4  text-base font-medium flex items-center gap-4 text-black">
+															<label className="cursor-pointer w-full  text-base font-medium flex items-center gap-4 text-black">
 																<Field
 																	className=" h-4 w-4 "
 																	type="checkbox"
