@@ -23,19 +23,19 @@ export const Gastos = () => {
 								<th scope="col" className="px-6 py-3">
 									Product name
 								</th>
-								<th scope="col" className="px-6 py-3 hidden md:table-cell">
+								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 									Category
 								</th>
-								<th scope="col" className="px-6 py-3 hidden md:table-cell">
+								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 									Fecha
 								</th>
-								<th scope="col" className="px-6 py-3 hidden md:table-cell">
+								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 									Descripcion
 								</th>
-								<th scope="col" className="px-6 py-3 hidden md:table-cell">
+								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 									Cantidad
 								</th>
-								<th scope="col" className="px-6 py-3 hidden md:table-cell">
+								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 									Unidad
 								</th>
 								<th scope="col" className="px-6 py-3  md:table-cell">
@@ -69,17 +69,17 @@ export const Gastos = () => {
 										>
 											{name}
 										</th>
-										<td className="px-6 py-4 hidden md:table-cell">
+										<td className="px-6 py-4 hidden lg:table-cell">
 											{category}
 										</td>
-										<td className="px-6 py-4 hidden md:table-cell">{fecha}</td>
-										<td className="px-6 py-4 hidden md:table-cell">
+										<td className="px-6 py-4 hidden lg:table-cell">{fecha}</td>
+										<td className="px-6 py-4 hidden lg:table-cell">
 											{description}
 										</td>
-										<td className="px-6 py-4 hidden md:table-cell">
+										<td className="px-6 py-4 hidden lg:table-cell">
 											{quantity}
 										</td>
-										<td className="px-6 py-4 hidden md:table-cell">{unit}</td>
+										<td className="px-6 py-4 hidden lg:table-cell">{unit}</td>
 										<td className="px-6 py-4">{currencyFormat(total)}</td>
 										<td className="px-6 py-4 text-center hidden md:table-cell">
 											<div
