@@ -295,57 +295,6 @@ export const Dashboard = () => {
 				</NavLink>
 			</div>
 			<div className="flex flex-col md:flex-row gap-4">
-				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
-					{/* Recuadro chiquito arriba a la derecha */}
-					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>+14</p>
-					</div>
-					<div className="absolute top-4 left-4 text-black ">
-						{/* Contenido principal */}
-						<div className="flex flex-col">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
-							</svg>
-						</div>
-						{/* Puedes cambiar el ícono según tus necesidades */}
-					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
-					<p className="text-sm mt-auto">NUEVOS CLIENTES</p>
-				</div>
-				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
-					{/* Recuadro chiquito arriba a la derecha */}
-					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-						<p>+14</p>
-					</div>
-					<div className="absolute top-4 left-4 text-black ">
-						{/* Contenido principal */}
-						<div className="flex flex-col">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								class="w-6 h-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</div>
-						{/* Puedes cambiar el ícono según tus necesidades */}
-					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
-					<p className="text-sm mt-auto">TICKET PROMEDIO</p>
-				</div>
-			</div>
-
-			<div className="flex flex-col md:flex-row gap-4">
 				<NavLink
 					to={"/productosVendidos"}
 					className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative"
@@ -435,6 +384,56 @@ export const Dashboard = () => {
 					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
 					<p className="text-sm mt-auto">TIEMPO DE DELIVERY PROMEDIO</p>
 				</NavLink>
+			</div>
+			<div className="flex flex-col md:flex-row gap-4">
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
+						<p>+14</p>
+					</div>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
+					<p className="text-sm mt-auto">NUEVOS CLIENTES</p>
+				</div>
+				<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+					{/* Recuadro chiquito arriba a la derecha */}
+					<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
+						<p>+14</p>
+					</div>
+					<div className="absolute top-4 left-4 text-black ">
+						{/* Contenido principal */}
+						<div className="flex flex-col">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								class="w-6 h-6"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</div>
+						{/* Puedes cambiar el ícono según tus necesidades */}
+					</div>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
+					<p className="text-sm mt-auto">TICKET PROMEDIO</p>
+				</div>
 			</div>
 
 			<div className="flex flex-col md:flex-row  gap-4">
