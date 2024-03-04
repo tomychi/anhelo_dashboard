@@ -93,16 +93,16 @@ export const EditDataComponent = () => {
 						<th scope="col" className="px-6 py-3">
 							Product name
 						</th>
-						<th scope="col" className="px-6 py-3">
+						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 							Type
 						</th>
-						<th scope="col" className="px-6 py-3">
+						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 							Price
 						</th>
-						<th scope="col" className="px-6 py-3">
+						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 							Image
 						</th>
-						<th scope="col" className="px-6 py-3">
+						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 							Description
 						</th>
 						<th scope="col" className="px-6 py-3">
@@ -123,11 +123,13 @@ export const EditDataComponent = () => {
 							>
 								{data.name}
 							</th>
-							<td className="px-6 py-4">{data.type}</td>
-							<td className="px-6 py-4">${data.price}</td>
-							<td className="px-6 py-4">{data.img}</td>
-							<td className="px-6 py-4 ">{data.description}</td>
-							<td className="px-6 py-4 text-center hidden md:table-cell">
+							<td className="px-6 py-4 hidden lg:table-cell">{data.type}</td>
+							<td className="px-6 py-4 hidden lg:table-cell">${data.price}</td>
+							<td className="px-6 py-4 hidden lg:table-cell">{data.img}</td>
+							<td className="px-6 py-4 hidden lg:table-cell">
+								{data.description}
+							</td>
+							<td className="px-6 py-4 text-center">
 								<div
 									onClick={() => {
 										if (data && id && collectionName) {
