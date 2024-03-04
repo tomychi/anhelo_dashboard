@@ -1,10 +1,9 @@
-import { EditDataComponent } from '../components/settings';
+import { EditDataComponent } from "../components/settings";
 
 export const Settings = () => {
-  return (
-    <div>
-      Settings
-      <EditDataComponent />
-    </div>
-  );
+	return (
+		<div>
+			<EditDataComponent />
+		</div>
+	);
 };
