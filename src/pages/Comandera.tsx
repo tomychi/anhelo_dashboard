@@ -86,10 +86,10 @@ export const Comandera = () => {
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
 	return (
-		<div>
-			<div className="flex justify-center font-antonio my-4">
+		<div className="p-4">
+			<div className="flex justify-center font-antonio gap-4 mb-4 ">
 				<button
-					className={`mx-2 py-2 px-4 ${
+					className={`p-4 ${
 						seccionActiva === "porHacer"
 							? "bg-custom-red"
 							: "border-2 border-red-main text-custom-red"
@@ -99,7 +99,7 @@ export const Comandera = () => {
 					Por Hacer
 				</button>
 				<button
-					className={`mx-2 py-2 px-4 ${
+					className={`p-4 ${
 						seccionActiva === "hechos"
 							? "bg-custom-red"
 							: "border-2 border-red-main text-custom-red"
@@ -109,17 +109,17 @@ export const Comandera = () => {
 					Hechos
 				</button>
 			</div>
-			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center">
+			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center">
 				<p className="border-b-2 font-black border-red-main ">
 					Customer success: {customerSuccess}%
 				</p>
 
-				<p className=" border-b-2 font-black border-red-main">
+				<p className=" border-b-2 font-black  text-center border-red-main">
 					Promedio de tiempo de elaboración por pedido:{" "}
 					{promedioTiempoElaboracion} minutos
 				</p>
 
-				<div className="flex flex-row border-b-2 font-black border-red-main">
+				<div className="flex  text-center flex-row border-b-2 font-black border-red-main mb-4">
 					<p>Filtrar por cadetes:</p>
 					<select
 						value={cadeteSeleccionado}
@@ -150,7 +150,7 @@ export const Comandera = () => {
 					</div>
 				)}
 			</div>
-			<div className="grid grid-cols-2 p-4 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+			<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
 				{seccionActiva === "porHacer" ? (
 					Array.isArray(pedidosPorHacer) && pedidosPorHacer.length > 0 ? (
 						pedidosPorHacer.map((comanda) => (
