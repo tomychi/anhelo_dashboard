@@ -11,10 +11,10 @@ export const CartShop = ({
 	const total = detallePedido.reduce((acc, d) => acc + (d.subTotal || 0), 0);
 
 	return (
-		<div className="flex flex-col w-full font-antonio justify-center items-center bg-custom-red ">
-			<div className="flex flex-row items-center p-4  w-full justify-between">
-				<h1 className=" text-6xl font-black">
-					CARRITO: {currencyFormat(total)}
+		<div className="flex flex-col w-full font-antonio justify-center  bg-custom-red ">
+			<div className="flex flex-row p-4  w-full justify-between">
+				<h1 className=" text-6xl mt-[-0.5rem] font-black">
+					CARRITO {currencyFormat(total)}
 				</h1>
 
 				<svg
@@ -22,7 +22,7 @@ export const CartShop = ({
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					className="w-10 h-10 border-2 border-black p-2 cursor-pointer"
+					className="w-10 h-10  border-2 border-black p-2 cursor-pointer"
 				>
 					<path
 						fillRule="evenodd"
