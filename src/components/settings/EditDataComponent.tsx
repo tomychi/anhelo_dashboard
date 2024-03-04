@@ -146,14 +146,12 @@ export const EditDataComponent = () => {
 				</tbody>
 			</table>
 			{isModalOpen && (
-				<div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-					<EditModal
-						closeModal={closeModal}
-						item={selectedItem}
-						id={id}
-						collectionName={collectionName}
-					/>
-				</div>
+				<EditModal
+					closeModal={closeModal}
+					item={selectedItem}
+					id={id}
+					collectionName={collectionName}
+				/>
 			)}
 		</div>
 	);
