@@ -136,7 +136,7 @@ export const EditDataComponent = () => {
 											handleEditClick(data, id, collectionName);
 										}
 									}}
-									className="font-black border border-red-main text-custom-red hover:underline"
+									className="font-black border border-red-main text-custom-red hover:underline px-1"
 								>
 									EDITAR
 								</div>

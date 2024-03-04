@@ -83,7 +83,7 @@ export const Gastos = () => {
 										<td className="px-6 py-4">{currencyFormat(total)}</td>
 										<td className="px-6 py-4 text-center hidden md:table-cell">
 											<div
-												className="font-black border border-red-main text-custom-red hover:underline"
+												className="font-black border border-red-main text-custom-red hover:underline px-1"
 												onClick={() => eliminarDocumento("gastos", id)}
 											>
 												Borrar
