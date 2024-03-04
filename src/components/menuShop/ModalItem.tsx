@@ -22,11 +22,11 @@ export const ModalItem = ({
 	const { toppings } = useSelector((state: RootState) => state.product);
 	return (
 		<>
-			<div className=" flex overflow-x-hidden overflow-y-auto fixed inset-0  outline-none focus:outline-none z-50 bg-black">
+			<div className=" flex overflow-x-hidden overflow-y-auto fixed inset-0  outline-none focus:outline-none z-50  bg-black">
 				<div className=" p-4 my-auto mx-auto">
-					<div className=" bg-custom-red flex flex-col font-antonio p-4">
+					<div className=" bg-custom-red  flex flex-col font-antonio p-4">
 						{/*header*/}
-						<div className=" flex flex-row pb-4 gap-4 justify-between">
+						<div className=" flex flex-col md:flex-row pb-4 gap-4 justify-between">
 							<h3 className="text-4xl flex justify-center uppercase font-black">
 								{name}
 							</h3>
@@ -118,11 +118,11 @@ export const ModalItem = ({
 											})}
 										</div>
 										<div className="">
-											<div className="flex justify-between gap-4 w-full">
-												<div className="flex items-center">
-													<div className="w-20 h-24 border-2 text-black  border-black text-4xl flex items-center justify-center">
+											<div className="flex flex-col md:flex-row items-center md:justify-between gap-4 w-full">
+												<div className="flex items-center w-full">
+													<div className="w-full h-24 border-2 text-black  border-black text-4xl flex items-center justify-center">
 														<button
-															className="w-24 h-24  text-black text-4xl"
+															className="w-full h-24  text-black text-4xl"
 															type="button"
 															onClick={() =>
 																formik.setFieldValue(
@@ -134,7 +134,7 @@ export const ModalItem = ({
 															-
 														</button>
 													</div>
-													<div className="w-20 h-24 border-2bg-black text-custom-red border-black text-4xl flex items-center justify-center">
+													<div className="w-full h-24 border-2bg-black text-custom-red border-black text-4xl flex items-center justify-center">
 														<Field
 															type="number"
 															name="quantity"
@@ -142,9 +142,9 @@ export const ModalItem = ({
 															className="w-full bg-black h-full text-center"
 														/>
 													</div>
-													<div className="w-20 h-24 border-2 text-black border-black text-4xl flex items-center justify-center">
+													<div className="w-full h-24 border-2 text-black border-black text-4xl flex items-center justify-center">
 														<button
-															className="p-4 text-black text-4xl"
+															className="p-4 w-full text-black text-4xl"
 															type="button"
 															onClick={() =>
 																formik.setFieldValue(
@@ -158,7 +158,7 @@ export const ModalItem = ({
 													</div>
 												</div>
 												<button
-													className=" text-4xl bg-black text-custom-red font-black p-4 uppercase w-full outline-none focus:outline-none"
+													className=" text-4xl bg-black text-custom-red font-black p-4 uppercase w-full h-24 outline-none focus:outline-none"
 													type="submit"
 												>
 													Guardar
