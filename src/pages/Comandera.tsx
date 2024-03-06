@@ -53,10 +53,7 @@ export const Comandera = () => {
 
     // Calcular la suma total de pedidos para el cadete seleccionado
     const totalPedidosCadete = orders.reduce((total, pedido) => {
-      if (
-        cadeteSeleccionado === '' ||
-        pedido.cadete === nuevoCadeteSeleccionado
-      ) {
+      if (pedido.cadete === nuevoCadeteSeleccionado) {
         return total + 1; // Si no se ha seleccionado ningún cadete o si el cadete del pedido coincide con el seleccionado, sumar 1 al total
       } else {
         return total;
@@ -68,8 +65,7 @@ export const Comandera = () => {
     // Calcular la suma total de los montos de los pedidos que fueron en efectivo para el cadete seleccionado
     const totalEfectivoCadete = orders.reduce((total, pedido) => {
       if (
-        (cadeteSeleccionado === '' ||
-          pedido.cadete === nuevoCadeteSeleccionado) &&
+        pedido.cadete === nuevoCadeteSeleccionado &&
         pedido.metodoPago === 'efectivo'
       ) {
         return total + pedido.total; // Si no se ha seleccionado ningún cadete o si el cadete del pedido coincide con el seleccionado y el pago fue en efectivo, sumar el monto total del pedido
@@ -109,51 +105,50 @@ export const Comandera = () => {
           Hechos
         </button>
       </div>
-      {location.pathname === '/comandas' ? null : (
-        <div>
-          <div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center">
+      <div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center">
+        {location.pathname === '/comandas' ? null : (
+          <div>
             <p className="border-b-2 font-black border-red-main ">
-              Customer success: {customerSuccess}%
+              Customer success: {Math.round(customerSuccess)}%
             </p>
 
             <p className=" border-b-2 font-black  text-center border-red-main">
               Promedio de tiempo de elaboración por pedido:{' '}
-              {promedioTiempoElaboracion} minutos
+              {Math.round(promedioTiempoElaboracion)} minutos
             </p>
-
-            <div className="flex  text-center flex-row border-b-2 font-black border-red-main mb-4">
-              <p>Filtrar por cadetes:</p>
-              <select
-                value={cadeteSeleccionado}
-                onChange={handleCadeteChange}
-                className="bg-black uppercase"
-              >
-                <option value="">Todos los cadetes</option>
-                {cadetesUnicos.map((cadete, index) => {
-                  if (cadete === undefined) return;
-                  return (
-                    <option key={index} value={cadete}>
-                      {cadete}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            {cadeteSeleccionado && (
-              <div>
-                <p>
-                  Suma total de pedidos para {cadeteSeleccionado}:{' '}
-                  {sumaTotalPedidos}
-                </p>
-                <p>
-                  Suma total de pagos en efectivo para {cadeteSeleccionado}:{' '}
-                  {currencyFormat(sumaTotalEfectivo)}
-                </p>
-              </div>
-            )}
           </div>
+        )}
+        <div className="flex  text-center flex-row border-b-2 font-black border-red-main mb-4">
+          <p>Filtrar por cadetes:</p>
+          <select
+            value={cadeteSeleccionado}
+            onChange={handleCadeteChange}
+            className="bg-black uppercase"
+          >
+            <option value="">Todos los cadetes</option>
+            {cadetesUnicos.map((cadete, index) => {
+              if (cadete === undefined) return;
+              return (
+                <option key={index} value={cadete}>
+                  {cadete}
+                </option>
+              );
+            })}
+          </select>
         </div>
-      )}
+        {cadeteSeleccionado && (
+          <div>
+            <p>
+              Suma total de pedidos para {cadeteSeleccionado}:{' '}
+              {sumaTotalPedidos}
+            </p>
+            <p>
+              Suma total de pagos en efectivo para {cadeteSeleccionado}:{' '}
+              {currencyFormat(sumaTotalEfectivo)}
+            </p>
+          </div>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
         {seccionActiva === 'porHacer' ? (
           Array.isArray(pedidosPorHacer) && pedidosPorHacer.length > 0 ? (
