@@ -1,6 +1,6 @@
 export interface UserState {
   uid?: string;
-  displayName?: string | null | undefined;
+  email?: string | null | undefined;
 }
 interface AuthAction {
   type: string;
