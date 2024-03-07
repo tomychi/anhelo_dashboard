@@ -27,6 +27,7 @@ export interface PedidoProps {
   dislike?: boolean;
   delay?: boolean;
   tiempoElaborado: string;
+  tiempoEntregado: string;
 }
 
 export interface ReadDataProps {

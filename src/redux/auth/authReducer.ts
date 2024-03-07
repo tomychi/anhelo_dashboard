@@ -1,6 +1,9 @@
 export interface UserState {
-  uid?: string;
-  email?: string | null | undefined;
+  user: {
+    uid?: string;
+    email?: string | null | undefined;
+  };
+  isAuth: boolean;
 }
 interface AuthAction {
   type: string;
