@@ -55,8 +55,8 @@ export const Neto = () => {
 		setMateriales(rawData);
 	};
 
-	const multiplierMasterpiecesOriginals = 1.6;
-	const multiplierSatisfyers = 1.3;
+	const multiplierMasterpiecesOriginals = 2.3;
+	const multiplierSatisfyers = 1.8;
 
 	useEffect(() => {
 		const getData = async () => {
