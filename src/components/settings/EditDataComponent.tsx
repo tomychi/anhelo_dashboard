@@ -96,7 +96,7 @@ export const EditDataComponent = () => {
 						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
 							Type
 						</th>
-						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
+						<th scope="col" className="px-6 py-3  lg:table-cell">
 							Price
 						</th>
 						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
@@ -124,7 +124,7 @@ export const EditDataComponent = () => {
 								{data.name}
 							</th>
 							<td className="px-6 py-4 hidden lg:table-cell">{data.type}</td>
-							<td className="px-6 py-4 hidden lg:table-cell">${data.price}</td>
+							<td className="px-6 py-4  lg:table-cell">${data.price}</td>
 							<td className="px-6 py-4 hidden lg:table-cell">{data.img}</td>
 							<td className="px-6 py-4 hidden lg:table-cell">
 								{data.description}
