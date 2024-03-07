@@ -146,10 +146,34 @@ export const Neto = () => {
 									{currencyFormat(p.price - p.costo)} - ganancia:
 									{Math.ceil(((p.price - p.costo) * 100) / p.price)}%
 								</td>
-								<td className="px-6 py-4">{currencyFormat(p.costo * 1.7)}</td>
 								<td className="px-6 py-4">
-									{currencyFormat(p.costo * 1.7 - p.costo)} - ganancia:
-									{Math.ceil(((p.costo * 1.7 - p.costo) * 100) / p.price)}%
+									{currencyFormat(
+										p.type === "satisfyer"
+											? p.costo * 1.3
+											: p.type === "masterpieces" || p.type === "originals"
+											? p.costo * 1.7
+											: p.price
+									)}
+								</td>
+								<td className="px-6 py-4">
+									{currencyFormat(
+										p.type === "satisfyer"
+											? p.costo * 1.3 - p.costo
+											: p.type === "masterpieces" || p.type === "originals"
+											? p.costo * 1.7 - p.costo
+											: p.price - p.costo
+									)}{" "}
+									- ganancia:
+									{Math.ceil(
+										((p.type === "satisfyer"
+											? p.costo * 1.3 - p.costo
+											: p.type === "masterpieces" || p.type === "originals"
+											? p.costo * 1.7 - p.costo
+											: p.price - p.costo) *
+											100) /
+											p.price
+									)}
+									%
 								</td>
 							</tr>
 						))}
