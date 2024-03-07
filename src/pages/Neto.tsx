@@ -55,6 +55,9 @@ export const Neto = () => {
 		setMateriales(rawData);
 	};
 
+	const multiplierMasterpiecesOriginals = 1.6;
+	const multiplierSatisfyers = 1.3;
+
 	useEffect(() => {
 		const getData = async () => {
 			await readMateriales();
@@ -149,26 +152,26 @@ export const Neto = () => {
 								<td className="px-6 py-4">
 									{currencyFormat(
 										p.type === "satisfyer"
-											? p.costo * 1.3
+											? p.costo * multiplierSatisfyers
 											: p.type === "masterpieces" || p.type === "originals"
-											? p.costo * 1.7
+											? p.costo * multiplierMasterpiecesOriginals
 											: p.price
 									)}
 								</td>
 								<td className="px-6 py-4">
 									{currencyFormat(
 										p.type === "satisfyer"
-											? p.costo * 1.3 - p.costo
+											? p.costo * multiplierSatisfyers - p.costo
 											: p.type === "masterpieces" || p.type === "originals"
-											? p.costo * 1.7 - p.costo
+											? p.costo * multiplierMasterpiecesOriginals - p.costo
 											: p.price - p.costo
 									)}{" "}
 									- ganancia:
 									{Math.ceil(
 										((p.type === "satisfyer"
-											? p.costo * 1.3 - p.costo
+											? p.costo * multiplierSatisfyers - p.costo
 											: p.type === "masterpieces" || p.type === "originals"
-											? p.costo * 1.7 - p.costo
+											? p.costo * multiplierMasterpiecesOriginals - p.costo
 											: p.price - p.costo) *
 											100) /
 											p.price
