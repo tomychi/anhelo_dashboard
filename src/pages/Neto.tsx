@@ -149,7 +149,7 @@ export const Neto = () => {
 								<td className="px-6 py-4">{currencyFormat(p.costo * 1.7)}</td>
 								<td className="px-6 py-4">
 									{currencyFormat(p.costo * 1.7 - p.costo)} - ganancia:
-									{Math.ceil(((p.costo * 1.7 - p.costo) * 100) / p.price)}
+									{Math.ceil(((p.costo * 1.7 - p.costo) * 100) / p.price)}%
 								</td>
 							</tr>
 						))}
