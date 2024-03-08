@@ -91,10 +91,7 @@ export const DynamicForm = () => {
       dispatch(readMaterialsAll(rawData));
     };
 
-    if (materiales.length === 0) {
-      console.log('dbbbbbbb');
-      getData();
-    }
+    getData();
   }, [dispatch, materiales]);
 
   useEffect(() => {
@@ -241,6 +238,7 @@ export const DynamicForm = () => {
         costoToppings += materialTopping.costo;
       }
     });
+
     // Verificar si se encontró el producto y obtener su costo
     const costoBurger = productoSeleccionado
       ? (productoSeleccionado.costo + costoToppings) * quantity
