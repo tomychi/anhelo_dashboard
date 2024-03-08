@@ -57,11 +57,12 @@ export const Card = ({ comanda }: ComandaRareProps) => {
     cadete,
     tiempoElaborado,
     tiempoEntregado,
+    entregado,
   } = comanda;
   const [selectedCadete, setSelectedCadete] = useState(cadete);
   const [nuevoCadete, setNuevoCadete] = useState('');
   const [cadetes, setCadetes] = useState<string[]>([]);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const user = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
     const getCadetes = async () => {
       const cade = await readCadetes();
@@ -309,6 +310,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         </div>
         <div className="mb-8 mt-12 flex justify-center">
           <p className={`text-2xl text-white font-black block`}>{hora}</p>
+          {entregado && <p>{tiempoEntregado}</p>}
           {tiempoElaborado ? (
             <div className="top-1 flex flex-row gap-4 items-center">
               <p

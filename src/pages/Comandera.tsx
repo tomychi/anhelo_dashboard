@@ -26,7 +26,14 @@ export const Comandera = () => {
   );
   const pedidosHechos = orders.filter(
     (o) =>
-      o.elaborado && (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+      o.elaborado &&
+      !o.entregado &&
+      (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+  );
+
+  const pedidosEntragados = orders.filter(
+    (o) =>
+      o.entregado && (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
   );
   useEffect(() => {
     if (location.pathname === '/comandas') {
@@ -104,6 +111,16 @@ export const Comandera = () => {
         >
           Hechos
         </button>
+        <button
+          className={`p-4 ${
+            seccionActiva === 'entregados'
+              ? 'bg-custom-red'
+              : 'border-2 border-red-main text-custom-red'
+          } text-black font-black uppercase `}
+          onClick={() => setSeccionActiva('entregados')}
+        >
+          Entregados
+        </button>
       </div>
       <div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center">
         {location.pathname === '/comandas' ? null : (
@@ -162,15 +179,27 @@ export const Comandera = () => {
               No hay pedidos por hacer.
             </p>
           )
-        ) : Array.isArray(pedidosHechos) && pedidosHechos.length > 0 ? (
-          pedidosHechos.map((comanda) => (
+        ) : seccionActiva === 'hechos' ? (
+          Array.isArray(pedidosHechos) && pedidosHechos.length > 0 ? (
+            pedidosHechos.map((comanda) => (
+              <div key={comanda.id}>
+                <Card comanda={comanda} />
+              </div>
+            ))
+          ) : (
+            <p className="text-custom-red font-antonio p-4">
+              No hay pedidos hechos.
+            </p>
+          )
+        ) : Array.isArray(pedidosEntragados) && pedidosEntragados.length > 0 ? (
+          pedidosEntragados.map((comanda) => (
             <div key={comanda.id}>
               <Card comanda={comanda} />
             </div>
           ))
         ) : (
           <p className="text-custom-red font-antonio p-4">
-            No hay pedidos hechos.
+            No hay pedidos por hacer.
           </p>
         )}
       </div>

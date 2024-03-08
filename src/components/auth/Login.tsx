@@ -24,11 +24,8 @@ export const Login = () => {
     if (!error) {
       dispatch(
         loginSuccess({
-          user: {
-            uid: res?.user?.uid,
-            email: res?.user?.email,
-          },
-          isAuth: true,
+          uid: res?.user?.uid,
+          email: res?.user?.email,
         })
       );
       navigate(from, { replace: true });

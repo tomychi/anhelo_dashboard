@@ -166,6 +166,7 @@ export const marcarPedidoComoEntregado = async (
       if (index !== -1) {
         // Si se encuentra el pedido en el arreglo, marcarlo como elaborado
         pedidosDelDia[index].tiempoEntregado = tiempo;
+        pedidosDelDia[index].entregado = true;
 
         // Actualizar el documento del día con el arreglo de pedidos modificado
         await updateDoc(pedidoDocRef, {

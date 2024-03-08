@@ -1,6 +1,6 @@
-import { UserState } from './authReducer';
+import { User } from './authReducer';
 
-export const loginSuccess = (user: UserState) => {
+export const loginSuccess = (user: User) => {
   return {
     type: 'LOGIN_SUCCESS',
     payload: user,

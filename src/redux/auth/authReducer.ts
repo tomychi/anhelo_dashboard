@@ -1,8 +1,10 @@
+export interface User {
+  uid?: string;
+  email?: string | null | undefined;
+}
+
 export interface UserState {
-  user: {
-    uid?: string;
-    email?: string | null | undefined;
-  };
+  user: User;
   isAuth: boolean;
 }
 interface AuthAction {
@@ -12,7 +14,10 @@ interface AuthAction {
 }
 
 const initialState = {
-  user: null,
+  user: {
+    uid: '',
+    email: null,
+  },
   isAuth: false,
   // Otros campos relacionados con la autenticación
 };
