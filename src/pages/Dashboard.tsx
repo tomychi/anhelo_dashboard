@@ -375,8 +375,10 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">-</p>
-					<p className="text-sm mt-auto">TIEMPO DE DELAY PROMEDIO</p>
+					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">
+						{Math.round(calcularPromedioTiempoElaboracion(orders))} M
+					</p>
+					<p className="text-sm mt-auto">TIEMPO DE ENTREGA TOTAL PROMEDIO</p>
 				</div>
 			</div>
 			<div className="flex flex-col md:flex-row gap-4">
