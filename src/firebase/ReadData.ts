@@ -6,6 +6,7 @@ import {
   updateDoc,
   getDoc,
   onSnapshot,
+  runTransaction,
 } from 'firebase/firestore';
 import { PedidoProps } from '../types/types';
 import { obtenerFechaActual } from '../helpers/dateToday';
@@ -95,50 +96,37 @@ export const marcarPedidoComoElaborado = async (
   pedidoId: string,
   tiempo: string
 ) => {
-  const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
-
-  // Obtener el año, mes y día actual
+  const todayDateString = obtenerFechaActual();
   const [dia, mes, anio] = todayDateString.split('/');
+
   try {
-    // Obtener referencia al documento del día dentro de la colección de pedidos en Firestore
-    const pedidoDocRef = doc(getFirestore(), 'pedidos', anio, mes, dia);
+    const firestore = getFirestore();
+    const pedidoDocRef = doc(firestore, 'pedidos', anio, mes, dia);
 
-    // Obtener el documento del día
-    const pedidoDocSnapshot = await getDoc(pedidoDocRef);
+    await runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
 
-    if (pedidoDocSnapshot.exists()) {
-      // Si el documento existe, obtener el arreglo de pedidos
+      if (!pedidoDocSnapshot.exists()) {
+        console.error('No se encontró el documento del día en Firestore');
+        return;
+      }
+
       const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
-
-      // Encontrar el índice del pedido en el arreglo de pedidos
       const index = pedidosDelDia.findIndex(
         (pedido: PedidoProps) => pedido.id === pedidoId
       );
 
       if (index !== -1) {
-        // Si se encuentra el pedido en el arreglo, marcarlo como elaborado
         pedidosDelDia[index].elaborado = true;
         pedidosDelDia[index].tiempoElaborado = tiempo;
-
-        try {
-          // Actualizar el documento del día con el arreglo de pedidos modificado
-          await updateDoc(pedidoDocRef, {
-            pedidos: pedidosDelDia,
-          });
-
-          console.log('Pedido marcado como elaborado en Firestore');
-        } catch (error) {
-          console.error('Error al actualizar el pedido en Firestore:', error);
-          // Aquí puedes manejar el error de acuerdo a tus necesidades
-        }
+        transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
+        console.log('Pedido marcado como elaborado en Firestore');
       } else {
         console.error(
           'El pedido no fue encontrado en el arreglo de pedidos del día'
         );
       }
-    } else {
-      console.error('No se encontró el documento del día en Firestore');
-    }
+    });
   } catch (error) {
     console.error('Error al marcar pedido como elaborado en Firestore:', error);
   }
