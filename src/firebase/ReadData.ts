@@ -3,7 +3,6 @@ import {
   collection,
   getDocs,
   doc,
-  updateDoc,
   getDoc,
   onSnapshot,
   runTransaction,
@@ -136,47 +135,39 @@ export const marcarPedidoComoEntregado = async (
   pedidoId: string,
   tiempo: string
 ) => {
-  const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
-
-  // Obtener el año, mes y día actual
+  const todayDateString = obtenerFechaActual();
   const [dia, mes, anio] = todayDateString.split('/');
+
   try {
-    // Obtener referencia al documento del día dentro de la colección de pedidos en Firestore
-    const pedidoDocRef = doc(getFirestore(), 'pedidos', anio, mes, dia);
+    const firestore = getFirestore();
+    const pedidoDocRef = doc(firestore, 'pedidos', anio, mes, dia);
 
-    // Obtener el documento del día
-    const pedidoDocSnapshot = await getDoc(pedidoDocRef);
+    await runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
 
-    if (pedidoDocSnapshot.exists()) {
-      // Si el documento existe, obtener el arreglo de pedidos
+      if (!pedidoDocSnapshot.exists()) {
+        console.error('No se encontró el documento del día en Firestore');
+        return;
+      }
+
       const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
-
-      // Encontrar el índice del pedido en el arreglo de pedidos
       const index = pedidosDelDia.findIndex(
         (pedido: PedidoProps) => pedido.id === pedidoId
       );
 
       if (index !== -1) {
-        // Si se encuentra el pedido en el arreglo, marcarlo como elaborado
         pedidosDelDia[index].tiempoEntregado = tiempo;
         pedidosDelDia[index].entregado = true;
-
-        // Actualizar el documento del día con el arreglo de pedidos modificado
-        await updateDoc(pedidoDocRef, {
-          pedidos: pedidosDelDia,
-        });
-
-        console.log('Pedido marcado como elaborado en Firestore');
+        transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
+        console.log('Pedido marcado como entregado en Firestore');
       } else {
         console.error(
           'El pedido no fue encontrado en el arreglo de pedidos del día'
         );
       }
-    } else {
-      console.error('No se encontró el documento del día en Firestore');
-    }
+    });
   } catch (error) {
-    console.error('Error al marcar pedido como elaborado en Firestore:', error);
+    console.error('Error al marcar pedido como entregado en Firestore:', error);
   }
 };
 
@@ -194,10 +185,16 @@ export const eliminarDocumento = async (
     // Obtener referencia al documento del día dentro de la colección en Firestore
     const docRef = doc(getFirestore(), dbName, anio, mes, dia);
 
-    // Obtener el documento del día
-    const docSnapshot = await getDoc(docRef);
+    runTransaction(getFirestore(), async (transaction) => {
+      const docSnapshot = await transaction.get(docRef);
 
-    if (docSnapshot.exists()) {
+      if (!docSnapshot.exists()) {
+        console.error(
+          `No se encontró el documento del día en Firestore para ${dbName}`
+        );
+        return;
+      }
+
       // Si el documento existe, obtener el arreglo de pedidos o gastos
       const data = docSnapshot.data()?.[dbName] || [];
 
@@ -207,103 +204,18 @@ export const eliminarDocumento = async (
       );
 
       // Actualizar el documento del día con el arreglo actualizado
-      await updateDoc(docRef, {
+      transaction.set(docRef, {
         [dbName]: dataActualizado,
       });
-
-      console.log(`${dbName} eliminado de Firestore`);
-    } else {
-      console.error(
-        `No se encontró el documento del día en Firestore para ${dbName}`
-      );
-    }
+    })
+      .then(() => {
+        console.log(`${dbName} eliminado de Firestore`);
+      })
+      .catch((error) => {
+        console.error(`Error al eliminar ${dbName} de Firestore:`, error);
+      });
   } catch (error) {
     console.error(`Error al eliminar ${dbName} de Firestore:`, error);
-  }
-};
-
-export const ReadOrdersForDate = (
-  year: string,
-  month: string,
-  day: string,
-  callback: OrdersCallback
-) => {
-  const firestore = getFirestore();
-  const ordersDocRef = doc(firestore, 'pedidos', year, month, day);
-
-  // Obtener una vez los datos del documento para la fecha especificada
-  getDoc(ordersDocRef)
-    .then((docSnapshot) => {
-      if (docSnapshot.exists()) {
-        // Si el documento existe, obtener el arreglo de pedidos
-        const pedidosDelDia = docSnapshot.data()?.pedidos || [];
-        callback(pedidosDelDia as PedidoProps[]); // Llamar a la función de devolución de llamada con los pedidos encontrados
-      } else {
-        // Si el documento no existe, no hay pedidos para la fecha especificada
-        callback([]); // Llamar a la función de devolución de llamada con un arreglo vacío
-      }
-    })
-    .catch((error) => {
-      console.error(
-        'Error al obtener los pedidos para la fecha especificada:',
-        error
-      );
-    });
-};
-
-export const addIngredientsToBurger = async (
-  burgerId: string,
-  ingredientes: Map<string, number>
-): Promise<Record<string, number>> => {
-  const firestore = getFirestore();
-  const burgerDocRef = doc(firestore, 'burgers', burgerId);
-  const friesDocRef = doc(firestore, 'fries', burgerId); // Usar el mismo ID para buscar en "fries"
-  const drinksDocRef = doc(firestore, 'drinks', burgerId); // Usar el mismo ID para buscar en "drinks"
-  const toppingsDocRef = doc(firestore, 'toppings', burgerId); // Usar el mismo ID para buscar en "toppings"
-
-  try {
-    // Intentar actualizar el documento en la colección "burgers"
-    await updateDoc(burgerDocRef, {
-      ingredients: Object.fromEntries(ingredientes.entries()),
-    });
-
-    // Devolver algún valor si es necesario
-    return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
-  } catch (error) {
-    // Si ocurre un error, intentar actualizar el documento en la colección "fries"
-    try {
-      await updateDoc(friesDocRef, {
-        ingredients: Object.fromEntries(ingredientes.entries()),
-      });
-
-      // Devolver algún valor si es necesario
-      return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
-    } catch (error) {
-      // Si ocurre un error, intentar actualizar el documento en la colección "drinks"
-      try {
-        await updateDoc(drinksDocRef, {
-          ingredients: Object.fromEntries(ingredientes.entries()),
-        });
-
-        // Devolver algún valor si es necesario
-        return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
-      } catch (error) {
-        // Si ocurre un error, intentar actualizar el documento en la colección "toppings"
-        try {
-          await updateDoc(toppingsDocRef, {
-            ingredients: Object.fromEntries(ingredientes.entries()),
-          });
-
-          // Devolver algún valor si es necesario
-          return Promise.resolve(Object.fromEntries(ingredientes.entries())); // Por ejemplo, podrías devolver un valor, una cadena, etc.
-        } catch (error) {
-          console.error('Error adding ingredients: ', error);
-          throw new Error(
-            'Failed to add ingredients to burger, fries, drinks, or toppings'
-          );
-        }
-      }
-    }
   }
 };
 export const ReadDataForDateRange = <T>(

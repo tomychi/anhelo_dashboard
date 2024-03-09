@@ -9,7 +9,6 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react';
 import {
   updateCadeteForOrder,
-  updateDelayForOrder,
   updateDislikeForOrder,
 } from '../../firebase/UploadOrder';
 import { addCadete, readCadetes } from '../../firebase/Cadetes';
@@ -131,8 +130,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
   };
   const imprimirTicket = async (nuevoPedido: PedidoProps) => {
-    const tiempo = obtenerDiferenciaHoraria(hora);
-    await marcarPedidoComoElaborado(id, tiempo);
     try {
       const response = await fetch('http://localhost:3000/imprimir', {
         method: 'POST',
@@ -143,6 +140,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
 
       if (response.ok) {
+        const tiempo = obtenerDiferenciaHoraria(hora);
+        await marcarPedidoComoElaborado(id, tiempo);
       } else {
         console.error('Error al imprimir');
         Swal.fire({
@@ -182,35 +181,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             <div className="absolute top-1 left-1 flex flex-row gap-4">
               {user.email === 'cadetes@anhelo.com' ? null : (
                 <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={() =>
-                      updateDelayForOrder(fecha, id, true)
-                        .then(() => {
-                          Swal.fire({
-                            icon: 'success',
-                            title: 'DELAY',
-                            text: `Llego tarde el pedido: ${id} `,
-                          });
-                        })
-                        .catch(() => {
-                          Swal.fire({
-                            icon: 'error',
-                            title: 'DELAY',
-                            text: `no se subio `,
-                          });
-                        })
-                    }
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
