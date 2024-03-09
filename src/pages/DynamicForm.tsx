@@ -89,9 +89,12 @@ export const DynamicForm = () => {
     const getData = async () => {
       const rawData = await ReadMateriales();
       dispatch(readMaterialsAll(rawData));
+      console.log('materiales');
     };
 
-    getData();
+    if (materiales.length === 0) {
+      getData();
+    }
   }, [dispatch, materiales]);
 
   useEffect(() => {
