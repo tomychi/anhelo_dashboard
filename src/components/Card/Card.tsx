@@ -131,6 +131,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
   };
   const imprimirTicket = async (nuevoPedido: PedidoProps) => {
+    const tiempo = obtenerDiferenciaHoraria(hora);
+    await marcarPedidoComoElaborado(id, tiempo);
     try {
       const response = await fetch('http://localhost:3000/imprimir', {
         method: 'POST',
@@ -141,8 +143,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
 
       if (response.ok) {
-        const tiempo = obtenerDiferenciaHoraria(hora);
-        await marcarPedidoComoElaborado(id, tiempo);
       } else {
         console.error('Error al imprimir');
         Swal.fire({

@@ -120,12 +120,17 @@ export const marcarPedidoComoElaborado = async (
         pedidosDelDia[index].elaborado = true;
         pedidosDelDia[index].tiempoElaborado = tiempo;
 
-        // Actualizar el documento del día con el arreglo de pedidos modificado
-        await updateDoc(pedidoDocRef, {
-          pedidos: pedidosDelDia,
-        });
+        try {
+          // Actualizar el documento del día con el arreglo de pedidos modificado
+          await updateDoc(pedidoDocRef, {
+            pedidos: pedidosDelDia,
+          });
 
-        console.log('Pedido marcado como elaborado en Firestore');
+          console.log('Pedido marcado como elaborado en Firestore');
+        } catch (error) {
+          console.error('Error al actualizar el pedido en Firestore:', error);
+          // Aquí puedes manejar el error de acuerdo a tus necesidades
+        }
       } else {
         console.error(
           'El pedido no fue encontrado en el arreglo de pedidos del día'
@@ -318,6 +323,8 @@ export const ReadDataForDateRange = <T>(
   valueDate: DateValueType
 ): Promise<T[]> => {
   return new Promise((resolve, reject) => {
+    let requestCount = 0; // Inicializa el contador de solicitudes
+
     try {
       if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
         throw new Error('Fecha de inicio o fin no especificada.');
@@ -328,6 +335,8 @@ export const ReadDataForDateRange = <T>(
       const allData: { [key: string]: T[] } = {};
 
       const getDataForDate = async (date: Date) => {
+        requestCount++; // Incrementa el contador en cada solicitud
+
         const year = date.getFullYear().toString();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
@@ -362,6 +371,9 @@ export const ReadDataForDateRange = <T>(
 
       Promise.all(getDataPromises)
         .then(() => {
+          console.log(
+            `Número total de solicitudes a la base de datos: ${requestCount}`
+          );
           const mergedData = Object.values(allData).reduce(
             (merged, data) => [...merged, ...data],
             []
