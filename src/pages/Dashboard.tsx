@@ -6,7 +6,10 @@ import Calendar from "../components/Calendar";
 import { MapStats } from "./MapStats";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
-import { calcularPromedioTiempoElaboracion } from "../helpers/dateToday";
+import {
+	calcularPromedioTiempoElaboracion,
+	promedioTiempoDeEntregaTotal,
+} from "../helpers/dateToday";
 
 Chart.register(...registerables);
 
@@ -375,9 +378,10 @@ export const Dashboard = () => {
 						</div>
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">
-						{Math.round(calcularPromedioTiempoElaboracion(orders))} M
+					<p className="text-4xl pt-8 pb-4 font-bold mt-auto">
+						{Math.round(promedioTiempoDeEntregaTotal(orders))} M
 					</p>
+
 					<p className="text-sm mt-auto">TIEMPO DE ENTREGA TOTAL PROMEDIO</p>
 				</div>
 			</div>

@@ -91,3 +91,33 @@ export const calcularPromedioTiempoElaboracion = (pedidos: PedidoProps[]) => {
 
 	return promedio;
 };
+export const promedioTiempoDeEntregaTotal = (pedidos: PedidoProps[]) => {
+	// Filtrar los pedidos que tienen la propiedad tiempoEntregado y hora definidas
+	const pedidosConTiempo = pedidos.filter(
+		(pedido) => pedido.tiempoEntregado && pedido.hora
+	);
+
+	// Verificar si hay pedidos con tiempo de entrega y hora
+	if (pedidosConTiempo.length === 0) {
+		return 0; // Devolver 0 como promedio si no hay pedidos con tiempo de entrega y hora
+	}
+
+	// Calcular el total del tiempo de entrega de todos los pedidos en minutos
+	const totalTiempoEntrega = pedidosConTiempo.reduce((total, pedido) => {
+		// Convertir los tiempos a minutos y calcular la diferencia
+		const tiempoEntregaMinutos = obtenerMinutosDesdeTiempo(
+			pedido.tiempoEntregado
+		);
+		const tiempoPedidoMinutos = obtenerMinutosDesdeTiempo(pedido.hora);
+		const diferenciaTiempo = tiempoEntregaMinutos - tiempoPedidoMinutos;
+
+		// Sumar la diferencia al total
+		return total + diferenciaTiempo;
+	}, 0);
+
+	// Calcular el promedio dividiendo el total por la cantidad de pedidos
+	const cantidadPedidos = pedidosConTiempo.length;
+	const promedio = totalTiempoEntrega / cantidadPedidos;
+
+	return promedio;
+};
