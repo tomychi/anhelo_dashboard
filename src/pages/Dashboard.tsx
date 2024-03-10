@@ -9,6 +9,7 @@ import { RootState } from "../redux/configureStore";
 import {
 	calcularPromedioTiempoElaboracion,
 	promedioTiempoDeEntregaTotal,
+	contarPedidosDemorados,
 } from "../helpers/dateToday";
 
 Chart.register(...registerables);
@@ -104,10 +105,12 @@ const options = {
 export const Dashboard = () => {
 	const { orders, facturacionTotal, totalProductosVendidos, neto, valueDate } =
 		useSelector((state: RootState) => state.data);
+
 	const customerSuccess =
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
+
 	const fechas = orders.map((o) => o.fecha);
 
 	// const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
@@ -322,7 +325,10 @@ export const Dashboard = () => {
 						{/* Puedes cambiar el ícono según tus necesidades */}
 					</div>
 					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">
-						{Math.round(customerSuccess)}%
+						{Math.ceil(
+							100 - (contarPedidosDemorados(orders) * 100) / orders.length
+						)}
+						%
 					</p>
 					<p className="text-sm mt-auto">CUSTOMER SUCCESS</p>
 				</div>

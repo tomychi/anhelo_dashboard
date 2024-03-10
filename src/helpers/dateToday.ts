@@ -121,3 +121,30 @@ export const promedioTiempoDeEntregaTotal = (pedidos: PedidoProps[]) => {
 
 	return promedio;
 };
+
+export const contarPedidosDemorados = (pedidos: PedidoProps[]) => {
+	// Filtrar los pedidos que tienen la propiedad tiempoEntregado y hora definidas
+	const pedidosConTiempo = pedidos.filter(
+		(pedido) => pedido.tiempoEntregado && pedido.hora
+	);
+
+	// Contador para la cantidad de pedidos demorados
+	let cantidadDemorados = 0;
+
+	// Iterar sobre los pedidos y contar los que demoraron más de 60 minutos
+	pedidosConTiempo.forEach((pedido) => {
+		// Convertir los tiempos a minutos y calcular la diferencia
+		const tiempoEntregaMinutos = obtenerMinutosDesdeTiempo(
+			pedido.tiempoEntregado
+		);
+		const tiempoPedidoMinutos = obtenerMinutosDesdeTiempo(pedido.hora);
+		const diferenciaTiempo = tiempoEntregaMinutos - tiempoPedidoMinutos;
+
+		// Incrementar el contador si la diferencia es mayor a 60 minutos
+		if (diferenciaTiempo > 60) {
+			cantidadDemorados++;
+		}
+	});
+
+	return cantidadDemorados;
+};
