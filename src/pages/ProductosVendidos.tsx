@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { Chart } from 'chart.js';
 
 const options = {
@@ -91,6 +91,33 @@ export const ProductosVendidos = () => {
     }
   }, 0);
 
+  // Creamos un objeto para almacenar la cantidad de medallones vendidos por minuto
+  const medallonesPorMinuto: { [hora: string]: number } = {};
+
+  // Iteramos sobre los productos vendidos para calcular la cantidad de medallones vendidos por minuto
+  productosPedidos.forEach((producto) => {
+    const hora = producto.hora.split(':')[0]; // Obtenemos la hora del producto
+    if (medallonesPorMinuto[hora]) {
+      medallonesPorMinuto[hora] += producto.quantity; // Sumamos la cantidad de medallones vendidos
+    } else {
+      medallonesPorMinuto[hora] = producto.quantity; // Inicializamos la cantidad de medallones vendidos
+    }
+  });
+
+  // Creamos los datos para el gráfico de línea
+  const data = {
+    labels: Object.keys(medallonesPorMinuto), // Utilizamos las horas como etiquetas en el eje x
+    datasets: [
+      {
+        label: 'Medallones vendidos por minuto',
+        data: Object.values(medallonesPorMinuto), // Utilizamos la cantidad de medallones vendidos como datos en el eje y
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+    ],
+  };
+
   return (
     <div className="flex p-4 gap-4 justify-between flex-col w-full">
       <div
@@ -137,6 +164,7 @@ export const ProductosVendidos = () => {
             <Bar data={data} options={options} plugins={[plugin]} />
           </div>
         ))}
+        <Line data={data} />
       </div>
     </div>
   );

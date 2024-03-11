@@ -4,6 +4,7 @@ import { PedidoProps, ProductoMaterial } from '../types/types';
 export interface BurgersPedidas {
   burger: string;
   quantity: number;
+  hora: string;
 }
 
 export const calcularTotales = (
@@ -22,14 +23,17 @@ export const calcularTotales = (
   }
 
   // Objeto temporal para realizar el seguimiento de las hamburguesas y sus cantidades acumuladas
-  const hamburguesasMap: { [burger: string]: number } = {};
+  const hamburguesasMap: {
+    [burger: string]: { quantity: number; hora: string };
+  } = {};
 
   // Función para sumar las cantidades de hamburguesas
-  const sumarCantidades = (burger: string, quantity: number) => {
+  const sumarCantidades = (burger: string, quantity: number, hora: string) => {
     if (hamburguesasMap[burger]) {
-      hamburguesasMap[burger] += quantity;
+      hamburguesasMap[burger].quantity += quantity;
+      hamburguesasMap[burger].hora = hora; // Agregamos la hora aquí
     } else {
-      hamburguesasMap[burger] = quantity;
+      hamburguesasMap[burger] = { quantity, hora }; // Aquí inicializamos el objeto si no existe
     }
   };
 
@@ -42,7 +46,7 @@ export const calcularTotales = (
         totals.totalProductosVendidos += order.detallePedido.reduce(
           (accumulator, detail) => {
             // Acumula la cantidad de productos vendidos y agrega cada hamburguesa al objeto hamburguesasMap
-            sumarCantidades(detail.burger, detail.quantity);
+            sumarCantidades(detail.burger, detail.quantity, order.hora);
             return accumulator + detail.quantity;
           },
           0
@@ -59,9 +63,10 @@ export const calcularTotales = (
 
   // Crear un arreglo con los objetos de hamburguesas y cantidades acumuladas
   const productosPedidos = Object.entries(hamburguesasMap).map(
-    ([burger, quantity]) => ({
+    ([burger, { quantity, hora }]) => ({
       burger,
       quantity,
+      hora,
     })
   );
 

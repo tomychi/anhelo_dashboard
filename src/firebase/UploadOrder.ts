@@ -1,7 +1,6 @@
 import {
   getFirestore,
   collection,
-  DocumentReference,
   doc,
   runTransaction,
 } from 'firebase/firestore';
@@ -26,7 +25,7 @@ interface OrderDetailProps {
 }
 export const UploadOrder = async (
   orderDetail: OrderDetailProps
-): Promise<DocumentReference> => {
+): Promise<string> => {
   const firestore = getFirestore();
   const pedidoId = uuidv4();
   const fechaFormateada = obtenerFechaActual();
@@ -46,7 +45,7 @@ export const UploadOrder = async (
       });
     });
     console.log('Pedido subido correctamente');
-    return pedidoDocRef;
+    return pedidoId;
   } catch (error) {
     console.error('Error al subir el pedido:', error);
     throw error;

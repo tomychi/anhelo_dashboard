@@ -3,13 +3,18 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
-import { ReadData, ReadDataSell } from '../firebase/ReadData';
+import {
+  ReadData,
+  ReadDataSell,
+  ReadOrdersForToday,
+} from '../firebase/ReadData';
 import { useDispatch, useSelector } from 'react-redux';
 import { readProductsAll } from '../redux/products/productAction';
 import { calcularCostoHamburguesa } from '../helpers/calculator';
 import { ReadMateriales } from '../firebase/Materiales';
 import { readMaterialsAll } from '../redux/materials/materialAction';
 import { RootState } from '../redux/configureStore';
+import { PedidoProps } from '../types/types';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -181,11 +186,32 @@ export const DynamicForm = () => {
 
     UploadOrder(info)
       .then((result) => {
-        Swal.fire({
-          icon: 'success',
-          title: `Pedido cargado`,
-          text: `El pedido ${result.id} se cargo correctamente`,
-        });
+        setTimeout(() => {
+          // Leer los pedidos para el día actual
+          ReadOrdersForToday((pedidos: PedidoProps[]) => {
+            // Verificar si el pedido recién cargado se encuentra en la lista de pedidos
+            const pedidoEncontrado = pedidos.find(
+              (pedido) => pedido.id === result
+            );
+
+            // Si el pedido se encuentra, no es necesario hacer nada
+            if (pedidoEncontrado) {
+              Swal.fire({
+                icon: 'success',
+                title: `Pedido cargado`,
+                text: `El pedido ${result} se cargo correctamente`,
+              });
+            }
+            // Si no se encuentra, mostrar un mensaje indicando que no se encontró
+            if (!pedidoEncontrado) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `No se encontró el pedido con el ID: ${result}`,
+              });
+            }
+          });
+        }, 1000);
       })
       .catch((error) => {
         Swal.fire({
