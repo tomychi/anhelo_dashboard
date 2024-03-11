@@ -91,33 +91,99 @@ export const ProductosVendidos = () => {
     }
   }, 0);
 
-  // Creamos un objeto para almacenar la cantidad de medallones vendidos por minuto
-  const medallonesPorMinuto: { [hora: string]: number } = {};
+  const totalMedallonesNecesarios = productosPedidos.reduce(
+    (total, producto) => {
+      // Verificar si el producto es una hamburguesa
+      const hamburguesa = burgers.find(
+        (burger) => burger.data.name === producto.burger
+      );
+      if (hamburguesa) {
+        // Obtener la cantidad de medallones necesarios para esta hamburguesa
+        const cantidadMedallones =
+          hamburguesa.data.ingredients.carne * producto.quantity;
+        return total + cantidadMedallones;
+      } else {
+        return total;
+      }
+    },
+    0
+  );
 
-  // Iteramos sobre los productos vendidos para calcular la cantidad de medallones vendidos por minuto
-  productosPedidos.forEach((producto) => {
-    const hora = producto.hora.split(':')[0]; // Obtenemos la hora del producto
-    if (medallonesPorMinuto[hora]) {
-      medallonesPorMinuto[hora] += producto.quantity; // Sumamos la cantidad de medallones vendidos
+  const totalBaconToppings = toppingsData.reduce((total, topping) => {
+    // Verificar si el topping es bacon
+    if (topping.name === 'bacon') {
+      return total + topping.quantity;
     } else {
-      medallonesPorMinuto[hora] = producto.quantity; // Inicializamos la cantidad de medallones vendidos
+      return total;
+    }
+  }, 0);
+
+  const totalBaconNecesario = productosPedidos.reduce((total, producto) => {
+    // Verificar si el producto es una hamburguesa
+    const hamburguesa = burgers.find(
+      (burger) => burger.data.name === producto.burger
+    );
+    if (hamburguesa && hamburguesa.data.ingredients.bacon) {
+      // Obtener la cantidad de bacon necesaria para esta hamburguesa
+      const cantidadBacon =
+        hamburguesa.data.ingredients.bacon * producto.quantity;
+      return total + cantidadBacon;
+    } else {
+      return total;
+    }
+  }, 0);
+  // Objeto para realizar el seguimiento de la cantidad de medallones por minuto
+  const medallonesPorMinuto: { [minuto: number]: number } = {};
+
+  // Calcular la cantidad de medallones por minuto
+  productosPedidos.forEach((producto) => {
+    const hamburguesa = burgers.find(
+      (burger) => burger.data.name === producto.burger
+    );
+    if (hamburguesa) {
+      const cantidadMedallones =
+        hamburguesa.data.ingredients.carne * producto.quantity;
+      const hora = producto.hora;
+      const [hour, minute] = hora.split(':').map(Number);
+      const minutos = hour * 60 + minute; // Convertir la hora a minutos
+      if (!medallonesPorMinuto[minutos]) {
+        medallonesPorMinuto[minutos] = 0;
+      }
+      medallonesPorMinuto[minutos] += cantidadMedallones;
     }
   });
 
-  // Creamos los datos para el gráfico de línea
-  const data = {
-    labels: Object.keys(medallonesPorMinuto), // Utilizamos las horas como etiquetas en el eje x
+  // Convertir los minutos en objetos Date
+  const minutosComoFechas = Object.keys(medallonesPorMinuto)
+    .map(Number)
+    .sort((a, b) => a - b);
+
+  // Convertir los minutos ordenados de nuevo a cadenas de horas
+  const horasOrdenadas = minutosComoFechas.map((minutos) => {
+    const hour = Math.floor(minutos / 60);
+    const minute = minutos % 60;
+    return `${hour.toString().padStart(2, '0')}:${minute
+      .toString()
+      .padStart(2, '0')}`;
+  });
+
+  const chartData = {
+    labels: horasOrdenadas,
     datasets: [
       {
-        label: 'Medallones vendidos por minuto',
-        data: Object.values(medallonesPorMinuto), // Utilizamos la cantidad de medallones vendidos como datos en el eje y
+        label: `Medallones por minuto`,
+        data: horasOrdenadas.map(
+          (hora) =>
+            medallonesPorMinuto[
+              parseInt(hora.split(':')[0]) * 60 + parseInt(hora.split(':')[1])
+            ]
+        ),
         fill: false,
-        borderColor: 'rgb(75, 192, 192)',
+        borderColor: 'rgba(75, 192, 192, 0.6)',
         tension: 0.1,
       },
     ],
   };
-
   return (
     <div className="flex p-4 gap-4 justify-between flex-col w-full">
       <div
@@ -137,6 +203,14 @@ export const ProductosVendidos = () => {
         <div>
           <span className="font-medium">Info alert!</span> Se vendieron{' '}
           {hamburguesasPedidas} hamburguesas
+          <br />
+          Medallones: {totalMedallonesNecesarios}
+          <br />
+          Carne: {(totalMedallonesNecesarios * 90) / 1000} KG
+          <br />
+          Bacon: {totalBaconNecesario + totalBaconToppings} fetas
+          <br />
+          Bacon: {((totalBaconNecesario + totalBaconToppings) * 20) / 1000} KG
         </div>
       </div>
       <div
@@ -159,12 +233,13 @@ export const ProductosVendidos = () => {
         </div>
       </div>
       <div className="grid-cols-1 grid gap-2  w-full  ">
+        <Line data={chartData} />
+
         {[dataBurgers, dataToppings].map((data, index) => (
           <div className="" key={index}>
             <Bar data={data} options={options} plugins={[plugin]} />
           </div>
         ))}
-        <Line data={data} />
       </div>
     </div>
   );
