@@ -246,7 +246,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
                     cancelButtonText: 'Cancelar',
                   }).then((result) => {
                     if (result.isConfirmed) {
-                      eliminarDocumento('pedidos', id)
+                      eliminarDocumento('pedidos', id, fecha)
                         .then(() => {
                           Swal.fire({
                             icon: 'success',

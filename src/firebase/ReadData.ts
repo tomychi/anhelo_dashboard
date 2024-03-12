@@ -231,13 +231,12 @@ export const marcarPedidoComoEntregado = async (
 // Función para eliminar un pedido de la base de datos en Firestore
 export const eliminarDocumento = async (
   dbName: string,
-  documentoId: string
+  documentoId: string,
+  fecha: string
 ) => {
   try {
-    const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
-
-    // Obtener el año, mes y día actual
-    const [dia, mes, anio] = todayDateString.split('/');
+    // Obtener el año, mes y día de la fecha proporcionada
+    const [dia, mes, anio] = fecha.split('/');
 
     // Obtener referencia al documento del día dentro de la colección en Firestore
     const docRef = doc(getFirestore(), dbName, anio, mes, dia);
