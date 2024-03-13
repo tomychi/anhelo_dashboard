@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { CardInfo } from '../components/dashboard/CardInfo';
 import { NetoSVG, GastosSVG, ExcedenteSVG } from '../components/icons';
+import currencyFormat from '../helpers/currencyFormat';
 
 export const MonthData = () => {
   const { expenseData } = useSelector((state: RootState) => state.data);
@@ -27,14 +28,18 @@ export const MonthData = () => {
   const balanceMensual = neto - totalGastos;
   return (
     <div className="p-4 flex flex-col gap-4">
-      <CardInfo info={neto} title={'Neto'} svgComponent={<NetoSVG />} />
       <CardInfo
-        info={totalGastos}
+        info={currencyFormat(neto)}
+        title={'Neto'}
+        svgComponent={<NetoSVG />}
+      />
+      <CardInfo
+        info={currencyFormat(totalGastos)}
         title={'Total gastos'}
         svgComponent={<GastosSVG />}
       />
       <CardInfo
-        info={balanceMensual}
+        info={currencyFormat(balanceMensual)}
         title={'Excedente mensual'}
         svgComponent={<ExcedenteSVG />}
       />

@@ -64,8 +64,14 @@ const dataReducer = (state = initialState, action: DataAction) => {
         // Para cada orden, sumamos el costoBurger de cada elemento en su detallePedido
         const costoBurgerOrden = order.detallePedido.reduce(
           (subtotal, pedido) => {
-            // Sumamos el costoBurger de este pedido al subtotal
-            return subtotal + pedido.costoBurger;
+            // Verificar si la propiedad costoBurger existe en el pedido
+            if (pedido.costoBurger) {
+              // Si existe, sumar su valor al subtotal
+              return subtotal + pedido.costoBurger;
+            } else {
+              // Si no existe, sumar 0 al subtotal
+              return subtotal;
+            }
           },
           0
         ); // Comenzamos el subtotal en 0 para esta orden
