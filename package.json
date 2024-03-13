@@ -19,6 +19,7 @@
     "dayjs": "^1.11.6",
     "firebase": "^10.7.1",
     "formik": "^2.4.5",
+    "instagram-graph-api": "^6.1.0",
     "install": "^0.13.0",
     "mapbox-gl": "^2.15.0",
     "npm": "^10.2.5",

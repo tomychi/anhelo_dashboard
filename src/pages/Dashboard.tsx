@@ -28,6 +28,7 @@ import {
   VisualizacionLocalSVG,
 } from '../components/icons';
 import { getNewCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
+import { AnheloIG } from '../components/instagram/AnheloIG';
 
 Chart.register(...registerables);
 
@@ -100,17 +101,6 @@ export const Dashboard = () => {
 
   // const token = import.meta.env.VITE_ACCESS_TOKEN_INSTAGRAM;
 
-  // const url = `https://graph.instagram.com/me?fields=id,username&access_token=${token}`;
-
-  // fetch(url)
-  //   .then((res) => res.json())
-  //   .then((data) => {
-  //     console.log(data.data);
-  //   })
-  //   .catch((err) => {
-  //     console.log('err', err);
-  //   });
-
   // const dataExtras = {
   //   labels: nombresExtras,
   //   datasets: [
@@ -166,6 +156,7 @@ export const Dashboard = () => {
   return (
     <div className="p-4 overflow-x-hidden flex flex-col gap-4">
       <Calendar />
+      <AnheloIG />
       <div className="flex flex-col md:flex-row gap-4">
         <CardInfo
           info={currencyFormat(facturacionTotal)}
