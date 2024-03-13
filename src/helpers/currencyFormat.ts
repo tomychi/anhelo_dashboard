@@ -1,4 +1,7 @@
 export default function currencyFormat(num: number) {
+  if (num === null) {
+    return '0'; // O cualquier otro valor predeterminado que desees devolver si el valor es nulo
+  }
   const aux = num.toFixed(2);
   let result = '$' + aux.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 

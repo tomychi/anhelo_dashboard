@@ -56,7 +56,6 @@ const plugin = {
 export const ProductosVendidos = () => {
   const { productosPedidos, toppingsData, totalProductosVendidos } =
     useSelector((state: RootState) => state.data);
-
   const { burgers } = useSelector((state: RootState) => state.product);
   const dataBurgers = {
     labels: productosPedidos.map((b) => b.burger),
