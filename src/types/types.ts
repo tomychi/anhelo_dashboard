@@ -107,3 +107,8 @@ export interface ProductoMaterial {
   ganancia?: number;
   unidadPorPrecio: number;
 }
+
+export interface TelefonosProps {
+  fecha: string;
+  telefono: string;
+}

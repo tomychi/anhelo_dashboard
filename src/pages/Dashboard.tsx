@@ -27,7 +27,7 @@ import {
   VentasSVG,
   VisualizacionLocalSVG,
 } from '../components/icons';
-import { groupOrdersByWeek } from '../helpers/orderByweeks';
+import { getNewCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
 
 Chart.register(...registerables);
 
@@ -83,10 +83,15 @@ const options = {
 };
 
 export const Dashboard = () => {
-  const { orders, facturacionTotal, totalProductosVendidos, neto } =
+  const { orders, facturacionTotal, totalProductosVendidos, neto, telefonos } =
     useSelector((state: RootState) => state.data);
 
   const { valueDate } = useSelector((state: RootState) => state.data);
+  const startDate = new Date(valueDate?.startDate || new Date());
+  const endDate = new Date(valueDate?.endDate || new Date());
+
+  // Ejemplo de uso
+  const newCustomers = getNewCustomers(telefonos, orders, startDate);
 
   // const customerSuccess =
   // 	100 -
@@ -117,8 +122,6 @@ export const Dashboard = () => {
   //   ],
   // };
 
-  const startDate = new Date(valueDate?.startDate || new Date());
-  const endDate = new Date(valueDate?.endDate || new Date());
   // Ejemplo de uso
   const { productsSoldByWeek, salesByWeek, totalRevenueByWeek } =
     groupOrdersByWeek(orders, startDate, endDate);
@@ -217,7 +220,7 @@ export const Dashboard = () => {
       </div>
       <div className="flex flex-col md:flex-row gap-4">
         <CardInfo
-          info={`0`}
+          info={newCustomers.length}
           title={'NUEVOS CLIENTES'}
           svgComponent={<NuevosClientesSVG />}
         />

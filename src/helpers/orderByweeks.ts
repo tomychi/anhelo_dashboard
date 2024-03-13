@@ -1,4 +1,4 @@
-import { PedidoProps } from '../types/types';
+import { PedidoProps, TelefonosProps } from '../types/types';
 import { startOfWeek, endOfWeek, addWeeks, isDate } from 'date-fns';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import { calcularTotales } from './calculator';
@@ -56,4 +56,37 @@ export const groupOrdersByWeek = (
   }
 
   return { productsSoldByWeek, salesByWeek, totalRevenueByWeek };
+};
+
+export const cleanPhoneNumber = (phoneNumber: string) => {
+  // Remover todo excepto los dígitos
+  const digitsOnly = phoneNumber.replace(/\D/g, '');
+  // Si el número comienza con "54", eliminarlo
+  const without54 = digitsOnly.startsWith('54')
+    ? digitsOnly.slice(2)
+    : digitsOnly;
+  // Si el número comienza con "9", eliminarlo
+  const without9 = without54.startsWith('9') ? without54.slice(1) : without54;
+  // Si el número comienza con "0", eliminarlo
+  const without0 = without9.startsWith('0') ? without9.slice(1) : without9;
+  // Retornar el número limpio
+  return without0;
+};
+
+export const getNewCustomers = (
+  telefonos: TelefonosProps[],
+  orders: PedidoProps[],
+  startDate: Date
+): TelefonosProps[] => {
+  // Filtrar los pedidos que coinciden con los números de teléfono de los clientes
+  const ordersWithSamePhoneNumber = orders.filter((order) => {
+    // Comprobar si el número de teléfono del pedido existe en los clientes
+    return telefonos.some(
+      (cliente) =>
+        cliente.telefono === cleanPhoneNumber(order.telefono) &&
+        new Date(convertDateFormat(cliente.fecha)) < startDate
+    );
+  });
+
+  return ordersWithSamePhoneNumber;
 };

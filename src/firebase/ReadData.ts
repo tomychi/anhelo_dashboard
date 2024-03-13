@@ -344,3 +344,25 @@ export const ReadDataForDateRange = <T>(
     }
   });
 };
+export const readTelefonosFromFirebase = async () => {
+  const firestore = getFirestore();
+  const collectionRef = collection(firestore, 'telefonos');
+
+  try {
+    const querySnapshot = await getDocs(collectionRef);
+    const telefonos = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        fecha: data.fecha || '', // Asegurarse de que la fecha esté presente
+        telefono: data.telefono || '', // Asegurarse de que el teléfono esté presente
+      };
+    });
+    return telefonos;
+  } catch (error) {
+    console.error(
+      'Error al obtener los números de teléfono desde Firebase:',
+      error
+    );
+    throw error;
+  }
+};

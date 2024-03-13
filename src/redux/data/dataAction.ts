@@ -1,6 +1,6 @@
 import { DateValueType } from 'react-tailwindcss-datepicker';
 import { ExpenseProps } from '../../firebase/UploadGasto';
-import { PedidoProps } from '../../types/types';
+import { PedidoProps, TelefonosProps } from '../../types/types';
 
 export const readOrdersData = (orders: PedidoProps[]) => {
   return {
@@ -27,5 +27,12 @@ export const setValueDate = (valueDate: DateValueType) => {
   return {
     type: 'SET_VALUEDATE',
     payload: valueDate,
+  };
+};
+
+export const setTelefonos = (telefonos: TelefonosProps[]) => {
+  return {
+    type: 'SET_TELEFONOS',
+    payload: telefonos,
   };
 };

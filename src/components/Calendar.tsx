@@ -4,11 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   readExpensesData,
   readOrdersData,
+  setTelefonos,
   setValueDate,
 } from '../redux/data/dataAction';
 import { useEffect } from 'react';
 import { formatDate } from '../helpers/dateToday';
-import { ReadDataForDateRange } from '../firebase/ReadData';
+import {
+  ReadDataForDateRange,
+  readTelefonosFromFirebase,
+} from '../firebase/ReadData';
 import { PedidoProps } from '../types/types';
 import { ExpenseProps } from '../firebase/UploadGasto';
 
@@ -27,6 +31,9 @@ const Calendar = () => {
         ReadDataForDateRange<PedidoProps>('pedidos', value),
         ReadDataForDateRange<ExpenseProps>('gastos', value),
       ]);
+
+      const telefonos = await readTelefonosFromFirebase();
+      dispatch(setTelefonos(telefonos));
 
       // Despachar acciones para actualizar los datos de pedidos y gastos
       dispatch(readOrdersData(ordersData));

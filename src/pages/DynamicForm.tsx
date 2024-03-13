@@ -15,6 +15,7 @@ import { ReadMateriales } from '../firebase/Materiales';
 import { readMaterialsAll } from '../redux/materials/materialAction';
 import { RootState } from '../redux/configureStore';
 import { PedidoProps } from '../types/types';
+import { addTelefonoFirebase } from '../firebase/Telefonos';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -220,6 +221,8 @@ export const DynamicForm = () => {
           text: `Hubo un error al cargar el pedido: ${error}`,
         });
       });
+
+    addTelefonoFirebase(info.telefono, info.fecha);
 
     // Limpia los datos del formulario después de procesarlos
     setFormData({
