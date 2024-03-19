@@ -1,7 +1,4 @@
-import { FormGasto } from "../components/gastos";
 import { eliminarDocumento } from "../firebase/ReadData";
-import currencyFormat from "../helpers/currencyFormat";
-import Calendar from "../components/Calendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Swal from "sweetalert2";
