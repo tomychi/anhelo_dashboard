@@ -91,9 +91,13 @@ const dataReducer = (state = initialState, action: DataAction) => {
       }, 0); // Comenzamos el total en 0
 
       // Obtener todos los toppings de todas las órdenes
-      const allToppings = orders.flatMap((o) =>
-        o.detallePedido.flatMap((d) => d.toppings)
-      );
+      const allToppings = orders
+        .flatMap((o) =>
+          o.detallePedido.flatMap((d) =>
+            Array.from({ length: d.quantity }, () => d.toppings)
+          )
+        )
+        .flat();
 
       // Contar la cantidad de cada topping
       const toppingCounts = allToppings.reduce((acc, topping) => {

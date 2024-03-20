@@ -99,7 +99,7 @@ export const FormGasto = () => {
         });
       })
       .then(() => {
-        updateMaterialCost(formData.id, cost)
+        updateMaterialCost(formData.id, cost, formData.quantity)
           .then((result) => {
             Swal.fire({
               icon: 'success',

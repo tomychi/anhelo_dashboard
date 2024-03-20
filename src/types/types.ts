@@ -106,6 +106,7 @@ export interface ProductoMaterial {
   precioVenta?: number;
   ganancia?: number;
   unidadPorPrecio: number;
+  stock?: number;
 }
 
 export interface TelefonosProps {

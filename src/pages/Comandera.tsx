@@ -8,6 +8,12 @@ import { readOrdersData } from '../redux/data/dataAction';
 import { useLocation } from 'react-router-dom';
 import currencyFormat from '../helpers/currencyFormat';
 import { calcularPromedioTiempoElaboracion } from '../helpers/dateToday';
+import { ProductStateProps } from '../redux/products/productReducer';
+import { updateMaterialStock } from '../firebase/Materiales';
+
+interface ToppingCounts {
+  [topping: string]: number;
+}
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
@@ -17,7 +23,130 @@ export const Comandera = () => {
   const [promedioTiempoElaboracion, setPromedioTiempoElaboracion] = useState(0);
 
   const dispatch = useDispatch();
-  const { orders } = useSelector((state: RootState) => state.data);
+  const { orders, productosPedidos, toppingsData } = useSelector(
+    (state: RootState) => state.data
+  );
+  const { burgers } = useSelector((state: RootState) => state.product);
+  const { materiales } = useSelector((state: RootState) => state.materials);
+
+  const fc = () => {
+    const totalToppingsQuantity = toppingsData.reduce(
+      (totals: ToppingCounts, topping) => {
+        // Verificar si ya existe una entrada para este tipo de topping
+        if (topping.name in totals) {
+          // Si existe, aumentar la cantidad
+          totals[topping.name] += topping.quantity;
+        } else {
+          // Si no existe, crear una nueva entrada con la cantidad de este tipo de topping
+          totals[topping.name] = topping.quantity;
+        }
+        return totals;
+      },
+      {}
+    );
+
+    // Definir una interfaz para el tipo de datos de los productos pedidos
+
+    const totalIngredientesUtilizados = productosPedidos.reduce(
+      (total, producto) => {
+        // Verificar si el producto es una hamburguesa
+        const hamburguesa = burgers.find(
+          (burger: ProductStateProps) => burger.data.name === producto.burger
+        );
+        if (hamburguesa) {
+          // Obtener los ingredientes de la hamburguesa
+          const ingredientes = hamburguesa.data.ingredients;
+
+          // Sumar la cantidad de cada ingrediente multiplicado por la cantidad de hamburguesas pedidas
+          for (const ingrediente in ingredientes) {
+            if (
+              Object.prototype.hasOwnProperty.call(ingredientes, ingrediente)
+            ) {
+              total[ingrediente] =
+                (total[ingrediente] || 0) +
+                ingredientes[ingrediente] * producto.quantity;
+            }
+          }
+        }
+        return total;
+      },
+      {} as { [ingredient: string]: number }
+    );
+
+    // Combinar los objetos totalToppingsQuantity y totalIngredientesUtilizados
+    const totalToppingsAndIngredients: { [key: string]: number } = {
+      ...totalToppingsQuantity,
+    };
+
+    // Iterar sobre los ingredientes utilizados y agregarlos al objeto combinado
+    for (const ingrediente in totalIngredientesUtilizados) {
+      if (ingrediente in totalIngredientesUtilizados) {
+        if (ingrediente in totalToppingsAndIngredients) {
+          // Si el ingrediente ya existe en totalToppingsAndIngredients, sumar las cantidades
+          totalToppingsAndIngredients[ingrediente] +=
+            totalIngredientesUtilizados[ingrediente];
+        } else {
+          // Si el ingrediente no existe, simplemente agregarlo al objeto combinado
+          totalToppingsAndIngredients[ingrediente] =
+            totalIngredientesUtilizados[ingrediente];
+        }
+      }
+    }
+
+    // Llamar a la función para actualizar el stock de ingredientes
+    const ingredientesUtilizados = Object.keys(totalToppingsAndIngredients);
+
+    for (const ingrediente of ingredientesUtilizados) {
+      const cantidadUtilizada = totalToppingsAndIngredients[ingrediente];
+      let nombreFiltrado = ingrediente
+        .replace(/\b(salsa|caramelizada)\b/gi, '')
+        .trim();
+
+      // Manejar el caso específico de "salsa anhelo" que debe convertirse en "alioli"
+      if (ingrediente.toLowerCase().includes('salsa anhelo')) {
+        nombreFiltrado = 'alioli';
+      }
+      try {
+        // Buscar el ID del ingrediente por su nombre
+        const ingredienteId = materiales.find(
+          (m) => m.nombre === nombreFiltrado
+        )?.id;
+
+        if (ingredienteId) {
+          // Llamar a la función para actualizar el stock de ingredientes
+          updateMaterialStock(ingredienteId, cantidadUtilizada);
+        } else {
+          console.error(
+            `No se encontró el ID del ingrediente con nombre ${ingrediente}`
+          );
+        }
+      } catch (error) {
+        console.error('Error actualizando el stock del ingrediente:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const ahora = new Date();
+    const horaDeseada = new Date(ahora);
+    horaDeseada.setHours(23, 59, 0, 0);
+    let tiempoHastaProximaEjecucion = horaDeseada.getTime() - ahora.getTime();
+
+    if (tiempoHastaProximaEjecucion < 0) {
+      tiempoHastaProximaEjecucion += 24 * 60 * 60 * 1000; // Si ya pasó la hora deseada, esperar hasta mañana
+    }
+
+    const temporizadorId = setTimeout(() => {
+      fc(); // Ejecutar la tarea
+      const intervaloId = setInterval(fc, 24 * 60 * 60 * 1000); // Configurar intervalo diario
+      // Limpiar el intervalo cuando el componente se desmonte
+      return () => clearInterval(intervaloId);
+    }, tiempoHastaProximaEjecucion);
+
+    // Limpiar el temporizador cuando el componente se desmonte
+    return () => clearTimeout(temporizadorId);
+  }, []); // Ejecutar solo una vez al montar el componente
+
   const location = useLocation();
   // Filtra los pedidos según la sección activa
   const pedidosPorHacer = orders.filter(

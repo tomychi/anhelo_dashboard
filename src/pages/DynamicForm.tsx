@@ -184,7 +184,6 @@ export const DynamicForm = () => {
       fecha: obtenerFechaActual(),
       elaborado: false,
     };
-
     UploadOrder(info)
       .then((result) => {
         setTimeout(() => {
