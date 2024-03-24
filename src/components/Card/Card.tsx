@@ -18,6 +18,9 @@ import {
 } from "../../helpers/dateToday";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import { Descuento } from "./Descuento"
+import { useLocation } from 'react-router-dom';
+
 
 const copyToClipboard = (textToCopy: string) => {
 	navigator.clipboard
@@ -62,6 +65,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 	const [nuevoCadete, setNuevoCadete] = useState("");
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const user = useSelector((state: RootState) => state.auth.user);
+  const location = useLocation();
+	  const isVentasPage = location.pathname.includes("ventas");
+
 	useEffect(() => {
 		const getCadetes = async () => {
 			const cade = await readCadetes();
@@ -381,6 +387,13 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				>
 					{currencyFormat(total)}
 				</p>
+				 <div>
+      {isVentasPage ? (
+				<p><Descuento fechaPedido={fecha} pedidoId={id}/> 	</p>
+      ) : (
+				<p>:</p>
+      )}
+    </div> 
 				<div className="mt-14 uppercase font-black gap-2 flex flex-row justify-center">
 					<label htmlFor="cadete">Cadete:</label>
 					<select
