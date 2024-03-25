@@ -149,23 +149,42 @@ export const Comandera = () => {
 
   const location = useLocation();
   // Filtra los pedidos según la sección activa
-  const pedidosPorHacer = orders.filter(
-    (o) =>
-      !o.elaborado &&
-      !o.entregado &&
-      (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
-  );
-  const pedidosHechos = orders.filter(
-    (o) =>
-      o.elaborado &&
-      !o.entregado &&
-      (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
-  );
+  const pedidosPorHacer = orders
+    .filter(
+      (o) =>
+        !o.elaborado &&
+        !o.entregado &&
+        (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+    )
+    .sort((a, b) => {
+      const [horaA, minutosA] = a.hora.split(':').map(Number);
+      const [horaB, minutosB] = b.hora.split(':').map(Number);
+      return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+    });
 
-  const pedidosEntragados = orders.filter(
-    (o) =>
-      o.entregado && (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
-  );
+  const pedidosHechos = orders
+    .filter(
+      (o) =>
+        o.elaborado &&
+        !o.entregado &&
+        (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+    )
+    .sort((a, b) => {
+      const [horaA, minutosA] = a.hora.split(':').map(Number);
+      const [horaB, minutosB] = b.hora.split(':').map(Number);
+      return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+    });
+
+  const pedidosEntragados = orders
+    .filter(
+      (o) =>
+        o.entregado && (!cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+    )
+    .sort((a, b) => {
+      const [horaA, minutosA] = a.hora.split(':').map(Number);
+      const [horaB, minutosB] = b.hora.split(':').map(Number);
+      return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+    });
   useEffect(() => {
     if (location.pathname === '/comandas') {
       const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {

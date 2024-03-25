@@ -285,7 +285,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           </div>
         </div>
         <div className="mb-8 mt-8 flex flex-col items-center gap-1 justify-center">
-          <p className={`text-2xl text-white font-black block`}>{hora}</p>
+          <p className={`text-4xl text-white font-black block`}>{hora}</p>
           {entregado && (
             <div className=" text-2xl text-white">
               <TiempoEntregadoEditable
@@ -314,7 +314,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
               </p>
             </div>
           ) : null}
-          <p className="bg-black mt-4  text-2xl text-center text-green-500">
+          <p className="bg-black mt-4  text-4xl text-center text-green-500">
             {aclaraciones}
           </p>
         </div>
@@ -328,14 +328,19 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             i: number
           ) => (
             <div key={i} className="flex mt-4 items-center flex-col">
-              <p className="text-black text-xl  font-black">
+              <p className="text-black text-4xl  font-black">
                 {quantity}X {burger}
               </p>
               <p>
                 {toppings.map((topping: string, toppingIndex: number) => (
                   <span
                     key={toppingIndex}
-                    className="text-lg flex justify-center"
+                    className={`text-3xl flex justify-center ${
+                      topping.toLowerCase() === 'huevo' ||
+                      topping.toLowerCase() === 'carne'
+                        ? 'bg-black mt-4  text-3xl text-center text-green-500'
+                        : ''
+                    }`}
                   >
                     - {topping}
                   </span>
