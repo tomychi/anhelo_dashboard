@@ -10,6 +10,8 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import {
   updateCadeteForOrder,
   updateDislikeForOrder,
+  updateTiempoElaboradoForOrder,
+  updateTiempoEntregaForOrder,
 } from '../../firebase/UploadOrder';
 import { addCadete, readCadetes } from '../../firebase/Cadetes';
 import {
@@ -20,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { Descuento } from './Descuento';
 import { useLocation } from 'react-router-dom';
-import { TiempoEntregadoEditable } from './TiempoEntregadoEditable';
+import { TiempoEditable } from './TiempoEditable';
 
 const copyToClipboard = (textToCopy: string) => {
   navigator.clipboard
@@ -178,7 +180,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
   return (
     <div
       className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
-        elaborado ? 'bg-green-500 hover:bg-green-600' : 'bg-custom-red'
+        elaborado ? 'bg-green-500 hover:bg-red-600' : 'bg-custom-red'
       }`}
     >
       <div className="relative">
@@ -288,10 +290,12 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           <p className={`text-4xl text-white font-black block`}>{hora}</p>
           {entregado && (
             <div className=" text-2xl text-white">
-              <TiempoEntregadoEditable
-                tiempoEntregadoInicial={tiempoEntregado}
+              <TiempoEditable
+                title="Entregado"
+                tiempoInicial={tiempoEntregado}
                 pedidoId={id}
                 fecha={fecha}
+                updateTiempoForOrder={updateTiempoEntregaForOrder}
               />
             </div>
           )}
@@ -310,7 +314,13 @@ export const Card = ({ comanda }: ComandaRareProps) => {
                     clipRule="evenodd"
                   />
                 </svg>
-                {tiempoElaborado}
+                <TiempoEditable
+                  title="Elaborado"
+                  tiempoInicial={tiempoElaborado}
+                  pedidoId={id}
+                  fecha={fecha}
+                  updateTiempoForOrder={updateTiempoElaboradoForOrder}
+                />
               </p>
             </div>
           ) : null}
@@ -335,10 +345,10 @@ export const Card = ({ comanda }: ComandaRareProps) => {
                 {toppings.map((topping: string, toppingIndex: number) => (
                   <span
                     key={toppingIndex}
-                    className={`text-3xl flex justify-center ${
+                    className={`text-2xl flex justify-star bg-black text-violet-700 ${
                       topping.toLowerCase() === 'huevo' ||
                       topping.toLowerCase() === 'carne'
-                        ? 'bg-black mt-4  text-3xl text-center text-green-500'
+                        ? 'bg-black mt-4  text-2xl text-center text-green-500'
                         : ''
                     }`}
                   >
@@ -350,31 +360,31 @@ export const Card = ({ comanda }: ComandaRareProps) => {
           )
         )}
       </div>
-      <div className=" mt-4 text-center">
+      <div className=" mt-4 text-center flex flex-col-reverse">
         <p
           className={`text-base ${
-            elaborado ? 'text-green-600' : 'text-black 700'
+            elaborado ? 'text-black-600' : 'text-black 700'
           }`}
         >
           Direccion: {direccion}
         </p>
         <p
           className={`text-base ${
-            elaborado ? 'text-green-600' : 'text-black 700'
+            elaborado ? 'text-black-600' : 'text-black 700'
           }`}
         >
           Piso: {piso}
         </p>
         <p
           className={`text-base ${
-            elaborado ? 'text-green-600' : 'text-black 700'
+            elaborado ? 'text-black-600' : 'text-black 700'
           }`}
         >
           Referencias: {referencias}
         </p>
         <p
           className={`text-base ${
-            elaborado ? 'text-green-600' : 'text-black 700'
+            elaborado ? 'text-black-600' : 'text-black 700'
           }`}
         >
           TELEFONO:{' '}
@@ -384,14 +394,14 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         </p>
         <p
           className={`text-base ${
-            elaborado ? 'text-green-600' : 'text-black 700'
+            elaborado ? 'text-black-600' : 'text-black 700'
           }`}
         >
           Metodo de pago: {metodoPago}
         </p>
         <p
           className={`text-lg ${
-            elaborado ? 'text-green-600' : 'text-black'
+            elaborado ? 'text-black-600' : 'text-black'
           } font-black`}
         >
           {currencyFormat(total)}

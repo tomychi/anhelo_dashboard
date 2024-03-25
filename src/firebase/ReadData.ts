@@ -274,6 +274,7 @@ export const eliminarDocumento = async (
     console.error(`Error al eliminar ${dbName} de Firestore:`, error);
   }
 };
+
 export const ReadDataForDateRange = <T>(
   dbName: string,
   valueDate: DateValueType

@@ -38,9 +38,14 @@ export const Clientes = () => {
     t.telefono.includes(searchTerm)
   );
 
+  // Filtrar los teléfonos que tienen pedidos asociados
+  const telefonosConPedidos = filteredTelefonos.filter((t) =>
+    orders.some((o) => cleanPhoneNumber(o.telefono) === t.telefono)
+  );
+
   // Función para ordenar los teléfonos según la cantidad de pedidos
   const sortTelefonos = () => {
-    return filteredTelefonos.sort((a, b) => {
+    return telefonosConPedidos.sort((a, b) => {
       const countA = getCantidadPedidos(a.telefono);
       const countB = getCantidadPedidos(b.telefono);
       if (sortDirection === 'desc') {
