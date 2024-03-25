@@ -31,6 +31,7 @@ const procesarToppings = (bloque: string) => {
 const procesarDetallePedido = (
   detail: string,
   toppingsInfo: ProductStateProps[],
+  data: ProductStateProps[],
   handleFormBurger: (value: DetallePedidoProps) => void
 ) => {
   const bloques = detail.match(/\d+x .*? : \$ \d+/g);
@@ -40,7 +41,6 @@ const procesarDetallePedido = (
       if (match !== null) {
         const quantity = parseInt(match[1]);
         let burger = match[2];
-        const priceBurger = parseInt(match[3]);
 
         // Aquí puedes usar quantity, burger y priceBurger...
         // Remover la parte de 'Toppings:' si está presente en el nombre de la hamburguesa
@@ -70,9 +70,10 @@ const procesarDetallePedido = (
             priceToppings += foundTopping.price;
           }
         }
-
+        const priceBurger = data.find((d) => d.data.name === burger)?.data
+          .price;
         const subTotal = (priceBurger + priceToppings) * quantity;
-
+        console.log(priceBurger);
         handleFormBurger({
           burger,
           priceBurger,
@@ -96,6 +97,7 @@ const procesarDetallePedido = (
 const parsearMensajePedido = (
   mensaje: string,
   toppingsInfo: ProductStateProps[],
+  data: ProductStateProps[],
   handleFormBurger: (value: DetallePedidoProps) => void
 ) => {
   // Expresiones regulares para encontrar las secciones relevantes
@@ -121,7 +123,7 @@ const parsearMensajePedido = (
 
   if (detallePedidoMatch && detallePedidoMatch[1]) {
     const detail = detallePedidoMatch[1].trim();
-    procesarDetallePedido(detail, toppingsInfo, handleFormBurger);
+    procesarDetallePedido(detail, toppingsInfo, data, handleFormBurger);
 
     return {
       telefono,
@@ -150,6 +152,11 @@ export const PedidosWeb = ({
 }: PedidosWebProps) => {
   const [mensaje, setMensaje] = useState<string>('');
   const { toppings } = useSelector((state: RootState) => state.product);
+  const { burgers, drinks, fries } = useSelector(
+    (state: RootState) => state.product
+  );
+
+  const data = [...burgers, ...drinks, ...fries];
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -158,6 +165,7 @@ export const PedidosWeb = ({
     const infoClient = parsearMensajePedido(
       mensaje,
       toppings,
+      data,
       handleFormBurger
     );
     if (infoClient) {
