@@ -144,7 +144,7 @@ export const updateCompesasionForOrder = (
   fechaPedido: string,
   pedidoId: string,
   compensasion: number,
-  bonificacion: string
+  bonificacion: number
 ): Promise<void> => {
   const firestore = getFirestore();
 
