@@ -1,7 +1,10 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import React, { useState } from 'react';
-import { getOrdersByPhoneNumber } from '../helpers/orderByweeks';
+import {
+  cleanPhoneNumber,
+  getOrdersByPhoneNumber,
+} from '../helpers/orderByweeks';
 import { PedidoProps } from '../types/types';
 import { CardOrderCliente } from '../components/Card';
 
@@ -49,7 +52,9 @@ export const Clientes = () => {
   };
   // Función para obtener la cantidad de pedidos por número de teléfono
   const getCantidadPedidos = (phoneNumber: string) => {
-    const pedidos = orders.filter((order) => order.telefono === phoneNumber);
+    const pedidos = orders.filter(
+      (order) => cleanPhoneNumber(order.telefono) === phoneNumber
+    );
     return pedidos.length;
   };
 
