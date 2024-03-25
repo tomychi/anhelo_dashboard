@@ -1,3 +1,5 @@
+export { Clientes } from './Clientes';
+
 export { Gastos } from './Gastos';
 export { Neto } from './Neto';
 export { Bruto } from './Bruto';

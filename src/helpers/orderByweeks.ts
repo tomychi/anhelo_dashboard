@@ -96,3 +96,15 @@ export const getNewCustomers = (
 
   return ordersWithSamePhoneNumber;
 };
+
+export const getOrdersByPhoneNumber = (
+  phoneNumber: string,
+  orders: PedidoProps[]
+): PedidoProps[] => {
+  // Filtrar los pedidos que coinciden con el número de teléfono proporcionado
+  const ordersByPhoneNumber = orders.filter((order) => {
+    return cleanPhoneNumber(order.telefono) === phoneNumber;
+  });
+
+  return ordersByPhoneNumber;
+};
