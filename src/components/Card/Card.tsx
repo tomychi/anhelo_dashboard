@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { Descuento } from './Descuento';
 import { useLocation } from 'react-router-dom';
+import { TiempoEntregadoEditable } from './TiempoEntregadoEditable';
 
 const copyToClipboard = (textToCopy: string) => {
   navigator.clipboard
@@ -286,9 +287,13 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         <div className="mb-8 mt-8 flex flex-col items-center gap-1 justify-center">
           <p className={`text-2xl text-white font-black block`}>{hora}</p>
           {entregado && (
-            <p className=" text-2xl text-white">
-              Pedido entregado a las {tiempoEntregado}
-            </p>
+            <div className=" text-2xl text-white">
+              <TiempoEntregadoEditable
+                tiempoEntregadoInicial={tiempoEntregado}
+                pedidoId={id}
+                fecha={fecha}
+              />
+            </div>
           )}
           {tiempoElaborado ? (
             <div className="top-1 flex flex-row gap-4 items-center">
