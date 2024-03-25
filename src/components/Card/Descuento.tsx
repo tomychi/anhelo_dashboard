@@ -26,7 +26,7 @@ export const Descuento = ({ fechaPedido, pedidoId }: DescuentoProps) => {
   };
   return (
     <div>
-      <h2>Ingrese Bonificación y Compensación por Error</h2>
+      <b>Ingrese Bonificación y Compensación por Error</b>
       <div>
         <label htmlFor="bonificacion">Bonificación:</label>
         <input
