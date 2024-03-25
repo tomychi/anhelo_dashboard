@@ -165,10 +165,13 @@ export const updateCompesasionForOrder = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
+          // Calcular el nuevo total restando la compensación y la bonificación
+          const nuevoTotal = pedido.total - compensasion - bonificacion;
           return {
             ...pedido,
             compensacionPorError: compensasion,
             bonificacion: bonificacion,
+            total: nuevoTotal, // Actualizar el total
           };
         } else {
           return pedido;
