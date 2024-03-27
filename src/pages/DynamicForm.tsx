@@ -92,46 +92,44 @@ export const DynamicForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const getData = async () => {
-      const rawData = await ReadMateriales();
-      dispatch(readMaterialsAll(rawData));
-      console.log('materiales');
-    };
-    getData();
-  }, [dispatch]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-  useEffect(() => {
-    setLoading(true);
-    const getData = async () => {
-      const rawData = await ReadData();
-      dispatch(readProductsAll(rawData));
-    };
+        // Verificar si los materiales ya han sido cargados
+        const materialesData = await ReadMateriales();
+        dispatch(readMaterialsAll(materialesData));
 
-    if (burgers.length === 0) {
-      getData();
-    }
+        // Verificar si los productos ya han sido cargados
+        if (burgers.length === 0) {
+          const productsData = await ReadData();
+          dispatch(readProductsAll(productsData));
+        }
 
-    const cargarProductos = async () => {
-      if (materiales.length > 0 && productos.length === 0) {
-        const rawData = await ReadDataSell();
-        const formattedData: DataProps[] = rawData.map((item) => ({
-          description: item.data.description,
-          img: item.data.img,
-          name: item.data.name,
-          price: item.data.price,
-          type: item.data.type,
-          ingredients: item.data.ingredients,
-          id: item.id,
-          costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
-        }));
-        setProductos(formattedData);
+        // Cargar productos si los materiales y los productos están disponibles
+        if (materiales.length > 0 && productos.length === 0) {
+          const rawData = await ReadDataSell();
+          const formattedData: DataProps[] = rawData.map((item) => ({
+            description: item.data.description,
+            img: item.data.img,
+            name: item.data.name,
+            price: item.data.price,
+            type: item.data.type,
+            ingredients: item.data.ingredients,
+            id: item.id,
+            costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
+          }));
+          setProductos(formattedData);
+        }
+      } catch (error) {
+        console.error('Error al obtener datos:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    cargarProductos();
-
-    setLoading(false);
-  }, [dispatch, productos, materiales, burgers]);
+    fetchData();
+  }, []);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
