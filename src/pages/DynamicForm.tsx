@@ -97,11 +97,8 @@ export const DynamicForm = () => {
       dispatch(readMaterialsAll(rawData));
       console.log('materiales');
     };
-
-    if (materiales.length === 0) {
-      getData();
-    }
-  }, [dispatch, materiales]);
+    getData();
+  }, [dispatch]);
 
   useEffect(() => {
     setLoading(true);

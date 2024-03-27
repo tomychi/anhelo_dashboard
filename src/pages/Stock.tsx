@@ -1,10 +1,23 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import Swal from 'sweetalert2';
+import { useEffect } from 'react';
+import { ReadMateriales } from '../firebase/Materiales';
+import { readMaterialsAll } from '../redux/materials/materialAction';
 
 export const Stock = () => {
   const { materiales } = useSelector((state: RootState) => state.materials);
-  console.log(materiales);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getData = async () => {
+      const rawData = await ReadMateriales();
+      dispatch(readMaterialsAll(rawData));
+      console.log('materiales');
+    };
+    getData();
+  }, [dispatch]);
+
   return (
     <div className="p-4 flex flex-col gap-4">
       <div className="">
