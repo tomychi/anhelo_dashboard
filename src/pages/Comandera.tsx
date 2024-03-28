@@ -323,7 +323,7 @@ export const Comandera = () => {
 					</div>
 				)}
 			</div>
-			<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+			<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4  ">
 				{seccionActiva === "porHacer" ? (
 					Array.isArray(pedidosPorHacer) && pedidosPorHacer.length > 0 ? (
 						pedidosPorHacer.map((comanda) => (
@@ -332,7 +332,7 @@ export const Comandera = () => {
 							</div>
 						))
 					) : (
-						<p className="text-custom-red font-antonio p-4">
+						<p className="text-custom-red  font-antonio ">
 							No hay pedidos por hacer.
 						</p>
 					)
@@ -344,7 +344,7 @@ export const Comandera = () => {
 							</div>
 						))
 					) : (
-						<p className="text-custom-red font-antonio p-4">
+						<p className="text-custom-red font-antonio ">
 							No hay pedidos hechos.
 						</p>
 					)
