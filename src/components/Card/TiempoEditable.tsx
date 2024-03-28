@@ -58,12 +58,12 @@ export const TiempoEditable = ({
 		<div>
 			<div className="flex flex-row  justify-between">
 				{/* Muestra el tiempo actual y un formulario para editarlo */}
-				<p className="text-xs border-4 p-1 border-white text-white w-full">{`${title}: ${tiempo} HS`}</p>
+				<p className="font-black border-4 pr-1 pl-1 border-white text-white w-full">{`${title}: ${tiempo} HS`}</p>
 				{/* Renderiza el botón de edición si el usuario no es un cadete */}
 				{!editandoTiempo && user.email !== "cadetes@anhelo.com" && (
 					<button
 						onClick={() => setEditandoTiempo(true)}
-						className="text-xs border-4 border-white text-white uppercase p-1"
+						className="font-black border-4 border-white text-white uppercase pr-1 pl-1"
 					>
 						Editar
 					</button>
@@ -76,11 +76,11 @@ export const TiempoEditable = ({
 						type="text"
 						value={nuevoTiempo}
 						onChange={handleNuevoTiempoChange}
-						className="bg-white uppercase text-xs font-black w-full  text-green-500 p-1 border-4 border-white"
+						className="bg-white uppercase font-black font-black w-full  text-green-500 pr-1 pl-1 border-4 border-white"
 					/>
 					<button
 						type="submit"
-						className="uppercase border-4 border-white text-xs text-white p-1"
+						className="uppercase border-4 border-white font-black text-white pr-1 pl-1"
 					>
 						Guardar
 					</button>
