@@ -56,7 +56,7 @@ export const TiempoEditable = ({
 
 	return (
 		<div>
-			<div className="flex flex-row  justify-between">
+			<div className="flex flex-row text-center justify-between">
 				{/* Muestra el tiempo actual y un formulario para editarlo */}
 				<p className="font-black border-4 pr-1 pl-1 border-white text-white w-full">{`${title}: ${tiempo} HS`}</p>
 				{/* Renderiza el botón de edición si el usuario no es un cadete */}
