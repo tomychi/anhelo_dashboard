@@ -7,7 +7,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { readOrdersData } from "../redux/data/dataAction";
 import { useLocation } from "react-router-dom";
 import currencyFormat from "../helpers/currencyFormat";
-import { calcularPromedioTiempoElaboracion } from "../helpers/dateToday";
+import {
+	calcularPromedioTiempoElaboracion,
+	promedioTiempoDeEntregaTotal,
+} from "../helpers/dateToday";
 import { ProductStateProps } from "../redux/products/productReducer";
 import { updateMaterialStock } from "../firebase/Materiales";
 
@@ -285,7 +288,7 @@ export const Comandera = () => {
 						</p>
 						<p className=" border-b-2 font-black  text-center border-red-main">
 							Promedio de tiempo de entrega total:{" "}
-							{Math.round(promedioTiempoElaboracion)} minutos
+							{Math.round(promedioTiempoDeEntregaTotal)} minutos
 						</p>
 					</div>
 				)}
