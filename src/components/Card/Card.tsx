@@ -9,7 +9,6 @@ import {
 import { ChangeEvent, useEffect, useState } from "react";
 import {
 	updateCadeteForOrder,
-	updateDislikeForOrder,
 	updateTiempoElaboradoForOrder,
 	updateTiempoEntregaForOrder,
 } from "../../firebase/UploadOrder";
@@ -64,6 +63,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 		entregado,
 	} = comanda;
 	const [selectedCadete, setSelectedCadete] = useState(cadete);
+	const [mostrarInfoCompleta, setMostrarInfoCompleta] = useState(false);
+	const [mostrarExtras, setMostrarExtras] = useState(false);
 	const [nuevoCadete, setNuevoCadete] = useState("");
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const user = useSelector((state: RootState) => state.auth.user);
@@ -184,12 +185,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 			}`}
 		>
 			<div className="flex flex-col items-center gap-1 justify-center">
-				<div className="flex flex-row ">
-					<p
-						className={`text-4xl text-black font-black border-2 pr-1 pl-1 border-black `}
-					>
-						{hora}
-					</p>
+				<div className="flex flex-row  mt-2 mb-4">
+					<p className={`text-4xl text-black font-black pr-1 pl-1  `}>{hora}</p>
 					{user.email === "cadetes@anhelo.com" ? null : (
 						<svg
 							onClick={() =>
@@ -225,7 +222,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="p-1 h-12 cursor-pointer border-2 border-black text-black"
+							className="p-3 h-12 cursor-pointer  text-black"
 						>
 							<path
 								fillRule="evenodd"
@@ -235,6 +232,47 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						</svg>
 					)}
 				</div>
+				<div className="text-center flex flex-col w-full">
+					<div className="flex flex-row w-full ">
+						{/* Mostrar dirección por defecto */}
+						<p
+							className={`uppercase border-4 font-black ${
+								mostrarInfoCompleta ? "w-full" : "w-2/3"
+							} text-white border-white pl-1 pr-1`}
+						>
+							Dirección: {direccion}
+						</p>
+
+						{!mostrarInfoCompleta && (
+							<button
+								className="uppercase border-4 font-black w-1/3 text-white border-white pl-1 pr-1"
+								onClick={() => setMostrarInfoCompleta(true)}
+							>
+								Ver más info
+							</button>
+						)}
+					</div>
+
+					{/* Mostrar el resto de la información solo si se hace clic en 'Ver más info' */}
+					{mostrarInfoCompleta && (
+						<div>
+							<p className="text-base">Piso: {piso}</p>
+							<p className="text-base">Referencias: {referencias}</p>
+							<p className="text-base">
+								TELEFONO:{" "}
+								<a
+									href={`tel:${telefono}`}
+									className="text-blue-600 hover:underline"
+								>
+									{telefono}
+								</a>
+							</p>
+							<p className="text-base">Método de pago: {metodoPago}</p>
+							<p className="text-lg font-black">{currencyFormat(total)}</p>
+						</div>
+					)}
+				</div>
+
 				<div className="mt-4 w-full uppercase font-black gap-2 flex flex-row justify-center">
 					<label htmlFor="cadete" className="text-white">
 						Cadete:
@@ -297,100 +335,50 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						</p>
 					)}
 				</div>
+			</div>
 
+			<div className=" mt-2 mb-6">
 				{aclaraciones && (
-					<p className="border-2 w-full border-black mt-4 pr-1 pl-1 pb-1 text-4xl text-center text-black font-black">
+					<p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
 						{aclaraciones}
 					</p>
 				)}
+				{detallePedido.map(
+					(
+						{
+							burger,
+							toppings,
+							quantity,
+						}: { burger: string; toppings: string[]; quantity: number },
+						i: number
+					) => (
+						<div key={i} className="flex mt-4 items-center flex-col">
+							<p className="text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1">
+								{quantity}X {burger}
+							</p>
+							<p>
+								<div className="flex flex-col items-center ">
+									{toppings.map((topping: string, toppingIndex: number) => (
+										<span
+											key={toppingIndex}
+											className={`text-2xl flex  text-black font-black ${
+												topping.toLowerCase() === "huevo" ||
+												topping.toLowerCase() === "carne"
+													? "bg-black mt-4  text-2xl text-center text-green-500"
+													: ""
+											}`}
+										>
+											{topping}
+										</span>
+									))}
+								</div>
+							</p>
+						</div>
+					)
+				)}
 			</div>
-			{detallePedido.map(
-				(
-					{
-						burger,
-						toppings,
-						quantity,
-					}: { burger: string; toppings: string[]; quantity: number },
-					i: number
-				) => (
-					<div key={i} className="flex mt-4 items-center flex-col">
-						<p className="text-black text-4xl  font-black">
-							{quantity}X {burger}
-						</p>
-						<p>
-							{toppings.map((topping: string, toppingIndex: number) => (
-								<span
-									key={toppingIndex}
-									className={`text-2xl flex justify-star bg-black text-violet-700 ${
-										topping.toLowerCase() === "huevo" ||
-										topping.toLowerCase() === "carne"
-											? "bg-black mt-4  text-2xl text-center text-green-500"
-											: ""
-									}`}
-								>
-									- {topping}
-								</span>
-							))}
-						</p>
-					</div>
-				)
-			)}
-			<div className=" mt-4 text-center flex flex-col-reverse">
-				<p
-					className={`text-base ${
-						elaborado ? "text-black-600" : "text-black 700"
-					}`}
-				>
-					Direccion: {direccion}
-				</p>
-				<p
-					className={`text-base ${
-						elaborado ? "text-black-600" : "text-black 700"
-					}`}
-				>
-					Piso: {piso}
-				</p>
-				<p
-					className={`text-base ${
-						elaborado ? "text-black-600" : "text-black 700"
-					}`}
-				>
-					Referencias: {referencias}
-				</p>
-				<p
-					className={`text-base ${
-						elaborado ? "text-black-600" : "text-black 700"
-					}`}
-				>
-					TELEFONO:{" "}
-					<a href={`tel:${telefono}`} className="text-blue-600 hover:underline">
-						{telefono}
-					</a>
-				</p>
-				<p
-					className={`text-base ${
-						elaborado ? "text-black-600" : "text-black 700"
-					}`}
-				>
-					Metodo de pago: {metodoPago}
-				</p>
-				<p
-					className={`text-lg ${
-						elaborado ? "text-black-600" : "text-black"
-					} font-black`}
-				>
-					{currencyFormat(total)}
-				</p>
-				<div>
-					{isVentasPage ? (
-						<p>
-							<Descuento fechaPedido={fecha} pedidoId={id} />{" "}
-						</p>
-					) : (
-						<p>:</p>
-					)}
-				</div>
 
+			<div>
 				{user.email === "cadetes@anhelo.com" ? (
 					elaborado && (
 						<div>
@@ -433,23 +421,47 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						</div>
 					)
 				) : (
-					<button
-						onClick={() => imprimirTicket(comanda)}
-						className={` bg-black w-full flex justify-center mt-4 ${
-							elaborado ? "text-green-500" : "text-custom-red"
-						} font-black p-4  inline-flex items-center`}
-					>
-						<svg
-							className={`fill-current w-4 h-4 mr-2 ${
+					<div>
+						<button
+							onClick={() => imprimirTicket(comanda)}
+							className={` bg-black w-full flex justify-center mt-4 ${
 								elaborado ? "text-green-500" : "text-custom-red"
-							}`}
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
+							} font-black p-4  inline-flex items-center`}
 						>
-							<path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-						</svg>
-						<span>IMPRIMIR TICKET</span>
-					</button>
+							<svg
+								className={`fill-current w-4 h-4 mr-2 ${
+									elaborado ? "text-green-500" : "text-custom-red"
+								}`}
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+							>
+								<path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+							</svg>
+							<span>IMPRIMIR TICKET</span>
+						</button>
+						<div>
+							{isVentasPage ? (
+								<div>
+									{/* Botón para mostrar o ocultar la sección de EXTRAS */}
+									<button
+										className=" font-black text-white w-full cursor-pointer mt-4 border-4 border-white"
+										onClick={() => setMostrarExtras(!mostrarExtras)}
+									>
+										{mostrarExtras ? "OCULTAR EXTRAS" : "ACCIONES EXTRAS"}
+									</button>
+
+									{/* Renderizar la sección de EXTRAS si mostrarExtras es true */}
+									{mostrarExtras && (
+										<p className="mt-4">
+											<Descuento fechaPedido={fecha} pedidoId={id} />
+										</p>
+									)}
+								</div>
+							) : (
+								<p>:</p>
+							)}
+						</div>
+					</div>
 				)}
 			</div>
 		</div>
