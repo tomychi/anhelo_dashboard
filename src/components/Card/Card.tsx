@@ -185,7 +185,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 			}`}
 		>
 			<div className="flex flex-col items-center gap-1 justify-center">
-				<div className="flex flex-row  mt-2 mb-4">
+				<div className="flex flex-row  mt-6 mb-7">
 					<p className={`text-4xl text-black font-black pr-1 pl-1  `}>{hora}</p>
 					{user.email === "cadetes@anhelo.com" ? null : (
 						<svg
@@ -339,9 +339,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				</div>
 			</div>
 
-			<div className=" mt-6 mb-6">
+			<div className=" mt-8">
 				{aclaraciones && (
-					<p className="w-full mt-4 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
+					<p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
 						{aclaraciones}
 					</p>
 				)}
@@ -426,7 +426,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 					<div>
 						<button
 							onClick={() => imprimirTicket(comanda)}
-							className={` bg-black w-full flex justify-center mt-4 ${
+							className={` bg-black w-full flex justify-center mt-14 ${
 								elaborado ? "text-green-500" : "text-custom-red"
 							} font-black p-4  inline-flex items-center`}
 						>
