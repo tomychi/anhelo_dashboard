@@ -446,7 +446,7 @@ export const DynamicForm = () => {
 											name="metodoPago"
 											value={formData.metodoPago}
 											onChange={handleChange}
-											className="p-4 w-full bg-black text-custom-red"
+											className="p-4 w-full bg-black text-custom-red select-none"
 										>
 											<option> METODO DE PAGO</option>
 											<option value="efectivo">Efectivo</option>
@@ -455,7 +455,7 @@ export const DynamicForm = () => {
 									</div>
 									<button
 										type="submit"
-										className="  text-custom-red w-full pt-8 pb-8 bg-black font-black uppercase text-2xl font-black  outline-none "
+										className="  text-custom-red w-full pt-8 pb-8 bg-black uppercase text-2xl font-black  outline-none "
 									>
 										Guardar
 									</button>
