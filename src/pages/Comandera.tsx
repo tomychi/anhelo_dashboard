@@ -355,7 +355,7 @@ export const Comandera = () => {
 						</div>
 					))
 				) : (
-					<p className="text-custom-red font-antonio p-4">
+					<p className="text-custom-red font-antonio ">
 						No hay pedidos por hacer.
 					</p>
 				)}
