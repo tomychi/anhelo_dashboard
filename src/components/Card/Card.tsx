@@ -339,9 +339,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 				</div>
 			</div>
 
-			<div className=" mt-2 mb-6">
+			<div className=" mt-6 mb-6">
 				{aclaraciones && (
-					<p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
+					<p className="w-full mt-4 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
 						{aclaraciones}
 					</p>
 				)}
