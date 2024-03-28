@@ -304,7 +304,7 @@ export const DynamicForm = () => {
 					<div className="flex flex-col">
 						<div className="flex w-full justify-center p-4">
 							<button
-								className={`pt-4 pb-4 text-2xl w-1/2 font-black ${
+								className={`pt-8 pb-8 text-2xl w-1/2 font-black ${
 									seccionActiva === "elaborar"
 										? "bg-black text-custom-red"
 										: "bg-custom-red text-black border-black border-2"
@@ -314,7 +314,7 @@ export const DynamicForm = () => {
 								TOMAR PEDIDO
 							</button>
 							<button
-								className={` w-1/2 pt-4 pb-4 text-2xl font-black ${
+								className={` w-1/2 pt-8 pb-8 text-2xl font-black ${
 									seccionActiva === "elaborar"
 										? "bg-custom-red text-black border-black border-2"
 										: "bg-black text-custom-red"
@@ -455,7 +455,7 @@ export const DynamicForm = () => {
 									</div>
 									<button
 										type="submit"
-										className="  text-custom-red w-full p-4 bg-black font-black uppercase  outline-none "
+										className="  text-custom-red w-full pt-8 pb-8 bg-black font-black uppercase text-2xl font-black  outline-none "
 									>
 										Guardar
 									</button>
