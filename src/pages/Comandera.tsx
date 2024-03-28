@@ -272,7 +272,7 @@ export const Comandera = () => {
 					Entregados
 				</button>
 			</div>
-			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center">
+			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center mb-8">
 				{location.pathname === "/comandas" ? null : (
 					<div>
 						<p className="border-b-2 font-black border-red-main ">
@@ -280,12 +280,16 @@ export const Comandera = () => {
 						</p>
 
 						<p className=" border-b-2 font-black  text-center border-red-main">
-							Promedio de tiempo de elaboración por pedido:{" "}
+							Promedio de tiempo de elaboración:{" "}
+							{Math.round(promedioTiempoElaboracion)} minutos
+						</p>
+						<p className=" border-b-2 font-black  text-center border-red-main">
+							Promedio de tiempo de entrega total:{" "}
 							{Math.round(promedioTiempoElaboracion)} minutos
 						</p>
 					</div>
 				)}
-				<div className="flex  text-center flex-row border-2 pl-1.5 font-black border-red-main mb-6 ">
+				<div className="flex  text-center flex-row border-2 pl-1.5 font-black border-red-main ">
 					<p>Filtrar por cadetes:</p>
 					<select
 						value={cadeteSeleccionado}
