@@ -328,7 +328,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 					{entregado && (
 						<p className="w-full">
 							<TiempoEditable
-								title="Entregado"
+								title="Entregado a las"
 								tiempoInicial={tiempoEntregado}
 								pedidoId={id}
 								fecha={fecha}
