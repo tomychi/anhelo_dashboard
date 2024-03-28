@@ -181,7 +181,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 	return (
 		<div
 			className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
-				elaborado ? "bg-green-500 hover:bg-red-600" : "bg-custom-red"
+				elaborado ? "bg-green-500 hover:bg-custom-red" : "bg-custom-red"
 			}`}
 		>
 			<div className="flex flex-col items-center gap-1 justify-center">
