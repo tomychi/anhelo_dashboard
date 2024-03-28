@@ -243,7 +243,7 @@ export const Comandera = () => {
 			orders.length;
 	return (
 		<div className="p-4 bg-black min-h-screen">
-			<div className="flex justify-center font-antonio gap-4 mb-4 ">
+			<div className="flex font-antonio gap-4 mb-4 ">
 				<button
 					className={`p-4 ${
 						seccionActiva === "porHacer"
@@ -275,24 +275,24 @@ export const Comandera = () => {
 					Entregados
 				</button>
 			</div>
-			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4 items-center text-center mb-8">
+			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4  mb-8">
 				{location.pathname === "/comandas" ? null : (
 					<div>
 						<p className="border-b-2 font-black border-red-main ">
 							Customer success: {Math.round(customerSuccess)}%
 						</p>
 
-						<p className=" border-b-2 font-black  text-center border-red-main">
+						<p className=" border-b-2 font-black  border-red-main">
 							Promedio de tiempo de elaboración:{" "}
 							{Math.round(promedioTiempoElaboracion)} minutos
 						</p>
-						<p className=" border-b-2 font-black  text-center border-red-main">
+						<p className=" border-b-2 font-black   border-red-main">
 							Promedio de tiempo de entrega total:{" "}
-							{Math.round(promedioTiempoDeEntregaTotal)} minutos
+							{Math.round(promedioTiempoDeEntregaTotal(orders))} MINUTOS
 						</p>
 					</div>
 				)}
-				<div className="flex  text-center flex-row border-2 pl-1.5 font-black border-red-main ">
+				<div className="flex   flex-row border-2 pl-1.5 font-black border-red-main ">
 					<p>Filtrar por cadetes:</p>
 					<select
 						value={cadeteSeleccionado}
