@@ -255,7 +255,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 
 					{/* Mostrar el resto de la información solo si se hace clic en 'Ver más info' */}
 					{mostrarInfoCompleta && (
-						<div>
+						<div className="mt-4 mb-4 font-black text-white">
 							<p className="text-base">Piso: {piso}</p>
 							<p className="text-base">Referencias: {referencias}</p>
 							<p className="text-base">
@@ -268,7 +268,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 								</a>
 							</p>
 							<p className="text-base">Método de pago: {metodoPago}</p>
-							<p className="text-lg font-black">{currencyFormat(total)}</p>
+							<p className="text-lg font-black">
+								MONTO: {currencyFormat(total)}
+							</p>
 						</div>
 					)}
 				</div>
