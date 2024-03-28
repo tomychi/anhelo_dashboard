@@ -285,7 +285,7 @@ export const Comandera = () => {
 						</p>
 					</div>
 				)}
-				<div className="flex  text-center flex-row border-2 pl-1 font-black border-red-main mb-6 ">
+				<div className="flex  text-center flex-row border-2 pl-1.5 font-black border-red-main mb-6 ">
 					<p>Filtrar por cadetes:</p>
 					<select
 						value={cadeteSeleccionado}
