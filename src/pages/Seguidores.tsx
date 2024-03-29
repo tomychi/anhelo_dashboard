@@ -56,6 +56,33 @@ export const Seguidores = () => {
 				comentarios: 3,
 			},
 		},
+		"2024-04-09": {
+			Anhelo: {
+				followers: 6734,
+				likes: 1500,
+				comentarios: 50,
+			},
+			Burgerfan: {
+				followers: 19600,
+				likes: 1400,
+				comentarios: 45,
+			},
+			"Santa Burger": {
+				followers: 16748,
+				likes: 200,
+				comentarios: 10,
+			},
+			"Desperta con esta burger": {
+				followers: 11900,
+				likes: 800,
+				comentarios: 5,
+			},
+			"Burger Pig": {
+				followers: 5931,
+				likes: 100,
+				comentarios: 3,
+			},
+		},
 	};
 
 	const creativos = {
@@ -97,7 +124,7 @@ export const Seguidores = () => {
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
 			<h1 className="text-custom-red uppercase flex items-center text-4xl font-black font-antonio">
-				FOLLOWERS GROWTH
+				INSTAGRAM GROWTH
 			</h1>
 			<div className="w-full">
 				<LineChart data={fakeDatabase} />
