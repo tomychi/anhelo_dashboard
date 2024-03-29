@@ -24,25 +24,28 @@ export const MonthData = () => {
 		}
 	}, 0);
 
-	// Agrupar los gastos por categoría excluyendo las categorías y nombres especificados
-	const gastosPorCategoria = expenseData.reduce((result, expense) => {
-		if (
-			expense.category !== "ingredientes" &&
-			expense.category !== "igredientes" &&
-			expense.category !== "bebidas" &&
-			expense.category !== "packaging" &&
-			expense.name !== "carne"
-		) {
-			// Si la categoría ya existe en el objeto result, se suma el total
-			if (result[expense.category]) {
-				result[expense.category] += expense.total;
-			} else {
-				// Si la categoría no existe en el objeto result, se crea con el total actual
-				result[expense.category] = expense.total;
+	interface ExpenseCategoryTotal {
+		[category: string]: number;
+	}
+
+	const gastosPorCategoria: ExpenseCategoryTotal = expenseData.reduce(
+		(result: ExpenseCategoryTotal, expense) => {
+			if (
+				expense.category !== "ingredientes" &&
+				expense.category !== "igredientes" &&
+				expense.category !== "bebidas" &&
+				expense.category !== "packaging" &&
+				expense.name !== "carne"
+			) {
+				// Verificar si la categoría ya existe en el objeto result
+				result[expense.category] = result[expense.category]
+					? result[expense.category] + expense.total
+					: expense.total;
 			}
-		}
-		return result;
-	}, {});
+			return result;
+		},
+		{}
+	);
 
 	console.log(
 		"Gastos por categoría (excluyendo ciertas categorías y nombres):",
