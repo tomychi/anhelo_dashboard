@@ -6,7 +6,9 @@ import currencyFormat from "../helpers/currencyFormat";
 
 export const MonthData = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
-	const { neto } = useSelector((state: RootState) => state.data);
+	const { neto, facturacionTotal } = useSelector(
+		(state: RootState) => state.data
+	);
 
 	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
 	const totalGastos = expenseData.reduce((total, expense) => {
@@ -58,6 +60,7 @@ export const MonthData = () => {
 	const balanceMensual = neto - totalGastos;
 	const balanceMensualPorcentaje = (balanceMensual * 100) / neto;
 	const gastosPorcentaje = (totalGastos * 100) / neto;
+	const netoPorcentaje = (neto * 100) / facturacionTotal;
 
 	return (
 		<div className="p-4 flex flex-col gap-4">
@@ -65,6 +68,7 @@ export const MonthData = () => {
 				info={currencyFormat(neto)}
 				title={"NETO"}
 				svgComponent={<NetoSVG />}
+				cuadrito={netoPorcentaje}
 			/>
 			<div>
 				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
