@@ -56,6 +56,8 @@ export const MonthData = () => {
 
 	// Calcular el balance mensual (neto - gastos)
 	const balanceMensual = neto - totalGastos;
+	const balanceMensualPorcentaje = (balanceMensual * 100) / neto;
+
 	return (
 		<div className="p-4 flex flex-col gap-4">
 			<CardInfo
@@ -102,6 +104,7 @@ export const MonthData = () => {
 				info={currencyFormat(balanceMensual)}
 				title={"EXCEDENTE"}
 				svgComponent={<ExcedenteSVG />}
+				cuadrito={balanceMensualPorcentaje}
 			/>
 		</div>
 	);
