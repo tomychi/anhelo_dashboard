@@ -442,7 +442,9 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 							<span>IMPRIMIR TICKET</span>
 						</button>
 						<div>
-							{isVentasPage ? (
+							{user.email === "cadetes@anhelo.com" ? (
+								<p>:</p>
+							) : (
 								<div>
 									{/* Botón para mostrar o ocultar la sección de EXTRAS */}
 									<button
@@ -459,8 +461,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 										</p>
 									)}
 								</div>
-							) : (
-								<p>:</p>
 							)}
 						</div>
 					</div>

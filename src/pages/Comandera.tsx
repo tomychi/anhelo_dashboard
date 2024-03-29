@@ -276,22 +276,20 @@ export const Comandera = () => {
 				</button>
 			</div>
 			<div className="text-custom-red uppercase font-antonio   flex flex-col gap-4  mb-8">
-				{location.pathname === "/comandas" ? null : (
-					<div>
-						<p className="border-b-2 font-black w-max border-red-main  ">
-							PEDIDOS ENTREGADOS A TIEMPO: {Math.round(customerSuccess)}%
-						</p>
+				<div>
+					<p className="border-b-2 font-black w-max border-red-main  ">
+						PEDIDOS ENTREGADOS A TIEMPO: {Math.round(customerSuccess)}%
+					</p>
 
-						<p className=" border-b-2 font-black w-max  border-red-main">
-							Promedio de tiempo de elaboración:{" "}
-							{Math.round(promedioTiempoElaboracion)} minutos
-						</p>
-						<p className=" border-b-2 font-black w-max   border-red-main">
-							Promedio de tiempo de entrega total:{" "}
-							{Math.round(promedioTiempoDeEntregaTotal(orders))} MINUTOS
-						</p>
-					</div>
-				)}
+					<p className=" border-b-2 font-black w-max  border-red-main">
+						Promedio de tiempo de elaboración:{" "}
+						{Math.round(promedioTiempoElaboracion)} minutos
+					</p>
+					<p className=" border-b-2 font-black w-max   border-red-main">
+						Promedio de tiempo de entrega total:{" "}
+						{Math.round(promedioTiempoDeEntregaTotal(orders))} MINUTOS
+					</p>
+				</div>
 				<div className="flex w-max  flex-row border-2 pl-1.5 font-black border-red-main ">
 					<p>Filtrar por cadetes:</p>
 					<select
