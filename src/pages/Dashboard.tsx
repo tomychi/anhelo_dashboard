@@ -169,7 +169,7 @@ export const Dashboard = () => {
 				<CardInfo
 					info={currencyFormat(neto)}
 					link={"neto"}
-					cuadrito={`  ${Math.ceil((neto * 100) / facturacionTotal)}%`}
+					cuadrito={(neto * 100) / facturacionTotal}
 					title={"FACTURACION NETA *Estimado"}
 					svgComponent={<NetoSVG />}
 				/>
