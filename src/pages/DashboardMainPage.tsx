@@ -15,6 +15,7 @@ import {
 } from '../pages';
 import { MonthData } from './MonthData';
 import { Stock } from './Stock';
+import { MapsApp } from './MapsApp';
 
 export const DashboardMainPage = () => {
   return (
@@ -38,6 +39,7 @@ export const DashboardMainPage = () => {
             <Route path="productosVendidos" element={<ProductosVendidos />} />
             <Route path="ventas" element={<Comandera />} />
             <Route path="monthdata" element={<MonthData />} />
+            <Route path="map" element={<MapsApp />} />
           </Route>
         </Routes>
       </div>

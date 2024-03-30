@@ -285,3 +285,47 @@ export const updateTiempoElaboradoForOrder = (
       });
   });
 };
+
+export const handleAddressSave = (
+  fechaPedido: string,
+  pedidoId: string,
+  direccion: string
+): Promise<void> => {
+  const firestore = getFirestore();
+
+  return new Promise((resolve, reject) => {
+    const [dia, mes, anio] = fechaPedido.split('/');
+    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+    runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+      if (!pedidoDocSnapshot.exists()) {
+        reject(new Error('El pedido no existe para la fecha especificada.'));
+        return;
+      }
+
+      const existingData = pedidoDocSnapshot.data();
+      const pedidosDelDia = existingData.pedidos || [];
+
+      const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
+        if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
+          return { ...pedido, direccion: direccion };
+        } else {
+          return pedido;
+        }
+      });
+
+      transaction.set(pedidoDocRef, {
+        ...existingData,
+        pedidos: pedidosActualizados,
+      });
+    })
+      .then(() => {
+        resolve();
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
