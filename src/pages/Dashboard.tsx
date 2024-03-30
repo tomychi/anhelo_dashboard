@@ -161,7 +161,6 @@ export const Dashboard = () => {
 				<CardInfo
 					info={currencyFormat(facturacionTotal)}
 					link={"bruto"}
-					cuadrito={`x1,15`}
 					title={"FACTURACIÓN BRUTA"}
 					svgComponent={<BrutoSVG />}
 				/>
