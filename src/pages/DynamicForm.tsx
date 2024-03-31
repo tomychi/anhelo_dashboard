@@ -1,14 +1,10 @@
 import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
-import { ReadData, ReadOrdersForToday } from '../firebase/ReadData';
-import { useDispatch, useSelector } from 'react-redux';
-import { readProductsAll } from '../redux/products/productAction';
-import { calcularCostoHamburguesa } from '../helpers/calculator';
-import { ReadMateriales } from '../firebase/Materiales';
-import { readMaterialsAll } from '../redux/materials/materialAction';
+import { ReadOrdersForToday } from '../firebase/ReadData';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { PedidoProps } from '../types/types';
 import { addTelefonoFirebase } from '../firebase/Telefonos';
@@ -79,47 +75,18 @@ export const DynamicForm = () => {
   };
 
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [productos, setProductos] = useState<DataProps[]>([]);
 
   const { materiales } = useSelector((state: RootState) => state.materials);
+  const { burgers, drinks, toppings, fries } = useSelector(
+    (state: RootState) => state.product
+  );
 
-  const dispatch = useDispatch();
+  const pburgers = burgers.map((b) => b.data);
+  const pdrinks = drinks.map((d) => d.data);
+  const ptoppings = toppings.map((t) => t.data);
+  const pfries = fries.map((f) => f.data);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        const materialesData = await ReadMateriales();
-        dispatch(readMaterialsAll(materialesData));
-        const productsData = await ReadData();
-        dispatch(readProductsAll(productsData));
-
-        const formattedData: DataProps[] = productsData.map((item) => ({
-          description: item.data.description,
-          img: item.data.img,
-          name: item.data.name,
-          price: item.data.price,
-          type: item.data.type,
-          ingredients: item.data.ingredients,
-          id: item.id,
-          costo: calcularCostoHamburguesa(
-            materialesData,
-            item.data.ingredients
-          ),
-        }));
-        setProductos(formattedData);
-      } catch (error) {
-        console.error('Error al obtener datos:', error);
-      } finally {
-        setLoading(false);
-        console.log('db soli');
-      }
-    };
-
-    fetchData();
-  }, []);
+  const productos = [...pburgers, ...pdrinks, ...ptoppings, ...pfries];
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -272,10 +239,6 @@ export const DynamicForm = () => {
     setDetallePedido((prevData) => [...prevData, burger]);
   };
 
-  if (loading && productos.length === 0) {
-    return null;
-  }
-
   return (
     <div>
       {productos.length > 0 && (
@@ -291,10 +254,7 @@ export const DynamicForm = () => {
               </div>
             )}
             {/* Mostrar las tarjetas solo si los productos están cargados */}
-            <MenuGallery
-              handleFormBurger={handleFormBurger}
-              loading={loading}
-            />
+            <MenuGallery handleFormBurger={handleFormBurger} />
           </div>
 
           {/* Sección form */}

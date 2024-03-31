@@ -1,7 +1,52 @@
 import { NavLink } from 'react-router-dom';
 import Absolute from '../../assets/absoluteIsologo.png';
+import { useDispatch } from 'react-redux';
+import { ReadMateriales } from '../../firebase/Materiales';
+import { readMaterialsAll } from '../../redux/materials/materialAction';
+import { readProductsAll } from '../../redux/products/productAction';
+import { calcularCostoHamburguesa } from '../../helpers/calculator';
+import { ReadData } from '../../firebase/ReadData';
+import { ProductStateProps } from '../../redux/products/productReducer';
 
 export const Sidebar = () => {
+  const dispatch = useDispatch();
+
+  const recargarDatos = () => {
+    const fetchData = async () => {
+      try {
+        const materialesData = await ReadMateriales();
+        dispatch(readMaterialsAll(materialesData));
+        const productsData = await ReadData();
+
+        const formattedData: ProductStateProps[] = productsData.map((item) => ({
+          collectionName: item.collectionName,
+          id: item.id,
+          data: {
+            description: item.data.description,
+            img: item.data.img,
+            name: item.data.name,
+            price: item.data.price,
+            type: item.data.type,
+            ingredients: item.data.ingredients,
+            id: item.id,
+            costo: calcularCostoHamburguesa(
+              materialesData,
+              item.data.ingredients
+            ),
+          },
+        }));
+        dispatch(readProductsAll(formattedData));
+        // setProductos(formattedData);
+      } catch (error) {
+        console.error('Error al obtener datos:', error);
+      } finally {
+        console.log('db soli');
+      }
+    };
+
+    fetchData();
+  };
+
   return (
     <aside id="drawer-navigation" className=" top-0 left-0 z-50 w-12 h-screen ">
       {/* <button
@@ -213,6 +258,23 @@ export const Sidebar = () => {
             </li>
           </ul>
         </>
+        <button
+          onClick={() => recargarDatos()}
+          className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group mt-auto"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
     </aside>
   );

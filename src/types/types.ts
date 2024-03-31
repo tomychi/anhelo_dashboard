@@ -83,20 +83,6 @@ export interface FormSubmitProps {
   envio: number;
 }
 
-export interface InfoItemProps {
-  description: string;
-  img: string;
-  name: string;
-  price: number;
-  type: string;
-}
-
-export interface InfoDataProps {
-  data: InfoItemProps;
-  id: string;
-  collectionName?: string;
-}
-
 export interface ProductoMaterial {
   id: string;
   nombre: string;

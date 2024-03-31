@@ -1,158 +1,113 @@
-import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { EditModal } from "./EditModal";
-import { InfoDataProps, InfoItemProps } from "../../types/types";
+import { useState } from 'react';
+import { EditModal } from './EditModal';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/configureStore';
+import { DocumentData } from 'firebase/firestore';
 
 export const EditDataComponent = () => {
-	const [data, setData] = useState<InfoDataProps[]>([]);
-	const [loading, setLoading] = useState(false);
+  const { burgers, drinks, toppings, fries } = useSelector(
+    (state: RootState) => state.product
+  );
 
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [selectedItem, setSelectedItem] = useState<InfoItemProps>({
-		description: "",
-		img: "",
-		name: "",
-		price: 0,
-		type: "",
-	}); // Para mantener los detalles del elemento seleccionado
-	const [id, setId] = useState<string>(""); // Para mantener los detalles del elemento seleccionado
-	const [collectionName, setCollectionName] = useState<string>(""); // Para mantener los detalles del elemento seleccionado
-	const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const data = [...burgers, ...drinks, ...toppings, ...fries];
 
-	useEffect(() => {
-		const fetchDataFromFirestore = async () => {
-			setLoading(true);
-			const firestore = getFirestore();
-			const collections = ["burgers", "drinks", "fries", "toppings"];
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<DocumentData>({
+    description: '',
+    img: '',
+    name: '',
+    price: 0,
+    type: '',
+  }); // Para mantener los detalles del elemento seleccionado
+  const [id, setId] = useState<string>(''); // Para mantener los detalles del elemento seleccionado
+  const [collectionName, setCollectionName] = useState<string>(''); // Para mantener los detalles del elemento seleccionado
 
-			const fetchedData = await Promise.all(
-				collections.map(async (collectionName) => {
-					const collectionRef = collection(firestore, collectionName);
-					const snapshot = await getDocs(collectionRef);
+  const handleEditClick = (
+    item: DocumentData,
+    id: string,
+    collectionName: string
+  ) => {
+    console.log(item);
+    setIsModalOpen(true);
+    setId(id);
+    setCollectionName(collectionName);
+    setSelectedItem(item);
+  };
 
-					const dataWithIds = snapshot.docs.map((doc) => ({
-						id: doc.id,
-						data: doc.data(),
-						collectionName: collectionName,
-					}));
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-					return dataWithIds;
-				})
-			);
-
-			const transformedData = fetchedData.flat().map((item) => ({
-				id: item.id,
-				data: {
-					description: item.data.description || "",
-					img: item.data.img || "",
-					name: item.data.name || "",
-					price: item.data.price || 0,
-					type: item.data.type || "",
-				},
-				collectionName: item.collectionName,
-			}));
-
-			setData(transformedData);
-			setLoading(false);
-			setInitialLoadComplete(true);
-		};
-
-		// Solo cargamos datos si aún no se ha realizado la carga inicial
-		if (!initialLoadComplete) {
-			fetchDataFromFirestore();
-		}
-	}, [initialLoadComplete]);
-
-	// const handleUpdateData = () => {
-	//   fetchDataFromFirestore();
-	// };
-
-	const handleEditClick = (
-		item: InfoItemProps,
-		id: string,
-		collectionName: string
-	) => {
-		console.log(item);
-		setIsModalOpen(true);
-		setId(id);
-		setCollectionName(collectionName);
-		setSelectedItem(item);
-	};
-
-	const closeModal = () => {
-		setIsModalOpen(false);
-	};
-
-	// Renderizar los datos obtenidos
-	return (
-		<div className="p-4">
-			<table className=" h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-					{/* Encabezados de la tabla */}
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							Product name
-						</th>
-						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-							Type
-						</th>
-						<th scope="col" className="px-6 py-3  lg:table-cell">
-							Price
-						</th>
-						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-							Image
-						</th>
-						<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-							Description
-						</th>
-						<th scope="col" className="px-6 py-3">
-							<span className="sr-only">Edit</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{/* Mapeo de datos de burgers */}
-					{data.map(({ data, id, collectionName }) => (
-						<tr
-							key={id}
-							className="bg-black text-custom-red uppercase font-black border border-red-main"
-						>
-							<th
-								scope="row"
-								className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-							>
-								{data.name}
-							</th>
-							<td className="px-6 py-4 hidden lg:table-cell">{data.type}</td>
-							<td className="px-6 py-4  lg:table-cell">${data.price}</td>
-							<td className="px-6 py-4 hidden lg:table-cell">{data.img}</td>
-							<td className="px-6 py-4 hidden lg:table-cell">
-								{data.description}
-							</td>
-							<td className="px-6 py-4 text-center">
-								<div
-									onClick={() => {
-										if (data && id && collectionName) {
-											handleEditClick(data, id, collectionName);
-										}
-									}}
-									className="font-black border border-red-main text-custom-red hover:underline px-1"
-								>
-									EDITAR
-								</div>
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
-			{isModalOpen && (
-				<EditModal
-					closeModal={closeModal}
-					item={selectedItem}
-					id={id}
-					collectionName={collectionName}
-				/>
-			)}
-		</div>
-	);
+  // Renderizar los datos obtenidos
+  return (
+    <div className="p-4">
+      <table className=" h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+        <thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
+          {/* Encabezados de la tabla */}
+          <tr>
+            <th scope="col" className="px-6 py-3">
+              Product name
+            </th>
+            <th scope="col" className="px-6 py-3 hidden lg:table-cell">
+              Type
+            </th>
+            <th scope="col" className="px-6 py-3  lg:table-cell">
+              Price
+            </th>
+            <th scope="col" className="px-6 py-3 hidden lg:table-cell">
+              Image
+            </th>
+            <th scope="col" className="px-6 py-3 hidden lg:table-cell">
+              Description
+            </th>
+            <th scope="col" className="px-6 py-3">
+              <span className="sr-only">Edit</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Mapeo de datos de burgers */}
+          {data.map(({ data, id, collectionName }) => (
+            <tr
+              key={id}
+              className="bg-black text-custom-red uppercase font-black border border-red-main"
+            >
+              <th
+                scope="row"
+                className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+              >
+                {data.name}
+              </th>
+              <td className="px-6 py-4 hidden lg:table-cell">{data.type}</td>
+              <td className="px-6 py-4  lg:table-cell">${data.price}</td>
+              <td className="px-6 py-4 hidden lg:table-cell">{data.img}</td>
+              <td className="px-6 py-4 hidden lg:table-cell">
+                {data.description}
+              </td>
+              <td className="px-6 py-4 text-center">
+                <div
+                  onClick={() => {
+                    if (data && id && collectionName) {
+                      handleEditClick(data, id, collectionName);
+                    }
+                  }}
+                  className="font-black border border-red-main text-custom-red hover:underline px-1"
+                >
+                  EDITAR
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {isModalOpen && (
+        <EditModal
+          closeModal={closeModal}
+          item={selectedItem}
+          id={id}
+          collectionName={collectionName}
+        />
+      )}
+    </div>
+  );
 };

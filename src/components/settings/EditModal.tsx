@@ -3,11 +3,11 @@ import { ConfirmationModal } from './ConfirmationModal';
 // Importa tu lógica para actualizar datos en Firebase Firestore
 import Swal from 'sweetalert2';
 import { updateDataInFirestore } from './Update';
-import { InfoItemProps } from '../../types/types';
+import { DocumentData } from 'firebase/firestore';
 
 interface EditModalProps {
   closeModal: () => void;
-  item: InfoItemProps;
+  item: DocumentData;
   id: string;
   collectionName: string;
 }
