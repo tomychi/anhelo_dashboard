@@ -21,7 +21,7 @@ export const BtnMyLocation = () => {
       onClick={onClick}
       style={{
         position: 'fixed',
-        top: '20px',
+        top: '60px',
         right: '20px',
         zIndex: 999,
       }}

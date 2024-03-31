@@ -12,6 +12,7 @@ import {
 import { ProductStateProps } from '../redux/products/productReducer';
 import { updateMaterialStock } from '../firebase/Materiales';
 import { GeneralStats, OrderList } from '../components/comandera';
+import { MapsApp } from './MapsApp';
 
 interface ToppingCounts {
   [topping: string]: number;
@@ -243,7 +244,7 @@ export const Comandera = () => {
       orders.length;
   return (
     <div className="p-4 bg-black min-h-screen">
-      <div className="flex font-antonio gap-4 mb-4 ">
+      <div className="flex font-antonio gap-4 mb-12 z-10 relative">
         <button
           className={`p-4 ${
             seccionActiva === 'porHacer'
@@ -285,9 +286,8 @@ export const Comandera = () => {
           Mapa
         </button>
       </div>
-
-      <div>
-        {seccionActiva === 'mapa' ? null : (
+      <div className="absolute bottom-0	">
+        {seccionActiva !== 'mapa' && (
           <>
             <GeneralStats
               customerSuccess={customerSuccess}
@@ -310,6 +310,8 @@ export const Comandera = () => {
             />
           </>
         )}
+
+        {seccionActiva === 'mapa' && <MapsApp />}
       </div>
     </div>
   );

@@ -20,7 +20,15 @@ export const ListOrderAddress = () => {
   };
 
   return (
-    <div className="relative">
+    <div
+      className=""
+      style={{
+        position: 'fixed',
+        top: '50px',
+        left: '25px',
+        zIndex: 999,
+      }}
+    >
       <div
         className="absolute top-4 left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
         style={{ zIndex: 999 }}
