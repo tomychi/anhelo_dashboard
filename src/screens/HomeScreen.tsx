@@ -2,7 +2,8 @@ import {
   BtnMyLocation,
   MapView,
   ReactLogo,
-  SearchBar,
+  // SearchBar,
+  ListOrderAddress,
 } from '../components/map';
 
 export const HomeScreen = () => {
@@ -11,7 +12,8 @@ export const HomeScreen = () => {
       <MapView />
       <BtnMyLocation />
       <ReactLogo />
-      <SearchBar />
+      <ListOrderAddress />
+      {/* <SearchBar /> */}
     </div>
   );
 };
