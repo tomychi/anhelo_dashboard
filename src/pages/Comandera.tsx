@@ -244,7 +244,7 @@ export const Comandera = () => {
       orders.length;
   return (
     <div className="p-4 bg-black min-h-screen">
-      <div className="flex font-antonio gap-4 mb-12 z-10 relative">
+      <div className="flex font-antonio gap-4 mb-4">
         <button
           className={`p-4 ${
             seccionActiva === 'porHacer'
@@ -286,7 +286,7 @@ export const Comandera = () => {
           Mapa
         </button>
       </div>
-      <div className="absolute bottom-0	">
+      <div className="">
         {seccionActiva !== 'mapa' && (
           <>
             <GeneralStats
