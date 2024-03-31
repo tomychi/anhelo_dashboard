@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import currencyFormat from '../helpers/currencyFormat';
 
 import {
@@ -6,13 +6,12 @@ import {
   collection,
   addDoc,
   DocumentReference,
+  DocumentData,
 } from 'firebase/firestore';
 import { ProductoMaterial } from '../types/types';
-import { ReadMateriales } from '../firebase/Materiales';
-import { DataProps } from './DynamicForm';
-import { ReadDataSell } from '../firebase/ReadData';
-import { calcularCostoHamburguesa } from '../helpers/calculator';
 import { Ingredients } from '../components/gastos';
+import { RootState } from '../redux/configureStore';
+import { useSelector } from 'react-redux';
 export const UploadMateriales = (
   materiales: ProductoMaterial[]
 ): Promise<DocumentReference[]> => {
@@ -37,63 +36,28 @@ export const UploadMateriales = (
 };
 
 export const Neto = () => {
-  const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
-  const [productos, setProductos] = useState<DataProps[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { materiales } = useSelector((state: RootState) => state.materials);
+  const { burgers, drinks, toppings, fries } = useSelector(
+    (state: RootState) => state.product
+  );
+
+  const pburgers = burgers.map((b) => b.data);
+  const pdrinks = drinks.map((d) => d.data);
+  const ptoppings = toppings.map((t) => t.data);
+  const pfries = fries.map((f) => f.data);
+
+  const productos = [...pburgers, ...pdrinks, ...ptoppings, ...pfries];
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<DataProps | null>(
+  const [selectedProduct, setSelectedProduct] = useState<DocumentData | null>(
     null
   );
-  const [materialesCargados, setMaterialesCargados] = useState(false);
-
-  const openModal = (product: DataProps) => {
+  const openModal = (product: DocumentData) => {
     setSelectedProduct(product);
     setModalOpen(true);
-  };
-  const readMateriales = async () => {
-    const rawData = await ReadMateriales();
-    setMateriales(rawData);
   };
 
   const multiplierMasterpiecesOriginals = 2.3;
   const multiplierSatisfyers = 1.8;
-
-  useEffect(() => {
-    const getData = async () => {
-      await readMateriales();
-      setMaterialesCargados(true);
-    };
-
-    if (!materialesCargados) {
-      getData();
-    }
-  }, [materialesCargados]);
-
-  useEffect(() => {
-    const cargarProductos = async () => {
-      if (materialesCargados && productos.length === 0) {
-        const rawData = await ReadDataSell();
-        const formattedData: DataProps[] = rawData.map((item) => ({
-          description: item.data.description,
-          img: item.data.img,
-          name: item.data.name,
-          price: item.data.price,
-          type: item.data.type,
-          ingredients: item.data.ingredients,
-          id: item.id,
-          costo: calcularCostoHamburguesa(materiales, item.data.ingredients),
-        }));
-        setProductos(formattedData);
-        setIsLoading(false);
-      }
-    };
-
-    cargarProductos();
-  }, [productos, materialesCargados, materiales]);
-
-  if (isLoading) {
-    return <p>Cargando...</p>;
-  }
 
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -125,7 +89,7 @@ export const Neto = () => {
             </tr>
           </thead>
           <tbody>
-            {productos.map((p: DataProps, index: number) => {
+            {productos.map((p: DocumentData, index: number) => {
               return (
                 <tr
                   key={index}

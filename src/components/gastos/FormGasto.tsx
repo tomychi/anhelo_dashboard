@@ -1,14 +1,15 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { obtenerFechaActual } from '../../helpers/dateToday';
 import { UploadExpense, ExpenseProps } from '../../firebase/UploadGasto';
 import Swal from 'sweetalert2';
-import { ProductoMaterial } from '../../types/types';
-import { ReadMateriales, updateMaterialCost } from '../../firebase/Materiales';
+import { updateMaterialCost } from '../../firebase/Materiales';
 import { calculateUnitCost } from '../../helpers/calculator';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/configureStore';
 
 export const FormGasto = () => {
-  const [materiales, setMateriales] = useState<ProductoMaterial[]>([]);
   const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
+  const { materiales } = useSelector((state: RootState) => state.materials);
 
   const [formData, setFormData] = useState<ExpenseProps>({
     description: '',
@@ -20,11 +21,6 @@ export const FormGasto = () => {
     unit: '',
     id: '',
   });
-
-  const readMateriales = async () => {
-    const rawData = await ReadMateriales();
-    setMateriales(rawData);
-  };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -134,10 +130,6 @@ export const FormGasto = () => {
       id: '',
     });
   };
-
-  useEffect(() => {
-    readMateriales();
-  }, []);
 
   return (
     <form
