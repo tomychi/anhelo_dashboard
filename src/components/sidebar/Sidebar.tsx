@@ -7,6 +7,7 @@ import { readProductsAll } from '../../redux/products/productAction';
 import { calcularCostoHamburguesa } from '../../helpers/calculator';
 import { ReadData } from '../../firebase/ReadData';
 import { ProductStateProps } from '../../redux/products/productReducer';
+import Swal from 'sweetalert2';
 
 export const Sidebar = () => {
   const dispatch = useDispatch();
@@ -35,12 +36,20 @@ export const Sidebar = () => {
             ),
           },
         }));
+
         dispatch(readProductsAll(formattedData));
-        // setProductos(formattedData);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Datos Actualizados',
+          text: 'Se actualizaron productos y materiales',
+        });
       } catch (error) {
-        console.error('Error al obtener datos:', error);
-      } finally {
-        console.log('db soli');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Error al traer datos: ${error}`,
+        });
       }
     };
 
