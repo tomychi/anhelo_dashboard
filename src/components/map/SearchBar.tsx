@@ -18,18 +18,7 @@ export const SearchBar = () => {
     }, 350);
   };
   return (
-    <div
-      style={{
-        backgroundColor: 'white',
-        borderRadius: '5px',
-        boxShadow: '0px 5px 10px rgba(0, 0, 0, 0.2)',
-        padding: '5px',
-        position: 'fixed',
-        top: '20px',
-        width: '250px',
-        zIndex: '999',
-      }}
-    >
+    <div>
       <input
         type="text"
         onChange={onQueryChanged}

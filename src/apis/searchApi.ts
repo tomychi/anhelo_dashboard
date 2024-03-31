@@ -17,7 +17,7 @@ const boundingBox = `${minLon},${minLat},${maxLon},${maxLat}`;
 const searchApi = axios.create({
   baseURL: 'https://api.mapbox.com/geocoding/v5/mapbox.places',
   params: {
-    limit: 5,
+    limit: 1,
     language: 'es',
     access_token: accessToken,
     country: 'AR',
