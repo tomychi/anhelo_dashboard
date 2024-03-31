@@ -48,7 +48,7 @@ export const MapProvider = ({ children }: Props) => {
     }
 
     dispatch({ type: 'setMarkers', payload: newMarkers });
-  }, [places]);
+  }, [places, state.map]);
 
   const setMap = (map: Map) => {
     const myLocationPopup = new Popup().setHTML(`
@@ -84,7 +84,7 @@ export const MapProvider = ({ children }: Props) => {
     kms /= 100;
 
     const minutes = Math.floor(duration / 60);
-    console.log(kms, minutes);
+    console.log(`Hay ${kms}km. Se tarda ${minutes}m`);
 
     const bounds = new LngLatBounds([start[0], start[1]], [end[0], end[1]]);
 

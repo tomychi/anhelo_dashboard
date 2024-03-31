@@ -32,13 +32,13 @@ export const SearchResults = () => {
   }
 
   return (
-    <ul className="list-group mt-3">
+    <ul className="mt-3">
       {places.map((place) => (
         <li
           key={place.id}
-          className={`list-group-item list-group-item-action pointer ${
-            activeId === place.id ? 'active' : ''
-          }`}
+          className={`cursor-pointer ${
+            activeId === place.id ? 'bg-blue-500 text-white' : 'bg-white'
+          } border border-gray-200 py-2 px-4 flex justify-between items-center`}
           onClick={() => onPlaceClicked(place)}
         >
           <h6>{place.text_es}</h6>
@@ -53,10 +53,10 @@ export const SearchResults = () => {
             onClick={() => {
               getRout(place);
             }}
-            className={`btn btn-sm ${
+            className={`text-sm py-1 px-2 border rounded ${
               activeId === place.id
-                ? 'btn-outline-light'
-                : 'btn-outline-primary'
+                ? 'border-white text-white bg-transparent'
+                : 'border-blue-500 text-blue-500 bg-white hover:bg-blue-100'
             }`}
           >
             Direcciones

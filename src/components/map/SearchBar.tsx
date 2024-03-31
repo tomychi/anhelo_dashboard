@@ -33,7 +33,7 @@ export const SearchBar = () => {
       <input
         type="text"
         onChange={onQueryChanged}
-        className="form-control"
+        className="w-full px-4 py-3 border rounded-lg shadow-lg bg-white focus:outline-none focus:border-blue-500"
         placeholder="Buscar lugar..."
       />
       <SearchResults />

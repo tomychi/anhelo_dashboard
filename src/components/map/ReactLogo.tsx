@@ -9,7 +9,7 @@ export const ReactLogo = () => {
         position: 'fixed',
         bottom: '20px',
         right: '20px',
-        width: '130px',
+        width: '110px',
       }}
     />
   );

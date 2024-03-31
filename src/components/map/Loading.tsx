@@ -10,7 +10,7 @@ export const Loading = () => {
         top: '0',
         width: '100vw',
       }}
-      className="d-flex justify-content-center align-items-center"
+      className="flex justify-center items-center"
     >
       {' '}
       <div className="text-center">
