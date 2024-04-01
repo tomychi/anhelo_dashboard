@@ -7,18 +7,19 @@ import { PlacesContext } from '../';
 import { directionsApi } from '../../apis';
 import { DirectionsResponse } from '../../interfaces/directions';
 import { Feature } from '../../interfaces/places';
-import Swal from 'sweetalert2';
 
 export interface MapState {
   isMapReady: boolean;
   map?: Map;
   markers: Marker[];
+  info: { kms: number; minutes: number };
 }
 
 const INITIAL_STATE: MapState = {
   isMapReady: false,
   map: undefined,
   markers: [],
+  info: { kms: 0, minutes: 0 },
 };
 
 interface Props {
@@ -28,7 +29,6 @@ interface Props {
 export const MapProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(mapReducer, INITIAL_STATE);
   const { places, userLocation } = useContext(PlacesContext);
-
   const getRout = async (place: Feature) => {
     if (!userLocation) throw new Error('No hay ubicación del usuario');
     const [lng, lat] = place.center;
@@ -59,12 +59,8 @@ export const MapProvider = ({ children }: Props) => {
         markerElement.addEventListener('click', async () => {
           // Manejar el evento de clic
           try {
-            const { kms, minutes } = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
-            Swal.fire({
-              icon: 'success',
-              title: `${place.place_name_es.split(',')[0]}`,
-              text: `Hay ${kms}km se tarda ${minutes}m`,
-            });
+            const info = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
+            dispatch({ type: 'setInfoDireccion', payload: info });
           } catch (error) {
             console.error(error);
           }

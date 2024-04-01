@@ -4,6 +4,7 @@ import {
   ReactLogo,
   // SearchBar,
   ListOrderAddress,
+  InfoDireccion,
 } from '../components/map';
 
 export const HomeScreen = () => {
@@ -13,6 +14,10 @@ export const HomeScreen = () => {
       {/* Posicionamiento arriba a la derecha */}
       <div className="absolute top-2 right-2">
         <BtnMyLocation />
+      </div>
+      {/* Posicionamiento arriba al medio */}
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2">
+        <InfoDireccion />
       </div>
       {/* Posicionamiento abajo a la derecha */}
       <div className="absolute bottom-4 right-2">

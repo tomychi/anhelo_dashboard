@@ -1,3 +1,4 @@
+export { InfoDireccion } from './InfoDireccion';
 export { ListOrderAddress } from './ListOrderAddress';
 export { LoadingPlaces } from './LoadingPlaces';
 export { SearchResults } from './SearchResults';
