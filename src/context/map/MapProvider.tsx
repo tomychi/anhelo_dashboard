@@ -6,6 +6,8 @@ import { mapReducer } from './mapReducer';
 import { PlacesContext } from '../';
 import { directionsApi } from '../../apis';
 import { DirectionsResponse } from '../../interfaces/directions';
+import { Feature } from '../../interfaces/places';
+import Swal from 'sweetalert2';
 
 export interface MapState {
   isMapReady: boolean;
@@ -25,7 +27,14 @@ interface Props {
 
 export const MapProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(mapReducer, INITIAL_STATE);
-  const { places } = useContext(PlacesContext);
+  const { places, userLocation } = useContext(PlacesContext);
+
+  const getRout = async (place: Feature) => {
+    if (!userLocation) throw new Error('No hay ubicación del usuario');
+    const [lng, lat] = place.center;
+    const results = await getRouteBetweenPoints(userLocation, [lng, lat]);
+    return results;
+  };
 
   // eslint-disable-next-line
   useEffect(() => {
@@ -35,8 +44,8 @@ export const MapProvider = ({ children }: Props) => {
     for (const place of places) {
       const [lng, lat] = place.center;
       const popup = new Popup().setHTML(`
-                    <h6>${place.text_es}</h6>
-                    <p>${place.place_name_es}</p>
+              <p>${place.place_name_es.split(',')[0]}</p>
+
                 `);
 
       const newMarker = new Marker()
@@ -44,6 +53,23 @@ export const MapProvider = ({ children }: Props) => {
         .setLngLat([lng, lat])
         .addTo(state.map!);
 
+      const markerElement = newMarker.getElement(); // Obtener el elemento DOM del marcador
+
+      if (markerElement) {
+        markerElement.addEventListener('click', async () => {
+          // Manejar el evento de clic
+          try {
+            const { kms, minutes } = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
+            Swal.fire({
+              icon: 'success',
+              title: `${place.place_name_es.split(',')[0]}`,
+              text: `Hay ${kms}km se tarda ${minutes}m`,
+            });
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      }
       newMarkers.push(newMarker);
     }
 
@@ -57,7 +83,7 @@ export const MapProvider = ({ children }: Props) => {
                 `);
 
     new Marker({
-      color: '#61dafb',
+      color: '#FE0000',
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
       .setPopup(myLocationPopup)
@@ -84,7 +110,6 @@ export const MapProvider = ({ children }: Props) => {
     kms /= 100;
 
     const minutes = Math.floor(duration / 60);
-    console.log(`Hay ${kms}km. Se tarda ${minutes}m`);
 
     const bounds = new LngLatBounds([start[0], start[1]], [end[0], end[1]]);
 
@@ -136,6 +161,7 @@ export const MapProvider = ({ children }: Props) => {
         'line-width': 5,
       },
     });
+    return Promise.resolve({ kms, minutes });
   };
   return (
     <MapContext.Provider

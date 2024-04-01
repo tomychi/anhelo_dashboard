@@ -15,7 +15,7 @@ export interface PlacesState {
 
 const INITIAL_STATE: PlacesState = {
   isLoading: true,
-  userLocation: undefined,
+  userLocation: [-64.3337858210026, -33.0957943618745],
   isLoadingPlaces: false,
   places: [],
 };

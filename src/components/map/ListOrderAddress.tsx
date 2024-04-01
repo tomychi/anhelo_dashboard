@@ -1,23 +1,39 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { PlacesContext } from '../../context';
 import { SearchResults } from './SearchResults';
 import { Feature } from '../../interfaces/places';
 import { SearchBar } from './SearchBar';
+import { PedidoProps } from '../../types/types';
 
 export const ListOrderAddress = () => {
   const { orders } = useSelector((state: RootState) => state.data);
   const { searchPlacesByTerm } = useContext(PlacesContext);
   const [searchResults, setSearchResults] = useState<Feature[]>([]);
+  const [unmatchedOrders, setUnmatchedOrders] = useState<PedidoProps[]>([]);
 
-  const [selectedAddress, setSelectedAddress] = useState('');
-
-  const handleSearch = async (direccion: string) => {
-    setSelectedAddress(direccion);
-    const results = await searchPlacesByTerm(direccion);
-    setSearchResults(results);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let allResults: Feature[] = []; // Initialize an array to store all results
+        const unmatchedOrdersArray: PedidoProps[] = []; // Declare as const
+        for (const order of orders) {
+          const results = await searchPlacesByTerm(order.direccion);
+          if (results.length === 0) {
+            unmatchedOrdersArray.push(order); // Store the entire order object
+          } else {
+            allResults = [...allResults, ...results]; // Concatenate the results
+          }
+        }
+        setSearchResults(allResults); // Update the state with all results at once
+        setUnmatchedOrders(unmatchedOrdersArray); // Update the state with unmatched orders
+      } catch (error) {
+        console.error('Error al obtener la ubicación del usuario:', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div
@@ -28,41 +44,10 @@ export const ListOrderAddress = () => {
       }}
       className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
     >
-      <h2 className="text-lg font-semibold mb-2">Dirección de Pedido</h2>
-      {orders.map((order) => (
-        <div key={order.id} className="mb-4">
-          <div className="relative">
-            <div
-              className="bg-white rounded-lg shadow-md p-1 "
-              style={{ zIndex: 999 }}
-            >
-              <div className="bg-blue-500 text-white border border-gray-200 py-2 px-4 mb-2 flex justify-between items-center rounded">
-                <h3>{order.direccion}</h3>
-                <button
-                  onClick={() => handleSearch(order.direccion)}
-                  className="text-sm py-1 px-2 border rounded border-white text-white bg-transparent border-blue-500 text-blue-500 hover:bg-blue-100"
-                >
-                  Ver!
-                </button>
-              </div>
-              {selectedAddress === order.direccion && (
-                <div className="mt-2">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Resultados de Búsqueda
-                  </h3>
-                  {/* Renderiza los resultados de búsqueda aquí */}
-
-                  {searchResults.length === 0 ? (
-                    <SearchBar />
-                  ) : (
-                    <SearchResults />
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
+      {/* {unmatchedOrders.length > 0 &&
+        unmatchedOrders.map((s, index) => {
+          return <div key={`${s.id}-${index}`}>{s.direccion}</div>;
+        })} */}
     </div>
   );
 };
