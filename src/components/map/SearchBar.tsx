@@ -3,7 +3,7 @@ import { SearchResults } from '.';
 import { PlacesContext } from '../../context';
 
 export const SearchBar = () => {
-  const { searchPlacesByTerm } = useContext(PlacesContext);
+  const { searchPlacesByOrder } = useContext(PlacesContext);
 
   const debouneRef = useRef<NodeJS.Timeout>();
 
@@ -14,7 +14,7 @@ export const SearchBar = () => {
 
     debouneRef.current = setTimeout(() => {
       const query = event.target.value;
-      searchPlacesByTerm(query);
+      searchPlacesByOrder(query);
     }, 350);
   };
   return (

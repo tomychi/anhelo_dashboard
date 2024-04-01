@@ -18,6 +18,7 @@ export const MapView = () => {
         center: userLocation,
         zoom: 14,
       });
+
       setMap(map);
     }
   }, [isLoading]);

@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { useContext, useEffect, useState } from 'react';
 import { PlacesContext } from '../../context';
-import { SearchResults } from './SearchResults';
 import { Feature } from '../../interfaces/places';
 import { SearchBar } from './SearchBar';
 import { PedidoProps } from '../../types/types';
@@ -10,8 +9,13 @@ import { PedidoProps } from '../../types/types';
 export const ListOrderAddress = () => {
   const { orders } = useSelector((state: RootState) => state.data);
   const { searchPlacesByTerm } = useContext(PlacesContext);
-  const [searchResults, setSearchResults] = useState<Feature[]>([]);
+  const [, setSearchResults] = useState<Feature[]>([]);
   const [unmatchedOrders, setUnmatchedOrders] = useState<PedidoProps[]>([]);
+
+  // Array de estados para controlar la visibilidad del SearchBar para cada componente
+  const [showSearchBarArray, setShowSearchBarArray] = useState(
+    unmatchedOrders.map(() => false)
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +39,13 @@ export const ListOrderAddress = () => {
     fetchData();
   }, []);
 
+  const toggleSearchBar = (index: number) => {
+    const newShowSearchBarArray = unmatchedOrders.map((order, i) =>
+      i === index ? !showSearchBarArray[i] : false
+    );
+    setShowSearchBarArray(newShowSearchBarArray);
+  };
+
   return (
     <div
       style={{
@@ -44,10 +55,20 @@ export const ListOrderAddress = () => {
       }}
       className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
     >
-      {/* {unmatchedOrders.length > 0 &&
-        unmatchedOrders.map((s, index) => {
-          return <div key={`${s.id}-${index}`}>{s.direccion}</div>;
-        })} */}
+      {unmatchedOrders.map((s, index) => {
+        return (
+          <div key={`${s.id}-${index}`}>
+            <b>{s.direccion}</b>
+            <div
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => toggleSearchBar(index)}
+            >
+              Ver!
+            </div>
+            {showSearchBarArray[index] && <SearchBar />}
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -10,14 +10,18 @@ export interface PlacesState {
   isLoading: boolean;
   userLocation?: [number, number];
   isLoadingPlaces: boolean;
+  isLoadingPlacesOrder: boolean;
   places: Feature[];
+  placesOrder: Feature[];
 }
 
 const INITIAL_STATE: PlacesState = {
   isLoading: true,
   userLocation: [-64.3337858210026, -33.0957943618745],
   isLoadingPlaces: false,
+  isLoadingPlacesOrder: false,
   places: [],
+  placesOrder: [],
 };
 
 interface Props {
@@ -51,6 +55,24 @@ export const PlacesProvider = ({ children }: Props) => {
     return resp.data.features;
   };
 
+  const searchPlacesByOrder = async (query: string): Promise<Feature[]> => {
+    if (query.length === 0) {
+      dispatch({ type: 'setPlacesOrder', payload: [] });
+      return [];
+    }
+    if (!state.userLocation) throw new Error('No hay ubicacion del usuario');
+
+    dispatch({ type: 'setLoadingPlacesOrder' });
+
+    const resp = await searchApi.get<PlacesResponse>(`/${query}.json`, {
+      params: {
+        proximity: state.userLocation.join(','),
+      },
+    });
+    dispatch({ type: 'setPlacesOrder', payload: resp.data.features });
+    return resp.data.features;
+  };
+
   return (
     <PlacesContext.Provider
       value={{
@@ -58,6 +80,7 @@ export const PlacesProvider = ({ children }: Props) => {
 
         // methods
         searchPlacesByTerm,
+        searchPlacesByOrder,
       }}
     >
       {children}

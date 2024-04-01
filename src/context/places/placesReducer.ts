@@ -4,7 +4,10 @@ import { Feature } from '../../interfaces/places';
 type PlacesAction =
   | { type: 'setUserLocation'; payload: [number, number] }
   | { type: 'setLoadingPlaces' }
-  | { type: 'setPlaces'; payload: Feature[] };
+  | { type: 'setPlaces'; payload: Feature[] }
+  | { type: 'setLoadingPlacesOrder' }
+  | { type: 'setPlacesOrder'; payload: Feature[] };
+
 export const placesReducer = (
   state: PlacesState,
   action: PlacesAction
@@ -27,6 +30,19 @@ export const placesReducer = (
         ...state,
         isLoading: false,
         places: [...state.places, ...action.payload],
+      };
+
+    case 'setLoadingPlacesOrder':
+      return {
+        ...state,
+        isLoading: true,
+        placesOrder: [],
+      };
+    case 'setPlacesOrder':
+      return {
+        ...state,
+        isLoading: false,
+        placesOrder: action.payload,
       };
     default:
       return state;

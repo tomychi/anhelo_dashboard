@@ -4,7 +4,8 @@ import { MapContext, PlacesContext } from '../../context';
 import { Feature } from '../../interfaces/places';
 
 export const SearchResults = () => {
-  const { places, isLoadingPlaces, userLocation } = useContext(PlacesContext);
+  const { placesOrder, isLoadingPlacesOrder, userLocation } =
+    useContext(PlacesContext);
   const { map, getRouteBetweenPoints } = useContext(MapContext);
 
   const [activeId, setActiveId] = useState('');
@@ -24,16 +25,16 @@ export const SearchResults = () => {
     getRouteBetweenPoints(userLocation, [lng, lat]);
   };
 
-  if (isLoadingPlaces) {
+  if (isLoadingPlacesOrder) {
     return <LoadingPlaces />;
   }
-  if (places.length === 0) {
+  if (placesOrder.length === 0) {
     return <></>;
   }
 
   return (
     <ul className="mt-3">
-      {places.map((place) => (
+      {placesOrder.map((place) => (
         <li
           key={place.id}
           className={`cursor-pointer ${
@@ -48,7 +49,6 @@ export const SearchResults = () => {
             }}
           >
             {place.place_name.split(',')[0]},{' '}
-            {place.place_name.split(',')[1].trim()}
           </p>
           <button
             onClick={() => {
