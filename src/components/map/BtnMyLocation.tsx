@@ -20,9 +20,6 @@ export const BtnMyLocation = () => {
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       onClick={onClick}
       style={{
-        position: 'fixed',
-        top: '60px',
-        right: '20px',
         zIndex: 999,
       }}
     >

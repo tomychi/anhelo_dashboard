@@ -6,10 +6,7 @@ export const ReactLogo = () => {
       src={anheloLogo}
       alt="React Logo"
       style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        width: '110px',
+        width: '70px',
       }}
     />
   );

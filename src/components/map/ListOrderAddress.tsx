@@ -21,54 +21,48 @@ export const ListOrderAddress = () => {
 
   return (
     <div
-      className=""
       style={{
-        position: 'fixed',
-        top: '50px',
-        left: '25px',
-        zIndex: 999,
+        height: '90vh',
+        left: 0,
+        top: 0,
       }}
+      className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
     >
-      <div
-        className="absolute top-4 left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
-        style={{ zIndex: 999 }}
-      >
-        <h2 className="text-lg font-semibold mb-2">Dirección de Pedido</h2>
-        {orders.map((order) => (
-          <div key={order.id} className="mb-4">
-            <div className="relative">
-              <div
-                className="bg-white rounded-lg shadow-md p-1 overflow-y-auto"
-                style={{ zIndex: 999 }}
-              >
-                <div className="bg-blue-500 text-white border border-gray-200 py-2 px-4 mb-2 flex justify-between items-center rounded">
-                  <h3>{order.direccion}</h3>
-                  <button
-                    onClick={() => handleSearch(order.direccion)}
-                    className="text-sm py-1 px-2 border rounded border-white text-white bg-transparent border-blue-500 text-blue-500 hover:bg-blue-100"
-                  >
-                    Ver!
-                  </button>
-                </div>
-                {selectedAddress === order.direccion && (
-                  <div className="mt-2">
-                    <h3 className="text-lg font-semibold mb-2">
-                      Resultados de Búsqueda
-                    </h3>
-                    {/* Renderiza los resultados de búsqueda aquí */}
-
-                    {searchResults.length === 0 ? (
-                      <SearchBar />
-                    ) : (
-                      <SearchResults />
-                    )}
-                  </div>
-                )}
+      <h2 className="text-lg font-semibold mb-2">Dirección de Pedido</h2>
+      {orders.map((order) => (
+        <div key={order.id} className="mb-4">
+          <div className="relative">
+            <div
+              className="bg-white rounded-lg shadow-md p-1 "
+              style={{ zIndex: 999 }}
+            >
+              <div className="bg-blue-500 text-white border border-gray-200 py-2 px-4 mb-2 flex justify-between items-center rounded">
+                <h3>{order.direccion}</h3>
+                <button
+                  onClick={() => handleSearch(order.direccion)}
+                  className="text-sm py-1 px-2 border rounded border-white text-white bg-transparent border-blue-500 text-blue-500 hover:bg-blue-100"
+                >
+                  Ver!
+                </button>
               </div>
+              {selectedAddress === order.direccion && (
+                <div className="mt-2">
+                  <h3 className="text-lg font-semibold mb-2">
+                    Resultados de Búsqueda
+                  </h3>
+                  {/* Renderiza los resultados de búsqueda aquí */}
+
+                  {searchResults.length === 0 ? (
+                    <SearchBar />
+                  ) : (
+                    <SearchResults />
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 };

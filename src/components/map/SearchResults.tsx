@@ -41,13 +41,14 @@ export const SearchResults = () => {
           } border border-gray-200 py-2 px-4 flex justify-between items-center`}
           onClick={() => onPlaceClicked(place)}
         >
-          <h6>{place.text_es}</h6>
+          {/* <h6>{place.text_es}</h6> */}
           <p
             style={{
               fontSize: '12px',
             }}
           >
-            {place.place_name}
+            {place.place_name.split(',')[0]},{' '}
+            {place.place_name.split(',')[1].trim()}
           </p>
           <button
             onClick={() => {

@@ -243,7 +243,9 @@ export const Comandera = () => {
     (orders.filter((order) => order.dislike || order.delay).length * 100) /
       orders.length;
   return (
-    <div className="p-4 bg-black min-h-screen">
+    <div className="grid grid-cols-1 grid-rows-2">
+      <div></div>
+      <div></div>
       <div className="flex font-antonio gap-4 mb-4">
         <button
           className={`p-4 ${
@@ -286,7 +288,7 @@ export const Comandera = () => {
           Mapa
         </button>
       </div>
-      <div className="">
+      <div className="row-start-4">
         {seccionActiva !== 'mapa' && (
           <>
             <GeneralStats
@@ -310,9 +312,8 @@ export const Comandera = () => {
             />
           </>
         )}
-
-        {seccionActiva === 'mapa' && <MapsApp />}
       </div>
+      <div>{seccionActiva === 'mapa' && <MapsApp />}</div>
     </div>
   );
 };
