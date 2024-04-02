@@ -7,7 +7,6 @@ import { PlacesContext } from '../';
 import { directionsApi } from '../../apis';
 import { DirectionsResponse } from '../../interfaces/directions';
 import { Feature } from '../../interfaces/places';
-import Swal from 'sweetalert2';
 
 export interface MapState {
   isMapReady: boolean;
@@ -43,12 +42,10 @@ export const MapProvider = ({ children }: Props) => {
 
     for (const place of places) {
       const [lng, lat] = place.center;
-      const popup = new Popup().setHTML(`
-              <p>${place.place_name_es.split(',')[0]}</p>
-
-                `);
-
-      const newMarker = new Marker()
+      const popup = new Popup();
+      const newMarker = new Marker({
+        color: '#ff0011',
+      })
         .setPopup(popup)
         .setLngLat([lng, lat])
         .addTo(state.map!);
@@ -59,12 +56,12 @@ export const MapProvider = ({ children }: Props) => {
         markerElement.addEventListener('click', async () => {
           // Manejar el evento de clic
           try {
-            const { kms, minutes } = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
-            Swal.fire({
-              icon: 'success',
-              title: `${place.place_name_es.split(',')[0]}`,
-              text: `Hay ${kms}km se tarda ${minutes}m`,
-            });
+            const info = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
+            popup.setHTML(`
+            <p>${place.place_name_es.split(',')[0]}</p>
+            <p>Hay: ${info.kms} km</p>
+            <p>Tarda: ${info.minutes} m</p>
+              `);
           } catch (error) {
             console.error(error);
           }
@@ -83,7 +80,7 @@ export const MapProvider = ({ children }: Props) => {
                 `);
 
     new Marker({
-      color: '#FE0000',
+      color: '#00ff11',
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
       .setPopup(myLocationPopup)

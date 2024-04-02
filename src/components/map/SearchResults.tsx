@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { LoadingPlaces } from './';
 import { MapContext, PlacesContext } from '../../context';
 import { Feature } from '../../interfaces/places';
+import { Marker, Popup } from 'mapbox-gl';
 
 export const SearchResults = () => {
   const { placesOrder, isLoadingPlacesOrder, userLocation } =
@@ -19,10 +20,42 @@ export const SearchResults = () => {
     });
   };
 
-  const getRout = (place: Feature) => {
+  const getRout = async (place: Feature) => {
     if (!userLocation) throw new Error('No hay ubicación del usuario');
     const [lng, lat] = place.center;
-    getRouteBetweenPoints(userLocation, [lng, lat]);
+    const info = await getRouteBetweenPoints(userLocation, [lng, lat]);
+
+    const popup = new Popup().setHTML(`
+    <p>Hay: ${info.kms} km</p>
+    <p>Tarda: ${info.minutes} m</p>
+    <p>${place.place_name_es.split(',')[0]}</p>
+
+      `);
+
+    const newMarker = new Marker({
+      color: '#0011ff',
+    })
+      .setPopup(popup)
+      .setLngLat([lng, lat])
+      .addTo(map!);
+
+    const markerElement = newMarker.getElement(); // Obtener el elemento DOM del marcador
+
+    if (markerElement) {
+      markerElement.addEventListener('click', async () => {
+        // Manejar el evento de clic
+        try {
+          const info = await getRouteBetweenPoints(userLocation, [lng, lat]); // Llamar a la función getRout con el lugar seleccionado
+          popup.setHTML(`
+            <p>${place.place_name_es.split(',')[0]}</p>
+            <p>Hay: ${info.kms} km</p>
+            <p>Tarda: ${info.minutes} m</p>
+              `);
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    }
   };
 
   if (isLoadingPlacesOrder) {
