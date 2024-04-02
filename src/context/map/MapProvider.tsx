@@ -12,14 +12,12 @@ export interface MapState {
   isMapReady: boolean;
   map?: Map;
   markers: Marker[];
-  info: { kms: number; minutes: number };
 }
 
 const INITIAL_STATE: MapState = {
   isMapReady: false,
   map: undefined,
   markers: [],
-  info: { kms: 0, minutes: 0 },
 };
 
 interface Props {
@@ -44,11 +42,7 @@ export const MapProvider = ({ children }: Props) => {
 
     for (const place of places) {
       const [lng, lat] = place.center;
-      const popup = new Popup().setHTML(`
-              <p>${place.place_name_es.split(',')[0]}</p>
-
-                `);
-
+      const popup = new Popup();
       const newMarker = new Marker({
         color: '#ff0011',
       })
@@ -63,7 +57,11 @@ export const MapProvider = ({ children }: Props) => {
           // Manejar el evento de clic
           try {
             const info = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
-            dispatch({ type: 'setInfoDireccion', payload: info });
+            popup.setHTML(`
+            <p>${place.place_name_es.split(',')[0]}</p>
+            <p>Hay: ${info.kms} km</p>
+            <p>Tarda: ${info.minutes} m</p>
+              `);
           } catch (error) {
             console.error(error);
           }

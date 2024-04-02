@@ -3,8 +3,7 @@ import { Map, Marker } from 'mapbox-gl';
 
 type MapAction =
   | { type: 'setMap'; payload: Map }
-  | { type: 'setMarkers'; payload: Marker[] }
-  | { type: 'setInfoDireccion'; payload: { kms: number; minutes: number } };
+  | { type: 'setMarkers'; payload: Marker[] };
 
 export const mapReducer = (state: MapState, action: MapAction): MapState => {
   switch (action.type) {
@@ -19,12 +18,6 @@ export const mapReducer = (state: MapState, action: MapAction): MapState => {
       return {
         ...state,
         markers: action.payload,
-      };
-
-    case 'setInfoDireccion':
-      return {
-        ...state,
-        info: action.payload,
       };
 
     default:
