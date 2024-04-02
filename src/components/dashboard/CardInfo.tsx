@@ -16,7 +16,12 @@ export const CardInfo = ({
 	svgComponent,
 }: CardInfoProps) => {
 	return (
-		<div className="flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative">
+		<NavLink
+			to={link ? `/${link}` : ""}
+			className={`flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative ${
+				!link && "cursor-default"
+			}`}
+		>
 			{/* Recuadro chiquito arriba a la derecha */}
 			{cuadrito && (
 				<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
@@ -30,17 +35,8 @@ export const CardInfo = ({
 				<div className="flex flex-col">{svgComponent}</div>
 				{/* Puedes cambiar el ícono según tus necesidades */}
 			</div>
-			{link ? (
-				<NavLink to={`/${link}`} className="w-full h-full">
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">{info}</p>
-					<p className="text-sm mt-auto uppercase">{title}</p>
-				</NavLink>
-			) : (
-				<>
-					<p className=" text-4xl pt-8 pb-4 font-bold mt-auto">{info}</p>
-					<p className="text-sm mt-auto uppercase">{title}</p>
-				</>
-			)}
-		</div>
+			<p className="text-4xl pt-8 pb-4 font-bold mt-auto">{info}</p>
+			<p className="text-sm mt-auto uppercase">{title}</p>
+		</NavLink>
 	);
 };

@@ -192,7 +192,7 @@ export const Dashboard = () => {
 					info={`${Math.ceil(
 						100 - (contarPedidosDemorados(orders) * 100) / orders.length
 					)}%`}
-					title={"CUSTOMER SUCCESS"}
+					title={"CLIENTES ATENDIDOS EXITOSAMENTE"}
 					svgComponent={<CustomerSuccessSVG />}
 				/>
 				<CardInfo
@@ -217,7 +217,7 @@ export const Dashboard = () => {
 
 				<CardInfo
 					info={currencyFormat((200000 + 180000 + 180000) / orders.length)}
-					title={"Customer Acquisition Cost"}
+					title={"COSTO DE ADQUISICION DE CLIENTES"}
 					svgComponent={<TicketPromedioSVG />}
 				/>
 				<CardInfo
