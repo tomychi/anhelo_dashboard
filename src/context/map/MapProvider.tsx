@@ -29,6 +29,7 @@ interface Props {
 export const MapProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(mapReducer, INITIAL_STATE);
   const { places, userLocation } = useContext(PlacesContext);
+
   const getRout = async (place: Feature) => {
     if (!userLocation) throw new Error('No hay ubicación del usuario');
     const [lng, lat] = place.center;
@@ -48,7 +49,9 @@ export const MapProvider = ({ children }: Props) => {
 
                 `);
 
-      const newMarker = new Marker()
+      const newMarker = new Marker({
+        color: '#ff0011',
+      })
         .setPopup(popup)
         .setLngLat([lng, lat])
         .addTo(state.map!);
@@ -79,7 +82,7 @@ export const MapProvider = ({ children }: Props) => {
                 `);
 
     new Marker({
-      color: '#FE0000',
+      color: '#00ff11',
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
       .setPopup(myLocationPopup)

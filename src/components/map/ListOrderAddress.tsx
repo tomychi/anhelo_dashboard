@@ -121,6 +121,7 @@ export const ListOrderAddress = () => {
             </button>
           )}
           {unmatchedOrders.map((s, index) => {
+            const isSelected = selectedAddress[s.id] !== undefined; // Verifica si la dirección está en selectedAddress
             return (
               <div key={`${s.id}-${index}`} className="">
                 <div>{s.direccion}</div>
@@ -130,12 +131,15 @@ export const ListOrderAddress = () => {
                 >
                   Marcar!
                 </div>
-                <input
-                  value={selectedAddress[s.id]?.address || ''}
-                  type="text"
-                  id={s.id}
-                  onChange={(e) => handleChange(e.target.value, s.id)} // Agrega un controlador onChange
-                />{' '}
+                {/* Muestra el input solo si la dirección está en selectedAddress */}
+                {isSelected && (
+                  <input
+                    value={selectedAddress[s.id].address || ''}
+                    type="text"
+                    id={s.id}
+                    onChange={(e) => handleChange(e.target.value, s.id)}
+                  />
+                )}
                 {/* Usa el índice para acceder a la dirección correspondiente */}
                 {/* {showSearchBarArray[index] && <SearchBar />} */}
               </div>

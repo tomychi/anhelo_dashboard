@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { LoadingPlaces } from './';
 import { MapContext, PlacesContext } from '../../context';
 import { Feature } from '../../interfaces/places';
+import { Marker, Popup } from 'mapbox-gl';
 
 export const SearchResults = () => {
   const { placesOrder, isLoadingPlacesOrder, userLocation } =
@@ -23,6 +24,17 @@ export const SearchResults = () => {
     if (!userLocation) throw new Error('No hay ubicación del usuario');
     const [lng, lat] = place.center;
     getRouteBetweenPoints(userLocation, [lng, lat]);
+    const popup = new Popup().setHTML(`
+    <p>${place.place_name_es.split(',')[0]}</p>
+
+      `);
+
+    new Marker({
+      color: '#0011ff',
+    })
+      .setPopup(popup)
+      .setLngLat([lng, lat])
+      .addTo(map!);
   };
 
   if (isLoadingPlacesOrder) {
