@@ -1,21 +1,28 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { useContext, useEffect, useState } from 'react';
-import { PlacesContext } from '../../context';
+import { MapContext, PlacesContext } from '../../context';
 import { Feature } from '../../interfaces/places';
-import { SearchBar } from './SearchBar';
 import { PedidoProps } from '../../types/types';
+import { mapClickFn } from '../../apis/locationPickerApi';
+import mapboxgl from 'mapbox-gl';
+import { handleAddressSave } from '../../firebase/UploadOrder';
+
+interface SelectedAddress {
+  address: string;
+  id: string;
+  fecha: string;
+}
 
 export const ListOrderAddress = () => {
   const { orders } = useSelector((state: RootState) => state.data);
   const { searchPlacesByTerm } = useContext(PlacesContext);
   const [, setSearchResults] = useState<Feature[]>([]);
   const [unmatchedOrders, setUnmatchedOrders] = useState<PedidoProps[]>([]);
-
-  // Array de estados para controlar la visibilidad del SearchBar para cada componente
-  const [showSearchBarArray, setShowSearchBarArray] = useState(
-    unmatchedOrders.map(() => false)
-  );
+  const { map } = useContext(MapContext);
+  const [selectedAddress, setSelectedAddress] = useState<{
+    [key: string]: SelectedAddress;
+  }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,36 +46,103 @@ export const ListOrderAddress = () => {
     fetchData();
   }, []);
 
-  const toggleSearchBar = (index: number) => {
-    const newShowSearchBarArray = unmatchedOrders.map((order, i) =>
-      i === index ? !showSearchBarArray[i] : false
-    );
-    setShowSearchBarArray(newShowSearchBarArray);
+  const changeAddress = async () => {
+    try {
+      const updatePromises: Promise<void>[] = [];
+
+      // Iterar sobre cada elemento de selectedAddress
+      for (const id in selectedAddress) {
+        const { fecha, address } = selectedAddress[id];
+        console.log(fecha, address);
+        if (address.trim() !== '') {
+          // Verificar si la dirección no está vacía
+          updatePromises.push(handleAddressSave(fecha, id, address));
+        }
+      }
+
+      await Promise.all(updatePromises);
+      console.log('Direcciones de pedidos actualizadas correctamente.');
+    } catch (error) {
+      console.error('Error al actualizar direcciones de pedidos:', error);
+    }
+  };
+
+  const handleClick = async (id: string, fecha: string) => {
+    let marker: mapboxgl.Marker;
+    const clickHandler = async (e: mapboxgl.MapMouseEvent) => {
+      try {
+        const newAddress = await mapClickFn(e.lngLat);
+        setSelectedAddress((prevState) => {
+          return {
+            ...prevState,
+            [id]: { ...prevState[id], address: newAddress, fecha },
+          };
+        });
+        if (marker == null) {
+          marker = new mapboxgl.Marker({
+            color: '#00ff00',
+          })
+            .setLngLat(e.lngLat)
+            .addTo(map!);
+        } else {
+          marker.setLngLat(e.lngLat);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    map?.once('click', clickHandler); // Suscribirse al evento de clic una vez
+  };
+
+  const handleChange = (newValue: string, id: string) => {
+    setSelectedAddress((prevState) => {
+      return { ...prevState, [id]: { ...prevState[id], address: newValue } };
+    });
   };
 
   return (
-    <div
-      style={{
-        height: '90vh',
-        left: 0,
-        top: 0,
-      }}
-      className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
-    >
-      {unmatchedOrders.map((s, index) => {
-        return (
-          <div key={`${s.id}-${index}`}>
-            <b>{s.direccion}</b>
-            <div
+    <div>
+      {unmatchedOrders.length === 0 ? null : (
+        <div
+          style={{
+            height: '90vh',
+            left: 0,
+            top: 0,
+          }}
+          className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
+        >
+          {Object.keys(selectedAddress).length > 0 && (
+            <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => toggleSearchBar(index)}
+              onClick={() => changeAddress()}
             >
-              Ver!
-            </div>
-            {showSearchBarArray[index] && <SearchBar />}
-          </div>
-        );
-      })}
+              Cambiar
+            </button>
+          )}
+          {unmatchedOrders.map((s, index) => {
+            return (
+              <div key={`${s.id}-${index}`} className="">
+                <div>{s.direccion}</div>
+                <div
+                  onClick={() => handleClick(s.id, s.fecha)} // Pasa el índice como argumento aquí
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Marcar!
+                </div>
+                <input
+                  value={selectedAddress[s.id]?.address || ''}
+                  type="text"
+                  id={s.id}
+                  onChange={(e) => handleChange(e.target.value, s.id)} // Agrega un controlador onChange
+                />{' '}
+                {/* Usa el índice para acceder a la dirección correspondiente */}
+                {/* {showSearchBarArray[index] && <SearchBar />} */}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
