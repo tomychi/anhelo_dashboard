@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "locations": [
+    {
+      "name": "Hat Club",
+      "coordinates": [-73.99566831245832, 40.72724507379965]
+    },
+    {
+      "name": "109th Street",
+      "coordinates": [-73.83597003588466, 40.68956385162866]
+    },
+    {
+      "name": "Frame Place",
+      "coordinates": [-73.82881164550781, 40.75557964275589]
+    },
+    {
+      "name": "Hillside Avenue",
+      "coordinates": [-73.79948039003885, 40.70855655680194]
+    },
+    {
+      "name": "North Conduit Avenue",
+      "coordinates": [-73.76930069877065, 40.66771807000583]
+    }
+  ],
+  "vehicles": [
+    {
+      "name": "0",
+      "start_location": "Hat Club",
+      "end_location": "Hat Club",
+      "capacities": { "boxes": 2 },
+      "earliest_start": "2024-04-02T08:00:00Z",
+      "latest_end": "2024-04-02T12:00:00Z"
+    },
+    {
+      "name": "1",
+      "start_location": "Hat Club",
+      "end_location": "Hat Club",
+      "capacities": { "boxes": 2 },
+      "earliest_start": "2024-04-02T08:00:00Z",
+      "latest_end": "2024-04-02T12:00:00Z"
+    }
+  ],
+  "shipments": [
+    {
+      "name": "0",
+      "from": "Hat Club",
+      "to": "109th Street",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "1",
+      "from": "Hat Club",
+      "to": "Frame Place",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "2",
+      "from": "Hat Club",
+      "to": "Hillside Avenue",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "3",
+      "from": "Hat Club",
+      "to": "North Conduit Avenue",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "4",
+      "from": "Hat Club",
+      "to": "109th Street",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "5",
+      "from": "Hat Club",
+      "to": "Frame Place",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "6",
+      "from": "Hat Club",
+      "to": "Hillside Avenue",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    },
+    {
+      "name": "7",
+      "from": "Hat Club",
+      "to": "North Conduit Avenue",
+      "size": { "boxes": 1 },
+      "pickup_duration": 10,
+      "dropoff_duration": 10
+    }
+  ]
+}
