@@ -70,7 +70,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const location = useLocation();
   const isVentasPage = location.pathname.includes('ventas');
-
   useEffect(() => {
     const getCadetes = async () => {
       const cade = await readCadetes();
@@ -267,10 +266,22 @@ export const Card = ({ comanda }: ComandaRareProps) => {
                   {telefono}
                 </a>
               </p>
-              <p className="text-base">Método de pago: {metodoPago}</p>
-              <p className="text-lg font-black">
-                MONTO: {currencyFormat(total)}
-              </p>
+              <div>
+                <p className="text-base">Método de pago: {metodoPago}</p>
+                {user.email === 'cadetes@anhelo.com' ? (
+                  metodoPago === 'efectivo' ? (
+                    <p className="text-lg font-black">
+                      MONTO: {currencyFormat(total)}
+                    </p>
+                  ) : (
+                    <p className="text-lg font-black">MONTO: Pagado</p>
+                  )
+                ) : (
+                  <p className="text-lg font-black">
+                    MONTO: {currencyFormat(total)}
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>
