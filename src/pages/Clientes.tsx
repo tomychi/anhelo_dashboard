@@ -186,29 +186,29 @@ export const Clientes = () => {
 	return (
 		<div className="p-4 font-antonio">
 			<div className="flex flex-row gap-4 mb-4">
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					BASE DE CLIENTES ALL TIME: {cantidadNumerosTelefono}
 				</div>
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					PEDIDOS POR CLIENTE: {""}
 					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					COSTO DE ADQUISICION DE CLIENTES: ${cac}
 				</div>
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					COSTO DE OPERACIONES: ${costoDeOperaciones.toFixed(2)}
 				</div>
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					BRUTO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
 					{brutoReportedBeforeDie.toFixed(2)}
 				</div>
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					NETO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
 					{netoReportedBeforeDie.toFixed(2)}
 				</div>
 
-				<div className="bg-custom-red p-4 font-black">
+				<div className="bg-custom-red h-min p-4 font-black">
 					RENTABILIDAD FINAL POR CLIENTE: $
 					{rentabilidadPromedioFinal.toFixed(2)}
 				</div>
