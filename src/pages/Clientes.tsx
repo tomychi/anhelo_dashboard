@@ -166,16 +166,13 @@ export const Clientes = () => {
 								</td>
 							</tr>
 							{selectedPhoneNumber === t.telefono && (
-								<tr>
-									<td
-										colSpan={1}
-										className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-									>
+								<div className=" pt-4">
+									<div className="flex flex-row">
 										{pedidosByPhone?.map((p) => (
 											<CardOrderCliente p={p} />
 										))}
-									</td>
-								</tr>
+									</div>
+								</div>
 							)}
 						</React.Fragment>
 					))}
