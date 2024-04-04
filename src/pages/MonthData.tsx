@@ -49,13 +49,6 @@ export const MonthData = () => {
 		{}
 	);
 
-	console.log(
-		"Gastos por categoría (excluyendo ciertas categorías y nombres):",
-		gastosPorCategoria
-	);
-
-	console.log("Gastos por categoría:", gastosPorCategoria);
-
 	// Calcular el balance mensual (neto - gastos)
 	const balanceMensual = neto - totalGastos;
 	const balanceMensualPorcentaje = (balanceMensual * 100) / neto;
