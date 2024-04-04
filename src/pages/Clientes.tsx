@@ -101,7 +101,10 @@ export const Clientes = () => {
 						<th scope="col" className="px-6 py-3">
 							Teléfonos
 						</th>
-						<th scope="col" className="px-6 py-3">
+						<th
+							scope="col"
+							className="px-4 py-3  text-black text-right whitespace-nowrap"
+						>
 							Cantidad de Pedidos
 							<button
 								className="ml-2 text-xs text-black border-black border-2 hover:text-custom-red hover:bg-black"
@@ -140,7 +143,7 @@ export const Clientes = () => {
 								)}
 							</button>
 						</th>
-						<th scope="col" className="px-6 py-3"></th>
+						<th scope="col" className="px-4  py-3"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -150,10 +153,10 @@ export const Clientes = () => {
 								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
 									{t.telefono}
 								</td>
-								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
+								<td className="px-4 py-4 font-black text-custom-red text-right whitespace-nowrap">
 									{getCantidadPedidos(t.telefono)}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+								<td className="px-4 py-4 font-black text-custom-red text-right whitespace-nowrap">
 									<button
 										className="font-black border border-red-main text-custom-red hover:underline px-1 uppercase"
 										onClick={() => handlePhoneNumberClick(t.telefono)}
