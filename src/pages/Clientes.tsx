@@ -12,7 +12,6 @@ export const Clientes = () => {
 	const { orders, telefonos, expenseData, facturacionTotal } = useSelector(
 		(state: RootState) => state.data
 	);
-	//Aca traigo la data de lo que gastamos en marketing
 
 	const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
 		null
@@ -63,22 +62,49 @@ export const Clientes = () => {
 	//Base de clientes
 	const cantidadNumerosTelefono = telefonos.length;
 
-	// Filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING"
-	const inversionMarketing = expenseData.filter(
-		(item) =>
-			item.category === "Sueldos" &&
-			(item.name === "SUELDO FIJO MARKETING" ||
-				item.name === "SUELDO VARIABLE MARKETING")
-	);
+	//Aca traigo la data de lo que gastamos en marketing
+	// Función para filtrar los elementos de expenseData cuya propiedad category sea "Ads" y sumar el valor de la propiedad 'total'
+	const calcularTotalAds = () => {
+		// Filtrar los elementos de expenseData cuya propiedad category sea "Ads"
+		const expenseDataAds = expenseData.filter(
+			(item) => item.category === "Ads"
+		);
 
-	// Sumar la propiedad "Total" de los objetos filtrados
-	const totalInversionMarketing = inversionMarketing.reduce(
-		(total, item) => total + item.total,
-		0
-	);
+		// Sumar el valor de la propiedad 'total' de cada elemento en expenseDataAds
+		const totalAds = expenseDataAds.reduce(
+			(total, item) => total + item.total,
+			0
+		);
+
+		return totalAds;
+	};
+
+	// Función para filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING" y sumar la propiedad "Total"
+	const calcularTotalInversionMarketing = () => {
+		// Filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING"
+		const inversionMarketing = expenseData.filter(
+			(item) =>
+				item.category === "Sueldos" &&
+				(item.name === "SUELDO FIJO MARKETING" ||
+					item.name === "SUELDO VARIABLE MARKETING")
+		);
+
+		// Sumar la propiedad "Total" de los objetos filtrados
+		const totalInversionMarketing = inversionMarketing.reduce(
+			(total, item) => total + item.total,
+			0
+		);
+
+		return totalInversionMarketing;
+	};
 
 	//CAC
-	const cac = parseFloat((totalInversionMarketing / orders.length).toFixed(2));
+	const cac = parseFloat(
+		(
+			(calcularTotalAds() + calcularTotalInversionMarketing()) /
+			orders.length
+		).toFixed(2)
+	);
 
 	//Life time value averague section
 
