@@ -104,7 +104,8 @@ export const Clientes = () => {
 		).toFixed(2)
 	);
 
-	const ticketPromedio = facturacionTotal / orders.length;
+	const ticketBrutoPromedio = facturacionTotal / orders.length;
+	const ticketNetoPromedio = neto / orders.length;
 
 	//Life time value averague section
 
@@ -152,7 +153,10 @@ export const Clientes = () => {
 	// Llamar a la función para obtener el promedio de pedidos por número de teléfono
 	const promedioPedidosPorTelefono = calcularPromedioPedidosPorTelefono();
 
-	const benefitReportesBeforeDie = ticketPromedio * promedioPedidosPorTelefono;
+	const brutoReportedBeforeDie =
+		ticketBrutoPromedio * promedioPedidosPorTelefono;
+
+	const netoReportedBeforeDie = ticketNetoPromedio * promedioPedidosPorTelefono;
 
 	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
 
@@ -176,6 +180,8 @@ export const Clientes = () => {
 	const balanceMensual = neto - totalGastos;
 	const rentabilidadPromedioFinal =
 		(balanceMensual / orders.length) * promedioPedidosPorTelefono;
+
+	const costoDeOperaciones = ticketNetoPromedio - rentabilidadPromedioFinal;
 
 	return (
 		<div className="p-4 font-antonio">
@@ -216,15 +222,23 @@ export const Clientes = () => {
 					COSTO DE ADQUISICION DE CLIENTES: ${cac}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					PROMEDIO PEDIDOS POR CLIENTE: {""}
+					COSTO DE OPERACIONES: ${costoDeOperaciones}
+				</div>
+				<div className="bg-custom-red p-4 font-black">
+					PEDIDOS POR CLIENTE: {""}
 					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					PROMEDIO BRUTO REPORTADO ANTES DE MORIR: $
-					{benefitReportesBeforeDie.toFixed(2)}
+					BRUTO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
+					{brutoReportedBeforeDie.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					PROMEDIO RENTABILIDAD FINAL: ${rentabilidadPromedioFinal.toFixed(2)}
+					NETO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
+					{netoReportedBeforeDie.toFixed(2)}
+				</div>
+				<div className="bg-custom-red p-4 font-black">
+					RENTABILIDAD FINAL POR CLIENTE: $
+					{rentabilidadPromedioFinal.toFixed(2)}
 				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
