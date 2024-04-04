@@ -170,8 +170,8 @@ export const Clientes = () => {
 					COSTO DE ADQUISICION DE CLIENTES: ${cac}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					PROMEDIO DE PEDIDOS POR NÚMERO DE TELÉFONO:
-					{promedioPedidosPorTelefono}
+					PROMEDIO DE PEDIDOS POR CLIENTE: {""}
+					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
 					BENEFIT REPORTED BEFORE DIE:
