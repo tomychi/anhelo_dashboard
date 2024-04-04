@@ -91,10 +91,45 @@ export const Clientes = () => {
 	};
 
 	// Calcular el promedio de pedidos por número de teléfono
-	const promedioPedidosPorTelefono = orders.length / telefonos.length;
+	// Función para contar cuántas veces se repite un teléfono en la lista de pedidos
+	const contarRepeticionesTelefono = () => {
+		const telefonoCount = {}; // Objeto para almacenar el recuento de cada número de teléfono
 
-	console.log(orders.length);
-	console.log(telefonos.length);
+		// Recorrer la lista de pedidos
+		orders.forEach((order) => {
+			const telefono = order.telefono;
+
+			// Verificar si el número de teléfono ya está en el objeto de recuento
+			if (telefonoCount[telefono]) {
+				// Si ya existe, incrementa su contador
+				telefonoCount[telefono]++;
+			} else {
+				// Si no existe, inicializa su contador en 1
+				telefonoCount[telefono] = 1;
+			}
+		});
+
+		return telefonoCount;
+	};
+
+	// Llamar a la función para obtener el recuento de repeticiones de teléfono
+	const repeticionesTelefono = contarRepeticionesTelefono();
+
+	// Función para calcular el promedio de pedidos por número de teléfono
+	const calcularPromedioPedidosPorTelefono = () => {
+		const repeticionesTelefono = contarRepeticionesTelefono();
+		const numerosTelefonosUnicos = Object.keys(repeticionesTelefono).length;
+		const totalPedidos = orders.length;
+
+		// Calcular el promedio
+		const promedio = totalPedidos / numerosTelefonosUnicos;
+		return promedio;
+	};
+
+	// Llamar a la función para obtener el promedio de pedidos por número de teléfono
+	const promedioPedidosPorTelefono = calcularPromedioPedidosPorTelefono();
+
+	console.log(promedioPedidosPorTelefono);
 
 	return (
 		<div className="p-4 font-antonio">
