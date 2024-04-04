@@ -9,7 +9,7 @@ import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
 
 export const Clientes = () => {
-	const { orders, telefonos, expenseData } = useSelector(
+	const { orders, telefonos, expenseData, facturacionTotal } = useSelector(
 		(state: RootState) => state.data
 	);
 	//Aca traigo la data de lo que gastamos en marketing
@@ -128,7 +128,8 @@ export const Clientes = () => {
 	// Llamar a la función para obtener el promedio de pedidos por número de teléfono
 	const promedioPedidosPorTelefono = calcularPromedioPedidosPorTelefono();
 
-	console.log(promedioPedidosPorTelefono);
+	const benefitReportesBeforeDie =
+		(facturacionTotal / orders.length) * promedioPedidosPorTelefono;
 
 	return (
 		<div className="p-4 font-antonio">
@@ -173,7 +174,7 @@ export const Clientes = () => {
 					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					BENEFIT REPORTED BEFORE DIE:
+					BRUTO REPORTADO ANTES DE MORIR: ${benefitReportesBeforeDie.toFixed(2)}
 				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
