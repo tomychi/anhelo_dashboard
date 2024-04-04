@@ -95,8 +95,8 @@ export const Clientes = () => {
 					/>
 				</div>
 			</div>
-			<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-				<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
 					<tr>
 						<th scope="col" className="px-6 py-3">
 							Teléfonos
@@ -104,7 +104,7 @@ export const Clientes = () => {
 						<th scope="col" className="px-6 py-3">
 							Cantidad de Pedidos
 							<button
-								className="ml-2 text-xs text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+								className="ml-2 text-xs text-black border-black border-2 hover:text-custom-red hover:bg-black"
 								onClick={() =>
 									setSortDirection((prevDirection) =>
 										prevDirection === "asc" ? "desc" : "asc"
@@ -146,15 +146,13 @@ export const Clientes = () => {
 					{sortTelefonos().map((t, i) => (
 						<React.Fragment key={i}>
 							<tr
-								className={`${
-									selectedPhoneNumber === t.telefono ? "bg-gray-100" : ""
-								} hover:bg-gray-50 cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}
+								className="bg-black text-custom-red uppercase font-black border border-red-main"
 								onClick={() => handlePhoneNumberClick(t.telefono)}
 							>
-								<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
 									{t.telefono}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
 									{getCantidadPedidos(t.telefono)}
 								</td>
 							</tr>
