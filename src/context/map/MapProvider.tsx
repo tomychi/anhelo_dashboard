@@ -105,10 +105,9 @@ export const MapProvider = ({ children }: Props) => {
     let kms = distance / 1000;
     kms = Math.round(kms * 100);
     kms /= 100;
-
     const minutes = Math.floor(duration / 60);
 
-    const bounds = new LngLatBounds([start[0], start[1]], [end[0], end[1]]);
+    const bounds = new LngLatBounds(start, start);
 
     for (const coord of coords) {
       const newCoord: [number, number] = [coord[0], coord[1]];
