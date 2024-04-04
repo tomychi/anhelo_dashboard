@@ -140,20 +140,26 @@ export const Clientes = () => {
 								)}
 							</button>
 						</th>
+						<th scope="col" className="px-6 py-3"></th>
 					</tr>
 				</thead>
 				<tbody>
 					{sortTelefonos().map((t, i) => (
 						<React.Fragment key={i}>
-							<tr
-								className="bg-black text-custom-red uppercase font-black border border-red-main"
-								onClick={() => handlePhoneNumberClick(t.telefono)}
-							>
+							<tr className="bg-black text-custom-red uppercase font-black border border-red-main">
 								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
 									{t.telefono}
 								</td>
 								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
 									{getCantidadPedidos(t.telefono)}
+								</td>
+								<td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+									<button
+										className="font-black border border-red-main text-custom-red hover:underline px-1 uppercase"
+										onClick={() => handlePhoneNumberClick(t.telefono)}
+									>
+										Ver detalle
+									</button>
 								</td>
 							</tr>
 							{selectedPhoneNumber === t.telefono && (
