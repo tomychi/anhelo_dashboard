@@ -100,6 +100,9 @@ export const Clientes = () => {
 				<div className="bg-custom-red p-4 font-black">
 					BASE DE CLIENTES: {cantidadNumerosTelefono}
 				</div>
+				<div className="bg-custom-red p-4 font-black">
+					COSTO DE ADQUISICION DE CLIENTES:
+				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
