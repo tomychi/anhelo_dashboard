@@ -64,7 +64,7 @@ export const Clientes = () => {
 	const cantidadNumerosTelefono = telefonos.length;
 
 	// Filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING"
-	const sueldosMarketing = expenseData.filter(
+	const inversionMarketing = expenseData.filter(
 		(item) =>
 			item.category === "Sueldos" &&
 			(item.name === "SUELDO FIJO MARKETING" ||
@@ -72,13 +72,13 @@ export const Clientes = () => {
 	);
 
 	// Sumar la propiedad "Total" de los objetos filtrados
-	const totalSueldosMarketing = sueldosMarketing.reduce(
+	const totalInversionMarketing = inversionMarketing.reduce(
 		(total, item) => total + item.total,
 		0
 	);
 
 	//CAC
-	const cac = parseFloat((totalSueldosMarketing / orders.length).toFixed(2));
+	const cac = parseFloat((totalInversionMarketing / orders.length).toFixed(2));
 
 	//Life time value averague section
 
