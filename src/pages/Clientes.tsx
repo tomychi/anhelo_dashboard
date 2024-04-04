@@ -136,8 +136,6 @@ export const Clientes = () => {
 
 		return telefonoCount;
 	};
-	// Llamar a la función para obtener el recuento de repeticiones de teléfono
-	const repeticionesTelefono = contarRepeticionesTelefono();
 
 	// Función para calcular el promedio de pedidos por número de teléfono
 	const calcularPromedioPedidosPorTelefono = () => {
@@ -189,7 +187,7 @@ export const Clientes = () => {
 					</div>
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					BASE DE CLIENTES: {cantidadNumerosTelefono}
+					BASE DE CLIENTES ALL TIME: {cantidadNumerosTelefono}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
 					COSTO DE ADQUISICION DE CLIENTES: ${cac}
