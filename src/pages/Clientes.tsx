@@ -219,15 +219,16 @@ export const Clientes = () => {
 					BASE DE CLIENTES ALL TIME: {cantidadNumerosTelefono}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					COSTO DE ADQUISICION DE CLIENTES: ${cac}
-				</div>
-				<div className="bg-custom-red p-4 font-black">
-					COSTO DE OPERACIONES: ${costoDeOperaciones}
-				</div>
-				<div className="bg-custom-red p-4 font-black">
 					PEDIDOS POR CLIENTE: {""}
 					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
+				<div className="bg-custom-red p-4 font-black">
+					COSTO DE ADQUISICION DE CLIENTES: ${cac}
+				</div>
+				<div className="bg-custom-red p-4 font-black">
+					COSTO DE OPERACIONES: ${costoDeOperaciones.toFixed(2)}
+				</div>
+
 				<div className="bg-custom-red p-4 font-black">
 					BRUTO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
 					{brutoReportedBeforeDie.toFixed(2)}
