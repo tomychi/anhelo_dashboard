@@ -93,7 +93,7 @@ export const Clientes = () => {
 	// Calcular el promedio de pedidos por número de teléfono
 	// Función para contar cuántas veces se repite un teléfono en la lista de pedidos
 	const contarRepeticionesTelefono = () => {
-		const telefonoCount = {}; // Objeto para almacenar el recuento de cada número de teléfono
+		const telefonoCount: { [telefono: string]: number } = {}; // Objeto para almacenar el recuento de cada número de teléfono
 
 		// Recorrer la lista de pedidos
 		orders.forEach((order) => {
@@ -111,7 +111,6 @@ export const Clientes = () => {
 
 		return telefonoCount;
 	};
-
 	// Llamar a la función para obtener el recuento de repeticiones de teléfono
 	const repeticionesTelefono = contarRepeticionesTelefono();
 
