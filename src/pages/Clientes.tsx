@@ -13,6 +13,8 @@ export const Clientes = () => {
 		useSelector((state: RootState) => state.data);
 
 	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
+
+	console.log(expenseData);
 	const totalGastos = expenseData.reduce((total, expense) => {
 		// Excluir los gastos que tengan la categoría "ingredientes"
 		if (
@@ -20,6 +22,7 @@ export const Clientes = () => {
 			expense.category !== "igredientes" &&
 			expense.category !== "bebidas" &&
 			expense.category !== "packaging" &&
+			expense.category !== "Infraestructura" &&
 			expense.name !== "carne"
 		) {
 			return total + expense.total;
@@ -27,29 +30,6 @@ export const Clientes = () => {
 			return total;
 		}
 	}, 0);
-
-	interface ExpenseCategoryTotal {
-		[category: string]: number;
-	}
-
-	const gastosPorCategoria: ExpenseCategoryTotal = expenseData.reduce(
-		(result: ExpenseCategoryTotal, expense) => {
-			if (
-				expense.category !== "ingredientes" &&
-				expense.category !== "igredientes" &&
-				expense.category !== "bebidas" &&
-				expense.category !== "packaging" &&
-				expense.name !== "carne"
-			) {
-				// Verificar si la categoría ya existe en el objeto result
-				result[expense.category] = result[expense.category]
-					? result[expense.category] + expense.total
-					: expense.total;
-			}
-			return result;
-		},
-		{}
-	);
 
 	// Calcular el balance mensual (neto - gastos)
 	const balanceMensual = neto - totalGastos;
@@ -235,14 +215,15 @@ export const Clientes = () => {
 					COSTO DE ADQUISICION DE CLIENTES: ${cac}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					PROMEDIO DE PEDIDOS POR CLIENTE: {""}
+					PROMEDIO PEDIDOS POR CLIENTE: {""}
 					{promedioPedidosPorTelefono.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					BRUTO REPORTADO ANTES DE MORIR: ${benefitReportesBeforeDie.toFixed(2)}
+					PROMEDIO BRUTO REPORTADO ANTES DE MORIR: $
+					{benefitReportesBeforeDie.toFixed(2)}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					RENTABILIDAD PROMEDIO FINAL: ${rentabilidadPromedioFinal.toFixed(2)}
+					PROMEDIO RENTABILIDAD FINAL: ${rentabilidadPromedioFinal.toFixed(2)}
 				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
