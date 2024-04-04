@@ -62,7 +62,6 @@ export const Clientes = () => {
 	//Base de clientes
 	const cantidadNumerosTelefono = telefonos.length;
 
-	//Aca traigo la data de lo que gastamos en marketing
 	// Función para filtrar los elementos de expenseData cuya propiedad category sea "Ads" y sumar el valor de la propiedad 'total'
 	const calcularTotalAds = () => {
 		// Filtrar los elementos de expenseData cuya propiedad category sea "Ads"
