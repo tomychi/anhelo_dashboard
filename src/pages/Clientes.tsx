@@ -21,7 +21,11 @@ export const Clientes = () => {
 
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
+	//Base de clientes
 	const cantidadNumerosTelefono = telefonos.length;
+
+	//CAC
+	// const cac = marketing / orders.length
 
 	// Función para manejar el clic en una fila de teléfono
 	const handlePhoneNumberClick = (phoneNumber: string) => {
@@ -103,6 +107,10 @@ export const Clientes = () => {
 				<div className="bg-custom-red p-4 font-black">
 					COSTO DE ADQUISICION DE CLIENTES:
 				</div>
+				<div className="bg-custom-red p-4 font-black">
+					LIFE TIME VALUE AVERAGE:
+				</div>
+				<div className="bg-custom-red p-4 font-black">BENEFIT:</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
