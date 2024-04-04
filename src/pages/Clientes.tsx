@@ -186,35 +186,6 @@ export const Clientes = () => {
 	return (
 		<div className="p-4 font-antonio">
 			<div className="flex flex-row gap-4 mb-4">
-				<div>
-					<div className="relative ">
-						<div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-4 pointer-events-none">
-							<svg
-								className="w-4 h-4 text-red-main"
-								aria-hidden="true"
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 20 20"
-							>
-								<path
-									stroke="currentColor"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-								/>
-							</svg>
-						</div>
-						<input
-							type="text"
-							id="table-search"
-							className="block p-4 ps-12  border-2 border-red-main w-80 bg-black"
-							placeholder="BUSCAR CLIENTE"
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-						/>
-					</div>
-				</div>
 				<div className="bg-custom-red p-4 font-black">
 					BASE DE CLIENTES ALL TIME: {cantidadNumerosTelefono}
 				</div>
@@ -240,6 +211,35 @@ export const Clientes = () => {
 				<div className="bg-custom-red p-4 font-black">
 					RENTABILIDAD FINAL POR CLIENTE: $
 					{rentabilidadPromedioFinal.toFixed(2)}
+				</div>
+			</div>
+			<div>
+				<div className="relative ">
+					<div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-4 pointer-events-none">
+						<svg
+							className="w-4 h-4 text-red-main"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 20 20"
+						>
+							<path
+								stroke="currentColor"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+							/>
+						</svg>
+					</div>
+					<input
+						type="text"
+						id="table-search"
+						className="block p-4 ps-12  border-2 border-red-main w-80 bg-black"
+						placeholder="BUSCAR CLIENTE"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
 				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">

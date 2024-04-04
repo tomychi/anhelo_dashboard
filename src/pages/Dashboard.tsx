@@ -216,11 +216,6 @@ export const Dashboard = () => {
 				/>
 
 				<CardInfo
-					info={currencyFormat((200000 + 180000 + 180000) / orders.length)}
-					title={"COSTO DE ADQUISICION DE CLIENTES"}
-					svgComponent={<TicketPromedioSVG />}
-				/>
-				<CardInfo
 					info={currencyFormat(facturacionTotal / orders.length)}
 					title={"TICKET PROMEDIO"}
 					svgComponent={<TicketPromedioSVG />}
