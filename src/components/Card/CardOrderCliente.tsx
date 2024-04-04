@@ -7,67 +7,67 @@ interface CardOrderCliente {
 
 export const CardOrderCliente = ({ p }: CardOrderCliente) => {
 	return (
-		<div key={p.id} className="border p-4  bg-gray-100">
-			<h3 className="text-lg font-semibold mb-2">Detalles del Pedido</h3>
+		<div key={p.id} className="p-4 uppercase bg-red-main flex flex-col gap-1">
+			<h3 className="text-lg font-black mb-2">Detalles del Pedido</h3>
 			<p>
-				<span className="font-semibold">ID del Pedido:</span> {p.id}
+				<span className="font-black">ID del Pedido:</span> {p.id}
 			</p>
 			<p>
-				<span className="font-semibold">Dirección:</span> {p.direccion}
+				<span className="font-black">Dirección:</span> {p.direccion}
 			</p>
 			<p>
-				<span className="font-semibold">Aclaraciones:</span> {p.aclaraciones}
+				<span className="font-black">Aclaraciones:</span> {p.aclaraciones}
 			</p>
 			<p>
-				<span className="font-semibold">Fecha:</span> {p.fecha}
+				<span className="font-black">Fecha:</span> {p.fecha}
 			</p>
 
 			<p>
-				<span className="font-semibold">Método de Pago:</span> {p.metodoPago}
+				<span className="font-black">Método de Pago:</span> {p.metodoPago}
 			</p>
 			<p>
-				<span className="font-semibold">Subtotal:</span> ${p.subTotal}
+				<span className="font-black">Subtotal:</span> ${p.subTotal}
 			</p>
 			<p>
-				<span className="font-semibold">Envío:</span> ${p.envio}
+				<span className="font-black">Envío:</span> ${p.envio}
 			</p>
 			<p>
-				<span className="font-semibold">Total:</span> ${p.total}
+				<span className="font-black">Total:</span> ${p.total}
 			</p>
 			<p>
-				<span className="font-semibold">Referencias:</span> {p.referencias}
+				<span className="font-black">Referencias:</span> {p.referencias}
 			</p>
 			<p>
-				<span className="font-semibold">Piso:</span> {p.piso}
+				<span className="font-black">Piso:</span> {p.piso}
 			</p>
 			{p.cadete && (
 				<p>
-					<span className="font-semibold">Cadete:</span> {p.cadete}
+					<span className="font-black">Cadete:</span> {p.cadete}
 				</p>
 			)}
 			{p.dislike && (
 				<p>
-					<span className="font-semibold">Dislike:</span> {p.dislike}
+					<span className="font-black">Dislike:</span> {p.dislike}
 				</p>
 			)}
 			{p.delay && (
 				<p>
-					<span className="font-semibold">Delay:</span> {p.delay}
+					<span className="font-black">Delay:</span> {p.delay}
 				</p>
 			)}
 			<p>
-				<span className="font-semibold">Hora:</span> {p.hora}
+				<span className="font-black">Hora:</span> {p.hora}
 			</p>
 			<p>
-				<span className="font-semibold">Tiempo Elaborado:</span>{" "}
+				<span className="font-black">Tiempo Elaborado:</span>{" "}
 				{p.tiempoElaborado}
 			</p>
 			<p>
-				<span className="font-semibold">Tiempo Entregado:</span>{" "}
+				<span className="font-black">Tiempo Entregado:</span>{" "}
 				{p.tiempoEntregado}
 			</p>
 			<p>
-				<span className="font-semibold">¿Entregado?:</span>{" "}
+				<span className="font-black">¿Entregado?:</span>{" "}
 				{p.entregado ? "Sí" : "No"}
 			</p>
 		</div>

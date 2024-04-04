@@ -167,7 +167,7 @@ export const Clientes = () => {
 							</tr>
 							{selectedPhoneNumber === t.telefono && (
 								<div className=" py-4">
-									<div className="flex flex-row">
+									<div className="flex flex-row gap-4">
 										{pedidosByPhone?.map((p) => (
 											<CardOrderCliente p={p} />
 										))}
