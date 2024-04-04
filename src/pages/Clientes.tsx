@@ -10,6 +10,8 @@ import { CardOrderCliente } from "../components/Card";
 
 export const Clientes = () => {
 	const { orders, telefonos } = useSelector((state: RootState) => state.data);
+	//Aca traigo la data de lo que gastamos en marketing
+	const { materiales } = useSelector((state: RootState) => state.materials);
 
 	const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
 		null
@@ -26,6 +28,8 @@ export const Clientes = () => {
 
 	//CAC
 	// const cac = marketing / orders.length
+
+	console.log(materiales);
 
 	// Función para manejar el clic en una fila de teléfono
 	const handlePhoneNumberClick = (phoneNumber: string) => {
