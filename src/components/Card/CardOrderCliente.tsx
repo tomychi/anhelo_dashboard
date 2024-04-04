@@ -7,7 +7,7 @@ interface CardOrderCliente {
 
 export const CardOrderCliente = ({ p }: CardOrderCliente) => {
 	return (
-		<div key={p.id} className="border rounded-md p-4 mb-4 bg-gray-100">
+		<div key={p.id} className="border p-4  bg-gray-100">
 			<h3 className="text-lg font-semibold mb-2">Detalles del Pedido</h3>
 			<p>
 				<span className="font-semibold">ID del Pedido:</span> {p.id}

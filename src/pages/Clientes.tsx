@@ -166,7 +166,7 @@ export const Clientes = () => {
 								</td>
 							</tr>
 							{selectedPhoneNumber === t.telefono && (
-								<div className=" pt-4">
+								<div className=" py-4">
 									<div className="flex flex-row">
 										{pedidosByPhone?.map((p) => (
 											<CardOrderCliente p={p} />
