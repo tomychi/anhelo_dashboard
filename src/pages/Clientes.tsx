@@ -12,29 +12,6 @@ export const Clientes = () => {
 	const { orders, telefonos, expenseData, facturacionTotal, neto } =
 		useSelector((state: RootState) => state.data);
 
-	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
-
-	console.log(expenseData);
-	const totalGastos = expenseData.reduce((total, expense) => {
-		// Excluir los gastos que tengan la categoría "ingredientes"
-		if (
-			expense.category !== "ingredientes" &&
-			expense.category !== "igredientes" &&
-			expense.category !== "bebidas" &&
-			expense.category !== "packaging" &&
-			expense.category !== "Infraestructura" &&
-			expense.name !== "carne"
-		) {
-			return total + expense.total;
-		} else {
-			return total;
-		}
-	}, 0);
-
-	// Calcular el balance mensual (neto - gastos)
-	const balanceMensual = neto - totalGastos;
-	const rentabilidadPromedioFinal = balanceMensual / orders.length;
-
 	const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
 		null
 	);
@@ -127,6 +104,8 @@ export const Clientes = () => {
 		).toFixed(2)
 	);
 
+	const ticketPromedio = facturacionTotal / orders.length;
+
 	//Life time value averague section
 
 	// Función para obtener la cantidad de pedidos por número de teléfono
@@ -173,8 +152,30 @@ export const Clientes = () => {
 	// Llamar a la función para obtener el promedio de pedidos por número de teléfono
 	const promedioPedidosPorTelefono = calcularPromedioPedidosPorTelefono();
 
-	const benefitReportesBeforeDie =
-		(facturacionTotal / orders.length) * promedioPedidosPorTelefono;
+	const benefitReportesBeforeDie = ticketPromedio * promedioPedidosPorTelefono;
+
+	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
+
+	const totalGastos = expenseData.reduce((total, expense) => {
+		// Excluir los gastos que tengan la categoría "ingredientes"
+		if (
+			expense.category !== "ingredientes" &&
+			expense.category !== "igredientes" &&
+			expense.category !== "bebidas" &&
+			expense.category !== "packaging" &&
+			expense.category !== "Infraestructura" &&
+			expense.name !== "carne"
+		) {
+			return total + expense.total;
+		} else {
+			return total;
+		}
+	}, 0);
+
+	// Calcular el balance mensual (neto - gastos)
+	const balanceMensual = neto - totalGastos;
+	const rentabilidadPromedioFinal =
+		(balanceMensual / orders.length) * promedioPedidosPorTelefono;
 
 	return (
 		<div className="p-4 font-antonio">
