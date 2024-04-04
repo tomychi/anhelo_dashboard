@@ -98,7 +98,7 @@ export const Clientes = () => {
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
 					<tr>
-						<th scope="col" className="px-6 py-3">
+						<th scope="col" className="px-4 text-left py-3">
 							Teléfonos
 						</th>
 						<th
@@ -150,7 +150,7 @@ export const Clientes = () => {
 					{sortTelefonos().map((t, i) => (
 						<React.Fragment key={i}>
 							<tr className="bg-black text-custom-red uppercase font-black border border-red-main">
-								<td className="px-6 py-4 font-black text-custom-red whitespace-nowrap">
+								<td className="px-4 py-4 font-black text-left text-custom-red whitespace-nowrap">
 									{t.telefono}
 								</td>
 								<td className="px-4 py-4 font-black text-custom-red text-right whitespace-nowrap">
