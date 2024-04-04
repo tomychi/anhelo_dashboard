@@ -9,9 +9,10 @@ import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
 
 export const Clientes = () => {
-	const { orders, telefonos } = useSelector((state: RootState) => state.data);
+	const { orders, telefonos, expenseData } = useSelector(
+		(state: RootState) => state.data
+	);
 	//Aca traigo la data de lo que gastamos en marketing
-	const { materiales } = useSelector((state: RootState) => state.materials);
 
 	const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
 		null
@@ -23,14 +24,6 @@ export const Clientes = () => {
 
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
-	//Base de clientes
-	const cantidadNumerosTelefono = telefonos.length;
-
-	//CAC
-	// const cac = marketing / orders.length
-
-	console.log(materiales);
-
 	// Función para manejar el clic en una fila de teléfono
 	const handlePhoneNumberClick = (phoneNumber: string) => {
 		// Si el número de teléfono seleccionado es igual al actual, lo deseleccionamos
@@ -41,6 +34,7 @@ export const Clientes = () => {
 		const pedidos = getOrdersByPhoneNumber(phoneNumber, orders);
 		setPedidosByPhone(pedidos);
 	};
+
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
 	// Filtrar los teléfonos según el término de búsqueda
@@ -65,6 +59,29 @@ export const Clientes = () => {
 			}
 		});
 	};
+
+	//Base de clientes
+	const cantidadNumerosTelefono = telefonos.length;
+
+	// Filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING"
+	const sueldosMarketing = expenseData.filter(
+		(item) =>
+			item.category === "Sueldos" &&
+			(item.name === "SUELDO FIJO MARKETING" ||
+				item.name === "SUELDO VARIABLE MARKETING")
+	);
+
+	// Sumar la propiedad "Total" de los objetos filtrados
+	const totalSueldosMarketing = sueldosMarketing.reduce(
+		(total, item) => total + item.total,
+		0
+	);
+
+	//CAC
+	const cac = parseFloat((totalSueldosMarketing / orders.length).toFixed(2));
+
+	//Life time value averague section
+
 	// Función para obtener la cantidad de pedidos por número de teléfono
 	const getCantidadPedidos = (phoneNumber: string) => {
 		const pedidos = orders.filter(
@@ -72,6 +89,12 @@ export const Clientes = () => {
 		);
 		return pedidos.length;
 	};
+
+	// Calcular el promedio de pedidos por número de teléfono
+	const promedioPedidosPorTelefono = orders.length / telefonos.length;
+
+	console.log(orders.length);
+	console.log(telefonos.length);
 
 	return (
 		<div className="p-4 font-antonio">
@@ -109,12 +132,15 @@ export const Clientes = () => {
 					BASE DE CLIENTES: {cantidadNumerosTelefono}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					COSTO DE ADQUISICION DE CLIENTES:
+					COSTO DE ADQUISICION DE CLIENTES: ${cac}
 				</div>
 				<div className="bg-custom-red p-4 font-black">
-					LIFE TIME VALUE AVERAGE:
+					PROMEDIO DE PEDIDOS POR NÚMERO DE TELÉFONO:
+					{promedioPedidosPorTelefono}
 				</div>
-				<div className="bg-custom-red p-4 font-black">BENEFIT:</div>
+				<div className="bg-custom-red p-4 font-black">
+					BENEFIT REPORTED BEFORE DIE:
+				</div>
 			</div>
 			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
