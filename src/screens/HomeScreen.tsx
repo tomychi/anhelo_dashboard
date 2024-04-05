@@ -3,7 +3,7 @@ import {
   ReactLogo,
   SearchBar,
   ListOrderAddress,
-  RoutesOptimization,
+  // RoutesOptimization,
 } from '../components/map';
 //
 export const HomeScreen = () => {
