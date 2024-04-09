@@ -6,7 +6,6 @@ import {
   getDoc,
   DocumentReference,
 } from 'firebase/firestore';
-import { obtenerFechaActual } from '../helpers/dateToday';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface ExpenseProps {
@@ -28,11 +27,8 @@ export const UploadExpense = (
   // Generar un ID único para el gasto
   const gastoId = uuidv4();
 
-  // Obtener la fecha formateada
-  const fechaFormateada = obtenerFechaActual();
-
   // Separar la fecha en día, mes y año
-  const [dia, mes, anio] = fechaFormateada.split('/');
+  const [dia, mes, anio] = expenseDetail.fecha.split('/');
 
   // Crear la referencia a la colección con tres segmentos: gastos/año/mes
   const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
