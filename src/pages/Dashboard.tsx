@@ -183,7 +183,13 @@ export const Dashboard = () => {
 				<CardInfo
 					info={orders.length}
 					link={"ventas"}
-					title={"VENTAS"}
+					title={"VENTAS delivery"}
+					svgComponent={<VentasSVG />}
+				/>
+				<CardInfo
+					info={orders.length}
+					link={"ventas"}
+					title={"VENTAS take away"}
 					svgComponent={<VentasSVG />}
 				/>
 			</div>
