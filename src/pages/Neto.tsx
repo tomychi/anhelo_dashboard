@@ -57,10 +57,13 @@ export const Neto = () => {
 		setModalOpen(true);
 	};
 
+	//2,2 + 0,1 para cubrir errores
 	const multiplierMasterpiecesOriginals = 2.3;
-	const multiplierSatisfyers = 1.5;
+	//1,5 + 0,1 para cubrir errores
+	const multiplierSatisfyers = 1.6;
 	const multiplierDrinks = 1.5;
-	const multiplierPapas = 1.5;
+	//1,5 + 0,1 para cubrir errores
+	const multiplierPapas = 1.6;
 	const ordersLastMonth = 1484;
 	const plusAlquiler = Math.ceil(300000 / ordersLastMonth);
 
