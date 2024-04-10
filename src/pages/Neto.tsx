@@ -114,6 +114,7 @@ export const Neto = () => {
 										{currencyFormat(p.price - p.costo)} - ganancia:
 										{Math.ceil(((p.price - p.costo) * 100) / p.price)}%
 									</td>
+									{/*Precio venta sugerido. el costo por el multiplier mas los 250*/}
 									<td className="px-6 py-4">
 										{currencyFormat(
 											p.type === "satisfyer"
@@ -123,24 +124,31 @@ export const Neto = () => {
 												: p.price
 										)}
 									</td>
+									{/* Ganancia obtenida sugerida*/}
 									<td className="px-6 py-4">
 										{currencyFormat(
 											p.type === "satisfyer"
-												? p.costo * multiplierSatisfyers - p.costo
+												? //Precio venta + 250 - costo = Ganancia
+												  p.costo * multiplierSatisfyers + 250 - p.costo
 												: p.type === "masterpieces" || p.type === "originals"
-												? p.costo * multiplierMasterpiecesOriginals - p.costo
-												: p.price - p.costo
+												? p.costo * multiplierMasterpiecesOriginals +
+												  250 -
+												  p.costo
+												: null
 										)}{" "}
 										- ganancia:
-										{Math.ceil(
-											((p.type === "satisfyer"
-												? p.costo * multiplierSatisfyers - p.costo
-												: p.type === "masterpieces" || p.type === "originals"
-												? p.costo * multiplierMasterpiecesOriginals - p.costo
-												: p.price - p.costo) *
-												100) /
-												p.price
-										)}
+										{100 -
+											Math.ceil(
+												p.type === "satisfyer"
+													? // costo por 100 dividido por el precio de venta
+													  (p.costo * 100) /
+															(p.costo * multiplierSatisfyers + 250)
+													: p.type === "masterpieces" || p.type === "originals"
+													? // costo por 100 dividido por el precio de venta
+													  (p.costo * 100) /
+													  (p.costo * multiplierMasterpiecesOriginals + 250)
+													: 0 // valor predeterminado en caso de que ninguna de las condiciones anteriores se cumpla
+											)}
 										%
 									</td>
 								</tr>
