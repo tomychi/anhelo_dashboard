@@ -182,14 +182,17 @@ export const Neto = () => {
 									<td className="px-6 py-4">
 										{currencyFormat(
 											p.type === "satisfyer"
-												? //Precio venta +230 - costo = Ganancia
-												  p.costo * multiplierSatisfyers +
+												? p.costo * multiplierSatisfyers +
 														plusAlquiler -
 														p.costo
 												: p.type === "masterpieces" || p.type === "originals"
 												? p.costo * multiplierMasterpiecesOriginals +
 												  250 -
 												  p.costo
+												: p.type === "drink"
+												? p.costo * multiplierDrinks + plusAlquiler - p.costo
+												: p.type === "papas"
+												? p.costo * multiplierPapas + plusAlquiler - p.costo
 												: null
 										)}{" "}
 										- ganancia:
@@ -204,6 +207,14 @@ export const Neto = () => {
 													  (p.costo * 100) /
 													  (p.costo * multiplierMasterpiecesOriginals +
 															plusAlquiler)
+													: p.type === "drink"
+													? // costo por 100 dividido por el precio de venta
+													  (p.costo * 100) /
+													  (p.costo * multiplierDrinks + plusAlquiler)
+													: p.type === "papas"
+													? // costo por 100 dividido por el precio de venta
+													  (p.costo * 100) /
+													  (p.costo * multiplierPapas + plusAlquiler)
 													: 0 // valor predeterminado en caso de que ninguna de las condiciones anteriores se cumpla
 											)}
 										%
