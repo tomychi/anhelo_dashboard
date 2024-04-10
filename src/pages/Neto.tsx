@@ -57,10 +57,16 @@ export const Neto = () => {
 		setModalOpen(true);
 	};
 
-	//2,2 + 0,1 para cubrir errores
-	const multiplierMasterpiecesOriginals = 2.3;
+	//Vendemos a los que buscan percepcion. Vendemos la marca, que es lo mas caro. ¿Como aumentamos la percepcion para poner el precio un poco fuera del contexto del mercado, un poco mas por encima? La gente en este apartado esta dispuesta a pagar un poco mas. Pensa que el ticket promedio es de 1,algo, no es una compra recurrente.
+
+	//2,3 nos deja en precio al que vende la competencia
+	//2,3 + 0,1 para cubrir errores
+
+	const multiplierMasterpiecesOriginals = 2.4;
+	//Vendemos a los que buscan precio
 	//1,5 + 0,1 para cubrir errores
 	const multiplierSatisfyers = 1.6;
+	//Son latas de gaseosas, no podemos exagerar
 	const multiplierDrinks = 1.5;
 	//1,5 + 0,1 para cubrir errores
 	const multiplierPapas = 1.6;
