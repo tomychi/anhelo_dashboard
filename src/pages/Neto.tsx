@@ -140,19 +140,30 @@ export const Neto = () => {
 												clip-rule="evenodd"
 											/>
 										</svg>
-										+
+										{(p.type === "satisfyer"
+											? p.costo * multiplierSatisfyers + plusAlquiler - p.price
+											: p.type === "masterpieces" || p.type === "originals"
+											? p.costo * multiplierMasterpiecesOriginals +
+											  plusAlquiler -
+											  p.price
+											: p.price) >= 0
+											? "+"
+											: "-"}
 										{currencyFormat(
-											p.type === "satisfyer"
-												? p.costo * multiplierSatisfyers +
-														plusAlquiler -
-														p.price
-												: p.type === "masterpieces" || p.type === "originals"
-												? p.costo * multiplierMasterpiecesOriginals +
-												  plusAlquiler -
-												  p.price
-												: p.price
-										)}{" "}
+											Math.abs(
+												p.type === "satisfyer"
+													? p.costo * multiplierSatisfyers +
+															plusAlquiler -
+															p.price
+													: p.type === "masterpieces" || p.type === "originals"
+													? p.costo * multiplierMasterpiecesOriginals +
+													  plusAlquiler -
+													  p.price
+													: p.price
+											)
+										)}
 									</td>
+
 									{/* Ganancia obtenida sugerida*/}
 									<td className="px-6 py-4">
 										{currencyFormat(
