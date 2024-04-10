@@ -62,7 +62,7 @@ export const Neto = () => {
 	//2,3 nos deja en precio al que vende la competencia
 	//2,3 + 0,1 para cubrir errores
 
-	const multiplierMasterpiecesOriginals = 2.4;
+	const multiplierMasterpiecesOriginals = 2.3;
 	//Vendemos a los que buscan precio
 	//1,5 + 0,1 para cubrir errores
 	const multiplierSatisfyers = 1.6;
