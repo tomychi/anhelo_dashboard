@@ -89,8 +89,6 @@ export const ProductosVendidos = () => {
 		costo: material.costo,
 	}));
 
-	console.log(materialesFiltradosConCosto);
-
 	const toppingsPagos = [
 		"bacon",
 		"lechuga",
@@ -103,8 +101,6 @@ export const ProductosVendidos = () => {
 		toppingsPagos.includes(topping.name.toLowerCase())
 	);
 
-	console.log(toppingsData);
-
 	// Sumar los quantity de todos los toppings
 	const totalQuantityToppings = toppingsData.reduce(
 		(total, topping) => total + topping.quantity,
@@ -116,6 +112,62 @@ export const ProductosVendidos = () => {
 		(total, topping) => total + topping.quantity,
 		0
 	);
+
+	// Interfaz para definir la estructura de los objetos en el arreglo relacionados
+	interface Relacionado {
+		nombre: string;
+		costo: number;
+		quantity: number;
+		costoTotal: number; // Agregar la propiedad costoTotal
+	}
+
+	// Función auxiliar para comparar nombres especiales
+	function compararNombres(nombre1: string, nombre2: string): boolean {
+		// Tratar los casos especiales, como "cebolla" y "cebolla caramelizada"
+		if (
+			(nombre1 === "cebolla" && nombre2 === "cebolla caramelizada") ||
+			(nombre1 === "cebolla caramelizada" && nombre2 === "cebolla")
+		)
+			return true;
+		if (
+			(nombre1 === "alioli" && nombre2 === "salsa anhelo") ||
+			(nombre1 === "salsa anhelo" && nombre2 === "alioli")
+		)
+			return true;
+		// Otros casos
+		return nombre1 === nombre2;
+	}
+
+	// Relacionar los dos conjuntos de datos
+	const relacionados: Relacionado[] = [];
+
+	materialesFiltradosConCosto.forEach((material) => {
+		const topping = toppingsData.find((t) =>
+			compararNombres(t.name, material.nombre)
+		);
+		if (topping) {
+			relacionados.push({
+				nombre: material.nombre,
+				costo: material.costo,
+				quantity: topping.quantity,
+				costoTotal: 0, // Inicializamos costoTotal a 0
+			});
+		}
+	});
+
+	// Calcular y almacenar el costo total para cada producto
+	relacionados.forEach((item) => {
+		item.costoTotal = item.quantity * item.costo;
+	});
+
+	// console.log(relacionados);
+	// Calcular la suma de todos los valores de costoTotal
+	const sumaCostoTotal = relacionados.reduce(
+		(total, item) => total + item.costoTotal,
+		0
+	);
+
+	console.log("La suma total de costoTotal es:", sumaCostoTotal);
 
 	const dataToppings = {
 		labels: toppingsData.map((t) => t.name),
