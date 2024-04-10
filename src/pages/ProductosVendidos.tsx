@@ -304,7 +304,7 @@ export const ProductosVendidos = () => {
 					<span className="font-medium">Info alert!</span> Se vendieron{" "}
 					{hamburguesasPedidas} hamburguesas
 					<br />
-					Toppings totales: {totalQuantityToppings}. Costo $
+					Toppings totales: {totalQuantityToppings}. Costo ${sumaCostoTotal}
 					<br />
 					Toppings pagos: {totalQuantityToppingsPagos}. Bruto $
 					{totalQuantityToppingsPagos * 200}
