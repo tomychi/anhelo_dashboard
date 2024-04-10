@@ -58,7 +58,10 @@ export const Neto = () => {
 	};
 
 	const multiplierMasterpiecesOriginals = 2.3;
-	const multiplierSatisfyers = 1.8;
+	const multiplierSatisfyers = 1.5;
+	const plusAlquiler = Math.ceil(300000 / 1300);
+
+	console.log(plusAlquiler);
 
 	return (
 		<div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -118,9 +121,10 @@ export const Neto = () => {
 									<td className="px-6 py-4">
 										{currencyFormat(
 											p.type === "satisfyer"
-												? p.costo * multiplierSatisfyers + 250
+												? p.costo * multiplierSatisfyers + plusAlquiler
 												: p.type === "masterpieces" || p.type === "originals"
-												? p.costo * multiplierMasterpiecesOriginals + 250
+												? p.costo * multiplierMasterpiecesOriginals +
+												  plusAlquiler
 												: p.price
 										)}
 									</td>
@@ -128,8 +132,10 @@ export const Neto = () => {
 									<td className="px-6 py-4">
 										{currencyFormat(
 											p.type === "satisfyer"
-												? //Precio venta + 250 - costo = Ganancia
-												  p.costo * multiplierSatisfyers + 250 - p.costo
+												? //Precio venta +230 - costo = Ganancia
+												  p.costo * multiplierSatisfyers +
+														plusAlquiler -
+														p.costo
 												: p.type === "masterpieces" || p.type === "originals"
 												? p.costo * multiplierMasterpiecesOriginals +
 												  250 -
@@ -142,11 +148,12 @@ export const Neto = () => {
 												p.type === "satisfyer"
 													? // costo por 100 dividido por el precio de venta
 													  (p.costo * 100) /
-															(p.costo * multiplierSatisfyers + 250)
+															(p.costo * multiplierSatisfyers + plusAlquiler)
 													: p.type === "masterpieces" || p.type === "originals"
 													? // costo por 100 dividido por el precio de venta
 													  (p.costo * 100) /
-													  (p.costo * multiplierMasterpiecesOriginals + 250)
+													  (p.costo * multiplierMasterpiecesOriginals +
+															plusAlquiler)
 													: 0 // valor predeterminado en caso de que ninguna de las condiciones anteriores se cumpla
 											)}
 										%

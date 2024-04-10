@@ -54,6 +54,7 @@ const plugin = {
 };
 
 export const ProductosVendidos = () => {
+	const { materiales } = useSelector((state: RootState) => state.materials);
 	const { productosPedidos, toppingsData, totalProductosVendidos } =
 		useSelector((state: RootState) => state.data);
 	const { burgers } = useSelector((state: RootState) => state.product);
@@ -68,7 +69,7 @@ export const ProductosVendidos = () => {
 		],
 	};
 
-	console.log(toppingsData);
+	// console.log(materiales);
 
 	const toppingsPagos = [
 		"bacon",
@@ -94,7 +95,22 @@ export const ProductosVendidos = () => {
 		0
 	);
 
-	console.log(totalQuantityToppingsPagos);
+	// Calcular el costo total de los toppings pagos
+	const costoTotalToppings = ventasToppingsPagos.reduce((total, topping) => {
+		// Buscar el costo del topping en los materiales
+		const material = materiales.find(
+			(material) => material.nombre.toLowerCase() === topping.name.toLowerCase()
+		);
+		// Si se encuentra el material y tiene un costo definido
+		if (material && material.unidadPorPrecio) {
+			// Calcular el costo del topping y sumarlo al total
+			return total + material.unidadPorPrecio * topping.quantity;
+		} else {
+			return total;
+		}
+	}, 0);
+
+	console.log(costoTotalToppings);
 
 	const dataToppings = {
 		labels: toppingsData.map((t) => t.name),
@@ -233,7 +249,8 @@ export const ProductosVendidos = () => {
 					<br />
 					Toppings totales: {totalQuantityToppings}
 					<br />
-					Toppings pagos: {totalQuantityToppingsPagos}
+					Toppings pagos: {totalQuantityToppingsPagos} = $
+					{totalQuantityToppingsPagos * 200}
 					<br />
 					Medallones: {totalMedallonesNecesarios}
 					<br />
