@@ -59,7 +59,8 @@ export const Neto = () => {
 
 	const multiplierMasterpiecesOriginals = 2.3;
 	const multiplierSatisfyers = 1.5;
-	const plusAlquiler = Math.ceil(300000 / 1300);
+	const ordersLastMonth = 1484;
+	const plusAlquiler = Math.ceil(300000 / ordersLastMonth);
 
 	console.log(plusAlquiler);
 
@@ -118,7 +119,7 @@ export const Neto = () => {
 										{Math.ceil(((p.price - p.costo) * 100) / p.price)}%
 									</td>
 									{/*Precio venta sugerido. el costo por el multiplier mas los 250*/}
-									<td className="px-6 py-4">
+									<td className="px-6 py-4 flex flex-row gap-2">
 										{currencyFormat(
 											p.type === "satisfyer"
 												? p.costo * multiplierSatisfyers + plusAlquiler
@@ -126,7 +127,31 @@ export const Neto = () => {
 												? p.costo * multiplierMasterpiecesOriginals +
 												  plusAlquiler
 												: p.price
-										)}
+										)}{" "}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24"
+											fill="currentColor"
+											className="w-4 h-4"
+										>
+											<path
+												fill-rule="evenodd"
+												d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+										+
+										{currencyFormat(
+											p.type === "satisfyer"
+												? p.costo * multiplierSatisfyers +
+														plusAlquiler -
+														p.price
+												: p.type === "masterpieces" || p.type === "originals"
+												? p.costo * multiplierMasterpiecesOriginals +
+												  plusAlquiler -
+												  p.price
+												: p.price
+										)}{" "}
 									</td>
 									{/* Ganancia obtenida sugerida*/}
 									<td className="px-6 py-4">
