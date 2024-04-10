@@ -88,11 +88,6 @@ export const ProductosVendidos = () => {
 		0
 	);
 
-	console.log(
-		"La suma total de quantity en productosOriginals es:",
-		totalQuantityOriginals
-	);
-
 	const toppingsTodos = [
 		"mayonesa",
 		"bacon",
@@ -184,7 +179,6 @@ export const ProductosVendidos = () => {
 		item.costoTotal = item.quantity * item.costo;
 	});
 
-	// console.log(relacionados);
 	// Calcular la suma de todos los valores de costoTotal
 	const sumaCostoTotal = relacionados.reduce(
 		(total, item) => total + item.costoTotal,
