@@ -59,10 +59,12 @@ export const Neto = () => {
 
 	const multiplierMasterpiecesOriginals = 2.3;
 	const multiplierSatisfyers = 1.5;
+	const multiplierDrinks = 1.5;
+	const multiplierPapas = 1.5;
 	const ordersLastMonth = 1484;
 	const plusAlquiler = Math.ceil(300000 / ordersLastMonth);
 
-	console.log(plusAlquiler);
+	console.log(productos);
 
 	return (
 		<div className="flex p-4 gap-4  justify-between flex-row w-full">
@@ -126,6 +128,10 @@ export const Neto = () => {
 												: p.type === "masterpieces" || p.type === "originals"
 												? p.costo * multiplierMasterpiecesOriginals +
 												  plusAlquiler
+												: p.type === "drink"
+												? p.costo * multiplierDrinks + plusAlquiler
+												: p.type === "papas"
+												? p.costo * multiplierPapas + plusAlquiler
 												: p.price
 										)}{" "}
 										<svg
@@ -146,6 +152,10 @@ export const Neto = () => {
 											? p.costo * multiplierMasterpiecesOriginals +
 											  plusAlquiler -
 											  p.price
+											: p.type === "drink"
+											? p.costo * multiplierDrinks + plusAlquiler - p.price
+											: p.type === "papas"
+											? p.costo * multiplierPapas + plusAlquiler - p.price
 											: p.price) >= 0
 											? "+"
 											: "-"}
@@ -159,6 +169,10 @@ export const Neto = () => {
 													? p.costo * multiplierMasterpiecesOriginals +
 													  plusAlquiler -
 													  p.price
+													: p.type === "drink"
+													? p.costo * multiplierDrinks + plusAlquiler - p.price
+													: p.type === "papas"
+													? p.costo * multiplierPapas + plusAlquiler - p.price
 													: p.price
 											)
 										)}
