@@ -307,7 +307,7 @@ export const ProductosVendidos = () => {
 					Toppings totales: {totalQuantityToppings}. Costo ${sumaCostoTotal}
 					<br />
 					Toppings pagos: {totalQuantityToppingsPagos}. Bruto $
-					{totalQuantityToppingsPagos * 200}
+					{totalQuantityToppingsPagos * 300}
 					<br />
 					Medallones: {totalMedallonesNecesarios}
 					<br />
