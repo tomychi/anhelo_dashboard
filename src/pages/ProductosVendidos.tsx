@@ -69,7 +69,27 @@ export const ProductosVendidos = () => {
 		],
 	};
 
-	// console.log(materiales);
+	const toppingsTodos = [
+		"mayonesa",
+		"bacon",
+		"lechuga",
+		"tomate",
+		"cebolla",
+		"ketchup",
+		"barbecue",
+		"alioli",
+	];
+
+	const materialesFiltrados = materiales.filter((material) =>
+		toppingsTodos.includes(material.nombre.toLowerCase())
+	);
+
+	const materialesFiltradosConCosto = materialesFiltrados.map((material) => ({
+		nombre: material.nombre,
+		costo: material.costo,
+	}));
+
+	console.log(materialesFiltradosConCosto);
 
 	const toppingsPagos = [
 		"bacon",
@@ -83,6 +103,8 @@ export const ProductosVendidos = () => {
 		toppingsPagos.includes(topping.name.toLowerCase())
 	);
 
+	console.log(toppingsData);
+
 	// Sumar los quantity de todos los toppings
 	const totalQuantityToppings = toppingsData.reduce(
 		(total, topping) => total + topping.quantity,
@@ -94,23 +116,6 @@ export const ProductosVendidos = () => {
 		(total, topping) => total + topping.quantity,
 		0
 	);
-
-	// Calcular el costo total de los toppings pagos
-	const costoTotalToppings = ventasToppingsPagos.reduce((total, topping) => {
-		// Buscar el costo del topping en los materiales
-		const material = materiales.find(
-			(material) => material.nombre.toLowerCase() === topping.name.toLowerCase()
-		);
-		// Si se encuentra el material y tiene un costo definido
-		if (material && material.unidadPorPrecio) {
-			// Calcular el costo del topping y sumarlo al total
-			return total + material.unidadPorPrecio * topping.quantity;
-		} else {
-			return total;
-		}
-	}, 0);
-
-	console.log(costoTotalToppings);
 
 	const dataToppings = {
 		labels: toppingsData.map((t) => t.name),
@@ -247,9 +252,9 @@ export const ProductosVendidos = () => {
 					<span className="font-medium">Info alert!</span> Se vendieron{" "}
 					{hamburguesasPedidas} hamburguesas
 					<br />
-					Toppings totales: {totalQuantityToppings}
+					Toppings totales: {totalQuantityToppings}. Costo $
 					<br />
-					Toppings pagos: {totalQuantityToppingsPagos} = $
+					Toppings pagos: {totalQuantityToppingsPagos}. Bruto $
 					{totalQuantityToppingsPagos * 200}
 					<br />
 					Medallones: {totalMedallonesNecesarios}
