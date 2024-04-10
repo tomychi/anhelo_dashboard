@@ -69,6 +69,30 @@ export const ProductosVendidos = () => {
 		],
 	};
 
+	// Definir la lista originals
+	const originals = [
+		"Simple Chessburger",
+		"Doble Cheeseburger",
+		"Triple Cheeseburger",
+		"Cuadruple Cheeseburger",
+	];
+
+	// Filtrar los elementos de productosPedidos según las hamburguesas originales
+	const productosOriginals = productosPedidos.filter((producto) =>
+		originals.includes(producto.burger)
+	);
+
+	// Calcular la suma de todos los valores de quantity en productosOriginals
+	const totalQuantityOriginals = productosOriginals.reduce(
+		(total, producto) => total + producto.quantity,
+		0
+	);
+
+	console.log(
+		"La suma total de quantity en productosOriginals es:",
+		totalQuantityOriginals
+	);
+
 	const toppingsTodos = [
 		"mayonesa",
 		"bacon",
@@ -166,8 +190,6 @@ export const ProductosVendidos = () => {
 		(total, item) => total + item.costoTotal,
 		0
 	);
-
-	console.log("La suma total de costoTotal es:", sumaCostoTotal);
 
 	const dataToppings = {
 		labels: toppingsData.map((t) => t.name),
@@ -308,6 +330,11 @@ export const ProductosVendidos = () => {
 					<br />
 					Toppings pagos: {totalQuantityToppingsPagos}. Bruto $
 					{totalQuantityToppingsPagos * 300}
+					<br />
+					Un promedio de{" "}
+					{Math.ceil((totalQuantityToppings / totalQuantityOriginals) * 100) /
+						100}{" "}
+					toppings por compra
 					<br />
 					Medallones: {totalMedallonesNecesarios}
 					<br />
