@@ -50,7 +50,7 @@ export const DynamicForm = () => {
     metodoPago: '',
     direccion: '',
     telefono: '',
-    envio: '1000',
+    envio: '1250',
     hora: obtenerHoraActual(),
     piso: '',
     referencias: '',
@@ -60,7 +60,7 @@ export const DynamicForm = () => {
     // Agregar la propiedad 'envio' con el valor '1000' al objeto clienteInfo
     const clienteInfoConEnvio = {
       ...clienteInfo,
-      envio: '1000',
+      envio: '1250',
     };
 
     // Actualizar el estado formData
