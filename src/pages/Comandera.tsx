@@ -255,22 +255,22 @@ export const Comandera = () => {
     (orders.filter((order) => order.dislike || order.delay).length * 100) /
       orders.length;
   return (
-    <div className="grid grid-cols-1 p-4 grid-rows-2">
+    <div className="grid grid-cols-1 p-2 grid-rows-2">
       <div></div>
       <div></div>
-      <div className="flex font-antonio gap-4 mb-4">
+      <div className="flex font-antonio gap-2 mb-2">
         <button
-          className={`p-4 ${
+          className={`p-2 ${
             seccionActiva === 'porHacer'
               ? 'bg-custom-red'
               : 'border-2 border-red-main text-custom-red'
           } text-black font-black uppercase `}
           onClick={() => setSeccionActiva('porHacer')}
         >
-          Por Hacer
+          Hacer
         </button>
         <button
-          className={`p-4 ${
+          className={`p-2 ${
             seccionActiva === 'hechos'
               ? 'bg-custom-red'
               : 'border-2 border-red-main text-custom-red'
@@ -280,7 +280,7 @@ export const Comandera = () => {
           Hechos
         </button>
         <button
-          className={`p-4 ${
+          className={`p-2 ${
             seccionActiva === 'entregados'
               ? 'bg-custom-red'
               : 'border-2 border-red-main text-custom-red'
@@ -290,7 +290,7 @@ export const Comandera = () => {
           Entregados
         </button>
         <button
-          className={`p-4 ${
+          className={`p-2 ${
             seccionActiva === 'mapa'
               ? 'bg-custom-red'
               : 'border-2 border-red-main text-custom-red'
@@ -299,7 +299,14 @@ export const Comandera = () => {
         >
           Mapa
         </button>
+
+        <div className="flex w-max  flex-row border-2  font-black border-red-main">
+          <p className="text-custom-red uppercase font-antonio text-xl">
+            {cadeteSeleccionado}
+          </p>
+        </div>
       </div>
+
       <div className="row-start-4">
         {seccionActiva !== 'mapa' && (
           <>
@@ -325,7 +332,9 @@ export const Comandera = () => {
           </>
         )}
       </div>
-      <div>{seccionActiva === 'mapa' && <MapsApp />}</div>
+      <div>
+        {seccionActiva === 'mapa' && <MapsApp orders={pedidosHechos} />}
+      </div>
     </div>
   );
 };

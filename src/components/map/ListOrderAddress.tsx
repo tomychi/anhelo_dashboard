@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/configureStore';
 import { useContext, useEffect, useState } from 'react';
 import { MapContext, PlacesContext } from '../../context';
 import { Feature } from '../../interfaces/places';
@@ -14,8 +12,11 @@ interface SelectedAddress {
   fecha: string;
 }
 
-export const ListOrderAddress = () => {
-  const { orders } = useSelector((state: RootState) => state.data);
+interface ListOrderAddressProps {
+  orders: PedidoProps[];
+}
+
+export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
   const { searchPlacesByTerm } = useContext(PlacesContext);
   const [, setSearchResults] = useState<Feature[]>([]);
   const [unmatchedOrders, setUnmatchedOrders] = useState<PedidoProps[]>([]);
@@ -44,7 +45,8 @@ export const ListOrderAddress = () => {
       }
     };
     fetchData();
-  }, []);
+    console.log('orders', orders);
+  }, [orders]);
 
   const changeAddress = async () => {
     try {
@@ -102,7 +104,13 @@ export const ListOrderAddress = () => {
   };
 
   return (
-    <div>
+    <div
+      className="w-full md:w-auto" // Ajusta para dispositivos móviles
+      style={{
+        height: '30vh', // Limita la altura a 30vh
+        overflowY: 'auto', // Permite el desplazamiento vertical
+      }}
+    >
       {unmatchedOrders.length === 0 ? null : (
         <div
           style={{

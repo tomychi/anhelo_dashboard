@@ -31,11 +31,8 @@ export const MapView = () => {
     <div
       style={{
         height: '91vh',
-        left: 0,
-        top: 0,
-        width: '100vw',
       }}
-      className="overflow-y-hidden"
+      className="w-full h-full overflow-y-hidden"
       ref={mapDiv}
     >
       {userLocation?.join(',')}
