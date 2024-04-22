@@ -346,7 +346,8 @@ export const Comandera = () => {
 			<div>
 				{seccionActiva === "mapa" && <MapsApp orders={pedidosHechos} />}
 			</div>
-			<button
+			{/* Esto es para la contabilidad, NO BORRAR */}
+			{/* <button
 				className="bg-white"
 				onClick={() => {
 					const direcciones = OrdersSinRotadores.map(
@@ -356,7 +357,7 @@ export const Comandera = () => {
 				}}
 			>
 				Copiar Direcciones
-			</button>
+			</button> */}
 		</div>
 	);
 };
