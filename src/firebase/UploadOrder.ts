@@ -8,6 +8,7 @@ import { DetallePedidoProps } from '../pages/DynamicForm';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { v4 as uuidv4 } from 'uuid';
 import { PedidoProps } from '../types/types';
+import { UploadAfip } from './afip';
 
 // Agregar orderDetail a la colección 'pedidos'
 
@@ -24,7 +25,8 @@ interface OrderDetailProps {
   hora: string;
 }
 export const UploadOrder = async (
-  orderDetail: OrderDetailProps
+  orderDetail: OrderDetailProps,
+  aliasCuenta: string
 ): Promise<string> => {
   const firestore = getFirestore();
   const pedidoId = uuidv4();
@@ -32,6 +34,10 @@ export const UploadOrder = async (
   const [dia, mes, anio] = fechaFormateada.split('/');
   const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
   const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+  if (orderDetail.metodoPago === 'mercadopago') {
+    UploadAfip({ monto: orderDetail.total, aliasCuenta });
+  }
 
   try {
     await runTransaction(firestore, async (transaction) => {

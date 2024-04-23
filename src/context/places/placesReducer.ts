@@ -1,10 +1,15 @@
 import { PlacesState } from './PlacesProvider';
 import { Feature } from '../../interfaces/places';
+import { PedidoProps } from '../../types/types';
+
+export interface CustomFeature extends Feature {
+  order: PedidoProps;
+}
 
 type PlacesAction =
   | { type: 'setUserLocation'; payload: [number, number] }
   | { type: 'setLoadingPlaces' }
-  | { type: 'setPlaces'; payload: Feature[] }
+  | { type: 'setPlaces'; payload: CustomFeature[] }
   | { type: 'setLoadingPlacesOrder' }
   | { type: 'setPlacesOrder'; payload: Feature[] };
 

@@ -2,9 +2,10 @@ import { useEffect, useReducer } from 'react';
 import { searchApi } from '../../apis';
 import { getUserLocation } from '../../helpers';
 import { PlacesContext } from './PlacesContext';
-import { placesReducer } from './placesReducer';
+import { CustomFeature, placesReducer } from './placesReducer';
 
 import { Feature, PlacesResponse } from '../../interfaces/places';
+import { PedidoProps } from '../../types/types';
 
 export interface PlacesState {
   isLoading: boolean;
@@ -37,7 +38,10 @@ export const PlacesProvider = ({ children }: Props) => {
     );
   }, []);
 
-  const searchPlacesByTerm = async (query: string): Promise<Feature[]> => {
+  const searchPlacesByTerm = async (
+    query: string,
+    order: PedidoProps
+  ): Promise<CustomFeature[]> => {
     if (query.length === 0) {
       dispatch({ type: 'setPlaces', payload: [] });
       return [];
@@ -51,8 +55,14 @@ export const PlacesProvider = ({ children }: Props) => {
         proximity: state.userLocation.join(','),
       },
     });
-    dispatch({ type: 'setPlaces', payload: resp.data.features });
-    return resp.data.features;
+    // Aquí puedes agregar la dirección y el pedido a los resultados si lo necesitas
+    const placesWithOrderInfo = resp.data.features.map((feature) => ({
+      ...feature,
+      order: order,
+    }));
+
+    dispatch({ type: 'setPlaces', payload: placesWithOrderInfo });
+    return placesWithOrderInfo;
   };
 
   const searchPlacesByOrder = async (query: string): Promise<Feature[]> => {

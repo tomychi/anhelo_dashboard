@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { Feature } from '../../interfaces/places';
+import { PedidoProps } from '../../types/types';
 
 export interface PlacesContextProps {
   isLoading: boolean;
@@ -10,7 +11,7 @@ export interface PlacesContextProps {
   placesOrder: Feature[];
 
   // methods
-  searchPlacesByTerm: (query: string) => Promise<Feature[]>;
+  searchPlacesByTerm: (query: string, order: PedidoProps) => Promise<Feature[]>;
   searchPlacesByOrder: (queryy: string) => Promise<Feature[]>;
 }
 

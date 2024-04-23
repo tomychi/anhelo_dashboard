@@ -6,7 +6,10 @@ export const PrivateRoutesLayout = () => {
   const location = useLocation();
   const currentUserEmail = projectAuth.currentUser?.email;
 
-  if (currentUserEmail === 'cadetes@anhelo.com') {
+  if (
+    currentUserEmail === 'cadetes@anhelo.com' ||
+    currentUserEmail === 'cocina@anhelo.com'
+  ) {
     // Si el usuario es cadetes@anhelo.com, solo tiene acceso a la ruta "/comandas"
     return (
       <Routes>

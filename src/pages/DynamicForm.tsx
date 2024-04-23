@@ -1,13 +1,15 @@
 import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { ReadOrdersForToday } from '../firebase/ReadData';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { PedidoProps } from '../types/types';
 import { addTelefonoFirebase } from '../firebase/Telefonos';
+import { obtenerMontosPorAlias } from '../firebase/afip';
+import { readOrdersData } from '../redux/data/dataAction';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -44,7 +46,72 @@ export interface DataStateProps {
   collectionName?: string;
 }
 
+type AliasTopes = Record<string, number>; // Definir un tipo para los topes de alias
+
+const obtenerAliasDisponible = (
+  montosPorAlias: Record<string, number>,
+  aliasTopes: AliasTopes
+): string => {
+  for (const [alias, topeTotal] of Object.entries(aliasTopes)) {
+    const montoAcumulado = montosPorAlias[alias] || 0;
+    if (montoAcumulado < topeTotal) {
+      return alias; // Devolver el alias si el monto acumulado es menor que el tope total
+    }
+  }
+  return 'onlyanhelo3'; // Devolver null si no hay ningún alias disponible
+};
+
+const aliasTopes = {
+  onlyanhelo1: 150000,
+  onlyanhelo2: 450000,
+};
+
 export const DynamicForm = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
+      console.log('db');
+      dispatch(readOrdersData(pedidos));
+    });
+
+    return () => {
+      unsubscribe(); // Detiene la suscripción cuando el componente se desmonta
+    };
+  }, [dispatch]);
+  const [montosPorAlias, setMontosPorAlias] = useState<Record<string, number>>(
+    {}
+  );
+
+  useEffect(() => {
+    const obtenerMontos = async () => {
+      try {
+        const fechaActual = obtenerFechaActual();
+        const [, mesActual, anioActual] = fechaActual.split('/');
+        const unsubscribe = await obtenerMontosPorAlias(
+          anioActual,
+          mesActual,
+          (montos) => {
+            setMontosPorAlias(montos);
+          }
+        );
+        return unsubscribe;
+      } catch (error) {
+        console.error('Error al obtener los montos por alias:', error);
+      }
+    };
+
+    let unsubscribeFunction: () => void = () => {}; // Inicializa la función de cancelación
+
+    obtenerMontos().then((unsubscribe) => {
+      unsubscribeFunction = unsubscribe || (() => {}); // Asigna la función de cancelación, o una función vacía si no está disponible
+    });
+
+    return () => {
+      unsubscribeFunction(); // Detiene la suscripción cuando el componente se desmonta
+    };
+  }, []);
+  const aliasDisponible = obtenerAliasDisponible(montosPorAlias, aliasTopes);
+
   const [formData, setFormData] = useState<FormDataProps>({
     aclaraciones: '',
     metodoPago: '',
@@ -136,7 +203,7 @@ export const DynamicForm = () => {
       fecha: obtenerFechaActual(),
       elaborado: false,
     };
-    UploadOrder(info)
+    UploadOrder(info, aliasDisponible)
       .then((result) => {
         setTimeout(() => {
           // Leer los pedidos para el día actual
@@ -260,7 +327,11 @@ export const DynamicForm = () => {
           {/* Sección form */}
           <div className="md:w-1/3">
             {/* Establecer el ancho de la sección */}
+
             <div className="font-antonio font-black bg-custom-red">
+              <h5 className="text-5xl mt-[0.01rem] font-black text-center">
+                {aliasDisponible}
+              </h5>
               <div className="flex flex-col">
                 <div className="flex w-full justify-center p-4">
                   <button

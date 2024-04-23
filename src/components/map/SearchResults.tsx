@@ -47,6 +47,7 @@ export const SearchResults = () => {
         try {
           const info = await getRouteBetweenPoints(userLocation, [lng, lat]); // Llamar a la función getRout con el lugar seleccionado
           popup.setHTML(`
+            <p>Encontrado: </p> 
             <p>${place.place_name_es.split(',')[0]}</p>
             <p>Hay: ${info.kms} km</p>
             <p>Tarda: ${info.minutes} m</p>

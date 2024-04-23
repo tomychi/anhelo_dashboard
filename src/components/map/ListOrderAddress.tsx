@@ -31,7 +31,7 @@ export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
         let allResults: Feature[] = []; // Initialize an array to store all results
         const unmatchedOrdersArray: PedidoProps[] = []; // Declare as const
         for (const order of orders) {
-          const results = await searchPlacesByTerm(order.direccion);
+          const results = await searchPlacesByTerm(order.direccion, order);
           if (results.length === 0) {
             unmatchedOrdersArray.push(order); // Store the entire order object
           } else {
