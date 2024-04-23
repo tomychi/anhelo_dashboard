@@ -7,7 +7,6 @@ interface MapsAppProps {
 }
 
 export const MapsApp = ({ orders }: MapsAppProps) => {
-  console.log(orders);
   return (
     <PlacesProvider>
       <MapProvider>
