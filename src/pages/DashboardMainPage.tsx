@@ -16,8 +16,12 @@ import {
 import { MonthData } from './MonthData';
 import { Stock } from './Stock';
 import { MapsApp } from './MapsApp';
+import { RootState } from '../redux/configureStore';
+import { useSelector } from 'react-redux';
 
 export const DashboardMainPage = () => {
+  const { orders } = useSelector((state: RootState) => state.data);
+
   return (
     <div className="flex h-screen bg-black overflow-x-hidden">
       <Sidebar />
@@ -39,7 +43,7 @@ export const DashboardMainPage = () => {
             <Route path="productosVendidos" element={<ProductosVendidos />} />
             <Route path="ventas" element={<Comandera />} />
             <Route path="monthdata" element={<MonthData />} />
-            <Route path="map" element={<MapsApp />} />
+            <Route path="map" element={<MapsApp orders={orders} />} />
           </Route>
         </Routes>
       </div>
