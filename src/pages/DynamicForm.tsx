@@ -487,17 +487,20 @@ export const DynamicForm = () => {
 														</h5>
 														<button
 															className="w-1/5 text-black border-2 border-black font-black p-4"
+															type="button" // Cambiar el tipo de botón a "button"
 															onClick={() => {
+																const mensaje = `El alias es ${aliasDisponible}, aguardo comprobante para tomar tu pedido!`;
 																navigator.clipboard
-																	.writeText(aliasDisponible)
+																	.writeText(mensaje)
 																	.then(() => {
 																		console.log(
-																			"Alias copiado al portapapeles."
+																			"Mensaje copiado al portapapeles:",
+																			mensaje
 																		);
 																	})
 																	.catch((error) => {
 																		console.error(
-																			"Error al copiar el alias al portapapeles:",
+																			"Error al copiar el mensaje al portapapeles:",
 																			error
 																		);
 																	});
