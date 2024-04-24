@@ -58,6 +58,7 @@ export const GeneralStats = ({
 					</div>
 				)}
 			</div>
+			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
 				<p className="border-b-2 font-black w-max border-red-main">
 					PEDIDOS ENTREGADOS A TIEMPO: {Math.round(customerSuccess)}%
