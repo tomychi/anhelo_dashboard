@@ -12,7 +12,7 @@ export interface PlacesState {
   userLocation?: [number, number];
   isLoadingPlaces: boolean;
   isLoadingPlacesOrder: boolean;
-  places: Feature[];
+  places: CustomFeature[];
   placesOrder: Feature[];
 }
 
@@ -56,10 +56,12 @@ export const PlacesProvider = ({ children }: Props) => {
       },
     });
     // Aquí puedes agregar la dirección y el pedido a los resultados si lo necesitas
-    const placesWithOrderInfo = resp.data.features.map((feature) => ({
-      ...feature,
-      order: order,
-    }));
+    const placesWithOrderInfo: CustomFeature[] = resp.data.features.map(
+      (feature) => ({
+        ...feature,
+        order: order,
+      })
+    );
 
     dispatch({ type: 'setPlaces', payload: placesWithOrderInfo });
     return placesWithOrderInfo;
