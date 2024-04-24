@@ -15,7 +15,7 @@ import {
 } from '../pages';
 import { MonthData } from './MonthData';
 import { Stock } from './Stock';
-import { MapsApp } from './MapsApp';
+import { MapsApp } from '../components/MapsApp';
 import { RootState } from '../redux/configureStore';
 import { useSelector } from 'react-redux';
 
