@@ -10,7 +10,7 @@ import { Feature } from '../../interfaces/places';
 import { readCadetes } from '../../firebase/Cadetes';
 import { updateCadeteForOrder } from '../../firebase/UploadOrder';
 import Swal from 'sweetalert2';
-
+import customMarkerImage from '../../assets/anheloLogoResized.png';
 export interface MapState {
   isMapReady: boolean;
   map?: Map;
@@ -106,17 +106,17 @@ export const MapProvider = ({ children }: Props) => {
       if (diffMinutes > 20) {
         // Marca el pedido de manera especial si han pasado más de 20 minutos
         newMarker = new Marker({
-          color: '#ff5500', // Color rojo para identificar los pedidos retrasados
+          color: '#ff0011', // Color rojo para identificar los pedidos retrasados
         });
       } else if (place.order.cadete) {
         // Marca el pedido con color azul si hay un cadete asignado
         newMarker = new Marker({
-          color: '#0000ff',
+          color: '#00ff11',
         });
       } else {
-        // Marca el pedido con color rojo si no hay cadete asignado y no ha pasado el tiempo límite
+        // Marca el pedido con color azul si no hay cadete asignado y no ha pasado el tiempo límite
         newMarker = new Marker({
-          color: '#ff0011',
+          color: '#0000ff',
         });
       }
 
@@ -187,6 +187,16 @@ export const MapProvider = ({ children }: Props) => {
     dispatch({ type: 'setMarkers', payload: newMarkers });
   }, [places, state.map, isLoadingCadetes, cadetes]);
 
+  // Función para crear un marcador con una imagen de tus activos
+  const createCustomMarker = (imagePath: string) => {
+    const container = document.createElement('div');
+    container.className = 'custom-marker';
+    container.style.backgroundImage = `url(${imagePath})`;
+    container.style.width = '50px'; // Ajusta el tamaño del icono según sea necesario
+    container.style.height = '50px'; // Ajusta el tamaño del icono según sea necesario
+
+    return container;
+  };
   const setMap = (map: Map) => {
     const myLocationPopup = new Popup().setHTML(`
                 <h4>Aqui estoy</h4>
@@ -195,6 +205,7 @@ export const MapProvider = ({ children }: Props) => {
 
     new Marker({
       color: '#00ff11',
+      element: createCustomMarker(customMarkerImage),
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
       .setPopup(myLocationPopup)
