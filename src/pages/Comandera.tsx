@@ -337,7 +337,7 @@ export const Comandera = () => {
 					</>
 				)}
 			</div>
-			<div>
+			<div className="h-1">
 				{seccionActiva === "mapa" && <MapsApp orders={pedidosHechos} />}
 			</div>
 			{/* Esto es para la contabilidad, NO BORRAR */}
