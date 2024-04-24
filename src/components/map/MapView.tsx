@@ -16,7 +16,7 @@ export const MapView = () => {
 				container: mapDiv.current!, // SE ASEGURA QUE NO SEA NULO (!)
 				style: "mapbox://styles/mapbox/dark-v10",
 				center: userLocation,
-				zoom: 14,
+				zoom: 12,
 			});
 
 			setMap(map);
@@ -30,7 +30,7 @@ export const MapView = () => {
 	return (
 		<div
 			style={{
-				height: "86vh",
+				height: "75vh",
 			}}
 			className="w-full h-full overflow-y-hidden"
 			ref={mapDiv}
