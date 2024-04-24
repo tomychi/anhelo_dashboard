@@ -482,7 +482,7 @@ export const DynamicForm = () => {
 												</select>
 												{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
 													<div className="flex flex-row">
-														<h5 className="text-black w-4/5 font-antonio border-black border-2 font-black p-4">
+														<h5 className="text-black w-4/5 font-antonio border-black border-2 font-black p-4 ">
 															ALIAS: {aliasDisponible}
 														</h5>
 														<button
