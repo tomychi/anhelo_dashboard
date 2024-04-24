@@ -308,14 +308,8 @@ export const Comandera = () => {
 					} text-black font-black uppercase `}
 					onClick={() => setSeccionActiva("mapa")}
 				>
-					Mapa
+					Mapa: {cadeteSeleccionado ? ` ${cadeteSeleccionado}` : "General"}
 				</button>
-
-				<div className="flex w-max  flex-row border-2  font-black border-red-main">
-					<p className="text-custom-red uppercase font-antonio text-xl">
-						{cadeteSeleccionado}
-					</p>
-				</div>
 			</div>
 
 			<div className="row-start-4">
