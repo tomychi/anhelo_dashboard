@@ -266,50 +266,50 @@ export const Comandera = () => {
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
 	return (
-		<div className="grid grid-cols-1 p-2 grid-rows-2">
-			<div></div>
-			<div></div>
-			<div className="flex font-antonio gap-2 mb-2">
-				<button
-					className={`p-2 ${
-						seccionActiva === "porHacer"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
-					onClick={() => setSeccionActiva("porHacer")}
-				>
-					Hacer
-				</button>
-				<button
-					className={`p-2 ${
-						seccionActiva === "hechos"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
-					onClick={() => setSeccionActiva("hechos")}
-				>
-					Hechos
-				</button>
-				<button
-					className={`p-2 ${
-						seccionActiva === "entregados"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
-					onClick={() => setSeccionActiva("entregados")}
-				>
-					Entregados
-				</button>
-				<button
-					className={`p-2 ${
-						seccionActiva === "mapa"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
-					onClick={() => setSeccionActiva("mapa")}
-				>
-					Mapa: {cadeteSeleccionado ? ` ${cadeteSeleccionado}` : "General"}
-				</button>
+		<div className=" p-4 flex flex-col">
+			<div className="">
+				<div className="flex font-antonio flex-row gap-2 mb-2">
+					<button
+						className={`p-2 ${
+							seccionActiva === "porHacer"
+								? "bg-custom-red"
+								: "border-2 border-red-main text-custom-red"
+						} text-black font-black uppercase `}
+						onClick={() => setSeccionActiva("porHacer")}
+					>
+						Hacer
+					</button>
+					<button
+						className={`p-2 ${
+							seccionActiva === "hechos"
+								? "bg-custom-red"
+								: "border-2 border-red-main text-custom-red"
+						} text-black font-black uppercase `}
+						onClick={() => setSeccionActiva("hechos")}
+					>
+						Hechos
+					</button>
+					<button
+						className={`p-2 ${
+							seccionActiva === "entregados"
+								? "bg-custom-red"
+								: "border-2 border-red-main text-custom-red"
+						} text-black font-black uppercase `}
+						onClick={() => setSeccionActiva("entregados")}
+					>
+						Entregados
+					</button>
+					<button
+						className={`p-2 ${
+							seccionActiva === "mapa"
+								? "bg-custom-red"
+								: "border-2 border-red-main text-custom-red"
+						} text-black font-black uppercase `}
+						onClick={() => setSeccionActiva("mapa")}
+					>
+						Mapa: {cadeteSeleccionado ? ` ${cadeteSeleccionado}` : "General"}
+					</button>
+				</div>
 			</div>
 
 			<div className="row-start-4">
