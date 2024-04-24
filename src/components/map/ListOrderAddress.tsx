@@ -5,6 +5,8 @@ import { PedidoProps } from '../../types/types';
 import { mapClickFn } from '../../apis/locationPickerApi';
 import mapboxgl from 'mapbox-gl';
 import { handleAddressSave } from '../../firebase/UploadOrder';
+import { RootState } from '../../redux/configureStore';
+import { useSelector } from 'react-redux';
 
 interface SelectedAddress {
   address: string;
@@ -17,6 +19,9 @@ interface ListOrderAddressProps {
 }
 
 export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const userAdmin = 'tomas.arcostanzo5@gmail.com';
   const { searchPlacesByTerm } = useContext(PlacesContext);
   const [, setSearchResults] = useState<Feature[]>([]);
   const [unmatchedOrders, setUnmatchedOrders] = useState<PedidoProps[]>([]);
@@ -104,57 +109,61 @@ export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
   };
 
   return (
-    <div
-      className="w-full md:w-auto" // Ajusta para dispositivos móviles
-      style={{
-        height: '30vh', // Limita la altura a 30vh
-        overflowY: 'auto', // Permite el desplazamiento vertical
-      }}
-    >
-      {unmatchedOrders.length === 0 ? null : (
+    <div>
+      {user.email === userAdmin ? (
         <div
+          className="w-full md:w-auto" // Ajusta para dispositivos móviles
           style={{
-            height: '90vh',
-            left: 0,
-            top: 0,
+            height: '30vh', // Limita la altura a 30vh
+            overflowY: 'auto', // Permite el desplazamiento vertical
           }}
-          className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
         >
-          {Object.keys(selectedAddress).length > 0 && (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => changeAddress()}
+          {unmatchedOrders.length === 0 ? null : (
+            <div
+              style={{
+                height: '90vh',
+                left: 0,
+                top: 0,
+              }}
+              className="left-4 w-60 bg-white rounded-lg shadow-md p-1 overflow-y-auto"
             >
-              Cambiar
-            </button>
-          )}
-          {unmatchedOrders.map((s, index) => {
-            const isSelected = selectedAddress[s.id] !== undefined; // Verifica si la dirección está en selectedAddress
-            return (
-              <div key={`${s.id}-${index}`} className="">
-                <div>{s.direccion}</div>
-                <div
-                  onClick={() => handleClick(s.id, s.fecha)} // Pasa el índice como argumento aquí
+              {Object.keys(selectedAddress).length > 0 && (
+                <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => changeAddress()}
                 >
-                  Marcar!
-                </div>
-                {/* Muestra el input solo si la dirección está en selectedAddress */}
-                {isSelected && (
-                  <input
-                    value={selectedAddress[s.id].address || ''}
-                    type="text"
-                    id={s.id}
-                    onChange={(e) => handleChange(e.target.value, s.id)}
-                  />
-                )}
-                {/* Usa el índice para acceder a la dirección correspondiente */}
-                {/* {showSearchBarArray[index] && <SearchBar />} */}
-              </div>
-            );
-          })}
+                  Cambiar
+                </button>
+              )}
+              {unmatchedOrders.map((s, index) => {
+                const isSelected = selectedAddress[s.id] !== undefined; // Verifica si la dirección está en selectedAddress
+                return (
+                  <div key={`${s.id}-${index}`} className="">
+                    <div>{s.direccion}</div>
+                    <div
+                      onClick={() => handleClick(s.id, s.fecha)} // Pasa el índice como argumento aquí
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Marcar!
+                    </div>
+                    {/* Muestra el input solo si la dirección está en selectedAddress */}
+                    {isSelected && (
+                      <input
+                        value={selectedAddress[s.id].address || ''}
+                        type="text"
+                        id={s.id}
+                        onChange={(e) => handleChange(e.target.value, s.id)}
+                      />
+                    )}
+                    {/* Usa el índice para acceder a la dirección correspondiente */}
+                    {/* {showSearchBarArray[index] && <SearchBar />} */}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

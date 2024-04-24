@@ -108,6 +108,11 @@ export const MapProvider = ({ children }: Props) => {
         newMarker = new Marker({
           color: '#ff0011', // Color rojo para identificar los pedidos retrasados
         });
+      } else if (diffMinutes > 10) {
+        // Marca el pedido de manera especial si han pasado más de 10 minutos
+        newMarker = new Marker({
+          color: '#FFD300', // Color amarillo para identificar los pedidos retrasados
+        });
       } else if (place.order.cadete) {
         // Marca el pedido con color azul si hay un cadete asignado
         newMarker = new Marker({
