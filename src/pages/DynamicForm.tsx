@@ -468,7 +468,7 @@ export const DynamicForm = () => {
 													Hora:
 												</label>
 											</div>
-											<div className="py-4 ">
+											<div className="py-4">
 												<select
 													id="metodoPago"
 													name="metodoPago"
