@@ -224,7 +224,11 @@ export const Dashboard = () => {
 				/>
 
 				<CardInfo
-					info={currencyFormat(facturacionTotal / orders.length)}
+					info={
+						orders.length > 0
+							? currencyFormat(facturacionTotal / orders.length)
+							: currencyFormat(0)
+					}
 					title={"TICKET PROMEDIO"}
 					svgComponent={<TicketPromedioSVG />}
 				/>
