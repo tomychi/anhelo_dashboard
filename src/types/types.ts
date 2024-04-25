@@ -29,6 +29,7 @@ export interface PedidoProps {
   tiempoElaborado: string;
   tiempoEntregado: string;
   entregado: boolean;
+  map?: string;
 }
 
 export interface ReadDataProps {

@@ -36,11 +36,24 @@ export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
         let allResults: Feature[] = []; // Initialize an array to store all results
         const unmatchedOrdersArray: PedidoProps[] = []; // Declare as const
         for (const order of orders) {
-          const results = await searchPlacesByTerm(order.direccion, order);
-          if (results.length === 0) {
-            unmatchedOrdersArray.push(order); // Store the entire order object
+          if (order.direccion === 'retiro por local') {
+            break;
+          }
+
+          let results;
+
+          if (order.map) {
+            // Si la propiedad 'map' está presente, buscar por ella
+            results = await searchPlacesByTerm(order.map, order);
           } else {
-            allResults = [...allResults, ...results]; // Concatenate the results
+            // Si no, buscar por la propiedad 'direccion'
+            results = await searchPlacesByTerm(order.direccion, order);
+          }
+
+          if (results.length === 0) {
+            unmatchedOrdersArray.push(order); // Almacenar el objeto de pedido completo
+          } else {
+            allResults = [...allResults, ...results]; // Concatenar los resultados
           }
         }
         setSearchResults(allResults); // Update the state with all results at once

@@ -316,7 +316,7 @@ export const handleAddressSave = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return { ...pedido, direccion: direccion };
+          return { ...pedido, map: direccion };
         } else {
           return pedido;
         }
