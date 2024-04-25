@@ -62,7 +62,7 @@ const obtenerAliasDisponible = (
 };
 
 const aliasTopes = {
-	onlyanhelo1: 150000, //TOBIAS
+	"tobias.azcurra": 150000, //TOBIAS
 	onlyanhelo2: 450000, //ALMA
 	//onlyanhelo3 TOMY
 };
@@ -490,7 +490,7 @@ export const DynamicForm = () => {
 															className="w-1/5 text-black border-2 border-black font-black p-4"
 															type="button" // Cambiar el tipo de botón a "button"
 															onClick={() => {
-																const mensaje = `El alias es ${aliasDisponible}, aguardo comprobante para tomar tu pedido!`;
+																const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
 																navigator.clipboard
 																	.writeText(mensaje)
 																	.then(() => {
