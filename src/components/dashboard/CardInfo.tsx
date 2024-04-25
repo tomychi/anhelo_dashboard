@@ -23,13 +23,16 @@ export const CardInfo = ({
 			}`}
 		>
 			{/* Recuadro chiquito arriba a la derecha */}
-			{cuadrito && (
+			{!isNaN(cuadrito as number) && cuadrito && (
 				<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 					{`${Math.ceil(
-						typeof cuadrito === "number" ? cuadrito : parseFloat(cuadrito)
+						typeof cuadrito === "number"
+							? cuadrito
+							: parseFloat(cuadrito as string)
 					)}%`}
 				</div>
 			)}
+
 			<div className="absolute top-4 left-4 text-black ">
 				{/* Contenido principal */}
 				<div className="flex flex-col">{svgComponent}</div>
