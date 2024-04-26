@@ -156,7 +156,7 @@ export const Sidebar = () => {
 								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
 							>
 								<svg
-									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
+									className="w-5 h-5 text-black transition duration-75 group-hover:text-custom-red"
 									aria-hidden="true"
 									xmlns="http://www.w3.org/2000/svg"
 									fill="currentColor"
@@ -164,6 +164,25 @@ export const Sidebar = () => {
 								>
 									<path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
 									<path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
+								</svg>
+							</NavLink>
+						</li>
+						<li>
+							<NavLink
+								to="/"
+								className="flex items-center p-2 text-black hover:bg-black group"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									className="w-5 h-5 text-black transition duration-75 group-hover:text-custom-red"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z"
+										clip-rule="evenodd"
+									/>
 								</svg>
 							</NavLink>
 						</li>
@@ -222,25 +241,6 @@ export const Sidebar = () => {
 										fillRule="evenodd"
 										d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z"
 										clipRule="evenodd"
-									/>
-								</svg>
-							</NavLink>
-						</li>
-						<li>
-							<NavLink
-								to="/"
-								className="flex items-center p-2 text-black hover:bg-black group"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									className="w-6 h-6"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z"
-										clip-rule="evenodd"
 									/>
 								</svg>
 							</NavLink>
