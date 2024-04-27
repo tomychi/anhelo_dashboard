@@ -194,7 +194,7 @@ export const PedidosWeb = ({
       >
         Mensaje:
       </label>
-      <button className="  text-custom-red mt-4 p-4 w-full bg-black font-black uppercase text-4x1 outline-none ">
+      <button className="text-custom-red mt-4 p-4 w-full bg-black font-black uppercase text-4x1 outline-none">
         Analizar
       </button>
     </form>

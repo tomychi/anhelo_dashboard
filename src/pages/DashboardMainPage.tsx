@@ -18,6 +18,7 @@ import { Stock } from './Stock';
 import { MapsApp } from '../components/MapsApp';
 import { RootState } from '../redux/configureStore';
 import { useSelector } from 'react-redux';
+import { RegistroEmpleado } from './RegistroEmpleado';
 
 export const DashboardMainPage = () => {
   const { orders } = useSelector((state: RootState) => state.data);
@@ -43,6 +44,7 @@ export const DashboardMainPage = () => {
             <Route path="productosVendidos" element={<ProductosVendidos />} />
             <Route path="ventas" element={<Comandera />} />
             <Route path="monthdata" element={<MonthData />} />
+            <Route path="horario" element={<RegistroEmpleado />} />
             <Route path="map" element={<MapsApp orders={orders} />} />
           </Route>
         </Routes>

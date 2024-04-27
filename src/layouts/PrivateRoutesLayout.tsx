@@ -6,6 +6,7 @@ export const PrivateRoutesLayout = () => {
   const location = useLocation();
   const currentUserEmail = projectAuth.currentUser?.email;
 
+  console.log(currentUserEmail);
   if (
     currentUserEmail === 'cadetes@anhelo.com' ||
     currentUserEmail === 'cocina@anhelo.com'
