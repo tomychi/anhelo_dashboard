@@ -45,6 +45,34 @@ export const GeneralStats = ({
 						})}
 					</select>
 				</div>
+				{/* Seccion empleados activos */}
+				<div className=" flex flex-row gap-2">
+					<div className="flex items-center">
+						{/* circulo  */}
+						<div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<div>cadete 1 presente</div>
+					</div>
+					<div className="flex items-center">
+						{/* circulo  */}
+						<div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<div>cadete 1 presente</div>
+					</div>
+					<div className="flex items-center">
+						{/* circulo  */}
+						<div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<div>cadete 1 presente</div>
+					</div>
+					<div className="flex items-center">
+						{/* circulo  */}
+						<div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<div>cadete 1 presente</div>
+					</div>
+					<div className="flex items-center">
+						{/* circulo  */}
+						<div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+						<div>cadete 1 presente</div>
+					</div>
+				</div>
 				{cadeteSeleccionado && (
 					<div>
 						<p>
