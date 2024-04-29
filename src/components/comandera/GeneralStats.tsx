@@ -8,6 +8,7 @@ import {
 	readEmpleados,
 } from "../../firebase/registroEmpleados";
 import { copyToClipboard } from "../../helpers/copy";
+import ScrollContainer from "./ScrollContainer";
 
 interface GeneralStatsProps {
 	customerSuccess: number;
@@ -84,43 +85,44 @@ export const GeneralStats = ({
 						})}
 					</select>
 				</div>
-				{/* Seccion empleados activos */}
-				<div className="flex items-center flex-row overflow-x-auto ">
-					<div className="flex flex-row gap-4 text-xs">
-						{empleados.map((empleado, index) => {
-							const horaEntrada = empleadoActivo(empleado.name)
-								? (
-										registro.find(
-											(registroEmpleado) =>
-												registroEmpleado.nombreEmpleado === empleado.name
-										)?.horaEntrada || "Hora de entrada no disponible"
-								  ).substring(0, 5) // Extraer solo HH:mm
-								: "Ausente";
-							return (
-								<div key={index} className="flex items-center flex-row">
-									<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
-										<div
-											className={`w-8 h-8 rounded-full ${
-												empleadoActivo(empleado.name)
-													? "bg-green-500"
-													: "bg-red-main"
-											}`}
-										></div>
+				<div className="flex items-center flex-row overflow-hidden">
+					<ScrollContainer>
+						<div className="flex flex-row gap-4 text-xs">
+							{empleados.map((empleado, index) => {
+								const horaEntrada = empleadoActivo(empleado.name)
+									? (
+											registro.find(
+												(registroEmpleado) =>
+													registroEmpleado.nombreEmpleado === empleado.name
+											)?.horaEntrada || "Hora de entrada no disponible"
+									  ).substring(0, 5) // Extraer solo HH:mm
+									: "Ausente";
+								return (
+									<div key={index} className="flex items-center flex-row">
+										<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
+											<div
+												className={`w-8 h-8 rounded-full ${
+													empleadoActivo(empleado.name)
+														? "bg-green-500"
+														: "bg-red-main"
+												}`}
+											></div>
+										</div>
+										<div className="flex flex-col w-full">
+											<p>{empleado.name}</p>
+											{horaEntrada === "Ausente" ? (
+												<p>{horaEntrada}</p>
+											) : (
+												<p className="flex items-center">
+													<span className="mr-2">Ingreso</span> {horaEntrada} hs
+												</p>
+											)}
+										</div>
 									</div>
-									<div className="flex flex-col w-full">
-										<p>{empleado.name}</p>
-										{horaEntrada === "Ausente" ? (
-											<p>{horaEntrada}</p>
-										) : (
-											<p className="flex items-center">
-												<span className="mr-2">Ingreso</span> {horaEntrada} hs
-											</p>
-										)}
-									</div>
-								</div>
-							);
-						})}
-					</div>
+								);
+							})}
+						</div>
+					</ScrollContainer>
 				</div>
 
 				{cadeteSeleccionado && (
