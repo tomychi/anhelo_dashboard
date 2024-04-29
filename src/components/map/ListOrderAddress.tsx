@@ -41,7 +41,6 @@ export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
           }
 
           let results;
-
           if (order.map) {
             // Si la propiedad 'map' está presente, buscar por ella
             results = await searchPlacesByTerm(order.map, order);

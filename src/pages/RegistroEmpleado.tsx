@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
+  EmpleadosProps,
   marcarEntrada,
   marcarSalida,
   obtenerRegistroActual,
+  readEmpleados,
 } from '../firebase/registroEmpleados';
 
 export interface RegistroProps {
@@ -13,18 +15,16 @@ export interface RegistroProps {
 }
 export const RegistroEmpleado = () => {
   const [registro, setRegistro] = useState<RegistroProps[]>([]);
+  const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 
-  const [empleados, setEmpleados] = useState([
-    { nombre: 'Santi (cadete)' },
-    { nombre: 'Mauri (cadete)' },
-    { nombre: 'Rodri (cadete)' },
-    { nombre: 'Ian (cadete)' },
-    { nombre: 'Maxi (cadete)' },
-    { nombre: 'Bruno' },
-    { nombre: 'Santi' },
-    { nombre: 'Jovino' },
-    // Agrega más empleados según sea necesario
-  ]);
+  useEffect(() => {
+    const getEmpleados = async () => {
+      const cade = await readEmpleados();
+      setEmpleados(cade);
+    };
+    getEmpleados();
+  }, []);
+
   useEffect(() => {
     const cargarRegistro = async () => {
       try {
@@ -38,9 +38,8 @@ export const RegistroEmpleado = () => {
     cargarRegistro();
   }, [empleados]);
 
-  console.log(registro);
   const handleMarcarEntrada = async (index: number) => {
-    const nombreEmpleado = empleados[index].nombre;
+    const nombreEmpleado = empleados[index].name;
     await marcarEntrada(nombreEmpleado);
     setEmpleados((prevEmpleados) => {
       const nuevosEmpleados = [...prevEmpleados];
@@ -49,7 +48,7 @@ export const RegistroEmpleado = () => {
   };
 
   const handleMarcarSalida = async (index: number) => {
-    const nombreEmpleado = empleados[index].nombre;
+    const nombreEmpleado = empleados[index].name;
     await marcarSalida(nombreEmpleado);
     setEmpleados((prevEmpleados) => {
       const nuevosEmpleados = [...prevEmpleados];
@@ -60,16 +59,16 @@ export const RegistroEmpleado = () => {
   return (
     <div className="font-antonio font-black ">
       {empleados.map((empleado, index) => {
-        // Verifica si el nombre del empleado está presente en el registro del día actual
+        // Verifica si el name del empleado está presente en el registro del día actual
         const estaEnRegistro = registro.some(
           (registroEmpleado) =>
-            registroEmpleado.nombreEmpleado === empleado.nombre
+            registroEmpleado.nombreEmpleado === empleado.name
         );
 
         // Verifica si el empleado está marcado en el registro
         const empleadoMarcado = registro.find(
           (registroEmpleado) =>
-            registroEmpleado.nombreEmpleado === empleado.nombre &&
+            registroEmpleado.nombreEmpleado === empleado.name &&
             registroEmpleado.marcado
         );
 
@@ -86,7 +85,7 @@ export const RegistroEmpleado = () => {
                 : handleMarcarEntrada(index)
             }
           >
-            {empleado.nombre}
+            {empleado.name}
           </button>
         );
       })}

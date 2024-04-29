@@ -7,6 +7,7 @@ import {
   getDoc,
   serverTimestamp,
   setDoc,
+  getDocs,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { RegistroProps } from '../pages/RegistroEmpleado';
@@ -110,4 +111,23 @@ export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
     console.error('Error al obtener el registro actual:', error);
     throw error;
   }
+};
+
+export interface EmpleadosProps {
+  category: string;
+  name: string;
+}
+
+export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
+  const firestore = getFirestore();
+  const collectionRef = collection(firestore, 'empleados');
+  const snapshot = await getDocs(collectionRef);
+
+  // Mapear los nombres de los cadetes desde los documentos de Firestore
+  const empleados = snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return { name: data.name, category: data.category };
+  });
+
+  return empleados;
 };

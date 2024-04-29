@@ -12,7 +12,6 @@ import {
   updateTiempoElaboradoForOrder,
   updateTiempoEntregaForOrder,
 } from '../../firebase/UploadOrder';
-import { addCadete, readCadetes } from '../../firebase/Cadetes';
 import {
   obtenerDiferenciaHoraria,
   obtenerHoraActual,
@@ -20,28 +19,8 @@ import {
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { Descuento } from '../Card/Descuento';
-import { useLocation } from 'react-router-dom';
 import { TiempoEditable } from '../Card/TiempoEditable';
-
-const copyToClipboard = (textToCopy: string) => {
-  navigator.clipboard
-    .writeText(textToCopy)
-    .then(() => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Copiado',
-        text: 'Texto copiado al portapapeles',
-      });
-    })
-    .catch((error) => {
-      console.error('Error copying to clipboard:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un error al copiar al portapapeles',
-      });
-    });
-};
+import { readEmpleados } from '../../firebase/registroEmpleados';
 
 export const Card = ({ comanda }: ComandaRareProps) => {
   const {
@@ -65,40 +44,25 @@ export const Card = ({ comanda }: ComandaRareProps) => {
   const [selectedCadete, setSelectedCadete] = useState(cadete);
   const [mostrarInfoCompleta, setMostrarInfoCompleta] = useState(false);
   const [mostrarExtras, setMostrarExtras] = useState(false);
-  const [nuevoCadete, setNuevoCadete] = useState('');
-  const [cadetes, setCadetes] = useState<string[]>([]);
   const user = useSelector((state: RootState) => state.auth.user);
-  const location = useLocation();
-  const isVentasPage = location.pathname.includes('ventas');
+  const [cadetes, setCadetes] = useState<string[]>([]);
+  const [botonDesactivado, setBotonDesactivado] = useState(false);
+
   useEffect(() => {
-    const getCadetes = async () => {
-      const cade = await readCadetes();
-      setCadetes(cade);
+    const obtenerCadetes = async () => {
+      try {
+        const empleados = await readEmpleados();
+        const cadetesFiltrados = empleados
+          .filter((empleado) => empleado.category === 'cadete')
+          .map((empleado) => empleado.name);
+        setCadetes(cadetesFiltrados);
+      } catch (error) {
+        console.error('Error al obtener los cadetes:', error);
+      }
     };
-    getCadetes();
+
+    obtenerCadetes();
   }, []);
-
-  const handleNuevoCadeteChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setNuevoCadete(event.target.value);
-  };
-
-  const agregarNuevoCadete = () => {
-    // Aquí puedes agregar la lógica para crear un nuevo cadete con el valor de nuevoCadete
-    addCadete(nuevoCadete)
-      .then(() => {
-        Swal.fire({
-          icon: 'success',
-          title: 'CADETE AGREGADO',
-          text: `SE AGREGO: ${nuevoCadete} `,
-        });
-        setCadetes((prev) => [...prev, nuevoCadete]);
-      })
-      .catch(() => {
-        console.error('Error al crear el cadete:');
-      });
-    setNuevoCadete('');
-  };
-
   // Manejar el cambio en el select
   const handleCadeteChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadete = event.target.value;
@@ -138,6 +102,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
       });
   };
   const imprimirTicket = async (nuevoPedido: PedidoProps) => {
+    setBotonDesactivado(true);
+
     try {
       const response = await fetch('http://localhost:3000/imprimir', {
         method: 'POST',
@@ -165,16 +131,12 @@ export const Card = ({ comanda }: ComandaRareProps) => {
         title: 'Error',
         text: 'Hubo un error en la solicitud',
       });
+    } finally {
+      // Habilita el botón nuevamente después de un tiempo (puedes ajustar el tiempo según tus necesidades)
+      setTimeout(() => {
+        setBotonDesactivado(false);
+      }, 3000); // Después de 3 segundos (3000 milisegundos), el botón se habilita nuevamente
     }
-  };
-
-  const handleCopyIconClick = (textToCopy: string) => {
-    copyToClipboard(textToCopy);
-    Swal.fire({
-      icon: 'success',
-      title: 'Copiado',
-      text: 'Texto copiado al portapapeles',
-    });
   };
 
   return (
@@ -302,6 +264,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             <option value={cadete} defaultValue={cadete}>
               {cadete}
             </option>
+            <option value={''}>{''}</option>
             {cadetes.map((c, i) => {
               if (c === cadete) return null;
               return (
@@ -312,17 +275,6 @@ export const Card = ({ comanda }: ComandaRareProps) => {
             })}
             {/* <option value="nuevo">Agregar nuevo cadete</option> */}
           </select>
-          {/* Agregar campo para ingresar el nombre del nuevo cadete */}
-          {selectedCadete === 'nuevo' && (
-            <div>
-              <input
-                type="text"
-                value={nuevoCadete}
-                onChange={handleNuevoCadeteChange}
-              />
-              <button onClick={agregarNuevoCadete}>Agregar</button>
-            </div>
-          )}
         </div>
         <div className="mt-4 w-full">
           {tiempoElaborado ? (
@@ -440,6 +392,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
               className={` bg-black w-full flex justify-center mt-14 ${
                 elaborado ? 'text-green-500' : 'text-custom-red'
               } font-black p-4  inline-flex items-center`}
+              disabled={botonDesactivado} // Desactiva el botón si el estado es true
             >
               <svg
                 className={`fill-current w-4 h-4 mr-2 ${

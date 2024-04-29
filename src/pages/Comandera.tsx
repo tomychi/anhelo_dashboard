@@ -338,7 +338,12 @@ export const Comandera = () => {
         )}
       </div>
       <div className="mt-2">
-        {seccionActiva === 'mapa' && <MapsApp orders={pedidosHechos} />}
+        {seccionActiva === 'mapa' &&
+          (location.pathname === '/comandas' ? (
+            <MapsApp orders={pedidosHechos} />
+          ) : (
+            <MapsApp orders={orders} />
+          ))}
       </div>
       {/* Esto es para la contabilidad, NO BORRAR */}
       {/* <button
