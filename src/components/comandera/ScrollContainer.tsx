@@ -12,7 +12,15 @@ const ScrollContainer = ({ children }: ScrollContainerProps) => {
 
 		if (container) {
 			const scrollRight = () => {
-				container.scrollLeft += 1; // Cambia la velocidad de desplazamiento ajustando este valor
+				container.scrollLeft += 5; // Cambia la velocidad de desplazamiento ajustando este valor
+
+				// Si llega al final del contenido, vuelve al principio
+				if (
+					container.scrollLeft >=
+					container.scrollWidth - container.clientWidth
+				) {
+					container.scrollLeft = 0;
+				}
 			};
 
 			const intervalId = setInterval(scrollRight, 50); // Cambia la frecuencia del desplazamiento ajustando este valor

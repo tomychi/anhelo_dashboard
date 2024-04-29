@@ -101,7 +101,7 @@ export const GeneralStats = ({
 									<div key={index} className="flex items-center flex-row">
 										<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
 											<div
-												className={`w-8 h-8 rounded-full ${
+												className={`w-8 h-8 rounded-none ${
 													empleadoActivo(empleado.name)
 														? "bg-green-500"
 														: "bg-red-main"
