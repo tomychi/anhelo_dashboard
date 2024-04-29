@@ -85,16 +85,18 @@ export const GeneralStats = ({
 					</select>
 				</div>
 				{/* Seccion empleados activos */}
-				<div className="flex flex-row gap-2">
+				<div className="flex flex-row gap-4">
 					{empleados.map((empleado, index) => {
 						const horaEntrada = empleadoActivo(empleado.name)
-							? registro.find(
-									(registroEmpleado) =>
-										registroEmpleado.nombreEmpleado === empleado.name
-							  )?.horaEntrada || "Hora de entrada no disponible"
+							? (
+									registro.find(
+										(registroEmpleado) =>
+											registroEmpleado.nombreEmpleado === empleado.name
+									)?.horaEntrada || "Hora de entrada no disponible"
+							  ).substring(0, 5) // Extraer solo HH:mm
 							: "Ausente";
 						return (
-							<div key={index} className="flex items-center">
+							<div key={index} className="flex items-center flex-row">
 								<div
 									className={`w-3 h-3 ${
 										empleadoActivo(empleado.name)
@@ -102,7 +104,17 @@ export const GeneralStats = ({
 											: "bg-red-main"
 									} rounded-full mr-2`}
 								></div>
-								<div>{`${empleado.name} (${horaEntrada})`}</div>
+								<div className="flex flex-col">
+									<p>{empleado.name}</p>
+									<p>
+										{" "}
+										{horaEntrada === "Ausente" ? (
+											<p>{horaEntrada}</p>
+										) : (
+											<p>ingreso: {horaEntrada} hs</p>
+										)}
+									</p>
+								</div>
 							</div>
 						);
 					})}
