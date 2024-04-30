@@ -147,15 +147,15 @@ export const GeneralStats = ({
 			</div>
 			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
-				<p className="border-b-2 font-black w-max border-red-main">
+				<p className="border-b-2 font-black w-max text-2xl border-red-main">
 					PEDIDOS ENTREGADOS A TIEMPO: {Math.round(customerSuccess)}%
 				</p>
 
-				<p className=" border-b-2 font-black w-max  border-red-main">
+				<p className=" border-b-2 font-black w-max text-xs  border-red-main">
 					Promedio de tiempo de elaboración:{" "}
 					{Math.round(promedioTiempoElaboracion)} minutos
 				</p>
-				<p className=" border-b-2 font-black w-max border-red-main">
+				<p className=" border-b-2 font-black w-max text-xs border-red-main">
 					Promedio de tiempo de entrega total:{" "}
 					{Math.round(promedioTiempoDeEntregaTotal(orders))} MINUTOS
 				</p>
