@@ -56,12 +56,23 @@ export const GeneralStats = ({
 
 		cargarRegistro();
 	}, []);
+
 	// Determina si un empleado está activo (presente) o inactivo (ausente) en función del registro
 	const empleadoActivo = (empleadoNombre: string) => {
 		const empleado = registro.find(
 			(registroEmpleado) => registroEmpleado.nombreEmpleado === empleadoNombre
 		);
-		return empleado && empleado.marcado; // Devuelve true si el empleado está en el registro y marcado como presente
+		if (empleado) {
+			if (empleado.marcado) {
+				// Si el empleado está marcado como presente
+				return { activo: true, horaSalida: null };
+			} else {
+				// Si el empleado está ausente
+				return { activo: false, horaSalida: empleado.horaSalida };
+			}
+		}
+		// Si no se encuentra al empleado en el registro
+		return { activo: false, horaSalida: null };
 	};
 
 	return (
@@ -89,7 +100,8 @@ export const GeneralStats = ({
 					<ScrollContainer>
 						<div className="flex flex-row gap-4 text-xs">
 							{empleados.map((empleado, index) => {
-								const horaEntrada = empleadoActivo(empleado.name)
+								const { activo, horaSalida } = empleadoActivo(empleado.name);
+								const horaEntrada = activo
 									? (
 											registro.find(
 												(registroEmpleado) =>
@@ -97,24 +109,29 @@ export const GeneralStats = ({
 											)?.horaEntrada || "Hora de entrada no disponible"
 									  ).substring(0, 5) // Extraer solo HH:mm
 									: "Ausente";
+								const horaSalidaFormateada = horaSalida
+									? horaSalida.substring(0, 5) // Extraer solo HH:mm
+									: "Hora de salida no disponible";
+
 								return (
 									<div key={index} className="flex items-center flex-row">
 										<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
 											<div
 												className={`w-8 h-8 rounded-none ${
-													empleadoActivo(empleado.name)
-														? "bg-green-500"
-														: "bg-red-main"
+													activo ? "bg-green-500" : "bg-red-main"
 												}`}
 											></div>
 										</div>
 										<div className="flex flex-col w-full">
 											<p>{empleado.name}</p>
-											{horaEntrada === "Ausente" ? (
-												<p>{horaEntrada}</p>
-											) : (
+											{activo ? (
 												<p className="flex items-center">
 													<span className="mr-2">Ingreso</span> {horaEntrada} hs
+												</p>
+											) : (
+												<p className="flex items-center">
+													<span className="mr-2">Salida</span>{" "}
+													{horaSalidaFormateada} hs
 												</p>
 											)}
 										</div>
@@ -124,7 +141,7 @@ export const GeneralStats = ({
 						</div>
 					</ScrollContainer>
 				</div>
-
+				; ;
 				{cadeteSeleccionado && (
 					<div>
 						<p>
