@@ -141,7 +141,6 @@ export const GeneralStats = ({
 						</div>
 					</ScrollContainer>
 				</div>
-				; ;
 				{cadeteSeleccionado && (
 					<div>
 						<p>
