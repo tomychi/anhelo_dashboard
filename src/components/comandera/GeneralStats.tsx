@@ -165,7 +165,8 @@ export const GeneralStats = ({
 			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
 				<p className="border-b-2 font-black w-max text-2xl border-red-main">
-					PEDIDOS ENTREGADOS A TIEMPO: {Math.round(customerSuccess)}%
+					PEDIDOS ENTREGADOS A TIEMPO:{" "}
+					{isNaN(customerSuccess) ? "0%" : Math.round(customerSuccess) + "%"}
 				</p>
 
 				<p className=" border-b-2 font-black w-max text-xs  border-red-main">
