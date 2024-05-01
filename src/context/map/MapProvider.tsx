@@ -81,111 +81,96 @@ export const MapProvider = ({ children }: Props) => {
       });
   }
 
-  const fetchData = async (place: Feature) => {
-    const info = await getRout(place); // Obtener la información de la ruta para el lugar dado
-
-    return {
-      kms: info.kms,
-      minutes: info.minutes,
-    };
-  };
-
   const uniquePlaces = Array.from(
     new Set(places.map((place) => JSON.stringify(place)))
   ).map((placeString) => JSON.parse(placeString));
 
   // eslint-disable-next-line
   useEffect(() => {
-    const fetchDataAndCalculateTotal = async () => {
-      state.markers.forEach((marker) => marker.remove());
-      const newMarkers: Marker[] = [];
-      // Variables para almacenar la información de la ruta
-      let totalKms = 0;
-      let totalMinutes = 0;
-      // Definir funciones jsonStringify y jsonParse
+    state.markers.forEach((marker) => marker.remove());
+    const newMarkers: Marker[] = [];
+    // Variables para almacenar la información de la ruta
 
-      for (const place of uniquePlaces) {
-        const [lng, lat] = place.center;
-        const popup = new Popup();
-        const info = await fetchData(place);
-        // Sumar la distancia y el tiempo al total
-        totalKms += info.kms;
-        totalMinutes += info.minutes;
+    // Definir funciones jsonStringify y jsonParse
 
-        // Obtén la hora actual
-        const now = new Date();
+    for (const place of uniquePlaces) {
+      const [lng, lat] = place.center;
+      const popup = new Popup();
 
-        // Extrae la hora y los minutos de la cadena de texto place.order.hora
-        const [hour, minute] = place.order.hora.split(':');
+      // Obtén la hora actual
+      const now = new Date();
 
-        // Crea un nuevo objeto Date con la fecha actual y la hora y minutos del pedido
-        const orderTime = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          parseInt(hour),
-          parseInt(minute)
-        );
+      // Extrae la hora y los minutos de la cadena de texto place.order.hora
+      const [hour, minute] = place.order.hora.split(':');
 
-        // Calcula la diferencia en minutos entre la hora actual y la hora del pedido
-        const diffMilliseconds = now.getTime() - orderTime.getTime();
-        const diffMinutes = Math.floor(diffMilliseconds / (1000 * 60)); // Convertir milisegundos a minutos
+      // Crea un nuevo objeto Date con la fecha actual y la hora y minutos del pedido
+      const orderTime = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        parseInt(hour),
+        parseInt(minute)
+      );
 
-        let newMarker;
-        // Verifica si han pasado más de 20 minutos desde que se realizó el pedido
+      // Calcula la diferencia en minutos entre la hora actual y la hora del pedido
+      const diffMilliseconds = now.getTime() - orderTime.getTime();
+      const diffMinutes = Math.floor(diffMilliseconds / (1000 * 60)); // Convertir milisegundos a minutos
 
-        if (place.order.elaborado === false) {
-          newMarker = new Marker({
-            color: '#9b9b9b', // Color rojo para identificar los pedidos retrasados
-          });
-        } else if (diffMinutes > 20) {
-          // Marca el pedido de manera especial si han pasado más de 20 minutos
-          newMarker = new Marker({
-            color: '#ff0011', // Color rojo para identificar los pedidos retrasados
-          });
-        } else if (diffMinutes > 10) {
-          // Marca el pedido de manera especial si han pasado más de 10 minutos
-          newMarker = new Marker({
-            color: '#FFD300', // Color amarillo para identificar los pedidos retrasados
-          });
-        } else if (place.order.cadete) {
-          // Marca el pedido con color azul si hay un cadete asignado
-          newMarker = new Marker({
-            color: '#00ff11',
-          });
-        } else {
-          // Marca el pedido con color azul si no hay cadete asignado y no ha pasado el tiempo límite
-          newMarker = new Marker({
-            color: '#0000ff',
-          });
-        }
+      let newMarker;
+      // Verifica si han pasado más de 20 minutos desde que se realizó el pedido
 
-        // Luego puedes utilizar el marcador aquí fuera del bloque if-else
-        newMarker.setPopup(popup).setLngLat([lng, lat]).addTo(state.map!);
-        const markerElement = newMarker.getElement(); // Obtener el elemento DOM del marcador
+      if (place.order.elaborado === false) {
+        newMarker = new Marker({
+          color: '#9b9b9b', // Color rojo para identificar los pedidos retrasados
+        });
+      } else if (diffMinutes > 20) {
+        // Marca el pedido de manera especial si han pasado más de 20 minutos
+        newMarker = new Marker({
+          color: '#ff0011', // Color rojo para identificar los pedidos retrasados
+        });
+      } else if (diffMinutes > 10) {
+        // Marca el pedido de manera especial si han pasado más de 10 minutos
+        newMarker = new Marker({
+          color: '#FFD300', // Color amarillo para identificar los pedidos retrasados
+        });
+      } else if (place.order.cadete) {
+        // Marca el pedido con color azul si hay un cadete asignado
+        newMarker = new Marker({
+          color: '#00ff11',
+        });
+      } else {
+        // Marca el pedido con color azul si no hay cadete asignado y no ha pasado el tiempo límite
+        newMarker = new Marker({
+          color: '#0000ff',
+        });
+      }
 
-        if (markerElement) {
-          markerElement.addEventListener('click', async () => {
-            // Manejar el evento de clic
-            try {
-              const info = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
-              if (!isLoadingCadetes) {
-                const defaultCadeteOption = place.order.cadete
-                  ? `<option value="${place.order.cadete}" selected>${place.order.cadete}</option>`
-                  : '';
-                const cadeteOptions = cadetes
-                  .map(
-                    (cadete, index) => `
+      // Luego puedes utilizar el marcador aquí fuera del bloque if-else
+      newMarker.setPopup(popup).setLngLat([lng, lat]).addTo(state.map!);
+      const markerElement = newMarker.getElement(); // Obtener el elemento DOM del marcador
+
+      if (markerElement) {
+        markerElement.addEventListener('click', async () => {
+          // Manejar el evento de clic
+          try {
+            const info = await getRout(place); // Llamar a la función getRout con el lugar seleccionado
+            if (!isLoadingCadetes) {
+              const defaultCadeteOption = place.order.cadete
+                ? `<option value="${place.order.cadete}" selected>${place.order.cadete}</option>`
+                : '';
+              const cadeteOptions = cadetes
+                .map(
+                  (cadete, index) => `
                 <option value="${cadete}" key="${index}">
                   ${cadete}
                 </option>
               `
-                  )
-                  .join('');
+                )
+                .join('');
 
-                const allCadeteOptions = defaultCadeteOption + cadeteOptions;
+              const allCadeteOptions = defaultCadeteOption + cadeteOptions;
 
-                popup.setHTML(`
+              popup.setHTML(`
               <p>${place.place_name_es.split(',')[0]}</p>
               <p>Hay: ${info.kms} km</p>
               <p>
@@ -196,39 +181,34 @@ export const MapProvider = ({ children }: Props) => {
               </p>
               <p>Tardas : ${info.minutes} m</p>
             `);
-                // Agrega el evento onchange al selector de cadetes después de establecer el contenido del popup
-                const cadeteSelector = document.getElementById(
-                  'cadeteSelector'
-                ) as HTMLSelectElement;
-                cadeteSelector?.addEventListener('change', () => {
-                  const nuevoCadete = cadeteSelector.value;
-                  handleCadeteSelection(
-                    place.order.fecha,
-                    place.order.id,
-                    nuevoCadete
-                  );
-                });
-              } else {
-                popup.setHTML(`
+              // Agrega el evento onchange al selector de cadetes después de establecer el contenido del popup
+              const cadeteSelector = document.getElementById(
+                'cadeteSelector'
+              ) as HTMLSelectElement;
+              cadeteSelector?.addEventListener('change', () => {
+                const nuevoCadete = cadeteSelector.value;
+                handleCadeteSelection(
+                  place.order.fecha,
+                  place.order.id,
+                  nuevoCadete
+                );
+              });
+            } else {
+              popup.setHTML(`
                 <p>${place.place_name_es.split(',')[0]}</p>
                 <p>Hay: ${info.kms} km</p>
                 <p>Cargando cadetes...</p>
                 <p>Tarda: ${info.minutes} m</p>
               `);
-              }
-            } catch (error) {
-              console.error(error);
             }
-          });
-        }
-        newMarkers.push(newMarker);
+          } catch (error) {
+            console.error(error);
+          }
+        });
       }
-      // Calcula la distancia y el tiempo para cada lugar
-      console.log('Distancia total de los pedidos:', totalKms, 'km');
-      console.log('Tiempo total de los pedidos:', totalMinutes, 'minutos');
-      dispatch({ type: 'setMarkers', payload: newMarkers });
-    };
-    fetchDataAndCalculateTotal();
+      newMarkers.push(newMarker);
+    }
+    dispatch({ type: 'setMarkers', payload: newMarkers });
   }, [places, isLoadingCadetes, cadetes]);
 
   // Función para crear un marcador con una imagen de tus activos
