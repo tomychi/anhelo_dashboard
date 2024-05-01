@@ -126,12 +126,20 @@ export const GeneralStats = ({
 											<p>{empleado.name}</p>
 											{activo ? (
 												<p className="flex items-center">
-													<span className="mr-2">Ingreso</span> {horaEntrada} hs
+													<span className="mr-2">
+														Ingreso {" " + horaEntrada} hs
+													</span>
 												</p>
 											) : (
 												<p className="flex items-center">
-													<span className="mr-2">Salida</span>{" "}
-													{horaSalidaFormateada} hs
+													{horaSalidaFormateada ===
+													"Hora de salida no disponible" ? (
+														<span>Ausente</span>
+													) : (
+														<span className="mr-2">
+															Salida {horaSalidaFormateada} hs
+														</span>
+													)}
 												</p>
 											)}
 										</div>
