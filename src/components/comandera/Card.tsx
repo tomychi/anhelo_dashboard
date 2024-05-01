@@ -159,6 +159,8 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 		return () => clearInterval(intervalo);
 	}, [hora]); // El efecto se ejecuta cada vez que cambia la hora
 
+	console.log(minutosDeDemora);
+
 	return (
 		<div
 			className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
@@ -168,11 +170,23 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 			<div className="flex flex-col items-center gap-1 justify-center">
 				<div className="flex flex-col  mt-6 mb-7">
 					<div className="flex flex-col items-center">
-						<p>ingreso a las {hora} hs</p>
-						<p className={`text-4xl text-black font-black pr-1 pl-1`}>
-							DEMORA: {minutosDeDemora} HS
-						</p>
+						{minutosDeDemora.charAt(0) === "-" ? (
+							<>
+								<p>enviar a las {hora} hs</p>
+								<p className="text-4xl text-black font-black pr-1 pl-1">
+									NO ENVIAR AUN
+								</p>
+							</>
+						) : (
+							<>
+								<p>entro a las {hora} hs</p>
+								<p className="text-4xl text-black font-black pr-1 pl-1">
+									DEMORA: {minutosDeDemora} HS
+								</p>
+							</>
+						)}
 					</div>
+
 					{user.email === "cadetes@anhelo.com" ? null : (
 						<svg
 							onClick={() =>
