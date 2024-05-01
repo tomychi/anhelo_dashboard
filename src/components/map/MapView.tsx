@@ -1,41 +1,41 @@
-import { useContext, useLayoutEffect, useRef } from "react";
-import { Map } from "mapbox-gl";
-import { Loading } from "./";
-import { MapContext, PlacesContext } from "../../context";
+import { useContext, useLayoutEffect, useRef } from 'react';
+import { Map } from 'mapbox-gl';
+import { Loading } from './';
+import { MapContext, PlacesContext } from '../../context';
 
 export const MapView = () => {
-	const { isLoading, userLocation } = useContext(PlacesContext);
-	const { setMap } = useContext(MapContext);
+  const { isLoading, userLocation } = useContext(PlacesContext);
+  const { setMap } = useContext(MapContext);
 
-	// mantener la referencia al elemento
-	const mapDiv = useRef<HTMLDivElement>(null);
+  // mantener la referencia al elemento
+  const mapDiv = useRef<HTMLDivElement>(null);
 
-	useLayoutEffect(() => {
-		if (!isLoading) {
-			const map = new Map({
-				container: mapDiv.current!, // SE ASEGURA QUE NO SEA NULO (!)
-				style: "mapbox://styles/mapbox/dark-v10",
-				center: userLocation,
-				zoom: 12,
-			});
+  useLayoutEffect(() => {
+    if (!isLoading) {
+      const map = new Map({
+        container: mapDiv.current!, // SE ASEGURA QUE NO SEA NULO (!)
+        style: 'mapbox://styles/mapbox/dark-v10',
+        center: userLocation,
+        zoom: 12,
+      });
 
-			setMap(map);
-		}
-	}, [isLoading]);
+      setMap(map);
+    }
+  }, [isLoading]);
 
-	if (isLoading) {
-		return <Loading />;
-	}
+  if (isLoading) {
+    return <Loading />;
+  }
 
-	return (
-		<div
-			style={{
-				height: "75vh",
-			}}
-			className="w-full h-full overflow-y-hidden"
-			ref={mapDiv}
-		>
-			{userLocation?.join(",")}
-		</div>
-	);
+  return (
+    <div
+      style={{
+        height: '75vh',
+      }}
+      className="w-full h-full overflow-y-hidden"
+      ref={mapDiv}
+    >
+      {userLocation?.join(',')}
+    </div>
+  );
 };

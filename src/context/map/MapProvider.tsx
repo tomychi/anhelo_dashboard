@@ -133,7 +133,12 @@ export const MapProvider = ({ children }: Props) => {
 
         let newMarker;
         // Verifica si han pasado más de 20 minutos desde que se realizó el pedido
-        if (diffMinutes > 20) {
+
+        if (place.order.elaborado === false) {
+          newMarker = new Marker({
+            color: '#9b9b9b', // Color rojo para identificar los pedidos retrasados
+          });
+        } else if (diffMinutes > 20) {
           // Marca el pedido de manera especial si han pasado más de 20 minutos
           newMarker = new Marker({
             color: '#ff0011', // Color rojo para identificar los pedidos retrasados
@@ -247,8 +252,8 @@ export const MapProvider = ({ children }: Props) => {
       element: createCustomMarker(customMarkerImage),
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
-      .setPopup(myLocationPopup)
-      .addTo(map); // agrega el marcador al mapa
+      .setPopup(myLocationPopup);
+    // .addTo(map); // agrega el marcador al mapa
 
     dispatch({
       type: 'setMap',

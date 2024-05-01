@@ -17,7 +17,6 @@ export const HomeScreen = ({ orders }: HomeScreenProps) => {
   const user = useSelector((state: RootState) => state.auth.user);
 
   const userAdmin = 'tomas.arcostanzo5@gmail.com';
-
   return (
     <div className="relative overflow-hidden">
       <MapView />

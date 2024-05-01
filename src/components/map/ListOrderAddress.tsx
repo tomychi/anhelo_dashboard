@@ -7,7 +7,6 @@ import mapboxgl from 'mapbox-gl';
 import { handleAddressSave } from '../../firebase/UploadOrder';
 import { RootState } from '../../redux/configureStore';
 import { useSelector } from 'react-redux';
-
 interface SelectedAddress {
   address: string;
   id: string;
@@ -62,7 +61,6 @@ export const ListOrderAddress = ({ orders }: ListOrderAddressProps) => {
       }
     };
     fetchData();
-    console.log('orders', orders);
   }, [orders]);
 
   const changeAddress = async () => {
