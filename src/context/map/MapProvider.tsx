@@ -171,7 +171,7 @@ export const MapProvider = ({ children }: Props) => {
               const allCadeteOptions = defaultCadeteOption + cadeteOptions;
 
               popup.setHTML(`
-              <p>${place.place_name_es.split(',')[0]}</p>
+              <p>${place.order.direccion}</p>
               <p>Hay: ${info.kms} km</p>
               <p>
                 Seleccionar cadete:
