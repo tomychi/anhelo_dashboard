@@ -252,8 +252,8 @@ export const MapProvider = ({ children }: Props) => {
       element: createCustomMarker(customMarkerImage),
     })
       .setLngLat(map.getCenter()) // setea el marcador en el centro del mapa (o usuario)
-      .setPopup(myLocationPopup);
-    // .addTo(map); // agrega el marcador al mapa
+      .setPopup(myLocationPopup)
+      .addTo(map); // agrega el marcador al mapa
 
     dispatch({
       type: 'setMap',
