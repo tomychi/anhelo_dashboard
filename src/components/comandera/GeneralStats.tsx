@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import currencyFormat from "../../helpers/currencyFormat";
 import { PedidoProps } from "../../types/types";
-import { RegistroProps } from "../../pages/RegistroEmpleado";
+import { RegistroProps } from "../../pages/Empleados";
 import {
 	EmpleadosProps,
 	obtenerRegistroActual,
