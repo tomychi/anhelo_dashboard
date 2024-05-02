@@ -156,47 +156,42 @@ const RegistroEmpleado = () => {
 			{/* SUELDOS */}
 			<div className=" w-3/4">
 				<p className="text-4xl text-custom-red">SUELDOS</p>
-				<p className=" text-custom-red">
-					Aca necesito traer la cantidad de burgers vendidas, necesito tener
-					como cargar lo que le pago a cada uno y que despues en base a eso me
-					haga la cuenta segun que sale en el registro tambien
-				</p>
-				<p className=" text-custom-red">1.Traer los productos vendidos.</p>
-			</div>
-			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
-					<tr>
-						<th scope="col" className="px-6 py-3">
-							FECHA
-						</th>
-						<th scope="col" className="px-6 py-3">
-							CANTIDAD DE PRODUCTOS
-						</th>
-						<th scope="col" className="px-6 py-3">
-							CANTIDAD DE VIAJES
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{Object.entries(detallePedidoLengthByDate).map(
-						([fecha, cantidadPedidos]) => (
-							<tr
-								key={fecha}
-								className="bg-black text-custom-red uppercase font-black border border-red-main"
-							>
-								<th
-									scope="row"
-									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+
+				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
+						<tr>
+							<th scope="col" className="px-6 py-3">
+								FECHA
+							</th>
+							<th scope="col" className="px-6 py-3">
+								CANTIDAD DE PRODUCTOS
+							</th>
+							<th scope="col" className="px-6 py-3">
+								CANTIDAD DE VIAJES
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{Object.entries(detallePedidoLengthByDate).map(
+							([fecha, cantidadPedidos]) => (
+								<tr
+									key={fecha}
+									className="bg-black text-custom-red uppercase font-black border border-red-main"
 								>
-									{fecha}
-								</th>
-								<td className="px-6 py-4">{cantidadPedidos}</td>
-								<td className="px-6 py-4">{cantidadPedidos}</td>
-							</tr>
-						)
-					)}
-				</tbody>
-			</table>
+									<th
+										scope="row"
+										className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+									>
+										{fecha}
+									</th>
+									<td className="px-6 py-4">{cantidadPedidos}</td>
+									<td className="px-6 py-4">{cantidadPedidos}</td>
+								</tr>
+							)
+						)}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	);
 };
