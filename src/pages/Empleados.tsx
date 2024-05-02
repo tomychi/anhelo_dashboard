@@ -6,6 +6,8 @@ import {
 	obtenerRegistroActual,
 	readEmpleados,
 } from "../firebase/registroEmpleados";
+import { RootState } from "../redux/configureStore";
+import { useSelector } from "react-redux";
 
 export interface RegistroProps {
 	horaEntrada: string;
@@ -55,7 +57,55 @@ const RegistroEmpleado = () => {
 		cargarRegistro();
 	}, [empleados]);
 
-	console.log(empleados);
+	const { orders } = useSelector((state: RootState) => state.data);
+
+	// Función para agrupar los pedidos por fecha
+	const groupOrdersByDate = (orders) => {
+		return orders.reduce((groupedOrders, order) => {
+			const date = order.fecha;
+			if (!groupedOrders[date]) {
+				groupedOrders[date] = [];
+			}
+			groupedOrders[date].push(order);
+			return groupedOrders;
+		}, {});
+	};
+
+	// Llama a la función para obtener los pedidos agrupados por fecha
+	const ordersByDate = groupOrdersByDate(orders);
+
+	// Muestra los pedidos agrupados por fecha
+	// console.log(ordersByDate);
+
+	// Función para sumar el largo de detallePedido teniendo en cuenta la cantidad
+	const sumDetallePedidoLength = (ordersByDate) => {
+		const result = {};
+
+		for (const fecha in ordersByDate) {
+			if (Object.hasOwnProperty.call(ordersByDate, fecha)) {
+				let totalDetallePedidoLength = 0;
+				const orders = ordersByDate[fecha];
+
+				for (const order of orders) {
+					for (const detalle of order.detallePedido) {
+						totalDetallePedidoLength +=
+							detalle.quantity > 1 ? detalle.quantity : 1;
+					}
+				}
+
+				result[fecha] = totalDetallePedidoLength;
+			}
+		}
+
+		return result;
+	};
+
+	// Llama a la función para obtener la suma del largo de detallePedido por fecha
+	const detallePedidoLengthByDate = sumDetallePedidoLength(ordersByDate);
+
+	// Muestra el resultado
+	//Aca tengo las burgers por dia
+	console.log(detallePedidoLengthByDate);
 
 	return (
 		<div className="p-4 font-antonio flex flex-row gap-4 font-black">
@@ -106,7 +156,31 @@ const RegistroEmpleado = () => {
 			{/* SUELDOS */}
 			<div className=" w-3/4">
 				<p className="text-4xl text-custom-red">SUELDOS</p>
+				<p className=" text-custom-red">
+					Aca necesito traer la cantidad de burgers vendidas, necesito tener
+					como cargar lo que le pago a cada uno y que despues en base a eso me
+					haga la cuenta segun que sale en el registro tambien
+				</p>
+				<p className=" text-custom-red">1.Traer los productos vendidos.</p>
 			</div>
+			<table className="table-auto text-red-main">
+				<thead>
+					<tr>
+						<th className="px-4 py-2">Fecha</th>
+						<th className="px-4 py-2">Cantidad de Pedidos</th>
+					</tr>
+				</thead>
+				<tbody>
+					{Object.entries(detallePedidoLengthByDate).map(
+						([fecha, cantidadPedidos]) => (
+							<tr key={fecha}>
+								<td className="border px-4 py-2">{fecha}</td>
+								<td className="border px-4 py-2">{cantidadPedidos}</td>
+							</tr>
+						)
+					)}
+				</tbody>
+			</table>
 		</div>
 	);
 };
