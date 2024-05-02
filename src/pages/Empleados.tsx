@@ -59,43 +59,52 @@ const RegistroEmpleado = () => {
 
 	return (
 		<div className="p-4 font-antonio flex flex-row gap-4 font-black">
-			{/* INGRESOS Y EGRESOS */}
-			<div className="w-1/2">
-				<p className="text-4xl text-custom-red">MARCAR PRESENCIAS</p>
-				{empleados.map((empleado, index) => {
-					// Verifica si el name del empleado está presente en el registro del día actual
-					const estaEnRegistro = registro.some(
-						(registroEmpleado) =>
-							registroEmpleado.nombreEmpleado === empleado.name
-					);
+			<div className="w-1/4">
+				<p className="text-4xl text-custom-red">REGISTRO</p>
+				{/* Filtrar empleados por categoría y mapear sobre cada grupo */}
+				{["cocina", "mostrador", "cadete"].map((categoria, categoriaIndex) => (
+					<div key={categoriaIndex} className="text-custom-red">
+						<p className="text-2xl mt-4">{categoria.toUpperCase()}</p>
+						{empleados
+							.filter((empleado) => empleado.category === categoria)
+							.map((empleado, index) => {
+								// Verifica si el nombre del empleado está presente en el registro del día actual
+								const estaEnRegistro = registro.some(
+									(registroEmpleado) =>
+										registroEmpleado.nombreEmpleado === empleado.name
+								);
 
-					// Verifica si el empleado está marcado en el registro
-					const empleadoMarcado = registro.find(
-						(registroEmpleado) =>
-							registroEmpleado.nombreEmpleado === empleado.name &&
-							registroEmpleado.marcado
-					);
+								// Verifica si el empleado está marcado en el registro
+								const empleadoMarcado = registro.find(
+									(registroEmpleado) =>
+										registroEmpleado.nombreEmpleado === empleado.name &&
+										registroEmpleado.marcado
+								);
 
-					// Determina el color del fondo del botón basado en la presencia del empleado en el registro y su estado de marcado
-					const colorFondo = empleadoMarcado ? "bg-green-600" : "bg-custom-red";
+								// Determina el color del fondo del botón basado en la presencia del empleado en el registro y su estado de marcado
+								const colorFondo = empleadoMarcado
+									? "bg-green-600"
+									: "bg-custom-red";
 
-					return (
-						<button
-							key={index}
-							className={`text-black mt-4 p-4 w-full flex flex-col ${colorFondo} font-black uppercase text-4x1 outline-none`}
-							onClick={() =>
-								estaEnRegistro
-									? handleMarcarSalida(empleado.name, setEmpleados)
-									: handleMarcarEntrada(empleado.name, setEmpleados)
-							}
-						>
-							{empleado.name}: {empleado.category}
-						</button>
-					);
-				})}
+								return (
+									<button
+										key={index}
+										className={`text-black mt-2 p-4 w-full flex flex-col ${colorFondo} font-black uppercase text-4x1 outline-none`}
+										onClick={() =>
+											estaEnRegistro
+												? handleMarcarSalida(empleado.name, setEmpleados)
+												: handleMarcarEntrada(empleado.name, setEmpleados)
+										}
+									>
+										{empleado.name}
+									</button>
+								);
+							})}
+					</div>
+				))}
 			</div>
 			{/* SUELDOS */}
-			<div className=" w-1/2">
+			<div className=" w-3/4">
 				<p className="text-4xl text-custom-red">SUELDOS</p>
 			</div>
 		</div>
