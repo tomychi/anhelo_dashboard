@@ -63,6 +63,59 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 
 		obtenerCadetes();
 	}, []);
+
+	function calcularDiferenciaMinutos(tiempoEntregado, hora) {
+		// Verificar si los valores son válidos
+		if (!tiempoEntregado || !hora) {
+			console.error(
+				"Los valores de tiempoEntregado y hora deben ser cadenas de texto válidas."
+			);
+			return 0;
+		}
+
+		// Dividir las cadenas de tiempo en horas y minutos
+		const tiempoEntregadoArray = tiempoEntregado.split(":");
+		const horaArray = hora.split(":");
+
+		// Verificar si las cadenas de tiempo tienen el formato correcto
+		if (tiempoEntregadoArray.length !== 2 || horaArray.length !== 2) {
+			console.error(
+				'Los valores de tiempoEntregado y hora deben tener el formato "HH:MM".'
+			);
+			return 0;
+		}
+
+		// Convertir las cadenas de tiempo en enteros
+		const tiempoEntregadoHoras = parseInt(tiempoEntregadoArray[0]);
+		const tiempoEntregadoMinutos = parseInt(tiempoEntregadoArray[1]);
+		const horaHoras = parseInt(horaArray[0]);
+		const horaMinutos = parseInt(horaArray[1]);
+
+		// Calcular la diferencia en minutos
+		const diferenciaHoras = tiempoEntregadoHoras - horaHoras;
+		const diferenciaMinutos = tiempoEntregadoMinutos - horaMinutos;
+
+		// Convertir la diferencia total a minutos
+		const diferenciaTotalMinutos = diferenciaHoras * 60 + diferenciaMinutos;
+
+		return diferenciaTotalMinutos;
+	}
+
+	const diferenciaMinutos = calcularDiferenciaMinutos(tiempoEntregado, hora);
+
+	function convertirMinutosAHora(minutos) {
+		const horas = Math.floor(minutos / 60);
+		const minutosRestantes = minutos % 60;
+
+		// Formatear las horas y los minutos como cadenas de texto
+		const horasString = String(horas).padStart(2, "0");
+		const minutosString = String(minutosRestantes).padStart(2, "0");
+
+		return `${horasString}:${minutosString} hs`;
+	}
+
+	const diferenciaMinutos2 = convertirMinutosAHora(diferenciaMinutos);
+
 	// Manejar el cambio en el select
 	const handleCadeteChange = (event: ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadete = event.target.value;
@@ -180,9 +233,15 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						) : (
 							<>
 								<p>entro a las {hora} hs</p>
-								<p className="text-4xl text-black font-black pr-1 pl-1">
-									DEMORA: {minutosDeDemora} HS
-								</p>
+								{elaborado ? (
+									<p className="text-4xl text-black font-black pr-1 pl-1">
+										DEMORA: {diferenciaMinutos2}
+									</p>
+								) : (
+									<p className="text-4xl text-black font-black pr-1 pl-1">
+										DEMORA: {minutosDeDemora} HS
+									</p>
+								)}
 							</>
 						)}
 					</div>
