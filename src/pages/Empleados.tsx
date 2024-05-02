@@ -163,19 +163,31 @@ const RegistroEmpleado = () => {
 				</p>
 				<p className=" text-custom-red">1.Traer los productos vendidos.</p>
 			</div>
-			<table className="table-auto text-red-main">
-				<thead>
+			<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+				<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
 					<tr>
-						<th className="px-4 py-2">Fecha</th>
-						<th className="px-4 py-2">Cantidad de Pedidos</th>
+						<th scope="col" className="px-6 py-3">
+							FECHA
+						</th>
+						<th scope="col" className="px-6 py-3">
+							CANTIDAD DE PEDIDOS
+						</th>
 					</tr>
 				</thead>
 				<tbody>
 					{Object.entries(detallePedidoLengthByDate).map(
 						([fecha, cantidadPedidos]) => (
-							<tr key={fecha}>
-								<td className="border px-4 py-2">{fecha}</td>
-								<td className="border px-4 py-2">{cantidadPedidos}</td>
+							<tr
+								key={fecha}
+								className="bg-black text-custom-red uppercase font-black border border-red-main"
+							>
+								<th
+									scope="row"
+									className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
+								>
+									{fecha}
+								</th>
+								<td className="px-6 py-4">{cantidadPedidos}</td>
 							</tr>
 						)
 					)}
