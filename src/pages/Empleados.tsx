@@ -108,6 +108,12 @@ const RegistroEmpleado = () => {
 	// console.log(detallePedidoLengthByDate);
 
 	function calcularSalario(cantidadProductosVendidos, cantidadHoras) {
+		// Parsear la cantidad de horas en formato de cadena 'HH:MM' a horas y minutos
+		const [horas, minutos] = cantidadHoras.split(":").map(Number);
+
+		// Convertir las horas y minutos a minutos totales
+		const minutosTotales = horas * 60 + minutos;
+
 		let salarioPorHora;
 
 		if (cantidadProductosVendidos < 70) {
@@ -131,17 +137,20 @@ const RegistroEmpleado = () => {
 			salarioPorHora = 7000;
 		}
 
-		return salarioPorHora * cantidadHoras;
+		// Calcular el salario total
+		const salarioTotal = salarioPorHora * (minutosTotales / 60);
+
+		return salarioTotal;
 	}
 
 	// Ejemplo de uso:
 	const cantidadProductosVendidos = 100;
-	const cantidadHorasTrabajadas = 8;
+	const cantidadHorasTrabajadas = "08:17"; // Horas: 8, Minutos: 17
 	const salario = calcularSalario(
 		cantidadProductosVendidos,
 		cantidadHorasTrabajadas
 	);
-	console.log("El salario a pagar es: $" + salario);
+	console.log("El salario a pagar es: $" + salario.toFixed(2));
 
 	return (
 		<div className="p-4 font-antonio flex flex-row gap-4 font-black">
