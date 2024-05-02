@@ -184,8 +184,8 @@ const RegistroEmpleado = () => {
 									>
 										{fecha}
 									</th>
-									<td className="px-6 py-4">{cantidadPedidos}</td>
-									<td className="px-6 py-4">{cantidadPedidos}</td>
+									<td className="px-6 py-4">{cantidadPedidos} = $</td>
+									<td className="px-6 py-4">{cantidadPedidos} = $</td>
 								</tr>
 							)
 						)}
