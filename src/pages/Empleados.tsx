@@ -105,7 +105,43 @@ const RegistroEmpleado = () => {
 
 	// Muestra el resultado
 	//Aca tengo las burgers por dia
-	console.log(detallePedidoLengthByDate);
+	// console.log(detallePedidoLengthByDate);
+
+	function calcularSalario(cantidadProductosVendidos, cantidadHoras) {
+		let salarioPorHora;
+
+		if (cantidadProductosVendidos < 70) {
+			salarioPorHora = 3000;
+		} else if (
+			cantidadProductosVendidos >= 70 &&
+			cantidadProductosVendidos <= 99
+		) {
+			salarioPorHora = 4000;
+		} else if (
+			cantidadProductosVendidos >= 100 &&
+			cantidadProductosVendidos <= 129
+		) {
+			salarioPorHora = 5000;
+		} else if (
+			cantidadProductosVendidos >= 130 &&
+			cantidadProductosVendidos <= 159
+		) {
+			salarioPorHora = 6000;
+		} else {
+			salarioPorHora = 7000;
+		}
+
+		return salarioPorHora * cantidadHoras;
+	}
+
+	// Ejemplo de uso:
+	const cantidadProductosVendidos = 100;
+	const cantidadHorasTrabajadas = 8;
+	const salario = calcularSalario(
+		cantidadProductosVendidos,
+		cantidadHorasTrabajadas
+	);
+	console.log("El salario a pagar es: $" + salario);
 
 	return (
 		<div className="p-4 font-antonio flex flex-row gap-4 font-black">
