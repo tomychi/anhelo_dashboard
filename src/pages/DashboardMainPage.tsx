@@ -18,7 +18,7 @@ import { Stock } from "./Stock";
 import { MapsApp } from "../components/MapsApp";
 import { RootState } from "../redux/configureStore";
 import { useSelector } from "react-redux";
-import { RegistroEmpleado } from "./Empleados";
+import RegistroEmpleado from "./Empleados";
 
 export const DashboardMainPage = () => {
 	const { orders } = useSelector((state: RootState) => state.data);

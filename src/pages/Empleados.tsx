@@ -199,8 +199,8 @@ const RegistroEmpleado = () => {
 				))}
 			</div>
 			{/* SUELDOS */}
-			<div className=" w-3/4">
-				<p className="text-4xl text-custom-red">SUELDOS</p>
+			<div className=" w-3/4 flex flex-col gap-4">
+				<p className="text-4xl text-custom-red ">SUELDOS</p>
 
 				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
