@@ -110,7 +110,7 @@ const RegistroEmpleado = () => {
 	return (
 		<div className="p-4 font-antonio flex flex-row gap-4 font-black">
 			<div className="w-1/4">
-				<p className="text-4xl text-custom-red">REGISTRO</p>
+				<p className="text-4xl text-custom-red">REGISTRO DE HORARIOS</p>
 				{/* Filtrar empleados por categoría y mapear sobre cada grupo */}
 				{["cocina", "mostrador", "cadete"].map((categoria, categoriaIndex) => (
 					<div key={categoriaIndex} className="text-custom-red">
