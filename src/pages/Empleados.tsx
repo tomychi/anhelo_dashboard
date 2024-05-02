@@ -170,7 +170,10 @@ const RegistroEmpleado = () => {
 							FECHA
 						</th>
 						<th scope="col" className="px-6 py-3">
-							CANTIDAD DE PEDIDOS
+							CANTIDAD DE PRODUCTOS
+						</th>
+						<th scope="col" className="px-6 py-3">
+							CANTIDAD DE VIAJES
 						</th>
 					</tr>
 				</thead>
@@ -187,6 +190,7 @@ const RegistroEmpleado = () => {
 								>
 									{fecha}
 								</th>
+								<td className="px-6 py-4">{cantidadPedidos}</td>
 								<td className="px-6 py-4">{cantidadPedidos}</td>
 							</tr>
 						)
