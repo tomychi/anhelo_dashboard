@@ -233,7 +233,7 @@ export const Card = ({ comanda }: ComandaRareProps) => {
 						) : (
 							<>
 								<p>entro a las {hora} hs</p>
-								{elaborado ? (
+								{entregado ? (
 									<p className="text-4xl text-black font-black pr-1 pl-1">
 										DEMORA: {diferenciaMinutos2}
 									</p>
