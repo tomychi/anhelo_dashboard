@@ -40,7 +40,7 @@ export const CardComandaHeader = ({
           {minutosDeDemora.charAt(0) === '-' ? (
             <>
               <p>enviar a las {hora} hs</p>
-              <p className="text-4xl text-black font-black pr-1 pl-1">
+              <p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
                 NO ENVIAR AUN
               </p>
             </>
