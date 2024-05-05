@@ -1,6 +1,6 @@
 export interface User {
-  uid?: string;
-  email?: string | null | undefined;
+  uid: string;
+  email: string;
 }
 
 export interface UserState {
@@ -16,7 +16,7 @@ interface AuthAction {
 const initialState = {
   user: {
     uid: '',
-    email: null,
+    email: '',
   },
   isAuth: false,
   // Otros campos relacionados con la autenticación

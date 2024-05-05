@@ -1,5 +1,5 @@
 import { PedidoProps } from '../../types/types';
-import { Card } from './Card';
+import { CardComanda } from './Card/CardComanda';
 
 interface OrderSectionProps {
   orders: PedidoProps[];
@@ -10,7 +10,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({ orders }) => {
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {orders.map((comanda) => (
         <div key={comanda.id}>
-          <Card comanda={comanda} />
+          <CardComanda comanda={comanda} />
         </div>
       ))}
     </div>

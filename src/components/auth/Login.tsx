@@ -24,8 +24,8 @@ export const Login = () => {
     if (!error) {
       dispatch(
         loginSuccess({
-          uid: res?.user?.uid,
-          email: res?.user?.email,
+          uid: res?.user?.uid || '',
+          email: res?.user?.email || '',
         })
       );
       navigate(from, { replace: true });

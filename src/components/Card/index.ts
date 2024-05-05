@@ -1,3 +1,3 @@
 export { CardOrderCliente } from './CardOrderCliente';
 
-export { Card } from '../comandera/Card';
+export { CardComanda } from '../comandera/Card/CardComanda';
