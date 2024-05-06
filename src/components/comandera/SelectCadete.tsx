@@ -91,7 +91,6 @@ export const SelectCadete = ({
         <option value={cadete} defaultValue={cadete}>
           {cadete}
         </option>
-        <option value={''}>{''}</option>
         {cadetes.map((c, i) => {
           if (c === cadete) return null;
           return (

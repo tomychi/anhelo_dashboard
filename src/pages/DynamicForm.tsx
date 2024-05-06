@@ -21,6 +21,7 @@ export interface FormDataProps {
   hora: string;
   piso: string;
   referencias: string;
+  cadete: string;
 }
 
 export interface DetallePedidoProps {
@@ -124,6 +125,7 @@ export const DynamicForm = () => {
     hora: obtenerHoraActual(),
     piso: '',
     referencias: '',
+    cadete: 'NADIE',
   });
 
   const handleFormClient = (clienteInfo: FormDataProps) => {
@@ -258,6 +260,7 @@ export const DynamicForm = () => {
       telefono: '',
       referencias: '',
       piso: '',
+      cadete: '',
     });
 
     setDetallePedido([]);
