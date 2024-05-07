@@ -199,8 +199,6 @@ export const DynamicForm = () => {
 
     const envio = parseInt(formData.envio);
 
-    formData.map = formData.direccion;
-
     const info = {
       ...formData,
       envio,

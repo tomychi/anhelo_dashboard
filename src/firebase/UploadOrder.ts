@@ -295,7 +295,7 @@ export const updateTiempoElaboradoForOrder = (
 export const handleAddressSave = (
   fechaPedido: string,
   pedidoId: string,
-  direccion: string
+  coords: [number, number]
 ): Promise<void> => {
   const firestore = getFirestore();
 
@@ -316,7 +316,7 @@ export const handleAddressSave = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return { ...pedido, map: direccion };
+          return { ...pedido, map: coords };
         } else {
           return pedido;
         }

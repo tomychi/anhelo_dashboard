@@ -29,7 +29,7 @@ export interface PedidoProps {
   tiempoElaborado: string;
   tiempoEntregado: string;
   entregado: boolean;
-  map: string;
+  map: [number, number];
 }
 
 export interface ReadDataProps {

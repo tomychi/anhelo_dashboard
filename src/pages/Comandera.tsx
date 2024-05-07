@@ -8,8 +8,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { readOrdersData } from '../redux/data/dataAction';
 import { useLocation } from 'react-router-dom';
 import { GeneralStats, OrderList } from '../components/comandera';
-import { MapsApp } from '../components/MapsApp';
 import { NavButtons } from '../components/comandera/NavButtons';
+import DeliveryMap from './DeliveryMap';
+import { buscarCoordenadas } from '../apis/getCoords';
+import { handleAddressSave } from '../firebase/UploadOrder';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
@@ -43,6 +45,17 @@ export const Comandera = () => {
     if (location.pathname === '/comandas') {
       const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
         dispatch(readOrdersData(pedidos));
+      });
+
+      // pedidos que no tengan la prop map se les asigna un valor
+      const pedidosSinMap = orders.filter((pedido) => !pedido.map);
+      // ahora con la funcion buscarCoordenadas se le asigna un valor a la propiedad map
+      pedidosSinMap.forEach(async (pedido) => {
+        const coordenadas = await buscarCoordenadas(pedido.direccion);
+        if (coordenadas) {
+          pedido.map = coordenadas;
+          await handleAddressSave(pedido.fecha, pedido.id, coordenadas);
+        }
       });
 
       return () => {
@@ -124,9 +137,10 @@ export const Comandera = () => {
       <div className="mt-2">
         {seccionActiva === 'mapa' &&
           (location.pathname === '/comandas' ? (
-            <MapsApp orders={[...pedidosHechos, ...pedidosPorHacer]} />
+            // <MapsApp orders={[...pedidosHechos, ...pedidosPorHacer]} />
+            <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
           ) : (
-            <MapsApp orders={orders} />
+            <DeliveryMap orders={orders} />
           ))}
       </div>
       {/* Esto es para la contabilidad, NO BORRAR */}
