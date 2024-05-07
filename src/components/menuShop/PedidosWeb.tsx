@@ -126,6 +126,7 @@ const parsearMensajePedido = (
     procesarDetallePedido(detail, toppingsInfo, data, handleFormBurger);
 
     return {
+      map: [0, 0] as [number, number],
       telefono,
       direccion,
       metodoPago,
@@ -134,11 +135,11 @@ const parsearMensajePedido = (
       aclaraciones: '',
       envio: '',
       hora: obtenerHoraActual(),
-      map: '',
-      cadete: 'NADIE',
+      cadete: 'NO ASIGNADO',
     };
   } else {
-    console.log('No se pudo encontrar el detalle del pedido en el mensaje.');
+    console.error('No se pudo encontrar el detalle del pedido.');
+    return null;
   }
 };
 interface PedidosWebProps {

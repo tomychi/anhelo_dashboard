@@ -1,10 +1,7 @@
 import { FeatureCollection, Feature, Point } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import { PedidoProps } from '../types/map';
-import {
-  colorsPedido,
-  obtenerDiferenciaHoraria,
-} from '../helpers/calculateDiffHours';
+import { obtenerDiferenciaHoraria } from '../helpers/calculateDiffHours';
 import { updateCadeteForOrder } from '../firebase/UploadOrder';
 
 interface FeatureProperties {
@@ -53,11 +50,8 @@ export const addWarehouseLayers = (
     { id: string; icon: string; cadete: string; pedidoInfo: string }
   >[] = pedidos.map((pedido, index) => {
     // calcular la diferencia de minutos entre la hora de entrada del pedido y la hora actual
-    let colorsAsigned = obtenerDiferenciaHoraria(pedido.hora);
+    const colorsAsigned = obtenerDiferenciaHoraria(pedido.hora);
 
-    if (pedido.cadete === 'NADIE') {
-      colorsAsigned = colorsPedido.gray;
-    }
     const cadeteOptions = cadetes
       .map(
         (cadete, index) => `
@@ -106,17 +100,20 @@ export const addWarehouseLayers = (
       data: warehouseCollection,
     },
     layout: {
-      'text-field': '▼',
+      'text-field': [
+        'case',
+        ['==', ['get', 'cadete'], 'NO ASIGNADO'], // Verifica si el cadete es "NO ASIGNADO"
+        '?', // Si es "NO ASIGNADO", muestra el símbolo de interrogación
+        '▼', // De lo contrario, muestra el triángulo normal
+      ],
       'text-size': 30,
     },
     paint: {
       'text-color': ['get', 'iconColor'],
-
       'text-halo-width': 2,
       'text-halo-color': 'hsl(55, 11%, 96%)',
     },
   });
-
   // Agregar popup al hacer clic en la ubicación del almacén
   map.on('click', ['warehouse-triangles', 'warehouses'], (e) => {
     if (!e.features || !e.features.length) return;
@@ -145,7 +142,11 @@ export const addWarehouseLayers = (
       .setHTML(
         `<div style="font-size: 20px; line-height: 1.5em;"> 
           <h2 style="font-size: 28px; font-weight: bold; margin-bottom: 10px;"> 🛵 ${cadete} </h2>
-          <select id="cadeteSelector" style="margin-bottom: 10px;">${cadeteOptions}</select>
+          <select id="cadeteSelector" style="margin-bottom: 10px;">
+    <option value="" key="">
+          
+          ${cadeteOptions}</select>
+
           <p>${pedidoInfo}</p>
         </div>`
       )
@@ -158,6 +159,9 @@ export const addWarehouseLayers = (
     ) as HTMLSelectElement;
     cadeteSelector?.addEventListener('click', () => {
       const nuevoCadete = cadeteSelector.value;
+
+      if (!nuevoCadete) return;
+
       if (nuevoCadete === cadete) return;
       updateCadeteForOrder(fechaPedido, idPedido, nuevoCadete);
     });

@@ -50,7 +50,7 @@ const MapContainer: React.FC<MapContainerProps> = ({
     //   console.log(e);
     // });
 
-    if (cadete) {
+    if (cadete && pedidos.length > 0) {
       addWaypoints(map);
     }
 

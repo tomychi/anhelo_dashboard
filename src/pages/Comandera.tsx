@@ -44,18 +44,20 @@ export const Comandera = () => {
   useEffect(() => {
     if (location.pathname === '/comandas') {
       const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
-        dispatch(readOrdersData(pedidos));
-      });
+        // pedidos que no tengan la prop map se les asigna un valor
+        const pedidosSinMap = pedidos.filter(
+          (pedido) => !pedido.map || pedido.map[0] === 0 || pedido.map[1] === 0
+        );
 
-      // pedidos que no tengan la prop map se les asigna un valor
-      const pedidosSinMap = orders.filter((pedido) => !pedido.map);
-      // ahora con la funcion buscarCoordenadas se le asigna un valor a la propiedad map
-      pedidosSinMap.forEach(async (pedido) => {
-        const coordenadas = await buscarCoordenadas(pedido.direccion);
-        if (coordenadas) {
-          pedido.map = coordenadas;
-          await handleAddressSave(pedido.fecha, pedido.id, coordenadas);
-        }
+        console.log(pedidosSinMap);
+        // ahora con la funcion buscarCoordenadas se le asigna un valor a la propiedad map
+        pedidosSinMap.forEach(async (pedido) => {
+          const coordenadas = await buscarCoordenadas(pedido.direccion);
+          if (coordenadas) {
+            await handleAddressSave(pedido.fecha, pedido.id, coordenadas);
+          }
+        });
+        dispatch(readOrdersData(pedidos));
       });
 
       return () => {

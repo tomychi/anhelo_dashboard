@@ -12,12 +12,12 @@ export interface FormDataProps {
   aclaraciones: string;
   metodoPago: string;
   direccion: string;
-  map: string;
   telefono: string;
   envio: string;
   hora: string;
   piso: string;
   referencias: string;
+  map: [number, number];
   cadete: string;
 }
 
@@ -86,13 +86,13 @@ export const DynamicForm = () => {
     aclaraciones: '',
     metodoPago: '',
     direccion: '',
-    map: '',
+    map: [0, 0],
     telefono: '',
     envio: '1250',
     hora: obtenerHoraActual(),
     piso: '',
     referencias: '',
-    cadete: 'NADIE',
+    cadete: 'NO ASIGNADO',
   });
 
   const handleFormClient = (clienteInfo: FormDataProps) => {
@@ -198,13 +198,13 @@ export const DynamicForm = () => {
       aclaraciones: '',
       metodoPago: '',
       direccion: '',
-      map: '',
-      envio: '',
-      hora: '',
+      map: [0, 0],
+      envio: '1250',
+      hora: obtenerHoraActual(),
       telefono: '',
       referencias: '',
       piso: '',
-      cadete: '',
+      cadete: 'NO ASIGNADO',
     });
 
     setDetallePedido([]);
