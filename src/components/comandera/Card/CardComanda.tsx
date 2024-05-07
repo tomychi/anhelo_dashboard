@@ -13,7 +13,10 @@ import {
   CardComdandaBody,
   CardComandaFooter,
 } from '../Card';
-
+import {
+  obtenerColorTailwind,
+  obtenerDiferenciaHorariaWithColor,
+} from '../../../helpers/calculateDiffHours';
 export const CardComanda = ({ comanda }: ComandaRareProps) => {
   const {
     aclaraciones,
@@ -37,9 +40,15 @@ export const CardComanda = ({ comanda }: ComandaRareProps) => {
 
   return (
     <div
-      className={`flex justify-center font-antonio uppercase flex-col  max-w-sm  overflow-hidden h-min p-4 ${
-        elaborado ? 'bg-green-500 hover:bg-custom-red' : 'bg-custom-red'
-      }`}
+      className={`flex justify-center font-antonio uppercase flex-col max-w-sm overflow-hidden h-min p-4 
+  ${obtenerColorTailwind(obtenerDiferenciaHorariaWithColor(hora))}
+
+  // cursor pointer
+
+    cursor-pointer
+    hover:shadow-lg hover:bg-red-300 hover:text-black hover:border-red-400
+
+   `}
     >
       <CardComandaHeader user={user} hora={hora} id={id} fecha={fecha} />
 

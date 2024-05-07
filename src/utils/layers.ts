@@ -1,7 +1,7 @@
 import { FeatureCollection, Feature, Point } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import { PedidoProps } from '../types/map';
-import { obtenerDiferenciaHoraria } from '../helpers/calculateDiffHours';
+import { obtenerDiferenciaHorariaWithColor } from '../helpers/calculateDiffHours';
 import { updateCadeteForOrder } from '../firebase/UploadOrder';
 
 interface FeatureProperties {
@@ -50,7 +50,7 @@ export const addWarehouseLayers = (
     { id: string; icon: string; cadete: string; pedidoInfo: string }
   >[] = pedidos.map((pedido, index) => {
     // calcular la diferencia de minutos entre la hora de entrada del pedido y la hora actual
-    const colorsAsigned = obtenerDiferenciaHoraria(pedido.hora);
+    const colorsAsigned = obtenerDiferenciaHorariaWithColor(pedido.hora);
 
     const cadeteOptions = cadetes
       .map(

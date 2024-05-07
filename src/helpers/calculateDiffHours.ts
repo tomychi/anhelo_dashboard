@@ -7,7 +7,7 @@ export const colorsPedido = {
   gray: '#D3D3D3',
 };
 
-export const obtenerDiferenciaHoraria = (hora: string): string => {
+export const obtenerDiferenciaHorariaWithColor = (hora: string): string => {
   // Obtener la hora actual
   const ahora = new Date();
 
@@ -34,8 +34,9 @@ export const obtenerDiferenciaHoraria = (hora: string): string => {
 
   // Agregar signo negativo si es necesario
   if (esNegativa) {
-    return colorsPedido.green;
+    return colorsPedido.gray;
   }
+
   if (horasDiferencia) {
     return colorsPedido.red;
   }
@@ -51,4 +52,14 @@ export const obtenerDiferenciaHoraria = (hora: string): string => {
   } else {
     return colorsPedido.red;
   }
+};
+
+const coloresTailwind: { [key: string]: string } = {
+  [colorsPedido.green]: 'bg-green-500',
+  [colorsPedido.yellow]: 'bg-yellow-500',
+  [colorsPedido.red]: 'bg-custom-red',
+  [colorsPedido.gray]: 'bg-gray-500',
+};
+export const obtenerColorTailwind = (colorHexadecimal: string) => {
+  return coloresTailwind[colorHexadecimal] || 'custom'; // Si el color no está en la lista, se utiliza un nombre de color personalizado
 };
