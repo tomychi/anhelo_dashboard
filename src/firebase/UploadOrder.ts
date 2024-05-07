@@ -50,7 +50,6 @@ export const UploadOrder = async (
         pedidos: pedidosDelDia,
       });
     });
-    console.log('Pedido subido correctamente');
     return pedidoId;
   } catch (error) {
     console.error('Error al subir el pedido:', error);

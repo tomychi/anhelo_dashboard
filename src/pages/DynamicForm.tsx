@@ -1,15 +1,12 @@
 import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { UploadOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
-import { ReadOrdersForToday } from '../firebase/ReadData';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
-import { PedidoProps } from '../types/types';
 import { addTelefonoFirebase } from '../firebase/Telefonos';
 import { obtenerMontosPorAlias } from '../firebase/afip';
-import { readOrdersData } from '../redux/data/dataAction';
 
 export interface FormDataProps {
   aclaraciones: string;
@@ -70,50 +67,20 @@ const aliasTopes = {
 };
 
 export const DynamicForm = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
-      console.log('db');
-      dispatch(readOrdersData(pedidos));
-    });
+  const [aliasDisponible, setAliasDisponible] = useState<string>('onlyanhelo3');
 
-    return () => {
-      unsubscribe(); // Detiene la suscripción cuando el componente se desmonta
-    };
-  }, [dispatch]);
-  const [montosPorAlias, setMontosPorAlias] = useState<Record<string, number>>(
-    {}
-  );
-
-  useEffect(() => {
-    const obtenerMontos = async () => {
-      try {
-        const fechaActual = obtenerFechaActual();
-        const [, mesActual, anioActual] = fechaActual.split('/');
-        const unsubscribe = await obtenerMontosPorAlias(
-          anioActual,
-          mesActual,
-          (montos) => {
-            setMontosPorAlias(montos);
-          }
-        );
-        return unsubscribe;
-      } catch (error) {
-        console.error('Error al obtener los montos por alias:', error);
-      }
-    };
-
-    let unsubscribeFunction: () => void = () => {}; // Inicializa la función de cancelación
-
-    obtenerMontos().then((unsubscribe) => {
-      unsubscribeFunction = unsubscribe || (() => {}); // Asigna la función de cancelación, o una función vacía si no está disponible
-    });
-
-    return () => {
-      unsubscribeFunction(); // Detiene la suscripción cuando el componente se desmonta
-    };
-  }, []);
-  const aliasDisponible = obtenerAliasDisponible(montosPorAlias, aliasTopes);
+  const obtenerMontos = () => {
+    try {
+      const fechaActual = obtenerFechaActual();
+      const [, mesActual, anioActual] = fechaActual.split('/');
+      obtenerMontosPorAlias(anioActual, mesActual, (montos) => {
+        const aliasDis = obtenerAliasDisponible(montos, aliasTopes);
+        setAliasDisponible(aliasDis);
+      });
+    } catch (error) {
+      console.error('Error al obtener los montos por alias:', error);
+    }
+  };
 
   const [formData, setFormData] = useState<FormDataProps>({
     aclaraciones: '',
@@ -210,32 +177,11 @@ export const DynamicForm = () => {
     };
     UploadOrder(info, aliasDisponible)
       .then((result) => {
-        setTimeout(() => {
-          // Leer los pedidos para el día actual
-          ReadOrdersForToday((pedidos: PedidoProps[]) => {
-            // Verificar si el pedido recién cargado se encuentra en la lista de pedidos
-            const pedidoEncontrado = pedidos.find(
-              (pedido) => pedido.id === result
-            );
-
-            // Si el pedido se encuentra, no es necesario hacer nada
-            if (pedidoEncontrado) {
-              Swal.fire({
-                icon: 'success',
-                title: `Pedido cargado`,
-                text: `El pedido ${result} se cargo correctamente`,
-              });
-            }
-            // Si no se encuentra, mostrar un mensaje indicando que no se encontró
-            if (!pedidoEncontrado) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: `No se encontró el pedido con el ID: ${result}`,
-              });
-            }
-          });
-        }, 1000);
+        Swal.fire({
+          icon: 'success',
+          title: `Pedido cargado`,
+          text: `El pedido ${result} se cargo correctamente`,
+        });
       })
       .catch((error) => {
         Swal.fire({
@@ -312,7 +258,6 @@ export const DynamicForm = () => {
     setDetallePedido((prevData) => [...prevData, burger]);
   };
 
-  console.log(detallePedido);
   return (
     <div>
       {productos.length > 0 && (
@@ -485,7 +430,12 @@ export const DynamicForm = () => {
                         >
                           <option> METODO DE PAGO</option>
                           <option value="efectivo">Efectivo</option>
-                          <option value="mercadopago">Mercadopago</option>
+                          <option
+                            value="mercadopago"
+                            onClick={() => obtenerMontos()}
+                          >
+                            Mercadopago
+                          </option>
                         </select>
                         {formData.metodoPago === 'mercadopago' && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
                           <div className="flex flex-row">

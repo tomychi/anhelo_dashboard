@@ -55,7 +55,7 @@ export const addWarehouseLayers = (
     // calcular la diferencia de minutos entre la hora de entrada del pedido y la hora actual
     let colorsAsigned = obtenerDiferenciaHoraria(pedido.hora);
 
-    if (!pedido.cadete) {
+    if (pedido.cadete === 'NADIE') {
       colorsAsigned = colorsPedido.gray;
     }
     const cadeteOptions = cadetes

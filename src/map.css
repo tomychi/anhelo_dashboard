@@ -3,11 +3,6 @@ body {
   padding: 0;
 }
 
-#map {
-  position: absolute;
-  inset: 0;
-}
-
 .truck {
   width: 20px;
   height: 20px;

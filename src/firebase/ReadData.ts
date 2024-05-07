@@ -136,6 +136,7 @@ export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
         // Si el documento existe, obtener el arreglo de pedidos
         const pedidosDelDia = docSnapshot.data()?.pedidos || [];
         callback(pedidosDelDia as PedidoProps[]); // Llamar a la función de devolución de llamada con los pedidos encontrados
+        console.log('Pedidos para el día actual:', pedidosDelDia);
       } else {
         // Si el documento no existe, no hay pedidos para el día actual
         callback([]); // Llamar a la función de devolución de llamada con un arreglo vacío
