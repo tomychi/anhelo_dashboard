@@ -92,7 +92,7 @@ export const EditModal = ({
                 id="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer uppercase"
+                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer "
                 placeholder="Type product name"
               />
             </div>
@@ -102,11 +102,11 @@ export const EditModal = ({
               </label>
               <input
                 type="text"
-                name="name"
-                id="name"
+                name="img"
+                id="img"
                 value={formData.img}
                 onChange={handleInputChange}
-                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer uppercase"
+                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
                 placeholder="Image"
               />
             </div>
@@ -120,7 +120,7 @@ export const EditModal = ({
                 id="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer uppercase"
+                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
                 placeholder="$2999"
               />
             </div>
@@ -135,8 +135,8 @@ export const EditModal = ({
                 id="type"
                 value={formData.type}
                 onChange={handleInputChange}
-                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer uppercase"
-                placeholder="$2999"
+                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                placeholder="originals"
               />
             </div>
             <div className="relative z-0 mt-4  ">
@@ -147,7 +147,7 @@ export const EditModal = ({
                 id="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black uppercase appearance-none text-black focus:outline-none focus:ring-0 peer"
+                className="block py-2.5 texk-black w-full  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
               ></input>
             </div>
           </div>
