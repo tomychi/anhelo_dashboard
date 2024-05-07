@@ -114,7 +114,6 @@ const parsearMensajePedido = (
 
   const telefono = datosVendedor[1];
   const direccion = datosVendedor[3];
-  const map = datosVendedor[3];
   const metodoPago = datosVendedor[6];
   const piso = datosVendedor[4];
   const referencias = datosVendedor[5];
@@ -129,13 +128,14 @@ const parsearMensajePedido = (
     return {
       telefono,
       direccion,
-      map,
       metodoPago,
       piso,
       referencias,
       aclaraciones: '',
       envio: '',
       hora: obtenerHoraActual(),
+      map: '',
+      cadete: 'NADIE',
     };
   } else {
     console.log('No se pudo encontrar el detalle del pedido en el mensaje.');
