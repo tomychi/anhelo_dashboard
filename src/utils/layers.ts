@@ -3,6 +3,8 @@ import mapboxgl from 'mapbox-gl';
 import { PedidoProps } from '../types/map';
 import { obtenerDiferenciaHorariaWithColor } from '../helpers/calculateDiffHours';
 import { updateCadeteForOrder } from '../firebase/UploadOrder';
+import Swal from 'sweetalert2';
+import { marcarPedidoComoEntregado } from '../firebase/ReadData';
 
 interface FeatureProperties {
   cadete: string;
@@ -10,6 +12,7 @@ interface FeatureProperties {
   cadeteOptions: string[];
   fechaPedido: string;
   idPedido: string;
+  elaborado: boolean;
 }
 
 export const addDropoffLayer = (
@@ -77,6 +80,7 @@ export const addWarehouseLayers = (
         cadete: pedido.cadete || '',
         fechaPedido: pedido.fecha,
         idPedido: pedido.id,
+        elaborado: pedido.elaborado,
         pedidoInfo: `${pedido.direccion}`, // Información del pedido para el popup
         iconColor: colorsAsigned, // Nuevo atributo para almacenar el color del ícono
 
@@ -139,8 +143,14 @@ export const addWarehouseLayers = (
       return;
     }
 
-    const { cadete, pedidoInfo, cadeteOptions, idPedido, fechaPedido } =
-      feature.properties as FeatureProperties;
+    const {
+      cadete,
+      pedidoInfo,
+      cadeteOptions,
+      idPedido,
+      fechaPedido,
+      elaborado,
+    } = feature.properties as FeatureProperties;
 
     // le podemos agregar al popup un select para que cambiar el cadete a cargo del pedido
     new mapboxgl.Popup()
@@ -156,10 +166,51 @@ export const addWarehouseLayers = (
           <p>${pedidoInfo}</p>
           <button id="changeCoords" style="margin-top: 10px; padding: 10px; background-color: #3887be; color: white; border: none; border-radius: 5px; cursor: pointer;">Cambiar</button>
 
+          ${
+            elaborado
+              ? `<button id="entregado" style="margin-top: 10px; padding: 10px; background-color: #3887be; color: white; border: none; border-radius: 5px; cursor: pointer;">Entregado</button>`
+              : ''
+          }
+
           </div>`
       )
 
       .addTo(map);
+
+    // Agregar un evento de click al botón de entregado
+    const entregadoButton = document.getElementById('entregado');
+    entregadoButton?.addEventListener('click', () => {
+      Swal.fire({
+        title: `¿Entregar ${pedidoInfo}?`,
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          marcarPedidoComoEntregado(idPedido, fechaPedido)
+            .then(() => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Entregado',
+                text: `El pedido ${pedidoInfo} ha sido entregado.`,
+              });
+            })
+            .catch(() => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo entregar el pedido.',
+              });
+            });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo entregar el pedido.',
+          });
+        }
+      });
+    });
 
     // Agregar un evento de click al botón de cambiar coordenadas
     const changeCoordsButton = document.getElementById('changeCoords');

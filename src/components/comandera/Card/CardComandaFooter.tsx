@@ -3,10 +3,7 @@ import {
   marcarPedidoComoElaborado,
   marcarPedidoComoEntregado,
 } from '../../../firebase/ReadData';
-import {
-  obtenerDiferenciaHoraria,
-  obtenerHoraActual,
-} from '../../../helpers/dateToday';
+import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
 import { useState } from 'react';
 import { Descuento } from '../../Card/Descuento';
 import { PedidoProps } from '../../../types/types';
@@ -76,8 +73,7 @@ export const CardComandaFooter = ({
             {tiempoEntregado === undefined ? (
               <button
                 onClick={() => {
-                  const hor = obtenerHoraActual();
-                  marcarPedidoComoEntregado(id, hor)
+                  marcarPedidoComoEntregado(id, fecha)
                     .then(() => {
                       Swal.fire({
                         icon: 'success',

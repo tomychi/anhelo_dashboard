@@ -9,7 +9,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { PedidoProps } from '../types/types';
-import { obtenerFechaActual } from '../helpers/dateToday';
+import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { ExpenseProps } from './UploadGasto';
 import { DateValueType } from 'react-tailwindcss-datepicker';
 import { Unsubscribe } from 'redux';
@@ -190,11 +190,10 @@ export const marcarPedidoComoElaborado = async (
 
 export const marcarPedidoComoEntregado = async (
   pedidoId: string,
-  tiempo: string
+  fecha: string
 ) => {
-  const todayDateString = obtenerFechaActual();
-  const [dia, mes, anio] = todayDateString.split('/');
-
+  const [dia, mes, anio] = fecha.split('/');
+  const tiempo = obtenerHoraActual();
   try {
     const firestore = getFirestore();
     const pedidoDocRef = doc(firestore, 'pedidos', anio, mes, dia);

@@ -13,9 +13,7 @@ import ScrollContainer from './ScrollContainer';
 interface GeneralStatsProps {
   customerSuccess: number;
   orders: PedidoProps[];
-  cadeteSeleccionado: string;
-  handleCadeteChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  cadetesUnicos: string[];
+  cadeteSeleccionado: string | null;
   sumaTotalPedidos: number;
   sumaTotalEfectivo: number;
 }
@@ -23,8 +21,6 @@ interface GeneralStatsProps {
 export const GeneralStats = ({
   customerSuccess,
   cadeteSeleccionado,
-  handleCadeteChange,
-  cadetesUnicos,
   sumaTotalPedidos,
   sumaTotalEfectivo,
 }: GeneralStatsProps) => {
@@ -73,28 +69,12 @@ export const GeneralStats = ({
   return (
     <div className="text-custom-red uppercase font-antonio flex flex-col gap-4 mb-8">
       <div className="flex flex-col gap-2">
-        <div className="flex w-max  flex-row border-2 pl-1.5 font-black border-red-main">
-          <p>Filtrar por cadetes:</p>
-          <select
-            value={cadeteSeleccionado}
-            onChange={handleCadeteChange}
-            className="bg-black uppercase"
-          >
-            <option value="">Todos los cadetes</option>
-            {cadetesUnicos.map((cadete: string, index: number) => {
-              if (cadete === undefined) return;
-              return (
-                <option key={index} value={cadete}>
-                  {cadete}
-                </option>
-              );
-            })}
-          </select>
-        </div>
         <div className="flex items-center flex-row overflow-hidden">
           <ScrollContainer>
             <div className="flex flex-row gap-4 text-xs">
               {empleados.map((empleado, index) => {
+                if (empleado.name === undefined) return;
+                if (empleado.name === 'NO ASIGNADO') return;
                 const { activo, horaSalida } = empleadoActivo(empleado.name);
                 const horaEntrada = activo
                   ? (

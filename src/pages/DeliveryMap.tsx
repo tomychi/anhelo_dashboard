@@ -4,18 +4,18 @@ import '../map.css';
 import mapboxgl from 'mapbox-gl';
 import { newDropoff, updateDropoffs } from '../services/deliveryService';
 import { PointHopper } from '../types/map';
-import CadeteSelect from '../components/Cadet/CadeteSelect';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { restaurantLocation } from '../data/restaurantLocation';
 import { PedidoProps } from '../types/types';
-import { readEmpleados } from '../firebase/registroEmpleados';
 import { PedidosSinCords } from '../components/Map';
 
 interface DeliveryProps {
   orders: PedidoProps[];
+  selectedCadete: string | null;
+  cadetes: string[];
 }
 
-const DeliveryMap = ({ orders }: DeliveryProps) => {
+const DeliveryMap = ({ orders, selectedCadete, cadetes }: DeliveryProps) => {
   const [clickMap, setClickMap] = useState<{
     value: boolean;
     id: string;
@@ -25,9 +25,6 @@ const DeliveryMap = ({ orders }: DeliveryProps) => {
     id: '',
     fecha: '',
   });
-
-  const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
-  const [cadetes, setCadetes] = useState<string[]>([]);
 
   const filteredPedidos = selectedCadete
     ? orders.filter((pedido) => pedido.cadete === selectedCadete)
@@ -58,28 +55,8 @@ const DeliveryMap = ({ orders }: DeliveryProps) => {
     updateDropoffs(map, dropoffs);
   };
 
-  useEffect(() => {
-    const obtenerCadetes = async () => {
-      try {
-        const empleados = await readEmpleados();
-        const cadetesFiltrados = empleados
-          .filter((empleado) => empleado.category === 'cadete')
-          .map((empleado) => empleado.name);
-        setCadetes(cadetesFiltrados);
-      } catch (error) {
-        console.error('Error al obtener los cadetes:', error);
-      }
-    };
-
-    obtenerCadetes();
-  }, []);
-
   return (
     <div>
-      <CadeteSelect
-        cadetes={cadetes}
-        onChange={(cadete) => setSelectedCadete(cadete)}
-      />{' '}
       <PedidosSinCords pedidos={pedidosSinCoords} setClickMap={setClickMap} />
       <MapContainer
         clickMap={clickMap}

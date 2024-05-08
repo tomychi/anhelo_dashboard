@@ -1,7 +1,7 @@
 interface NavButtonsProps {
   seccionActiva: string;
   setSeccionActiva: (seccion: string) => void;
-  cadeteSeleccionado: string;
+  cadeteSeleccionado: string | null;
 }
 
 export const NavButtons = ({

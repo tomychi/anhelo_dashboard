@@ -12,20 +12,22 @@ import { NavButtons } from '../components/comandera/NavButtons';
 import DeliveryMap from './DeliveryMap';
 import { buscarCoordenadas } from '../apis/getCoords';
 import { handleAddressSave } from '../firebase/UploadOrder';
+import CadeteSelect from '../components/Cadet/CadeteSelect';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
   const dispatch = useDispatch();
-  const [cadeteSeleccionado, setCadeteSeleccionado] = useState('');
   const [sumaTotalPedidos, setSumaTotalPedidos] = useState(0);
   const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState(0);
+  const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
 
+  const [cadetes, setCadetes] = useState<string[]>([]);
   const { orders } = useSelector((state: RootState) => state.data);
 
   const location = useLocation();
   // Filtrar y ordenar los pedidos una vez
   const filteredOrders = orders
-    .filter((o) => !cadeteSeleccionado || o.cadete === cadeteSeleccionado)
+    .filter((o) => !selectedCadete || o.cadete === selectedCadete)
     .sort((a, b) => {
       const [horaA, minutosA] = a.hora.split(':').map(Number);
       const [horaB, minutosB] = b.hora.split(':').map(Number);
@@ -73,7 +75,7 @@ export const Comandera = () => {
   // Manejar el cambio en el select de cadetes
   const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadeteSeleccionado = event.target.value;
-    setCadeteSeleccionado(nuevoCadeteSeleccionado);
+    setSelectedCadete(nuevoCadeteSeleccionado);
 
     // Calcular la suma total de pedidos para el cadete seleccionado
     const totalPedidosCadete = orders.reduce((total, pedido) => {
@@ -111,17 +113,20 @@ export const Comandera = () => {
       <NavButtons
         seccionActiva={seccionActiva}
         setSeccionActiva={setSeccionActiva}
-        cadeteSeleccionado={cadeteSeleccionado}
+        cadeteSeleccionado={selectedCadete}
       />
       <div className="row-start-4">
+        <CadeteSelect
+          cadetes={cadetes}
+          setCadetes={setCadetes}
+          handleCadeteChange={handleCadeteChange}
+        />{' '}
         {seccionActiva !== 'mapa' && (
           <>
             <GeneralStats
               customerSuccess={customerSuccess}
               orders={orders}
-              cadeteSeleccionado={cadeteSeleccionado}
-              handleCadeteChange={handleCadeteChange}
-              cadetesUnicos={cadetesUnicos}
+              cadeteSeleccionado={selectedCadete}
               sumaTotalPedidos={sumaTotalPedidos}
               sumaTotalEfectivo={sumaTotalEfectivo}
             />
@@ -140,9 +145,17 @@ export const Comandera = () => {
         {seccionActiva === 'mapa' &&
           (location.pathname === '/comandas' ? (
             // <MapsApp orders={[...pedidosHechos, ...pedidosPorHacer]} />
-            <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
+            <DeliveryMap
+              orders={[...pedidosHechos, ...pedidosPorHacer]}
+              selectedCadete={selectedCadete}
+              cadetes={cadetesUnicos}
+            />
           ) : (
-            <DeliveryMap orders={orders} />
+            <DeliveryMap
+              orders={orders}
+              selectedCadete={selectedCadete}
+              cadetes={cadetesUnicos}
+            />
           ))}
       </div>
       {/* Esto es para la contabilidad, NO BORRAR */}
