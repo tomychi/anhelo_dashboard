@@ -2,14 +2,13 @@
 
 import Swal from 'sweetalert2';
 import { eliminarDocumento } from '../../../firebase/ReadData';
-import { useState } from 'react';
-import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
 
 interface CardComandaHeaderProps {
   user: { email: string };
   hora: string;
   id: string;
   fecha: string;
+  minutosDeDemora: string;
 }
 
 export const CardComandaHeader = ({
@@ -17,22 +16,8 @@ export const CardComandaHeader = ({
   hora,
   id,
   fecha,
+  minutosDeDemora,
 }: CardComandaHeaderProps) => {
-  // Estado para almacenar la cantidad de minutos de demora
-  const [minutosDeDemora, setMinutosDeDemora] = useState(
-    obtenerDiferenciaHoraria(hora)
-  );
-
-  // Efecto para actualizar la cantidad de minutos de demora cada minuto
-  // Función para calcular y actualizar la cantidad de minutos de demora
-  const actualizarMinutosDeDemora = () => {
-    const nuevaDiferencia = obtenerDiferenciaHoraria(hora);
-    setMinutosDeDemora(nuevaDiferencia);
-  };
-
-  // Actualiza la cantidad de minutos de demora cada minuto
-  setInterval(actualizarMinutosDeDemora, 60000); // 60000 milisegundos = 1 minuto
-
   return (
     <div className="flex flex-col items-center gap-1 justify-center">
       <div className="flex flex-col  mt-6 mb-7">

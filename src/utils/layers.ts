@@ -106,7 +106,7 @@ export const addWarehouseLayers = (
         '?', // Si es "NO ASIGNADO", muestra el símbolo de interrogación
         '▼', // De lo contrario, muestra el triángulo normal
       ],
-      'text-size': 30,
+      'text-size': 25,
     },
     paint: {
       'text-color': ['get', 'iconColor'],
