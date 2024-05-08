@@ -78,23 +78,33 @@ export const getNewCustomers = (
   telefonos: TelefonosProps[],
   orders: PedidoProps[],
   startDate: Date
-): TelefonosProps[] => {
+): PedidoProps[] => {
   // Verificar si telefonos es un array y no está vacío
   if (!Array.isArray(telefonos) || telefonos.length === 0) {
     return [];
   }
 
-  // Filtrar los pedidos que coinciden con los números de teléfono de los clientes
-  const ordersWithSamePhoneNumber = orders.filter((order) => {
-    // Comprobar si el número de teléfono del pedido existe en los clientes
-    return telefonos.some(
+  // estos son los clientes que ya pidieron
+  // const ordersWithSamePhoneNumber = orders.filter((order) => {
+  //   // Comprobar si el número de teléfono del pedido existe en los clientes
+  //   return telefonos.some(
+  //     (cliente) =>
+  //       cliente.telefono === cleanPhoneNumber(order.telefono) &&
+  //       new Date(convertDateFormat(cliente.fecha)) < startDate
+  //   );
+  // });
+
+  // Filtrar los clientes que no tienen pedidos asociados
+  const newCustomers = orders.filter((order) => {
+    // Comprobar si el número de teléfono del cliente no coincide con ningún pedido
+    return !telefonos.some(
       (cliente) =>
         cliente.telefono === cleanPhoneNumber(order.telefono) &&
         new Date(convertDateFormat(cliente.fecha)) < startDate
     );
   });
 
-  return ordersWithSamePhoneNumber;
+  return newCustomers;
 };
 
 export const getOrdersByPhoneNumber = (
