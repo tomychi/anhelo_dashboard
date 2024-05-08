@@ -27,6 +27,7 @@ export const addDropoffLayer = (
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
       'icon-image': 'marker-15', // Usa el marcador de Mapbox predeterminado
+      'text-allow-overlap': true,
     },
   });
 };
@@ -43,7 +44,8 @@ export const addTruckMarker = (
 export const addWarehouseLayers = (
   map: mapboxgl.Map,
   pedidos: PedidoProps[],
-  cadetes: string[]
+  cadetes: string[],
+  setClickMap: (value: { value: boolean; id: string; fecha: string }) => void
 ) => {
   const warehouseFeatures: Feature<
     Point,
@@ -152,10 +154,18 @@ export const addWarehouseLayers = (
           ${cadeteOptions}</select>
 
           <p>${pedidoInfo}</p>
-        </div>`
+          <button id="changeCoords" style="margin-top: 10px; padding: 10px; background-color: #3887be; color: white; border: none; border-radius: 5px; cursor: pointer;">Cambiar</button>
+
+          </div>`
       )
 
       .addTo(map);
+
+    // Agregar un evento de click al botón de cambiar coordenadas
+    const changeCoordsButton = document.getElementById('changeCoords');
+    changeCoordsButton?.addEventListener('click', () => {
+      setClickMap({ value: true, id: idPedido, fecha: fechaPedido });
+    });
 
     // Agregar un evento de cambio al select
     const cadeteSelector = document.getElementById(

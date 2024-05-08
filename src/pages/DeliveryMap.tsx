@@ -9,18 +9,34 @@ import { useEffect, useState } from 'react';
 import { restaurantLocation } from '../data/restaurantLocation';
 import { PedidoProps } from '../types/types';
 import { readEmpleados } from '../firebase/registroEmpleados';
+import { PedidosSinCords } from '../components/Map';
 
 interface DeliveryProps {
   orders: PedidoProps[];
 }
 
 const DeliveryMap = ({ orders }: DeliveryProps) => {
+  const [clickMap, setClickMap] = useState<{
+    value: boolean;
+    id: string;
+    fecha: string;
+  }>({
+    value: false,
+    id: '',
+    fecha: '',
+  });
+
   const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
   const [cadetes, setCadetes] = useState<string[]>([]);
 
   const filteredPedidos = selectedCadete
     ? orders.filter((pedido) => pedido.cadete === selectedCadete)
     : orders;
+
+  // pedidos sin coords map=[0,0]
+  const pedidosSinCoords = orders.filter(
+    (pedido) => pedido.map[0] === 0 && pedido.map[1] === 0
+  );
 
   const warehouseLocations = filteredPedidos.map((p) => p.map);
 
@@ -64,7 +80,10 @@ const DeliveryMap = ({ orders }: DeliveryProps) => {
         cadetes={cadetes}
         onChange={(cadete) => setSelectedCadete(cadete)}
       />{' '}
+      <PedidosSinCords pedidos={pedidosSinCoords} setClickMap={setClickMap} />
       <MapContainer
+        clickMap={clickMap}
+        setClickMap={setClickMap}
         restaurantLocation={restaurantLocation}
         cadetes={cadetes}
         dropoffs={dropoffs}

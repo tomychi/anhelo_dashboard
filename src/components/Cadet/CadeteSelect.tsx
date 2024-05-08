@@ -10,9 +10,8 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({ onChange, cadetes }) => {
   };
 
   return (
-    <div className="cadete-select-container">
+    <div className=" z-50 bg-white p-3 rounded-lg shadow-md">
       <label>Selecciona un cadete:</label>
-      {/*  estilos tailwind al select */}
       <select
         onChange={handleCadeteChange}
         className="

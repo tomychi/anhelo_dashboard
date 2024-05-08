@@ -1,0 +1,1 @@
+export { PedidosSinCords } from './PedidosSinCords';

@@ -33,9 +33,9 @@ export interface PedidoProps {
   referencias: string;
   id: string;
   piso: string;
-  cadete?: string;
-  dislike?: boolean;
-  delay?: boolean;
+  cadete: string;
+  dislike: boolean;
+  delay: boolean;
   tiempoElaborado: string;
   tiempoEntregado: string;
   entregado: boolean;
