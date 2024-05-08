@@ -99,7 +99,12 @@ export const addWarehouseLayers = (
       type: 'geojson',
       data: warehouseCollection,
     },
+
     layout: {
+      'text-keep-upright': true,
+      // texto no desaparezca al hacer zoom
+      'text-allow-overlap': true,
+
       'text-field': [
         'case',
         ['==', ['get', 'cadete'], 'NO ASIGNADO'], // Verifica si el cadete es "NO ASIGNADO"
@@ -114,7 +119,6 @@ export const addWarehouseLayers = (
       'text-halo-color': 'hsl(55, 11%, 96%)',
     },
   });
-  // Agregar popup al hacer clic en la ubicación del almacén
   map.on('click', ['warehouse-triangles', 'warehouses'], (e) => {
     if (!e.features || !e.features.length) return;
 
