@@ -45,20 +45,19 @@ export const Comandera = () => {
 
   useEffect(() => {
     if (location.pathname === '/comandas') {
-      const unsubscribe = ReadOrdersForToday((pedidos: PedidoProps[]) => {
+      const unsubscribe = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
         // pedidos que no tengan la prop map se les asigna un valor
         const pedidosSinMap = pedidos.filter(
           (pedido) => !pedido.map || pedido.map[0] === 0 || pedido.map[1] === 0
         );
 
-        console.log(pedidosSinMap);
         // ahora con la funcion buscarCoordenadas se le asigna un valor a la propiedad map
-        pedidosSinMap.forEach(async (pedido) => {
+        for (const pedido of pedidosSinMap) {
           const coordenadas = await buscarCoordenadas(pedido.direccion);
           if (coordenadas) {
             await handleAddressSave(pedido.fecha, pedido.id, coordenadas);
           }
-        });
+        }
         dispatch(readOrdersData(pedidos));
       });
 
@@ -67,10 +66,6 @@ export const Comandera = () => {
       };
     }
   }, [dispatch, location]);
-
-  const cadetesUnicos: string[] = Array.from(
-    new Set(orders.map((order) => order.cadete))
-  ).filter((cadete): cadete is string => typeof cadete === 'string');
 
   // Manejar el cambio en el select de cadetes
   const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -148,13 +143,13 @@ export const Comandera = () => {
             <DeliveryMap
               orders={[...pedidosHechos, ...pedidosPorHacer]}
               selectedCadete={selectedCadete}
-              cadetes={cadetesUnicos}
+              cadetes={cadetes}
             />
           ) : (
             <DeliveryMap
               orders={orders}
               selectedCadete={selectedCadete}
-              cadetes={cadetesUnicos}
+              cadetes={cadetes}
             />
           ))}
       </div>

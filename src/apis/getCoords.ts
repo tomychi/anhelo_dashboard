@@ -1,4 +1,5 @@
 import axios from 'axios';
+import directionsApi from './directionsApi';
 
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
@@ -43,5 +44,47 @@ export const buscarCoordenadas = async (direccion: string) => {
   } catch (error) {
     console.error('Error al obtener las coordenadas:', error);
     return null;
+  }
+};
+
+export const obtenerDistanciaYMinuto = async (
+  origen: number[],
+  destino: number[]
+): Promise<{ kms: number; minutosDistancia: number }> => {
+  console.log(origen, destino);
+  try {
+    // Realizar la solicitud a la API de direcciones de Mapbox
+    const response = await directionsApi.get(
+      `/${origen.join(',')};${destino.join(',')}`
+    );
+
+    // Verificar si se encontraron resultados
+    if (response.data.routes && response.data.routes.length > 0) {
+      // Obtener la geometría de la ruta
+      const { distance, duration } = response.data.routes[0];
+
+      let kms = distance / 1000;
+      kms = Math.round(kms * 100);
+      kms /= 100;
+
+      const minutes = Math.floor(duration / 60);
+
+      return {
+        kms: kms, // Devolver la distancia en kilómetros
+        minutosDistancia: minutes,
+      }; // Devolver la geometría de la ruta
+    } else {
+      console.error('No se encontraron rutas para los puntos proporcionados.');
+      return {
+        kms: 0,
+        minutosDistancia: 0,
+      };
+    }
+  } catch (error) {
+    console.error('Error al obtener la ruta:', error);
+    return {
+      kms: 0,
+      minutosDistancia: 0,
+    };
   }
 };
