@@ -100,3 +100,8 @@ export interface TelefonosProps {
   fecha: string;
   telefono: string;
 }
+
+export interface CustomerType {
+  existingCustomers: PedidoProps[];
+  newCustomers: PedidoProps[];
+}

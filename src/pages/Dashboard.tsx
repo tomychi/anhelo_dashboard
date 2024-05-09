@@ -26,7 +26,7 @@ import {
   VentasSVG,
   VisualizacionLocalSVG,
 } from '../components/icons';
-import { getNewCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
+import { getCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
 // import { AnheloIG } from '../components/instagram/AnheloIG';
 import { MapStats } from './MapStats';
 Chart.register(...registerables);
@@ -91,7 +91,7 @@ export const Dashboard = () => {
   const endDate = new Date(valueDate?.endDate || new Date());
 
   // Ejemplo de uso
-  const newCustomers = getNewCustomers(telefonos, orders, startDate);
+  const customers = getCustomers(telefonos, orders, startDate);
 
   // const customerSuccess =
   // 	100 -
@@ -217,7 +217,7 @@ export const Dashboard = () => {
       </div>
       <div className="flex flex-col md:flex-row gap-4">
         <CardInfo
-          info={newCustomers.length}
+          info={customers.newCustomers.length}
           link={'clientes'}
           title={'NUEVOS CLIENTES'}
           svgComponent={<NuevosClientesSVG />}

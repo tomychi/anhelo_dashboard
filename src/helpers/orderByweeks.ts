@@ -1,4 +1,4 @@
-import { PedidoProps, TelefonosProps } from '../types/types';
+import { CustomerType, PedidoProps, TelefonosProps } from '../types/types';
 import { startOfWeek, endOfWeek, addWeeks, isDate } from 'date-fns';
 import { calcularTotales } from './calculator';
 import { convertDateFormat } from './dateToday';
@@ -74,25 +74,25 @@ export const cleanPhoneNumber = (phoneNumber: string) => {
   return without0;
 };
 
-export const getNewCustomers = (
+export const getCustomers = (
   telefonos: TelefonosProps[],
   orders: PedidoProps[],
   startDate: Date
-): PedidoProps[] => {
+): CustomerType => {
   // Verificar si telefonos es un array y no está vacío
   if (!Array.isArray(telefonos) || telefonos.length === 0) {
-    return [];
+    return { existingCustomers: [], newCustomers: [] };
   }
 
-  // estos son los clientes que ya pidieron
-  // const ordersWithSamePhoneNumber = orders.filter((order) => {
-  //   // Comprobar si el número de teléfono del pedido existe en los clientes
-  //   return telefonos.some(
-  //     (cliente) =>
-  //       cliente.telefono === cleanPhoneNumber(order.telefono) &&
-  //       new Date(convertDateFormat(cliente.fecha)) < startDate
-  //   );
-  // });
+  // Estos son los clientes que ya han pedido
+  const existingCustomers = orders.filter((order) => {
+    // Comprobar si el número de teléfono del pedido existe en los clientes
+    return telefonos.some(
+      (cliente) =>
+        cliente.telefono === cleanPhoneNumber(order.telefono) &&
+        new Date(convertDateFormat(cliente.fecha)) < startDate
+    );
+  });
 
   // Filtrar los clientes que no tienen pedidos asociados
   const newCustomers = orders.filter((order) => {
@@ -104,9 +104,8 @@ export const getNewCustomers = (
     );
   });
 
-  return newCustomers;
+  return { existingCustomers, newCustomers };
 };
-
 export const getOrdersByPhoneNumber = (
   phoneNumber: string,
   orders: PedidoProps[]
