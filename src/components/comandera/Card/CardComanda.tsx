@@ -39,7 +39,6 @@ export const CardComanda = ({ comanda }: ComandaRareProps) => {
     entregado,
   } = comanda;
   const { user } = useSelector((state: RootState) => state.auth);
-
   // Estado para almacenar la cantidad de minutos de demora
   const [minutosDeDemora, setMinutosDeDemora] = useState(
     obtenerDiferenciaHoraria(hora)
@@ -83,6 +82,7 @@ export const CardComanda = ({ comanda }: ComandaRareProps) => {
         hora={hora}
         id={id}
         fecha={fecha}
+        elaborado={elaborado}
         minutosDeDemora={minutosDeDemora}
       />
 

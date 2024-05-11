@@ -8,9 +8,9 @@ export const PrivateRoutesLayout = () => {
 
   if (
     currentUserEmail === 'cadetes@anhelo.com' ||
-    currentUserEmail === 'cocina@anhelo.com'
+    currentUserEmail === 'cocina@anhelo.com' ||
+    currentUserEmail === 'mostrador@anhelo.com'
   ) {
-    // Si el usuario es cadetes@anhelo.com, solo tiene acceso a la ruta "/comandas"
     return (
       <Routes>
         <Route path="/comandas" element={<Comandera />} />

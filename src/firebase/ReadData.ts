@@ -227,6 +227,44 @@ export const marcarPedidoComoEntregado = async (
   }
 };
 
+export const marcarPedidoComoEmbalado = async (
+  pedidoId: string,
+  fecha: string
+) => {
+  const [dia, mes, anio] = fecha.split('/');
+  const tiempo = obtenerHoraActual();
+  try {
+    const firestore = getFirestore();
+    const pedidoDocRef = doc(firestore, 'pedidos', anio, mes, dia);
+
+    await runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+
+      if (!pedidoDocSnapshot.exists()) {
+        console.error('No se encontró el documento del día en Firestore');
+        return;
+      }
+
+      const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
+      const index = pedidosDelDia.findIndex(
+        (pedido: PedidoProps) => pedido.id === pedidoId
+      );
+
+      if (index !== -1) {
+        pedidosDelDia[index].tiempoEmbalado = tiempo;
+        transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
+        console.log('Pedido marcado como entregado en Firestore');
+      } else {
+        console.error(
+          'El pedido no fue encontrado en el arreglo de pedidos del día'
+        );
+      }
+    });
+  } catch (error) {
+    console.error('Error al marcar pedido como entregado en Firestore:', error);
+  }
+};
+
 // Función para eliminar un pedido de la base de datos en Firestore
 export const eliminarDocumento = async (
   dbName: string,

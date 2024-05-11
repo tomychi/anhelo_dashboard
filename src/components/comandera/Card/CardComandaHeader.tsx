@@ -9,6 +9,7 @@ interface CardComandaHeaderProps {
   id: string;
   fecha: string;
   minutosDeDemora: string;
+  elaborado: boolean;
 }
 
 export const CardComandaHeader = ({
@@ -17,12 +18,15 @@ export const CardComandaHeader = ({
   id,
   fecha,
   minutosDeDemora,
+  elaborado,
 }: CardComandaHeaderProps) => {
   return (
     <div className="flex flex-col items-center gap-1 justify-center">
-      <div className="flex flex-col  mt-6 mb-7">
+      <div className="flex flex-col  mb-7">
         <div className="flex flex-col items-center">
-          {minutosDeDemora.charAt(0) === '-' ? (
+          {elaborado ? (
+            <></>
+          ) : minutosDeDemora.charAt(0) === '-' ? (
             <>
               <p>enviar a las {hora} hs</p>
               <p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">

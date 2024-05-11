@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import {
   marcarPedidoComoElaborado,
+  marcarPedidoComoEmbalado,
   marcarPedidoComoEntregado,
 } from '../../../firebase/ReadData';
 import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
@@ -55,7 +56,6 @@ interface CardComandaFooterProps {
   user: { email: string };
   comanda: PedidoProps;
 }
-
 export const CardComandaFooter = ({
   user,
   comanda,
@@ -109,6 +109,48 @@ export const CardComandaFooter = ({
         )
       ) : (
         <div>
+          {elaborado && user.email === 'mostrador@anhelo.com' && (
+            // mostrar un boton para decir pedido embalado
+            <button
+              onClick={() => {
+                marcarPedidoComoEmbalado(id, fecha)
+                  .then(() => {
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'EMBALADOOOOOOOOOOOOOOOO',
+                      text: `El pedido con ID ${id} ha sido embalado.`,
+                    });
+                    setBotonDesactivado(true);
+                  })
+                  .catch(() => {
+                    Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'No se pudo embalar el pedido.',
+                    });
+                  })
+                  .finally(() => {
+                    setTimeout(() => {
+                      setBotonDesactivado(false);
+                    }, 3000);
+                  });
+              }}
+              className={`bg-black w-full flex justify-center mt-4 ${
+                elaborado ? 'text-green-500' : 'text-custom-red'
+              } font-black p-4  inline-flex items-center`}
+            >
+              <svg
+                className={`fill-current w-4 h-4 mr-2 ${
+                  elaborado ? 'text-green-500' : 'text-custom-red'
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+              </svg>
+              <span>EMBALADO</span>
+            </button>
+          )}
           <button
             onClick={() =>
               imprimirTicket(comanda, setBotonDesactivado, hora, id)
