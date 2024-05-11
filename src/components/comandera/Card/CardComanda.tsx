@@ -82,7 +82,6 @@ export const CardComanda = ({ comanda }: ComandaRareProps) => {
         hora={hora}
         id={id}
         fecha={fecha}
-        elaborado={elaborado}
         minutosDeDemora={minutosDeDemora}
       />
 
