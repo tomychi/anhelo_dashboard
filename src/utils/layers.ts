@@ -1,6 +1,6 @@
 import { FeatureCollection, Feature, Point } from 'geojson';
 import mapboxgl from 'mapbox-gl';
-import { PedidoProps } from '../types/map';
+import { PedidoProps } from '../types/types';
 import { obtenerDiferenciaHorariaWithColor } from '../helpers/calculateDiffHours';
 import { updateCadeteForOrder } from '../firebase/UploadOrder';
 import Swal from 'sweetalert2';

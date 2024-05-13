@@ -29,3 +29,4 @@ export { ExcedenteSVG } from './ExcedenteSVG';
 export { GastosSVG } from './GastosSVG';
 
 export { NetoSVG } from './NetoSVG';
+export { TruckKM } from './TruckKM';

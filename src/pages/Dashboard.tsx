@@ -25,10 +25,12 @@ import {
   TiempoCoccionSVG,
   VentasSVG,
   VisualizacionLocalSVG,
+  TruckKM,
 } from '../components/icons';
 import { getCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
 // import { AnheloIG } from '../components/instagram/AnheloIG';
 import { MapStats } from './MapStats';
+import { calculateKMS } from '../helpers';
 Chart.register(...registerables);
 
 const plugin = {
@@ -213,6 +215,12 @@ export const Dashboard = () => {
           info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
           title={'TIEMPO DE ENTREGA TOTAL PROMEDIO'}
           svgComponent={<EntregaPromedioSVG />}
+        />
+
+        <CardInfo
+          info={`${Math.round(calculateKMS(orders))} km`}
+          title={'KM RECORRIDOS'}
+          svgComponent={<TruckKM />}
         />
       </div>
       <div className="flex flex-col md:flex-row gap-4">

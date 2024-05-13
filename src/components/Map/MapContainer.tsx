@@ -8,7 +8,7 @@ import {
 } from '../../utils/layers';
 import { FeatureCollection } from 'geojson';
 import { featureCollection } from '@turf/turf';
-import { PedidoProps } from '../../types/map';
+import { PedidoProps } from '../../types/types';
 import Swal from 'sweetalert2';
 import { handleAddressSave } from '../../firebase/UploadOrder';
 

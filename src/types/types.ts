@@ -30,6 +30,8 @@ export interface PedidoProps {
   tiempoEntregado: string;
   entregado: boolean;
   map: [number, number];
+  kms: number;
+  minutosDistancia: number;
 }
 
 export interface ReadDataProps {
