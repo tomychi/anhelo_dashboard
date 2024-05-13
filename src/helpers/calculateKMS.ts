@@ -9,10 +9,13 @@ export const calculateKMS = (pedidos: PedidoProps[]) => {
 
 // los pedidos que esten a menos de 2km es viaje cerca, entre 2km y 3.5km es viaje lejos y superando 3.5 es viaje muy lejos hacer una funcion que te devuelva el tipo de viaje y te devuelva la cantidad de pedidos de cada tipo
 
+const corto = 2;
+const lejos = 3.5;
+
 const tipoViaje = (kms: number) => {
-  if (kms < 2) {
+  if (kms <= corto) {
     return 'viaje cerca';
-  } else if (kms >= 2 && kms < 3.5) {
+  } else if (kms > corto && kms < lejos) {
     return 'viaje lejos';
   } else {
     return 'viaje muy lejos';
