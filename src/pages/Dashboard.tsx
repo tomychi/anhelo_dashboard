@@ -31,6 +31,7 @@ import { getCustomers, groupOrdersByWeek } from '../helpers/orderByweeks';
 // import { AnheloIG } from '../components/instagram/AnheloIG';
 import { MapStats } from './MapStats';
 import { calculateKMS } from '../helpers';
+import { tipoViajes } from '../helpers/calculateKMS';
 Chart.register(...registerables);
 
 const plugin = {
@@ -112,6 +113,8 @@ export const Dashboard = () => {
   //     },
   //   ],
   // };
+
+  console.log(tipoViajes(orders));
 
   // Ejemplo de uso
   const { productsSoldByWeek, salesByWeek, totalRevenueByWeek } =
