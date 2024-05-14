@@ -17,11 +17,11 @@ export const PrivateRoutesLayout = () => {
         <Route path="/*" element={<Navigate to="/comandas" />} />
       </Routes>
     );
+  } else {
+    return projectAuth.currentUser ? (
+      <Outlet />
+    ) : (
+      <Navigate to="/authentication" state={{ from: location }} replace />
+    );
   }
-
-  return projectAuth.currentUser ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/authentication" state={{ from: location }} replace />
-  );
 };

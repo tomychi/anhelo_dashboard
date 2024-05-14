@@ -20,14 +20,17 @@ export const Login = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const res = await login(email, password);
-    if (!error) {
+
+    if (!error && res) {
       dispatch(
         loginSuccess({
           uid: res?.user?.uid || '',
           email: res?.user?.email || '',
         })
       );
+
       navigate(from, { replace: true });
       setEmail('');
       setPassword('');
