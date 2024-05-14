@@ -84,7 +84,7 @@ export const obtenerDiferenciaHoraria = (hora: string): string => {
   return horaFormateada;
 };
 
-const obtenerMinutosDesdeTiempo = (tiempo: string) => {
+export const obtenerMinutosDesdeTiempo = (tiempo: string) => {
   const [horas, minutos] = tiempo.split(':').map(Number);
   return horas * 60 + minutos;
 };

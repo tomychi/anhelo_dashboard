@@ -2,6 +2,7 @@
 
 import Swal from 'sweetalert2';
 import { eliminarDocumento } from '../../../firebase/ReadData';
+import { obtenerMinutosDesdeTiempo } from '../../../helpers/dateToday';
 
 interface CardComandaHeaderProps {
   user: { email: string };
@@ -9,6 +10,9 @@ interface CardComandaHeaderProps {
   id: string;
   fecha: string;
   minutosDeDemora: string;
+  entregado: boolean;
+  tiempoEntregado: string;
+  tiempoElaborado: string;
 }
 
 export const CardComandaHeader = ({
@@ -17,27 +21,44 @@ export const CardComandaHeader = ({
   id,
   fecha,
   minutosDeDemora,
+  entregado,
+  tiempoEntregado,
+  tiempoElaborado,
 }: CardComandaHeaderProps) => {
+  // Convertir los tiempos a minutos y calcular la diferencia
+  const tiempoEntregaMinutos = obtenerMinutosDesdeTiempo(tiempoEntregado);
+  const tiempoPedidoMinutos = obtenerMinutosDesdeTiempo(hora);
+  const diferenciaTiempo = tiempoEntregaMinutos - tiempoPedidoMinutos;
+
   return (
     <div className="flex flex-col items-center gap-1 justify-center">
       <div className="flex flex-col  mb-7">
-        <div className="flex flex-col items-center">
-          {minutosDeDemora.charAt(0) === '-' ? (
-            <>
-              <p>enviar a las {hora} hs</p>
-              <p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
-                NO ENVIAR AUN
-              </p>
-            </>
-          ) : (
-            <>
-              <p>entro a las {hora} hs</p>
-              <p className="text-4xl text-black font-black pr-1 pl-1">
-                DEMORA: {minutosDeDemora} HS
-              </p>
-            </>
-          )}
-        </div>
+        {entregado ? (
+          <div>
+            <p>Entro a las {hora} hs</p>
+            <p>Elaborado en {tiempoElaborado} hs</p>
+            <p>Entregado a las {tiempoEntregado} hs</p>
+            <p>Se tardo en entregar {diferenciaTiempo}m</p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            {minutosDeDemora.charAt(0) === '-' ? (
+              <>
+                <p>enviar a las {hora} hs</p>
+                <p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
+                  NO ENVIAR AUN
+                </p>
+              </>
+            ) : (
+              <>
+                <p>entro a las {hora} hs</p>
+                <p className="text-4xl text-black font-black pr-1 pl-1">
+                  DEMORA: {minutosDeDemora} HS
+                </p>
+              </>
+            )}
+          </div>
+        )}
 
         {user.email === 'cadetes@anhelo.com' ? null : (
           <svg

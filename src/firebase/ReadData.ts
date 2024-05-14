@@ -317,7 +317,7 @@ export const ReadDataForDateRange = <T>(
   valueDate: DateValueType
 ): Promise<T[]> => {
   return new Promise((resolve, reject) => {
-    let requestCount = 0; // Inicializa el contador de solicitudes
+    let requestCounter = 0; // Inicializar contador de solicitudes
 
     try {
       if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
@@ -329,7 +329,7 @@ export const ReadDataForDateRange = <T>(
       const allData: { [key: string]: T[] } = {};
 
       const getDataForDate = async (date: Date) => {
-        requestCount++; // Incrementa el contador en cada solicitud
+        requestCounter++;
 
         const year = date.getFullYear().toString();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -365,13 +365,15 @@ export const ReadDataForDateRange = <T>(
 
       Promise.all(getDataPromises)
         .then(() => {
-          console.log(
-            `Número total de solicitudes a la base de datos: ${requestCount}`
-          );
           const mergedData = Object.values(allData).reduce(
             (merged, data) => [...merged, ...data],
             []
           );
+          console.log(
+            'Número total de solicitudes a la base de datos:',
+            requestCounter
+          ); // Imprimir el número total de solicitudes
+
           resolve(mergedData);
         })
         .catch((error) => {
