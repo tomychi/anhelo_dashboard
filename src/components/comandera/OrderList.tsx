@@ -6,6 +6,7 @@ interface OrderListProps {
   pedidosPorHacer: PedidoProps[];
   pedidosHechos: PedidoProps[];
   pedidosEntregados: PedidoProps[];
+  cadetes: string[];
 }
 
 export const OrderList: React.FC<OrderListProps> = ({
@@ -13,15 +14,16 @@ export const OrderList: React.FC<OrderListProps> = ({
   pedidosPorHacer,
   pedidosHechos,
   pedidosEntregados,
+  cadetes,
 }) => {
   return (
     <div>
       {seccionActiva === 'porHacer' ? (
-        <OrderSection orders={pedidosPorHacer} />
+        <OrderSection orders={pedidosPorHacer} cadetes={cadetes} />
       ) : seccionActiva === 'hechos' ? (
-        <OrderSection orders={pedidosHechos} />
+        <OrderSection orders={pedidosHechos} cadetes={cadetes} />
       ) : (
-        <OrderSection orders={pedidosEntregados} />
+        <OrderSection orders={pedidosEntregados} cadetes={cadetes} />
       )}
     </div>
   );

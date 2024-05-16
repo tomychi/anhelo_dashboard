@@ -53,9 +53,12 @@ const imprimirTicket = async (
 };
 
 interface CardComandaFooterProps {
-  user: { email: string };
+  user: {
+    email: string;
+  };
   comanda: PedidoProps;
 }
+
 export const CardComandaFooter = ({
   user,
   comanda,

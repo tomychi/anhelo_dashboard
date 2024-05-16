@@ -1,4 +1,3 @@
-import { ComandaRareProps } from '../../../types/types';
 import {
   updateTiempoElaboradoForOrder,
   updateTiempoEntregaForOrder,
@@ -19,25 +18,64 @@ import {
 } from '../../../helpers/calculateDiffHours';
 import { useEffect, useState } from 'react';
 import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
-export const CardComanda = ({ comanda }: ComandaRareProps) => {
-  const {
+import { PedidoProps } from '../../../types/types';
+
+interface CardComandaProps extends PedidoProps {
+  cadetes: string[];
+}
+
+export const CardComanda = ({
+  aclaraciones,
+  detallePedido,
+  direccion,
+  elaborado,
+  envio,
+  fecha,
+  hora,
+  metodoPago,
+  subTotal,
+  telefono,
+  total,
+  referencias,
+  id,
+  piso,
+  cadete,
+  dislike,
+  delay,
+  tiempoElaborado,
+  tiempoEntregado,
+  entregado,
+  map,
+  kms,
+  minutosDistancia,
+  cadetes,
+}: CardComandaProps) => {
+  const comanda = {
     aclaraciones,
+    detallePedido,
     direccion,
+    elaborado,
+    envio,
+    fecha,
     hora,
     metodoPago,
-    total,
+    subTotal,
     telefono,
-    detallePedido,
-    elaborado,
+    total,
     referencias,
     id,
     piso,
-    fecha,
     cadete,
+    dislike,
+    delay,
     tiempoElaborado,
     tiempoEntregado,
     entregado,
-  } = comanda;
+    map,
+    kms,
+    minutosDistancia,
+  };
+
   const { user } = useSelector((state: RootState) => state.auth);
   // Estado para almacenar la cantidad de minutos de demora
   const [minutosDeDemora, setMinutosDeDemora] = useState(
@@ -110,6 +148,7 @@ export const CardComanda = ({ comanda }: ComandaRareProps) => {
         cadete={cadete}
         fecha={fecha}
         id={id}
+        cadetes={cadetes}
       />
 
       <CardComdandaBody

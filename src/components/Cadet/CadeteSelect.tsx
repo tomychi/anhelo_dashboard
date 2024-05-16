@@ -1,32 +1,29 @@
-import { useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { UploadVueltaCadete, VueltaInfo } from '../../firebase/Cadetes';
+import { PedidoProps } from '../../types/types';
 import './CadeteSelect.css';
-import { readEmpleados } from '../../firebase/registroEmpleados';
 interface CadeteSelectProps {
   handleCadeteChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   cadetes: string[];
-  setCadetes: (cadetes: string[]) => void;
+  selectedCadete: string | null;
+  orders: PedidoProps[];
+  vueltas: VueltaInfo[];
+  setVueltas: (vueltas: VueltaInfo[]) => void;
 }
 
 const CadeteSelect: React.FC<CadeteSelectProps> = ({
   handleCadeteChange,
   cadetes,
-  setCadetes,
+  selectedCadete,
+  orders,
+  vueltas,
+  setVueltas,
 }) => {
-  useEffect(() => {
-    const obtenerCadetes = async () => {
-      try {
-        const empleados = await readEmpleados();
-        const cadetesFiltrados = empleados
-          .filter((empleado) => empleado.category === 'cadete')
-          .map((empleado) => empleado.name);
-        setCadetes(cadetesFiltrados);
-      } catch (error) {
-        console.error('Error al obtener los cadetes:', error);
-      }
-    };
+  // mapear las vueltas del cadete y si hay una vuelta sin hora de llegada, mostrar el boton para marcar la vuelta
 
-    obtenerCadetes();
-  }, []);
+  const vueltaSinHoraLlegada = vueltas.find(
+    (vuelta) => vuelta.horaLlegada === null
+  );
 
   return (
     <div className=" z-50 bg-white p-3 rounded-lg shadow-md">
@@ -83,6 +80,41 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
           </option>
         ))}
       </select>
+
+      {/* boton para que si hay cadete seleccionado me deje hacer click y marcar la vuelta de ese cadete */}
+
+      {selectedCadete && (
+        <button
+          className={
+            vueltaSinHoraLlegada
+              ? 'bg-custom-red text-white px-2 py-1 rounded-md mr-2'
+              : 'bg-green-500 text-white px-2 py-1 rounded-md mr-2'
+          }
+          onClick={() => {
+            UploadVueltaCadete(
+              orders.map((order) => order.id),
+              selectedCadete
+            )
+              .then((res) => {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Vuelta marcada',
+                  text: res.map((vuelta) => vuelta.horaSalida).join(', '),
+                });
+                setVueltas(res as VueltaInfo[]);
+              })
+              .catch((err) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error al marcar la vuelta',
+                  text: err.message,
+                });
+              });
+          }}
+        >
+          {vueltaSinHoraLlegada ? 'LLegada a cocina' : 'Saliendo'}
+        </button>
+      )}
     </div>
   );
 };

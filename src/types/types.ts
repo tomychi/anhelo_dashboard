@@ -43,10 +43,6 @@ export interface ComandaProps {
   id: string;
 }
 
-export interface ComandaRareProps {
-  comanda: PedidoProps;
-}
-
 export interface ToppingsProps {
   name: string;
   id?: string;

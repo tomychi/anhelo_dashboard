@@ -7,12 +7,15 @@ import { RootState } from '../redux/configureStore';
 import { useSelector, useDispatch } from 'react-redux';
 import { readOrdersData } from '../redux/data/dataAction';
 import { useLocation } from 'react-router-dom';
-import { GeneralStats, OrderList } from '../components/comandera';
+import { GeneralStats, OrderList, Vueltas } from '../components/comandera';
 import { NavButtons } from '../components/comandera/NavButtons';
 import DeliveryMap from './DeliveryMap';
 import { buscarCoordenadas } from '../apis/getCoords';
 import { handleAddressSave } from '../firebase/UploadOrder';
 import CadeteSelect from '../components/Cadet/CadeteSelect';
+import { EmpleadosProps, readEmpleados } from '../firebase/registroEmpleados';
+import { obtenerFechaActual } from '../helpers/dateToday';
+import { VueltaInfo, obtenerVueltasCadete } from '../firebase/Cadetes';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
@@ -22,6 +25,9 @@ export const Comandera = () => {
   const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
 
   const [cadetes, setCadetes] = useState<string[]>([]);
+  const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
+  const [vueltas, setVueltas] = useState<VueltaInfo[]>([]);
+
   const { orders } = useSelector((state: RootState) => state.data);
 
   const location = useLocation();
@@ -44,6 +50,23 @@ export const Comandera = () => {
   const pedidosEntregados = filteredOrders.filter((o) => o.entregado);
 
   useEffect(() => {
+    const obtenerCadetes = async () => {
+      try {
+        const empleados = await readEmpleados();
+
+        setEmpleados(empleados);
+
+        const cadetesFiltrados = empleados
+          .filter((empleado) => empleado.category === 'cadete')
+          .map((empleado) => empleado.name);
+        setCadetes(cadetesFiltrados);
+      } catch (error) {
+        console.error('Error al obtener los cadetes:', error);
+      }
+    };
+
+    obtenerCadetes();
+
     if (location.pathname === '/comandas') {
       const unsubscribe = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
         // pedidos que no tengan la prop map se les asigna un valor
@@ -70,6 +93,21 @@ export const Comandera = () => {
   // Manejar el cambio en el select de cadetes
   const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadeteSeleccionado = event.target.value;
+
+    if (nuevoCadeteSeleccionado === '') {
+      setSelectedCadete(null);
+      setVueltas([]);
+      return;
+    }
+
+    obtenerVueltasCadete(nuevoCadeteSeleccionado, obtenerFechaActual())
+      .then((vueltas) => {
+        setVueltas(vueltas);
+      })
+      .catch((error) => {
+        console.error('Error al obtener las vueltas del cadete:', error);
+      });
+
     setSelectedCadete(nuevoCadeteSeleccionado);
 
     // Calcular la suma total de pedidos para el cadete seleccionado
@@ -108,13 +146,15 @@ export const Comandera = () => {
       <NavButtons
         seccionActiva={seccionActiva}
         setSeccionActiva={setSeccionActiva}
-        cadeteSeleccionado={selectedCadete}
       />
       <div className="row-start-4">
         <CadeteSelect
+          vueltas={vueltas}
           cadetes={cadetes}
-          setCadetes={setCadetes}
           handleCadeteChange={handleCadeteChange}
+          selectedCadete={selectedCadete}
+          orders={pedidosHechos}
+          setVueltas={setVueltas}
         />{' '}
         {seccionActiva !== 'mapa' && (
           <>
@@ -124,6 +164,7 @@ export const Comandera = () => {
               cadeteSeleccionado={selectedCadete}
               sumaTotalPedidos={sumaTotalPedidos}
               sumaTotalEfectivo={sumaTotalEfectivo}
+              empleados={empleados}
             />
             <OrderList
               seccionActiva={seccionActiva}
@@ -132,6 +173,7 @@ export const Comandera = () => {
               pedidosEntregados={
                 seccionActiva !== 'mapa' ? pedidosEntregados : []
               }
+              cadetes={cadetes}
             />
           </>
         )}
@@ -153,6 +195,13 @@ export const Comandera = () => {
             />
           ))}
       </div>
+
+      <div className="flex flex-col">
+        {seccionActiva === 'vueltas' && (
+          <Vueltas cadete={selectedCadete} vueltas={vueltas} />
+        )}
+      </div>
+
       {/* Esto es para la contabilidad, NO BORRAR */}
       {/* <button
 				className="bg-white"

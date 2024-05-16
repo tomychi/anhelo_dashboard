@@ -26,6 +26,13 @@ export const CardComandaHeader = ({
   tiempoElaborado,
 }: CardComandaHeaderProps) => {
   // Convertir los tiempos a minutos y calcular la diferencia
+
+  // si existe tiempoEntregado
+
+  if (tiempoEntregado === undefined) {
+    tiempoEntregado = '00:00';
+  }
+
   const tiempoEntregaMinutos = obtenerMinutosDesdeTiempo(tiempoEntregado);
   const tiempoPedidoMinutos = obtenerMinutosDesdeTiempo(hora);
   const diferenciaTiempo = tiempoEntregaMinutos - tiempoPedidoMinutos;

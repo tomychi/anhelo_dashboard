@@ -5,7 +5,6 @@ import { RegistroProps } from '../../pages/Empleados';
 import {
   EmpleadosProps,
   obtenerRegistroActual,
-  readEmpleados,
 } from '../../firebase/registroEmpleados';
 import { copyToClipboard } from '../../helpers/copy';
 import ScrollContainer from './ScrollContainer';
@@ -16,6 +15,7 @@ interface GeneralStatsProps {
   cadeteSeleccionado: string | null;
   sumaTotalPedidos: number;
   sumaTotalEfectivo: number;
+  empleados: EmpleadosProps[];
 }
 
 export const GeneralStats = ({
@@ -23,17 +23,9 @@ export const GeneralStats = ({
   cadeteSeleccionado,
   sumaTotalPedidos,
   sumaTotalEfectivo,
+  empleados,
 }: GeneralStatsProps) => {
   const [registro, setRegistro] = useState<RegistroProps[]>([]);
-  const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
-
-  useEffect(() => {
-    const getEmpleados = async () => {
-      const cade = await readEmpleados();
-      setEmpleados(cade);
-    };
-    getEmpleados();
-  }, []);
 
   useEffect(() => {
     const cargarRegistro = async () => {

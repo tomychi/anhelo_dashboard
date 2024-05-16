@@ -1,15 +1,15 @@
 // componente para seleccionar un cadete
 // se utiliza en el componente Comandera.tsx
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import Swal from 'sweetalert2';
 import { updateCadeteForOrder } from '../../firebase/UploadOrder';
-import { readEmpleados } from '../../firebase/registroEmpleados';
 
 interface SelectCadeteProps {
   elaborado: boolean;
   cadete: string;
   fecha: string;
   id: string;
+  cadetes: string[];
 }
 
 export const SelectCadete = ({
@@ -17,9 +17,9 @@ export const SelectCadete = ({
   cadete,
   fecha,
   id,
+  cadetes,
 }: SelectCadeteProps) => {
   const [selectedCadete, setSelectedCadete] = useState(cadete);
-  const [cadetes, setCadetes] = useState<string[]>([]);
 
   const handleCadeteChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadete = event.target.value;
@@ -57,22 +57,6 @@ export const SelectCadete = ({
         console.error('Error al actualizar el cadete del pedido:');
       });
   };
-
-  useEffect(() => {
-    const obtenerCadetes = async () => {
-      try {
-        const empleados = await readEmpleados();
-        const cadetesFiltrados = empleados
-          .filter((empleado) => empleado.category === 'cadete')
-          .map((empleado) => empleado.name);
-        setCadetes(cadetesFiltrados);
-      } catch (error) {
-        console.error('Error al obtener los cadetes:', error);
-      }
-    };
-
-    obtenerCadetes();
-  }, []);
 
   return (
     <div className="mt-4 w-full uppercase font-black gap-2 flex flex-row justify-center">
