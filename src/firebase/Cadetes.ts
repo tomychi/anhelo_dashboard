@@ -33,10 +33,6 @@ export const UploadVueltaCadete = async (
     throw new Error('No se ha seleccionado un cadete');
   }
 
-  if (!ordersId.length) {
-    throw new Error('No hay pedidos en la vuelta');
-  }
-
   try {
     // Crear una referencia al documento del cadete
     const cadeteDocRef = doc(

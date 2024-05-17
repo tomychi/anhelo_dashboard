@@ -91,6 +91,15 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
               : 'bg-green-500 text-white px-2 py-1 rounded-md mr-2'
           }
           onClick={() => {
+            // si vueltaSinHoraLlegada es false tiene que marcar la vuelta de salida y tiene q haber pedidos
+            if (!vueltaSinHoraLlegada && orders.length === 0) {
+              Swal.fire({
+                icon: 'error',
+                title: 'No hay pedidos para marcar la vuelta',
+              });
+              return;
+            }
+
             UploadVueltaCadete(
               orders.map((order) => order.id),
               selectedCadete

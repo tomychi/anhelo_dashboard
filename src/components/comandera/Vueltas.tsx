@@ -190,6 +190,8 @@ export const Vueltas = ({
                             ordersId.includes(pedido.id) && (
                               <li key={pedido.id}>
                                 <p>{pedido.direccion}</p>
+                                <p>Hay: {pedido.kms}km</p>
+                                <p>Demora: {pedido.minutosDistancia}m</p>
                               </li>
                             )
                         )}
