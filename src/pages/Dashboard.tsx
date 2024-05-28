@@ -114,7 +114,7 @@ export const Dashboard = () => {
   //   ],
   // };
 
-  console.log(tipoViajes(orders));
+  // console.log(tipoViajes(orders));
 
   // Ejemplo de uso
   const { productsSoldByWeek, salesByWeek, totalRevenueByWeek } =

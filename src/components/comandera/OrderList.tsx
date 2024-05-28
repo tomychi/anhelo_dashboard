@@ -23,7 +23,9 @@ export const OrderList: React.FC<OrderListProps> = ({
       ) : seccionActiva === 'hechos' ? (
         <OrderSection orders={pedidosHechos} cadetes={cadetes} />
       ) : (
-        <OrderSection orders={pedidosEntregados} cadetes={cadetes} />
+        seccionActiva === 'entregados' && (
+          <OrderSection orders={pedidosEntregados} cadetes={cadetes} />
+        )
       )}
     </div>
   );
