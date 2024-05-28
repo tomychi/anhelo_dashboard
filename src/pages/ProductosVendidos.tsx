@@ -354,7 +354,7 @@ export const ProductosVendidos = () => {
           <br />
           Bolsitas de papas: {cantBolsitas}
           <br />
-          papas: {(cantBolsitas * 200) / 1000} KG
+          papas: {(cantBolsitas * 120) / 1000} KG
         </div>
       </div>
       <div
