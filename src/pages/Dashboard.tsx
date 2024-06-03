@@ -330,7 +330,7 @@ export const Dashboard = () => {
             />
           </svg>
         </div>
-        {/* <MapStats /> */}
+        <MapStats />
       </div>
     </div>
   );
