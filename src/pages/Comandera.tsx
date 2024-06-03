@@ -17,6 +17,14 @@ import { EmpleadosProps, readEmpleados } from '../firebase/registroEmpleados';
 import { obtenerFechaActual } from '../helpers/dateToday';
 import { VueltaInfo, obtenerVueltasCadete } from '../firebase/Cadetes';
 
+function formatearFecha(fechaStr: string | Date) {
+  const fecha = new Date(fechaStr);
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const anio = fecha.getFullYear();
+  return `${dia}/${mes}/${anio}`;
+}
+
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
   const dispatch = useDispatch();
@@ -29,6 +37,7 @@ export const Comandera = () => {
   const [vueltas, setVueltas] = useState<VueltaInfo[]>([]);
 
   const { orders } = useSelector((state: RootState) => state.data);
+  const { valueDate } = useSelector((state: RootState) => state.data);
 
   const location = useLocation();
   // Filtrar y ordenar los pedidos una vez
@@ -100,13 +109,29 @@ export const Comandera = () => {
       return;
     }
 
-    obtenerVueltasCadete(nuevoCadeteSeleccionado, obtenerFechaActual())
-      .then((vueltas) => {
-        setVueltas(vueltas);
-      })
-      .catch((error) => {
-        console.error('Error al obtener las vueltas del cadete:', error);
-      });
+    if (location.pathname === '/comandas') {
+      obtenerVueltasCadete(nuevoCadeteSeleccionado, obtenerFechaActual())
+        .then((vueltas) => {
+          setVueltas(vueltas);
+        })
+        .catch((error) => {
+          console.error('Error al obtener las vueltas del cadete:', error);
+        });
+    } else {
+      const fecha = valueDate?.startDate
+        ? formatearFecha(valueDate.startDate)
+        : obtenerFechaActual();
+
+      console.log(fecha);
+      console.log(obtenerFechaActual());
+      obtenerVueltasCadete(nuevoCadeteSeleccionado, fecha)
+        .then((vueltas) => {
+          setVueltas(vueltas);
+        })
+        .catch((error) => {
+          console.error('Error al obtener las vueltas del cadete:', error);
+        });
+    }
 
     setSelectedCadete(nuevoCadeteSeleccionado);
 

@@ -170,3 +170,55 @@ export const contarPedidosDemorados = (pedidos: PedidoProps[]) => {
 
   return cantidadDemorados;
 };
+
+// export function calcularDiferenciaHoraria(horaInicio: string, horaFin: string) {
+//   // Convierte una hora en formato HH:MM a minutos totales
+//   function convertirHoraAMinutos(hora: string) {
+//     const [horas, minutos] = hora.split(':').map(Number);
+//     return horas * 60 + minutos;
+//   }
+
+//   const minutosInicio = convertirHoraAMinutos(horaInicio);
+//   const minutosFin = convertirHoraAMinutos(horaFin);
+
+//   const diferenciaMinutos = minutosFin - minutosInicio;
+
+//   // Calcula la diferencia en horas y minutos
+//   const horas = Math.floor(diferenciaMinutos / 60);
+//   const minutos = diferenciaMinutos % 60;
+
+//   return `${horas} horas y ${minutos} minutos`;
+// }
+
+const convertirHoraAMinutos = (hora: string) => {
+  const [horas, minutos] = hora.split(':').map(Number);
+  return horas * 60 + minutos;
+};
+
+export const calcularDiferenciaHoraria = (
+  horaInicio: string,
+  horaFin: string
+) => {
+  const minutosInicio = convertirHoraAMinutos(horaInicio);
+  const minutosFin = convertirHoraAMinutos(horaFin);
+
+  return minutosFin - minutosInicio;
+};
+
+export const calcularPromedioTiempoPorViaje = (
+  horaSalida: string,
+  horaLlegada: string,
+  cantidadDeViajes: number
+) => {
+  if (!horaSalida || !horaLlegada || cantidadDeViajes === 0) {
+    return 'N/A';
+  }
+
+  const diferenciaMinutos = calcularDiferenciaHoraria(horaSalida, horaLlegada);
+  const promedioMinutosPorViaje = diferenciaMinutos / cantidadDeViajes;
+
+  const horas = Math.floor(promedioMinutosPorViaje / 60);
+  const minutos = Math.round(promedioMinutosPorViaje % 60);
+
+  return `${horas} horas y ${minutos} minutos por viaje`;
+};

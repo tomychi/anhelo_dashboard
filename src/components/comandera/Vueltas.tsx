@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { VueltaInfo, buscarPedidos } from '../../firebase/Cadetes';
 import { TiempoCoccionSVG, TruckKM } from '../icons';
 import { PedidoProps } from '../../types/types';
+import {
+  calcularDiferenciaHoraria,
+  calcularPromedioTiempoPorViaje,
+} from '../../helpers/dateToday';
 
 interface VueltasWithOrders extends VueltaInfo {
   orders: PedidoProps[];
@@ -204,6 +208,25 @@ export const Vueltas = ({
                   <div className="flex items-center">
                     <TiempoCoccionSVG />
                     <span>{horaLlegada}</span>
+                  </div>
+                )}
+
+                {horaLlegada && horaSalida && (
+                  <div>
+                    <span>Llegada: {horaLlegada}</span>
+                    <div>
+                      Diferencia:{' '}
+                      {calcularDiferenciaHoraria(horaSalida, horaLlegada)}{' '}
+                      minutos
+                    </div>
+                    <div>
+                      Promedio por viaje:{' '}
+                      {calcularPromedioTiempoPorViaje(
+                        horaSalida,
+                        horaLlegada,
+                        ordersId.length
+                      )}
+                    </div>
                   </div>
                 )}
               </li>
