@@ -89,12 +89,6 @@ export const Vueltas = ({
 
 	return (
 		<div className="bg-white p-3 rounded-lg shadow-md">
-			<div className="mb-4 p-4 bg-gray-200 rounded-lg">
-				<h2 className="text-xl font-bold">
-					Tiempo promedio de entrega por pedido:
-				</h2>
-				<p>{calcularPromedioGeneral()}</p>
-			</div>
 			<ol className="relative border-s border-gray-200 dark:border-gray-700">
 				{vueltasWithOrders &&
 					vueltasWithOrders.map(
