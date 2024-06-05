@@ -42,21 +42,34 @@ export const Vueltas = ({
 			})
 			.filter((promedio) => promedio > 0);
 
+		console.log("Nuevos promedios por viaje:", nuevosPromedios);
 		setPromediosPorViaje(nuevosPromedios);
 	}, [vueltasWithOrders]);
 
 	const calcularPromedioGeneral = () => {
-		if (promediosPorViaje.length === 0) return 0;
+		console.log("Promedios por viaje al calcular:", promediosPorViaje);
+
+		if (promediosPorViaje.length === 0) return "0 minutos";
 
 		const totalMinutos = promediosPorViaje.reduce(
 			(total, tiempo) => total + tiempo,
 			0
 		);
+		console.log("Total minutos:", totalMinutos);
+
 		const promedioMinutos = totalMinutos / promediosPorViaje.length;
+		console.log("Promedio minutos:", promedioMinutos);
+
 		const horas = Math.floor(promedioMinutos / 60);
 		const minutos = Math.round(promedioMinutos % 60);
 
-		return `${horas} horas y ${minutos} minutos`;
+		console.log("Horas:", horas, "Minutos:", minutos);
+
+		if (horas === 0) {
+			return `${minutos} minutos`;
+		} else {
+			return `${horas} horas y ${minutos} minutos`;
+		}
 	};
 
 	const handleClickVerPedidos = (ordersId: string[], fecha: string) => {

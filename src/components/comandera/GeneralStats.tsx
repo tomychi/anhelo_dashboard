@@ -24,7 +24,6 @@ export const GeneralStats = ({
 	cadeteSeleccionado,
 	sumaTotalPedidos,
 	sumaTotalEfectivo,
-	empleados,
 	promedioTiempoEntrega,
 }: GeneralStatsProps) => {
 	const [registro, setRegistro] = useState<RegistroProps[]>([]);
@@ -62,7 +61,10 @@ export const GeneralStats = ({
 				<div>
 					<div>
 						<p>
-							Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}
+							Tiempo promedio de entrega por pedido:{" "}
+							{promedioTiempoEntrega === "N/A"
+								? "0 minutos"
+								: promedioTiempoEntrega}
 						</p>
 					</div>
 					<p>
