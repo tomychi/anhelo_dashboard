@@ -68,7 +68,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 				<button
 					className={
 						vueltaSinHoraLlegada
-							? "bg-custom-red text-black  font-antonio font-black uppercase p-8 mt-2 "
+							? "bg-custom-red text-black  font-antonio font-black uppercase p-8 mb-2 mt-4 "
 							: "bg-green-500 text-white font-antonio font-black uppercase  p-8 mt-4 mb-2"
 					}
 					onClick={() => {
