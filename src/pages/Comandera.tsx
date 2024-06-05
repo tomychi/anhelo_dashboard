@@ -1,5 +1,3 @@
-// PAGINA ORIENTADA A DAR CONCIENCIA DE LA VELOCIDAD
-
 import { useEffect, useState } from "react";
 import { ReadOrdersForToday } from "../firebase/ReadData";
 import { PedidoProps } from "../types/types";
@@ -14,7 +12,11 @@ import { buscarCoordenadas } from "../apis/getCoords";
 import { handleAddressSave } from "../firebase/UploadOrder";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 import { EmpleadosProps, readEmpleados } from "../firebase/registroEmpleados";
-import { obtenerFechaActual } from "../helpers/dateToday";
+
+import {
+	obtenerFechaActual,
+	calcularDiferenciaHoraria,
+} from "../helpers/dateToday";
 import { VueltaInfo, obtenerVueltasCadete } from "../firebase/Cadetes";
 
 function formatearFecha(fechaStr: string | Date) {
@@ -35,12 +37,13 @@ export const Comandera = () => {
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 	const [vueltas, setVueltas] = useState<VueltaInfo[]>([]);
+	const [promediosPorViaje, setPromediosPorViaje] = useState<number[]>([]);
 
 	const { orders } = useSelector((state: RootState) => state.data);
 	const { valueDate } = useSelector((state: RootState) => state.data);
 
 	const location = useLocation();
-	// Filtrar y ordenar los pedidos una vez
+
 	const filteredOrders = orders
 		.filter((o) => !selectedCadete || o.cadete === selectedCadete)
 		.sort((a, b) => {
@@ -49,7 +52,6 @@ export const Comandera = () => {
 			return horaA * 60 + minutosA - (horaB * 60 + minutosB);
 		});
 
-	// Dividir los pedidos filtrados en las diferentes categorías
 	const pedidosPorHacer = filteredOrders.filter(
 		(o) => !o.elaborado && !o.entregado
 	);
@@ -62,7 +64,6 @@ export const Comandera = () => {
 		const obtenerCadetes = async () => {
 			try {
 				const empleados = await readEmpleados();
-
 				setEmpleados(empleados);
 
 				const cadetesFiltrados = empleados
@@ -78,12 +79,10 @@ export const Comandera = () => {
 
 		if (location.pathname === "/comandas") {
 			const unsubscribe = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
-				// pedidos que no tengan la prop map se les asigna un valor
 				const pedidosSinMap = pedidos.filter(
 					(pedido) => !pedido.map || pedido.map[0] === 0 || pedido.map[1] === 0
 				);
 
-				// ahora con la funcion buscarCoordenadas se le asigna un valor a la propiedad map
 				for (const pedido of pedidosSinMap) {
 					const coordenadas = await buscarCoordenadas(pedido.direccion);
 					if (coordenadas) {
@@ -94,12 +93,42 @@ export const Comandera = () => {
 			});
 
 			return () => {
-				unsubscribe(); // Detiene la suscripción cuando el componente se desmonta
+				unsubscribe();
 			};
 		}
 	}, [dispatch, location]);
 
-	// Manejar el cambio en el select de cadetes
+	useEffect(() => {
+		const nuevosPromedios = vueltas
+			.map(({ horaSalida, horaLlegada, ordersId }) => {
+				if (horaSalida && horaLlegada && ordersId.length > 0) {
+					const diferenciaMinutos = calcularDiferenciaHoraria(
+						horaSalida,
+						horaLlegada
+					);
+					return diferenciaMinutos / ordersId.length;
+				}
+				return 0;
+			})
+			.filter((promedio) => promedio > 0);
+
+		setPromediosPorViaje(nuevosPromedios);
+	}, [vueltas]);
+
+	const calcularPromedioGeneral = () => {
+		if (promediosPorViaje.length === 0) return "N/A";
+
+		const totalMinutos = promediosPorViaje.reduce(
+			(total, tiempo) => total + tiempo,
+			0
+		);
+		const promedioMinutos = totalMinutos / promediosPorViaje.length;
+		const horas = Math.floor(promedioMinutos / 60);
+		const minutos = Math.round(promedioMinutos % 60);
+
+		return `${horas} horas y ${minutos} minutos`;
+	};
+
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
 
@@ -122,8 +151,6 @@ export const Comandera = () => {
 				? formatearFecha(valueDate.startDate)
 				: obtenerFechaActual();
 
-			console.log(fecha);
-			console.log(obtenerFechaActual());
 			obtenerVueltasCadete(nuevoCadeteSeleccionado, fecha)
 				.then((vueltas) => {
 					setVueltas(vueltas);
@@ -135,10 +162,9 @@ export const Comandera = () => {
 
 		setSelectedCadete(nuevoCadeteSeleccionado);
 
-		// Calcular la suma total de pedidos para el cadete seleccionado
 		const totalPedidosCadete = orders.reduce((total, pedido) => {
 			if (pedido.cadete === nuevoCadeteSeleccionado) {
-				return total + 1; // Si no se ha seleccionado ningún cadete o si el cadete del pedido coincide con el seleccionado, sumar 1 al total
+				return total + 1;
 			} else {
 				return total;
 			}
@@ -146,13 +172,12 @@ export const Comandera = () => {
 
 		setSumaTotalPedidos(totalPedidosCadete);
 
-		// Calcular la suma total de los montos de los pedidos que fueron en efectivo para el cadete seleccionado
 		const totalEfectivoCadete = orders.reduce((total, pedido) => {
 			if (
 				pedido.cadete === nuevoCadeteSeleccionado &&
 				pedido.metodoPago === "efectivo"
 			) {
-				return total + pedido.total; // Si no se ha seleccionado ningún cadete o si el cadete del pedido coincide con el seleccionado y el pago fue en efectivo, sumar el monto total del pedido
+				return total + pedido.total;
 			} else {
 				return total;
 			}
@@ -167,7 +192,7 @@ export const Comandera = () => {
 			orders.length;
 
 	return (
-		<div className=" p-4 flex flex-col">
+		<div className="p-4 flex flex-col">
 			<CadeteSelect
 				vueltas={vueltas}
 				cadetes={cadetes}
@@ -175,7 +200,7 @@ export const Comandera = () => {
 				selectedCadete={selectedCadete}
 				orders={pedidosHechos}
 				setVueltas={setVueltas}
-			/>{" "}
+			/>
 			<GeneralStats
 				customerSuccess={customerSuccess}
 				orders={orders}
@@ -183,6 +208,7 @@ export const Comandera = () => {
 				sumaTotalPedidos={sumaTotalPedidos}
 				sumaTotalEfectivo={sumaTotalEfectivo}
 				empleados={empleados}
+				promedioTiempoEntrega={calcularPromedioGeneral()}
 			/>
 			<NavButtons
 				seccionActiva={seccionActiva}
@@ -198,7 +224,6 @@ export const Comandera = () => {
 			<div className="mt-2">
 				{seccionActiva === "mapa" &&
 					(location.pathname === "/comandas" ? (
-						// <MapsApp orders={[...pedidosHechos, ...pedidosPorHacer]} />
 						<DeliveryMap
 							orders={[...pedidosHechos, ...pedidosPorHacer]}
 							selectedCadete={selectedCadete}

@@ -16,6 +16,7 @@ interface GeneralStatsProps {
 	sumaTotalPedidos: number;
 	sumaTotalEfectivo: number;
 	empleados: EmpleadosProps[];
+	promedioTiempoEntrega: string;
 }
 
 export const GeneralStats = ({
@@ -24,6 +25,7 @@ export const GeneralStats = ({
 	sumaTotalPedidos,
 	sumaTotalEfectivo,
 	empleados,
+	promedioTiempoEntrega,
 }: GeneralStatsProps) => {
 	const [registro, setRegistro] = useState<RegistroProps[]>([]);
 
@@ -40,21 +42,17 @@ export const GeneralStats = ({
 		cargarRegistro();
 	}, []);
 
-	// Determina si un empleado está activo (presente) o inactivo (ausente) en función del registro
 	const empleadoActivo = (empleadoNombre: string) => {
 		const empleado = registro.find(
 			(registroEmpleado) => registroEmpleado.nombreEmpleado === empleadoNombre
 		);
 		if (empleado) {
 			if (empleado.marcado) {
-				// Si el empleado está marcado como presente
 				return { activo: true, horaSalida: null };
 			} else {
-				// Si el empleado está ausente
 				return { activo: false, horaSalida: empleado.horaSalida };
 			}
 		}
-		// Si no se encuentra al empleado en el registro
 		return { activo: false, horaSalida: null };
 	};
 
@@ -74,10 +72,10 @@ export const GeneralStats = ({
 												(registroEmpleado) =>
 													registroEmpleado.nombreEmpleado === empleado.name
 											)?.horaEntrada || "Hora de entrada no disponible"
-									  ).substring(0, 5) // Extraer solo HH:mm
+									  ).substring(0, 5)
 									: "Ausente";
 								const horaSalidaFormateada = horaSalida
-									? horaSalida.substring(0, 5) // Extraer solo HH:mm
+									? horaSalida.substring(0, 5)
 									: "Hora de salida no disponible";
 
 								return (
@@ -135,6 +133,9 @@ export const GeneralStats = ({
 						</p>
 					</div>
 				)}
+				<div>
+					<p>Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}</p>
+				</div>
 			</div>
 			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
