@@ -247,7 +247,7 @@ export const Comandera = () => {
 									: "Hora de salida no disponible";
 
 								return (
-									<div key={index} className="flex items-center flex-row">
+									<div key={index} className="flex items-center flex-row ">
 										<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
 											<div
 												className={`w-8 h-8 rounded-none ${
@@ -255,7 +255,7 @@ export const Comandera = () => {
 												}`}
 											></div>
 										</div>
-										<div className="flex flex-col w-full text-white">
+										<div className="flex flex-col w-full text-red-main font-antonio font-black uppercase">
 											<p>{empleado.name}</p>
 											{activo ? (
 												<p className="flex items-center">

@@ -26,7 +26,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 	);
 
 	return (
-		<div className="z-50 flex flex-col ">
+		<div className="z-50 flex flex-col mt-4">
 			<select
 				onChange={handleCadeteChange}
 				className="
