@@ -46,7 +46,7 @@ export const Vueltas = ({
 	}, [vueltasWithOrders]);
 
 	const calcularPromedioGeneral = () => {
-		if (promediosPorViaje.length === 0) return "N/A";
+		if (promediosPorViaje.length === 0) return 0;
 
 		const totalMinutos = promediosPorViaje.reduce(
 			(total, tiempo) => total + tiempo,

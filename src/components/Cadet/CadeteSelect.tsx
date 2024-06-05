@@ -30,16 +30,15 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 			<select
 				onChange={handleCadeteChange}
 				className="
-        text-black
-        font-antonio
-        uppercase
-        font-black
-        bg-red-main
-        p-4
-        
-      
-        cursor-pointer
-        "
+    text-black
+    font-antonio
+    uppercase
+    font-black
+    bg-red-main
+    p-4
+    rounded-none
+    cursor-pointer
+  "
 			>
 				<option
 					value=""
@@ -48,7 +47,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
         uppercase
         font-black
         bg-red-main
-        p-4
+        
           "
 				>
 					SELECCIONA UN CADETE
@@ -57,14 +56,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 					<option
 						key={index}
 						value={cadete}
-						className="
-                 text-black
-        font-antonio
-        uppercase
-        font-black
-        bg-red-main
-        p-4
-            "
+						className="text-black font-antonio uppercase font-black bg-red-main"
 					>
 						{cadete}
 					</option>
