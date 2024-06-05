@@ -58,87 +58,29 @@ export const GeneralStats = ({
 
 	return (
 		<div className="text-custom-red uppercase font-antonio flex flex-col gap-4 mb-2">
-			<div className="flex flex-col gap-2">
-				<div className="flex items-center flex-row overflow-hidden">
-					<ScrollContainer>
-						<div className="flex flex-row gap-4 text-xs">
-							{empleados.map((empleado, index) => {
-								if (empleado.name === undefined) return;
-								if (empleado.name === "NO ASIGNADO") return;
-								const { activo, horaSalida } = empleadoActivo(empleado.name);
-								const horaEntrada = activo
-									? (
-											registro.find(
-												(registroEmpleado) =>
-													registroEmpleado.nombreEmpleado === empleado.name
-											)?.horaEntrada || "Hora de entrada no disponible"
-									  ).substring(0, 5)
-									: "Ausente";
-								const horaSalidaFormateada = horaSalida
-									? horaSalida.substring(0, 5)
-									: "Hora de salida no disponible";
-
-								return (
-									<div key={index} className="flex items-center flex-row">
-										<div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
-											<div
-												className={`w-8 h-8 rounded-none ${
-													activo ? "bg-green-500" : "bg-red-main"
-												}`}
-											></div>
-										</div>
-										<div className="flex flex-col w-full">
-											<p>{empleado.name}</p>
-											{activo ? (
-												<p className="flex items-center">
-													<span className="mr-2">
-														Ingreso {" " + horaEntrada} hs
-													</span>
-												</p>
-											) : (
-												<p className="flex items-center">
-													{horaSalidaFormateada ===
-													"Hora de salida no disponible" ? (
-														<span>Ausente</span>
-													) : (
-														<span className="mr-2">
-															Salida {horaSalidaFormateada} hs
-														</span>
-													)}
-												</p>
-											)}
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					</ScrollContainer>
-				</div>
-				{cadeteSeleccionado && (
+			{cadeteSeleccionado && (
+				<div>
 					<div>
-						<div>
-							<p>
-								Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}
-							</p>
-						</div>
 						<p>
-							Suma total de pedidos para {cadeteSeleccionado}:{" "}
-							{sumaTotalPedidos}
-						</p>
-						<p
-							className="cursor-pointer"
-							onClick={() =>
-								copyToClipboard(
-									`${cadeteSeleccionado}: ${currencyFormat(sumaTotalEfectivo)}`
-								)
-							}
-						>
-							Suma total de pagos en efectivo para {cadeteSeleccionado}:{" "}
-							{currencyFormat(sumaTotalEfectivo)}
+							Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}
 						</p>
 					</div>
-				)}
-			</div>
+					<p>
+						Suma total de pedidos para {cadeteSeleccionado}: {sumaTotalPedidos}
+					</p>
+					<p
+						className="cursor-pointer"
+						onClick={() =>
+							copyToClipboard(
+								`${cadeteSeleccionado}: ${currencyFormat(sumaTotalEfectivo)}`
+							)
+						}
+					>
+						Suma total de pagos en efectivo para {cadeteSeleccionado}:{" "}
+						{currencyFormat(sumaTotalEfectivo)}
+					</p>
+				</div>
+			)}
 			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
 				<p className="border-b-2 font-black w-max text-2xl border-red-main">
