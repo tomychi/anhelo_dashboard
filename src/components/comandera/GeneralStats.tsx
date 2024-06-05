@@ -116,6 +116,11 @@ export const GeneralStats = ({
 				</div>
 				{cadeteSeleccionado && (
 					<div>
+						<div>
+							<p>
+								Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}
+							</p>
+						</div>
 						<p>
 							Suma total de pedidos para {cadeteSeleccionado}:{" "}
 							{sumaTotalPedidos}
@@ -133,9 +138,6 @@ export const GeneralStats = ({
 						</p>
 					</div>
 				)}
-				<div>
-					<p>Tiempo promedio de entrega por pedido: {promedioTiempoEntrega}</p>
-				</div>
 			</div>
 			<div className="border-b-2 border-red-main w-full"></div>
 			<div>
