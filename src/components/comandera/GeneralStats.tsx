@@ -7,7 +7,6 @@ import {
 	obtenerRegistroActual,
 } from "../../firebase/registroEmpleados";
 import { copyToClipboard } from "../../helpers/copy";
-import ScrollContainer from "./ScrollContainer";
 
 interface GeneralStatsProps {
 	customerSuccess: number;
