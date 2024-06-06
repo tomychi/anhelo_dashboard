@@ -84,8 +84,8 @@ export const GeneralStats = ({
 				</div>
 			)}
 			<div className="mt-4">
-				<p className="border-b-2  font-black w-max text-2xl border-red-main">
-					PEDIDOS ENTREGADOS A TIEMPO:{" "}
+				<p className="border-b-2 w-fit  font-black  text-2xl border-red-main">
+					ENTREGAS A TIEMPO:{" "}
 					{isNaN(customerSuccess) ? "0%" : Math.round(customerSuccess) + "%"}
 				</p>
 			</div>
