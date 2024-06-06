@@ -37,6 +37,17 @@ export const CardComandaHeader = ({
 	const tiempoPedidoMinutos = obtenerMinutosDesdeTiempo(hora);
 	const diferenciaTiempo = tiempoEntregaMinutos - tiempoPedidoMinutos;
 
+	const convertirMinutosAHorasYMinutos = (minutosTotales: number): string => {
+		const horas = Math.floor(minutosTotales / 60);
+		const minutos = minutosTotales % 60;
+		return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(
+			2,
+			"0"
+		)}`;
+	};
+
+	const tiempoFormateado = convertirMinutosAHorasYMinutos(diferenciaTiempo);
+
 	return (
 		<div className="flex flex-col items-center gap-1 justify-center">
 			<div className="flex flex-col  mb-7">
@@ -44,7 +55,7 @@ export const CardComandaHeader = ({
 					<div className="flex flex-col items-center">
 						<p>Entro a las {hora} hs</p>
 						<p className="text-4xl text-black font-black pr-1 pl-1">
-							DEMORA: {diferenciaTiempo} minutos
+							DEMORA: {tiempoFormateado} hs
 						</p>
 					</div>
 				) : (
