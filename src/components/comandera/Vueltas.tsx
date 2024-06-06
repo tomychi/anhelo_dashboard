@@ -111,11 +111,11 @@ export const Vueltas = ({
 											<TruckKM />
 											<span
 												className="
-                      bg-blue-500
+                 border-2
+								 border-green-500
                       text-white
                       p-2
-                      rounded-md
-                      mr-2
+                      mb-2
                     "
 											>
 												{horaSalida} (En camino)
