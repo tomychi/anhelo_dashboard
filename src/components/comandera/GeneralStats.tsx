@@ -55,6 +55,12 @@ export const GeneralStats = ({
 		return { activo: false, horaSalida: null };
 	};
 
+	const obtenerUltimasDosPalabras = (texto: string): string => {
+		const palabras = texto.split(" ");
+		const ultimasDosPalabras = palabras.slice(-2).join(" ");
+		return ultimasDosPalabras;
+	};
+
 	return (
 		<div className="text-custom-red uppercase font-antonio flex flex-col gap-4 mb-2">
 			{cadeteSeleccionado && (
@@ -64,7 +70,7 @@ export const GeneralStats = ({
 							Tiempo promedio de entrega por pedido:{" "}
 							{promedioTiempoEntrega === "N/A"
 								? "0 minutos"
-								: promedioTiempoEntrega}
+								: obtenerUltimasDosPalabras(promedioTiempoEntrega)}
 						</p>
 					</div>
 					<p>

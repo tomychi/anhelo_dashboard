@@ -62,7 +62,6 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 					</option>
 				))}
 			</select>
-			{/* boton para que si hay cadete seleccionado me deje hacer click y marcar la vuelta de ese cadete */}
 
 			{selectedCadete ? (
 				<button
