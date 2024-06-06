@@ -64,12 +64,12 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 			</select>
 			{/* boton para que si hay cadete seleccionado me deje hacer click y marcar la vuelta de ese cadete */}
 
-			{selectedCadete && (
+			{selectedCadete ? (
 				<button
 					className={
 						vueltaSinHoraLlegada
-							? "bg-custom-red text-black  font-antonio font-black uppercase p-8 mb-2 mt-4 "
-							: "bg-green-500 text-white font-antonio font-black uppercase  p-8 mt-4 mb-2"
+							? "bg-custom-red text-black font-antonio font-black uppercase p-8 mb-2 mt-4"
+							: "bg-green-500 text-white font-antonio font-black uppercase p-8 mt-4 mb-2"
 					}
 					onClick={() => {
 						// si vueltaSinHoraLlegada es false tiene que marcar la vuelta de salida y tiene q haber pedidos
@@ -88,7 +88,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 							.then((res) => {
 								Swal.fire({
 									icon: "success",
-									title: "Vuelta marcada",
+									title: "VUELTA MARCADA",
 									text: res.map((vuelta) => vuelta.horaSalida).join(", "),
 								});
 								setVueltas(res as VueltaInfo[]);
@@ -103,6 +103,18 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 					}}
 				>
 					{vueltaSinHoraLlegada ? "MARCAR REGRESO" : "MARCAR SALIDA"}
+				</button>
+			) : (
+				<button
+					className="border-2 border-red-main text-custom-red font-antonio font-black uppercase p-8 mb-2 mt-4"
+					onClick={() => {
+						Swal.fire({
+							icon: "error",
+							title: "Necesitas marcar un cadete para arrancar tu vuelta",
+						});
+					}}
+				>
+					Necesitas marcar un cadete para arrancar tu vuelta
 				</button>
 			)}
 		</div>
