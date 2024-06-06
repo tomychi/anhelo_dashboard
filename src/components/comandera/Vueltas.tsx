@@ -107,15 +107,13 @@ export const Vueltas = ({
 							return (
 								<li key={horaSalida} className={`bg-red-main  p-4 `}>
 									{horaSalida && !horaLlegada && (
-										<div className="flex items-center">
-											<TruckKM />
+										<div className="flex items-center gap-4">
 											<span
 												className="
-                 border-2
-								 border-green-500
+                 bg-green-500
                       text-white
                       p-2
-                      mb-2
+                      mb-4
                     "
 											>
 												{horaSalida} (En camino)
@@ -129,7 +127,7 @@ export const Vueltas = ({
                       bg-green-500
                       text-white
                       p-2
-                      mb-2
+                      mb-4
                     "
 											>
 												VUELTA completada ({horaSalida} hs - {horaLlegada} hs)
@@ -141,7 +139,6 @@ export const Vueltas = ({
 											<span
 												className="
                         p-2
-                        mb-2
                       border-2 
                       border-black
                       text-black
@@ -216,7 +213,7 @@ export const Vueltas = ({
 									)}
 
 									{horaLlegada && horaSalida && (
-										<div>
+										<div className="mt-4">
 											<div>
 												TIEMPO EN VIAJE:{" "}
 												{calcularDiferenciaHoraria(horaSalida, horaLlegada)}{" "}
