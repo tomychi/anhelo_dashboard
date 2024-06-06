@@ -40,7 +40,7 @@ export const NavButtons = ({
 				>
 					Entregados
 				</button>
-				<button
+				{/* <button
 					className={`p-2 ${
 						seccionActiva === "mapa"
 							? "bg-custom-red"
@@ -49,7 +49,7 @@ export const NavButtons = ({
 					onClick={() => setSeccionActiva("mapa")}
 				>
 					Mapa
-				</button>
+				</button> */}
 
 				{/* boton para ver las vueltas */}
 				<button
