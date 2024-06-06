@@ -327,7 +327,7 @@ export const Comandera = () => {
 						/>
 					))}
 			</div>
-			<div className="flex flex-col">
+			<div>
 				{seccionActiva === "vueltas" && (
 					<Vueltas cadete={selectedCadete} vueltas={vueltas} />
 				)}
