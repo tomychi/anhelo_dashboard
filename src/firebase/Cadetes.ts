@@ -156,6 +156,68 @@ export const obtenerVueltasCadete = async (
   return vueltas; // Devolver el array de vueltas transformadas
 };
 
+export const eliminarVueltaCadete = async (
+  cadete: string | null,
+  fecha: string,
+  horaSalida: string
+): Promise<VueltaInfo[]> => {
+  const firestore = getFirestore();
+  console.log(fecha);
+  const [dia, mes, anio] = fecha.split('/');
+
+  if (!cadete) {
+    throw new Error('No se ha seleccionado un cadete');
+  }
+
+  try {
+    // Crear una referencia al documento del cadete
+    const cadeteDocRef = doc(
+      firestore,
+      'cadetes',
+      cadete
+    ) as DocumentReference<DocumentData>;
+
+    // Crear una subcolección "vueltas" dentro del documento del cadete
+    const vueltasCollectionRef = collection(cadeteDocRef, 'vueltas');
+
+    // Crear un ID único para el documento de vuelta usando la fecha
+    const vueltaId = `${anio}-${mes}-${dia}`;
+
+    // Referencia al documento de vuelta
+    const vueltaDocRef = doc(vueltasCollectionRef, vueltaId);
+    const vueltaDocSnapshot = await getDoc(vueltaDocRef);
+
+    if (!vueltaDocSnapshot.exists()) {
+      throw new Error('No se encontró una vuelta para la fecha proporcionada');
+    }
+
+    const vueltaData = vueltaDocSnapshot.data();
+    let vueltas: VueltaInfo[] = [];
+    if (vueltaData && Array.isArray(vueltaData.vueltas)) {
+      vueltas = vueltaData.vueltas;
+    }
+
+    // Filtrar la vuelta específica que queremos eliminar
+    const vueltasActualizadas = vueltas.filter(
+      (vuelta) => vuelta.horaSalida !== horaSalida
+    );
+
+    if (vueltas.length === vueltasActualizadas.length) {
+      throw new Error(
+        'No se encontró una vuelta con la hora de salida proporcionada'
+      );
+    }
+
+    // Actualizar el documento de vuelta con las vueltas restantes
+    await setDoc(vueltaDocRef, { vueltas: vueltasActualizadas });
+
+    return vueltasActualizadas;
+  } catch (error) {
+    console.error('Error al eliminar la vuelta:', error);
+    throw error;
+  }
+};
+
 // Función para buscar los pedidos en la base de datos de pedidos
 export const buscarPedidos = async (ids: string[], fecha: string) => {
   if (!fecha) {
