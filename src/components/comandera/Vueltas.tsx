@@ -1,156 +1,226 @@
-import { useEffect, useState } from "react";
-import { VueltaInfo, buscarPedidos } from "../../firebase/Cadetes";
-import { TiempoCoccionSVG, TruckKM } from "../icons";
-import { PedidoProps } from "../../types/types";
+import { useEffect, useState } from 'react';
 import {
-	calcularDiferenciaHoraria,
-	calcularPromedioTiempoPorViaje,
-} from "../../helpers/dateToday";
+  VueltaInfo,
+  buscarPedidos,
+  eliminarVueltaCadete,
+} from '../../firebase/Cadetes';
+import { TiempoCoccionSVG, TruckKM } from '../icons';
+import { PedidoProps } from '../../types/types';
+import {
+  calcularDiferenciaHoraria,
+  calcularPromedioTiempoPorViaje,
+  obtenerFechaActual,
+} from '../../helpers/dateToday';
+import { RootState } from '../../redux/configureStore';
+import { useSelector } from 'react-redux';
+
+function intercambiarDiaMes(fechaStr: string | Date): string {
+  let fechaString: string;
+
+  if (typeof fechaStr === 'string') {
+    fechaString = fechaStr;
+  } else if (fechaStr instanceof Date) {
+    const dia = String(fechaStr.getDate()).padStart(2, '0');
+    const mes = String(fechaStr.getMonth() + 1).padStart(2, '0');
+    const anio = fechaStr.getFullYear();
+    fechaString = `${dia}/${mes}/${anio}`;
+  } else {
+    throw new Error('El argumento debe ser una cadena o un objeto Date');
+  }
+
+  const [anio, mes, dia] = fechaString.split('-');
+  if (dia && mes && anio) {
+    return `${dia}/${mes}/${anio}`;
+  } else {
+    throw new Error('La fecha no tiene el formato esperado');
+  }
+}
 
 interface VueltasWithOrders extends VueltaInfo {
-	orders: PedidoProps[];
+  orders: PedidoProps[];
 }
 
 export const Vueltas = ({
-	vueltas,
+  vueltas,
+  cadete,
+  setVueltas,
 }: {
-	cadete: string | null;
-	vueltas: VueltaInfo[];
+  cadete: string | null;
+  vueltas: VueltaInfo[];
+  setVueltas: (vueltas: VueltaInfo[]) => void;
 }) => {
-	const [loading, setLoading] = useState(false);
-	const [vueltasWithOrders, setVueltasWithOrders] = useState<
-		VueltasWithOrders[]
-	>([]);
-	const [promediosPorViaje, setPromediosPorViaje] = useState<string[]>([]);
+  const { valueDate } = useSelector((state: RootState) => state.data);
 
-	useEffect(() => {
-		setVueltasWithOrders(vueltas.map((vuelta) => ({ ...vuelta, orders: [] })));
-	}, [vueltas]);
+  const [loading, setLoading] = useState(false);
+  const [vueltasWithOrders, setVueltasWithOrders] = useState<
+    VueltasWithOrders[]
+  >([]);
 
-	useEffect(() => {
-		const nuevosPromedios = vueltasWithOrders
-			.map(({ horaSalida, horaLlegada, ordersId }) => {
-				if (horaSalida && horaLlegada && ordersId.length > 0) {
-					return calcularPromedioTiempoPorViaje(
-						horaSalida,
-						horaLlegada,
-						ordersId.length
-					);
-				}
-				return "00:00";
-			})
-			.filter((promedio) => promedio !== "00:00");
+  const [promediosPorViaje, setPromediosPorViaje] = useState<string[]>([]);
 
-		setPromediosPorViaje(nuevosPromedios);
-	}, [vueltasWithOrders]);
+  const fechaSi = valueDate?.endDate
+    ? intercambiarDiaMes(valueDate.endDate)
+    : obtenerFechaActual();
 
-	const calcularPromedioGeneral = () => {
-		if (promediosPorViaje.length === 0) return "0 minutos";
+  useEffect(() => {
+    setVueltasWithOrders(vueltas.map((vuelta) => ({ ...vuelta, orders: [] })));
+  }, [vueltas]);
 
-		const totalMinutos = promediosPorViaje.reduce((total, tiempo) => {
-			const [horas, minutos] = tiempo.split(":").map(Number);
-			return total + horas * 60 + minutos;
-		}, 0);
+  useEffect(() => {
+    const nuevosPromedios = vueltasWithOrders
+      .map(({ horaSalida, horaLlegada, ordersId }) => {
+        if (horaSalida && horaLlegada && ordersId.length > 0) {
+          return calcularPromedioTiempoPorViaje(
+            horaSalida,
+            horaLlegada,
+            ordersId.length
+          );
+        }
+        return '00:00';
+      })
+      .filter((promedio) => promedio !== '00:00');
 
-		const promedioMinutos = totalMinutos / promediosPorViaje.length;
+    setPromediosPorViaje(nuevosPromedios);
+  }, [vueltasWithOrders]);
 
-		const horas = Math.floor(promedioMinutos / 60);
-		const minutos = Math.round(promedioMinutos % 60);
+  //   const calcularPromedioGeneral = () => {
+  //     if (promediosPorViaje.length === 0) return '0 minutos';
 
-		if (horas === 0) {
-			return `${minutos} minutos`;
-		} else {
-			return `${horas} horas y ${minutos} minutos`;
-		}
-	};
+  //     const totalMinutos = promediosPorViaje.reduce((total, tiempo) => {
+  //       const [horas, minutos] = tiempo.split(':').map(Number);
+  //       return total + horas * 60 + minutos;
+  //     }, 0);
 
-	const getBackgroundColor = (promedioPorViaje: string) => {
-		const [horas, minutos] = promedioPorViaje.split(":").map(Number);
-		const totalMinutos = horas * 60 + minutos;
+  //     const promedioMinutos = totalMinutos / promediosPorViaje.length;
 
-		if (totalMinutos < 15) return "bg-green-500";
-		if (totalMinutos >= 15 && totalMinutos <= 30) return "bg-yellow-500";
-		if (totalMinutos > 30) return "bg-red-main";
-		return "";
-	};
+  //     const horas = Math.floor(promedioMinutos / 60);
+  //     const minutos = Math.round(promedioMinutos % 60);
 
-	const handleClickVerPedidos = (ordersId: string[], fecha: string) => {
-		setLoading(true);
-		buscarPedidos(ordersId, fecha).then((pedidos) => {
-			const vueltasConPedidos = vueltas.map((vuelta) => ({
-				...vuelta,
-				orders: pedidos.filter((pedido: PedidoProps) =>
-					ordersId.includes(pedido.id)
-				),
-			}));
+  //     if (horas === 0) {
+  //       return `${minutos} minutos`;
+  //     } else {
+  //       return `${horas} horas y ${minutos} minutos`;
+  //     }
+  //   };
 
-			setVueltasWithOrders(vueltasConPedidos);
-			setLoading(false);
-		});
-	};
+  //   const getBackgroundColor = (promedioPorViaje: string) => {
+  //     const [horas, minutos] = promedioPorViaje.split(':').map(Number);
+  //     const totalMinutos = horas * 60 + minutos;
 
-	return (
-		<div>
-			<ol className="flex flex-col gap-4 font-antonio text-black font-black uppercase">
-				{vueltasWithOrders &&
-					vueltasWithOrders.map(
-						({ horaSalida, horaLlegada, ordersId, fecha, orders }) => {
-							let promedioPorViaje = "00:00";
-							if (horaSalida && horaLlegada && ordersId.length > 0) {
-								promedioPorViaje = calcularPromedioTiempoPorViaje(
-									horaSalida,
-									horaLlegada,
-									ordersId.length
-								);
-							}
-							const bgColor = getBackgroundColor(promedioPorViaje);
-							return (
-								<li key={horaSalida} className={`bg-red-main  p-4 `}>
-									{horaSalida && !horaLlegada && (
-										<div className="flex items-center">
-											<TruckKM />
-											<span
-												className="
+  //     if (totalMinutos < 15) return 'bg-green-500';
+  //     if (totalMinutos >= 15 && totalMinutos <= 30) return 'bg-yellow-500';
+  //     if (totalMinutos > 30) return 'bg-red-main';
+  //     return '';
+  //   };
+
+  //   const handleClickVerPedidos = (ordersId: string[], fecha: string) => {
+  //     setLoading(true);
+  //     buscarPedidos(ordersId, fecha).then((pedidos) => {
+  //       const vueltasConPedidos = vueltas.map((vuelta) => ({
+  //         ...vuelta,
+  //         orders: pedidos.filter((pedido: PedidoProps) =>
+  //           ordersId.includes(pedido.id)
+  //         ),
+  //       }));
+
+  //       setVueltasWithOrders(vueltasConPedidos);
+  //       setLoading(false);
+  //     });
+  //   };
+
+  return (
+    <div>
+      <ol className="flex flex-col gap-4 font-antonio text-black font-black uppercase">
+        {vueltasWithOrders &&
+          vueltasWithOrders.map(
+            ({ horaSalida, horaLlegada, ordersId, fecha, orders }) => {
+              let promedioPorViaje = '00:00';
+              if (horaSalida && horaLlegada && ordersId.length > 0) {
+                promedioPorViaje = calcularPromedioTiempoPorViaje(
+                  horaSalida,
+                  horaLlegada,
+                  ordersId.length
+                );
+              }
+              return (
+                <li key={horaSalida} className={`bg-red-main  p-4 `}>
+                  {horaSalida && !horaLlegada && (
+                    <div className="flex items-center">
+                      <TruckKM />
+                      <span
+                        className="
                  border-2
 								 border-green-500
                       text-white
                       p-2
                       mb-2
                     "
-											>
-												{horaSalida} (En camino)
-											</span>
-										</div>
-									)}
-									{horaSalida && horaLlegada && (
-										<div className="flex items-center">
-											<span
-												className="
+                      >
+                        {horaSalida} (En camino)
+                      </span>
+                    </div>
+                  )}
+
+                  <button
+                    className="
+					text-white
+					bg-custom-red
+					hover:bg-red-500
+					py-2
+					px-4
+					border
+					border-red-700
+					rounded
+					shadow-md
+					cursor-pointer
+					"
+                    onClick={() => {
+                      eliminarVueltaCadete(cadete, fechaSi, horaSalida)
+                        .then((vueltasActualizadas) => {
+                          console.log(
+                            'Vueltas actualizadas:',
+                            vueltasActualizadas
+                          );
+
+                          setVueltas(vueltasActualizadas);
+                        })
+                        .catch((error) => {
+                          console.error('Error:', error);
+                        });
+                    }}
+                  >
+                    Borrar vuelta
+                  </button>
+
+                  {horaSalida && horaLlegada && (
+                    <div className="flex items-center">
+                      <span
+                        className="
                       bg-green-500
                       text-white
                       p-2
                       mb-2
                     "
-											>
-												VUELTA completada ({horaSalida} hs - {horaLlegada} hs)
-											</span>
-										</div>
-									)}
-									{ordersId && (
-										<div className="flex items-center">
-											<span
-												className="
+                      >
+                        VUELTA completada ({horaSalida} hs - {horaLlegada} hs)
+                      </span>
+                    </div>
+                  )}
+                  {ordersId && (
+                    <div className="flex items-center">
+                      <span
+                        className="
                         p-2
                         mb-2
                       border-2 
                       border-black
                       text-black
                     "
-											>
-												{ordersId.length} pedidos
-											</span>
-											{/* Deshabilitado hasta que funcione para que no se confundan los cadetes */}
-											{/* <button
+                      >
+                        {ordersId.length} pedidos
+                      </span>
+                      {/* Deshabilitado hasta que funcione para que no se confundan los cadetes */}
+                      {/* <button
 												className="
                         text-white
                         bg-custom-red
@@ -169,7 +239,7 @@ export const Vueltas = ({
 											>
 												Ver pedidos
 											</button> */}
-											{/* {loading && (
+                      {/* {loading && (
 												<div role="status">
 													<svg
 														aria-hidden="true"
@@ -190,46 +260,46 @@ export const Vueltas = ({
 													<span className="sr-only">Loading...</span>
 												</div>
 											)} */}
-											{orders.length > 0 && (
-												<ul
-													className="
+                      {orders.length > 0 && (
+                        <ul
+                          className="
                         mt-4
                         bg-gray-200
                         p-4 
                         rounded-lg
                         shadow-md
                       "
-												>
-													{orders.map(
-														(pedido) =>
-															ordersId.includes(pedido.id) && (
-																<li key={pedido.id}>
-																	<p>{pedido.direccion}</p>
-																	<p>Hay: {pedido.kms}km</p>
-																	<p>Demora: {pedido.minutosDistancia}m</p>
-																</li>
-															)
-													)}
-												</ul>
-											)}
-										</div>
-									)}
+                        >
+                          {orders.map(
+                            (pedido) =>
+                              ordersId.includes(pedido.id) && (
+                                <li key={pedido.id}>
+                                  <p>{pedido.direccion}</p>
+                                  <p>Hay: {pedido.kms}km</p>
+                                  <p>Demora: {pedido.minutosDistancia}m</p>
+                                </li>
+                              )
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                  )}
 
-									{horaLlegada && horaSalida && (
-										<div>
-											<div>
-												TIEMPO EN VIAJE:{" "}
-												{calcularDiferenciaHoraria(horaSalida, horaLlegada)}{" "}
-												minutos
-											</div>
-											<div>TIEMPO PROMEDIO POR PEDIDO: {promedioPorViaje}</div>
-										</div>
-									)}
-								</li>
-							);
-						}
-					)}
-			</ol>
-		</div>
-	);
+                  {horaLlegada && horaSalida && (
+                    <div>
+                      <div>
+                        TIEMPO EN VIAJE:{' '}
+                        {calcularDiferenciaHoraria(horaSalida, horaLlegada)}{' '}
+                        minutos
+                      </div>
+                      <div>TIEMPO PROMEDIO POR PEDIDO: {promedioPorViaje}</div>
+                    </div>
+                  )}
+                </li>
+              );
+            }
+          )}
+      </ol>
+    </div>
+  );
 };
