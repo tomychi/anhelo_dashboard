@@ -7,7 +7,6 @@ import {
 	obtenerRegistroActual,
 } from "../../firebase/registroEmpleados";
 import { copyToClipboard } from "../../helpers/copy";
-import ScrollContainer from "./ScrollContainer";
 
 interface GeneralStatsProps {
 	customerSuccess: number;
@@ -55,6 +54,12 @@ export const GeneralStats = ({
 		return { activo: false, horaSalida: null };
 	};
 
+	const obtenerUltimasDosPalabras = (texto: string): string => {
+		const palabras = texto.split(" ");
+		const ultimasDosPalabras = palabras.slice(-2).join(" ");
+		return ultimasDosPalabras;
+	};
+
 	return (
 		<div className="text-custom-red uppercase font-antonio flex flex-col gap-4 mb-2">
 			{cadeteSeleccionado && (
@@ -64,7 +69,7 @@ export const GeneralStats = ({
 							Tiempo promedio de entrega por pedido:{" "}
 							{promedioTiempoEntrega === "N/A"
 								? "0 minutos"
-								: promedioTiempoEntrega}
+								: obtenerUltimasDosPalabras(promedioTiempoEntrega)}
 						</p>
 					</div>
 					<p>
@@ -84,8 +89,8 @@ export const GeneralStats = ({
 				</div>
 			)}
 			<div className="mt-4">
-				<p className="border-b-2  font-black w-max text-2xl border-red-main">
-					PEDIDOS ENTREGADOS A TIEMPO:{" "}
+				<p className="border-b-2 w-fit  font-black  text-2xl border-red-main">
+					ENTREGAS A TIEMPO:{" "}
 					{isNaN(customerSuccess) ? "0%" : Math.round(customerSuccess) + "%"}
 				</p>
 			</div>

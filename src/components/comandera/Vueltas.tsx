@@ -83,50 +83,50 @@ export const Vueltas = ({
     setPromediosPorViaje(nuevosPromedios);
   }, [vueltasWithOrders]);
 
-  //   const calcularPromedioGeneral = () => {
-  //     if (promediosPorViaje.length === 0) return '0 minutos';
+  const calcularPromedioGeneral = () => {
+    if (promediosPorViaje.length === 0) return '0 minutos';
 
-  //     const totalMinutos = promediosPorViaje.reduce((total, tiempo) => {
-  //       const [horas, minutos] = tiempo.split(':').map(Number);
-  //       return total + horas * 60 + minutos;
-  //     }, 0);
+    const totalMinutos = promediosPorViaje.reduce((total, tiempo) => {
+      const [horas, minutos] = tiempo.split(':').map(Number);
+      return total + horas * 60 + minutos;
+    }, 0);
 
-  //     const promedioMinutos = totalMinutos / promediosPorViaje.length;
+    const promedioMinutos = totalMinutos / promediosPorViaje.length;
 
-  //     const horas = Math.floor(promedioMinutos / 60);
-  //     const minutos = Math.round(promedioMinutos % 60);
+    const horas = Math.floor(promedioMinutos / 60);
+    const minutos = Math.round(promedioMinutos % 60);
 
-  //     if (horas === 0) {
-  //       return `${minutos} minutos`;
-  //     } else {
-  //       return `${horas} horas y ${minutos} minutos`;
-  //     }
-  //   };
+    if (horas === 0) {
+      return `${minutos} minutos`;
+    } else {
+      return `${horas} horas y ${minutos} minutos`;
+    }
+  };
 
-  //   const getBackgroundColor = (promedioPorViaje: string) => {
-  //     const [horas, minutos] = promedioPorViaje.split(':').map(Number);
-  //     const totalMinutos = horas * 60 + minutos;
+  const getBackgroundColor = (promedioPorViaje: string) => {
+    const [horas, minutos] = promedioPorViaje.split(':').map(Number);
+    const totalMinutos = horas * 60 + minutos;
 
-  //     if (totalMinutos < 15) return 'bg-green-500';
-  //     if (totalMinutos >= 15 && totalMinutos <= 30) return 'bg-yellow-500';
-  //     if (totalMinutos > 30) return 'bg-red-main';
-  //     return '';
-  //   };
+    if (totalMinutos < 15) return 'bg-green-500';
+    if (totalMinutos >= 15 && totalMinutos <= 30) return 'bg-yellow-500';
+    if (totalMinutos > 30) return 'bg-red-main';
+    return '';
+  };
 
-  //   const handleClickVerPedidos = (ordersId: string[], fecha: string) => {
-  //     setLoading(true);
-  //     buscarPedidos(ordersId, fecha).then((pedidos) => {
-  //       const vueltasConPedidos = vueltas.map((vuelta) => ({
-  //         ...vuelta,
-  //         orders: pedidos.filter((pedido: PedidoProps) =>
-  //           ordersId.includes(pedido.id)
-  //         ),
-  //       }));
+  const handleClickVerPedidos = (ordersId: string[], fecha: string) => {
+    setLoading(true);
+    buscarPedidos(ordersId, fecha).then((pedidos) => {
+      const vueltasConPedidos = vueltas.map((vuelta) => ({
+        ...vuelta,
+        orders: pedidos.filter((pedido: PedidoProps) =>
+          ordersId.includes(pedido.id)
+        ),
+      }));
 
-  //       setVueltasWithOrders(vueltasConPedidos);
-  //       setLoading(false);
-  //     });
-  //   };
+      setVueltasWithOrders(vueltasConPedidos);
+      setLoading(false);
+    });
+  };
 
   return (
     <div>
@@ -142,18 +142,17 @@ export const Vueltas = ({
                   ordersId.length
                 );
               }
+              const bgColor = getBackgroundColor(promedioPorViaje);
               return (
                 <li key={horaSalida} className={`bg-red-main  p-4 `}>
                   {horaSalida && !horaLlegada && (
-                    <div className="flex items-center">
-                      <TruckKM />
+                    <div className="flex items-center gap-4">
                       <span
                         className="
-                 border-2
-								 border-green-500
+                 bg-green-500
                       text-white
                       p-2
-                      mb-2
+                      mb-4
                     "
                       >
                         {horaSalida} (En camino)
@@ -199,7 +198,7 @@ export const Vueltas = ({
                       bg-green-500
                       text-white
                       p-2
-                      mb-2
+                      mb-4
                     "
                       >
                         VUELTA completada ({horaSalida} hs - {horaLlegada} hs)
@@ -211,7 +210,6 @@ export const Vueltas = ({
                       <span
                         className="
                         p-2
-                        mb-2
                       border-2 
                       border-black
                       text-black
@@ -286,7 +284,7 @@ export const Vueltas = ({
                   )}
 
                   {horaLlegada && horaSalida && (
-                    <div>
+                    <div className="mt-4">
                       <div>
                         TIEMPO EN VIAJE:{' '}
                         {calcularDiferenciaHoraria(horaSalida, horaLlegada)}{' '}
