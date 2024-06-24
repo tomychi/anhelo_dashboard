@@ -305,6 +305,26 @@ export const Comandera = () => {
         orders={pedidosHechos}
         setVueltas={setVueltas}
       />
+      {/* un boton para copiar todas las direcciones de orders y agruparlas por la fecha */}
+
+      <button
+        className="bg-red-main text-white font-antonio font-bold p-2 rounded-lg"
+        onClick={() => {
+          const ordersByDate = orders.reduce((acc, order) => {
+            const date = order.fecha;
+            if (!acc[date]) {
+              acc[date] = [];
+            }
+            acc[date].push(order.direccion);
+            return acc;
+          }, {} as Record<string, string[]>);
+
+          navigator.clipboard.writeText(JSON.stringify(ordersByDate));
+        }}
+      >
+        Copiar direcciones
+      </button>
+
       <GeneralStats
         customerSuccess={customerSuccess}
         orders={orders}
