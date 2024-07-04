@@ -15,25 +15,38 @@ export interface FakeDatabase {
   [date: string]: DateData;
 }
 
-const LineChart: React.FC<{ data: FakeDatabase }> = ({ data }) => {
-  const dates = Object.keys(data);
-  const competitors = Object.keys(data[dates[0]]);
+interface LineChartProps {
+  data: FakeDatabase;
+}
+const LineChart: React.FC<LineChartProps> = ({ data }) => {
+  if (!data) {
+    return <div>No data available</div>;
+  }
+
+  const dates = Object.keys(data).sort();
+  const usernames = dates.length > 0 ? Object.keys(data[dates[0]]) : [];
+
+  const colors = [
+    'rgba(255, 99, 132, 1)', // anhelo
+    'rgb(11,193,123)',
+    'rgba(153, 102, 255, 1)',
+    'rgb(219,18,60)',
+    'rgb(246,204,49)',
+  ];
+
+  const datasets = usernames.map((username, index) => ({
+    label: username,
+    data: dates.map((date) => data[date][username]?.followers ?? null),
+    fill: false,
+    borderColor: colors[index % colors.length],
+    tension: 0.1,
+  }));
 
   const chartData = {
     labels: dates,
-    datasets: competitors.map((competitor) => ({
-      label: competitor,
-      data: dates.map((date) => data[date][competitor].followers),
-      fill: false,
-      borderColor: '#' + ((Math.random() * 0xffffff) << 0).toString(16),
-    })),
+    datasets,
   };
 
-  return (
-    <div className="h-[50vh]">
-      <Line data={chartData} />
-    </div>
-  );
+  return <Line data={chartData} />;
 };
-
 export default LineChart;
