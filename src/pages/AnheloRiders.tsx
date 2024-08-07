@@ -49,8 +49,8 @@ export const AnheloRiders = () => {
 				</p>
 				{/* Card donde mapeamos los pedidos */}
 				<div className="flex flex-row  justify-between border  border-red-main">
-					<div className="flex flex-col p-2">
-						<p className="uppercase  bg-black font-black text-red-main font-antonio">
+					<div className="flex flex-col p-4">
+						<p className="uppercase mb-2 mt-2 bg-black font-black text-red-main font-antonio">
 							1. Marcelo T. De Alvear 546
 						</p>
 						<p className="text-red-main text-xs font-black font-antonio">
@@ -60,11 +60,11 @@ export const AnheloRiders = () => {
 							Cobrar: $17.820
 						</p>
 					</div>
-					<div className="flex flex-row">
-						<p className="uppercase p-2 flex items-center bg-green-500 font-black text-black font-antonio">
+					<div className="flex flex-col justify-between">
+						<p className="uppercase p-2 flex items-center h-1/2 text-center justify-center bg-green-500 font-black text-black font-antonio">
 							LLAMAR
 						</p>
-						<p className="uppercase p-2 flex items-center bg-green-500 font-black text-black font-antonio">
+						<p className="uppercase p-2 flex items-center h-1/2 bg-green-500 font-black justify-center text-black font-antonio">
 							ENTREGAR
 						</p>
 					</div>
