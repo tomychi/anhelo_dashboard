@@ -48,49 +48,62 @@ export const MapStats = () => {
           console.warn('Pedido sin dirección:', item);
           continue; // Salta a la siguiente iteración del bucle si no hay dirección
         }
+        // Si las coordenadas en item.map son válidas, usa esas coordenadas
+        if (item.map && item.map[0] !== 0 && item.map[1] !== 0) {
+          const coordinates: [number, number] = [item.map[1], item.map[0]]; // Invertir las coordenadas
+          new mapboxgl.Marker({
+            color: '#ff0000',
+            scale: 0.2,
+          })
+            .setLngLat(coordinates)
+            .setPopup(
+              new mapboxgl.Popup().setHTML(`<h3>${item.direccion}</h3>`)
+            )
+            .addTo(map);
+        } else {
+          // Si no hay coordenadas válidas en item.map, realiza la geocodificación
+          const address = encodeURIComponent(item.direccion);
+          const endpoint = 'mapbox.places';
+          const proximity = `${tuCiudadCoordinates[0]},${tuCiudadCoordinates[1]}`;
+          const url = `https://api.mapbox.com/geocoding/v5/${endpoint}/${address}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&bbox=${bbox}`;
 
-        const address = encodeURIComponent(item.direccion);
-        const endpoint = 'mapbox.places';
-        const proximity = `${tuCiudadCoordinates[0]},${tuCiudadCoordinates[1]}`;
-        const url = `https://api.mapbox.com/geocoding/v5/${endpoint}/${address}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&bbox=${bbox}`;
+          try {
+            const response = await fetch(url);
+            const geodata = await response.json();
 
-        try {
-          const response = await fetch(url);
-          const geodata = await response.json();
+            // Verifica si hay datos de geometría disponibles
+            if (
+              geodata.features &&
+              geodata.features.length > 0 &&
+              geodata.features[0].geometry
+            ) {
+              const coordinates = geodata.features[0].geometry.coordinates;
 
-          // Verifica si hay datos de geometría disponibles
-          if (
-            geodata.features &&
-            geodata.features.length > 0 &&
-            geodata.features[0].geometry
-          ) {
-            const coordinates = geodata.features[0].geometry.coordinates;
+              geocodedData.push({
+                coordinates: coordinates,
+                address: item.direccion,
+              });
 
-            geocodedData.push({
-              coordinates: coordinates,
-              address: item.direccion,
-            });
-
-            new mapboxgl.Marker({
-              color: '#ff0000',
-              scale: 0.2,
-            })
-              .setLngLat(coordinates)
-              .setPopup(
-                new mapboxgl.Popup().setHTML(`<h3>${item.direccion}</h3>`)
-              )
-              .addTo(map);
-          } else {
-            console.log(
-              'No se encontró geometría para la dirección:',
-              item.direccion
-            );
+              new mapboxgl.Marker({
+                color: '#ff0000',
+                scale: 0.2,
+              })
+                .setLngLat(coordinates)
+                .setPopup(
+                  new mapboxgl.Popup().setHTML(`<h3>${item.direccion}</h3>`)
+                )
+                .addTo(map);
+            } else {
+              console.log(
+                'No se encontró geometría para la dirección:',
+                item.direccion
+              );
+            }
+          } catch (error) {
+            console.error('Error al obtener coordenadas:', error);
           }
-        } catch (error) {
-          console.error('Error al obtener coordenadas:', error);
         }
       }
-
       saveMapData(geocodedData); // Guardar los datos del mapa en el localStorage
       setMapLoaded(true); // Marcar el mapa como cargado
     };
