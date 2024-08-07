@@ -45,7 +45,7 @@ export const AnheloRiders = () => {
 			{/* Aca la parte de los pedidos */}
 			<div className=" flex flex-col">
 				<p className="uppercase bg-red-main p-4 font-black font-antonio">
-					Pedidos por entregar (2)
+					Pedidos por entregar (3)
 				</p>
 				{/* Card donde mapeamos los pedidos */}
 				<div className="flex flex-row  justify-between border  border-red-main">
