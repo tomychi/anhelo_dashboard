@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import mapa from "../assets/mapa.png";
 import logo from "../assets/anheloTMblack.png";
 
@@ -86,6 +86,12 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 );
 
 export const AnheloRiders: React.FC = () => {
+	const [isListVisible, setIsListVisible] = useState(false);
+
+	const toggleListVisibility = () => {
+		setIsListVisible(!isListVisible);
+	};
+
 	return (
 		<div className="flex flex-col">
 			{/* Parte de la ganancia */}
@@ -131,18 +137,38 @@ export const AnheloRiders: React.FC = () => {
 			</div>
 			{/* Parte de los pedidos */}
 			<div className="flex flex-col">
-				<p className="uppercase bg-red-main p-4 font-black font-antonio">
-					Pedidos por entregar ({pedidos.length})
-				</p>
+				<button
+					onClick={toggleListVisibility}
+					className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
+				>
+					<span>Pedidos por entregar ({pedidos.length})</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className={`h-6 w-6 transform transition-transform ${
+							isListVisible ? "rotate-180" : ""
+						}`}
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M19 9l-7 7-7-7"
+						/>
+					</svg>
+				</button>
 				{/* Card donde mapeamos los pedidos */}
-				{pedidos.map((pedido, index) => (
-					<PedidoCard
-						key={index}
-						direccion={pedido.direccion}
-						demora={pedido.demora}
-						monto={pedido.monto}
-					/>
-				))}
+				{isListVisible &&
+					pedidos.map((pedido, index) => (
+						<PedidoCard
+							key={index}
+							direccion={pedido.direccion}
+							demora={pedido.demora}
+							monto={pedido.monto}
+						/>
+					))}
 			</div>
 		</div>
 	);
