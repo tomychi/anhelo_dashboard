@@ -48,13 +48,16 @@ export const AnheloRiders = () => {
 					Pedidos por entregar (2)
 				</p>
 				{/* Card donde mapeamos los pedidos */}
-				<div className="flex flex-row  justify-between border h-14 border-red-main">
+				<div className="flex flex-row  justify-between border  border-red-main">
 					<div className="flex flex-col p-2">
 						<p className="uppercase  bg-black font-black text-red-main font-antonio">
-							1. Marcelo T 546
+							1. Marcelo T. De Alvear 546
 						</p>
 						<p className="text-red-main text-xs font-black font-antonio">
 							Demora: 17 minutos
+						</p>
+						<p className="text-red-main text-xs font-black font-antonio">
+							Cobrar: $17.820
 						</p>
 					</div>
 					<div className="flex flex-row">
