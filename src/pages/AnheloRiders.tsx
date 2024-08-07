@@ -43,7 +43,11 @@ export const AnheloRiders = () => {
 				<img src={mapa} alt="mapa" />
 			</div>
 			{/* Aca la parte de los pedidos */}
-			<div></div>
+			<div className="bg-red-main p-4">
+				<p className="uppercase font-black font-antonio">
+					Pedidos por entregar (2)
+				</p>
+			</div>
 		</div>
 	);
 };
