@@ -32,7 +32,7 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 	demora,
 	monto,
 }) => (
-	<div className="flex flex-row justify-between border border-red-main mb-4">
+	<div className="flex flex-row justify-between border border-red-main ">
 		<div className="flex flex-col p-4">
 			<p className="uppercase mb-2 mt-2 bg-black font-black text-red-main font-antonio">
 				{direccion}
