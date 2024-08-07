@@ -144,13 +144,95 @@ export const AnheloRiders: React.FC = () => {
 			<div>
 				<img src={mapa} alt="mapa" />
 			</div>
-			{/* Parte de los pedidos */}
+			{/* Pedidos por entregar */}
 			<div className="flex flex-col">
 				<button
 					onClick={toggleListVisibility}
 					className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
 				>
 					<span>Pedidos por entregar ({pedidos.length})</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className={`h-6 w-6 transform transition-transform duration-300 ${
+							isListVisible ? "rotate-180" : ""
+						}`}
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M19 9l-7 7-7-7"
+						/>
+					</svg>
+				</button>
+				{/* Contenedor para la lista de pedidos con transición */}
+				<div
+					className={`transition-all duration-500 ease-in-out overflow-hidden ${
+						isListVisible ? "max-h-[1000px]" : "max-h-0"
+					}`}
+				>
+					{pedidos.map((pedido, index) => (
+						<PedidoCard
+							key={index}
+							{...pedido}
+							isVisible={isListVisible}
+							index={index}
+						/>
+					))}
+				</div>
+			</div>
+			{/* Pedidos entregados */}
+
+			<div className="flex flex-col">
+				<button
+					onClick={toggleListVisibility}
+					className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
+				>
+					<span>Pedidos entregados ({pedidos.length})</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className={`h-6 w-6 transform transition-transform duration-300 ${
+							isListVisible ? "rotate-180" : ""
+						}`}
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M19 9l-7 7-7-7"
+						/>
+					</svg>
+				</button>
+				{/* Contenedor para la lista de pedidos con transición */}
+				<div
+					className={`transition-all duration-500 ease-in-out overflow-hidden ${
+						isListVisible ? "max-h-[1000px]" : "max-h-0"
+					}`}
+				>
+					{pedidos.map((pedido, index) => (
+						<PedidoCard
+							key={index}
+							{...pedido}
+							isVisible={isListVisible}
+							index={index}
+						/>
+					))}
+				</div>
+			</div>
+			{/* Pedidos cancelados */}
+
+			<div className="flex flex-col">
+				<button
+					onClick={toggleListVisibility}
+					className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
+				>
+					<span>Pedidos cancelados ({pedidos.length})</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						className={`h-6 w-6 transform transition-transform duration-300 ${
