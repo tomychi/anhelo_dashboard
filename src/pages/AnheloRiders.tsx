@@ -47,10 +47,31 @@ export const AnheloRiders = () => {
 				<p className="uppercase bg-red-main p-4 font-black font-antonio">
 					Pedidos por entregar (2)
 				</p>
-				{/* Aca hacemos un mapeo de los pedidos */}
-				<p className="uppercase p-4 bg-black font-black text-red-main font-antonio">
-					1. Marcelo T 546
-				</p>
+				{/* Card donde mapeamos los pedidos */}
+				<div className="flex flex-row justify-between border border-red-main">
+					<p className="uppercase p-4 bg-black font-black text-red-main font-antonio">
+						1. Marcelo T 546
+					</p>
+					<p className="uppercase p-4 bg-green-500 font-black text-black font-antonio">
+						ENTREGAR
+					</p>
+				</div>
+				<div className="flex flex-row justify-between border border-red-main">
+					<p className="uppercase p-4 bg-black font-black text-red-main font-antonio">
+						1. Marcelo T 546
+					</p>
+					<p className="uppercase p-4 bg-green-500 font-black text-black font-antonio">
+						ENTREGAR
+					</p>
+				</div>
+				<div className="flex flex-row justify-between border border-red-main">
+					<p className="uppercase p-4 bg-black font-black text-red-main font-antonio">
+						1. Marcelo T 546
+					</p>
+					<p className="uppercase p-4 bg-green-500 font-black text-black font-antonio">
+						ENTREGAR
+					</p>
+				</div>
 			</div>
 		</div>
 	);
