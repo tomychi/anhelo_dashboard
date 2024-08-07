@@ -43,9 +43,13 @@ export const AnheloRiders = () => {
 				<img src={mapa} alt="mapa" />
 			</div>
 			{/* Aca la parte de los pedidos */}
-			<div className="bg-red-main p-4">
-				<p className="uppercase font-black font-antonio">
+			<div className=" flex flex-col">
+				<p className="uppercase bg-red-main p-4 font-black font-antonio">
 					Pedidos por entregar (2)
+				</p>
+				{/* Aca hacemos un mapeo de los pedidos */}
+				<p className="uppercase p-4 bg-black font-black text-red-main font-antonio">
+					1. Marcelo T 546
 				</p>
 			</div>
 		</div>
