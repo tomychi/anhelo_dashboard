@@ -7,9 +7,11 @@ interface PedidoCardProps {
 	direccion: string;
 	demora: string;
 	monto: string;
+	isVisible: boolean;
+	index: number;
 }
 
-const pedidos: PedidoCardProps[] = [
+const pedidos: Omit<PedidoCardProps, "isVisible" | "index">[] = [
 	{
 		direccion: "Marcelo T. De Alvear 546",
 		demora: "17 minutos",
@@ -31,8 +33,15 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 	direccion,
 	demora,
 	monto,
+	isVisible,
+	index,
 }) => (
-	<div className="flex flex-row justify-between border border-red-main">
+	<div
+		className={`flex flex-row justify-between border border-red-main transition-transform duration-300 ease-in-out ${
+			isVisible ? "transform-none" : "transform -translate-y-full"
+		}`}
+		style={{ transitionDelay: `${index * 100}ms` }}
+	>
 		<div className="flex flex-col p-4">
 			<p className="uppercase mb-2 mt-2 bg-black font-black text-red-main font-antonio">
 				{direccion}
@@ -144,7 +153,7 @@ export const AnheloRiders: React.FC = () => {
 					<span>Pedidos por entregar ({pedidos.length})</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						className={`h-6 w-6 transform transition-transform ${
+						className={`h-6 w-6 transform transition-transform duration-300 ${
 							isListVisible ? "rotate-180" : ""
 						}`}
 						fill="none"
@@ -159,16 +168,21 @@ export const AnheloRiders: React.FC = () => {
 						/>
 					</svg>
 				</button>
-				{/* Card donde mapeamos los pedidos */}
-				{isListVisible &&
-					pedidos.map((pedido, index) => (
+				{/* Contenedor para la lista de pedidos con transición */}
+				<div
+					className={`transition-all duration-500 ease-in-out overflow-hidden ${
+						isListVisible ? "max-h-[1000px]" : "max-h-0"
+					}`}
+				>
+					{pedidos.map((pedido, index) => (
 						<PedidoCard
 							key={index}
-							direccion={pedido.direccion}
-							demora={pedido.demora}
-							monto={pedido.monto}
+							{...pedido}
+							isVisible={isListVisible}
+							index={index}
 						/>
 					))}
+				</div>
 			</div>
 		</div>
 	);
