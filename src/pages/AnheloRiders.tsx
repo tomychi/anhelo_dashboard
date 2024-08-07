@@ -58,10 +58,10 @@ export const AnheloRiders = () => {
 						</p>
 					</div>
 					<div className="flex flex-row">
-						<p className="uppercase p-2 bg-green-500 font-black text-black font-antonio">
+						<p className="uppercase p-2 flex items-center bg-green-500 font-black text-black font-antonio">
 							LLAMAR
 						</p>
-						<p className="uppercase p-2 bg-green-500 font-black text-black font-antonio">
+						<p className="uppercase p-2 flex items-center bg-green-500 font-black text-black font-antonio">
 							ENTREGAR
 						</p>
 					</div>
