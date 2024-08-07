@@ -94,6 +94,17 @@ const procesarDetallePedido = (
   }
 };
 
+const extractCoordinates = (url: string) => {
+  const regex = /maps\?q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+  const match = url.match(regex);
+  if (match) {
+    const lat = parseFloat(match[1]);
+    const lng = parseFloat(match[2]);
+    return [lat, lng];
+  }
+  return [0, 0]; // Valor predeterminado si no se encuentran coordenadas
+};
+
 const parsearMensajePedido = (
   mensaje: string,
   toppingsInfo: ProductStateProps[],
@@ -102,7 +113,7 @@ const parsearMensajePedido = (
 ) => {
   // Expresiones regulares para encontrar las secciones relevantes
   const datosVendedorRegex =
-    /Nombre:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Piso y número:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
+    /Nombre:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Ubicación:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
 
   // Buscar coincidencias en el mensaje
   const datosVendedorMatch = datosVendedorRegex.exec(mensaje);
@@ -115,7 +126,7 @@ const parsearMensajePedido = (
   const telefono = datosVendedor[1];
   const direccion = datosVendedor[3];
   const metodoPago = datosVendedor[6];
-  const piso = datosVendedor[4];
+  const ubicacion = datosVendedor[4];
   const referencias = datosVendedor[5];
 
   const detallePedidoRegex = /Aquí está el detalle de mi pedido:(.*)/s;
@@ -124,13 +135,14 @@ const parsearMensajePedido = (
   if (detallePedidoMatch && detallePedidoMatch[1]) {
     const detail = detallePedidoMatch[1].trim();
     procesarDetallePedido(detail, toppingsInfo, data, handleFormBurger);
+    const coordinates = extractCoordinates(ubicacion);
 
     return {
-      map: [0, 0] as [number, number],
+      map: coordinates as [number, number],
       telefono,
       direccion,
       metodoPago,
-      piso,
+      ubicacion,
       referencias,
       aclaraciones: '',
       envio: '',

@@ -22,7 +22,7 @@ export interface PedidoProps {
   total: number;
   referencias: string;
   id: string;
-  piso: string;
+  ubicacion: string;
   cadete: string;
   dislike: boolean;
   delay: boolean;

@@ -4,7 +4,7 @@ import { TiempoEditable } from '../../Card/TiempoEditable';
 
 interface CardComandaInfoProps {
   direccion: string;
-  piso: string;
+  ubicacion: string;
   referencias: string;
   telefono: string;
   metodoPago: string;
@@ -29,7 +29,7 @@ interface CardComandaInfoProps {
 
 export const CardComandaInfo = ({
   direccion,
-  piso,
+  ubicacion,
   referencias,
   telefono,
   metodoPago,
@@ -71,7 +71,7 @@ export const CardComandaInfo = ({
         {/* Mostrar el resto de la información solo si se hace clic en 'Ver más info' */}
         {mostrarInfoCompleta && (
           <div className="mt-4 mb-4 font-black text-white">
-            <p className="text-base">Piso: {piso}</p>
+            <p className="text-base">ubicacion: {ubicacion}</p>
             <p className="text-base">Referencias: {referencias}</p>
             <p className="text-base">
               TELEFONO:{' '}

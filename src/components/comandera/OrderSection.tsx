@@ -30,7 +30,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           total,
           referencias,
           id,
-          piso,
+          ubicacion,
           cadete,
           dislike,
           delay,
@@ -52,7 +52,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               detallePedido={detallePedido}
               elaborado={elaborado}
               referencias={referencias}
-              piso={piso}
+              ubicacion={ubicacion}
               fecha={fecha}
               cadete={cadete}
               tiempoElaborado={tiempoElaborado}

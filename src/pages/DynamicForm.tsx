@@ -15,7 +15,7 @@ export interface FormDataProps {
   telefono: string;
   envio: string;
   hora: string;
-  piso: string;
+  ubicacion: string;
   referencias: string;
   map: [number, number];
   cadete: string;
@@ -90,7 +90,7 @@ export const DynamicForm = () => {
     telefono: '',
     envio: '1500',
     hora: obtenerHoraActual(),
-    piso: '',
+    ubicacion: '',
     referencias: '',
     cadete: 'NO ASIGNADO',
   });
@@ -203,7 +203,7 @@ export const DynamicForm = () => {
       hora: obtenerHoraActual(),
       telefono: '',
       referencias: '',
-      piso: '',
+      ubicacion: '',
       cadete: 'NO ASIGNADO',
     });
 
@@ -359,16 +359,16 @@ export const DynamicForm = () => {
                         <input
                           className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
                           type="text"
-                          id="piso"
-                          name="piso"
-                          value={formData.piso}
+                          id="ubicacion"
+                          name="ubicacion"
+                          value={formData.ubicacion}
                           onChange={handleChange}
                         />
                         <label
-                          htmlFor="piso"
+                          htmlFor="ubicacion"
                           className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
                         >
-                          Piso:
+                          ubicacion:
                         </label>
                       </div>
                       <div className="relative z-0 mt-4 ">

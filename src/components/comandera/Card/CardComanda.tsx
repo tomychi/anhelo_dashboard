@@ -40,7 +40,7 @@ export const CardComanda = ({
   total,
   referencias,
   id,
-  piso,
+  ubicacion,
   cadete,
   dislike,
   delay,
@@ -67,7 +67,7 @@ export const CardComanda = ({
     total,
     referencias,
     id,
-    piso,
+    ubicacion,
     cadete,
     dislike,
     delay,
@@ -125,7 +125,7 @@ export const CardComanda = ({
 
       <CardComandaInfo
         direccion={direccion}
-        piso={piso}
+        ubicacion={ubicacion}
         referencias={referencias}
         telefono={telefono}
         metodoPago={metodoPago}
