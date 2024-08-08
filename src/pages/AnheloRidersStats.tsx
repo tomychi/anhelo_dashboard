@@ -67,7 +67,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-6  shadow-lg mb-6">
+				<div className="bg-black text-red-main p-4  shadow-lg mb-6">
 					<h2 className="text-2xl font-bold mb-4 uppercase">
 						Estadísticas Principales
 					</h2>
@@ -87,7 +87,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-6  shadow-lg mb-6">
+				<div className="bg-black text-red-main p-4  shadow-lg mb-6">
 					<h2 className="text-2xl font-bold mb-4 uppercase">
 						Resumen de Actividad
 					</h2>
@@ -103,7 +103,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-6  shadow-lg">
+				<div className="bg-black text-red-main p-4  ">
 					<h2 className="text-2xl font-bold mb-4 uppercase">
 						Desglose de Paga
 					</h2>
