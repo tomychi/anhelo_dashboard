@@ -107,11 +107,11 @@ export const AnheloRidersStats = () => {
 				</div>
 
 				{/* Resumen de la actividad */}
-				<div className="bg-black text-red-main   shadow-lg mb-4">
+				<div className="bg-black text-red-main mb-4">
 					<div className="flex flex-row items-center gap-2 ">
-						<div className="flex flex-row items-baseline gap-1 pl-4">
-							<div className="bg-red-main h-0.5 flex-grow" />
-							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
+						<div className="bg-red-main h-0.5 flex-grow"></div>
+						<div className="flex flex-row items-baseline gap-1 py-4 pr-4">
+							<h2 className="text-2xl font-bold uppercase">
 								Resumen de la actividad
 							</h2>
 							<svg
@@ -122,7 +122,7 @@ export const AnheloRidersStats = () => {
 								strokeWidth="3"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="h-3 -rotate-90"
+								className="h-3 -rotate-90 ml-2"
 							>
 								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
