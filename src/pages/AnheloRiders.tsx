@@ -102,9 +102,9 @@ export const AnheloRiders: React.FC = () => {
 	};
 
 	return (
-		<div className="flex flex-col h-screen justify-between">
+		<div className="flex flex-col h-screen">
 			{/* Parte de la ganancia */}
-			<div className="bg-red-main flex flex-row justify-between p-4">
+			<div className="bg-slate-100 flex flex-row justify-between p-4 shadow-xl">
 				<div>
 					<div className="flex flex-row gap-2 items-baseline">
 						<p className="text-4xl font-black font-antonio">$7020</p>
@@ -141,11 +141,15 @@ export const AnheloRiders: React.FC = () => {
 				</div>
 			</div>
 			{/* Parte del mapa */}
-			<div>
-				<img src={mapa} alt="mapa" />
+			<div className="flex-grow relative">
+				<img
+					src={mapa}
+					alt="mapa"
+					className="absolute inset-0 w-full h-full object-cover"
+				/>
 			</div>
 			{/* Parte de pedidos */}
-			<div className="">
+			<div className="overflow-y-auto max-h-[40vh]">
 				{/* Pedidos por entregar */}
 				<div className="flex flex-col">
 					<button
