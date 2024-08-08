@@ -104,7 +104,7 @@ export const AnheloRiders: React.FC = () => {
 	return (
 		<div className="flex flex-col h-screen">
 			{/* Parte de la ganancia */}
-			<div className="bg-slate-100 flex flex-row justify-between p-4 shadow-xl">
+			<div className="bg-red-main flex flex-row justify-between p-4 shadow-xl">
 				<div>
 					<div className="flex flex-row gap-2 items-baseline">
 						<p className="text-4xl font-black font-antonio">$7020</p>
