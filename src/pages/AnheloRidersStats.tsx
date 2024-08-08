@@ -107,11 +107,28 @@ export const AnheloRidersStats = () => {
 				</div>
 
 				{/* Resumen de la actividad */}
-				<div className="bg-black text-red-main p-4  shadow-lg mb-4">
-					<h2 className="text-2xl font-bold mb-4 uppercase">
-						Resumen de Actividad
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div className="bg-black text-red-main   shadow-lg mb-4">
+					<div className="flex flex-row items-center gap-2 ">
+						<div className="flex flex-row items-baseline gap-1 pl-4">
+							<div className="bg-red-main h-0.5 flex-grow" />
+							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
+								Resumen de la actividad
+							</h2>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-3 -rotate-90"
+							>
+								<path d="M20 4L4 20M4 4v16h16" />
+							</svg>
+						</div>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 px-4 pb-4 gap-4">
 						<div>
 							<p className="text-sm uppercase">Km recorridos</p>
 							<p className="text-xl font-bold">42 kms = $8000</p>
