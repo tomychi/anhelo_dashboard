@@ -102,7 +102,7 @@ export const AnheloRiders: React.FC = () => {
 	};
 
 	return (
-		<div className="flex flex-col justify-between">
+		<div className="flex flex-col h-screen justify-between">
 			{/* Parte de la ganancia */}
 			<div className="bg-red-main flex flex-row justify-between p-4">
 				<div>
