@@ -42,6 +42,7 @@ export const AnheloRidersStats = () => {
 				</NavLink>
 
 				<h1 className="text-6xl font-black mb-4 text-center">NIVEL 2</h1>
+				<p>Capaz de sacar 4 pedidos sin descuidar la entrega</p>
 
 				<div className="bg-white text-black p-6  shadow-lg mb-6">
 					<h2 className="text-2xl font-bold mb-4">Estadísticas Principales</h2>
