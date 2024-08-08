@@ -1,13 +1,26 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export const AnheloRidersStats = () => {
+	const navigate = useNavigate();
+	const [isArrowRotated, setIsArrowRotated] = useState(false);
+
+	const handleVolverClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		setIsArrowRotated(true);
+		setTimeout(() => {
+			setIsArrowRotated(false);
+			navigate("/anheloriders");
+		}, 500);
+	};
+
 	return (
 		<div className="bg-red-main min-h-screen text-black font-antonio">
 			<div className="container mx-auto p-4">
 				<NavLink
 					to="/anheloriders"
 					className="flex items-center mb-6 text-black"
+					onClick={handleVolverClick}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -15,7 +28,9 @@ export const AnheloRidersStats = () => {
 						viewBox="0 0 24 24"
 						strokeWidth="1.5"
 						stroke="currentColor"
-						className="w-6 h-6 transform rotate-180 mr-2"
+						className={`w-6 h-6 mr-2 transition-transform duration-500 ${
+							isArrowRotated ? "rotate-0" : "rotate-180"
+						}`}
 					>
 						<path
 							strokeLinecap="round"
