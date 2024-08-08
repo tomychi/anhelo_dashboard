@@ -131,7 +131,7 @@ export const AnheloRidersStats = () => {
 						onClick={toggleResumen}
 					>
 						<div className="bg-red-main h-0.5 flex-grow"></div>
-						<div className="flex flex-row items-baseline gap-1 py-4 pr-4">
+						<div className="flex flex-row items-baseline gap-1 p-4">
 							<h2 className="text-2xl font-bold uppercase">
 								Resumen de la actividad
 							</h2>
