@@ -11,7 +11,7 @@ interface PedidoCardProps {
 	index: number;
 }
 
-const pedidos: Omit<PedidoCardProps, "isVisible" | "index">[] = [
+const pedidosPorEntregar: Omit<PedidoCardProps, "isVisible" | "index">[] = [
 	{
 		direccion: "Marcelo T. De Alvear 546",
 		demora: "17 minutos",
@@ -20,12 +20,23 @@ const pedidos: Omit<PedidoCardProps, "isVisible" | "index">[] = [
 	{
 		direccion: "Av. Siempre Viva 742",
 		demora: "25 minutos",
-		monto: "PAGADO",
+		monto: "$15.500",
 	},
+];
+
+const pedidosEntregados: Omit<PedidoCardProps, "isVisible" | "index">[] = [
 	{
 		direccion: "Calle Falsa 123",
 		demora: "10 minutos",
-		monto: "$8.500",
+		monto: "PAGADO",
+	},
+];
+
+const pedidosCancelados: Omit<PedidoCardProps, "isVisible" | "index">[] = [
+	{
+		direccion: "Av. Rivadavia 1234",
+		demora: "30 minutos",
+		monto: "CANCELADO",
 	},
 ];
 
@@ -50,7 +61,9 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 				Demora: {demora}
 			</p>
 			<p className="text-red-main text-xs font-black font-antonio">
-				{monto === "PAGADO" ? "Cobrar: PAGADO" : `Cobrar: ${monto}`}
+				{monto === "PAGADO" || monto === "CANCELADO"
+					? `Cobrar: ${monto}`
+					: `Cobrar: ${monto}`}
 			</p>
 		</div>
 		<div className="flex flex-col justify-between">
@@ -95,11 +108,14 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 );
 
 export const AnheloRiders: React.FC = () => {
-	const [isListVisible, setIsListVisible] = useState(false);
+	const [isPorEntregarVisible, setIsPorEntregarVisible] = useState(false);
+	const [isEntregadosVisible, setIsEntregadosVisible] = useState(false);
+	const [isCanceladosVisible, setIsCanceladosVisible] = useState(false);
 
-	const toggleListVisibility = () => {
-		setIsListVisible(!isListVisible);
-	};
+	const togglePorEntregar = () =>
+		setIsPorEntregarVisible(!isPorEntregarVisible);
+	const toggleEntregados = () => setIsEntregadosVisible(!isEntregadosVisible);
+	const toggleCancelados = () => setIsCanceladosVisible(!isCanceladosVisible);
 
 	useEffect(() => {
 		const setVh = () => {
@@ -165,14 +181,14 @@ export const AnheloRiders: React.FC = () => {
 				{/* Pedidos por entregar */}
 				<div className="flex flex-col">
 					<button
-						onClick={toggleListVisibility}
+						onClick={togglePorEntregar}
 						className="uppercase bg-yellow-400 p-4 font-black font-antonio text-left flex justify-between items-center"
 					>
-						<span>Pedidos por entregar ({pedidos.length})</span>
+						<span>Pedidos por entregar ({pedidosPorEntregar.length})</span>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							className={`h-6 w-6 transform transition-transform duration-300 ${
-								isListVisible ? "rotate-180" : ""
+								isPorEntregarVisible ? "rotate-180" : ""
 							}`}
 							fill="none"
 							viewBox="0 0 24 24"
@@ -186,17 +202,16 @@ export const AnheloRiders: React.FC = () => {
 							/>
 						</svg>
 					</button>
-					{/* Contenedor para la lista de pedidos con transición */}
 					<div
 						className={`transition-all duration-500 ease-in-out overflow-hidden ${
-							isListVisible ? "max-h-[1000px]" : "max-h-0"
+							isPorEntregarVisible ? "max-h-[1000px]" : "max-h-0"
 						}`}
 					>
-						{pedidos.map((pedido, index) => (
+						{pedidosPorEntregar.map((pedido, index) => (
 							<PedidoCard
 								key={index}
 								{...pedido}
-								isVisible={isListVisible}
+								isVisible={isPorEntregarVisible}
 								index={index}
 							/>
 						))}
@@ -205,14 +220,14 @@ export const AnheloRiders: React.FC = () => {
 				{/* Pedidos entregados */}
 				<div className="flex flex-col">
 					<button
-						onClick={toggleListVisibility}
+						onClick={toggleEntregados}
 						className="uppercase bg-green-500 p-4 font-black font-antonio text-left flex justify-between items-center"
 					>
-						<span>Pedidos entregados ({pedidos.length})</span>
+						<span>Pedidos entregados ({pedidosEntregados.length})</span>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							className={`h-6 w-6 transform transition-transform duration-300 ${
-								isListVisible ? "rotate-180" : ""
+								isEntregadosVisible ? "rotate-180" : ""
 							}`}
 							fill="none"
 							viewBox="0 0 24 24"
@@ -226,17 +241,16 @@ export const AnheloRiders: React.FC = () => {
 							/>
 						</svg>
 					</button>
-					{/* Contenedor para la lista de pedidos con transición */}
 					<div
 						className={`transition-all duration-500 ease-in-out overflow-hidden ${
-							isListVisible ? "max-h-[1000px]" : "max-h-0"
+							isEntregadosVisible ? "max-h-[1000px]" : "max-h-0"
 						}`}
 					>
-						{pedidos.map((pedido, index) => (
+						{pedidosEntregados.map((pedido, index) => (
 							<PedidoCard
 								key={index}
 								{...pedido}
-								isVisible={isListVisible}
+								isVisible={isEntregadosVisible}
 								index={index}
 							/>
 						))}
@@ -245,14 +259,14 @@ export const AnheloRiders: React.FC = () => {
 				{/* Pedidos cancelados */}
 				<div className="flex flex-col">
 					<button
-						onClick={toggleListVisibility}
+						onClick={toggleCancelados}
 						className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
 					>
-						<span>Pedidos cancelados ({pedidos.length})</span>
+						<span>Pedidos cancelados ({pedidosCancelados.length})</span>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							className={`h-6 w-6 transform transition-transform duration-300 ${
-								isListVisible ? "rotate-180" : ""
+								isCanceladosVisible ? "rotate-180" : ""
 							}`}
 							fill="none"
 							viewBox="0 0 24 24"
@@ -266,17 +280,16 @@ export const AnheloRiders: React.FC = () => {
 							/>
 						</svg>
 					</button>
-					{/* Contenedor para la lista de pedidos con transición */}
 					<div
 						className={`transition-all duration-500 ease-in-out overflow-hidden ${
-							isListVisible ? "max-h-[1000px]" : "max-h-0"
+							isCanceladosVisible ? "max-h-[1000px]" : "max-h-0"
 						}`}
 					>
-						{pedidos.map((pedido, index) => (
+						{pedidosCancelados.map((pedido, index) => (
 							<PedidoCard
 								key={index}
 								{...pedido}
-								isVisible={isListVisible}
+								isVisible={isCanceladosVisible}
 								index={index}
 							/>
 						))}
