@@ -81,7 +81,6 @@ export const AnheloRidersStats = () => {
 						<p className="text-xl font-bold mt-2">
 							TOTAL DE LA VUELTA: $10.060
 						</p>
-						<p className="text-lg">CADA VIAJE: $2.012</p>
 					</div>
 				</div>
 			</div>

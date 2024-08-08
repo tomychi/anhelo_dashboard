@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import mapa from "../assets/mapa.png";
 import logo from "../assets/anheloTMblack.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 // Define el tipo para las propiedades del componente PedidoCard
 interface PedidoCardProps {
@@ -109,14 +109,25 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 );
 
 export const AnheloRiders: React.FC = () => {
+	const navigate = useNavigate();
 	const [isPorEntregarVisible, setIsPorEntregarVisible] = useState(false);
 	const [isEntregadosVisible, setIsEntregadosVisible] = useState(false);
 	const [isCanceladosVisible, setIsCanceladosVisible] = useState(false);
+	const [isArrowRotated, setIsArrowRotated] = useState(false);
 
 	const togglePorEntregar = () =>
 		setIsPorEntregarVisible(!isPorEntregarVisible);
 	const toggleEntregados = () => setIsEntregadosVisible(!isEntregadosVisible);
 	const toggleCancelados = () => setIsCanceladosVisible(!isCanceladosVisible);
+
+	const handleVerDetallesClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		setIsArrowRotated(true);
+		setTimeout(() => {
+			setIsArrowRotated(false);
+			navigate("/anheloriders_stats");
+		}, 500);
+	};
 
 	useEffect(() => {
 		const setVh = () => {
@@ -147,14 +158,20 @@ export const AnheloRiders: React.FC = () => {
 					</div>
 				</div>
 				<div className="flex flex-col justify-between">
-					<NavLink to="/anheloriders_stats" className="flex flex-col items-end">
+					<NavLink
+						to="/anheloriders_stats"
+						className="flex flex-col items-end"
+						onClick={handleVerDetallesClick}
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
 							strokeWidth="1.5"
 							stroke="currentColor"
-							className="w-6"
+							className={`w-6 transition-transform duration-500 ${
+								isArrowRotated ? "rotate-180" : ""
+							}`}
 						>
 							<path
 								strokeLinecap="round"
