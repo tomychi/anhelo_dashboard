@@ -37,7 +37,7 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 	index,
 }) => (
 	<div
-		className={`flex flex-row justify-between border border-red-main transition-transform duration-300 ease-in-out ${
+		className={`flex flex-row justify-between border-b border-b-red-main transition-transform duration-300 ease-in-out ${
 			isVisible ? "transform-none" : "transform -translate-y-full"
 		}`}
 		style={{ transitionDelay: `${index * 100}ms` }}
