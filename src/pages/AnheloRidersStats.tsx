@@ -41,7 +41,7 @@ export const AnheloRidersStats = () => {
 					<span className="text-sm font-black uppercase">Volver</span>
 				</NavLink>
 
-				<div className="flex flex-col  mb-8">
+				<div className="flex flex-col  mb-10">
 					<h1 className="text-6xl font-black">NIVEL 2:</h1>
 
 					<p>
