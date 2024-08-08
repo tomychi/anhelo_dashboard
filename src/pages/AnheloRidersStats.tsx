@@ -73,14 +73,14 @@ export const AnheloRidersStats = () => {
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
-								fill="currentColor"
-								className="h-4"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-3"
 							>
-								<path
-									fill-rule="evenodd"
-									d="M20.03 3.97a.75.75 0 0 1 0 1.06L6.31 18.75h9.44a.75.75 0 0 1 0 1.5H4.5a.75.75 0 0 1-.75-.75V8.25a.75.75 0 0 1 1.5 0v9.44L18.97 3.97a.75.75 0 0 1 1.06 0Z"
-									clip-rule="evenodd"
-								/>
+								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
 
 							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
