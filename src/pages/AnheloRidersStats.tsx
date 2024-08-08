@@ -122,7 +122,7 @@ export const AnheloRidersStats = () => {
 								strokeWidth="3"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="h-3 -rotate-90 ml-2"
+								className="h-3 -rotate-90 "
 							>
 								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
