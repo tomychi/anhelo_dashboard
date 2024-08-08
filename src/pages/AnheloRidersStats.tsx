@@ -67,7 +67,8 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main   shadow-lg mb-6">
+				{/* Estadisticas principales */}
+				<div className="bg-black text-red-main   mb-4">
 					<div className="flex flex-row items-center gap-2 ">
 						<div className="flex flex-row items-baseline gap-1 pl-4">
 							<svg
@@ -105,7 +106,8 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-4  shadow-lg mb-6">
+				{/* Resumen de la actividad */}
+				<div className="bg-black text-red-main p-4  shadow-lg mb-4">
 					<h2 className="text-2xl font-bold mb-4 uppercase">
 						Resumen de Actividad
 					</h2>
@@ -121,29 +123,50 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-4  ">
-					<h2 className="text-2xl font-bold mb-4 uppercase">
-						Desglose de Paga
-					</h2>
-					{[1, 2, 3, 4, 5].map((pedido) => (
-						<div key={pedido} className="mb-4 last:mb-0">
-							<h3 className="text-xl font-bold mb-2">Pedido {pedido}</h3>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-								{pedido === 1 && (
-									<p>Punto de Retiro: $1000 (Por ser en días pico)</p>
-								)}
-								<p>
-									Km al Pedido {pedido}: ${pedido * 200} ({pedido} km)
-								</p>
-								<p>Punto de Entrega: $1000</p>
-							</div>
+				{/* Desglose de la paga */}
+				<div className="bg-black text-red-main   ">
+					<div className="flex flex-row items-center gap-2 ">
+						<div className="flex flex-row items-baseline gap-1 pl-4">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-3"
+							>
+								<path d="M20 4L4 20M4 4v16h16" />
+							</svg>
+
+							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
+								Desglose de la paga
+							</h2>
 						</div>
-					))}
-					<div className="mt-4 pt-4 border-t border-gray-200">
-						<p>Km de vuelta al local: $1160 (5.8 km)</p>
-						<p className="text-xl font-bold mt-2">
-							TOTAL DE LA VUELTA: $10.060
-						</p>
+						<div className="bg-red-main h-0.5 flex-grow" />
+					</div>
+					<div className="px-4 pb-4">
+						{[1, 2, 3, 4, 5].map((pedido) => (
+							<div key={pedido} className="mb-4 last:mb-0">
+								<h3 className="text-xl font-bold mb-2">Pedido {pedido}</h3>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+									{pedido === 1 && (
+										<p>Punto de Retiro: $1000 (Por ser en días pico)</p>
+									)}
+									<p>
+										Km al Pedido {pedido}: ${pedido * 200} ({pedido} km)
+									</p>
+									<p>Punto de Entrega: $1000</p>
+								</div>
+							</div>
+						))}
+						<div className="mt-4 pt-4 border-t border-gray-200">
+							<p>Km de vuelta al local: $1160 (5.8 km)</p>
+							<p className="text-xl font-bold mt-2">
+								TOTAL DE LA VUELTA: $10.060
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
