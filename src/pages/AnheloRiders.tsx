@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import mapa from "../assets/mapa.png";
 import logo from "../assets/anheloTMblack.png";
 
@@ -101,8 +101,20 @@ export const AnheloRiders: React.FC = () => {
 		setIsListVisible(!isListVisible);
 	};
 
+	useEffect(() => {
+		const setVh = () => {
+			let vh = window.innerHeight * 0.01;
+			document.documentElement.style.setProperty("--vh", `${vh}px`);
+		};
+
+		setVh();
+
+		window.addEventListener("resize", setVh);
+		return () => window.removeEventListener("resize", setVh);
+	}, []);
+
 	return (
-		<div className="flex flex-col h-screen">
+		<div className="flex flex-col h-screen h-[calc(var(--vh,1vh)*100)]">
 			{/* Parte de la ganancia */}
 			<div className="bg-red-main flex flex-row justify-between p-4 shadow-xl">
 				<div>
@@ -149,7 +161,7 @@ export const AnheloRiders: React.FC = () => {
 				/>
 			</div>
 			{/* Parte de pedidos */}
-			<div className="overflow-y-auto max-h-[40vh]">
+			<div className="overflow-y-auto max-h-[40vh] pb-safe">
 				{/* Pedidos por entregar */}
 				<div className="flex flex-col">
 					<button
