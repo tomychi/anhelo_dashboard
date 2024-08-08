@@ -67,7 +67,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-white text-black p-6  shadow-lg mb-6">
+				<div className="bg-black text-red-main p-6  shadow-lg mb-6">
 					<h2 className="text-2xl font-bold mb-4">Estadísticas Principales</h2>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div>
@@ -85,7 +85,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-white text-black p-6  shadow-lg mb-6">
+				<div className="bg-black text-red-main p-6  shadow-lg mb-6">
 					<h2 className="text-2xl font-bold mb-4">Resumen de Actividad</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
@@ -99,7 +99,7 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-white text-black p-6  shadow-lg">
+				<div className="bg-black text-red-main p-6  shadow-lg">
 					<h2 className="text-2xl font-bold mb-4">Desglose de Paga</h2>
 					{[1, 2, 3, 4, 5].map((pedido) => (
 						<div key={pedido} className="mb-4 last:mb-0">
