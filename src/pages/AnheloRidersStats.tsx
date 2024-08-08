@@ -67,11 +67,14 @@ export const AnheloRidersStats = () => {
 					</div>
 				</div>
 
-				<div className="bg-black text-red-main p-4  shadow-lg mb-6">
-					<h2 className="text-2xl font-bold mb-4 uppercase">
-						Estadísticas Principales
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div className="bg-black text-red-main   shadow-lg mb-6">
+					<div className="flex flex-row items-center gap-2 ">
+						<h2 className="text-2xl font-bold uppercase p-4">
+							Estadísticas Principales
+						</h2>
+						<div className="bg-red-main h-0.5 flex-grow" />
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
 						<div>
 							<p className="text-sm uppercase">Velocidad promedio</p>
 							<p className="text-xl font-bold">40 km/hr</p>
