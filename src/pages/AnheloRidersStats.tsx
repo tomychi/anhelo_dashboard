@@ -44,7 +44,9 @@ export const AnheloRidersStats = () => {
 				<div className="flex flex-col  mb-8">
 					<h1 className="text-6xl font-black">NIVEL 2:</h1>
 
-					<p>Capaz de sacar 4 pedidos por vuelta sin descuidar la entrega.</p>
+					<p>
+						Capaz de sacar máximo 4 pedidos por vuelta sin descuidar la entrega.
+					</p>
 					<div className="flex flex-row gap-4 border-2 mt-4 justify-between p-2">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +61,8 @@ export const AnheloRidersStats = () => {
 						</svg>
 
 						<p className="mt-2 text-white">
-							En el siguiente nivel se te habilitaran 5 pedidos por vuelta.
+							En el siguiente nivel se te habilitaran máximo 5 pedidos por
+							vuelta.
 						</p>
 					</div>
 				</div>
