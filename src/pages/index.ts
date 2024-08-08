@@ -18,3 +18,4 @@ export { Delivery } from "./Delivery";
 export { DynamicForm } from "./DynamicForm";
 
 export { AnheloRiders } from "./AnheloRiders";
+export { AnheloRidersStats } from "./AnheloRidersStats";
