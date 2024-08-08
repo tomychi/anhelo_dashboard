@@ -4,6 +4,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 export const AnheloRidersStats = () => {
 	const navigate = useNavigate();
 	const [isArrowRotated, setIsArrowRotated] = useState(false);
+	const [isEstadisticasVisible, setIsEstadisticasVisible] = useState(false); // Cambiado a false
+	const [isResumenVisible, setIsResumenVisible] = useState(false); // Cambiado a false
+	const [isDesgloseVisible, setIsDesgloseVisible] = useState(false); // Cambiado a false
 
 	const handleVolverClick = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -13,6 +16,11 @@ export const AnheloRidersStats = () => {
 			navigate("/anheloriders");
 		}, 500);
 	};
+
+	const toggleEstadisticas = () =>
+		setIsEstadisticasVisible(!isEstadisticasVisible);
+	const toggleResumen = () => setIsResumenVisible(!isResumenVisible);
+	const toggleDesglose = () => setIsDesgloseVisible(!isDesgloseVisible);
 
 	return (
 		<div className="bg-red-main min-h-screen text-black font-antonio">
@@ -41,7 +49,7 @@ export const AnheloRidersStats = () => {
 					<span className="text-sm font-black uppercase">Volver</span>
 				</NavLink>
 
-				<div className="flex flex-col  mb-10">
+				<div className="flex flex-col mb-10">
 					<h1 className="text-6xl font-black">NIVEL 2:</h1>
 
 					<p>
@@ -68,8 +76,11 @@ export const AnheloRidersStats = () => {
 				</div>
 
 				{/* Estadisticas principales */}
-				<div className="bg-black text-red-main   mb-4">
-					<div className="flex flex-row items-center gap-2 ">
+				<div className="bg-black text-red-main mb-4">
+					<div
+						className="flex flex-row items-center gap-2 cursor-pointer"
+						onClick={toggleEstadisticas}
+					>
 						<div className="flex flex-row items-baseline gap-1 pl-4">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -79,36 +90,46 @@ export const AnheloRidersStats = () => {
 								strokeWidth="3"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="h-3"
+								className={`h-3 transition-transform duration-300 ${
+									isEstadisticasVisible ? "rotate-180" : ""
+								}`}
 							>
 								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
-
 							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
 								Estadísticas Principales
 							</h2>
 						</div>
 						<div className="bg-red-main h-0.5 flex-grow" />
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
-						<div>
-							<p className="text-sm uppercase">Velocidad promedio</p>
-							<p className="text-xl font-bold">40 km/hr</p>
-						</div>
-						<div>
-							<p className="text-sm uppercase">Horas conectado promedio</p>
-							<p className="text-xl font-bold">3:32 hs</p>
-						</div>
-						<div>
-							<p className="text-sm uppercase">Paga promedio por hora</p>
-							<p className="text-xl font-bold">$8000</p>
+					<div
+						className={`transition-all duration-500 ease-in-out overflow-hidden ${
+							isEstadisticasVisible ? "max-h-[1000px]" : "max-h-0"
+						}`}
+					>
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
+							<div>
+								<p className="text-sm uppercase">Velocidad promedio</p>
+								<p className="text-xl font-bold">40 km/hr</p>
+							</div>
+							<div>
+								<p className="text-sm uppercase">Horas conectado promedio</p>
+								<p className="text-xl font-bold">3:32 hs</p>
+							</div>
+							<div>
+								<p className="text-sm uppercase">Paga promedio por hora</p>
+								<p className="text-xl font-bold">$8000</p>
+							</div>
 						</div>
 					</div>
 				</div>
 
 				{/* Resumen de la actividad */}
 				<div className="bg-black text-red-main mb-4">
-					<div className="flex flex-row items-center gap-2 ">
+					<div
+						className="flex flex-row items-center gap-2 cursor-pointer"
+						onClick={toggleResumen}
+					>
 						<div className="bg-red-main h-0.5 flex-grow"></div>
 						<div className="flex flex-row items-baseline gap-1 py-4 pr-4">
 							<h2 className="text-2xl font-bold uppercase">
@@ -122,27 +143,38 @@ export const AnheloRidersStats = () => {
 								strokeWidth="3"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="h-3 -rotate-90 "
+								className={`h-3 transition-transform duration-300 ${
+									isResumenVisible ? "rotate-90" : "-rotate-90"
+								}`}
 							>
 								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
 						</div>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 px-4 pb-4 gap-4">
-						<div>
-							<p className="text-sm uppercase">Km recorridos</p>
-							<p className="text-xl font-bold">42 kms = $8000</p>
-						</div>
-						<div>
-							<p className="text-sm uppercase">Puntos de entrega</p>
-							<p className="text-xl font-bold">21 = $21.000</p>
+					<div
+						className={`transition-all duration-500 ease-in-out overflow-hidden ${
+							isResumenVisible ? "max-h-[1000px]" : "max-h-0"
+						}`}
+					>
+						<div className="grid grid-cols-1 md:grid-cols-2 px-4 pb-4 gap-4">
+							<div>
+								<p className="text-sm uppercase">Km recorridos</p>
+								<p className="text-xl font-bold">42 kms = $8000</p>
+							</div>
+							<div>
+								<p className="text-sm uppercase">Puntos de entrega</p>
+								<p className="text-xl font-bold">21 = $21.000</p>
+							</div>
 						</div>
 					</div>
 				</div>
 
 				{/* Desglose de la paga */}
-				<div className="bg-black text-red-main   ">
-					<div className="flex flex-row items-center gap-2 ">
+				<div className="bg-black text-red-main">
+					<div
+						className="flex flex-row items-center gap-2 cursor-pointer"
+						onClick={toggleDesglose}
+					>
 						<div className="flex flex-row items-baseline gap-1 pl-4">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -152,36 +184,43 @@ export const AnheloRidersStats = () => {
 								strokeWidth="3"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								className="h-3"
+								className={`h-3 transition-transform duration-300 ${
+									isDesgloseVisible ? "rotate-180" : ""
+								}`}
 							>
 								<path d="M20 4L4 20M4 4v16h16" />
 							</svg>
-
 							<h2 className="text-2xl font-bold uppercase pr-4 py-4">
 								Desglose de la paga
 							</h2>
 						</div>
 						<div className="bg-red-main h-0.5 flex-grow" />
 					</div>
-					<div className="px-4 pb-4">
-						{[1, 2, 3, 4, 5].map((pedido) => (
-							<div key={pedido} className="mb-4 last:mb-0">
-								<h3 className="text-xl font-bold mb-2">Pedido {pedido}</h3>
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-									{pedido === 1 && (
-										<p>Punto de Retiro: $1000 (Por ser en días pico)</p>
-									)}
-									<p>
-										Km al Pedido {pedido}: ${pedido * 200} ({pedido} km)
-									</p>
-									<p>Punto de Entrega: $1000</p>
+					<div
+						className={`transition-all duration-500 ease-in-out overflow-hidden ${
+							isDesgloseVisible ? "max-h-[1000px]" : "max-h-0"
+						}`}
+					>
+						<div className="px-4 pb-4">
+							{[1, 2, 3, 4, 5].map((pedido) => (
+								<div key={pedido} className="mb-4 last:mb-0">
+									<h3 className="text-xl font-bold mb-2">Pedido {pedido}</h3>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+										{pedido === 1 && (
+											<p>Punto de Retiro: $1000 (Por ser en días pico)</p>
+										)}
+										<p>
+											Km al Pedido {pedido}: ${pedido * 200} ({pedido} km)
+										</p>
+										<p>Punto de Entrega: $1000</p>
+									</div>
 								</div>
-							</div>
-						))}
-						<p>Km de vuelta al local: $1160 (5.8 km)</p>
-						<p className="text-xl font-bold mt-2">
-							TOTAL DE LA VUELTA: $10.060
-						</p>
+							))}
+							<p>Km de vuelta al local: $1160 (5.8 km)</p>
+							<p className="text-xl font-bold mt-2">
+								TOTAL DE LA VUELTA: $10.060
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
