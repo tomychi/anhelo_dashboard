@@ -178,12 +178,10 @@ export const AnheloRidersStats = () => {
 								</div>
 							</div>
 						))}
-						<div className="mt-4 pt-4 border-t border-gray-200">
-							<p>Km de vuelta al local: $1160 (5.8 km)</p>
-							<p className="text-xl font-bold mt-2">
-								TOTAL DE LA VUELTA: $10.060
-							</p>
-						</div>
+						<p>Km de vuelta al local: $1160 (5.8 km)</p>
+						<p className="text-xl font-bold mt-2">
+							TOTAL DE LA VUELTA: $10.060
+						</p>
 					</div>
 				</div>
 			</div>
