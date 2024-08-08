@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import mapa from "../assets/mapa.png";
 import logo from "../assets/anheloTMblack.png";
+import { NavLink } from "react-router-dom";
 
 // Define el tipo para las propiedades del componente PedidoCard
 interface PedidoCardProps {
@@ -132,7 +133,7 @@ export const AnheloRiders: React.FC = () => {
 	return (
 		<div className="flex flex-col h-screen h-[calc(var(--vh,1vh)*100)]">
 			{/* Parte de la ganancia */}
-			<div className="bg-red-main flex flex-row justify-between p-4 shadow-xl">
+			<div className="bg-red-main flex flex-row justify-between p-4 ">
 				<div>
 					<div className="flex flex-row gap-2 items-baseline">
 						<p className="text-4xl font-black font-antonio">$7020</p>
@@ -146,7 +147,7 @@ export const AnheloRiders: React.FC = () => {
 					</div>
 				</div>
 				<div className="flex flex-col justify-between">
-					<div className="flex flex-col items-end">
+					<NavLink to="/anheloriders_stats" className="flex flex-col items-end">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -164,7 +165,7 @@ export const AnheloRiders: React.FC = () => {
 						<p className="text-xs font-black font-antonio uppercase">
 							ver detalles
 						</p>
-					</div>
+					</NavLink>
 					<img src={logo} alt="logo" className="h-4" />
 				</div>
 			</div>
