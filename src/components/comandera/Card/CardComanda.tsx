@@ -50,7 +50,6 @@ export const CardComanda = ({
   map,
   kms,
   minutosDistancia,
-  cadetes,
   vueltas,
 }: CardComandaProps) => {
   const comanda = {
@@ -145,7 +144,6 @@ export const CardComanda = ({
         cadete={cadete}
         fecha={fecha}
         id={id}
-        cadetes={cadetes}
       />
 
       <CardComdandaBody

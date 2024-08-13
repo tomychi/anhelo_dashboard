@@ -21,6 +21,24 @@ export interface VueltaInfo {
   fecha: string;
 }
 
+export const fetchCadetesNames = async () => {
+  const firestore = getFirestore();
+  const usersCollectionRef = collection(firestore, 'users');
+
+  // Hacer una consulta para obtener solo los usuarios con rol 'cadete'
+  const cadetesQuery = query(usersCollectionRef, where('rol', '==', 'cadete'));
+
+  try {
+    const querySnapshot = await getDocs(cadetesQuery);
+    const cadetesNames = querySnapshot.docs.map((doc) => doc.data().name);
+
+    return cadetesNames;
+  } catch (error) {
+    console.error('Error obteniendo los nombres de los cadetes:', error);
+    return [];
+  }
+};
+
 export const UploadVueltaCadete = async (
   ordersId: string[],
   cadete: string

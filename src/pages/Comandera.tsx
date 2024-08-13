@@ -1,28 +1,16 @@
 import { useEffect, useState } from 'react';
-import { ReadOrdersForToday } from '../firebase/ReadData';
-import { PedidoProps } from '../types/types';
 import { RootState } from '../redux/configureStore';
 import { useSelector, useDispatch } from 'react-redux';
-import { readOrdersData } from '../redux/data/dataAction';
 import { useLocation } from 'react-router-dom';
 import { GeneralStats, OrderList, Vueltas } from '../components/comandera';
 import { NavButtons } from '../components/comandera/NavButtons';
-import DeliveryMap from './DeliveryMap';
-import { buscarCoordenadas } from '../apis/getCoords';
-import { handleAddressSave } from '../firebase/UploadOrder';
 import CadeteSelect from '../components/Cadet/CadeteSelect';
-import {
-  EmpleadosProps,
-  readEmpleados,
-  RegistroProps,
-  obtenerRegistroActual,
-} from '../firebase/registroEmpleados';
-import {
-  obtenerFechaActual,
-  calcularDiferenciaHoraria,
-} from '../helpers/dateToday';
+import { EmpleadosProps, readEmpleados } from '../firebase/registroEmpleados';
+import { obtenerFechaActual } from '../helpers/dateToday';
 import { VueltaInfo, obtenerVueltasCadete } from '../firebase/Cadetes';
-import ScrollContainer from '../components/comandera/ScrollContainer';
+import { ReadOrdersForToday } from '../firebase/ReadData';
+import { PedidoProps } from '../types/types';
+import { readOrdersData } from '../redux/data/dataAction';
 
 function intercambiarDiaMes(fechaStr: string | Date): string {
   let fechaString: string;
@@ -56,8 +44,7 @@ export const Comandera = () => {
   const [cadetes, setCadetes] = useState<string[]>([]);
   const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
   const [vueltas, setVueltas] = useState<VueltaInfo[]>([]);
-  const [promediosPorViaje, setPromediosPorViaje] = useState<number[]>([]);
-  const [registro, setRegistro] = useState<RegistroProps[]>([]);
+  // const [registro, setRegistro] = useState<RegistroProps[]>([]);
 
   const { orders } = useSelector((state: RootState) => state.data);
   const { valueDate } = useSelector((state: RootState) => state.data);
@@ -79,7 +66,6 @@ export const Comandera = () => {
     (o) => o.elaborado && !o.entregado
   );
   const pedidosEntregados = filteredOrders.filter((o) => o.entregado);
-
   useEffect(() => {
     const obtenerCadetes = async () => {
       try {
@@ -88,6 +74,7 @@ export const Comandera = () => {
 
         const cadetesFiltrados = empleados
           .filter((empleado) => empleado.category === 'cadete')
+
           .map((empleado) => empleado.name);
         setCadetes(cadetesFiltrados);
       } catch (error) {
@@ -96,19 +83,8 @@ export const Comandera = () => {
     };
 
     obtenerCadetes();
-
     if (location.pathname === '/comandas') {
       const unsubscribe = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
-        const pedidosSinMap = pedidos.filter(
-          (pedido) => !pedido.map || pedido.map[0] === 0 || pedido.map[1] === 0
-        );
-
-        for (const pedido of pedidosSinMap) {
-          const coordenadas = await buscarCoordenadas(pedido.direccion);
-          if (coordenadas) {
-            await handleAddressSave(pedido.fecha, pedido.id, coordenadas);
-          }
-        }
         dispatch(readOrdersData(pedidos));
       });
 
@@ -118,63 +94,32 @@ export const Comandera = () => {
     }
   }, [dispatch, location]);
 
-  useEffect(() => {
-    const cargarRegistro = async () => {
-      try {
-        const datosRegistro = await obtenerRegistroActual();
-        setRegistro(datosRegistro);
-      } catch (error) {
-        console.error('Error al cargar el registro:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const cargarRegistro = async () => {
+  //     try {
+  //       const datosRegistro = await obtenerRegistroActual();
+  //       setRegistro(datosRegistro);
+  //     } catch (error) {
+  //       console.error('Error al cargar el registro:', error);
+  //     }
+  //   };
 
-    cargarRegistro();
-  }, []);
+  //   cargarRegistro();
+  // }, []);
 
-  const empleadoActivo = (empleadoNombre: string) => {
-    const empleado = registro.find(
-      (registroEmpleado) => registroEmpleado.nombreEmpleado === empleadoNombre
-    );
-    if (empleado) {
-      if (empleado.marcado) {
-        return { activo: true, horaSalida: null };
-      } else {
-        return { activo: false, horaSalida: empleado.horaSalida };
-      }
-    }
-    return { activo: false, horaSalida: null };
-  };
-
-  useEffect(() => {
-    const nuevosPromedios = vueltas
-      .map(({ horaSalida, horaLlegada, ordersId }) => {
-        if (horaSalida && horaLlegada && ordersId.length > 0) {
-          const diferenciaMinutos = calcularDiferenciaHoraria(
-            horaSalida,
-            horaLlegada
-          );
-          return diferenciaMinutos / ordersId.length;
-        }
-        return 0;
-      })
-      .filter((promedio) => promedio > 0);
-
-    setPromediosPorViaje(nuevosPromedios);
-  }, [vueltas]);
-
-  const calcularPromedioGeneral = () => {
-    if (promediosPorViaje.length === 0) return 'N/A';
-
-    const totalMinutos = promediosPorViaje.reduce(
-      (total, tiempo) => total + tiempo,
-      0
-    );
-    const promedioMinutos = totalMinutos / promediosPorViaje.length;
-    const horas = Math.floor(promedioMinutos / 60);
-    const minutos = Math.round(promedioMinutos % 60);
-
-    return `${horas} horas y ${minutos} minutos`;
-  };
+  // const empleadoActivo = (empleadoNombre: string) => {
+  //   const empleado = registro.find(
+  //     (registroEmpleado) => registroEmpleado.nombreEmpleado === empleadoNombre
+  //   );
+  //   if (empleado) {
+  //     if (empleado.marcado) {
+  //       return { activo: true, horaSalida: null };
+  //     } else {
+  //       return { activo: false, horaSalida: empleado.horaSalida };
+  //     }
+  //   }
+  //   return { activo: false, horaSalida: null };
+  // };
 
   const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadeteSeleccionado = event.target.value;
@@ -242,7 +187,7 @@ export const Comandera = () => {
     <div className="p-4 flex flex-col">
       <div className="flex flex-col gap-2">
         <div className="flex items-center flex-row overflow-hidden">
-          <ScrollContainer>
+          {/* <ScrollContainer>
             <div className="flex flex-row gap-4 text-xs">
               {empleados.map((empleado, index) => {
                 if (empleado.name === undefined) return;
@@ -294,7 +239,7 @@ export const Comandera = () => {
                 );
               })}
             </div>
-          </ScrollContainer>
+          </ScrollContainer> */}
         </div>
       </div>
       <CadeteSelect
@@ -332,7 +277,6 @@ export const Comandera = () => {
         sumaTotalPedidos={sumaTotalPedidos}
         sumaTotalEfectivo={sumaTotalEfectivo}
         empleados={empleados}
-        promedioTiempoEntrega={calcularPromedioGeneral()}
       />
       <NavButtons
         seccionActiva={seccionActiva}
@@ -346,22 +290,7 @@ export const Comandera = () => {
         cadetes={cadetes}
         vueltas={vueltas}
       />
-      <div className="mt-2">
-        {seccionActiva === 'mapa' &&
-          (location.pathname === '/comandas' ? (
-            <DeliveryMap
-              orders={[...pedidosHechos, ...pedidosPorHacer]}
-              selectedCadete={selectedCadete}
-              cadetes={cadetes}
-            />
-          ) : (
-            <DeliveryMap
-              orders={orders}
-              selectedCadete={selectedCadete}
-              cadetes={cadetes}
-            />
-          ))}
-      </div>
+
       <div>
         {seccionActiva === 'vueltas' && (
           <Vueltas
