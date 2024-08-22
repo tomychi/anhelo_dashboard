@@ -55,6 +55,9 @@ export const DeliveryMap = ({ orders }: MapsProps) => {
                 <p>
                   <strong>Hora:</strong> {order.hora}
                 </p>
+                <p>
+                  <strong>Total:</strong> ${order.total}
+                </p>
                 <SelectCadete
                   cadete={order.cadete}
                   fecha={order.fecha}
