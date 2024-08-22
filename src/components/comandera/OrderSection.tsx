@@ -1,17 +1,14 @@
-import { VueltaInfo } from '../../firebase/Cadetes';
 import { PedidoProps } from '../../types/types';
 import { CardComanda } from './Card/CardComanda';
 
 interface OrderSectionProps {
   orders: PedidoProps[];
   cadetes: string[];
-  vueltas: VueltaInfo[];
 }
 
 export const OrderSection: React.FC<OrderSectionProps> = ({
   orders,
   cadetes,
-  vueltas,
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -67,7 +64,6 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               minutosDistancia={minutosDistancia}
               envio={envio}
               cadetes={cadetes}
-              vueltas={vueltas}
             />
           </div>
         )

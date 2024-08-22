@@ -40,6 +40,16 @@ export const NavButtons = ({
         >
           Entregados
         </button>
+        <button
+          className={`p-2 ${
+            seccionActiva === 'mapa'
+              ? 'bg-custom-red'
+              : 'border-2 border-red-main text-custom-red'
+          } text-black font-black uppercase `}
+          onClick={() => setSeccionActiva('mapa')}
+        >
+          Mapa
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import { VueltaInfo } from '../../firebase/Cadetes';
 import { PedidoProps } from '../../types/types';
 import { OrderSection } from './OrderSection';
 
@@ -8,7 +7,6 @@ interface OrderListProps {
   pedidosHechos: PedidoProps[];
   pedidosEntregados: PedidoProps[];
   cadetes: string[];
-  vueltas: VueltaInfo[];
 }
 
 export const OrderList: React.FC<OrderListProps> = ({
@@ -17,29 +15,16 @@ export const OrderList: React.FC<OrderListProps> = ({
   pedidosHechos,
   pedidosEntregados,
   cadetes,
-  vueltas,
 }) => {
   return (
     <div>
       {seccionActiva === 'porHacer' ? (
-        <OrderSection
-          orders={pedidosPorHacer}
-          cadetes={cadetes}
-          vueltas={vueltas}
-        />
+        <OrderSection orders={pedidosPorHacer} cadetes={cadetes} />
       ) : seccionActiva === 'hechos' ? (
-        <OrderSection
-          orders={pedidosHechos}
-          cadetes={cadetes}
-          vueltas={vueltas}
-        />
+        <OrderSection orders={pedidosHechos} cadetes={cadetes} />
       ) : (
         seccionActiva === 'entregados' && (
-          <OrderSection
-            orders={pedidosEntregados}
-            cadetes={cadetes}
-            vueltas={vueltas}
-          />
+          <OrderSection orders={pedidosEntregados} cadetes={cadetes} />
         )
       )}
     </div>

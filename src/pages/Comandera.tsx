@@ -2,37 +2,14 @@ import { useEffect, useState } from 'react';
 import { RootState } from '../redux/configureStore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { GeneralStats, OrderList, Vueltas } from '../components/comandera';
+import { GeneralStats, OrderList } from '../components/comandera';
 import { NavButtons } from '../components/comandera/NavButtons';
 import CadeteSelect from '../components/Cadet/CadeteSelect';
 import { EmpleadosProps, readEmpleados } from '../firebase/registroEmpleados';
-import { obtenerFechaActual } from '../helpers/dateToday';
-import { VueltaInfo, obtenerVueltasCadete } from '../firebase/Cadetes';
 import { ReadOrdersForToday } from '../firebase/ReadData';
 import { PedidoProps } from '../types/types';
 import { readOrdersData } from '../redux/data/dataAction';
-
-function intercambiarDiaMes(fechaStr: string | Date): string {
-  let fechaString: string;
-
-  if (typeof fechaStr === 'string') {
-    fechaString = fechaStr;
-  } else if (fechaStr instanceof Date) {
-    const dia = String(fechaStr.getDate()).padStart(2, '0');
-    const mes = String(fechaStr.getMonth() + 1).padStart(2, '0');
-    const anio = fechaStr.getFullYear();
-    fechaString = `${dia}/${mes}/${anio}`;
-  } else {
-    throw new Error('El argumento debe ser una cadena o un objeto Date');
-  }
-
-  const [anio, mes, dia] = fechaString.split('-');
-  if (dia && mes && anio) {
-    return `${dia}/${mes}/${anio}`;
-  } else {
-    throw new Error('La fecha no tiene el formato esperado');
-  }
-}
+import { DeliveryMap } from '../components/maps/DeliveryMap';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
@@ -43,11 +20,9 @@ export const Comandera = () => {
 
   const [cadetes, setCadetes] = useState<string[]>([]);
   const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
-  const [vueltas, setVueltas] = useState<VueltaInfo[]>([]);
   // const [registro, setRegistro] = useState<RegistroProps[]>([]);
 
   const { orders } = useSelector((state: RootState) => state.data);
-  const { valueDate } = useSelector((state: RootState) => state.data);
 
   const location = useLocation();
 
@@ -126,30 +101,7 @@ export const Comandera = () => {
 
     if (nuevoCadeteSeleccionado === '') {
       setSelectedCadete(null);
-      setVueltas([]);
       return;
-    }
-
-    if (location.pathname === '/comandas') {
-      obtenerVueltasCadete(nuevoCadeteSeleccionado, obtenerFechaActual())
-        .then((vueltas) => {
-          setVueltas(vueltas);
-        })
-        .catch((error) => {
-          console.error('Error al obtener las vueltas del cadete:', error);
-        });
-    } else {
-      const fecha = valueDate?.endDate
-        ? intercambiarDiaMes(valueDate.endDate)
-        : obtenerFechaActual();
-
-      obtenerVueltasCadete(nuevoCadeteSeleccionado, fecha)
-        .then((vueltas) => {
-          setVueltas(vueltas);
-        })
-        .catch((error) => {
-          console.error('Error al obtener las vueltas del cadete:', error);
-        });
     }
 
     setSelectedCadete(nuevoCadeteSeleccionado);
@@ -243,12 +195,10 @@ export const Comandera = () => {
         </div>
       </div>
       <CadeteSelect
-        vueltas={vueltas}
         cadetes={cadetes}
         handleCadeteChange={handleCadeteChange}
         selectedCadete={selectedCadete}
         orders={pedidosHechos}
-        setVueltas={setVueltas}
       />
       {/* un boton para copiar todas las direcciones de orders y agruparlas por la fecha */}
 
@@ -288,17 +238,14 @@ export const Comandera = () => {
         pedidosHechos={pedidosHechos}
         pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
         cadetes={cadetes}
-        vueltas={vueltas}
       />
-
-      <div>
-        {seccionActiva === 'vueltas' && (
-          <Vueltas
-            cadete={selectedCadete}
-            vueltas={vueltas}
-            setVueltas={setVueltas}
-          />
-        )}
+      <div className="mt-2">
+        {seccionActiva === 'mapa' &&
+          (location.pathname === '/comandas' ? (
+            <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
+          ) : (
+            <DeliveryMap orders={orders} />
+          ))}
       </div>
     </div>
   );

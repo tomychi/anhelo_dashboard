@@ -8,7 +8,6 @@ import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
 import { useState } from 'react';
 import { Descuento } from '../../Card/Descuento';
 import { PedidoProps } from '../../../types/types';
-import { VueltaInfo } from '../../../firebase/Cadetes';
 
 const imprimirTicket = async (
   nuevoPedido: PedidoProps,
@@ -58,13 +57,11 @@ interface CardComandaFooterProps {
     email: string;
   };
   comanda: PedidoProps;
-  vueltas: VueltaInfo[];
 }
 
 export const CardComandaFooter = ({
   user,
   comanda,
-  vueltas,
 }: CardComandaFooterProps) => {
   const { elaborado, id, fecha, tiempoEntregado, hora } = comanda;
 
@@ -80,20 +77,6 @@ export const CardComandaFooter = ({
               <button
                 onClick={() => {
                   // si en la ultima vuelta no tiene la hora salida, no se puede entregar
-
-                  const ultimaVuelta = vueltas[vueltas.length - 1];
-                  if (
-                    vueltas.length === 0 ||
-                    ultimaVuelta.horaSalida === null ||
-                    ultimaVuelta.horaSalida === undefined
-                  ) {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: 'No se puede entregar el pedido sin una vuelta activa',
-                    });
-                    return;
-                  }
 
                   marcarPedidoComoEntregado(id, fecha)
                     .then(() => {

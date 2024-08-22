@@ -9,8 +9,6 @@ import { obtenerFechaActual } from '../helpers/dateToday';
 import { v4 as uuidv4 } from 'uuid';
 import { PedidoProps } from '../types/types';
 import { UploadAfip } from './afip';
-import { restaurantLocation } from '../data/restaurantLocation';
-import { obtenerDistanciaYMinuto } from '../apis/getCoords';
 
 // Agregar orderDetail a la colección 'pedidos'
 
@@ -291,51 +289,4 @@ export const updateTiempoElaboradoForOrder = (
         reject(error);
       });
   });
-};
-
-export const handleAddressSave = async (
-  fechaPedido: string,
-  pedidoId: string,
-  coords: [number, number]
-): Promise<void> => {
-  const firestore = getFirestore();
-
-  try {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
-    const pedidoDocRef = doc(pedidosCollectionRef, dia);
-
-    await runTransaction(firestore, async (transaction) => {
-      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
-      if (!pedidoDocSnapshot.exists()) {
-        throw new Error('El pedido no existe para la fecha especificada.');
-      }
-
-      const existingData = pedidoDocSnapshot.data();
-      const pedidosDelDia = existingData.pedidos || [];
-
-      const { kms, minutosDistancia } = await obtenerDistanciaYMinuto(
-        restaurantLocation,
-        coords
-      );
-
-      const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
-        if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return { ...pedido, map: coords, kms, minutosDistancia };
-        } else {
-          return pedido;
-        }
-      });
-
-      transaction.set(pedidoDocRef, {
-        ...existingData,
-        pedidos: pedidosActualizados,
-      });
-    });
-
-    console.log('Pedido actualizado correctamente en Firestore');
-  } catch (error) {
-    console.error('Error al manejar la dirección:', error);
-    throw error;
-  }
 };

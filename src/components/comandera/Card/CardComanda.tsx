@@ -19,11 +19,9 @@ import {
 import { useEffect, useState } from 'react';
 import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
 import { PedidoProps } from '../../../types/types';
-import { VueltaInfo } from '../../../firebase/Cadetes';
 
 interface CardComandaProps extends PedidoProps {
   cadetes: string[];
-  vueltas: VueltaInfo[];
 }
 
 export const CardComanda = ({
@@ -50,7 +48,6 @@ export const CardComanda = ({
   map,
   kms,
   minutosDistancia,
-  vueltas,
 }: CardComandaProps) => {
   const comanda = {
     aclaraciones,
@@ -151,7 +148,7 @@ export const CardComanda = ({
         detallePedido={detallePedido}
       />
 
-      <CardComandaFooter user={user} comanda={comanda} vueltas={vueltas} />
+      <CardComandaFooter user={user} comanda={comanda} />
     </div>
   );
 };
