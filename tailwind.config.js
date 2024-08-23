@@ -14,9 +14,22 @@ module.exports = {
 				"custom-red": "#FE0000",
 			},
 			fontFamily: {
+				coolvetica: ["Coolvetica", "sans-serif"],
+				"coolvetica-compressed": ["Coolvetica Compressed", "sans-serif"],
+				"coolvetica-condensed": ["Coolvetica Condensed", "sans-serif"],
+				"coolvetica-crammed": ["Coolvetica Crammed", "sans-serif"],
+				"coolvetica-ul": ["Coolvetica Ul", "sans-serif"],
 				oswald: ["Oswald", "sans-serif"],
 				antonio: ["Antonio", "sans-serif"],
 				kotch: ["Koch Fette Deutsche Schrift", "sans-serif"],
+			},
+			fontWeight: {
+				thin: "200",
+				light: "300",
+				normal: "400",
+				medium: "500",
+				bold: "700",
+				black: "900",
 			},
 			screens: {
 				random: "463px",

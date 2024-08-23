@@ -47,10 +47,10 @@ export const Login = () => {
 	};
 
 	const inputClass = `
-		block py-2.5 w-full border-0 border-b-2 border-black 
+		block px-4 h-12 w-full border-0 border-b-2 border-black 
 		appearance-none focus:outline-none focus:ring-0 peer
 		placeholder-gray-400 placeholder-opacity-100
-		bg-gray-100 text-black
+		bg-gray-100 text-black font-light 
 		autofill:bg-gray-100 autofill:text-black
 		focus:bg-gray-100 focus:text-black
 		hover:bg-gray-100 hover:text-black
@@ -58,7 +58,7 @@ export const Login = () => {
 
 	return (
 		<form
-			className="font-antonio w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center text-gray-100 font-black"
+			className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center text-gray-100 "
 			onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
 		>
 			{/* Logo */}
@@ -70,20 +70,20 @@ export const Login = () => {
 					style={{ filter: "invert(100%)", WebkitFilter: "invert(100%)" }}
 				/>
 				<div className="flex flex-row justify-end mt-[-13px]">
-					<p className="text-gray-100 text-xs">powered by</p>
+					<p className="text-gray-100 text-xs font-bold">powered by</p>
 					<div className="flex flex-row gap-1 items-center">
 						<img
 							src={absoluteLogo}
 							className="h-10 brightness-0 invert-[0.92] saturate-0 contrast-[0.92]"
 							alt=""
 						/>
-						<p className="text-gray-100">Absolute</p>
+						<p className="text-gray-100 font-bold">Absolute</p>
 					</div>
 				</div>
 			</div>
 			{/* Input del correo */}
 			<div className="mb-4 w-full mt-8">
-				<label className="block mb-2 text-gray-100 text-xs ">
+				<label className="block mb-2 text-gray-100 text-xs font-light ">
 					Bienvenido, por favor tu correo
 				</label>
 
@@ -117,9 +117,9 @@ export const Login = () => {
 			{/* Ingresar */}
 			<button
 				type="submit"
-				className="text-black w-full p-4 bg-gray-100 font-black uppercase outline-none"
+				className="text-black w-full p-4  h-12  bg-gray-100 font-bold   outline-none"
 			>
-				INGRESAR
+				<p className="mt-[-4px]">Ingresar</p>
 			</button>
 		</form>
 	);
