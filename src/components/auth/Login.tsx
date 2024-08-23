@@ -83,15 +83,11 @@ export const Login = () => {
 			</div>
 			{/* Input del correo */}
 			<div className="mb-4 w-full mt-8">
-				<label className="block mb-2 text-gray-100 text-xs font-light ">
-					Bienvenido, por favor tu correo
-				</label>
-
 				<input
 					className={inputClass}
 					style={inputStyle}
 					required
-					placeholder="name@gmail.com"
+					placeholder="Bienvenido, por favor tu correo"
 					type="email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
@@ -99,16 +95,12 @@ export const Login = () => {
 			</div>
 			{/* Input de la contraseña */}
 			<div className="mb-12 w-full">
-				<label className="block mb-2 text-xs font-light text-gray-100 ">
-					Y tu contraseña
-				</label>
-
 				<input
 					className={inputClass}
 					style={inputStyle}
 					required
 					type="password"
-					placeholder="password"
+					placeholder="Y tu contraseña"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
 				/>
