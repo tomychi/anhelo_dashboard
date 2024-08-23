@@ -159,11 +159,9 @@ export const Dashboard = () => {
 		<div className=" overflow-x-hidden font-coolvetica flex flex-col ">
 			<div className="flex flex-col p-4 bg-black justify-between">
 				<Calendar />
-				<p className="text-white text-5xl mt-8">Hola Tobias</p>
+				<p className="text-white text-5xl mt-8 mb-2">Hola Tobias</p>
 			</div>
-
 			{/* Aca los cards */}
-
 			<div className="flex flex-col  bg-gray-100 p-4 ">
 				<div className="flex flex-col  shadow-2xl shadow-black   md:flex-row ">
 					<CardInfo
@@ -299,7 +297,7 @@ export const Dashboard = () => {
 					))}
 				</div>
 			</div> */}
-			<div className="w-full flex flex-col ">
+			{/* <div className="w-full flex flex-col ">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black  uppercase ">
 						zonas de influencia
@@ -319,7 +317,7 @@ export const Dashboard = () => {
 						/>
 					</svg>
 				</div>
-			</div>
+			</div> */}
 		</div>
 	);
 };
