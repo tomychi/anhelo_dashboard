@@ -57,21 +57,23 @@ export const Sidebar = () => {
 	};
 
 	return (
-		<div className="flex flex-row h-14 bg-black w-full pl-2 pt-2 gap-2 justify-between">
+		<div className="flex flex-row h-14 bg-black w-full  pt-2 gap-2 justify-between px-4">
 			{/* EL logo */}
-			<NavLink to={"/"} className="flex flex-col items-center ">
+			<NavLink to={"/"} className="ml-[-3px] items-center ">
 				<img
 					src={Absolute}
-					className="h-12 p-1 mx-auto filter brightness-[400] saturate-0"
+					className="h-12 pt-1  filter brightness-[400] saturate-0"
 					alt="Absolute Logo"
 				/>
 			</NavLink>
 			{/* El resto */}
-			<div className="flex flex-row items-center">
+			<div className="flex flex-row gap-4 items-center">
 				<div className="bg-gray-100 rounded-md flex items-center px-2 h-9">
 					<p className="text-xs font-bold">Acción rapida</p>
 				</div>
-				<div>items</div>
+				<div className="bg-gray-100 rounded-md flex items-center px-2 h-9">
+					-
+				</div>
 				{/* <ul className="space-y-2 font-medium">
 					<li>
 						<NavLink
