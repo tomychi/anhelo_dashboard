@@ -57,18 +57,22 @@ export const Sidebar = () => {
 	};
 
 	return (
-		<div className="flex flex-row h-14 bg-black w-full pl-2 pt-2 gap-2">
-			<>
-				<NavLink to={"/"} className="flex flex-col items-center justify-center">
-					<img
-						src={Absolute}
-						className="h-12 p-1 mx-auto filter brightness-[400] saturate-0"
-						alt="Absolute Logo"
-					/>
-				</NavLink>
-			</>
-			<>
-				<ul className="space-y-2 font-medium">
+		<div className="flex flex-row h-14 bg-black w-full pl-2 pt-2 gap-2 justify-between">
+			{/* EL logo */}
+			<NavLink to={"/"} className="flex flex-col items-center ">
+				<img
+					src={Absolute}
+					className="h-12 p-1 mx-auto filter brightness-[400] saturate-0"
+					alt="Absolute Logo"
+				/>
+			</NavLink>
+			{/* El resto */}
+			<div className="flex flex-row items-center">
+				<div className="bg-gray-100 rounded-md flex items-center px-2 h-9">
+					<p className="text-xs font-bold">Acción rapida</p>
+				</div>
+				<div>items</div>
+				{/* <ul className="space-y-2 font-medium">
 					<li>
 						<NavLink
 							to={"/pedidos"}
@@ -104,26 +108,6 @@ export const Sidebar = () => {
 							</svg>
 						</NavLink>
 					</li>
-
-					{/* <li>
-							<NavLink
-								to="/delivery"
-								className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									className="w-5 h-5 text-black transition duration-75 text-black group-hover:text-black group-hover:text-custom-red"
-								>
-									<path
-										fillRule="evenodd"
-										d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-										clipRule="evenodd"
-									/>
-								</svg>
-							</NavLink>
-						</li> */}
 
 					<li>
 						<NavLink
@@ -261,9 +245,9 @@ export const Sidebar = () => {
 							</svg>
 						</NavLink>
 					</li>
-				</ul>
-			</>
-			<button
+				</ul> */}
+			</div>
+			{/* <button
 				onClick={() => recargarDatos()}
 				className="flex items-center p-2 text-black text-black hover:bg-black hover:bg-black group mt-auto"
 			>
@@ -279,7 +263,7 @@ export const Sidebar = () => {
 						clipRule="evenodd"
 					/>
 				</svg>
-			</button>
+			</button> */}
 		</div>
 	);
 };
