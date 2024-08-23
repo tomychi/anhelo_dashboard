@@ -43,17 +43,18 @@ export const Login = () => {
 
 	return (
 		<form
-			className="font-antonio  w-full p-4 md:p-0 md:w-1/3 mx-auto text-black font-black"
+			className="font-antonio  w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center  text-black font-black"
 			onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
 		>
-			<div className="flex flex-col ">
+			{/* Logo */}
+			<div className="flex flex-col w-3/4 ">
 				<img
 					src={Sticker}
-					className="w-3/4 mb-4 mx-auto"
+					className="w-full mb-4 mx-auto"
 					alt="Anhelo Logo"
 					style={{ filter: "invert(100%)", WebkitFilter: "invert(100%)" }}
 				/>
-				<div className="flex flex-row justify-center mt-[-13px]">
+				<div className="flex flex-row justify-end mt-[-13px]">
 					<p className="text-gray-100 text-xs">powered by</p>
 					<div className="flex flex-row gap-1 items-center">
 						<img
@@ -65,7 +66,8 @@ export const Login = () => {
 					</div>
 				</div>
 			</div>
-			<div className="mb-4 mt-8">
+			{/* Input del correo */}
+			<div className="mb-4 w-full mt-8">
 				<label className="block mb-2 text-gray-100 text-sm ">
 					Bienvenido, por favor tu correo
 				</label>
@@ -79,7 +81,8 @@ export const Login = () => {
 					onChange={(e) => setEmail(e.target.value)}
 				/>
 			</div>
-			<div className="mb-5">
+			{/* Input de la contraseña */}
+			<div className="mb-5 w-full">
 				<label className="block mb-2 text-sm text-gray-100 ">
 					Y tu contraseña
 				</label>
@@ -94,7 +97,7 @@ export const Login = () => {
 				/>
 			</div>
 			{error && <p>{errorMessage}</p>}
-
+			{/* Ingresar */}
 			<button
 				type="submit"
 				className=" text-black w-full p-4 bg-gray-100 font-black uppercase  outline-none"
