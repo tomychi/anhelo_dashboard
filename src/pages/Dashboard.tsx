@@ -156,126 +156,130 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className="p-4 overflow-x-hidden font-coolvetica flex flex-col gap-4">
-			<div className="flex flex-col  bg-black justify-between">
+		<div className=" overflow-x-hidden font-coolvetica flex flex-col gap-4">
+			<div className="flex flex-col p-4 bg-black justify-between">
 				<Calendar />
 				<p className="text-white text-5xl mt-8">Hola Tobias</p>
 			</div>
 
-			<div className="flex flex-col md:flex-row gap-4">
-				<CardInfo
-					info={currencyFormat(facturacionTotal)}
-					link={"bruto"}
-					title={"FACTURACIÓN BRUTA"}
-					svgComponent={<BrutoSVG />}
-				/>
+			{/* Aca los cards */}
 
-				<CardInfo
-					info={currencyFormat(neto)}
-					link={"neto"}
-					cuadrito={(neto * 100) / facturacionTotal}
-					title={"FACTURACION NETA *Estimado"}
-					svgComponent={<NetoSVG />}
-				/>
+			<div className="flex flex-col gap-4 bg-slate-700 p-4">
+				<div className="flex flex-col  md:flex-row gap-4">
+					<CardInfo
+						info={currencyFormat(facturacionTotal)}
+						link={"bruto"}
+						title={"FACTURACIÓN BRUTA"}
+						svgComponent={<BrutoSVG />}
+					/>
+
+					<CardInfo
+						info={currencyFormat(neto)}
+						link={"neto"}
+						cuadrito={(neto * 100) / facturacionTotal}
+						title={"FACTURACION NETA *Estimado"}
+						svgComponent={<NetoSVG />}
+					/>
+				</div>
+
+				<div className="flex flex-col md:flex-row gap-4">
+					<CardInfo
+						info={totalProductosVendidos}
+						link={"productosVendidos"}
+						title={"PRODUCTOS VENDIDOS"}
+						svgComponent={<ProductoVendidosSVG />}
+					/>
+					<CardInfo
+						info={orders.length}
+						link={"ventas"}
+						title={"VENTAS delivery"}
+						svgComponent={<VentasSVG />}
+					/>
+					<CardInfo
+						info="-"
+						link={"ventas"}
+						title={"VENTAS take away"}
+						svgComponent={<VentasSVG />}
+					/>
+				</div>
+				<div className="flex flex-col md:flex-row gap-4">
+					<CardInfo
+						info={`${Math.ceil(
+							orders.length > 0
+								? 100 - (contarPedidosDemorados(orders) * 100) / orders.length
+								: 0
+						)}%`}
+						title={"CLIENTES ATENDIDOS EXITOSAMENTE"}
+						svgComponent={<CustomerSuccessSVG />}
+					/>
+					<CardInfo
+						info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
+						title={"TIEMPO DE COCCIÓN PROMEDIO"}
+						svgComponent={<TiempoCoccionSVG />}
+					/>
+
+					<CardInfo
+						info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
+						title={"TIEMPO DE ENTREGA TOTAL PROMEDIO"}
+						svgComponent={<EntregaPromedioSVG />}
+					/>
+
+					<CardInfo
+						info={`${Math.round(calculateKMS(orders))} km`}
+						title={"KM RECORRIDOS"}
+						svgComponent={<TruckKM />}
+					/>
+				</div>
+				<div className="flex flex-col md:flex-row gap-4">
+					<CardInfo
+						info={customers.newCustomers.length}
+						link={"clientes"}
+						title={"NUEVOS CLIENTES"}
+						svgComponent={<NuevosClientesSVG />}
+					/>
+
+					<CardInfo
+						info={
+							orders.length > 0
+								? currencyFormat(facturacionTotal / orders.length)
+								: currencyFormat(0)
+						}
+						title={"TICKET PROMEDIO"}
+						svgComponent={<TicketPromedioSVG />}
+					/>
+				</div>
+
+				<div className="flex flex-col md:flex-row  gap-4">
+					<CardInfo
+						info={0}
+						title={"VISUALIZACIÓN LOCAL"}
+						svgComponent={<VisualizacionLocalSVG />}
+					/>
+					<CardInfo
+						info={0}
+						link="seguidores"
+						title={"NUEVOS SEGUIDORES"}
+						svgComponent={<NuevosSeguidoresSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"PROMEDIO DE LIKES"}
+						svgComponent={<PromedioLikesSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"PROMEDIO DE COMENTARIOS"}
+						svgComponent={<PromedioComentariosSVG />}
+					/>{" "}
+					<CardInfo
+						info={0}
+						title={"PROMEDIO DE COMPARTIDOS"}
+						svgComponent={<PromedioCompartidosSVG />}
+					/>
+				</div>
 			</div>
 
-			<div className="flex flex-col md:flex-row gap-4">
-				<CardInfo
-					info={totalProductosVendidos}
-					link={"productosVendidos"}
-					title={"PRODUCTOS VENDIDOS"}
-					svgComponent={<ProductoVendidosSVG />}
-				/>
-				<CardInfo
-					info={orders.length}
-					link={"ventas"}
-					title={"VENTAS delivery"}
-					svgComponent={<VentasSVG />}
-				/>
-				<CardInfo
-					info="-"
-					link={"ventas"}
-					title={"VENTAS take away"}
-					svgComponent={<VentasSVG />}
-				/>
-			</div>
-			<div className="flex flex-col md:flex-row gap-4">
-				<CardInfo
-					info={`${Math.ceil(
-						orders.length > 0
-							? 100 - (contarPedidosDemorados(orders) * 100) / orders.length
-							: 0
-					)}%`}
-					title={"CLIENTES ATENDIDOS EXITOSAMENTE"}
-					svgComponent={<CustomerSuccessSVG />}
-				/>
-				<CardInfo
-					info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
-					title={"TIEMPO DE COCCIÓN PROMEDIO"}
-					svgComponent={<TiempoCoccionSVG />}
-				/>
-
-				<CardInfo
-					info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
-					title={"TIEMPO DE ENTREGA TOTAL PROMEDIO"}
-					svgComponent={<EntregaPromedioSVG />}
-				/>
-
-				<CardInfo
-					info={`${Math.round(calculateKMS(orders))} km`}
-					title={"KM RECORRIDOS"}
-					svgComponent={<TruckKM />}
-				/>
-			</div>
-			<div className="flex flex-col md:flex-row gap-4">
-				<CardInfo
-					info={customers.newCustomers.length}
-					link={"clientes"}
-					title={"NUEVOS CLIENTES"}
-					svgComponent={<NuevosClientesSVG />}
-				/>
-
-				<CardInfo
-					info={
-						orders.length > 0
-							? currencyFormat(facturacionTotal / orders.length)
-							: currencyFormat(0)
-					}
-					title={"TICKET PROMEDIO"}
-					svgComponent={<TicketPromedioSVG />}
-				/>
-			</div>
-
-			<div className="flex flex-col md:flex-row  gap-4">
-				<CardInfo
-					info={0}
-					title={"VISUALIZACIÓN LOCAL"}
-					svgComponent={<VisualizacionLocalSVG />}
-				/>
-				<CardInfo
-					info={0}
-					link="seguidores"
-					title={"NUEVOS SEGUIDORES"}
-					svgComponent={<NuevosSeguidoresSVG />}
-				/>
-				<CardInfo
-					info={0}
-					title={"PROMEDIO DE LIKES"}
-					svgComponent={<PromedioLikesSVG />}
-				/>
-				<CardInfo
-					info={0}
-					title={"PROMEDIO DE COMENTARIOS"}
-					svgComponent={<PromedioComentariosSVG />}
-				/>{" "}
-				<CardInfo
-					info={0}
-					title={"PROMEDIO DE COMPARTIDOS"}
-					svgComponent={<PromedioCompartidosSVG />}
-				/>
-			</div>
-
-			<div className="flex w-full flex-col gap-4 ">
+			{/* <div className="flex w-full flex-col gap-4 ">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black   ">KPIs TRACKING</h1>
 					<svg
@@ -308,7 +312,7 @@ export const Dashboard = () => {
 						</div>
 					))}
 				</div>
-			</div>
+			</div> */}
 			<div className="w-full flex flex-col gap-4">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black  uppercase ">
