@@ -45,11 +45,11 @@ export const Dashboard = () => {
 
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative ">
-			<div className="bg-black p-4">
+			<div className="bg-black px-4 pb-4">
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola Tobias</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[147px]  bg-white rounded-lg shadow-2xl shadow-black ">
+			<div className="absolute left-4 right-4 top-[130px]  bg-white rounded-lg shadow-2xl shadow-black ">
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}

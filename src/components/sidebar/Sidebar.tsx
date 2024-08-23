@@ -57,12 +57,12 @@ export const Sidebar = () => {
 	};
 
 	return (
-		<div className="flex flex-row h-14 bg-black w-full  pt-2 gap-2 justify-between px-4">
+		<div className="flex flex-row  bg-black w-full  pt-4 pb-4 gap-2 justify-between px-4">
 			{/* EL logo */}
 			<NavLink to={"/"} className="ml-[-3px] items-center ">
 				<img
 					src={Absolute}
-					className="h-12 pt-1  filter brightness-[400] saturate-0"
+					className="h-10   filter brightness-[400] saturate-0"
 					alt="Absolute Logo"
 				/>
 			</NavLink>
