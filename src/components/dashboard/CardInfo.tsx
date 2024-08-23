@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import arrow from "../../assets/arrowIcon.png";
 
 interface CardInfoProps {
 	info: string | number;
@@ -33,13 +34,15 @@ export const CardInfo = ({
 				</div>
 			)}
 
-			<div className="absolute top-4 left-4 text-black ">
-				{/* Contenido principal */}
-				<div className="flex flex-col">{svgComponent}</div>
-				{/* Puedes cambiar el ícono según tus necesidades */}
+			<div className="flex flex-row items-center justify-between w-full">
+				{/* El titulo */}
+				<div className=" flex flex-col gap-1">
+					<p className="text-sm font-medium ">{title}</p>
+					<img src={arrow} className="h-2 w-1.5" alt="" />
+				</div>
+				{/* El numero */}
+				<p className="text-4xl font-medium ">{info}</p>
 			</div>
-			<p className="text-4xl pt-8 pb-4 font-bold mt-auto">{info}</p>
-			<p className="text-sm mt-auto uppercase">{title}</p>
 		</NavLink>
 	);
 };

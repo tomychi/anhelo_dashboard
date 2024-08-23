@@ -169,7 +169,7 @@ export const Dashboard = () => {
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
 						link={"bruto"}
-						title={"FACTURACIÓN BRUTA"}
+						title={"Facturación bruta"}
 						svgComponent={<BrutoSVG />}
 					/>
 
