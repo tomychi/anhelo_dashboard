@@ -19,12 +19,12 @@ export const CardInfo = ({
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100 text-black font-coolvetica border px-4 pt-2 pb-3  ${
+			className={`flex-1 bg-gray-100 text-black font-coolvetica  px-4 pt-2 pb-3 ${
 				!link && "cursor-default"
-			}`}
+			} ${title === "Facturación bruta" ? "rounded-t-md border-b" : " border"}`}
 		>
-			{/* Recuadro chiquito arriba a la derecha
-			{!isNaN(cuadrito as number) && cuadrito && (
+			{/* Recuadro chiquito arriba a la derecha */}
+			{/* {!isNaN(cuadrito as number) && cuadrito && (
 				<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 					{`${Math.ceil(
 						typeof cuadrito === "number"
