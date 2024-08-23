@@ -8,7 +8,6 @@ import {
 	setTelefonos,
 	setValueDate,
 } from "../redux/data/dataAction";
-import { formatDate } from "../helpers/dateToday";
 import {
 	ReadDataForDateRange,
 	readTelefonosFromFirebase,
