@@ -19,11 +19,11 @@ export const CardInfo = ({
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100  rounded-md  h-40 flex flex-col items-start text-black font-coolvetica font-black p-4 relative ${
+			className={`flex-1 bg-gray-100 text-black font-coolvetica  px-4 pt-2 pb-3  ${
 				!link && "cursor-default"
 			}`}
 		>
-			{/* Recuadro chiquito arriba a la derecha */}
+			{/* Recuadro chiquito arriba a la derecha
 			{!isNaN(cuadrito as number) && cuadrito && (
 				<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
 					{`${Math.ceil(
@@ -32,7 +32,7 @@ export const CardInfo = ({
 							: parseFloat(cuadrito as string)
 					)}%`}
 				</div>
-			)}
+			)} */}
 
 			<div className="flex flex-row items-center justify-between w-full">
 				{/* El titulo */}
