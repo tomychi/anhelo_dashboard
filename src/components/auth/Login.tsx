@@ -47,7 +47,7 @@ export const Login = () => {
 	};
 
 	const inputClass = `
-		block px-4 h-12 w-full border-0 border-b-2 border-black 
+		block px-4 h-12 w-full border-0 rounded-md border-b-2 border-black 
 		appearance-none focus:outline-none focus:ring-0 peer
 		placeholder-gray-400 placeholder-opacity-100
 		bg-gray-100 text-black font-light 
@@ -109,7 +109,7 @@ export const Login = () => {
 			{/* Ingresar */}
 			<button
 				type="submit"
-				className="text-black w-full p-4  h-12  bg-gray-100 font-bold   outline-none"
+				className="text-black w-full p-4  h-12 rounded-md bg-gray-100 font-bold   outline-none"
 			>
 				<p className="mt-[-4px]">Ingresar</p>
 			</button>
