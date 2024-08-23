@@ -53,9 +53,8 @@ export const Sidebar = () => {
 				<nav className="pl-2 pt-2 h-full overflow-y-auto">
 					<ul className="gap-4">
 						{[
-							{ to: "/pedidos", text: "Pedidos" },
+							{ to: "/pedidos", text: "Tomar pedidos" },
 							{ to: "/comandas", text: "Comandas" },
-							{ to: "/", text: "Dashboard" },
 							{ to: "/empleados", text: "Empleados" },
 							{ to: "/gastos", text: "Gastos" },
 							{ to: "/monthdata", text: "Datos Mensuales" },
