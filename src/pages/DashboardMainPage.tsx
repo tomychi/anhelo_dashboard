@@ -21,8 +21,8 @@ import RegistroEmpleado from "./Empleados";
 
 export const DashboardMainPage = () => {
 	return (
-		<div className="flex h-screen bg-gray-100 overflow-x-hidden">
-			{/* <Sidebar /> */}
+		<div className="flex h-screen flex flex-col bg-gray-100 overflow-x-hidden">
+			<Sidebar />
 			<div className="flex-grow overflow-y-auto">
 				<Routes>
 					{/* Agrega un comodín '*' a la ruta principal */}
