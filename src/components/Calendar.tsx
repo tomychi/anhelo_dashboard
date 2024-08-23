@@ -56,7 +56,7 @@ const Calendar = () => {
 			<style>
 				{`
           .react-tailwindcss-datepicker .react-tailwindcss-datepicker-input-container .react-tailwindcss-datepicker-input {
-            padding-left: 2.5rem !important;
+            padding-left: 2rem !important; /* pl-8 */
             font-size: 0.75rem !important; /* text-xs */
             font-family: 'Coolvetica', sans-serif !important;
             font-weight: 300 !important; /* font-light */
@@ -67,7 +67,7 @@ const Calendar = () => {
 				separator={"hasta"}
 				primaryColor={"red"}
 				showShortcuts={true}
-				inputClassName="w-full uppercase rounded-md border border-white focus:ring-0 font-coolvetica text-white p-4 bg-black text-xs font-light"
+				inputClassName="w-full uppercase rounded-md border border-white focus:ring-0 font-coolvetica text-white p-4 pl-10 bg-black text-xs font-light"
 				toggleClassName="absolute rounded-l-md font-antonio text-white font-black left-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
 				containerClassName="relative rounded-md font-antonio text-black font-black"
 				showFooter={true}
