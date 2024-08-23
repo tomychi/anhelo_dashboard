@@ -41,9 +41,24 @@ export const Login = () => {
 		}
 	};
 
+	const inputStyle = {
+		backgroundColor: "#f3f4f6",
+		color: "black",
+	};
+
+	const inputClass = `
+		block py-2.5 w-full border-0 border-b-2 border-black 
+		appearance-none focus:outline-none focus:ring-0 peer
+		placeholder-gray-400 placeholder-opacity-100
+		bg-gray-100 text-black
+		autofill:bg-gray-100 autofill:text-black
+		focus:bg-gray-100 focus:text-black
+		hover:bg-gray-100 hover:text-black
+	`;
+
 	return (
 		<form
-			className="font-antonio  w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center  text-black font-black"
+			className="font-antonio w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center text-gray-100 font-black"
 			onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
 		>
 			{/* Logo */}
@@ -68,12 +83,13 @@ export const Login = () => {
 			</div>
 			{/* Input del correo */}
 			<div className="mb-4 w-full mt-8">
-				<label className="block mb-2 text-gray-100 text-sm ">
+				<label className="block mb-2 text-gray-100 text-xs ">
 					Bienvenido, por favor tu correo
 				</label>
 
 				<input
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+					className={inputClass}
+					style={inputStyle}
 					required
 					placeholder="name@gmail.com"
 					type="email"
@@ -88,7 +104,8 @@ export const Login = () => {
 				</label>
 
 				<input
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none bg-gray-100 text-black focus:outline-none focus:ring-0 peer"
+					className={inputClass}
+					style={inputStyle}
 					required
 					type="password"
 					placeholder="password"
@@ -100,7 +117,7 @@ export const Login = () => {
 			{/* Ingresar */}
 			<button
 				type="submit"
-				className=" text-black w-full p-4 bg-gray-100 font-black uppercase  outline-none"
+				className="text-black w-full p-4 bg-gray-100 font-black uppercase outline-none"
 			>
 				INGRESAR
 			</button>
