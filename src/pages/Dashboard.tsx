@@ -50,7 +50,7 @@ export const Dashboard = () => {
 				<p className="text-white text-5xl mt-8 mb-4">Hola Tobias</p>
 			</div>
 			<div className="absolute left-4 right-4 top-[147px] bg-white rounded-lg shadow-2xl shadow-black ">
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
 						link={"bruto"}
