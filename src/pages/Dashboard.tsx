@@ -156,7 +156,7 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className=" overflow-x-hidden font-coolvetica flex flex-col gap-4">
+		<div className=" overflow-x-hidden font-coolvetica flex flex-col ">
 			<div className="flex flex-col p-4 bg-black justify-between">
 				<Calendar />
 				<p className="text-white text-5xl mt-8">Hola Tobias</p>
@@ -164,8 +164,8 @@ export const Dashboard = () => {
 
 			{/* Aca los cards */}
 
-			<div className="flex flex-col gap-4 bg-slate-700 p-4 ">
-				<div className="flex flex-col   md:flex-row gap-4">
+			<div className="flex flex-col  bg-slate-700 p-4 ">
+				<div className="flex flex-col   md:flex-row ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
 						link={"bruto"}
@@ -182,7 +182,7 @@ export const Dashboard = () => {
 					/>
 				</div>
 
-				<div className="flex flex-col md:flex-row gap-4">
+				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={totalProductosVendidos}
 						link={"productosVendidos"}
@@ -202,7 +202,7 @@ export const Dashboard = () => {
 						svgComponent={<VentasSVG />}
 					/>
 				</div>
-				<div className="flex flex-col md:flex-row gap-4">
+				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={`${Math.ceil(
 							orders.length > 0
@@ -230,7 +230,7 @@ export const Dashboard = () => {
 						svgComponent={<TruckKM />}
 					/>
 				</div>
-				<div className="flex flex-col md:flex-row gap-4">
+				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={customers.newCustomers.length}
 						link={"clientes"}
@@ -249,7 +249,7 @@ export const Dashboard = () => {
 					/>
 				</div>
 
-				<div className="flex flex-col md:flex-row  gap-4">
+				<div className="flex flex-col md:flex-row  ">
 					<CardInfo
 						info={0}
 						title={"VISUALIZACIÓN LOCAL"}
@@ -279,7 +279,7 @@ export const Dashboard = () => {
 				</div>
 			</div>
 
-			{/* <div className="flex w-full flex-col gap-4 ">
+			{/* <div className="flex w-full flex-col  ">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black   ">KPIs TRACKING</h1>
 					<svg
@@ -297,7 +297,7 @@ export const Dashboard = () => {
 						/>
 					</svg>
 				</div>
-				<div className="flex flex-col md:grid-cols-2 md:grid gap-4  w-full  ">
+				<div className="flex flex-col md:grid-cols-2 md:grid   w-full  ">
 					{[
 						dataBurgersSemana,
 						dataVentasSemana,
@@ -313,7 +313,7 @@ export const Dashboard = () => {
 					))}
 				</div>
 			</div> */}
-			<div className="w-full flex flex-col gap-4">
+			<div className="w-full flex flex-col ">
 				<div className="flex items-center   text-4xl">
 					<h1 className="text-custom-red font-black  uppercase ">
 						zonas de influencia
