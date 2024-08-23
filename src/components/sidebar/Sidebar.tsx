@@ -39,18 +39,9 @@ export const Sidebar = () => {
 				</div>
 			</div>
 
-			{/* Overlay oscuro */}
-			{isMenuOpen && (
-				<div
-					className="fixed inset-0 bg-black bg-opacity-50 z-[9999]"
-					style={{ top: navbarHeight }}
-					onClick={toggleMenu}
-				></div>
-			)}
-
 			{/* Menú desplegable */}
 			<div
-				className={`fixed left-0 w-full bg-gray-100 transition-all duration-300 ease-in-out shadow-lg ${
+				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out shadow-lg ${
 					isMenuOpen ? "z-[10000]" : "z-[-1]"
 				}`}
 				style={{
