@@ -94,7 +94,7 @@ export const Login = () => {
 				/>
 			</div>
 			{/* Input de la contraseña */}
-			<div className="mb-12 w-full">
+			<div className="mb-10 w-full">
 				<input
 					className={inputClass}
 					style={inputStyle}
