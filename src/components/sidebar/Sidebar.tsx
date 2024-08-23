@@ -42,7 +42,7 @@ export const Sidebar = () => {
 			{/* Overlay oscuro */}
 			{isMenuOpen && (
 				<div
-					className="fixed inset-0 bg-black bg-opacity-50 z-20"
+					className="fixed inset-0 bg-black bg-opacity-50 z-[9999]"
 					style={{ top: navbarHeight }}
 					onClick={toggleMenu}
 				></div>
@@ -50,15 +50,18 @@ export const Sidebar = () => {
 
 			{/* Menú desplegable */}
 			<div
-				className={`fixed left-0 w-full bg-gray-100 transition-all duration-300 ease-in-out z-20 shadow-lg`}
+				className={`fixed left-0 w-full bg-gray-100 transition-all duration-300 ease-in-out shadow-lg ${
+					isMenuOpen ? "z-[10000]" : "z-[-1]"
+				}`}
 				style={{
 					top: navbarHeight,
 					height: `calc(100vh - ${navbarHeight})`,
 					transform: isMenuOpen ? "translateY(0)" : "translateY(-100%)",
+					visibility: isMenuOpen ? "visible" : "hidden",
 				}}
 			>
-				<nav className="pl-2 pt-2 h-full">
-					<ul className=" gap-4">
+				<nav className="pl-2 pt-2 h-full overflow-y-auto">
+					<ul className="gap-4">
 						{[
 							{ to: "/pedidos", text: "Pedidos" },
 							{ to: "/comandas", text: "Comandas" },
