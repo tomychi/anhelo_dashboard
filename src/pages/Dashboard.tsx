@@ -156,14 +156,14 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className=" overflow-x-hidden font-coolvetica flex flex-col ">
+		<div className=" overflow-x-hidden font-coolvetica bg-gray-100 flex flex-col ">
 			<div className="flex flex-col p-4 bg-black justify-between">
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-2">Hola Tobias</p>
 			</div>
 			{/* Aca los cards */}
-			<div className="flex flex-col  bg-gray-100 p-4 ">
-				<div className="flex flex-col  shadow-2xl shadow-black   md:flex-row ">
+			<div className="flex flex-col  p-4 ">
+				<div className="flex flex-col  shadow-2xl shadow-black  md:flex-row ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
 						link={"bruto"}
