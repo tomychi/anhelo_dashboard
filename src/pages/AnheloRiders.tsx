@@ -55,20 +55,20 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 		style={{ transitionDelay: `${index * 100}ms` }}
 	>
 		<div className="flex flex-col p-4">
-			<p className="uppercase mb-2 mt-2 bg-black font-black text-red-main font-antonio">
+			<p className="uppercase mb-2 mt-2 bg-black font-black text-red-main font-coolvetica">
 				{direccion}
 			</p>
-			<p className="text-red-main text-xs font-black font-antonio">
+			<p className="text-red-main text-xs font-black font-coolvetica">
 				Demora: {demora}
 			</p>
-			<p className="text-red-main text-xs font-black font-antonio">
+			<p className="text-red-main text-xs font-black font-coolvetica">
 				{monto === "PAGADO" || monto === "CANCELADO"
 					? `Cobrar: ${monto}`
 					: `Cobrar: ${monto}`}
 			</p>
 		</div>
 		<div className="flex flex-col justify-between">
-			<div className="uppercase p-2 flex flex-row items-center h-1/2 bg-white font-black justify-center text-black font-antonio gap-2">
+			<div className="uppercase p-2 flex flex-row items-center h-1/2 bg-white font-black justify-center text-black font-coolvetica gap-2">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
@@ -86,7 +86,7 @@ const PedidoCard: React.FC<PedidoCardProps> = ({
 
 				<p>LLAMAR</p>
 			</div>
-			<div className="uppercase p-2 flex flex-row items-center h-1/2 bg-green-500 font-black justify-center text-black font-antonio gap-2">
+			<div className="uppercase p-2 flex flex-row items-center h-1/2 bg-green-500 font-black justify-center text-black font-coolvetica gap-2">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
@@ -147,14 +147,16 @@ export const AnheloRiders: React.FC = () => {
 			<div className="bg-red-main flex flex-row justify-between p-4 ">
 				<div>
 					<div className="flex flex-row gap-2 items-baseline">
-						<p className="text-4xl font-black font-antonio">$7020</p>
-						<p className="text-xs font-black font-antonio uppercase">
+						<p className="text-4xl font-black font-coolvetica">$7020</p>
+						<p className="text-xs font-black font-coolvetica uppercase">
 							ganancia
 						</p>
 					</div>
 					<div className="flex flex-row gap-2 items-baseline">
-						<p className="text-4xl font-black font-antonio">$280</p>
-						<p className="text-xs font-black font-antonio uppercase">propina</p>
+						<p className="text-4xl font-black font-coolvetica">$280</p>
+						<p className="text-xs font-black font-coolvetica uppercase">
+							propina
+						</p>
 					</div>
 				</div>
 				<div className="flex flex-col justify-between">
@@ -179,7 +181,7 @@ export const AnheloRiders: React.FC = () => {
 								d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
 							/>
 						</svg>
-						<p className="text-xs font-black font-antonio uppercase">
+						<p className="text-xs font-black font-coolvetica uppercase">
 							ver detalles
 						</p>
 					</NavLink>
@@ -200,7 +202,7 @@ export const AnheloRiders: React.FC = () => {
 				<div className="flex flex-col">
 					<button
 						onClick={togglePorEntregar}
-						className="uppercase bg-yellow-400 p-4 font-black font-antonio text-left flex justify-between items-center"
+						className="uppercase bg-yellow-400 p-4 font-black font-coolvetica text-left flex justify-between items-center"
 					>
 						<span>Pedidos por entregar ({pedidosPorEntregar.length})</span>
 						<svg
@@ -239,7 +241,7 @@ export const AnheloRiders: React.FC = () => {
 				<div className="flex flex-col">
 					<button
 						onClick={toggleEntregados}
-						className="uppercase bg-green-500 p-4 font-black font-antonio text-left flex justify-between items-center"
+						className="uppercase bg-green-500 p-4 font-black font-coolvetica text-left flex justify-between items-center"
 					>
 						<span>Pedidos entregados ({pedidosEntregados.length})</span>
 						<svg
@@ -278,7 +280,7 @@ export const AnheloRiders: React.FC = () => {
 				<div className="flex flex-col">
 					<button
 						onClick={toggleCancelados}
-						className="uppercase bg-red-main p-4 font-black font-antonio text-left flex justify-between items-center"
+						className="uppercase bg-red-main p-4 font-black font-coolvetica text-left flex justify-between items-center"
 					>
 						<span>Pedidos cancelados ({pedidosCancelados.length})</span>
 						<svg

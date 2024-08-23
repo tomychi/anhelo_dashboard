@@ -30,7 +30,7 @@ export const CartShop = ({
 	};
 
 	return (
-		<div className="flex flex-col w-full font-antonio justify-center bg-custom-red">
+		<div className="flex flex-col w-full font-coolvetica justify-center bg-custom-red">
 			{/* Generador de Vouchers
 			<div className="bg-white p-4 mb-4 rounded shadow">
 				<h3 className="text-xl font-bold mb-2">

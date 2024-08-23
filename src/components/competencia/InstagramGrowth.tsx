@@ -1,37 +1,37 @@
-import { useEffect, useState } from 'react';
-import LineChart, { FakeDatabase } from '../LineChart';
+import { useEffect, useState } from "react";
+import LineChart, { FakeDatabase } from "../LineChart";
 import {
-  fetchAllInstagramData,
-  transformData,
-} from '../../firebase/InstagramData';
+	fetchAllInstagramData,
+	transformData,
+} from "../../firebase/InstagramData";
 
 export const InstagramGrowth: React.FC = () => {
-  const [data, setData] = useState<FakeDatabase | null>(null);
+	const [data, setData] = useState<FakeDatabase | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const rawData = await fetchAllInstagramData();
-        const transformedData = transformData(rawData);
-        setData(transformedData);
-      } catch (error) {
-        console.error('Error al obtener los datos:', error);
-      }
-    };
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const rawData = await fetchAllInstagramData();
+				const transformedData = transformData(rawData);
+				setData(transformedData);
+			} catch (error) {
+				console.error("Error al obtener los datos:", error);
+			}
+		};
 
-    fetchData();
-  }, []);
+		fetchData();
+	}, []);
 
-  console.log(data);
+	console.log(data);
 
-  return (
-    <div>
-      <h1 className="text-custom-red uppercase flex items-center text-4xl font-black font-antonio">
-        INSTAGRAM GROWTH
-      </h1>
-      <div className="w-full">
-        {data ? <LineChart data={data} /> : <p>Cargando datos...</p>}
-      </div>
-    </div>
-  );
+	return (
+		<div>
+			<h1 className="text-custom-red uppercase flex items-center text-4xl font-black font-coolvetica">
+				INSTAGRAM GROWTH
+			</h1>
+			<div className="w-full">
+				{data ? <LineChart data={data} /> : <p>Cargando datos...</p>}
+			</div>
+		</div>
+	);
 };

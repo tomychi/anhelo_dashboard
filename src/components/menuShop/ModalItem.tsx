@@ -24,7 +24,7 @@ export const ModalItem = ({
 		<>
 			<div className=" flex overflow-x-hidden overflow-y-auto fixed inset-0  outline-none focus:outline-none z-50  bg-black">
 				<div className=" p-4 my-auto mx-auto">
-					<div className=" bg-custom-red  flex flex-col font-antonio p-4">
+					<div className=" bg-custom-red  flex flex-col font-coolvetica p-4">
 						{/*header*/}
 						<div className=" flex flex-col md:flex-row pb-4 gap-4 justify-between">
 							<h3 className="text-4xl flex justify-center uppercase font-black">

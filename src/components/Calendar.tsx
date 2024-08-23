@@ -100,8 +100,8 @@ const Calendar = () => {
 					primaryColor={"red"}
 					showShortcuts={true}
 					inputClassName="w-full h-10 rounded-md border border-white focus:ring-0 font-coolvetica text-white px-4 pl-10 pr-8 bg-black text-xs font-light"
-					toggleClassName="absolute rounded-l-md font-antonio text-white font-black left-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-					containerClassName="relative rounded-md font-antonio text-black font-black"
+					toggleClassName="absolute rounded-l-md font-coolvetica text-white font-black left-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+					containerClassName="relative rounded-md font-coolvetica text-black font-black"
 					showFooter={true}
 					value={valueDate}
 					onChange={handleValueDate}

@@ -23,7 +23,7 @@ export const AnheloRidersStats = () => {
 	const toggleDesglose = () => setIsDesgloseVisible(!isDesgloseVisible);
 
 	return (
-		<div className="bg-red-main min-h-screen text-black font-antonio">
+		<div className="bg-red-main min-h-screen text-black font-coolvetica">
 			<div className="container mx-auto p-4">
 				<NavLink
 					to="/anheloriders"

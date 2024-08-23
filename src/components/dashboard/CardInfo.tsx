@@ -18,7 +18,7 @@ export const CardInfo = ({
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-antonio font-black p-4 relative ${
+			className={`flex-1 bg-custom-red h-40 flex flex-col items-start text-black font-coolvetica font-black p-4 relative ${
 				!link && "cursor-default"
 			}`}
 		>

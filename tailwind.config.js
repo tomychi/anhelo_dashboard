@@ -20,8 +20,6 @@ module.exports = {
 				"coolvetica-crammed": ["Coolvetica Crammed", "sans-serif"],
 				"coolvetica-ul": ["Coolvetica Ul", "sans-serif"],
 				oswald: ["Oswald", "sans-serif"],
-				antonio: ["Antonio", "sans-serif"],
-				kotch: ["Koch Fette Deutsche Schrift", "sans-serif"],
 			},
 			fontWeight: {
 				thin: "200",

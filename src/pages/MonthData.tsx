@@ -64,7 +64,7 @@ export const MonthData = () => {
 				cuadrito={netoPorcentaje}
 			/>
 			<div>
-				<table className="h-min w-full font-antonio text-sm text-left rtl:text-right text-black">
+				<table className="h-min w-full font-coolvetica text-sm text-left rtl:text-right text-black">
 					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
 						<tr>
 							<th scope="col" className="px-6 py-3">

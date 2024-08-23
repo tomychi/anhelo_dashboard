@@ -1,51 +1,51 @@
-import { CardItem } from './CardItem';
-import { DetallePedidoProps } from '../../pages/DynamicForm';
-import { RootState } from '../../redux/configureStore';
-import { useSelector } from 'react-redux';
+import { CardItem } from "./CardItem";
+import { DetallePedidoProps } from "../../pages/DynamicForm";
+import { RootState } from "../../redux/configureStore";
+import { useSelector } from "react-redux";
 
 interface Props {
-  handleFormBurger: (value: DetallePedidoProps) => void;
+	handleFormBurger: (value: DetallePedidoProps) => void;
 }
 
 export const MenuGallery = ({ handleFormBurger }: Props) => {
-  const { burgers, drinks, fries } = useSelector(
-    (state: RootState) => state.product
-  );
-  const data = [...burgers, ...drinks, ...fries];
+	const { burgers, drinks, fries } = useSelector(
+		(state: RootState) => state.product
+	);
+	const data = [...burgers, ...drinks, ...fries];
 
-  return (
-    <div className="flex flex-col">
-      <div>
-        {[
-          'promo',
-          'satisfyer',
-          'originals',
-          'masterpieces',
-          'papas',
-          'drink',
-        ].map((sectionName) => (
-          <div key={sectionName}>
-            <h1 className="text-custom-red font-antonio text-2xl font-black mb-4 ">
-              {sectionName.toUpperCase()}
-            </h1>
-            <div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
-              {/* Renderizar items de la sección correspondiente */}
-              {data
-                .filter((item) => item.data.type === sectionName)
-                .map(({ id, data }) => (
-                  <CardItem
-                    key={id}
-                    img={data.img}
-                    name={data.name}
-                    price={data.price}
-                    type={data.type}
-                    handleFormBurger={handleFormBurger}
-                  />
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex flex-col">
+			<div>
+				{[
+					"promo",
+					"satisfyer",
+					"originals",
+					"masterpieces",
+					"papas",
+					"drink",
+				].map((sectionName) => (
+					<div key={sectionName}>
+						<h1 className="text-custom-red font-coolvetica text-2xl font-black mb-4 ">
+							{sectionName.toUpperCase()}
+						</h1>
+						<div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
+							{/* Renderizar items de la sección correspondiente */}
+							{data
+								.filter((item) => item.data.type === sectionName)
+								.map(({ id, data }) => (
+									<CardItem
+										key={id}
+										img={data.img}
+										name={data.name}
+										price={data.price}
+										type={data.type}
+										handleFormBurger={handleFormBurger}
+									/>
+								))}
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	);
 };
