@@ -19,7 +19,7 @@ export const CardInfo = ({
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-50 border-black px-4 pt-2 pb-3 ${
+			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-50 border-black px-4 pt-2 pb-3  ${
 				!link && "cursor-default"
 			} ${title === "Facturación bruta" ? "rounded-t-md" : " "}`}
 		>

@@ -177,7 +177,7 @@ export const Dashboard = () => {
 						info={currencyFormat(neto)}
 						link={"neto"}
 						cuadrito={(neto * 100) / facturacionTotal}
-						title={"FACTURACION NETA *Estimado"}
+						title={"Facturación neta"}
 						svgComponent={<NetoSVG />}
 					/>
 				</div>
@@ -186,19 +186,19 @@ export const Dashboard = () => {
 					<CardInfo
 						info={totalProductosVendidos}
 						link={"productosVendidos"}
-						title={"PRODUCTOS VENDIDOS"}
+						title={"Productos vendidos"}
 						svgComponent={<ProductoVendidosSVG />}
 					/>
 					<CardInfo
 						info={orders.length}
 						link={"ventas"}
-						title={"VENTAS delivery"}
+						title={"Ventas delivery"}
 						svgComponent={<VentasSVG />}
 					/>
 					<CardInfo
 						info="-"
 						link={"ventas"}
-						title={"VENTAS take away"}
+						title={"Ventas take away"}
 						svgComponent={<VentasSVG />}
 					/>
 				</div>
@@ -209,24 +209,24 @@ export const Dashboard = () => {
 								? 100 - (contarPedidosDemorados(orders) * 100) / orders.length
 								: 0
 						)}%`}
-						title={"CLIENTES ATENDIDOS EXITOSAMENTE"}
+						title={"Customer success"}
 						svgComponent={<CustomerSuccessSVG />}
 					/>
 					<CardInfo
 						info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
-						title={"TIEMPO DE COCCIÓN PROMEDIO"}
+						title={"Tiempo  coccion promedio"}
 						svgComponent={<TiempoCoccionSVG />}
 					/>
 
 					<CardInfo
 						info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
-						title={"TIEMPO DE ENTREGA TOTAL PROMEDIO"}
+						title={"Tiempo total promedio"}
 						svgComponent={<EntregaPromedioSVG />}
 					/>
 
 					<CardInfo
 						info={`${Math.round(calculateKMS(orders))} km`}
-						title={"KM RECORRIDOS"}
+						title={"Km recorridos"}
 						svgComponent={<TruckKM />}
 					/>
 				</div>
@@ -234,7 +234,7 @@ export const Dashboard = () => {
 					<CardInfo
 						info={customers.newCustomers.length}
 						link={"clientes"}
-						title={"NUEVOS CLIENTES"}
+						title={"Nuevos clientes"}
 						svgComponent={<NuevosClientesSVG />}
 					/>
 
@@ -244,7 +244,7 @@ export const Dashboard = () => {
 								? currencyFormat(facturacionTotal / orders.length)
 								: currencyFormat(0)
 						}
-						title={"TICKET PROMEDIO"}
+						title={"Ticket promedio"}
 						svgComponent={<TicketPromedioSVG />}
 					/>
 				</div>
@@ -252,28 +252,28 @@ export const Dashboard = () => {
 				<div className="flex flex-col md:flex-row  ">
 					<CardInfo
 						info={0}
-						title={"VISUALIZACIÓN LOCAL"}
+						title={"Visualización local"}
 						svgComponent={<VisualizacionLocalSVG />}
 					/>
 					<CardInfo
 						info={0}
 						link="seguidores"
-						title={"NUEVOS SEGUIDORES"}
+						title={"Nuevos seguidores"}
 						svgComponent={<NuevosSeguidoresSVG />}
 					/>
 					<CardInfo
 						info={0}
-						title={"PROMEDIO DE LIKES"}
+						title={"Promedio de likes"}
 						svgComponent={<PromedioLikesSVG />}
 					/>
 					<CardInfo
 						info={0}
-						title={"PROMEDIO DE COMENTARIOS"}
+						title={"Promedio de comentarios"}
 						svgComponent={<PromedioComentariosSVG />}
 					/>{" "}
 					<CardInfo
 						info={0}
-						title={"PROMEDIO DE COMPARTIDOS"}
+						title={"Promedio de compartidos"}
 						svgComponent={<PromedioCompartidosSVG />}
 					/>
 				</div>
