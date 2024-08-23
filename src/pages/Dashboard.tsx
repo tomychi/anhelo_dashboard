@@ -44,113 +44,109 @@ export const Dashboard = () => {
 	const customers = getCustomers(telefonos, orders, startDate);
 
 	return (
-		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col">
+		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
 			<div className="bg-black p-4">
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola Tobias</p>
 			</div>
-			<div className="flex-grow p-4 pt-16 relative">
-				<div className="absolute left-4 right-4 -top-5 bg-white rounded-lg shadow-2xl shadow-black p-4">
-					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-						<CardInfo
-							info={currencyFormat(facturacionTotal)}
-							link={"bruto"}
-							title={"Facturación bruta"}
-							svgComponent={<BrutoSVG />}
-						/>
-						<CardInfo
-							info={currencyFormat(neto)}
-							link={"neto"}
-							cuadrito={(neto * 100) / facturacionTotal}
-							title={"Facturación neta"}
-							svgComponent={<NetoSVG />}
-						/>
-						<CardInfo
-							info={totalProductosVendidos}
-							link={"productosVendidos"}
-							title={"Productos vendidos"}
-							svgComponent={<ProductoVendidosSVG />}
-						/>
-						<CardInfo
-							info={orders.length}
-							link={"ventas"}
-							title={"Ventas delivery"}
-							svgComponent={<VentasSVG />}
-						/>
-						<CardInfo
-							info="-"
-							link={"ventas"}
-							title={"Ventas take away"}
-							svgComponent={<VentasSVG />}
-						/>
-						<CardInfo
-							info={`${Math.ceil(
-								orders.length > 0
-									? 100 - (contarPedidosDemorados(orders) * 100) / orders.length
-									: 0
-							)}%`}
-							title={"Customer success"}
-							svgComponent={<CustomerSuccessSVG />}
-						/>
-						<CardInfo
-							info={`${Math.round(
-								calcularPromedioTiempoElaboracion(orders)
-							)} M`}
-							title={"Tiempo cocción promedio"}
-							svgComponent={<TiempoCoccionSVG />}
-						/>
-						<CardInfo
-							info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
-							title={"Tiempo total promedio"}
-							svgComponent={<EntregaPromedioSVG />}
-						/>
-						<CardInfo
-							info={`${Math.round(calculateKMS(orders))} km`}
-							title={"Km recorridos"}
-							svgComponent={<TruckKM />}
-						/>
-						<CardInfo
-							info={customers.newCustomers.length}
-							link={"clientes"}
-							title={"Nuevos clientes"}
-							svgComponent={<NuevosClientesSVG />}
-						/>
-						<CardInfo
-							info={
-								orders.length > 0
-									? currencyFormat(facturacionTotal / orders.length)
-									: currencyFormat(0)
-							}
-							title={"Ticket promedio"}
-							svgComponent={<TicketPromedioSVG />}
-						/>
-						<CardInfo
-							info={0}
-							title={"Visualización local"}
-							svgComponent={<VisualizacionLocalSVG />}
-						/>
-						<CardInfo
-							info={0}
-							link="seguidores"
-							title={"Nuevos seguidores"}
-							svgComponent={<NuevosSeguidoresSVG />}
-						/>
-						<CardInfo
-							info={0}
-							title={"Promedio de likes"}
-							svgComponent={<PromedioLikesSVG />}
-						/>
-						<CardInfo
-							info={0}
-							title={"Promedio de comentarios"}
-							svgComponent={<PromedioComentariosSVG />}
-						/>
-						<CardInfo
-							info={0}
-							title={"Promedio de compartidos"}
-							svgComponent={<PromedioCompartidosSVG />}
-						/>
-					</div>
+			<div className="absolute left-4 right-4 top-[147px] bg-white rounded-lg shadow-2xl shadow-black ">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+					<CardInfo
+						info={currencyFormat(facturacionTotal)}
+						link={"bruto"}
+						title={"Facturación bruta"}
+						svgComponent={<BrutoSVG />}
+					/>
+					<CardInfo
+						info={currencyFormat(neto)}
+						link={"neto"}
+						cuadrito={(neto * 100) / facturacionTotal}
+						title={"Facturación neta"}
+						svgComponent={<NetoSVG />}
+					/>
+					<CardInfo
+						info={totalProductosVendidos}
+						link={"productosVendidos"}
+						title={"Productos vendidos"}
+						svgComponent={<ProductoVendidosSVG />}
+					/>
+					<CardInfo
+						info={orders.length}
+						link={"ventas"}
+						title={"Ventas delivery"}
+						svgComponent={<VentasSVG />}
+					/>
+					<CardInfo
+						info="-"
+						link={"ventas"}
+						title={"Ventas take away"}
+						svgComponent={<VentasSVG />}
+					/>
+					<CardInfo
+						info={`${Math.ceil(
+							orders.length > 0
+								? 100 - (contarPedidosDemorados(orders) * 100) / orders.length
+								: 0
+						)}%`}
+						title={"Customer success"}
+						svgComponent={<CustomerSuccessSVG />}
+					/>
+					<CardInfo
+						info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
+						title={"Tiempo cocción promedio"}
+						svgComponent={<TiempoCoccionSVG />}
+					/>
+					<CardInfo
+						info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
+						title={"Tiempo total promedio"}
+						svgComponent={<EntregaPromedioSVG />}
+					/>
+					<CardInfo
+						info={`${Math.round(calculateKMS(orders))} km`}
+						title={"Km recorridos"}
+						svgComponent={<TruckKM />}
+					/>
+					<CardInfo
+						info={customers.newCustomers.length}
+						link={"clientes"}
+						title={"Nuevos clientes"}
+						svgComponent={<NuevosClientesSVG />}
+					/>
+					<CardInfo
+						info={
+							orders.length > 0
+								? currencyFormat(facturacionTotal / orders.length)
+								: currencyFormat(0)
+						}
+						title={"Ticket promedio"}
+						svgComponent={<TicketPromedioSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"Visualización local"}
+						svgComponent={<VisualizacionLocalSVG />}
+					/>
+					<CardInfo
+						info={0}
+						link="seguidores"
+						title={"Nuevos seguidores"}
+						svgComponent={<NuevosSeguidoresSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"Promedio de likes"}
+						svgComponent={<PromedioLikesSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"Promedio de comentarios"}
+						svgComponent={<PromedioComentariosSVG />}
+					/>
+					<CardInfo
+						info={0}
+						title={"Promedio de compartidos"}
+						svgComponent={<PromedioCompartidosSVG />}
+					/>
 				</div>
 			</div>
 		</div>
