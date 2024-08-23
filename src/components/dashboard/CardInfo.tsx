@@ -1,3 +1,4 @@
+import React from "react";
 import { NavLink } from "react-router-dom";
 import arrow from "../../assets/arrowIcon.png";
 
@@ -23,32 +24,37 @@ export const CardInfo = ({
 			? ""
 			: "";
 
+	const displayPercentage = !isNaN(cuadrito as number) && cuadrito;
+
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black  px-4 pt-2 pb-3 ${
+			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${
 				!link && "cursor-default"
 			} ${roundedClass}`}
 		>
-			{/* Recuadro chiquito arriba a la derecha */}
-			{/* {!isNaN(cuadrito as number) && cuadrito && (
-				<div className="absolute top-4 right-4 bg-black text-custom-red p-4">
-					{`${Math.ceil(
-						typeof cuadrito === "number"
-							? cuadrito
-							: parseFloat(cuadrito as string)
-					)}%`}
-				</div>
-			)} */}
-
 			<div className="flex flex-row items-center justify-between w-full">
 				{/* El titulo */}
-				<div className=" flex flex-col gap-1">
-					<p className="text-sm font-medium ">{title}</p>
+				<div className="flex flex-col gap-1">
+					<p className="text-sm font-medium">
+						{title}
+						{displayPercentage && (
+							<>
+								{" "}
+								(
+								{`${Math.ceil(
+									typeof cuadrito === "number"
+										? cuadrito
+										: parseFloat(cuadrito as string)
+								)}%`}
+								)
+							</>
+						)}
+					</p>
 					<img src={arrow} className="h-2 w-1.5" alt="" />
 				</div>
 				{/* El numero */}
-				<p className="text-4xl font-medium ">{info}</p>
+				<p className="text-4xl font-medium">{info}</p>
 			</div>
 		</NavLink>
 	);
