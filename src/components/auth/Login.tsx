@@ -65,7 +65,7 @@ export const Login = () => {
 					</div>
 				</div>
 			</div>
-			<div className="mb-4">
+			<div className="mb-4 mt-8">
 				<label className="block mb-2 text-gray-100 text-sm ">
 					Bienvenido, por favor tu correo
 				</label>
