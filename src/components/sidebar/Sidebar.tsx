@@ -68,7 +68,7 @@ export const Sidebar = () => {
 			</NavLink>
 			{/* El resto */}
 			<div className="flex flex-row gap-4 items-center">
-				<div className="bg-gray-100 rounded-md flex items-center px-2 h-9">
+				<div className="bg-gray-100 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
 					<p className="text-xs font-bold">Acción rapida</p>
 				</div>
 				<div className="bg-gray-100 rounded-md flex items-center px-2 h-9">
