@@ -62,8 +62,8 @@ export const Sidebar = () => {
 				<NavLink to={"/"} className="flex flex-col items-center justify-center">
 					<img
 						src={Absolute}
-						className="h-12 p-1 mx-auto"
-						alt="absolute Logo"
+						className="h-12 p-1 mx-auto filter brightness-[400] saturate-0"
+						alt="Absolute Logo"
 					/>
 				</NavLink>
 			</>
