@@ -165,14 +165,13 @@ export const Dashboard = () => {
 			{/* Aca los cards */}
 
 			<div className="flex flex-col  bg-gray-100 p-4 ">
-				<div className="flex flex-col   md:flex-row ">
+				<div className="flex flex-col  shadow-2xl shadow-black   md:flex-row ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
 						link={"bruto"}
 						title={"Facturación bruta"}
 						svgComponent={<BrutoSVG />}
 					/>
-
 					<CardInfo
 						info={currencyFormat(neto)}
 						link={"neto"}
@@ -180,9 +179,6 @@ export const Dashboard = () => {
 						title={"Facturación neta"}
 						svgComponent={<NetoSVG />}
 					/>
-				</div>
-
-				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={totalProductosVendidos}
 						link={"productosVendidos"}
@@ -201,8 +197,6 @@ export const Dashboard = () => {
 						title={"Ventas take away"}
 						svgComponent={<VentasSVG />}
 					/>
-				</div>
-				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={`${Math.ceil(
 							orders.length > 0
@@ -217,27 +211,22 @@ export const Dashboard = () => {
 						title={"Tiempo  coccion promedio"}
 						svgComponent={<TiempoCoccionSVG />}
 					/>
-
 					<CardInfo
 						info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
 						title={"Tiempo total promedio"}
 						svgComponent={<EntregaPromedioSVG />}
 					/>
-
 					<CardInfo
 						info={`${Math.round(calculateKMS(orders))} km`}
 						title={"Km recorridos"}
 						svgComponent={<TruckKM />}
 					/>
-				</div>
-				<div className="flex flex-col md:flex-row ">
 					<CardInfo
 						info={customers.newCustomers.length}
 						link={"clientes"}
 						title={"Nuevos clientes"}
 						svgComponent={<NuevosClientesSVG />}
 					/>
-
 					<CardInfo
 						info={
 							orders.length > 0
@@ -247,9 +236,6 @@ export const Dashboard = () => {
 						title={"Ticket promedio"}
 						svgComponent={<TicketPromedioSVG />}
 					/>
-				</div>
-
-				<div className="flex flex-col md:flex-row  ">
 					<CardInfo
 						info={0}
 						title={"Visualización local"}

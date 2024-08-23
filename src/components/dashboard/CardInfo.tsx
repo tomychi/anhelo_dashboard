@@ -16,12 +16,19 @@ export const CardInfo = ({
 	cuadrito,
 	svgComponent,
 }: CardInfoProps) => {
+	const roundedClass =
+		title === "Facturación bruta"
+			? "rounded-t-md"
+			: title === "Promedio de compartidos"
+			? "rounded-b-md"
+			: "";
+
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100 text-black font-coolvetica border-b-[0.5px] border-opacity-50 border-black px-4 pt-2 pb-3 shadow-xl shadow-black ${
+			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black  px-4 pt-2 pb-3 ${
 				!link && "cursor-default"
-			} ${title === "Facturación bruta" ? "rounded-t-md" : " "}`}
+			} ${roundedClass}`}
 		>
 			{/* Recuadro chiquito arriba a la derecha */}
 			{/* {!isNaN(cuadrito as number) && cuadrito && (
