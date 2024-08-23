@@ -110,7 +110,7 @@ const Calendar = () => {
 				/>
 				<img
 					src={arrow}
-					className={`h-2 arrow-down ${isOpen ? "open" : ""}`}
+					className={`h-2 arrow-down mr-1 ${isOpen ? "open" : ""}`}
 					style={{ filter: "invert(100%)" }}
 					alt="arrow"
 				/>
