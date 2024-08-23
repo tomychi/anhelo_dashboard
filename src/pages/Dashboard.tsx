@@ -164,7 +164,7 @@ export const Dashboard = () => {
 
 			{/* Aca los cards */}
 
-			<div className="flex flex-col  bg-slate-700 p-4 ">
+			<div className="flex flex-col  bg-gray-100 p-4 ">
 				<div className="flex flex-col   md:flex-row ">
 					<CardInfo
 						info={currencyFormat(facturacionTotal)}
