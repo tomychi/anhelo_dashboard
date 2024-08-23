@@ -31,7 +31,7 @@ export const Sidebar = () => {
 						className="bg-gray-100 rounded-md flex items-center px-2 h-9 w-9 justify-center"
 					>
 						{isMenuOpen ? (
-							"×"
+							<p className="mt-[-5px] font-black">×</p>
 						) : (
 							<img src={items} alt="Menu" className="h-3 object-contain" />
 						)}
