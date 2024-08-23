@@ -156,8 +156,8 @@ export const Dashboard = () => {
 	};
 
 	return (
-		<div className="p-4 overflow-x-hidden font-coolvetica bg-black flex flex-col gap-4">
-			<div className="flex flex-col  bg-green-500 justify-between">
+		<div className="p-4 overflow-x-hidden font-coolvetica flex flex-col gap-4">
+			<div className="flex flex-col  bg-black justify-between">
 				<Calendar />
 				<p className="text-white text-5xl mt-8">Hola Tobias</p>
 			</div>
