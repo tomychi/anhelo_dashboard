@@ -22,11 +22,9 @@ const Calendar = () => {
 	const handleValueDate = async (value: DateValueType) => {
 		dispatch(setValueDate(value));
 
-		// Eliminar los datos del mapa del localStorage si existen
 		localStorage.removeItem("mapData");
 
 		try {
-			// Leer datos de pedidos y gastos
 			const [ordersData, expensesData] = await Promise.all([
 				ReadDataForDateRange<PedidoProps>("pedidos", value),
 				ReadDataForDateRange<ExpenseProps>("gastos", value),
@@ -35,11 +33,9 @@ const Calendar = () => {
 			const telefonos = await readTelefonosFromFirebase();
 			dispatch(setTelefonos(telefonos));
 
-			// Despachar acciones para actualizar los datos de pedidos y gastos
 			dispatch(readOrdersData(ordersData));
 			dispatch(readExpensesData(expensesData));
 		} catch (error) {
-			// Manejar el error si ocurre algún problema al leer los datos
 			console.error("Se produjo un error al leer los datos:", error);
 		}
 	};
@@ -49,24 +45,36 @@ const Calendar = () => {
 			dispatch(
 				setValueDate({
 					startDate: formatDate(new Date()),
-					endDate: formatDate(new Date()), // Último día de diciembre del año actual
+					endDate: formatDate(new Date()),
 				})
 			);
 		}
 	}, [dispatch, valueDate]);
 
 	return (
-		<Datepicker
-			separator={"hasta"}
-			primaryColor={"red"}
-			showShortcuts={true}
-			inputClassName="w-full uppercase rounded-md border border-white focus:ring-0 font-antonio text-white p-4 font-black bg-black"
-			toggleClassName="absolute rounded-l-md font-antonio text-white font-black left-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-			containerClassName="relative rounded-md font-antonio text-black font-black"
-			showFooter={true}
-			value={valueDate}
-			onChange={handleValueDate}
-		/>
+		<>
+			<style>
+				{`
+          .react-tailwindcss-datepicker .react-tailwindcss-datepicker-input-container .react-tailwindcss-datepicker-input {
+            padding-left: 2.5rem !important;
+            font-size: 0.75rem !important; /* text-xs */
+            font-family: 'Coolvetica', sans-serif !important;
+            font-weight: 300 !important; /* font-light */
+          }
+        `}
+			</style>
+			<Datepicker
+				separator={"hasta"}
+				primaryColor={"red"}
+				showShortcuts={true}
+				inputClassName="w-full uppercase rounded-md border border-white focus:ring-0 font-coolvetica text-white p-4 bg-black text-xs font-light"
+				toggleClassName="absolute rounded-l-md font-antonio text-white font-black left-0 h-full px-3 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed"
+				containerClassName="relative rounded-md font-antonio text-black font-black"
+				showFooter={true}
+				value={valueDate}
+				onChange={handleValueDate}
+			/>
+		</>
 	);
 };
 
