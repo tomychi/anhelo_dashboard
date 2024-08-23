@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Absolute from "../../assets/absoluteIsologo.avif";
 import items from "../../assets/itemsIcon.png";
 
 export const Sidebar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const navigate = useNavigate();
 
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
+	};
+
+	const closeMenu = () => {
+		setIsMenuOpen(false);
+	};
+
+	const handleNavigation = (to: string) => {
+		closeMenu();
+		navigate(to);
 	};
 
 	const navbarHeight = "72px"; // Ajusta esto al alto exacto de tu navbar
@@ -15,7 +25,7 @@ export const Sidebar = () => {
 	return (
 		<div className="relative">
 			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30">
-				<NavLink to={"/"} className="ml-[-3px] items-center">
+				<NavLink to="/" className="ml-[-3px] items-center" onClick={closeMenu}>
 					<img
 						src={Absolute}
 						className="h-10 filter brightness-[400] saturate-0"
@@ -53,8 +63,9 @@ export const Sidebar = () => {
 				<nav className="pl-2 pt-2 h-full overflow-y-auto">
 					<ul className="gap-4">
 						{[
-							{ to: "/pedidos", text: "Tomar pedidos" },
+							{ to: "/pedidos", text: "Pedidos" },
 							{ to: "/comandas", text: "Comandas" },
+							{ to: "/", text: "Dashboard" },
 							{ to: "/empleados", text: "Empleados" },
 							{ to: "/gastos", text: "Gastos" },
 							{ to: "/monthdata", text: "Datos Mensuales" },
@@ -63,13 +74,12 @@ export const Sidebar = () => {
 							{ to: "/settings", text: "Configuración" },
 						].map((item, index) => (
 							<li key={index}>
-								<NavLink
-									to={item.to}
-									className="block p-2 hover:bg-gray-200 rounded text-sm"
-									onClick={toggleMenu}
+								<button
+									className="block p-2 hover:bg-gray-200 rounded text-sm w-full text-left"
+									onClick={() => handleNavigation(item.to)}
 								>
 									{item.text}
-								</NavLink>
+								</button>
 							</li>
 						))}
 					</ul>
