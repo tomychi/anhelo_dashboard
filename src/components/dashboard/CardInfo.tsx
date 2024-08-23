@@ -20,7 +20,7 @@ export const CardInfo = ({
 		title === "Facturación bruta"
 			? "rounded-t-md"
 			: title === "Promedio de compartidos"
-			? "rounded-b-md"
+			? ""
 			: "";
 
 	return (
