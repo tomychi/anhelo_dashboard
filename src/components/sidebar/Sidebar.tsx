@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Absolute from "../../assets/absoluteIsologo.avif";
+import items from "../../assets/itemsIcon.png";
 
 export const Sidebar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,7 +30,11 @@ export const Sidebar = () => {
 						onClick={toggleMenu}
 						className="bg-gray-100 rounded-md flex items-center px-2 h-9 w-9 justify-center"
 					>
-						{isMenuOpen ? "×" : "-"}
+						{isMenuOpen ? (
+							"×"
+						) : (
+							<img src={items} alt="Menu" className="h-3 object-contain" />
+						)}
 					</button>
 				</div>
 			</div>
