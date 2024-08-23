@@ -98,8 +98,8 @@ export const Login = () => {
 				/>
 			</div>
 			{/* Input de la contraseña */}
-			<div className="mb-5 w-full">
-				<label className="block mb-2 text-sm text-gray-100 ">
+			<div className="mb-12 w-full">
+				<label className="block mb-2 text-xs font-light text-gray-100 ">
 					Y tu contraseña
 				</label>
 
