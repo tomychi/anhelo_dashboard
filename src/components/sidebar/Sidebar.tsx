@@ -13,7 +13,7 @@ export const Sidebar = () => {
 	const navbarHeight = "72px"; // Ajusta esto al alto exacto de tu navbar
 
 	return (
-		<>
+		<div className="relative">
 			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30">
 				<NavLink to={"/"} className="ml-[-3px] items-center">
 					<img
@@ -41,14 +41,13 @@ export const Sidebar = () => {
 
 			{/* Menú desplegable */}
 			<div
-				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out shadow-lg ${
-					isMenuOpen ? "z-[10000]" : "z-[-1]"
+				className={`absolute left-0 w-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
+					isMenuOpen ? "translate-y-0" : "-translate-y-full"
 				}`}
 				style={{
 					top: navbarHeight,
 					height: `calc(100vh - ${navbarHeight})`,
-					transform: isMenuOpen ? "translateY(0)" : "translateY(-100%)",
-					visibility: isMenuOpen ? "visible" : "hidden",
+					zIndex: 20,
 				}}
 			>
 				<nav className="pl-2 pt-2 h-full overflow-y-auto">
@@ -77,6 +76,6 @@ export const Sidebar = () => {
 					</ul>
 				</nav>
 			</div>
-		</>
+		</div>
 	);
 };

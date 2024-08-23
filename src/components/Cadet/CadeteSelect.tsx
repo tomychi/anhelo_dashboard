@@ -14,7 +14,7 @@ const CadeteSelect: React.FC<CadeteSelectProps> = ({
 	// mapear las vueltas del cadete y si hay una vuelta sin hora de llegada, mostrar el boton para marcar la vuelta
 
 	return (
-		<div className="z-50 flex flex-col mt-4">
+		<div className=" flex flex-col mt-4">
 			<select
 				onChange={handleCadeteChange}
 				className="
