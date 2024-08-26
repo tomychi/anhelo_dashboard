@@ -18,6 +18,7 @@ export const Gastos = () => {
 					<p className="text-lg mb-[2px] font-black">+ </p>
 				</button>
 			</div>
+			<div className="w-1/3 bg-black h-[0.5px] mt-4"></div>
 
 			{/* <div className="">
 				<FormGasto />
