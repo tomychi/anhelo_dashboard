@@ -70,7 +70,9 @@ export const Gastos = () => {
 										{name} ({quantity} u.)
 									</th>
 
-									<td className="px-6 py-4">{currencyFormat(total)}</td>
+									<td className="pl-4 w-1/5 font-light py-3">
+										{currencyFormat(total)}
+									</td>
 									<td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
 											className="font-black border border-red-main text-custom-red hover:underline px-1"
