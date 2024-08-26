@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import { RootState } from "../redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,7 @@ const Calendar = () => {
 	const { valueDate } = useSelector((state: RootState) => state.data);
 	const [isOpen, setIsOpen] = useState(false);
 	const calendarRef = useRef<HTMLDivElement>(null);
+	const location = useLocation();
 
 	const handleValueDate = async (value: DateValueType) => {
 		dispatch(setValueDate(value));
@@ -69,28 +71,33 @@ const Calendar = () => {
 		setIsOpen(!isOpen);
 	};
 
+	const bgColor = location.pathname === "/" ? "bg-black" : " bg-gray-100 ";
+	const textColor = location.pathname === "/" ? "text-white" : "text-black ";
+	const borderColor =
+		location.pathname === "/" ? " border-white" : "border-black ";
+
 	return (
 		<>
 			<style>
 				{`
-					.calendar-container {
-						position: relative;
-					}
-					.arrow-down {
-						position: absolute;
-						right: 10px;
-						top: 50%;
-						transform: translateY(-50%) rotate(90deg); /* Flecha apuntando hacia abajo por defecto */
-						pointer-events: none;
-						transition: transform 0.3s ease;
-					}
-					.arrow-down.open {
-						transform: translateY(-50%) rotate(-90deg); /* Flecha apuntando hacia arriba cuando está abierto */
-					}
-				`}
+          .calendar-container {
+            position: relative;
+          }
+          .arrow-down {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            pointer-events: none;
+            transition: transform 0.3s ease;
+          }
+          .arrow-down.open {
+            transform: translateY(-50%) rotate(-90deg);
+          }
+        `}
 			</style>
 			<div
-				className="calendar-container"
+				className={`calendar-container ${bgColor}`}
 				ref={calendarRef}
 				onClick={handleCalendarClick}
 			>
@@ -98,11 +105,11 @@ const Calendar = () => {
 					separator={"hasta"}
 					i18n={"es"}
 					primaryColor={"blue"}
-					// showShortcuts={true}
-					inputClassName="w-full h-10 rounded-md border border-white focus:ring-0 font-coolvetica text-white px-4 pl-10 pr-8 bg-black text-xs font-light"
-					toggleClassName="absolute rounded-l-md font-coolvetica text-white font-black left-0 h-full px-3 focus:outline-none "
-					containerClassName="relative  rounded-md font-coolvetica text-black font-black"
-					// showFooter={true}
+					inputClassName={`w-full h-10 rounded-md border focus:ring-0 font-coolvetica  px-4 pl-10 pr-8 ${bgColor} ${textColor} ${borderColor} text-xs font-light`}
+					toggleClassName={`absolute rounded-l-md font-coolvetica ${textColor} font-black left-0 h-full px-3 focus:outline-none`}
+					containerClassName={`
+						relative rounded-md font-coolvetica ${textColor} font-black
+					`}
 					value={valueDate}
 					onChange={handleValueDate}
 					placeholder={"Desde y hasta"}
