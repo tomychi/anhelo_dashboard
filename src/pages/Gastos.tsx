@@ -19,6 +19,9 @@ export const Gastos = () => {
 				</button>
 			</div>
 			<div className="w-1/3 bg-black h-[0.5px] mt-4"></div>
+			<div className="p-4">
+				<Calendar />
+			</div>
 
 			{/* <div className="">
 				<FormGasto />
