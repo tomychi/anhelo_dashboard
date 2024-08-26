@@ -10,8 +10,16 @@ export const Gastos = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
 
 	return (
-		<div className="p-4 flex flex-col gap-4">
-			<div className="">
+		<div className="">
+			<div className="flex flex-row justify-between items-center mt-8 mx-4">
+				<p className="text-black font-medium text-5xl ">Gastos</p>
+				<button className="bg-black gap-4 text-gray-100 mt-2 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
+					<p className="text-xs font-light">Nueva compra </p>
+					<p className="text-lg mb-[2px] font-black">+ </p>
+				</button>
+			</div>
+
+			{/* <div className="">
 				<FormGasto />
 			</div>
 			<Calendar />
@@ -19,7 +27,6 @@ export const Gastos = () => {
 				<div className=" font-coolvetica">
 					<table className=" w-full text-sm text-left rtl:text-right text-black">
 						<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-							{/* Encabezados de la tabla */}
 							<tr>
 								<th scope="col" className="px-6 py-3">
 									Product name
@@ -48,7 +55,6 @@ export const Gastos = () => {
 							</tr>
 						</thead>
 						<tbody>
-							{/* Mapeo de datos de burgers */}
 							{expenseData.map(
 								({
 									quantity,
@@ -125,7 +131,7 @@ export const Gastos = () => {
 						</tbody>
 					</table>
 				</div>
-			</div>
+			</div> */}
 		</div>
 	);
 };
