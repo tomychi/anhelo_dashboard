@@ -66,19 +66,10 @@ export const Gastos = () => {
 									key={id}
 									className=" text-black border font-light border-black border-opacity-20"
 								>
-									<th
-										scope="row"
-										className="px-6 py-4 font-light  whitespace-nowrap "
-									>
-										{name}
+									<th scope="row" className="pl-4 w-1/5 font-light py-3">
+										{name} ({quantity})
 									</th>
-									<td className="px-6 py-4 hidden lg:table-cell">{category}</td>
-									<td className="px-6 py-4 hidden lg:table-cell">{fecha}</td>
-									<td className="px-6 py-4 hidden lg:table-cell">
-										{description}
-									</td>
-									<td className="px-6 py-4 hidden lg:table-cell">{quantity}</td>
-									<td className="px-6 py-4 hidden lg:table-cell">{unit}</td>
+
 									<td className="px-6 py-4">{currencyFormat(total)}</td>
 									<td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
