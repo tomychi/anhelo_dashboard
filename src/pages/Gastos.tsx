@@ -39,13 +39,13 @@ export const Gastos = () => {
 								Descripcion
 							</th>
 
-							<th scope="col" className="pl-4 w-1/5 py-3">
+							<th scope="col" className="pl-4 w-1/6 py-3">
 								Total
 							</th>
-							<th scope="col" className="pl-4 w-1/5 py-3">
+							<th scope="col" className="pl-4 w-1/6 py-3">
 								Estado
 							</th>
-							<th scope="col" className="pl-4 w-1/5 py-3 "></th>
+							<th scope="col" className="pl-4 w-1/6 py-3 "></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -68,15 +68,15 @@ export const Gastos = () => {
 										{name} ({quantity} u.)
 									</th>
 
-									<td className="pl-4 w-1/5 font-light py-3">
+									<td className="pl-4 w-1/7 font-light py-3">
 										{currencyFormat(total)}
 									</td>
-									<td className="pl-4 w-1/5 font-light  ">
+									<td className="pl-4 w-1/7 font-light  ">
 										<p className="bg-yellow-500 p-1 rounded-md text-center">
 											Pendiente
 										</p>
 									</td>
-									<td className="pl-4 w-1/5 font-black text-2xl ">. . .</td>
+									<td className="pl-4 w-1/7 font-black text-2xl ">. . .</td>
 									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
 											className="font-black border border-red-main text-custom-red hover:underline px-1"
