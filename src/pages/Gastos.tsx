@@ -64,11 +64,11 @@ export const Gastos = () => {
 							}) => (
 								<tr
 									key={id}
-									className="bg-black text-custom-red uppercase font-black border border-red-main"
+									className=" text-black border font-light border-black border-opacity-20"
 								>
 									<th
 										scope="row"
-										className="px-6 py-4 font-black text-custom-red whitespace-nowrap "
+										className="px-6 py-4 font-light  whitespace-nowrap "
 									>
 										{name}
 									</th>
