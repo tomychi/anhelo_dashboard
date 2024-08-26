@@ -67,7 +67,7 @@ export const Gastos = () => {
 									className=" text-black border font-light border-black border-opacity-20"
 								>
 									<th scope="row" className="pl-4 w-1/5 font-light py-3">
-										{name} ({quantity})
+										{name} (x{quantity} u.)
 									</th>
 
 									<td className="px-6 py-4">{currencyFormat(total)}</td>
