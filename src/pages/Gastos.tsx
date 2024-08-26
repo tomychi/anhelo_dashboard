@@ -10,7 +10,7 @@ export const Gastos = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
 
 	return (
-		<div className="">
+		<div className="flex flex-col">
 			<div className="flex flex-row justify-between items-center mt-8 mx-4">
 				<p className="text-black font-medium text-5xl ">Gastos</p>
 				<button className="bg-black gap-4 text-gray-100 mt-2 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
