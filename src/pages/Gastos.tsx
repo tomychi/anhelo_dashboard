@@ -21,6 +21,14 @@ export const Gastos = () => {
 			<div className="w-1/3 bg-black h-[0.5px] mt-4"></div>
 			<div className="p-4">
 				<Calendar />
+				<div className="flex flex-row gap-2 mt-2">
+					<div className=" flex items-center w-1/3 h-10 rounded-md border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
+						Todos
+					</div>
+					<div className=" flex items-center w-2/3 h-10 rounded-md border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
+						Buscar
+					</div>
+				</div>
 			</div>
 
 			{/* <div className="">
