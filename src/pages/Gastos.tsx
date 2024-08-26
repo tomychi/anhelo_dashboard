@@ -45,9 +45,7 @@ export const Gastos = () => {
 							<th scope="col" className="pl-4 w-1/5 py-3">
 								Estado
 							</th>
-							<th scope="col" className="pl-4 w-1/5 py-3 ">
-								More
-							</th>
+							<th scope="col" className="pl-4 w-1/5 py-3 "></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -78,6 +76,7 @@ export const Gastos = () => {
 											Pendiente
 										</p>
 									</td>
+									<td className="pl-4 w-1/5 font-black text-2xl ">. . .</td>
 									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
 											className="font-black border border-red-main text-custom-red hover:underline px-1"
