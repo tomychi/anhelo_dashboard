@@ -31,119 +31,104 @@ export const Gastos = () => {
 				</div>
 			</div>
 
+			<div className=" font-coolvetica">
+				<table className=" w-full text-xs text-left text-black">
+					<thead className=" text-black border  ">
+						<tr>
+							<th scope="col" className="pl-4 w-2/5 py-3">
+								Descripcion
+							</th>
+
+							<th scope="col" className="pl-4 w-1/5 py-3">
+								Total
+							</th>
+							<th scope="col" className="pl-4 w-1/5 py-3">
+								Estado
+							</th>
+							<th scope="col" className="pl-4 w-1/5 py-3 ">
+								More
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{expenseData.map(
+							({
+								quantity,
+								fecha,
+								category,
+								name,
+								total,
+								unit,
+								description,
+								id,
+							}) => (
+								<tr
+									key={id}
+									className="bg-black text-custom-red uppercase font-black border border-red-main"
+								>
+									<th
+										scope="row"
+										className="px-6 py-4 font-black text-custom-red whitespace-nowrap "
+									>
+										{name}
+									</th>
+									<td className="px-6 py-4 hidden lg:table-cell">{category}</td>
+									<td className="px-6 py-4 hidden lg:table-cell">{fecha}</td>
+									<td className="px-6 py-4 hidden lg:table-cell">
+										{description}
+									</td>
+									<td className="px-6 py-4 hidden lg:table-cell">{quantity}</td>
+									<td className="px-6 py-4 hidden lg:table-cell">{unit}</td>
+									<td className="px-6 py-4">{currencyFormat(total)}</td>
+									<td className="px-6 py-4 text-center hidden md:table-cell">
+										<div
+											className="font-black border border-red-main text-custom-red hover:underline px-1"
+											onClick={() =>
+												Swal.fire({
+													title: "¿Estás seguro?",
+													text: "¡No podrás revertir esto!",
+													icon: "warning",
+													showCancelButton: true,
+													confirmButtonColor: "#3085d6",
+													cancelButtonColor: "#d33",
+													confirmButtonText: "Sí, eliminarlo",
+													cancelButtonText: "Cancelar",
+												}).then((result) => {
+													if (result.isConfirmed) {
+														eliminarDocumento("gastos", id, fecha)
+															.then(() => {
+																Swal.fire({
+																	icon: "success",
+																	title: "¡Eliminado!",
+																	text: `El gasto con ID ${id} ha sido eliminado.`,
+																});
+															})
+															.catch(() => {
+																Swal.fire({
+																	icon: "error",
+																	title: "Error",
+																	text: "No se pudo eliminar el gasto.",
+																});
+															});
+													}
+												})
+											}
+										>
+											Borrar
+										</div>
+									</td>
+								</tr>
+							)
+						)}
+					</tbody>
+				</table>
+			</div>
+
 			{/* <div className="">
 				<FormGasto />
 			</div>
 			<Calendar />
-			<div className="">
-				<div className=" font-coolvetica">
-					<table className=" w-full text-sm text-left rtl:text-right text-black">
-						<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-							<tr>
-								<th scope="col" className="px-6 py-3">
-									Product name
-								</th>
-								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-									Category
-								</th>
-								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-									Fecha
-								</th>
-								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-									Descripcion
-								</th>
-								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-									Cantidad
-								</th>
-								<th scope="col" className="px-6 py-3 hidden lg:table-cell">
-									Unidad
-								</th>
-								<th scope="col" className="px-6 py-3  md:table-cell">
-									Total
-								</th>
-								<th scope="col" className="px-6 py-3  hidden md:table-cell">
-									<span className="sr-only">Edit</span>
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{expenseData.map(
-								({
-									quantity,
-									fecha,
-									category,
-									name,
-									total,
-									unit,
-									description,
-									id,
-								}) => (
-									<tr
-										key={id}
-										className="bg-black text-custom-red uppercase font-black border border-red-main"
-									>
-										<th
-											scope="row"
-											className="px-6 py-4 font-black text-custom-red whitespace-nowrap "
-										>
-											{name}
-										</th>
-										<td className="px-6 py-4 hidden lg:table-cell">
-											{category}
-										</td>
-										<td className="px-6 py-4 hidden lg:table-cell">{fecha}</td>
-										<td className="px-6 py-4 hidden lg:table-cell">
-											{description}
-										</td>
-										<td className="px-6 py-4 hidden lg:table-cell">
-											{quantity}
-										</td>
-										<td className="px-6 py-4 hidden lg:table-cell">{unit}</td>
-										<td className="px-6 py-4">{currencyFormat(total)}</td>
-										<td className="px-6 py-4 text-center hidden md:table-cell">
-											<div
-												className="font-black border border-red-main text-custom-red hover:underline px-1"
-												onClick={() =>
-													Swal.fire({
-														title: "¿Estás seguro?",
-														text: "¡No podrás revertir esto!",
-														icon: "warning",
-														showCancelButton: true,
-														confirmButtonColor: "#3085d6",
-														cancelButtonColor: "#d33",
-														confirmButtonText: "Sí, eliminarlo",
-														cancelButtonText: "Cancelar",
-													}).then((result) => {
-														if (result.isConfirmed) {
-															eliminarDocumento("gastos", id, fecha)
-																.then(() => {
-																	Swal.fire({
-																		icon: "success",
-																		title: "¡Eliminado!",
-																		text: `El gasto con ID ${id} ha sido eliminado.`,
-																	});
-																})
-																.catch(() => {
-																	Swal.fire({
-																		icon: "error",
-																		title: "Error",
-																		text: "No se pudo eliminar el gasto.",
-																	});
-																});
-														}
-													})
-												}
-											>
-												Borrar
-											</div>
-										</td>
-									</tr>
-								)
-							)}
-						</tbody>
-					</table>
-				</div>
-			</div> */}
+			 */}
 		</div>
 	);
 };
