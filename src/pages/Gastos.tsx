@@ -73,7 +73,12 @@ export const Gastos = () => {
 									<td className="pl-4 w-1/5 font-light py-3">
 										{currencyFormat(total)}
 									</td>
-									<td className="px-6 py-4 text-center hidden md:table-cell">
+									<td className="pl-4 w-1/5 font-light  ">
+										<p className="bg-yellow-500 p-1 rounded-md text-center">
+											Pendiente
+										</p>
+									</td>
+									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
 											className="font-black border border-red-main text-custom-red hover:underline px-1"
 											onClick={() =>
@@ -109,7 +114,7 @@ export const Gastos = () => {
 										>
 											Borrar
 										</div>
-									</td>
+									</td> */}
 								</tr>
 							)
 						)}
