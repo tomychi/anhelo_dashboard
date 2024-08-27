@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-export const Gastos = () => {
+export const NuevaCompra = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
 
 	const [showModal, setShowModal] = useState(false);
