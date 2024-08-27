@@ -158,103 +158,73 @@ export const FormGasto = () => {
 					</datalist>
 				</div>
 				<div className="section  relative z-0 mt-4">
-					<label
-						htmlFor="quantity"
-						className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-					>
-						Cantidad:
-					</label>
 					<input
 						type="number"
 						id="quantity"
 						name="quantity"
 						value={formData.quantity}
-						className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 						onChange={handleChange}
+						placeholder="Cantidad"
 						required
 					/>
 				</div>
 				<div className="section  relative z-0 mt-4">
-					<label
-						htmlFor="unit"
-						className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-					>
-						Unidad de Medida:
-					</label>
 					<input
 						type="text"
 						id="unit"
 						name="unit"
 						value={formData.unit}
-						className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 						onChange={handleChange}
+						placeholder="Unidad de medida"
 						required
 					/>
 				</div>
 			</div>
 			<div className="section w-full relative z-0 mt-4">
-				<label
-					htmlFor="total"
-					className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>
-					Total $:
-				</label>
 				<input
 					type="number"
 					id="total"
 					name="total"
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 					value={formData.total}
 					onChange={handleChange}
+					placeholder="Total $"
 					required
 				/>
 			</div>
 			<div className="section w-full relative z-0 mt-4">
-				<label
-					htmlFor="description"
-					className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>
-					Descripción:
-				</label>
 				<input
 					type="text"
 					id="description"
 					name="description"
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 					value={formData.description}
+					placeholder="Descripción"
 					onChange={handleChange}
 				/>
 			</div>
 			<div className="section w-full relative z-0 mt-4">
-				<label
-					htmlFor="category"
-					className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>
-					Categoría:
-				</label>
 				<input
 					type="text"
 					id="category"
 					name="category"
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 					value={formData.category}
+					placeholder="Categoría"
 					onChange={handleChange}
 					required
 				/>
 			</div>
 			<div className="section w-full  relative z-0 mt-4">
-				<label
-					htmlFor="fecha"
-					className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-				>
-					Fecha:
-				</label>
 				<input
 					type="string"
 					id="fecha"
 					name="fecha"
-					className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 					value={formData.fecha}
+					placeholder="Categoría"
 					onChange={handleChange}
 					required
 				/>
