@@ -231,7 +231,7 @@ export const FormGasto = () => {
 			</div>
 			<button
 				type="submit"
-				className=" text-gray-100 w-full p-4 bg-black font-black uppercase  outline-none"
+				className=" text-gray-100 w-full p-4 bg-black font-black  rounded-md mt-4  outline-none"
 			>
 				Guardar
 			</button>
