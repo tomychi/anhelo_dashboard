@@ -75,6 +75,8 @@ const Calendar = () => {
 	const textColor = location.pathname === "/" ? "text-white" : "text-black ";
 	const borderColor =
 		location.pathname === "/" ? " border-white" : "border-black ";
+	const arrowColor =
+		location.pathname === "/" ? { filter: "invert(100%)" } : {};
 
 	return (
 		<>
@@ -118,7 +120,7 @@ const Calendar = () => {
 				<img
 					src={arrow}
 					className={`h-2 arrow-down mr-1 ${isOpen ? "open" : ""}`}
-					style={{ filter: "invert(100%)" }}
+					style={arrowColor}
 					alt="arrow"
 				/>
 			</div>
