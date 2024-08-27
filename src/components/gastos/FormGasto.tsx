@@ -227,7 +227,7 @@ export const FormGasto = () => {
 						type="number"
 						id="quantity"
 						name="quantity"
-						value={formData.quantity}
+						value={formData.quantity || ""}
 						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						onChange={handleChange}
 						placeholder="Cantidad"
@@ -252,7 +252,7 @@ export const FormGasto = () => {
 						id="total"
 						name="total"
 						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.total}
+						value={formData.total || ""}
 						onChange={handleChange}
 						placeholder="Total $"
 						required
