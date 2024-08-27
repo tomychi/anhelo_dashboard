@@ -138,19 +138,14 @@ export const FormGasto = () => {
 		>
 			<div className="item-section w-full">
 				<div className="section relative z-0 mt-4">
-					<label
-						htmlFor="name"
-						className="uppercase text-sm font-medium absolute text-black 500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0]"
-					>
-						Nombre del Ítem:
-					</label>
 					<input
 						type="text"
 						id="name"
 						name="name"
-						className="block w-full py-2.5 texk-black bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="block text-light rounded-md w-full py-2.5 px-4 texk-black bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 						value={formData.name}
 						onChange={handleNameChange}
+						placeholder="Nombre del Ítem:"
 						list="itemNames"
 						required
 						autoComplete="off"
