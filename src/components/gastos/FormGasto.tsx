@@ -145,7 +145,7 @@ export const FormGasto = () => {
 						className="block text-light rounded-md w-full py-2.5 px-4 texk-black bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 						value={formData.name}
 						onChange={handleNameChange}
-						placeholder="Nombre del Ítem:"
+						placeholder="Nombre del item"
 						list="itemNames"
 						required
 						autoComplete="off"
