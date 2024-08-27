@@ -134,7 +134,7 @@ export const FormGasto = () => {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className=" items-center w-full justify-center p-4 mt-4 shadow-2xl  shadow-black rounded-md  font-coolvetica font-black text-black "
+			className=" items-center w-full justify-center p-4 mt-4  rounded-md  font-coolvetica font-black text-black "
 		>
 			<div className="item-section w-full flex flex-col gap-4">
 				<div className="section relative z-0 ">
@@ -142,7 +142,7 @@ export const FormGasto = () => {
 						type="text"
 						id="name"
 						name="name"
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.name}
 						onChange={handleNameChange}
 						placeholder="Nombre del item"
@@ -163,7 +163,7 @@ export const FormGasto = () => {
 						id="quantity"
 						name="quantity"
 						value={formData.quantity}
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						onChange={handleChange}
 						placeholder="Cantidad"
 						required
@@ -175,7 +175,7 @@ export const FormGasto = () => {
 						id="unit"
 						name="unit"
 						value={formData.unit}
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						onChange={handleChange}
 						placeholder="Unidad de medida"
 						required
@@ -186,7 +186,7 @@ export const FormGasto = () => {
 						type="number"
 						id="total"
 						name="total"
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.total}
 						onChange={handleChange}
 						placeholder="Total $"
@@ -198,7 +198,7 @@ export const FormGasto = () => {
 						type="text"
 						id="description"
 						name="description"
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.description}
 						placeholder="Descripción"
 						onChange={handleChange}
@@ -209,7 +209,7 @@ export const FormGasto = () => {
 						type="text"
 						id="category"
 						name="category"
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.category}
 						placeholder="Categoría"
 						onChange={handleChange}
@@ -221,7 +221,7 @@ export const FormGasto = () => {
 						type="string"
 						id="fecha"
 						name="fecha"
-						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.fecha}
 						placeholder="Categoría"
 						onChange={handleChange}

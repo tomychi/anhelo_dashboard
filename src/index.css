@@ -41,15 +41,17 @@ input:-webkit-autofill:active {
 	-webkit-text-fill-color: black !important;
 }
 
-/* Asegurar que los inputs tengan fondo gris y texto negro en todos los estados, excepto los que tengan la clase .bg-black */
-input:not(.bg-black) {
+/* Estilos por defecto para inputs con la clase .default-input */
+input.default-input {
 	background-color: #f3f4f6 !important;
 	color: black !important;
 }
 
-input:not(.bg-black):focus,
-input:not(.bg-black):hover,
-input:not(.bg-black):active {
+input.default-input:focus,
+input.default-input:hover,
+input.default-input:active {
 	background-color: #f3f4f6 !important;
 	color: black !important;
 }
+
+/* Puedes agregar más estilos específicos aquí si es necesario */
