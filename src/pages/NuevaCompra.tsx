@@ -3,12 +3,14 @@ import { FormGasto } from "../components/gastos";
 export const NuevaCompra = () => {
 	return (
 		<div className="flex flex-col ">
-			<div className="flex flex-row justify-center items-center mt-8 mx-4">
-				<p className="text-black font-medium text-2xl ">Nueva compra</p>
+			<div className="mt-11">
+				<div className="w-1/5 bg-black h-[0.5px] "></div>
+				<p className="text-black font-medium text-2xl px-4  mt-1.5">
+					Nueva compra
+				</p>
 			</div>
-			<div className="">
-				<FormGasto />
-			</div>
+
+			<FormGasto />
 		</div>
 	);
 };
