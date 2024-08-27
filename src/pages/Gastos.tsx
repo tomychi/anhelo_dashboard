@@ -134,21 +134,6 @@ export const Gastos = () => {
 					</tbody>
 				</table>
 			</div>
-
-			{/* Modal para FormGasto */}
-			{showModal && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-					<div className="bg-white rounded-lg p-6 relative w-1/2">
-						<button
-							className="absolute top-2 right-2 text-xl font-bold"
-							onClick={toggleModal}
-						>
-							&times;
-						</button>
-						<FormGasto /> {/* Aquí renderizas el formulario */}
-					</div>
-				</div>
-			)}
 		</div>
 	);
 };
