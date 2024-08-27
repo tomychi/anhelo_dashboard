@@ -62,7 +62,7 @@ export const Gastos = () => {
 							}) => (
 								<tr
 									key={id}
-									className=" text-black border font-light border-black border-opacity-20"
+									className=" text-black border font-light  border-black border-opacity-20"
 								>
 									<th scope="row" className="pl-4 w-1/5 font-light py-3">
 										{name} ({quantity} u.)
@@ -76,7 +76,9 @@ export const Gastos = () => {
 											Pendiente
 										</p>
 									</td>
-									<td className="pl-4 w-1/7 font-black text-2xl ">. . .</td>
+									<td className=" pl-4 w-1/7 text-left flex  text-2xl font-black ">
+										<p className="relative bottom-1">. . .</p>
+									</td>
 									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
 											className="font-black border border-red-main text-custom-red hover:underline px-1"
