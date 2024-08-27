@@ -142,7 +142,7 @@ export const FormGasto = () => {
 						type="text"
 						id="name"
 						name="name"
-						className="block text-light rounded-md w-full py-2.5 px-4 texk-black bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
 						value={formData.name}
 						onChange={handleNameChange}
 						placeholder="Nombre del item"
