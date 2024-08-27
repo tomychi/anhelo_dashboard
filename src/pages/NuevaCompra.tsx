@@ -5,7 +5,7 @@ export const NuevaCompra = () => {
 		<div className="flex flex-col ">
 			<div className="mt-11">
 				<div className="w-1/5 bg-black h-[0.5px] "></div>
-				<p className="text-black font-medium text-2xl px-4  mt-1.5">
+				<p className="text-black font-medium text-2xl px-4  mt-2">
 					Nueva compra
 				</p>
 			</div>
