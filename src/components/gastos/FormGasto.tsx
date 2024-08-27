@@ -134,7 +134,7 @@ export const FormGasto = () => {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="flex flex-col items-center w-full justify-center font-coolvetica font-black text-black bg-custom-red p-4"
+			className="flex flex-col items-center w-full justify-center font-coolvetica font-black text-black  p-4"
 		>
 			<div className="item-section w-full">
 				<div className="section relative z-0 mt-4">
@@ -266,7 +266,7 @@ export const FormGasto = () => {
 			</div>
 			<button
 				type="submit"
-				className=" text-custom-red w-full p-4 bg-black font-black uppercase  outline-none"
+				className=" text-gray-100 w-full p-4 bg-black font-black uppercase  outline-none"
 			>
 				Guardar
 			</button>
