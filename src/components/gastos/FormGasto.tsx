@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { obtenerFechaActual } from "../../helpers/dateToday";
 import { UploadExpense, ExpenseProps } from "../../firebase/UploadGasto";
 import Swal from "sweetalert2";
@@ -7,9 +7,70 @@ import { calculateUnitCost } from "../../helpers/calculator";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 
+const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({
+	onFileSelect,
+}) => {
+	const [file, setFile] = useState<File | null>(null);
+
+	const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			setFile(e.target.files[0]);
+			onFileSelect(e.target.files[0]);
+		}
+	};
+
+	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+
+	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+			setFile(e.dataTransfer.files[0]);
+			onFileSelect(e.dataTransfer.files[0]);
+		}
+	};
+
+	return (
+		<div
+			className="w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer"
+			onDragOver={handleDragOver}
+			onDrop={handleDrop}
+			onClick={() => document.getElementById("fileInput")?.click()}
+		>
+			<input
+				type="file"
+				id="fileInput"
+				className="hidden"
+				onChange={handleFileChange}
+			/>
+			<svg
+				className="w-12 h-12 text-gray-400 mb-4"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth={2}
+					d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+				/>
+			</svg>
+			<p className="text-sm text-gray-600">
+				{file ? file.name : "Selecciona o arrastra un documento"}
+			</p>
+		</div>
+	);
+};
+
 export const FormGasto = () => {
 	const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
 	const { materiales } = useSelector((state: RootState) => state.materials);
+	const [file, setFile] = useState<File | null>(null);
 
 	const [formData, setFormData] = useState<ExpenseProps>({
 		description: "",
@@ -27,7 +88,6 @@ export const FormGasto = () => {
 	) => {
 		const { name, value } = e.target;
 
-		// Verificamos si el valor ingresado es un número válido
 		const numericValue = parseFloat(value);
 		const sanitizedValue = isNaN(numericValue) ? "" : numericValue;
 
@@ -35,6 +95,10 @@ export const FormGasto = () => {
 			...prevData,
 			[name]: name === "total" || name === "quantity" ? sanitizedValue : value,
 		}));
+	};
+
+	const handleFileSelect = (selectedFile: File) => {
+		setFile(selectedFile);
 	};
 
 	const handleNameChange = (
@@ -47,34 +111,33 @@ export const FormGasto = () => {
 
 		if (selectedMaterial) {
 			setUnidadPorPrecio(selectedMaterial.unidadPorPrecio);
-			// Si el material seleccionado existe, actualiza los campos del formulario con sus datos
 			setFormData({
 				...formData,
 				id: selectedMaterial.id,
 				name: selectedMaterial.nombre,
-				quantity: 0, // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
+				quantity: 0,
 				unit: selectedMaterial.unit,
-				total: 0, // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
-				description: "", // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
+				total: 0,
+				description: "",
 				category: selectedMaterial.categoria,
 				fecha: obtenerFechaActual(),
 			});
 		} else {
-			// Si el material seleccionado no existe, permite al usuario escribirlo manualmente
 			setFormData({
 				...formData,
 				name: value,
-				quantity: 0, // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
-				unit: "", // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
-				total: 0, // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
-				description: "", // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
-				category: "", // Puedes llenar esto con datos predefinidos o dejarlo vacío según tu lógica
+				quantity: 0,
+				unit: "",
+				total: 0,
+				description: "",
+				category: "",
 				fecha: obtenerFechaActual(),
 			});
 		}
 	};
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		const cost = calculateUnitCost(
 			formData.total,
 			formData.quantity,
@@ -83,8 +146,8 @@ export const FormGasto = () => {
 			formData.name
 		);
 
-		e.preventDefault();
-		// Llama a la función para actualizar el costo del material
+		// Aquí deberías manejar la carga del archivo si es necesario
+		// Por ejemplo, podrías usar una función para subir el archivo a Firebase Storage
 
 		UploadExpense(formData)
 			.then((result) => {
@@ -93,6 +156,7 @@ export const FormGasto = () => {
 					title: `Gasto cargado`,
 					text: `El gasto ${result.id} se cargó correctamente`,
 				});
+				// Aquí podrías agregar lógica adicional para manejar el archivo subido
 			})
 			.then(() => {
 				updateMaterialCost(formData.id, cost, formData.quantity)
@@ -129,15 +193,17 @@ export const FormGasto = () => {
 			unit: "",
 			id: "",
 		});
+		setFile(null);
 	};
 
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className=" items-center w-full justify-center p-4   rounded-md  font-coolvetica  text-black "
+			className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
 		>
 			<div className="item-section w-full flex flex-col gap-4">
-				<div className="section relative z-0 ">
+				<FileUpload onFileSelect={handleFileSelect} />
+				<div className="section relative z-0">
 					<input
 						type="text"
 						id="name"
@@ -151,13 +217,12 @@ export const FormGasto = () => {
 						autoComplete="off"
 					/>
 					<datalist id="itemNames">
-						{/* Aquí puedes agregar opciones dinámicamente desde tu arreglo de materiales */}
 						{materiales.map((material, index) => (
 							<option key={index} value={material.nombre} />
 						))}
 					</datalist>
 				</div>
-				<div className="section  relative z-0 ">
+				<div className="section relative z-0">
 					<input
 						type="number"
 						id="quantity"
@@ -169,7 +234,7 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
-				<div className="section  relative z-0 ">
+				<div className="section relative z-0">
 					<input
 						type="text"
 						id="unit"
@@ -181,7 +246,7 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
-				<div className="section w-full relative z-0 ">
+				<div className="section w-full relative z-0">
 					<input
 						type="number"
 						id="total"
@@ -193,7 +258,7 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
-				<div className="section w-full relative z-0 ">
+				<div className="section w-full relative z-0">
 					<input
 						type="text"
 						id="description"
@@ -204,7 +269,7 @@ export const FormGasto = () => {
 						onChange={handleChange}
 					/>
 				</div>
-				<div className="section w-full relative z-0 ">
+				<div className="section w-full relative z-0">
 					<input
 						type="text"
 						id="category"
@@ -216,21 +281,21 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
-				<div className="section w-full  relative z-0 ">
+				<div className="section w-full relative z-0">
 					<input
 						type="string"
 						id="fecha"
 						name="fecha"
 						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						value={formData.fecha}
-						placeholder="Categoría"
+						placeholder="Fecha"
 						onChange={handleChange}
 						required
 					/>
 				</div>
 				<button
 					type="submit"
-					className=" text-gray-100 w-full p-4 bg-black font-bold  rounded-md   outline-none"
+					className="text-gray-100 w-full p-4 bg-black font-bold rounded-md outline-none"
 				>
 					Guardar
 				</button>
