@@ -134,10 +134,10 @@ export const FormGasto = () => {
 	return (
 		<form
 			onSubmit={handleSubmit}
-			className="flex flex-col items-center w-full justify-center font-coolvetica font-black text-black  p-4"
+			className=" items-center w-full justify-center font-coolvetica font-black text-black "
 		>
-			<div className="item-section w-full">
-				<div className="section relative z-0 mt-4">
+			<div className="item-section w-full flex flex-col gap-4">
+				<div className="section relative z-0 ">
 					<input
 						type="text"
 						id="name"
@@ -157,7 +157,7 @@ export const FormGasto = () => {
 						))}
 					</datalist>
 				</div>
-				<div className="section  relative z-0 mt-4">
+				<div className="section  relative z-0 ">
 					<input
 						type="number"
 						id="quantity"
@@ -169,7 +169,7 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
-				<div className="section  relative z-0 mt-4">
+				<div className="section  relative z-0 ">
 					<input
 						type="text"
 						id="unit"
@@ -181,60 +181,60 @@ export const FormGasto = () => {
 						required
 					/>
 				</div>
+				<div className="section w-full relative z-0 ">
+					<input
+						type="number"
+						id="total"
+						name="total"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						value={formData.total}
+						onChange={handleChange}
+						placeholder="Total $"
+						required
+					/>
+				</div>
+				<div className="section w-full relative z-0 ">
+					<input
+						type="text"
+						id="description"
+						name="description"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						value={formData.description}
+						placeholder="Descripción"
+						onChange={handleChange}
+					/>
+				</div>
+				<div className="section w-full relative z-0 ">
+					<input
+						type="text"
+						id="category"
+						name="category"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						value={formData.category}
+						placeholder="Categoría"
+						onChange={handleChange}
+						required
+					/>
+				</div>
+				<div className="section w-full  relative z-0 ">
+					<input
+						type="string"
+						id="fecha"
+						name="fecha"
+						className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
+						value={formData.fecha}
+						placeholder="Categoría"
+						onChange={handleChange}
+						required
+					/>
+				</div>
+				<button
+					type="submit"
+					className=" text-gray-100 w-full p-4 bg-black font-black  rounded-md   outline-none"
+				>
+					Guardar
+				</button>
 			</div>
-			<div className="section w-full relative z-0 mt-4">
-				<input
-					type="number"
-					id="total"
-					name="total"
-					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
-					value={formData.total}
-					onChange={handleChange}
-					placeholder="Total $"
-					required
-				/>
-			</div>
-			<div className="section w-full relative z-0 mt-4">
-				<input
-					type="text"
-					id="description"
-					name="description"
-					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
-					value={formData.description}
-					placeholder="Descripción"
-					onChange={handleChange}
-				/>
-			</div>
-			<div className="section w-full relative z-0 mt-4">
-				<input
-					type="text"
-					id="category"
-					name="category"
-					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
-					value={formData.category}
-					placeholder="Categoría"
-					onChange={handleChange}
-					required
-				/>
-			</div>
-			<div className="section w-full  relative z-0 mt-4">
-				<input
-					type="string"
-					id="fecha"
-					name="fecha"
-					className="block font-light text-xs  rounded-md w-full  h-10 px-4  bg-transparent border border-black appearance-none text-black focus:outline-none focus:ring-0"
-					value={formData.fecha}
-					placeholder="Categoría"
-					onChange={handleChange}
-					required
-				/>
-			</div>
-			<button
-				type="submit"
-				className=" text-gray-100 w-full p-4 bg-black font-black  rounded-md mt-4  outline-none"
-			>
-				Guardar
-			</button>
 		</form>
 	);
 };
