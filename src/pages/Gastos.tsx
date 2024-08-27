@@ -5,15 +5,25 @@ import Calendar from "../components/Calendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 export const Gastos = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
+
+	const [showModal, setShowModal] = useState(false);
+
+	const toggleModal = () => {
+		setShowModal(!showModal);
+	};
 
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between items-center mt-8 mx-4">
 				<p className="text-black font-medium text-5xl ">Gastos</p>
-				<button className="bg-black gap-4 text-gray-100 mt-2 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
+				<button
+					className="bg-black gap-4 text-gray-100 mt-2 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9"
+					onClick={toggleModal} // Llama a toggleModal al hacer clic
+				>
 					<p className="text-xs font-light">Nueva compra </p>
 					<p className="text-lg mb-[2px] font-black">+ </p>
 				</button>
@@ -62,7 +72,7 @@ export const Gastos = () => {
 							}) => (
 								<tr
 									key={id}
-									className=" text-black border font-light  border-black border-opacity-20"
+									className=" text-black border font-light border-black border-opacity-20"
 								>
 									<th scope="row" className="pl-4 w-1/5 font-light py-3">
 										{name} ({quantity} u.)
@@ -76,8 +86,8 @@ export const Gastos = () => {
 											Pendiente
 										</p>
 									</td>
-									<td className=" pl-4 w-1/7 text-left flex  text-2xl font-black ">
-										<p className="relative bottom-1">. . .</p>
+									<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
+										. . .
 									</td>
 									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
 										<div
@@ -123,11 +133,20 @@ export const Gastos = () => {
 				</table>
 			</div>
 
-			{/* <div className="">
-				<FormGasto />
-			</div>
-			<Calendar />
-			 */}
+			{/* Modal para FormGasto */}
+			{showModal && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+					<div className="bg-white rounded-lg p-6 relative w-1/2">
+						<button
+							className="absolute top-2 right-2 text-xl font-bold"
+							onClick={toggleModal}
+						>
+							&times;
+						</button>
+						<FormGasto /> {/* Aquí renderizas el formulario */}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

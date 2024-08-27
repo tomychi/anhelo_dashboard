@@ -21,6 +21,7 @@ export const PrivateRoutesLayout = () => {
 
   if (currentUserEmail === 'tomas.arcostanzo5@gmail.com') {
     // Acceso completo para tomas.arcostanzo5@gmail.com
+
     return <Outlet />;
   }
 

@@ -57,6 +57,7 @@ export const Sidebar = () => {
               { to: '/pedidos', text: 'Pedidos' },
               { to: '/comandas', text: 'Comandas' },
               { to: '/marketing', text: 'Marketing' },
+              { to: '/vouchers', text: 'Vouchers' },
               { to: '/', text: 'Dashboard' },
               { to: '/empleados', text: 'Empleados' },
               { to: '/gastos', text: 'Gastos' },
