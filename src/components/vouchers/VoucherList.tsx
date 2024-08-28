@@ -106,7 +106,7 @@ export const VoucherList: React.FC = () => {
 									{`${group.usados}/${group.total}`}
 								</p>
 							</td>
-							<td className="pl-4 w-1/6 font-black text-2xl relative bottom-2">
+							<td className="pl-4 w-1/7 font-black text-2xl  relative bottom-2 ">
 								. . .
 							</td>
 						</tr>
