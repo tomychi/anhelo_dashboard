@@ -40,8 +40,11 @@ export const GenerateVouchersForm = () => {
 				<input
 					type="number"
 					placeholder="Cantidad"
-					value={cantidad}
-					onChange={(e) => setCantidad(parseInt(e.target.value, 10))}
+					value={cantidad || ""}
+					onChange={(e) => {
+						const value = e.target.value;
+						setCantidad(value === "" ? 0 : parseInt(value, 10));
+					}}
 					className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 				/>
 				<div className="flex justify-between items-center">
