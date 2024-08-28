@@ -12,6 +12,7 @@ interface ExpenseProps {
   quantity: number;
   unit: string;
   id: string;
+  estado: string;
 }
 
 export const Marketing = () => {
@@ -24,6 +25,7 @@ export const Marketing = () => {
     quantity: 0,
     unit: '',
     id: '',
+    estado: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +55,7 @@ export const Marketing = () => {
           quantity: 0,
           unit: '',
           id: '',
+          estado: '',
         });
       })
       .catch((error) => {
