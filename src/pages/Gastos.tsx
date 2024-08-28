@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { projectAuth } from '../firebase/config';
+import { ExpenseProps, UpdateExpenseStatus } from '../firebase/UploadGasto';
 
 export const Gastos = () => {
   const { expenseData } = useSelector((state: RootState) => state.data);
@@ -17,11 +18,35 @@ export const Gastos = () => {
   const filteredExpenseData = isMarketingUser
     ? expenseData.filter((expense) => expense.category === 'marketing')
     : expenseData;
+  const [expenses, setExpenses] = useState<ExpenseProps[]>(filteredExpenseData);
 
   const [showModal, setShowModal] = useState(false);
 
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+
+  const handleStatusChange = async (
+    id: string,
+    newStatus: 'pendiente' | 'pagado'
+  ) => {
+    try {
+      // Actualiza el estado en la base de datos
+      await UpdateExpenseStatus(
+        id,
+        newStatus,
+        expenses.find((exp) => exp.id === id)?.fecha || ''
+      );
+
+      // Actualiza el estado local
+      setExpenses(
+        expenses.map((exp) =>
+          exp.id === id ? { ...exp, estado: newStatus } : exp
+        )
+      );
+    } catch (error) {
+      console.error('Error actualizando el estado:', error);
+    }
   };
 
   return (
@@ -91,10 +116,20 @@ export const Gastos = () => {
                   <td className="pl-4 w-1/7 font-light py-3">
                     {currencyFormat(total)}
                   </td>
-                  <td className="pl-4 w-1/7 font-light  ">
-                    <p className="bg-yellow-500 p-1 rounded-md text-center">
-                      {estado}
-                    </p>
+                  <td className="pl-4 w-1/7 font-light">
+                    <select
+                      className="bg-gray-300 p-1 rounded-md"
+                      value={estado}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          id,
+                          e.target.value as 'pendiente' | 'pagado'
+                        )
+                      }
+                    >
+                      <option value="pendiente">Pendiente</option>
+                      <option value="pagado">Pagado</option>
+                    </select>
                   </td>
                   <td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
                     . . .
