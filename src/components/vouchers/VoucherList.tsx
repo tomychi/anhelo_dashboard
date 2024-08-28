@@ -110,7 +110,7 @@ export const VoucherList: React.FC = () => {
 								</p>
 							</td>
 							<td className="pl-4 w-1/7 font-light py-3">$350</td>
-							<td className="pl-4 w-1/7 font-light  ">
+							<td className="pl-4 w-1/7 font-medium  ">
 								<p className=" p-1 rounded-md text-center text-gray-100 bg-black">
 									Codigos
 								</p>
