@@ -118,7 +118,7 @@ export const VoucherList: React.FC = () => {
 					))
 				) : (
 					<p className="text-center flex justify-center w-full items-center py-4">
-						No hay vouchers disponibles.
+						No hay campañas disponibles.
 					</p>
 				)}
 			</tbody>
