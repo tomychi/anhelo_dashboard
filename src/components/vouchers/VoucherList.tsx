@@ -31,7 +31,7 @@ export const VoucherList: React.FC = () => {
 	};
 
 	return (
-		<table className=" w-full text-xs text-left text-black">
+		<table className=" w-full text-xs text-left font-coolvetica text-black">
 			<thead className=" text-black  ">
 				<tr>
 					<th scope="col" className="pl-4 w-2/5 py-3">
@@ -69,19 +69,22 @@ export const VoucherList: React.FC = () => {
 									{voucher.estado}
 								</p>
 							</td>
-							<td className="pl-4 w-1/7 font-light py-3">
+							{/* <td className="pl-4 w-1/7 font-light py-3">
 								<button
 									onClick={() => handleCopyVoucher(voucher.codigo)}
 									className="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
 								>
 									Copiar
 								</button>
+							</td> */}
+							<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
+								. . .
 							</td>
 						</tr>
 					))
 				) : (
 					<tr>
-						<td colSpan={4} className="text-center py-4">
+						<td colSpan={4} className="text-center  py-4">
 							No hay vouchers disponibles.
 						</td>
 					</tr>
