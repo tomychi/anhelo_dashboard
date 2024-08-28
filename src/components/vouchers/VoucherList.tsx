@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { obtenerTodosLosVouchers, Voucher } from "../../firebase/voucher";
 
+interface GroupedVoucher {
+	titulo: string;
+	fecha: string;
+	usados: number;
+	total: number;
+}
+
 export const VoucherList: React.FC = () => {
-	const [vouchers, setVouchers] = useState<Voucher[]>([]);
-	const [filteredVouchers, setFilteredVouchers] = useState<Voucher[]>([]);
+	const [groupedVouchers, setGroupedVouchers] = useState<GroupedVoucher[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -11,7 +17,8 @@ export const VoucherList: React.FC = () => {
 			setLoading(true);
 			try {
 				const allVouchers = await obtenerTodosLosVouchers();
-				setVouchers(allVouchers);
+				const grouped = groupVouchersByTitle(allVouchers);
+				setGroupedVouchers(grouped);
 			} catch (error) {
 				console.error("Error al obtener todos los vouchers:", error);
 			} finally {
@@ -21,30 +28,55 @@ export const VoucherList: React.FC = () => {
 		fetchVouchers();
 	}, []);
 
-	useEffect(() => {
-		setFilteredVouchers(vouchers.filter((v) => v.estado === "disponible"));
-	}, [vouchers]);
+	const groupVouchersByTitle = (vouchers: Voucher[]): GroupedVoucher[] => {
+		const groupedObj: { [key: string]: GroupedVoucher } = {};
 
-	const handleCopyVoucher = (codigo: string) => {
-		navigator.clipboard.writeText(codigo);
-		alert(`Código ${codigo} copiado al portapapeles`);
+		vouchers.forEach((voucher) => {
+			if (!groupedObj[voucher.titulo]) {
+				groupedObj[voucher.titulo] = {
+					titulo: voucher.titulo,
+					fecha: voucher.fecha,
+					usados: 0,
+					total: 0,
+				};
+			}
+
+			groupedObj[voucher.titulo].total++;
+			if (voucher.estado === "usado") {
+				groupedObj[voucher.titulo].usados++;
+			}
+
+			if (
+				new Date(voucher.fecha) > new Date(groupedObj[voucher.titulo].fecha)
+			) {
+				groupedObj[voucher.titulo].fecha = voucher.fecha;
+			}
+		});
+
+		return Object.values(groupedObj);
+	};
+
+	const getUsageColor = (usados: number, total: number): string => {
+		const ratio = usados / total;
+		if (ratio < 0.25) return "bg-red-main";
+		if (ratio < 0.5) return "bg-yellow-500";
+		return "text-green-500";
 	};
 
 	return (
-		<table className=" w-full text-xs text-left font-coolvetica text-black">
-			<thead className=" text-black  ">
+		<table className="w-full text-xs text-left font-coolvetica text-black">
+			<thead className="text-black">
 				<tr>
 					<th scope="col" className="pl-4 w-2/5 py-3">
 						Campaña
 					</th>
-
 					<th scope="col" className="pl-4 w-1/6 py-3">
 						Fecha
 					</th>
 					<th scope="col" className="pl-4 w-1/6 py-3">
 						Canjeados
 					</th>
-					<th scope="col" className="pl-4 w-1/6 py-3 "></th>
+					<th scope="col" className="pl-4 w-1/6 py-3"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,37 +86,34 @@ export const VoucherList: React.FC = () => {
 							Cargando vouchers...
 						</td>
 					</tr>
-				) : filteredVouchers.length > 0 ? (
-					filteredVouchers.map((voucher, index) => (
+				) : groupedVouchers.length > 0 ? (
+					groupedVouchers.map((group, index) => (
 						<tr
 							key={index}
 							className="text-black border font-light border-black border-opacity-20"
 						>
-							<th scope="row" className="pl-4 w-1/5 font-light py-3">
-								{voucher.codigo}
-							</th>
-							<td className="pl-4 w-1/7 font-light py-3">{voucher.titulo}</td>
-							<td className="pl-4 w-1/7 font-light">
-								<p className="bg-yellow-500 p-1 rounded-md text-center">
-									{voucher.estado}
+							<td className="pl-4 w-2/5 font-light py-3">{group.titulo}</td>
+							<td className="pl-4 w-1/6 font-light py-3">
+								{new Date(group.fecha).toLocaleDateString()}
+							</td>
+							<td className="pl-4 w-1/7 font-light  ">
+								<p
+									className={`  p-1 rounded-md text-center   ${getUsageColor(
+										group.usados,
+										group.total
+									)}`}
+								>
+									{`${group.usados}/${group.total}`}
 								</p>
 							</td>
-							{/* <td className="pl-4 w-1/7 font-light py-3">
-								<button
-									onClick={() => handleCopyVoucher(voucher.codigo)}
-									className="bg-green-500 text-white py-1 px-2 rounded-lg hover:bg-green-600"
-								>
-									Copiar
-								</button>
-							</td> */}
-							<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
+							<td className="pl-4 w-1/6 font-black text-2xl relative bottom-2">
 								. . .
 							</td>
 						</tr>
 					))
 				) : (
 					<tr>
-						<td colSpan={4} className="text-center  py-4">
+						<td colSpan={4} className="text-center py-4">
 							No hay vouchers disponibles.
 						</td>
 					</tr>
