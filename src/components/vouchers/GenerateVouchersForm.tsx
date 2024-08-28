@@ -51,9 +51,9 @@ export const GenerateVouchersForm = () => {
 					<button
 						onClick={handleGenerateVouchers}
 						disabled={loading}
-						className="text-gray-100 w-full h-10 px-4  bg-black font-bold rounded-md outline-none"
+						className="text-gray-100 w-full h-10 px-4  bg-black font-medium rounded-md outline-none"
 					>
-						{loading ? "Generando..." : "Generar Vouchers"}
+						{loading ? "Generando..." : "Crear"}
 					</button>
 				</div>
 			</div>
