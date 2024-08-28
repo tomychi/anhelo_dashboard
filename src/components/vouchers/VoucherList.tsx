@@ -64,10 +64,10 @@ export const VoucherList: React.FC = () => {
 	};
 
 	return (
-		<table className="w-full text-xs text-left font-coolvetica text-black">
+		<table className="w-full text-xs text-left  font-coolvetica text-black">
 			<thead className="text-black">
 				<tr>
-					<th scope="col" className="pl-4 w-2/5 py-3">
+					<th scope="col" className="pl-4 w-2/5  py-3">
 						Campaña
 					</th>
 					<th scope="col" className="pl-4 w-1/7 py-3">
@@ -110,7 +110,11 @@ export const VoucherList: React.FC = () => {
 								</p>
 							</td>
 							<td className="pl-4 w-1/7 font-light py-3">$350</td>
-							<td className="pl-4 w-1/7 font-light py-3">Codigos </td>
+							<td className="pl-4 w-1/7 font-light  ">
+								<p className=" p-1 rounded-md text-center text-gray-100 bg-black">
+									Codigos
+								</p>
+							</td>
 						</tr>
 					))
 				) : (
