@@ -120,6 +120,7 @@ export const FormGasto = () => {
     quantity: 0,
     unit: '',
     id: '',
+    estado: '',
   });
 
   const handleChange = (
@@ -160,6 +161,7 @@ export const FormGasto = () => {
         description: '',
         category: selectedMaterial.categoria,
         fecha: obtenerFechaActual(),
+        estado: '',
       });
     } else {
       setFormData({
@@ -171,6 +173,7 @@ export const FormGasto = () => {
         description: '',
         category: isMarketingUser ? 'marketing' : '', // Si es usuario de marketing, la categoría es 'marketing'
         fecha: obtenerFechaActual(),
+        estado: '',
       });
     }
   };
@@ -231,6 +234,7 @@ export const FormGasto = () => {
       quantity: 0,
       unit: '',
       id: '',
+      estado: '',
     });
     setFile(null);
   };
@@ -307,6 +311,19 @@ export const FormGasto = () => {
             placeholder="Descripción"
             onChange={handleChange}
           />
+        </div>
+        <div className="section w-full relative z-0">
+          <select
+            id="estado"
+            name="estado"
+            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.estado}
+            onChange={handleChange}
+            required
+          >
+            <option value="pendiente">Pendiente</option>
+            <option value="pagado">Pagado</option>
+          </select>
         </div>
         <div className="section w-full relative z-0">
           <input

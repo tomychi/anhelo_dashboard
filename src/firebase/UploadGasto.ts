@@ -17,6 +17,7 @@ export interface ExpenseProps {
   quantity: number;
   unit: string;
   id: string;
+  estado: string;
 }
 
 export const UploadExpense = (

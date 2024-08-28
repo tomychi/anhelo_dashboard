@@ -77,6 +77,7 @@ export const Gastos = () => {
                 total,
                 unit,
                 description,
+                estado,
                 id,
               }) => (
                 <tr
@@ -92,7 +93,7 @@ export const Gastos = () => {
                   </td>
                   <td className="pl-4 w-1/7 font-light  ">
                     <p className="bg-yellow-500 p-1 rounded-md text-center">
-                      Pendiente
+                      {estado}
                     </p>
                   </td>
                   <td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
