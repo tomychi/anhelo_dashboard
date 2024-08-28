@@ -56,8 +56,8 @@ export const GenerateVouchersForm = () => {
 						{loading ? "Generando..." : "Generar Vouchers"}
 					</button>
 				</div>
-				<VoucherList />
 			</div>
+			<VoucherList />
 		</div>
 	);
 };
