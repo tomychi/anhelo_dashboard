@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { RootState } from "../../redux/configureStore";
 import Absolute from "../../assets/absoluteIsologo.avif";
 import items from "../../assets/itemsIcon.png";
 
 export const Sidebar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const currentUserEmail = useSelector(
-		(state: RootState) => state.auth.user?.email
+		(state: RootState) => state.auth?.user?.email
 	);
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
@@ -15,7 +16,7 @@ export const Sidebar = () => {
 		setIsMenuOpen(!isMenuOpen);
 	};
 
-	const navbarHeight = "72px"; // Ajusta esto al alto exacto de tu navbar
+	const navbarHeight = "72px";
 
 	const menuItems = isMarketingUser
 		? [
@@ -63,7 +64,6 @@ export const Sidebar = () => {
 				</div>
 			</div>
 
-			{/* Menú desplegable */}
 			<div
 				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out shadow-lg ${
 					isMenuOpen ? "z-[10000]" : "z-[-1]"
