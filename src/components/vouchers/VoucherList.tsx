@@ -109,9 +109,9 @@ export const VoucherList: React.FC = () => {
 								</p>
 							</td>
 							<td className=" w-1/12 pl-4  font-light py-3">$350</td>
-							<td className=" w-3/12 font-medium  ">
-								<p className=" p-1 rounded-md text-center text-gray-100 bg-black">
-									Copiar codigos
+							<td className=" w-3/12 font-medium  pr-4">
+								<p className=" p-1 rounded-md text-center  text-gray-100 bg-black">
+									Codigos
 								</p>
 							</td>
 						</tr>
