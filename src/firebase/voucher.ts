@@ -33,9 +33,33 @@ export const generarVouchers = async (
   }
 };
 
+export const subirCuponesExistentes = async (
+  codigos: string[],
+  titulo: string
+): Promise<void> => {
+  const firestore = getFirestore();
+
+  for (const codigo of codigos) {
+    const voucherDocRef = doc(firestore, 'vouchers', codigo);
+
+    try {
+      await setDoc(voucherDocRef, {
+        codigo,
+        titulo,
+        estado: 'disponible',
+        fecha: '28/08/2024',
+      });
+      console.log(`Voucher ${codigo} subido correctamente`);
+    } catch (error) {
+      console.error(`Error al subir el voucher ${codigo}:`, error);
+      throw error;
+    }
+  }
+};
 export interface Voucher {
   codigo: string;
   estado: 'disponible' | 'usado';
+  fecha: string;
   titulo: string; // Asegúrate de que este campo esté presente
 }
 
