@@ -25,7 +25,7 @@ export const GenerateVouchersForm = () => {
 			<div className="mt-11">
 				<div className="w-1/5 bg-black h-[0.5px] "></div>
 				<p className="text-black font-medium text-2xl px-4  mt-2">
-					Generar vouchers 2x1
+					Campañas voucher 2x1
 				</p>
 			</div>
 			<div className="p-4 flex flex-col gap-4">
@@ -53,7 +53,7 @@ export const GenerateVouchersForm = () => {
 						disabled={loading}
 						className="text-gray-100 w-full h-10 px-4  bg-black font-medium rounded-md outline-none"
 					>
-						{loading ? "Generando..." : "Crear"}
+						{loading ? "Generando..." : "Generar vouchers"}
 					</button>
 				</div>
 			</div>
