@@ -65,23 +65,22 @@ export const VoucherList: React.FC = () => {
 
 	return (
 		<table className="w-full text-xs text-left  font-coolvetica text-black">
-			<thead className="text-black">
+			<thead className="text-black ">
 				<tr>
-					<th scope="col" className="pl-4 w-2/5  py-3">
+					<th scope="col" className="pl-4 w-3/12  py-3">
 						Campaña
 					</th>
-					<th scope="col" className="pl-4 w-1/7 py-3">
+					<th scope="col" className="pl-4  w-1/12 py-3">
 						Fecha
 					</th>
-					<th scope="col" className="pl-4 w-1/7 py-3">
+					<th scope="col" className=" pl-4 w-1/12 py-3">
 						Canjeados
 					</th>
-					<th scope="col" className="pl-4 w-1/7 py-3">
+					<th scope="col" className="pl-4  w-1/12 py-3">
 						Coste por resultado
 					</th>
 
-					<th scope="col" className="pl-4 w-1/7 py-3"></th>
-					<th scope="col" className="pl-4 w-1/7 py-3"></th>
+					<th scope="col" className=" w-3/12 py-3"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -97,11 +96,11 @@ export const VoucherList: React.FC = () => {
 							key={index}
 							className="text-black border font-light border-black border-opacity-20"
 						>
-							<td className="pl-4 w-2/5 font-light py-3">{group.titulo}</td>
-							<td className="pl-4 w-1/17font-light py-3">28/08/2024</td>
-							<td className="pl-4 w-1/7 font-light  ">
+							<td className=" w-3/12 font-light py-3 pl-4">{group.titulo}</td>
+							<td className=" w-1/12 pl-4  font-light py-3">28/08/2024</td>
+							<td className=" w-1/12 pl-4  font-light  ">
 								<p
-									className={`  p-1 rounded-md text-center   ${getUsageColor(
+									className={`  p-1  rounded-md text-center   ${getUsageColor(
 										group.usados,
 										group.total
 									)}`}
@@ -109,10 +108,10 @@ export const VoucherList: React.FC = () => {
 									{`${group.usados}/${group.total}`}
 								</p>
 							</td>
-							<td className="pl-4 w-1/7 font-light py-3">$350</td>
-							<td className="pl-4 w-1/7 font-medium  ">
+							<td className=" w-1/12 pl-4  font-light py-3">$350</td>
+							<td className=" w-3/12 font-medium  ">
 								<p className=" p-1 rounded-md text-center text-gray-100 bg-black">
-									Codigos
+									Copiar codigos
 								</p>
 							</td>
 						</tr>
