@@ -63,7 +63,7 @@ export const GenerateVouchersForm = () => {
 								disabled={loading}
 								className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
 							>
-								{loading ? "Generando..." : "Generar vouchers"}
+								{loading ? "Generando..." : "Generar"}
 							</button>
 						</div>
 					</>
