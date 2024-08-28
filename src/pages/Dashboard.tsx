@@ -85,9 +85,27 @@ export const Dashboard = () => {
 		<CardInfo
 			key="seguidores"
 			info={0}
-			link="seguidores"
+			// link="seguidores"
 			title={"Nuevos seguidores"}
 			svgComponent={<NuevosSeguidoresSVG />}
+		/>,
+		<CardInfo
+			key="likes"
+			info={0}
+			title={"Promedio de likes"}
+			svgComponent={<PromedioLikesSVG />}
+		/>,
+		<CardInfo
+			key="comentarios"
+			info={0}
+			title={"Promedio de comentarios"}
+			svgComponent={<PromedioComentariosSVG />}
+		/>,
+		<CardInfo
+			key="compartidos"
+			info={0}
+			title={"Promedio de compartidos"}
+			svgComponent={<PromedioCompartidosSVG />}
 		/>,
 	];
 
@@ -173,29 +191,11 @@ export const Dashboard = () => {
 			title={"Ticket promedio"}
 			svgComponent={<TicketPromedioSVG />}
 		/>,
-		<CardInfo
-			key="likes"
-			info={0}
-			title={"Promedio de likes"}
-			svgComponent={<PromedioLikesSVG />}
-		/>,
-		<CardInfo
-			key="comentarios"
-			info={0}
-			title={"Promedio de comentarios"}
-			svgComponent={<PromedioComentariosSVG />}
-		/>,
-		<CardInfo
-			key="compartidos"
-			info={0}
-			title={"Promedio de compartidos"}
-			svgComponent={<PromedioCompartidosSVG />}
-		/>,
 	];
 
 	const cardsToRender = isMarketingUser
 		? marketingCards
-		: [...marketingCards, ...allCards];
+		: [...allCards, ...marketingCards];
 
 	const greetingName = isMarketingUser ? "Lucho" : "Tobias";
 
