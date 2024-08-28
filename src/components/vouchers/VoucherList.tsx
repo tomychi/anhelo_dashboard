@@ -70,13 +70,18 @@ export const VoucherList: React.FC = () => {
 					<th scope="col" className="pl-4 w-2/5 py-3">
 						Campaña
 					</th>
-					<th scope="col" className="pl-4 w-1/6 py-3">
+					<th scope="col" className="pl-4 w-1/7 py-3">
 						Fecha
 					</th>
-					<th scope="col" className="pl-4 w-1/6 py-3">
+					<th scope="col" className="pl-4 w-1/7 py-3">
 						Canjeados
 					</th>
-					<th scope="col" className="pl-4 w-1/6 py-3"></th>
+					<th scope="col" className="pl-4 w-1/7 py-3">
+						Coste por resultado
+					</th>
+
+					<th scope="col" className="pl-4 w-1/7 py-3"></th>
+					<th scope="col" className="pl-4 w-1/7 py-3"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -93,9 +98,7 @@ export const VoucherList: React.FC = () => {
 							className="text-black border font-light border-black border-opacity-20"
 						>
 							<td className="pl-4 w-2/5 font-light py-3">{group.titulo}</td>
-							<td className="pl-4 w-1/6 font-light py-3">
-								{new Date(group.fecha).toLocaleDateString()}
-							</td>
+							<td className="pl-4 w-1/17font-light py-3">28/08/2024</td>
 							<td className="pl-4 w-1/7 font-light  ">
 								<p
 									className={`  p-1 rounded-md text-center   ${getUsageColor(
@@ -106,9 +109,8 @@ export const VoucherList: React.FC = () => {
 									{`${group.usados}/${group.total}`}
 								</p>
 							</td>
-							<td className="pl-4 w-1/7 font-black text-2xl  relative bottom-2 ">
-								. . .
-							</td>
+							<td className="pl-4 w-1/7 font-light py-3">$350</td>
+							<td className="pl-4 w-1/7 font-light py-3">Codigos </td>
 						</tr>
 					))
 				) : (
