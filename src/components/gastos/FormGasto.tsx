@@ -7,6 +7,7 @@ import { calculateUnitCost } from '../../helpers/calculator';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/configureStore';
 import { uploadFile } from '../../firebase/files';
+import { projectAuth } from '../../firebase/config';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -104,6 +105,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 };
 
 export const FormGasto = () => {
+  const currentUserEmail = projectAuth.currentUser?.email;
+  const isMarketingUser = currentUserEmail === 'marketing@anhelo.com';
   const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
   const { materiales } = useSelector((state: RootState) => state.materials);
   const [file, setFile] = useState<File | null>(null);
@@ -111,7 +114,7 @@ export const FormGasto = () => {
   const [formData, setFormData] = useState<ExpenseProps>({
     description: '',
     total: 0,
-    category: '',
+    category: isMarketingUser ? 'marketing' : '', // Si es usuario de marketing, la categoría es 'marketing'
     fecha: obtenerFechaActual(),
     name: '',
     quantity: 0,
@@ -166,7 +169,7 @@ export const FormGasto = () => {
         unit: '',
         total: 0,
         description: '',
-        category: '',
+        category: isMarketingUser ? 'marketing' : '', // Si es usuario de marketing, la categoría es 'marketing'
         fecha: obtenerFechaActual(),
       });
     }
@@ -222,7 +225,7 @@ export const FormGasto = () => {
     setFormData({
       description: '',
       total: 0,
-      category: '',
+      category: isMarketingUser ? 'marketing' : '', // Si es usuario de marketing, la categoría es 'marketing'
       fecha: obtenerFechaActual(),
       name: '',
       quantity: 0,
@@ -313,7 +316,8 @@ export const FormGasto = () => {
             className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
             value={formData.category}
             placeholder="Categoría"
-            onChange={handleChange}
+            readOnly={isMarketingUser} // Hacer el campo solo lectura si es usuario de marketing
+            onChange={isMarketingUser ? undefined : handleChange} // Deshabilitar el cambio si es usuario de marketing
             required
           />
         </div>
