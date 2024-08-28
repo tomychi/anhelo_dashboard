@@ -32,7 +32,7 @@ export const VoucherList: React.FC = () => {
 
 	return (
 		<table className=" w-full text-xs text-left text-black">
-			<thead className=" text-black border  ">
+			<thead className=" text-black border-b  ">
 				<tr>
 					<th scope="col" className="pl-4 w-2/5 py-3">
 						Campaña
