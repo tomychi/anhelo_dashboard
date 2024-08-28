@@ -205,9 +205,18 @@ export const Dashboard = () => {
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola {greetingName}</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[130px]  rounded-lg shadow-2xl shadow-black ">
+			<div className="absolute left-4 right-4 top-[130px] rounded-lg shadow-2xl shadow-black ">
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
-					{cardsToRender}
+					{cardsToRender.map((card, index) => {
+						let className = "";
+						if (index === 0) className = "rounded-t-lg";
+						if (index === cardsToRender.length - 1) className = "rounded-b-lg";
+
+						return React.cloneElement(card, {
+							key: index,
+							className: className,
+						});
+					})}
 				</div>
 			</div>
 		</div>
