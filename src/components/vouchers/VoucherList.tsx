@@ -144,7 +144,7 @@ export const VoucherList: React.FC = () => {
 					doc.setFont("helvetica", "bold");
 					doc.setFontSize(8); // Ajusta el tamaño de la fuente si es necesario
 					doc.setTextColor(0, 0, 0); // Negro
-					doc.text(`Código: ${codigo}`, x + scaledX, y + scaledY);
+					doc.text(`${codigo}`, x + scaledX, y + scaledY);
 
 					voucherIndex++;
 				});
