@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
-  generarVouchers,
+  crearVoucher,
+  generarCodigos,
   obtenerTitulosVouchers,
-  subirCodigosExistentes,
   VoucherTituloConFecha,
 } from '../../firebase/voucher';
 import { VoucherList } from './VoucherList';
+import { SelectCodes } from './SelectCodes';
 
 export const GenerateVouchersForm = () => {
   const [showForm, setShowForm] = useState(false);
   const [cantidad, setCantidad] = useState(0);
-  const [titulo, setTitulo] = useState(''); // Título del nuevo voucher
   const [loading, setLoading] = useState(false);
   const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
     []
   );
-  const [selectedTitles, setSelectedTitles] = useState<{
-    [key: string]: number;
-  }>({});
+
+  const [titulo, setTitulo] = useState('');
+  const [fecha, setFecha] = useState('');
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -34,42 +34,29 @@ export const GenerateVouchersForm = () => {
     fetchVouchers();
   }, []);
 
-  const handleTitleChange = (title: string, cantidadTransferir: number) => {
-    setSelectedTitles((prev) => ({
-      ...prev,
-      [title]: cantidadTransferir,
-    }));
-  };
-
   const handleGenerateVouchers = async () => {
     setLoading(true);
     try {
-      const checkedTitles = Object.entries(selectedTitles).filter(
-        ([, checked]) => checked
-      );
-
-      if (checkedTitles.length === 0) {
-        // Si no hay ningún título seleccionado, generar vouchers para el nuevo título
-        await generarVouchers(cantidad, titulo);
-      } else {
-        // Si hay un título seleccionado, transferir códigos desde el título seleccionado al nuevo
-        const [title] = checkedTitles[0];
-        const voucher = voucherTitles.find((v) => v.titulo === title);
-
-        if (voucher) {
-          const cantidadDisponible = voucher.creados - voucher.usados;
-          await generarVouchers(cantidad, titulo, title, cantidadDisponible);
-        }
-      }
-
-      alert('Vouchers generados y almacenados correctamente');
-      setShowForm(false);
+      await generarCodigos(cantidad);
+      alert(`Se han generado y almacenado ${cantidad} códigos correctamente.`);
       setCantidad(0);
-      setTitulo('');
-      setSelectedTitles({});
     } catch (error) {
-      console.error('Error al generar y almacenar vouchers:', error);
-      alert('Error al generar vouchers');
+      console.error('Error al generar y almacenar códigos:', error);
+      alert('Error al generar códigos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateVoucher = async () => {
+    setLoading(true);
+    try {
+      await crearVoucher(titulo, fecha);
+      alert('Voucher creado exitosamente');
+      setTitulo('');
+      setFecha('');
+    } catch (error) {
+      alert('Error al crear el voucher');
     } finally {
       setLoading(false);
     }
@@ -94,52 +81,47 @@ export const GenerateVouchersForm = () => {
           <>
             <input
               type="text"
-              value={titulo} // Campo para ingresar el título del nuevo voucher
-              placeholder="Título de la campaña"
+              placeholder="Título del voucher"
+              value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
             />
             <input
-              type="number"
-              placeholder="Cantidad de códigos necesarios"
-              value={cantidad || ''}
-              onChange={(e) => {
-                const value = e.target.value;
-                setCantidad(value === '' ? 0 : parseInt(value, 10));
-              }}
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+              type="date"
+              placeholder="Fecha del voucher"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
             />
-            <div className="flex flex-col mt-4">
-              {voucherTitles.map((voucher) => {
-                const disponibles = voucher.creados - voucher.usados;
-                return (
-                  <div key={voucher.titulo} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      checked={!!selectedTitles[voucher.titulo]}
-                      onChange={(e) =>
-                        handleTitleChange(
-                          voucher.titulo,
-                          e.target.checked ? cantidad : 0
-                        )
-                      }
-                      className="mr-2"
-                    />
-                    <label>
-                      {voucher.titulo} - {disponibles} disponibles
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+
             <div className="flex justify-between items-center mt-4">
+              <button
+                onClick={handleCreateVoucher}
+                disabled={loading}
+                className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
+              >
+                {loading ? 'Generando...' : 'Generar campa'}
+              </button>
+            </div>
+            <div className="flex flex-col p-4 gap-4">
+              <input
+                type="number"
+                placeholder="Cantidad de códigos a generar"
+                value={cantidad || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCantidad(value === '' ? 0 : parseInt(value, 10));
+                }}
+                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+              />
               <button
                 onClick={handleGenerateVouchers}
                 disabled={loading}
                 className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
               >
-                {loading ? 'Generando...' : 'Generar'}
+                {loading ? 'Generando...' : 'Generar Códigos'}
               </button>
+              <SelectCodes voucherTitles={voucherTitles} />
             </div>
           </>
         )}

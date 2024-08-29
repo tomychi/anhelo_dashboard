@@ -1,5 +1,5 @@
 import {
-  arrayRemove,
+  addDoc,
   arrayUnion,
   collection,
   doc,
@@ -8,121 +8,25 @@ import {
   getFirestore,
   setDoc,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore';
-import { obtenerFechaActual } from '../helpers/dateToday';
 
-export const generarVouchers = async (
-  cantidad: number,
+export const crearVoucher = async (
   titulo: string,
-  tituloOrigen?: string,
-  cantidadTransferir?: number
+  fecha: string
 ): Promise<void> => {
   const firestore = getFirestore();
   const voucherDocRef = doc(firestore, 'vouchers', titulo);
 
   try {
-    if (tituloOrigen && cantidadTransferir) {
-      // Transferir códigos de un documento origen a un nuevo documento
-      const voucherDocOrigenRef = doc(firestore, 'vouchers', tituloOrigen);
-      const voucherDocOrigen = await getDoc(voucherDocOrigenRef);
+    await setDoc(voucherDocRef, {
+      titulo,
+      fecha,
+    });
 
-      if (voucherDocOrigen.exists()) {
-        const dataOrigen = voucherDocOrigen.data();
-        const codigosOrigen = dataOrigen.codigos || [];
-
-        // Tomar los últimos `cantidadTransferir` códigos
-        const codigosTransferir = codigosOrigen.slice(-cantidadTransferir);
-
-        // Remover los códigos transferidos del documento origen
-        await updateDoc(voucherDocOrigenRef, {
-          codigos: arrayRemove(...codigosTransferir),
-          usados: (dataOrigen.usados || 0) + cantidadTransferir,
-          creados: dataOrigen.creados,
-        });
-
-        // Preparar los códigos para el nuevo documento
-        const batch = codigosTransferir.map(
-          (codigo: string[], index: number) => ({
-            ...codigo,
-            num: index + 1,
-          })
-        );
-        // Generar códigos adicionales si es necesario
-        const cantidadFaltante = cantidad - batch.length;
-        for (let i = 0; i < cantidadFaltante; i++) {
-          const codigo = Math.random()
-            .toString(36)
-            .substring(2, 7)
-            .toUpperCase(); // Genera un código de 5 dígitos
-          batch.push({
-            codigo,
-            estado: 'disponible',
-            num: batch.length + 1,
-          });
-        }
-
-        // Verificar si el nuevo documento ya existe
-        const voucherDoc = await getDoc(voucherDocRef);
-        if (!voucherDoc.exists()) {
-          // Si no existe, crear el nuevo documento con los códigos
-          await setDoc(voucherDocRef, {
-            codigos: batch,
-            fecha: obtenerFechaActual(),
-            canjeados: 0,
-            usados: cantidad,
-            creados: cantidad,
-          });
-        } else {
-          // Si existe, actualizar el documento con los nuevos códigos
-          await updateDoc(voucherDocRef, {
-            codigos: arrayUnion(...batch),
-          });
-        }
-
-        console.log(
-          `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
-        );
-      } else {
-        console.log(
-          `El documento con el título origen ${tituloOrigen} no existe.`
-        );
-      }
-    } else {
-      // Si no hay título de origen, solo se genera un nuevo documento
-      const batch = [];
-      for (let i = 0; i < cantidad; i++) {
-        const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 dígitos
-        batch.push({
-          codigo,
-          estado: 'disponible',
-          num: i + 1,
-        });
-      }
-
-      // Verificar si el nuevo documento ya existe
-      const voucherDoc = await getDoc(voucherDocRef);
-      if (!voucherDoc.exists()) {
-        // Si no existe, crear el nuevo documento con los códigos
-        await setDoc(voucherDocRef, {
-          codigos: batch,
-          fecha: obtenerFechaActual(),
-          canjeados: 0,
-          usados: cantidad,
-          creados: cantidad,
-        });
-      } else {
-        // Si existe, actualizar el documento con los nuevos códigos
-        await updateDoc(voucherDocRef, {
-          codigos: arrayUnion(...batch),
-        });
-      }
-
-      console.log(
-        `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
-      );
-    }
+    console.log(`Documento creado exitosamente con el título: ${titulo}`);
   } catch (error) {
-    console.error('Error al generar y almacenar los vouchers:', error);
+    console.error('Error al crear el documento:', error);
     throw error;
   }
 };
@@ -246,5 +150,115 @@ export const subirCodigosExistentes = async (
   } catch (error) {
     console.error('Error al subir los códigos:', error);
     throw error;
+  }
+};
+
+export interface Codigo {
+  codigo: string;
+  estado: string;
+  num: number;
+}
+
+export const generarCodigos = async (cantidad: number): Promise<void> => {
+  const firestore = getFirestore();
+  const codigosCollectionRef = collection(firestore, 'codigos');
+
+  try {
+    for (let i = 0; i < cantidad; i++) {
+      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 caracteres
+      const nuevoCodigo: Codigo = {
+        codigo,
+        estado: 'disponible',
+        num: i + 1,
+      };
+
+      // Almacena el código en Firestore
+      await addDoc(codigosCollectionRef, nuevoCodigo);
+    }
+
+    console.log(
+      `Se han generado y almacenado ${cantidad} códigos correctamente.`
+    );
+  } catch (error) {
+    console.error('Error al generar y almacenar los códigos:', error);
+    throw error;
+  }
+};
+
+export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
+  const firestore = getFirestore();
+  const codigosCollectionRef = collection(firestore, 'codigos'); // Referencia a la colección 'codigos'
+
+  try {
+    const querySnapshot = await getDocs(codigosCollectionRef);
+    const codigos: Codigo[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.codigo && data.num) {
+        // Asegúrate de que `data.codigo` y `data.num` existan
+        codigos.push({
+          codigo: data.codigo,
+          num: data.num,
+          estado: data.estado,
+        } as Codigo);
+      }
+    });
+
+    // Ordenar los códigos por su propiedad 'num'
+    codigos.sort((a, b) => a.num - b.num);
+
+    return codigos;
+  } catch (error) {
+    console.error('Error al obtener los códigos:', error);
+    throw error;
+  }
+};
+
+export const moverCodigosARango = async (
+  titulo: string,
+  codigosSeleccionados: Codigo[]
+) => {
+  const db = getFirestore();
+
+  try {
+    // Referencia al documento del voucher
+    const voucherRef = doc(db, 'vouchers', titulo);
+
+    // Iniciar una transacción para manejar múltiples operaciones
+    const batch = writeBatch(db);
+
+    // Obtener el documento del voucher para agregar los códigos
+    const voucherDocSnapshot = await getDoc(voucherRef);
+    let existingCodigos: Codigo[] = [];
+
+    if (voucherDocSnapshot.exists()) {
+      // Si el documento ya existe, obtener los códigos existentes
+      const data = voucherDocSnapshot.data();
+      existingCodigos = data?.codigos || [];
+    }
+
+    // Añadir los códigos seleccionados al documento del voucher
+    batch.update(voucherRef, {
+      codigos: [...existingCodigos, ...codigosSeleccionados],
+    });
+
+    // Eliminar los códigos de la colección de códigos
+    for (const codigo of codigosSeleccionados) {
+      const codigosSnapshot = await getDocs(collection(db, 'codigos'));
+      codigosSnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.codigo === codigo.codigo) {
+          batch.delete(doc.ref);
+        }
+      });
+    }
+
+    // Ejecutar la transacción
+    await batch.commit();
+
+    console.log('Códigos movidos y eliminados correctamente');
+  } catch (error) {
+    console.error('Error al mover códigos:', error);
   }
 };
