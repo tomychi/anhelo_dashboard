@@ -1,10 +1,12 @@
 import {
+  arrayUnion,
   collection,
   doc,
+  getDoc,
   getDocs,
   getFirestore,
-  runTransaction,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
 
@@ -13,121 +15,101 @@ export const generarVouchers = async (
   titulo: string
 ): Promise<void> => {
   const firestore = getFirestore();
-
-  for (let i = 0; i < cantidad; i++) {
-    const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 dígitos
-    const voucherDocRef = doc(firestore, 'vouchers', codigo);
-
-    try {
-      await setDoc(voucherDocRef, {
-        codigo,
-        titulo,
-        estado: 'disponible',
-        fecha: obtenerFechaActual(),
-      });
-      console.log(`Voucher ${codigo} generado y almacenado correctamente`);
-    } catch (error) {
-      console.error('Error al generar y almacenar el voucher:', error);
-      throw error;
-    }
-  }
-};
-
-export const subirCuponesExistentes = async (
-  codigos: string[],
-  titulo: string
-): Promise<void> => {
-  const firestore = getFirestore();
-
-  for (const codigo of codigos) {
-    const voucherDocRef = doc(firestore, 'vouchers', codigo);
-
-    try {
-      await setDoc(voucherDocRef, {
-        codigo,
-        titulo,
-        estado: 'disponible',
-        fecha: '28/08/2024',
-      });
-      console.log(`Voucher ${codigo} subido correctamente`);
-    } catch (error) {
-      console.error(`Error al subir el voucher ${codigo}:`, error);
-      throw error;
-    }
-  }
-};
-export interface Voucher {
-  codigo: string;
-  estado: 'disponible' | 'usado';
-  fecha: string;
-  titulo: string; // Asegúrate de que este campo esté presente
-}
-
-export const canjearVoucher = async (codigo: string): Promise<boolean> => {
-  const firestore = getFirestore();
-  const voucherDocRef = doc(firestore, 'vouchers', codigo);
+  const voucherDocRef = doc(firestore, 'vouchers', titulo);
 
   try {
-    const success = await runTransaction(firestore, async (transaction) => {
-      const docSnapshot = await transaction.get(voucherDocRef);
+    // Verifica si el documento ya existe
+    const voucherDoc = await getDoc(voucherDocRef);
 
-      if (!docSnapshot.exists()) {
-        console.error('No se encontró el voucher con el código proporcionado');
-        return false;
-      }
+    if (!voucherDoc.exists()) {
+      // Si el documento no existe, crearlo con un array vacío
+      await setDoc(voucherDocRef, {
+        codigos: [],
+        fecha: obtenerFechaActual(),
+        canjeados: 0,
+        usados: cantidad,
+        creados: cantidad,
+      });
+    }
 
-      const data = docSnapshot.data();
+    const batch = [];
+    for (let i = 0; i < cantidad; i++) {
+      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 dígitos
+      batch.push({
+        codigo,
+        estado: 'disponible',
+        num: i + 1,
+      });
+    }
 
-      if (data?.estado === 'usado') {
-        console.error('El voucher ya ha sido canjeado');
-        return false;
-      }
-
-      // Actualiza el estado del voucher a "usado"
-      transaction.update(voucherDocRef, { estado: 'usado' });
-      return true;
+    // Ahora se puede hacer la actualización del documento
+    await updateDoc(voucherDocRef, {
+      codigos: arrayUnion(...batch),
     });
 
-    return success;
+    console.log(
+      `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
+    );
   } catch (error) {
-    console.error('Error al canjear el voucher:', error);
+    console.error('Error al generar y almacenar los vouchers:', error);
     throw error;
   }
 };
 
-export const obtenerTodosLosVouchers = async (): Promise<Voucher[]> => {
+export interface VoucherTituloConFecha {
+  titulo: string;
+  fecha: string;
+  canjeados: number;
+  usados: number;
+  creados: number;
+}
+
+export const obtenerTitulosVouchers = async (): Promise<
+  VoucherTituloConFecha[]
+> => {
   const firestore = getFirestore();
   const vouchersCollectionRef = collection(firestore, 'vouchers');
 
   try {
     const querySnapshot = await getDocs(vouchersCollectionRef);
-    const vouchers: Voucher[] = [];
+    const titulosConFecha: VoucherTituloConFecha[] = [];
+
     querySnapshot.forEach((doc) => {
-      const data = doc.data() as Voucher;
-      // Asegúrate de que los datos contengan todos los campos requeridos
-      vouchers.push(data);
+      const data = doc.data();
+      titulosConFecha.push({
+        titulo: doc.id, // Agrega el ID de cada documento como un título
+        fecha: data.fecha || 'Fecha no disponible', // Agrega la fecha, si existe
+        canjeados: data.canjeados,
+        usados: data.usados,
+        creados: data.creados,
+      });
     });
-    return vouchers;
+
+    return titulosConFecha;
   } catch (error) {
-    console.error('Error al obtener los vouchers:', error);
+    console.error('Error al obtener los títulos de vouchers:', error);
     throw error;
   }
 };
-export const obtenerTitulosVouchers = async (): Promise<string[]> => {
+
+export const actualizarVouchersUsados = async (
+  titulo: string,
+  cantidadUsados: number
+): Promise<void> => {
   const firestore = getFirestore();
-  const fechaFormateada = obtenerFechaActual(); // Utiliza tu función para formatear la fecha
-  const [, mes, anio] = fechaFormateada.split('/');
-  const vouchersCollectionRef = collection(firestore, 'vouchers', anio, mes);
+  const voucherDocRef = doc(firestore, 'vouchers', titulo);
 
   try {
-    const querySnapshot = await getDocs(vouchersCollectionRef);
-    const titulos: string[] = [];
-    querySnapshot.forEach((doc) => {
-      titulos.push(doc.id);
+    // Actualiza solo el campo 'usados' en el documento correspondiente
+    await updateDoc(voucherDocRef, {
+      usados: cantidadUsados,
     });
-    return titulos;
+
+    console.log(
+      `Cantidad de vouchers usados actualizada a ${cantidadUsados} para el título: ${titulo}`
+    );
   } catch (error) {
-    console.error('Error al obtener los títulos de vouchers:', error);
+    console.error('Error al actualizar la cantidad de vouchers usados:', error);
     throw error;
   }
 };
