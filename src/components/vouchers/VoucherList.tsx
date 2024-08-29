@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
 	actualizarVouchersUsados,
 	obtenerTitulosVouchers,
+	obtenerCodigosCampana,
 	VoucherTituloConFecha,
 } from "../../firebase/voucher";
 import { jsPDF } from "jspdf";
@@ -71,72 +72,73 @@ export const VoucherList: React.FC = () => {
 		}
 	};
 
-	const generateVoucherPDF = () => {
+	const generateVoucherPDF = async () => {
 		if (selectedVoucher) {
-			const selectedGroup = voucherTitles.find(
-				(v) => v.titulo === selectedVoucher
-			);
-			if (!selectedGroup) {
-				alert("No se encontró el grupo de vouchers seleccionado.");
-				return;
-			}
+			setLoading(true);
+			try {
+				const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
 
-			const doc = new jsPDF({
-				orientation: "landscape",
-				unit: "mm",
-				format: [320, 450], // Tamaño SA3
-			});
-
-			const numVouchersPerPage = 36;
-			const voucherWidth = 50;
-			const voucherHeight = 80;
-			const margin = 0;
-			const numColumns = 9;
-			const numRows = 4;
-
-			let voucherIndex = 0;
-
-			// Aquí generamos códigos de ejemplo
-			const codigosEjemplo = Array.from(
-				{ length: selectedGroup.creados },
-				(_, i) => `CODE${i + 1}`
-			);
-
-			codigosEjemplo.forEach((codigo, index) => {
-				if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
-					doc.addPage();
+				if (codigosCampana.length === 0) {
+					alert("No se encontraron códigos para el voucher seleccionado.");
+					return;
 				}
 
-				const x = (voucherIndex % numColumns) * (voucherWidth + margin);
-				const y =
-					(Math.floor(voucherIndex / numColumns) % numRows) *
-					(voucherHeight + margin);
-
-				doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
-
-				const scaleX = voucherWidth / (canvasRef.current?.width || 400);
-				const scaleY = voucherHeight / (canvasRef.current?.height || 300);
-
-				const scaledX = clickPosition ? clickPosition.x * scaleX : 0;
-				const scaledY = clickPosition ? clickPosition.y * scaleY : 0;
-
-				// Agregar el número del voucher en el cuadrado blanco
-				doc.setFont("helvetica", "bold");
-				doc.setFontSize(6);
-				doc.setTextColor(255, 255, 255);
-				doc.text(`${index + 1}`, x + voucherWidth - 5, y + 5, {
-					align: "right",
+				const doc = new jsPDF({
+					orientation: "landscape",
+					unit: "mm",
+					format: [320, 450], // Tamaño SA3
 				});
 
-				// Agregar el código del voucher en la posición seleccionada
-				doc.setFontSize(8);
-				doc.setTextColor(0, 0, 0);
-				doc.text(`${codigo}`, x + scaledX, y + scaledY);
+				const numVouchersPerPage = 36;
+				const voucherWidth = 50;
+				const voucherHeight = 80;
+				const margin = 0;
+				const numColumns = 9;
+				const numRows = 4;
 
-				voucherIndex++;
-			});
+				let voucherIndex = 0;
 
-			doc.save(`vouchers_${selectedGroup.titulo}.pdf`);
+				codigosCampana.forEach((codigoData) => {
+					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
+						doc.addPage();
+					}
+
+					const x = (voucherIndex % numColumns) * (voucherWidth + margin);
+					const y =
+						(Math.floor(voucherIndex / numColumns) % numRows) *
+						(voucherHeight + margin);
+
+					doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
+
+					const scaleX = voucherWidth / (canvasRef.current?.width || 400);
+					const scaleY = voucherHeight / (canvasRef.current?.height || 300);
+
+					const scaledX = clickPosition ? clickPosition.x * scaleX : 0;
+					const scaledY = clickPosition ? clickPosition.y * scaleY : 0;
+
+					// Agregar el número del voucher en la esquina superior derecha
+					doc.setFont("helvetica", "bold");
+					doc.setFontSize(6);
+					doc.setTextColor(255, 255, 255);
+					doc.text(`${codigoData.num}`, x + voucherWidth - 2, y + 3, {
+						align: "right",
+					});
+
+					// Agregar el código del voucher en la posición seleccionada
+					doc.setFontSize(8);
+					doc.setTextColor(0, 0, 0);
+					doc.text(`${codigoData.codigo}`, x + scaledX, y + scaledY);
+
+					voucherIndex++;
+				});
+
+				doc.save(`vouchers_${selectedVoucher}.pdf`);
+			} catch (error) {
+				console.error("Error al generar el PDF:", error);
+				alert("Hubo un error al generar el PDF. Por favor, intente de nuevo.");
+			} finally {
+				setLoading(false);
+			}
 		} else {
 			alert("No se ha seleccionado un voucher para imprimir.");
 		}
@@ -212,7 +214,10 @@ export const VoucherList: React.FC = () => {
 								</td>
 								<td className="w-2/12 font-medium pr-4">
 									<button
-										onClick={() => setSelectedVoucher(t.titulo)}
+										onClick={() => {
+											setSelectedVoucher(t.titulo);
+											generateVoucherPDF();
+										}}
 										className="p-1 rounded-md text-center text-gray-100 bg-black w-full"
 									>
 										Crear PDF
