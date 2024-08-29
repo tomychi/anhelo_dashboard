@@ -112,12 +112,12 @@ export const VoucherList: React.FC = () => {
 				format: [320, 450], // Tamaño SA3
 			});
 
-			const numVouchersPerPage = 90; // Número de vouchers por página
+			const numVouchersPerPage = 36; // Número de vouchers por página
 			const voucherWidth = 50; // Ajusta el ancho del voucher
-			const voucherHeight = 30; // Ajusta la altura del voucher
+			const voucherHeight = 80; // Ajusta la altura del voucher
 			const margin = 0; // Espacio entre vouchers
 			const numColumns = 9; // Número de columnas por página
-			const numRows = 10; // Número de filas por página
+			const numRows = 4; // Número de filas por página
 
 			let voucherIndex = 0;
 
