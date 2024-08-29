@@ -144,7 +144,7 @@ export const GenerateVouchersForm = () => {
           </>
         )}
       </div>
-      <VoucherList voucherTitles={voucherTitles} />
+      <VoucherList />
     </div>
   );
 };
