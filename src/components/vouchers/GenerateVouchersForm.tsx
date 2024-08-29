@@ -86,7 +86,7 @@ export const GenerateVouchersForm = () => {
 						onClick={() => setShowForm(true)}
 						className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
 					>
-						Nueva campaña
+						Crear nueva campaña
 					</button>
 				) : (
 					<>
@@ -98,50 +98,45 @@ export const GenerateVouchersForm = () => {
 							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						/>
 						<input
-							type="text"
-							value={titulo} // Campo para ingresar el título del nuevo voucher
-							placeholder="Fecha"
-							onChange={(e) => setTitulo(e.target.value)}
-							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						/>
-
-						<div className="flex justify-between items-center ">
-							<button
-								onClick={handleGenerateVouchers}
-								disabled={loading}
-								className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
-							>
-								{loading ? "Generando..." : "Crear campaña"}
-							</button>
-						</div>
-					</>
-				)}
-			</div>
-			<div className="p-4 flex flex-col gap-4">
-				{!showForm ? (
-					<button
-						onClick={() => setShowForm(true)}
-						className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
-					>
-						Generar códigos
-					</button>
-				) : (
-					<>
-						<input
-							type="text"
-							value={titulo} // Campo para ingresar el título del nuevo voucher
+							type="number"
 							placeholder="Cantidad de códigos necesarios"
-							onChange={(e) => setTitulo(e.target.value)}
+							value={cantidad || ""}
+							onChange={(e) => {
+								const value = e.target.value;
+								setCantidad(value === "" ? 0 : parseInt(value, 10));
+							}}
 							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
 						/>
-
-						<div className="flex justify-between items-center ">
+						<div className="flex flex-col mt-4">
+							{voucherTitles.map((voucher) => {
+								const disponibles = voucher.creados - voucher.usados;
+								return (
+									<div key={voucher.titulo} className="flex items-center mb-2">
+										<input
+											type="checkbox"
+											checked={!!selectedTitles[voucher.titulo]}
+											onChange={(e) =>
+												handleTitleChange(
+													voucher.titulo,
+													e.target.checked ? cantidad : 0
+												)
+											}
+											className="mr-2"
+										/>
+										<label>
+											{voucher.titulo} - {disponibles} disponibles
+										</label>
+									</div>
+								);
+							})}
+						</div>
+						<div className="flex justify-between items-center mt-4">
 							<button
 								onClick={handleGenerateVouchers}
 								disabled={loading}
 								className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
 							>
-								{loading ? "Generando..." : "Crear códigos"}
+								{loading ? "Generando..." : "Generar"}
 							</button>
 						</div>
 					</>

@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
+
 export const generarVouchers = async (
   cantidad: number,
   titulo: string,
@@ -125,6 +126,7 @@ export const generarVouchers = async (
     throw error;
   }
 };
+
 export interface VoucherTituloConFecha {
   titulo: string;
   fecha: string;
@@ -179,6 +181,27 @@ export const actualizarVouchersUsados = async (
     );
   } catch (error) {
     console.error('Error al actualizar la cantidad de vouchers usados:', error);
+    throw error;
+  }
+};
+
+export const obtenerCodigosCampana = async (
+  titulo: string
+): Promise<Array<{ codigo: string; num: number }>> => {
+  const firestore = getFirestore();
+  const voucherDocRef = doc(firestore, 'vouchers', titulo);
+
+  try {
+    const voucherDoc = await getDoc(voucherDocRef);
+    if (voucherDoc.exists()) {
+      const data = voucherDoc.data();
+      return data.codigos || [];
+    } else {
+      console.log('No se encontró el documento para la campaña:', titulo);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error al obtener los códigos de la campaña:', error);
     throw error;
   }
 };

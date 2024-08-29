@@ -1,266 +1,260 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
-  actualizarVouchersUsados,
-  obtenerTitulosVouchers,
-  obtenerTodosLosVouchers,
-  Voucher,
-  VoucherTituloConFecha,
-} from '../../firebase/voucher';
-import { jsPDF } from 'jspdf';
-import voucherImg from '../../assets/Voucher.jpg'; // Asegúrate de que la ruta es correcta
+	actualizarVouchersUsados,
+	obtenerTitulosVouchers,
+	obtenerCodigosCampana,
+	VoucherTituloConFecha,
+} from "../../firebase/voucher";
+import { jsPDF } from "jspdf";
+import voucherImg from "../../assets/Voucher.jpg";
 
-interface GroupedVoucher {
-  titulo: string;
-  fecha: string;
-  usados: number;
-  total: number;
-  codigos: string[];
-}
+export const VoucherList: React.FC = () => {
+	const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
+		[]
+	);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
+	const [clickPosition, setClickPosition] = useState<{
+		x: number;
+		y: number;
+	} | null>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 
-export const VoucherList = ({
-  voucherTitles,
-}: {
-  voucherTitles: VoucherTituloConFecha[];
-}) => {
-  const [groupedVouchers, setGroupedVouchers] = useState<GroupedVoucher[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
-  const [clickPosition, setClickPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+	useEffect(() => {
+		const fetchVouchers = async () => {
+			setLoading(true);
+			try {
+				const titles = await obtenerTitulosVouchers();
+				setVoucherTitles(titles);
+			} catch (error) {
+				console.error("Error al obtener los títulos de vouchers:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchVouchers();
+	}, []);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    const image = new Image();
-    image.src = voucherImg;
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		const ctx = canvas?.getContext("2d");
+		const image = new Image();
+		image.src = voucherImg;
 
-    image.onload = () => {
-      if (ctx && canvas) {
-        console.log('Imagen cargada exitosamente.');
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0);
-      } else {
-        console.error('Error: No se pudo obtener el contexto del canvas.');
-      }
-    };
+		image.onload = () => {
+			if (ctx && canvas) {
+				console.log("Imagen cargada exitosamente.");
+				canvas.width = image.width;
+				canvas.height = image.height;
+				ctx.drawImage(image, 0, 0);
+			} else {
+				console.error("Error: No se pudo obtener el contexto del canvas.");
+			}
+		};
 
-    image.onerror = () => {
-      console.error('Error al cargar la imagen.');
-    };
+		image.onerror = () => {
+			console.error("Error al cargar la imagen.");
+		};
 
-    return () => {
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
-  }, []);
+		return () => {
+			if (ctx) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
+		};
+	}, []);
 
-  const groupVouchersByTitle = (vouchers: Voucher[]): GroupedVoucher[] => {
-    const groupedObj: { [key: string]: GroupedVoucher } = {};
+	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+		const rect = canvasRef.current?.getBoundingClientRect();
+		if (rect) {
+			const x = event.clientX - rect.left;
+			const y = event.clientY - rect.top;
+			setClickPosition({ x, y });
+		}
+	};
 
-    vouchers.forEach((voucher) => {
-      if (!groupedObj[voucher.titulo]) {
-        groupedObj[voucher.titulo] = {
-          titulo: voucher.titulo,
-          fecha: voucher.fecha,
-          usados: 0,
-          total: 0,
-          codigos: [],
-        };
-      }
+	const generateVoucherPDF = async () => {
+		if (selectedVoucher) {
+			setLoading(true);
+			try {
+				const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
 
-      groupedObj[voucher.titulo].total++;
-      groupedObj[voucher.titulo].codigos.push(voucher.codigo);
-      if (voucher.estado === 'usado') {
-        groupedObj[voucher.titulo].usados++;
-      }
+				if (codigosCampana.length === 0) {
+					alert("No se encontraron códigos para el voucher seleccionado.");
+					return;
+				}
 
-      if (
-        new Date(voucher.fecha) > new Date(groupedObj[voucher.titulo].fecha)
-      ) {
-        groupedObj[voucher.titulo].fecha = voucher.fecha;
-      }
-    });
+				const doc = new jsPDF({
+					orientation: "landscape",
+					unit: "mm",
+					format: [320, 450], // Tamaño SA3
+				});
 
-    return Object.values(groupedObj);
-  };
+				const numVouchersPerPage = 36;
+				const voucherWidth = 50;
+				const voucherHeight = 80;
+				const margin = 0;
+				const numColumns = 9;
+				const numRows = 4;
 
-  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (rect) {
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      setClickPosition({ x, y });
-    }
-  };
+				let voucherIndex = 0;
 
-  const generateVoucherPDF = () => {
-    if (groupedVouchers.length > 0) {
-      const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: [320, 450], // Tamaño SA3
-      });
+				codigosCampana.forEach((codigoData) => {
+					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
+						doc.addPage();
+					}
 
-      const numVouchersPerPage = 36; // Número de vouchers por página
-      const voucherWidth = 50; // Ajusta el ancho del voucher
-      const voucherHeight = 80; // Ajusta la altura del voucher
-      const margin = 0; // Espacio entre vouchers
-      const numColumns = 9; // Número de columnas por página
-      const numRows = 4; // Número de filas por página
+					const x = (voucherIndex % numColumns) * (voucherWidth + margin);
+					const y =
+						(Math.floor(voucherIndex / numColumns) % numRows) *
+						(voucherHeight + margin);
 
-      let voucherIndex = 0;
+					doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
 
-      groupedVouchers.forEach((group) => {
-        group.codigos.forEach((codigo) => {
-          if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
-            doc.addPage(); // Agrega una nueva página después de llenar la página actual
-          }
+					const scaleX = voucherWidth / (canvasRef.current?.width || 400);
+					const scaleY = voucherHeight / (canvasRef.current?.height || 300);
 
-          const x = (voucherIndex % numColumns) * (voucherWidth + margin);
-          const y =
-            (Math.floor(voucherIndex / numColumns) % numRows) *
-            (voucherHeight + margin);
+					const scaledX = clickPosition ? clickPosition.x * scaleX : 0;
+					const scaledY = clickPosition ? clickPosition.y * scaleY : 0;
 
-          doc.addImage(voucherImg, 'JPEG', x, y, voucherWidth, voucherHeight);
+					// Agregar el número del voucher en la esquina superior derecha
+					doc.setFont("helvetica", "bold");
+					doc.setFontSize(6);
+					doc.setTextColor(255, 255, 255);
+					doc.text(`${codigoData.num}`, x + voucherWidth - 2, y + 3, {
+						align: "right",
+					});
 
-          // Asegúrate de que la posición del código sea correcta
-          const scaleX = voucherWidth / (canvasRef.current?.width || 400);
-          const scaleY = voucherHeight / (canvasRef.current?.height || 300);
+					// Agregar el código del voucher en la posición seleccionada
+					doc.setFontSize(8);
+					doc.setTextColor(0, 0, 0);
+					doc.text(`${codigoData.codigo}`, x + scaledX, y + scaledY);
 
-          const scaledX = clickPosition.x * scaleX;
-          const scaledY = clickPosition.y * scaleY;
+					voucherIndex++;
+				});
 
-          doc.setFont('helvetica', 'bold');
-          doc.setFontSize(8); // Ajusta el tamaño de la fuente si es necesario
-          doc.setTextColor(0, 0, 0); // Negro
-          doc.text(`${codigo}`, x + scaledX, y + scaledY);
+				doc.save(`vouchers_${selectedVoucher}.pdf`);
+			} catch (error) {
+				console.error("Error al generar el PDF:", error);
+				alert("Hubo un error al generar el PDF. Por favor, intente de nuevo.");
+			} finally {
+				setLoading(false);
+			}
+		} else {
+			alert("No se ha seleccionado un voucher para imprimir.");
+		}
+	};
 
-          voucherIndex++;
-        });
-      });
+	const getUsageColor = (usados: number, total: number): string => {
+		const ratio = usados / total;
+		if (ratio < 0.25) return "bg-red-main";
+		if (ratio < 0.5) return "bg-yellow-500";
+		return "text-green-500";
+	};
 
-      doc.save('vouchers_anhelo_burgers.pdf');
-    } else {
-      alert('No hay códigos disponibles para imprimir.');
-    }
-  };
+	return (
+		<div>
+			<table className="w-full text-xs text-left font-coolvetica text-black">
+				<thead className="text-black">
+					<tr>
+						<th scope="col" className="pl-4 w-3/12 py-3">
+							Campaña
+						</th>
+						<th scope="col" className="pl-4 w-1/12 py-3">
+							Fecha
+						</th>
+						<th scope="col" className="pl-4 w-1/12 py-3">
+							Canjeados
+						</th>
+						<th scope="col" className="pl-4 w-1/12 py-3">
+							Entregados / creados
+						</th>
+						<th scope="col" className="w-2/12 py-3"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{loading ? (
+						<tr>
+							<td colSpan={5} className="text-center py-4">
+								Cargando campañas...
+							</td>
+						</tr>
+					) : voucherTitles.length > 0 ? (
+						voucherTitles.map((t, index) => (
+							<tr
+								key={index}
+								className="text-black border font-light border-black border-opacity-20"
+							>
+								<td className="w-3/12 font-light py-3 pl-4">{t.titulo}</td>
+								<td className="w-1/12 pl-4 font-light py-3">{t.fecha}</td>
+								<td className="w-1/12 pl-4 font-light">
+									<p
+										className={`p-1 rounded-md text-center ${getUsageColor(
+											t.usados,
+											t.creados
+										)}`}
+									>
+										{`${t.canjeados}/${t.creados}`}
+									</p>
+								</td>
+								<td
+									className="w-1/12 pl-4 font-light py-3 cursor-pointer"
+									onClick={() => {
+										const nuevaCantidadUsados = prompt(
+											"Ingrese la nueva cantidad de vouchers usados:"
+										);
+										if (nuevaCantidadUsados !== null) {
+											actualizarVouchersUsados(
+												t.titulo,
+												parseInt(nuevaCantidadUsados, 10)
+											);
+										}
+									}}
+								>
+									{t.usados} / {t.creados}
+								</td>
+								<td className="w-2/12 font-medium pr-4">
+									<button
+										onClick={() => {
+											setSelectedVoucher(t.titulo);
+											generateVoucherPDF();
+										}}
+										className="p-1 rounded-md text-center text-gray-100 bg-black w-full"
+									>
+										Crear PDF
+									</button>
+								</td>
+							</tr>
+						))
+					) : (
+						<tr>
+							<td colSpan={5} className="text-center py-4">
+								No hay campañas disponibles.
+							</td>
+						</tr>
+					)}
+				</tbody>
+			</table>
 
-  const getUsageColor = (usados: number, total: number): string => {
-    const ratio = usados / total;
-    if (ratio < 0.25) return 'bg-red-main';
-    if (ratio < 0.5) return 'bg-yellow-500';
-    return 'text-green-500';
-  };
-
-  const copyCodigosToClipboard = (codigos: string[]) => {
-    const codigosText = codigos.join('\n');
-    navigator.clipboard.writeText(codigosText).then(
-      () => {
-        alert('Códigos copiados al portapapeles');
-      },
-      (err) => {
-        console.error('Error al copiar códigos: ', err);
-        alert('Error al copiar códigos');
-      }
-    );
-  };
-
-  return (
-    <div>
-      <table className="w-full text-xs text-left font-coolvetica text-black">
-        <thead className="text-black">
-          <tr>
-            <th scope="col" className="pl-4 w-3/12 py-3">
-              Campaña
-            </th>
-            <th scope="col" className="pl-4 w-1/12 py-3">
-              Fecha
-            </th>
-            <th scope="col" className="pl-4 w-1/12 py-3">
-              Canjeados
-            </th>
-            <th scope="col" className="pl-4 w-1/12 py-3">
-              Entregados / creados
-            </th>
-            <th scope="col" className="w-2/12 py-3"></th>
-            <th scope="col" className="w-2/12 py-3"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={6} className="text-center py-4">
-                Cargando campañas...
-              </td>
-            </tr>
-          ) : voucherTitles.length > 0 ? (
-            voucherTitles.map((t, index) => (
-              <tr
-                key={index}
-                className="text-black border font-light border-black border-opacity-20"
-              >
-                <td className="w-3/12 font-light py-3 pl-4">{t.titulo}</td>
-                <td className="w-3/12 font-light py-3 pl-4">{t.fecha}</td>
-                <td className="w-3/12 font-light py-3 pl-4">{t.canjeados}</td>
-                <td
-                  className="w-3/12 font-light py-3 pl-4 cursor-pointer"
-                  onClick={() => {
-                    const nuevaCantidadUsados = prompt(
-                      'Ingrese la nueva cantidad de vouchers usados:'
-                    );
-                    if (nuevaCantidadUsados !== null) {
-                      actualizarVouchersUsados(
-                        t.titulo,
-                        parseInt(nuevaCantidadUsados, 10)
-                      );
-                    }
-                  }}
-                >
-                  {t.usados} / {t.creados}
-                </td>
-                <button
-                  onClick={() => {}}
-                  className="p-1 rounded-md text-center text-gray-100 bg-blue-500 w-full"
-                >
-                  Seleccionar Voucher
-                </button>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6} className="text-center py-4">
-                No hay campañas disponibles.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      {selectedVoucher && (
-        <>
-          <h2 className="text-center my-4">
-            Haz clic en la imagen para elegir la ubicación del código
-          </h2>
-          <canvas
-            ref={canvasRef}
-            width={400}
-            height={300}
-            style={{ border: '1px solid black' }}
-            onClick={handleCanvasClick}
-          />
-          <button
-            onClick={generateVoucherPDF}
-            className="p-1 rounded-md text-center text-gray-100 bg-green-500 w-full"
-          >
-            Generar Voucher
-          </button>
-        </>
-      )}
-    </div>
-  );
+			{selectedVoucher && (
+				<>
+					<h2 className="text-center my-4">
+						Haz clic en la imagen para elegir la ubicación del código
+					</h2>
+					<canvas
+						ref={canvasRef}
+						width={400}
+						height={300}
+						style={{ border: "1px solid black" }}
+						onClick={handleCanvasClick}
+					/>
+					<button
+						onClick={generateVoucherPDF}
+						className="p-1 rounded-md text-center text-gray-100 bg-green-500 w-full"
+					>
+						Generar Voucher
+					</button>
+				</>
+			)}
+		</div>
+	);
 };
