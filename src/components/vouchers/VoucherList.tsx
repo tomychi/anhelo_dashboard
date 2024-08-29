@@ -17,7 +17,11 @@ interface GroupedVoucher {
   codigos: string[];
 }
 
-export const VoucherList: React.FC = () => {
+export const VoucherList = ({
+  voucherTitles,
+}: {
+  voucherTitles: VoucherTituloConFecha[];
+}) => {
   const [groupedVouchers, setGroupedVouchers] = useState<GroupedVoucher[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
@@ -26,25 +30,6 @@ export const VoucherList: React.FC = () => {
     y: number;
   } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
-    []
-  ); // Nuevo estado para los títulos de los vouchers
-
-  useEffect(() => {
-    const fetchVouchers = async () => {
-      setLoading(true);
-      try {
-        const allVoucherTitles = await obtenerTitulosVouchers(); // Obtener títulos de vouchers
-        setVoucherTitles(allVoucherTitles); // Almacenar títulos en el estado
-      } catch (error) {
-        console.error('Error al obtener todos los vouchers:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchVouchers();
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -1,4 +1,5 @@
 import {
+  arrayRemove,
   arrayUnion,
   collection,
   doc,
@@ -9,53 +10,122 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { obtenerFechaActual } from '../helpers/dateToday';
-
 export const generarVouchers = async (
   cantidad: number,
-  titulo: string
+  titulo: string,
+  tituloOrigen?: string,
+  cantidadTransferir?: number
 ): Promise<void> => {
   const firestore = getFirestore();
   const voucherDocRef = doc(firestore, 'vouchers', titulo);
 
   try {
-    // Verifica si el documento ya existe
-    const voucherDoc = await getDoc(voucherDocRef);
+    if (tituloOrigen && cantidadTransferir) {
+      // Transferir códigos de un documento origen a un nuevo documento
+      const voucherDocOrigenRef = doc(firestore, 'vouchers', tituloOrigen);
+      const voucherDocOrigen = await getDoc(voucherDocOrigenRef);
 
-    if (!voucherDoc.exists()) {
-      // Si el documento no existe, crearlo con un array vacío
-      await setDoc(voucherDocRef, {
-        codigos: [],
-        fecha: obtenerFechaActual(),
-        canjeados: 0,
-        usados: cantidad,
-        creados: cantidad,
-      });
+      if (voucherDocOrigen.exists()) {
+        const dataOrigen = voucherDocOrigen.data();
+        const codigosOrigen = dataOrigen.codigos || [];
+
+        // Tomar los últimos `cantidadTransferir` códigos
+        const codigosTransferir = codigosOrigen.slice(-cantidadTransferir);
+
+        // Remover los códigos transferidos del documento origen
+        await updateDoc(voucherDocOrigenRef, {
+          codigos: arrayRemove(...codigosTransferir),
+          usados: (dataOrigen.usados || 0) + cantidadTransferir,
+          creados: dataOrigen.creados,
+        });
+
+        // Preparar los códigos para el nuevo documento
+        const batch = codigosTransferir.map(
+          (codigo: string[], index: number) => ({
+            ...codigo,
+            num: index + 1,
+          })
+        );
+        console.log(batch, cantidad);
+        // Generar códigos adicionales si es necesario
+        const cantidadFaltante = cantidad - batch.length;
+        for (let i = 0; i < cantidadFaltante; i++) {
+          const codigo = Math.random()
+            .toString(36)
+            .substring(2, 7)
+            .toUpperCase(); // Genera un código de 5 dígitos
+          batch.push({
+            codigo,
+            estado: 'disponible',
+            num: batch.length + 1,
+          });
+        }
+
+        // Verificar si el nuevo documento ya existe
+        const voucherDoc = await getDoc(voucherDocRef);
+        if (!voucherDoc.exists()) {
+          // Si no existe, crear el nuevo documento con los códigos
+          await setDoc(voucherDocRef, {
+            codigos: batch,
+            fecha: obtenerFechaActual(),
+            canjeados: 0,
+            usados: cantidad,
+            creados: cantidad,
+          });
+        } else {
+          // Si existe, actualizar el documento con los nuevos códigos
+          await updateDoc(voucherDocRef, {
+            codigos: arrayUnion(...batch),
+          });
+        }
+
+        console.log(
+          `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
+        );
+      } else {
+        console.log(
+          `El documento con el título origen ${tituloOrigen} no existe.`
+        );
+      }
+    } else {
+      // Si no hay título de origen, solo se genera un nuevo documento
+      const batch = [];
+      for (let i = 0; i < cantidad; i++) {
+        const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 dígitos
+        batch.push({
+          codigo,
+          estado: 'disponible',
+          num: i + 1,
+        });
+      }
+
+      // Verificar si el nuevo documento ya existe
+      const voucherDoc = await getDoc(voucherDocRef);
+      if (!voucherDoc.exists()) {
+        // Si no existe, crear el nuevo documento con los códigos
+        await setDoc(voucherDocRef, {
+          codigos: batch,
+          fecha: obtenerFechaActual(),
+          canjeados: 0,
+          usados: cantidad,
+          creados: cantidad,
+        });
+      } else {
+        // Si existe, actualizar el documento con los nuevos códigos
+        await updateDoc(voucherDocRef, {
+          codigos: arrayUnion(...batch),
+        });
+      }
+
+      console.log(
+        `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
+      );
     }
-
-    const batch = [];
-    for (let i = 0; i < cantidad; i++) {
-      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 dígitos
-      batch.push({
-        codigo,
-        estado: 'disponible',
-        num: i + 1,
-      });
-    }
-
-    // Ahora se puede hacer la actualización del documento
-    await updateDoc(voucherDocRef, {
-      codigos: arrayUnion(...batch),
-    });
-
-    console.log(
-      `Vouchers generados y almacenados correctamente bajo el título: ${titulo}`
-    );
   } catch (error) {
     console.error('Error al generar y almacenar los vouchers:', error);
     throw error;
   }
 };
-
 export interface VoucherTituloConFecha {
   titulo: string;
   fecha: string;
