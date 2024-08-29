@@ -46,7 +46,6 @@ export const generarVouchers = async (
             num: index + 1,
           })
         );
-        console.log(batch, cantidad);
         // Generar códigos adicionales si es necesario
         const cantidadFaltante = cantidad - batch.length;
         for (let i = 0; i < cantidadFaltante; i++) {
