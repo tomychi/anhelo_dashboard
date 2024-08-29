@@ -7,14 +7,6 @@ import {
 import { jsPDF } from "jspdf";
 import voucherImg from "../../assets/Voucher.jpg";
 
-interface GroupedVoucher {
-	titulo: string;
-	fecha: string;
-	usados: number;
-	total: number;
-	codigos: string[];
-}
-
 export const VoucherList: React.FC = () => {
 	const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
 		[]
@@ -80,7 +72,7 @@ export const VoucherList: React.FC = () => {
 	};
 
 	const generateVoucherPDF = () => {
-		if (voucherTitles.length > 0 && selectedVoucher) {
+		if (selectedVoucher) {
 			const selectedGroup = voucherTitles.find(
 				(v) => v.titulo === selectedVoucher
 			);
@@ -104,14 +96,13 @@ export const VoucherList: React.FC = () => {
 
 			let voucherIndex = 0;
 
-			// Aquí deberías generar los códigos para el PDF
-			// Como no tenemos acceso directo a los códigos, generaremos códigos de ejemplo
+			// Aquí generamos códigos de ejemplo
 			const codigosEjemplo = Array.from(
 				{ length: selectedGroup.creados },
 				(_, i) => `CODE${i + 1}`
 			);
 
-			codigosEjemplo.forEach((codigo) => {
+			codigosEjemplo.forEach((codigo, index) => {
 				if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
 					doc.addPage();
 				}
@@ -129,7 +120,15 @@ export const VoucherList: React.FC = () => {
 				const scaledX = clickPosition ? clickPosition.x * scaleX : 0;
 				const scaledY = clickPosition ? clickPosition.y * scaleY : 0;
 
+				// Agregar el número del voucher en el cuadrado blanco
 				doc.setFont("helvetica", "bold");
+				doc.setFontSize(6);
+				doc.setTextColor(255, 255, 255);
+				doc.text(`${index + 1}`, x + voucherWidth - 5, y + 5, {
+					align: "right",
+				});
+
+				// Agregar el código del voucher en la posición seleccionada
 				doc.setFontSize(8);
 				doc.setTextColor(0, 0, 0);
 				doc.text(`${codigo}`, x + scaledX, y + scaledY);
@@ -139,9 +138,7 @@ export const VoucherList: React.FC = () => {
 
 			doc.save(`vouchers_${selectedGroup.titulo}.pdf`);
 		} else {
-			alert(
-				"No hay vouchers disponibles para imprimir o no se ha seleccionado un voucher."
-			);
+			alert("No se ha seleccionado un voucher para imprimir.");
 		}
 	};
 
