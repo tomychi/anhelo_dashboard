@@ -213,9 +213,9 @@ export const VoucherList: React.FC = () => {
 								<td className="w-2/12 font-medium pr-4">
 									<button
 										onClick={() => setSelectedVoucher(t.titulo)}
-										className="p-1 rounded-md text-center text-gray-100 bg-blue-500 w-full"
+										className="p-1 rounded-md text-center text-gray-100 bg-black w-full"
 									>
-										Seleccionar Voucher
+										Crear PDF de vouchers
 									</button>
 								</td>
 							</tr>
