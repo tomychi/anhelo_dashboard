@@ -205,3 +205,46 @@ export const obtenerCodigosCampana = async (
     throw error;
   }
 };
+
+export const subirCodigosExistentes = async (
+  codigos: string[]
+): Promise<void> => {
+  const firestore = getFirestore();
+  const titulo = 'baco'; // El título del documento
+  const voucherDocRef = doc(firestore, 'vouchers', titulo);
+
+  const usados = ['EA2E9', 'HO77E', '69198', '19XUO'];
+
+  try {
+    // Preparar los códigos para el documento
+    const batch = codigos.map((codigo, index) => ({
+      codigo,
+      estado: usados.includes(codigo) ? 'usado' : 'disponible',
+      num: index + 1,
+    }));
+
+    // Verificar si el documento ya existe
+    const voucherDoc = await getDoc(voucherDocRef);
+    if (!voucherDoc.exists()) {
+      // Si no existe, crear el nuevo documento con los códigos
+      await setDoc(voucherDocRef, {
+        codigos: batch,
+        fecha: '24/08/2024',
+        canjeados: 0,
+        usados: 0,
+        creados: codigos.length,
+      });
+    } else {
+      // Si existe, actualizar el documento con los nuevos códigos
+      await updateDoc(voucherDocRef, {
+        codigos: arrayUnion(...batch),
+        creados: (voucherDoc.data().creados || 0) + codigos.length,
+      });
+    }
+
+    console.log(`Códigos subidos correctamente bajo el título: ${titulo}`);
+  } catch (error) {
+    console.error('Error al subir los códigos:', error);
+    throw error;
+  }
+};
