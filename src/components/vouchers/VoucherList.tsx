@@ -102,7 +102,7 @@ export const VoucherList: React.FC = () => {
 				{loading ? (
 					<tr>
 						<td colSpan={5} className="text-center py-4">
-							Cargando vouchers...
+							Cargando campañas...
 						</td>
 					</tr>
 				) : groupedVouchers.length > 0 ? (
