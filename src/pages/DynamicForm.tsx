@@ -7,8 +7,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { addTelefonoFirebase } from '../firebase/Telefonos';
 import { obtenerMontosPorAlias } from '../firebase/afip';
+import { canjearVoucher } from '../firebase/voucher';
+import currencyFormat from '../helpers/currencyFormat';
 
 export interface FormDataProps {
+  cupon: string;
   aclaraciones: string;
   metodoPago: string;
   direccion: string;
@@ -83,6 +86,7 @@ export const DynamicForm = () => {
   };
 
   const [formData, setFormData] = useState<FormDataProps>({
+    cupon: '',
     aclaraciones: '',
     metodoPago: '',
     direccion: '',
@@ -134,7 +138,7 @@ export const DynamicForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Aquí puedes manejar la lógica para enviar los datos del formulario
 
@@ -157,13 +161,51 @@ export const DynamicForm = () => {
       return;
     }
 
-    const subTotal = detallePedido.reduce((acc, burger) => {
-      if (burger.subTotal !== undefined) {
-        return acc + burger.subTotal;
+    // Validar el cupón si existe en el formulario
+    let cuponValido = false;
+    if (formData.cupon) {
+      cuponValido = await canjearVoucher(formData.cupon);
+
+      if (!cuponValido) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Cupón inválido',
+          text: 'El cupón que ingresaste no es válido o ya ha sido canjeado.',
+        });
       }
+    }
+
+    // Calcular el subtotal
+    const subTotal = detallePedido.reduce((acc, burger) => {
+      // Asegúrate de que `burger.quantity` y `burger.priceBurger` no sean undefined
+      const cantidad = burger.quantity ?? 1;
+      const priceBurger = burger.priceBurger ?? 0;
+
+      // Aplica descuento si el cupón es válido y la cantidad es mayor a 2
+      const cantidadFinal =
+        cuponValido && cantidad >= 2 ? cantidad - 1 : cantidad;
+
+      console.log(cantidadFinal);
+
+      if (burger.subTotal !== undefined) {
+        return acc + priceBurger * cantidadFinal + (burger.priceToppings ?? 0);
+      }
+
       return acc;
     }, 0);
 
+    if (cuponValido) {
+      const total = subTotal + parseInt(formData.envio);
+      Swal.fire({
+        icon: 'success',
+        title: 'DESCUENTO',
+        text: `El total es ${currencyFormat(total)}`,
+        timer: 3000, // Cierra automáticamente después de 3 segundos
+        timerProgressBar: true, // Mostrar barra de progreso
+        showCloseButton: true, // Mostrar botón de cerrar (cruz)
+        showConfirmButton: false, // No mostrar botón de confirmación
+      });
+    }
     const envio = parseInt(formData.envio);
 
     const info = {
@@ -177,11 +219,7 @@ export const DynamicForm = () => {
     };
     UploadOrder(info, aliasDisponible)
       .then((result) => {
-        Swal.fire({
-          icon: 'success',
-          title: `Pedido cargado`,
-          text: `El pedido ${result} se cargo correctamente`,
-        });
+        console.log(result);
       })
       .catch((error) => {
         Swal.fire({
@@ -195,6 +233,7 @@ export const DynamicForm = () => {
 
     // Limpia los datos del formulario después de procesarlos
     setFormData({
+      cupon: '',
       aclaraciones: '',
       metodoPago: '',
       direccion: '',
@@ -307,6 +346,21 @@ export const DynamicForm = () => {
                 {seccionActiva === 'elaborar' ? (
                   <div className="flex flex-col items-center justify-center">
                     <form onSubmit={handleSubmit} className="w-full p-4">
+                      <div className="relative z-0 mt-4 ">
+                        <input
+                          className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
+                          id="cupon"
+                          name="cupon"
+                          value={formData.cupon}
+                          onChange={handleChange}
+                        />
+                        <label
+                          htmlFor="cupon"
+                          className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                          Cupón:
+                        </label>
+                      </div>
                       <div className="relative z-0 mt-4 ">
                         <input
                           className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"

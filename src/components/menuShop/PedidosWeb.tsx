@@ -73,7 +73,6 @@ const procesarDetallePedido = (
         const priceBurger = data.find((d) => d.data.name === burger)?.data
           .price;
         const subTotal = (priceBurger + priceToppings) * quantity;
-        console.log(priceBurger);
         handleFormBurger({
           burger,
           priceBurger,
@@ -111,6 +110,11 @@ const parsearMensajePedido = (
   data: ProductStateProps[],
   handleFormBurger: (value: DetallePedidoProps) => void
 ) => {
+  // Extraer cupón
+  const cuponRegex = /Cupón:\s*(.*?)(?:\s*-|$)/;
+  const cuponMatch = cuponRegex.exec(mensaje);
+  const cupon = cuponMatch ? cuponMatch[1].trim() : '';
+
   // Expresiones regulares para encontrar las secciones relevantes
   const datosVendedorRegex =
     /Nombre:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Ubicación:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
@@ -138,6 +142,7 @@ const parsearMensajePedido = (
     const coordinates = extractCoordinates(ubicacion);
 
     return {
+      cupon, // Aquí se devuelve el cupón extraído
       map: coordinates as [number, number],
       telefono,
       direccion,
@@ -185,6 +190,7 @@ export const PedidosWeb = ({
     );
     if (infoClient) {
       handleFormClient(infoClient);
+
       setSeccionActiva('elaborar');
     } else {
       console.error('No se pudo obtener la información del cliente.');
