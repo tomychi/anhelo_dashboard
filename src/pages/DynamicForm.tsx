@@ -200,7 +200,7 @@ export const DynamicForm = () => {
         icon: 'success',
         title: 'DESCUENTO',
         text: `El total es ${currencyFormat(total)}`,
-        timer: 3000, // Cierra automáticamente después de 3 segundos
+        timer: 8000, // Cierra automáticamente después de 3 segundos
         timerProgressBar: true, // Mostrar barra de progreso
         showCloseButton: true, // Mostrar botón de cerrar (cruz)
         showConfirmButton: false, // No mostrar botón de confirmación
