@@ -1,7 +1,18 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { Bar, Line } from 'react-chartjs-2';
-import { Chart } from 'chart.js';
+
+import {
+  Chart,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+Chart.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 const options = {
   responsive: true,
