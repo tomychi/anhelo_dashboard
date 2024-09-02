@@ -177,11 +177,11 @@ export const Dashboard = () => {
 			title={"Km recorridos"}
 			svgComponent={<TruckKM />}
 		/>,
-
+		// Kpi financiero
 		<CardInfo
 			key="km"
 			info={`${Math.round(calculateKMS(orders))} km`}
-			title={"Km recorridos"}
+			title={"Costo promedio delivery"}
 			svgComponent={<TruckKM />}
 		/>,
 		<CardInfo
