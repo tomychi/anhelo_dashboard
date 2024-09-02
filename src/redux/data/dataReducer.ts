@@ -20,6 +20,7 @@ export interface DataState {
   valueDate: DateValueType;
   telefonos: TelefonosProps[];
   vueltas: Cadete[];
+  isLoading: boolean;
 }
 
 interface DataAction {
@@ -40,6 +41,7 @@ const initialState: DataState = {
   neto: 0,
   vueltas: [],
   toppingsData: [],
+  isLoading: false,
   valueDate: {
     startDate: formatDate(new Date()),
     endDate: formatDate(new Date()), // Último día de diciembre del año actual
@@ -55,6 +57,12 @@ const dataReducer = (state = initialState, action: DataAction) => {
         valueDate,
       };
     }
+
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
 
     case 'SET_TELEFONOS': {
       const telefonos = action.payload;

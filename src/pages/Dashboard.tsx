@@ -45,6 +45,7 @@ export const Dashboard = () => {
     neto,
     telefonos,
     vueltas,
+    isLoading,
   } = useSelector((state: RootState) => state.data);
   const currentUserEmail = projectAuth.currentUser?.email;
   const isMarketingUser = currentUserEmail === 'marketing@anhelo.com';
@@ -218,48 +219,55 @@ export const Dashboard = () => {
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg shadow-2xl shadow-black ">
         <div className="mt-8 px-4">
-          {vueltas.map((cadete) => (
-            <div key={cadete.id} className="mb-8">
-              <h3 className="text-2xl font-semibold">{cadete.name}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {cadete.vueltas.map((vuelta, index) => (
-                  <div
-                    key={vuelta.rideId}
-                    className="p-4 bg-white rounded-lg shadow-md"
-                  >
-                    <h4 className="text-xl font-bold mb-2">
-                      Vuelta {index + 1}
-                    </h4>
+          {isLoading ? (
+            <p className="text-center text-white">Cargando datos...</p> // Mostrar mensaje de carga
+          ) : (
+            vueltas.map((cadete) => (
+              <div key={cadete.id} className="mb-8">
+                <h3 className="text-2xl font-semibold">{cadete.name}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {cadete.vueltas?.map((vuelta, index) => (
+                    <div
+                      key={vuelta.rideId}
+                      className="p-4 bg-white rounded-lg shadow-md"
+                    >
+                      <h4 className="text-xl font-bold mb-2">
+                        Vuelta {index + 1}
+                      </h4>
 
-                    <p>
-                      <strong>Paga:</strong> {currencyFormat(vuelta.paga)}
-                    </p>
-                    <p>
-                      <strong>Distancia Total:</strong> {vuelta.totalDistance}{' '}
-                      km
-                    </p>
-                    <p>
-                      <strong>Duración Total:</strong>{' '}
-                      {vuelta.totalDuration.toFixed(2)} min
-                    </p>
-                  </div>
-                ))}
+                      <p>
+                        <strong>Paga:</strong> {currencyFormat(vuelta.paga)}
+                      </p>
+                      <p>
+                        <strong>Distancia Total:</strong> {vuelta.totalDistance}{' '}
+                        km
+                      </p>
+                      <p>
+                        <strong>Duración Total:</strong>{' '}
+                        {vuelta.totalDuration.toFixed(2)} min
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
-          {cardsToRender.map((card, index) => {
-            let className = '';
-            if (index === 0) className = 'rounded-t-lg';
-            if (index === cardsToRender.length - 1) className = 'rounded-b-lg';
+        {!isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+            {cardsToRender.map((card, index) => {
+              let className = '';
+              if (index === 0) className = 'rounded-t-lg';
+              if (index === cardsToRender.length - 1)
+                className = 'rounded-b-lg';
 
-            return React.cloneElement(card, {
-              key: index,
-              className: className,
-            });
-          })}
-        </div>
+              return React.cloneElement(card, {
+                key: index,
+                className: className,
+              });
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

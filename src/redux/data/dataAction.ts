@@ -42,3 +42,10 @@ export const setCatedesVueltas = (vueltas: Cadete[]) => {
     payload: vueltas,
   };
 };
+
+export const setLoading = (isLoading: boolean) => {
+  return {
+    type: 'SET_LOADING',
+    payload: isLoading,
+  };
+};

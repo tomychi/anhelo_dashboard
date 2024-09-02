@@ -7,6 +7,7 @@ import {
   readExpensesData,
   readOrdersData,
   setCatedesVueltas,
+  setLoading,
   setTelefonos,
   setValueDate,
 } from '../redux/data/dataAction';
@@ -22,12 +23,14 @@ import { fetchCadetesVueltasByPeriod } from '../firebase/Cadetes';
 const Calendar = () => {
   const dispatch = useDispatch();
   const { valueDate } = useSelector((state: RootState) => state.data);
+
   const [isOpen, setIsOpen] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const handleValueDate = async (value: DateValueType) => {
     dispatch(setValueDate(value));
+    dispatch(setLoading(true));
 
     localStorage.removeItem('mapData');
 
@@ -48,6 +51,8 @@ const Calendar = () => {
       dispatch(readExpensesData(expensesData));
     } catch (error) {
       console.error('Se produjo un error al leer los datos:', error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
