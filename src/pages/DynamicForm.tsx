@@ -185,8 +185,6 @@ export const DynamicForm = () => {
       const cantidadFinal =
         cuponValido && cantidad >= 2 ? cantidad - 1 : cantidad;
 
-      console.log(cantidadFinal);
-
       if (burger.subTotal !== undefined) {
         return acc + priceBurger * cantidadFinal + (burger.priceToppings ?? 0);
       }
@@ -285,6 +283,8 @@ export const DynamicForm = () => {
     const costoBurger = productoSeleccionado
       ? (productoSeleccionado.costo + costoToppings) * quantity
       : 0;
+    console.log(productoSeleccionado);
+    console.log(costoBurger);
     const burger = {
       burger: values.burger,
       toppings: values.toppings,
