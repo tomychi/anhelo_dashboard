@@ -82,6 +82,7 @@ interface Vuelta {
 export const Dashboard = () => {
 	const dispatch = useDispatch();
 	const [cadetes, setCadetes] = useState<Cadete[]>([]);
+	const [totalPaga, setTotalPaga] = useState(0);
 	const {
 		valueDate,
 		orders,
@@ -168,6 +169,19 @@ export const Dashboard = () => {
 				"Cadetes con vueltas filtradas por fecha (excluyendo vueltas vacías):",
 				filteredCadetes
 			);
+
+			const calculatedTotalPaga = filteredCadetes.reduce((total, cadete) => {
+				return (
+					total +
+					cadete.vueltas.reduce(
+						(cadetePaga, vuelta) => cadetePaga + vuelta.paga,
+						0
+					)
+				);
+			}, 0);
+
+			setTotalPaga(calculatedTotalPaga);
+			console.log("Total paga de todas las vueltas:", calculatedTotalPaga);
 		}
 	}, [filteredCadetes]);
 
@@ -276,7 +290,11 @@ export const Dashboard = () => {
 		/>,
 		<CardInfo
 			key="costokm"
-			info={`${Math.round(calculateKMS(orders))} km`}
+			info={
+				orders.length > 0
+					? currencyFormat(totalPaga / orders.length)
+					: currencyFormat(0)
+			}
 			title={"Costo promedio delivery"}
 			svgComponent={<TruckKM />}
 		/>,
