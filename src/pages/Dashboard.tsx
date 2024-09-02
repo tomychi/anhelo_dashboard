@@ -1,11 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import currencyFormat from "../helpers/currencyFormat";
 import Calendar from "../components/Calendar";
 import { CardInfo } from "../components/dashboard";
 import { projectAuth } from "../firebase/config";
-
+import {
+	getFirestore,
+	collection,
+	getDocs,
+	query,
+	where,
+	Timestamp,
+} from "firebase/firestore";
+import { DateRangeType } from "react-tailwindcss-datepicker/dist/types";
 import {
 	BrutoSVG,
 	CustomerSuccessSVG,
@@ -35,21 +43,78 @@ import { readMaterialsAll } from "../redux/materials/materialAction";
 import { readProductsAll } from "../redux/products/productAction";
 import { ReadData } from "../firebase/ReadData";
 
-export const Dashboard = () => {
-	const currentUserEmail = projectAuth.currentUser?.email;
-	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+const convertTimestamps = (obj: any): any => {
+	if (obj instanceof Timestamp) {
+		return obj.toDate();
+	} else if (Array.isArray(obj)) {
+		return obj.map(convertTimestamps);
+	} else if (typeof obj === "object" && obj !== null) {
+		return Object.fromEntries(
+			Object.entries(obj).map(([key, value]) => [key, convertTimestamps(value)])
+		);
+	}
+	return obj;
+};
 
+const isDateInRange = (date: Date, startDate: Date, endDate: Date) => {
+	return date >= startDate && date <= endDate;
+};
+
+interface Cadete {
+	id: string;
+	name: string;
+	available: boolean;
+	category: string;
+	vueltas?: Vuelta[];
+}
+
+interface Vuelta {
+	startTime: Date;
+	endTime?: Date;
+	rideId: string;
+	status: string;
+	totalDistance: number;
+	totalDuration: number;
+	paga: number;
+	orders: any[];
+}
+
+export const Dashboard = () => {
 	const dispatch = useDispatch();
+	const [cadetes, setCadetes] = useState<Cadete[]>([]);
 	const {
+		valueDate,
 		orders,
 		facturacionTotal,
 		totalProductosVendidos,
 		neto,
 		telefonos,
-		valueDate,
 	} = useSelector((state: RootState) => state.data);
+	const currentUserEmail = projectAuth.currentUser?.email;
+	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
-	console.log(neto);
+	console.log(calculateKMS);
+
+	const filteredCadetes = useMemo(() => {
+		if (!valueDate || !valueDate.startDate) return [];
+
+		const startDate = new Date(valueDate.startDate);
+		const endDate = new Date(valueDate.endDate || valueDate.startDate);
+		startDate.setHours(0, 0, 0, 0);
+		endDate.setHours(23, 59, 59, 999);
+
+		return cadetes
+			.map((cadete) => ({
+				...cadete,
+				vueltas:
+					cadete.vueltas?.filter(
+						(vuelta) =>
+							vuelta.startTime &&
+							isDateInRange(new Date(vuelta.startTime), startDate, endDate)
+					) || [],
+			}))
+			.filter((cadete) => cadete.vueltas.length > 0);
+	}, [cadetes, valueDate]);
 
 	useEffect(() => {
 		const fetchMateriales = async () => {
@@ -66,7 +131,7 @@ export const Dashboard = () => {
 				const products = await ReadData();
 				dispatch(readProductsAll(products));
 			} catch (error) {
-				console.error("Error al leer los materiales:", error);
+				console.error("Error al leer los productos:", error);
 			}
 		};
 
@@ -74,7 +139,41 @@ export const Dashboard = () => {
 		fetchMateriales();
 	}, [dispatch]);
 
-	const startDate = new Date(valueDate?.startDate || new Date());
+	useEffect(() => {
+		const fetchCadetes = async () => {
+			const firestore = getFirestore();
+			const empleadosRef = collection(firestore, "empleados");
+			const cadetesQuery = query(
+				empleadosRef,
+				where("category", "==", "cadete")
+			);
+			try {
+				const snapshot = await getDocs(cadetesQuery);
+				const cadetesData = snapshot.docs.map((doc) => {
+					const data = doc.data();
+					return convertTimestamps({ id: doc.id, ...data }) as Cadete;
+				});
+				setCadetes(cadetesData);
+			} catch (error) {
+				console.error("Error al obtener los cadetes:", error);
+			}
+		};
+
+		fetchCadetes();
+	}, []);
+
+	useEffect(() => {
+		if (filteredCadetes.length > 0) {
+			console.log(
+				"Cadetes con vueltas filtradas por fecha (excluyendo vueltas vacías):",
+				filteredCadetes
+			);
+		}
+	}, [filteredCadetes]);
+
+	const startDate = valueDate?.startDate
+		? new Date(valueDate.startDate)
+		: new Date();
 	const customers = getCustomers(telefonos, orders, startDate);
 
 	const marketingCards = [
@@ -87,7 +186,6 @@ export const Dashboard = () => {
 		<CardInfo
 			key="seguidores"
 			info={0}
-			// link="seguidores"
 			title={"Nuevos seguidores"}
 			svgComponent={<NuevosSeguidoresSVG />}
 		/>,
@@ -170,16 +268,14 @@ export const Dashboard = () => {
 			title={"Tiempo total promedio"}
 			svgComponent={<EntregaPromedioSVG />}
 		/>,
-		// Reducis este numero acercandote a tus clientes
 		<CardInfo
 			key="km"
 			info={`${Math.round(calculateKMS(orders))} km`}
 			title={"Km recorridos"}
 			svgComponent={<TruckKM />}
 		/>,
-		// Kpi financiero
 		<CardInfo
-			key="km"
+			key="costokm"
 			info={`${Math.round(calculateKMS(orders))} km`}
 			title={"Costo promedio delivery"}
 			svgComponent={<TruckKM />}
