@@ -1,7 +1,7 @@
 import { DateValueType } from 'react-tailwindcss-datepicker';
 import { ExpenseProps } from '../../firebase/UploadGasto';
 import { BurgersPedidas, calcularTotales } from '../../helpers/calculator';
-import { PedidoProps, TelefonosProps } from '../../types/types';
+import { Cadete, PedidoProps, TelefonosProps } from '../../types/types';
 import { formatDate } from '../../helpers/dateToday';
 
 export interface DataState {
@@ -19,6 +19,7 @@ export interface DataState {
   }[];
   valueDate: DateValueType;
   telefonos: TelefonosProps[];
+  vueltas: Cadete[];
 }
 
 interface DataAction {
@@ -37,6 +38,7 @@ const initialState: DataState = {
   productosPedidos: [],
   gastosTotal: 0,
   neto: 0,
+  vueltas: [],
   toppingsData: [],
   valueDate: {
     startDate: formatDate(new Date()),
@@ -59,6 +61,14 @@ const dataReducer = (state = initialState, action: DataAction) => {
       return {
         ...state,
         telefonos,
+      };
+    }
+
+    case 'SET_VUELTAS': {
+      const vueltas = action.payload;
+      return {
+        ...state,
+        vueltas,
       };
     }
 

@@ -1,87 +1,93 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
-import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
-import { RootState } from "../redux/configureStore";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import { RootState } from '../redux/configureStore';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-	readExpensesData,
-	readOrdersData,
-	setTelefonos,
-	setValueDate,
-} from "../redux/data/dataAction";
+  readExpensesData,
+  readOrdersData,
+  setCatedesVueltas,
+  setTelefonos,
+  setValueDate,
+} from '../redux/data/dataAction';
 import {
-	ReadDataForDateRange,
-	readTelefonosFromFirebase,
-} from "../firebase/ReadData";
-import { PedidoProps } from "../types/types";
-import { ExpenseProps } from "../firebase/UploadGasto";
-import arrow from "../assets/arrowIcon.png";
+  ReadDataForDateRange,
+  readTelefonosFromFirebase,
+} from '../firebase/ReadData';
+import { PedidoProps } from '../types/types';
+import { ExpenseProps } from '../firebase/UploadGasto';
+import arrow from '../assets/arrowIcon.png';
+import { fetchCadetesVueltasByPeriod } from '../firebase/Cadetes';
 
 const Calendar = () => {
-	const dispatch = useDispatch();
-	const { valueDate } = useSelector((state: RootState) => state.data);
-	const [isOpen, setIsOpen] = useState(false);
-	const calendarRef = useRef<HTMLDivElement>(null);
-	const location = useLocation();
+  const dispatch = useDispatch();
+  const { valueDate } = useSelector((state: RootState) => state.data);
+  const [isOpen, setIsOpen] = useState(false);
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
-	const handleValueDate = async (value: DateValueType) => {
-		dispatch(setValueDate(value));
+  const handleValueDate = async (value: DateValueType) => {
+    dispatch(setValueDate(value));
 
-		localStorage.removeItem("mapData");
+    localStorage.removeItem('mapData');
 
-		try {
-			const [ordersData, expensesData] = await Promise.all([
-				ReadDataForDateRange<PedidoProps>("pedidos", value),
-				ReadDataForDateRange<ExpenseProps>("gastos", value),
-			]);
+    try {
+      const [ordersData, expensesData] = await Promise.all([
+        ReadDataForDateRange<PedidoProps>('pedidos', value),
+        ReadDataForDateRange<ExpenseProps>('gastos', value),
+      ]);
 
-			const telefonos = await readTelefonosFromFirebase();
-			dispatch(setTelefonos(telefonos));
+      const telefonos = await readTelefonosFromFirebase();
+      dispatch(setTelefonos(telefonos));
 
-			dispatch(readOrdersData(ordersData));
-			dispatch(readExpensesData(expensesData));
-		} catch (error) {
-			console.error("Se produjo un error al leer los datos:", error);
-		}
-	};
+      // Lee las vueltas de los cadetes en el rango de fechas seleccionado
+      const cadetesConVueltas = await fetchCadetesVueltasByPeriod(value);
+      dispatch(setCatedesVueltas(cadetesConVueltas));
 
-	useEffect(() => {
-		if (valueDate === undefined) {
-			dispatch(setValueDate(null));
-		}
-	}, [dispatch, valueDate]);
+      dispatch(readOrdersData(ordersData));
+      dispatch(readExpensesData(expensesData));
+    } catch (error) {
+      console.error('Se produjo un error al leer los datos:', error);
+    }
+  };
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				calendarRef.current &&
-				!calendarRef.current.contains(event.target as Node)
-			) {
-				setIsOpen(false);
-			}
-		};
+  useEffect(() => {
+    if (valueDate === undefined) {
+      dispatch(setValueDate(null));
+    }
+  }, [dispatch, valueDate]);
 
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
-	const handleCalendarClick = () => {
-		setIsOpen(!isOpen);
-	};
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
-	const bgColor = location.pathname === "/" ? "bg-black" : " bg-gray-100 ";
-	const textColor = location.pathname === "/" ? "text-white" : "text-black ";
-	const borderColor =
-		location.pathname === "/" ? " border-white" : "border-black ";
-	const arrowColor =
-		location.pathname === "/" ? { filter: "invert(100%)" } : {};
+  const handleCalendarClick = () => {
+    setIsOpen(!isOpen);
+  };
 
-	return (
-		<>
-			<style>
-				{`
+  const bgColor = location.pathname === '/' ? 'bg-black' : ' bg-gray-100 ';
+  const textColor = location.pathname === '/' ? 'text-white' : 'text-black ';
+  const borderColor =
+    location.pathname === '/' ? ' border-white' : 'border-black ';
+  const arrowColor =
+    location.pathname === '/' ? { filter: 'invert(100%)' } : {};
+
+  return (
+    <>
+      <style>
+        {`
           .calendar-container {
             position: relative;
           }
@@ -97,35 +103,35 @@ const Calendar = () => {
             transform: translateY(-50%) rotate(-90deg);
           }
         `}
-			</style>
-			<div
-				className={`calendar-container ${bgColor}`}
-				ref={calendarRef}
-				onClick={handleCalendarClick}
-			>
-				<Datepicker
-					separator={"hasta"}
-					i18n={"es"}
-					primaryColor={"blue"}
-					inputClassName={`w-full h-10 rounded-md border focus:ring-0 font-coolvetica  px-4 pl-10 pr-8 ${bgColor} ${textColor} ${borderColor} text-xs font-light`}
-					toggleClassName={`absolute rounded-l-md font-coolvetica ${textColor} font-black left-0 h-full px-3 focus:outline-none`}
-					containerClassName={`
+      </style>
+      <div
+        className={`calendar-container ${bgColor}`}
+        ref={calendarRef}
+        onClick={handleCalendarClick}
+      >
+        <Datepicker
+          separator={'hasta'}
+          i18n={'es'}
+          primaryColor={'blue'}
+          inputClassName={`w-full h-10 rounded-md border focus:ring-0 font-coolvetica  px-4 pl-10 pr-8 ${bgColor} ${textColor} ${borderColor} text-xs font-light`}
+          toggleClassName={`absolute rounded-l-md font-coolvetica ${textColor} font-black left-0 h-full px-3 focus:outline-none`}
+          containerClassName={`
 						relative rounded-md font-coolvetica ${textColor} font-black
 					`}
-					value={valueDate}
-					onChange={handleValueDate}
-					placeholder={"Desde y hasta"}
-					useRange={false}
-				/>
-				<img
-					src={arrow}
-					className={`h-2 arrow-down mr-1 ${isOpen ? "open" : ""}`}
-					style={arrowColor}
-					alt="arrow"
-				/>
-			</div>
-		</>
-	);
+          value={valueDate}
+          onChange={handleValueDate}
+          placeholder={'Desde y hasta'}
+          useRange={false}
+        />
+        <img
+          src={arrow}
+          className={`h-2 arrow-down mr-1 ${isOpen ? 'open' : ''}`}
+          style={arrowColor}
+          alt="arrow"
+        />
+      </div>
+    </>
+  );
 };
 
 export default Calendar;

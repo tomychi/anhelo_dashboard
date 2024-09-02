@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { PedidoProps } from '../types/types';
+import { DateValueType } from 'react-tailwindcss-datepicker';
 
 export interface VueltaInfo {
   horaSalida: string;
@@ -127,112 +128,69 @@ export const UploadVueltaCadete = async (
   }
 };
 
-// Esta función recuperará todas las vueltas para un cadete específico en una fecha dada
-export const obtenerVueltasCadete = async (
-  cadete: string,
-  fecha: string
-): Promise<VueltaInfo[]> => {
-  const firestore = getFirestore();
-  const [dia, mes, anio] = fecha.split('/');
-  let vueltas: VueltaInfo[] = []; // Array para almacenar las vueltas
-
-  try {
-    // Crear una referencia al documento del cadete
-    const cadeteDocRef = doc(
-      firestore,
-      'cadetes',
-      cadete
-    ) as DocumentReference<DocumentData>;
-
-    // Crear una subcolección "vueltas" dentro del documento del cadete
-    const vueltasCollectionRef = collection(cadeteDocRef, 'vueltas');
-
-    // Obtener el ID único para el documento de vuelta usando la fecha
-    const vueltaId = `${anio}-${mes}-${dia}`;
-
-    // Obtener las vueltas del cadete en la fecha dada
-    const vueltasSnapshot = await getDocs(
-      query(vueltasCollectionRef, where('__name__', '==', vueltaId))
-    );
-
-    // Iterar sobre los documentos de vueltas y mapearlos a objetos VueltaInfo
-    vueltas = vueltasSnapshot.docs.flatMap((doc) => {
-      const vueltaData = doc.data();
-      const vueltasData = vueltaData.vueltas; // Acceder a la matriz de vueltas
-      // Mapear sobre las vueltas y crear objetos VueltaInfo para cada una
-      return vueltasData.map((vuelta: VueltaInfo) => ({
-        horaSalida: vuelta.horaSalida, // Asegúrate de que esto sea correcto
-        horaLlegada: vuelta.horaLlegada, // Asegúrate de que esto sea correcto
-        ordersId: vuelta.ordersId, // Asegúrate de que esto sea correcto
-      }));
-    });
-  } catch (error) {
-    console.error('Error al obtener las vueltas del cadete:', error);
-    throw error;
-  }
-
-  return vueltas; // Devolver el array de vueltas transformadas
+// Función para convertir una fecha de tipo Date a la hora 00:00:00 del mismo día
+const startOfDay = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setHours(0, 0, 0, 0);
+  return newDate;
 };
 
-export const eliminarVueltaCadete = async (
-  cadete: string | null,
-  fecha: string,
-  horaSalida: string
-): Promise<VueltaInfo[]> => {
-  const firestore = getFirestore();
-  console.log(fecha);
-  const [dia, mes, anio] = fecha.split('/');
+// Función para convertir una fecha de tipo Date a la hora 23:59:59 del mismo día
+const endOfDay = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setHours(23, 59, 59, 999);
+  return newDate;
+};
 
-  if (!cadete) {
-    throw new Error('No se ha seleccionado un cadete');
+// Función para filtrar las vueltas según el período seleccionado
+const filterVueltasByPeriod = (
+  vueltas: any[],
+  startDate: Date,
+  endDate: Date
+) => {
+  return vueltas.filter((vuelta) => {
+    const startTime = new Date(vuelta.startTime.toDate()); // Convierte Timestamp a Date
+    return startTime >= startDate && startTime <= endDate;
+  });
+};
+
+// Función para obtener todas las vueltas de cadetes en un período específico
+export const fetchCadetesVueltasByPeriod = async (valueDate: DateValueType) => {
+  if (!valueDate || !valueDate.startDate) {
+    console.error('Fecha inválida proporcionada');
+    return [];
   }
 
+  const startDate = startOfDay(new Date(valueDate.startDate as Date));
+  const endDate = valueDate.endDate
+    ? endOfDay(new Date(valueDate.endDate as Date))
+    : endOfDay(new Date(valueDate.startDate as Date));
+
+  const firestore = getFirestore();
+  const empleadosRef = collection(firestore, 'empleados');
+  const cadetesQuery = query(empleadosRef, where('category', '==', 'cadete'));
+
   try {
-    // Crear una referencia al documento del cadete
-    const cadeteDocRef = doc(
-      firestore,
-      'cadetes',
-      cadete
-    ) as DocumentReference<DocumentData>;
+    const snapshot = await getDocs(cadetesQuery);
+    const cadetesData = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const vueltasFiltradas = filterVueltasByPeriod(
+        data.vueltas || [],
+        startDate,
+        endDate
+      );
+      return { ...data, id: doc.id, vueltas: vueltasFiltradas };
+    });
 
-    // Crear una subcolección "vueltas" dentro del documento del cadete
-    const vueltasCollectionRef = collection(cadeteDocRef, 'vueltas');
-
-    // Crear un ID único para el documento de vuelta usando la fecha
-    const vueltaId = `${anio}-${mes}-${dia}`;
-
-    // Referencia al documento de vuelta
-    const vueltaDocRef = doc(vueltasCollectionRef, vueltaId);
-    const vueltaDocSnapshot = await getDoc(vueltaDocRef);
-
-    if (!vueltaDocSnapshot.exists()) {
-      throw new Error('No se encontró una vuelta para la fecha proporcionada');
-    }
-
-    const vueltaData = vueltaDocSnapshot.data();
-    let vueltas: VueltaInfo[] = [];
-    if (vueltaData && Array.isArray(vueltaData.vueltas)) {
-      vueltas = vueltaData.vueltas;
-    }
-
-    // Filtrar la vuelta específica que queremos eliminar
-    const vueltasActualizadas = vueltas.filter(
-      (vuelta) => vuelta.horaSalida !== horaSalida
+    // Filtrar cadetes que tienen vueltas en el período seleccionado
+    const cadetesConVueltas = cadetesData.filter(
+      (cadete) => cadete.vueltas.length > 0
     );
 
-    if (vueltas.length === vueltasActualizadas.length) {
-      throw new Error(
-        'No se encontró una vuelta con la hora de salida proporcionada'
-      );
-    }
-
-    // Actualizar el documento de vuelta con las vueltas restantes
-    await setDoc(vueltaDocRef, { vueltas: vueltasActualizadas });
-
-    return vueltasActualizadas;
+    return cadetesConVueltas;
   } catch (error) {
-    console.error('Error al eliminar la vuelta:', error);
-    throw error;
+    console.error('Error al obtener los cadetes:', error);
+    return [];
   }
 };
 

@@ -103,3 +103,21 @@ export interface CustomerType {
   existingCustomers: PedidoProps[];
   newCustomers: PedidoProps[];
 }
+
+export interface Cadete {
+  id: string;
+  name?: string;
+  available?: boolean;
+  category?: string;
+  vueltas?: Vuelta[];
+}
+export interface Vuelta {
+  startTime: Date;
+  endTime?: Date;
+  rideId: string;
+  status: string;
+  totalDistance: number;
+  totalDuration: number;
+  paga: number;
+  orders: PedidoProps[];
+}
