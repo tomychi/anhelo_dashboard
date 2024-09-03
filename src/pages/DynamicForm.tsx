@@ -120,10 +120,11 @@ export const DynamicForm = () => {
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
 
   const { materiales } = useSelector((state: RootState) => state.materials);
+
   const { burgers, drinks, toppings, fries } = useSelector(
     (state: RootState) => state.product
   );
-
+  1;
   const pburgers = burgers.map((b) => b.data);
   const pdrinks = drinks.map((d) => d.data);
   const ptoppings = toppings.map((t) => t.data);
@@ -251,6 +252,7 @@ export const DynamicForm = () => {
 
   // si es el formulario de la seccion burgers
   const handleFormBurger = (values: DetallePedidoProps) => {
+    console.log(productos);
     const quantity = values.quantity !== undefined ? values.quantity : 0;
     const priceToppings =
       values.priceToppings !== undefined ? values.priceToppings : 0;
@@ -283,8 +285,6 @@ export const DynamicForm = () => {
     const costoBurger = productoSeleccionado
       ? (productoSeleccionado.costo + costoToppings) * quantity
       : 0;
-    console.log(productoSeleccionado);
-    console.log(costoBurger);
     const burger = {
       burger: values.burger,
       toppings: values.toppings,

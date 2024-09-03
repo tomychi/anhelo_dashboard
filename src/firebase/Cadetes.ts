@@ -14,6 +14,7 @@ import {
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { PedidoProps } from '../types/types';
 import { DateValueType } from 'react-tailwindcss-datepicker';
+import { startOfDay, endOfDay, parseISO, set } from 'date-fns';
 
 export interface VueltaInfo {
   horaSalida: string;
@@ -128,44 +129,46 @@ export const UploadVueltaCadete = async (
   }
 };
 
-// Función para convertir una fecha de tipo Date a la hora 00:00:00 del mismo día
-const startOfDay = (date: Date) => {
-  const newDate = new Date(date);
-  newDate.setHours(0, 0, 0, 0);
-  return newDate;
-};
-
-// Función para convertir una fecha de tipo Date a la hora 23:59:59 del mismo día
-const endOfDay = (date: Date) => {
-  const newDate = new Date(date);
-  newDate.setHours(23, 59, 59, 999);
-  return newDate;
-};
-
-// Función para filtrar las vueltas según el período seleccionado
-const filterVueltasByPeriod = (
-  vueltas: any[],
-  startDate: Date,
-  endDate: Date
-) => {
-  return vueltas.filter((vuelta) => {
-    const startTime = new Date(vuelta.startTime.toDate()); // Convierte Timestamp a Date
-    return startTime >= startDate && startTime <= endDate;
-  });
-};
-
-// Función para obtener todas las vueltas de cadetes en un período específico
 export const fetchCadetesVueltasByPeriod = async (valueDate: DateValueType) => {
   if (!valueDate || !valueDate.startDate) {
     console.error('Fecha inválida proporcionada');
     return [];
   }
 
-  const startDate = startOfDay(new Date(valueDate.startDate as Date));
-  const endDate = valueDate.endDate
-    ? endOfDay(new Date(valueDate.endDate as Date))
-    : endOfDay(new Date(valueDate.startDate as Date));
+  const parseDate = (date: string | Date): Date => {
+    if (typeof date === 'string') {
+      return parseISO(date);
+    }
+    return date;
+  };
 
+  const normalizeDate = (date: Date, isEndDate: boolean = false): Date => {
+    const normalizedDate = set(date, {
+      hours: isEndDate ? 23 : 0,
+      minutes: isEndDate ? 59 : 0,
+      seconds: isEndDate ? 59 : 0,
+      milliseconds: isEndDate ? 999 : 0,
+    });
+    return normalizedDate;
+  };
+
+  const startDate = normalizeDate(parseDate(valueDate.startDate));
+  const endDate = valueDate.endDate
+    ? normalizeDate(parseDate(valueDate.endDate), true)
+    : normalizeDate(parseDate(valueDate.startDate), true);
+
+  const filterVueltasByPeriod = (
+    vueltas: any[],
+    startDate: Date,
+    endDate: Date
+  ) => {
+    return vueltas.filter((vuelta) => {
+      const startTime = normalizeDate(new Date(vuelta.startTime.toDate()));
+      return startTime >= startDate && startTime <= endDate;
+    });
+  };
+
+  // ... resto del código ...
   const firestore = getFirestore();
   const empleadosRef = collection(firestore, 'empleados');
   const cadetesQuery = query(empleadosRef, where('category', '==', 'cadete'));
