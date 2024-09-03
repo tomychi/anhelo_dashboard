@@ -73,8 +73,6 @@ export const Neto = () => {
   const ordersLastMonth = 1484;
   const plusAlquiler = Math.ceil(300000 / ordersLastMonth);
 
-  console.log(productos);
-
   return (
     <div className="flex p-4 gap-4  justify-between flex-row w-full">
       <div className="w-4/5 flex flex-col gap-4">

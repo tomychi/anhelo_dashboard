@@ -17,17 +17,35 @@ export const Ingredients = ({
 }: IngredientsProps) => {
   // Crear un mapa para inicializar el estado local
   const mapa = new Map<string, number>();
-  materiales.forEach((m) => {
-    if (selectedProduct.ingredients[m.nombre]) {
-      mapa.set(m.nombre, selectedProduct.ingredients[m.nombre]);
-    } else {
-      mapa.set(m.nombre, 0);
-    }
-  });
+  if (materiales) {
+    materiales.forEach((m) => {
+      if (
+        selectedProduct.ingredients &&
+        selectedProduct.ingredients[m.nombre]
+      ) {
+        mapa.set(m.nombre, selectedProduct.ingredients[m.nombre]);
+      } else {
+        mapa.set(m.nombre, 0);
+      }
+    });
+  }
 
   // Usar useState con el mapa inicializado
   const [selectMaterial, setSelectMaterial] =
     useState<Map<string, number>>(mapa);
+
+  // Si selectedProduct.ingredients o materiales no están definidos, mostrar un mensaje de error
+  if (!selectedProduct.ingredients) {
+    return (
+      <div>
+        Error: No se encontraron ingredientes para el producto seleccionado.
+      </div>
+    );
+  }
+
+  if (!materiales || materiales.length === 0) {
+    return <div>Error: No se encontraron materiales disponibles.</div>;
+  }
 
   // Función para manejar cambios en los inputs
   const handleInputChange = (
@@ -44,7 +62,7 @@ export const Ingredients = ({
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black  z-50">
+    <div className="fixed inset-0 flex justify-center items-center bg-black z-50">
       <div className="bg-white p-8 rounded-lg">
         <h2 className="text-2xl font-bold mb-4">{selectedProduct.name}</h2>
         <p>Ingredientes:</p>
@@ -93,7 +111,6 @@ export const Ingredients = ({
                 ingredientesSeleccionados
               )
                 .then((result) => {
-                  // Crear una cadena con los ingredientes ordenados uno debajo del otro
                   const ingredientesText = Object.entries(result)
                     .map(
                       ([ingrediente, cantidad]) => `${ingrediente}: ${cantidad}`
