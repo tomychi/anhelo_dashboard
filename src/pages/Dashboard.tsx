@@ -98,6 +98,20 @@ export const Dashboard = () => {
 		console.log("Total productos vendidos ajustado:", calculoProductosVendidos);
 	}, [orders, totalProductosVendidos]);
 
+	useEffect(() => {
+		const totalPagaCalculated =
+			vueltas?.reduce((total, cadete) => {
+				return (
+					total +
+					(cadete.vueltas?.reduce((sum, vuelta) => sum + vuelta.paga, 0) || 0)
+				);
+			}, 0) || 0;
+
+		setTotalPaga(totalPagaCalculated);
+
+		console.log("Total paga:", totalPagaCalculated);
+	}, [vueltas]);
+
 	const marketingCards = [
 		<CardInfo
 			key="visualizacion"
@@ -224,7 +238,7 @@ export const Dashboard = () => {
 			svgComponent={<TicketPromedioSVG />}
 		/>,
 	];
-	console.log(vueltas);
+
 	const cardsToRender = isMarketingUser
 		? marketingCards
 		: [...allCards, ...marketingCards];
