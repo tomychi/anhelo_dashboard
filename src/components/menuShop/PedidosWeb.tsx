@@ -117,7 +117,7 @@ const parsearMensajePedido = (
 
   // Expresiones regulares para encontrar las secciones relevantes
   const datosVendedorRegex =
-    /Nombre:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Ubicación:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
+    /Hora:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Ubicación:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
 
   // Buscar coincidencias en el mensaje
   const datosVendedorMatch = datosVendedorRegex.exec(mensaje);
@@ -127,6 +127,7 @@ const parsearMensajePedido = (
     ? datosVendedorMatch.slice(1).map((value) => value.trim())
     : [];
 
+  const hora = datosVendedor[0] || obtenerHoraActual();
   const telefono = datosVendedor[1];
   const direccion = datosVendedor[3];
   const metodoPago = datosVendedor[6];
@@ -151,7 +152,7 @@ const parsearMensajePedido = (
       referencias,
       aclaraciones: '',
       envio: '',
-      hora: obtenerHoraActual(),
+      hora,
       cadete: 'NO ASIGNADO',
     };
   } else {
