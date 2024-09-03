@@ -279,36 +279,43 @@ export const Dashboard = () => {
         <div className="mt-8 px-4">
           {isLoading ? (
             <p className="text-center text-white">Cargando datos...</p> // Mostrar mensaje de carga
-          ) : (
+          ) : vueltas && vueltas.length > 0 ? (
             vueltas.map((cadete) => (
               <div key={cadete.id} className="mb-8">
                 <h3 className="text-2xl font-semibold">{cadete.name}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {cadete.vueltas?.map((vuelta, index) => (
-                    <div
-                      key={vuelta.rideId}
-                      className="p-4 bg-white rounded-lg shadow-md"
-                    >
-                      <h4 className="text-xl font-bold mb-2">
-                        Vuelta {index + 1}
-                      </h4>
-
-                      <p>
-                        <strong>Paga:</strong> {currencyFormat(vuelta.paga)}
-                      </p>
-                      <p>
-                        <strong>Distancia Total:</strong> {vuelta.totalDistance}{' '}
-                        km
-                      </p>
-                      <p>
-                        <strong>Duración Total:</strong>{' '}
-                        {vuelta.totalDuration.toFixed(2)} min
-                      </p>
-                    </div>
-                  ))}
+                  {cadete.vueltas && cadete.vueltas.length > 0 ? (
+                    cadete.vueltas.map((vuelta, index) => (
+                      <div
+                        key={vuelta.rideId}
+                        className="p-4 bg-white rounded-lg shadow-md"
+                      >
+                        <h4 className="text-xl font-bold mb-2">
+                          Vuelta {index + 1}
+                        </h4>
+                        <p>
+                          <strong>Paga:</strong> {currencyFormat(vuelta.paga)}
+                        </p>
+                        <p>
+                          <strong>Distancia Total:</strong>{' '}
+                          {vuelta.totalDistance} km
+                        </p>
+                        <p>
+                          <strong>Duración Total:</strong>{' '}
+                          {vuelta.totalDuration.toFixed(2)} min
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No hay vueltas disponibles para este cadete.</p>
+                  )}
                 </div>
               </div>
             ))
+          ) : (
+            <p className="text-center text-white">
+              No hay datos de vueltas disponibles.
+            </p>
           )}
         </div>
         {!isLoading && (
