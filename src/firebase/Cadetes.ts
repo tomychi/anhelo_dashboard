@@ -14,7 +14,7 @@ import {
 import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { PedidoProps } from '../types/types';
 import { DateValueType } from 'react-tailwindcss-datepicker';
-import { startOfDay, endOfDay, parseISO, set } from 'date-fns';
+import { parseISO, set } from 'date-fns';
 
 export interface VueltaInfo {
   horaSalida: string;
