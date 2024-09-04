@@ -331,38 +331,37 @@ export const DynamicForm = () => {
 					</div>
 
 					{/* Sección form */}
-					<div className="md:w-1/3 flex flex-col font-coolvetica font-black bg-gray-300 shadow-lg rounded-lg shadow-lg">
-						{/* Establecer el ancho de la sección */}
-						<div className="flex flex-col">
-							{/* Botones */}
-							<div className="flex w-full justify-center  px-4 pt-4">
-								<button
-									className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
-										seccionActiva === "elaborar"
-											? "bg-black text-gray-200"
-											: "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
-									} text-black  `}
-									onClick={() => setSeccionActiva("elaborar")}
-								>
-									Tomar pedido
-								</button>
-								<button
-									className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
-										seccionActiva === "elaborar"
-											? "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
-											: "bg-black text-gray-200"
-									}  `}
-									onClick={() => setSeccionActiva("hechos")}
-								>
-									Hecho por la web
-								</button>
-							</div>
-							{/* Elaborar */}
+					<div className="md:w-1/3 flex flex-col font-coolvetica font-black">
+						{/* Botones */}
+						<div className="flex w-full justify-center px-4 pt-4 bg-gray-300 rounded-t-lg">
+							<button
+								className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-tl-lg ${
+									seccionActiva === "elaborar"
+										? "bg-black text-gray-200"
+										: "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
+								} text-black`}
+								onClick={() => setSeccionActiva("elaborar")}
+							>
+								Tomar pedido
+							</button>
+							<button
+								className={`w-1/2 pt-8 pb-8 text-2xl font-medium rounded-tr-lg ${
+									seccionActiva === "elaborar"
+										? "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
+										: "bg-black text-gray-200"
+								}`}
+								onClick={() => setSeccionActiva("hechos")}
+							>
+								Hecho por la web
+							</button>
+						</div>
+						{/* Contenido dinámico */}
+						<div className="bg-gray-300 rounded-b-lg shadow-lg">
 							{seccionActiva === "elaborar" ? (
-								<div className="flex flex-col items-center justify-center">
+								<div className="flex flex-col items-center justify-center p-4">
 									<form
 										onSubmit={handleSubmit}
-										className="w-full p-4 flex flex-col gap-2"
+										className="w-full flex flex-col gap-2"
 									>
 										<input
 											className={inputClass}
@@ -382,7 +381,6 @@ export const DynamicForm = () => {
 											placeholder="Aclaraciones"
 											onChange={handleChange}
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -392,7 +390,6 @@ export const DynamicForm = () => {
 											placeholder="Teléfono"
 											onChange={handleChange}
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -403,7 +400,6 @@ export const DynamicForm = () => {
 											placeholder="Dirección"
 											onChange={handleChange}
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -414,7 +410,6 @@ export const DynamicForm = () => {
 											placeholder="Coordenadas"
 											onChange={handleChange}
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -425,7 +420,6 @@ export const DynamicForm = () => {
 											placeholder="Referencias"
 											onChange={handleChange}
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -435,9 +429,8 @@ export const DynamicForm = () => {
 											value={formData.envio}
 											placeholder="Envio"
 											onChange={handleChange}
-											required // Agregar el atributo required
+											required
 										/>
-
 										<input
 											className={inputClass}
 											style={inputStyle}
@@ -448,7 +441,6 @@ export const DynamicForm = () => {
 											placeholder="Hora"
 											onChange={handleChange}
 										/>
-
 										<select
 											id="metodoPago"
 											name="metodoPago"
@@ -457,7 +449,7 @@ export const DynamicForm = () => {
 											value={formData.metodoPago}
 											onChange={handleChange}
 										>
-											<option> Metodo de pago</option>
+											<option>Metodo de pago</option>
 											<option value="efectivo">Efectivo</option>
 											<option
 												value="mercadopago"
@@ -466,14 +458,14 @@ export const DynamicForm = () => {
 												Mercadopago
 											</option>
 										</select>
-										{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
-											<div className="flex flex-row ">
-												<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black   p-4 ">
+										{formData.metodoPago === "mercadopago" && (
+											<div className="flex flex-row">
+												<h5 className="text-black px-4 h-12 flex items-center rounded-l-lg font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black p-4">
 													Alias: {aliasDisponible}
 												</h5>
 												<button
-													className="w-1/5 text-gray-100  border-black h-12  flex text-center justify-center items-center  rounded-r-lg  font-medium bg-black"
-													type="button" // Cambiar el tipo de botón a "button"
+													className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
+													type="button"
 													onClick={() => {
 														const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
 														navigator.clipboard
@@ -498,7 +490,7 @@ export const DynamicForm = () => {
 										)}
 										<button
 											type="submit"
-											className="  text-gray-100 w-full pt-8 pb-8 bg-black  text-2xl font-medium rounded-lg   "
+											className="text-gray-100 w-full pt-8 pb-8 bg-black text-2xl font-medium rounded-lg mt-4"
 										>
 											Guardar
 										</button>
