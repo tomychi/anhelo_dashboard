@@ -55,7 +55,7 @@ export const CartShop = ({
 				<div className="grid grid-cols-6 p-4 gap-4">
 					{detallePedido.map((p, index) => (
 						<div className="" key={index}>
-							<h3 className="text-xs bg-black p-4 text-custom-red font-black uppercase">
+							<h3 className="text-xs bg-gray-300 rounded-md p-2 font-black ">
 								{p.quantity}x {p.burger}
 								{p.toppings?.map((t, i) => (
 									<div key={i}>: {t}</div>
