@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { DetallePedidoProps } from "../../pages/DynamicForm";
 import currencyFormat from "../../helpers/currencyFormat";
+import editIcon from "../../assets/editIcon.png";
 
 export const CartShop = ({
 	detallePedido,
@@ -96,19 +97,19 @@ export const CartShop = ({
 					</button>
 				) : (
 					editableTotal > 0 && (
-						<div>
-							<button
+						<div className="flex flex-row">
+							<img
+								src={editIcon}
+								className="h-4 cursor-pointer"
 								onClick={handleEditTotal}
-								className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
-							>
-								Editar Total
-							</button>
+							/>
+
 							<svg
 								onClick={limpiarDetallePedido}
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								className="w-8 h-8 rounded-md p-2 cursor-pointer"
+								className="w-4  cursor-pointer"
 							>
 								<path
 									fillRule="evenodd"
