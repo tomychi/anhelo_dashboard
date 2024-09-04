@@ -31,6 +31,19 @@ export const CartShop = ({
 	const capitalizeFirstLetter = (string) => {
 		return string.charAt(0).toLowerCase() + string.slice(1).toLowerCase();
 	};
+
+	const formatToppings = (toppings) => {
+		const capitalizedToppings = toppings.map(capitalizeFirstLetter);
+		if (capitalizedToppings.length === 0) return "";
+		if (capitalizedToppings.length === 1) return capitalizedToppings[0];
+		if (capitalizedToppings.length === 2)
+			return capitalizedToppings.join(" y ");
+		return (
+			capitalizedToppings.slice(0, -1).join(", ") +
+			" y " +
+			capitalizedToppings.slice(-1)
+		);
+	};
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
@@ -61,7 +74,7 @@ export const CartShop = ({
 									{p.quantity}x {p.burger}
 									{p.toppings &&
 										p.toppings.length > 0 &&
-										` con ${p.toppings.map(capitalizeFirstLetter).join(", ")}`}
+										`con ${formatToppings(p.toppings)}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
 							</h3>
