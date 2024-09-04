@@ -360,7 +360,10 @@ export const DynamicForm = () => {
 								</div>
 								{seccionActiva === "elaborar" ? (
 									<div className="flex flex-col items-center justify-center">
-										<form onSubmit={handleSubmit} className="w-full p-4">
+										<form
+											onSubmit={handleSubmit}
+											className="w-full p-4 flex flex-col gap-2"
+										>
 											<input
 												className={inputClass}
 												style={inputStyle}
