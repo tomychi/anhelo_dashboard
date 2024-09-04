@@ -318,7 +318,7 @@ export const DynamicForm = () => {
 					{/* Sección carrito y productos */}
 					<div className="flex flex-col w-full md:w-2/3">
 						{detallePedido && (
-							<div className="pb-6 pr-8">
+							<div className="pb-6 pr-6">
 								<CartShop
 									limpiarDetallePedido={limpiarDetallePedido}
 									detallePedido={detallePedido}
