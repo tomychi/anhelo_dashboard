@@ -1,5 +1,5 @@
 import { CartShop, MenuGallery, PedidosWeb } from "../components/menuShop";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { UploadOrder } from "../firebase/UploadOrder";
 import Swal from "sweetalert2";
 import { obtenerFechaActual, obtenerHoraActual } from "../helpers/dateToday";
@@ -32,6 +32,7 @@ export interface DetallePedidoProps {
 	priceToppings?: number;
 	subTotal: number;
 }
+
 export interface DataProps {
 	description: string;
 	img: string;
@@ -39,16 +40,17 @@ export interface DataProps {
 	price: number;
 	type: string;
 	id: string;
-	ingredients: Record<string, number>; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
-	costo: number; // Un objeto donde las claves son los nombres de los ingredientes y los valores son las cantidades
+	ingredients: Record<string, number>;
+	costo: number;
 }
+
 export interface DataStateProps {
 	data: DataProps;
 	id: string;
 	collectionName?: string;
 }
 
-type AliasTopes = Record<string, number>; // Definir un tipo para los topes de alias
+type AliasTopes = Record<string, number>;
 
 const obtenerAliasDisponible = (
 	montosPorAlias: Record<string, number>,
@@ -57,34 +59,21 @@ const obtenerAliasDisponible = (
 	for (const [alias, topeTotal] of Object.entries(aliasTopes)) {
 		const montoAcumulado = montosPorAlias[alias] || 0;
 		if (montoAcumulado < topeTotal) {
-			return alias; // Devolver el alias si el monto acumulado es menor que el tope total
+			return alias;
 		}
 	}
-	return "onlyanhelo3"; // Devolver null si no hay ningún alias disponible
+	return "onlyanhelo3";
 };
 
 const aliasTopes = {
-	"tobias.azcurra": 150000, //TOBIAS
-	onlyanhelo2: 450000, //ALMA
-	//onlyanhelo3 TOMY
+	"tobias.azcurra": 150000,
+	onlyanhelo2: 450000,
 };
 
 export const DynamicForm = () => {
 	const [aliasDisponible, setAliasDisponible] = useState<string>("onlyanhelo3");
-
-	const obtenerMontos = () => {
-		try {
-			const fechaActual = obtenerFechaActual();
-			const [, mesActual, anioActual] = fechaActual.split("/");
-			obtenerMontosPorAlias(anioActual, mesActual, (montos) => {
-				const aliasDis = obtenerAliasDisponible(montos, aliasTopes);
-				setAliasDisponible(aliasDis);
-			});
-		} catch (error) {
-			console.error("Error al obtener los montos por alias:", error);
-		}
-	};
-
+	const [editableTotal, setEditableTotal] = useState(0);
+	const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
 	const [formData, setFormData] = useState<FormDataProps>({
 		cupon: "",
 		aclaraciones: "",
@@ -99,14 +88,44 @@ export const DynamicForm = () => {
 		cadete: "NO ASIGNADO",
 	});
 
+	const { materiales } = useSelector((state: RootState) => state.materials);
+	const { burgers, drinks, toppings, fries } = useSelector(
+		(state: RootState) => state.product
+	);
+
+	const pburgers = burgers.map((b) => b.data);
+	const pdrinks = drinks.map((d) => d.data);
+	const ptoppings = toppings.map((t) => t.data);
+	const pfries = fries.map((f) => f.data);
+
+	const productos = [...pburgers, ...pdrinks, ...ptoppings, ...pfries];
+
+	useEffect(() => {
+		const newTotal = detallePedido.reduce(
+			(acc, item) => acc + (item.subTotal || 0),
+			0
+		);
+		setEditableTotal(newTotal);
+	}, [detallePedido]);
+
+	const obtenerMontos = () => {
+		try {
+			const fechaActual = obtenerFechaActual();
+			const [, mesActual, anioActual] = fechaActual.split("/");
+			obtenerMontosPorAlias(anioActual, mesActual, (montos) => {
+				const aliasDis = obtenerAliasDisponible(montos, aliasTopes);
+				setAliasDisponible(aliasDis);
+			});
+		} catch (error) {
+			console.error("Error al obtener los montos por alias:", error);
+		}
+	};
+
 	const handleFormClient = (clienteInfo: FormDataProps) => {
-		// Agregar la propiedad 'envio' con el valor '1000' al objeto clienteInfo
 		const clienteInfoConEnvio = {
 			...clienteInfo,
 			envio: "2000",
 		};
-
-		// Actualizar el estado formData
 		setFormData((prevState) => ({
 			...prevState,
 			...clienteInfoConEnvio,
@@ -117,21 +136,6 @@ export const DynamicForm = () => {
 		setDetallePedido([]);
 	};
 
-	const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
-
-	const { materiales } = useSelector((state: RootState) => state.materials);
-
-	const { burgers, drinks, toppings, fries } = useSelector(
-		(state: RootState) => state.product
-	);
-	1;
-	const pburgers = burgers.map((b) => b.data);
-	const pdrinks = drinks.map((d) => d.data);
-	const ptoppings = toppings.map((t) => t.data);
-	const pfries = fries.map((f) => f.data);
-
-	const productos = [...pburgers, ...pdrinks, ...ptoppings, ...pfries];
-
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
 	) => {
@@ -139,9 +143,12 @@ export const DynamicForm = () => {
 		setFormData({ ...formData, [name]: value });
 	};
 
+	const handleTotalChange = (newTotal: number) => {
+		setEditableTotal(newTotal);
+	};
+
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// Aquí puedes manejar la lógica para enviar los datos del formulario
 
 		if (detallePedido.length === 0) {
 			Swal.fire({
@@ -152,7 +159,6 @@ export const DynamicForm = () => {
 			return;
 		}
 
-		// Validar que los campos requeridos estén llenos
 		if (!formData.metodoPago || !formData.direccion) {
 			Swal.fire({
 				icon: "error",
@@ -162,11 +168,9 @@ export const DynamicForm = () => {
 			return;
 		}
 
-		// Validar el cupón si existe en el formulario
 		let cuponValido = false;
 		if (formData.cupon) {
 			cuponValido = await canjearVoucher(formData.cupon);
-
 			if (!cuponValido) {
 				Swal.fire({
 					icon: "error",
@@ -176,49 +180,25 @@ export const DynamicForm = () => {
 			}
 		}
 
-		// Calcular el subtotal
-		const subTotal = detallePedido.reduce((acc, burger) => {
-			// Asegúrate de que `burger.quantity` y `burger.priceBurger` no sean undefined
-			const cantidad = burger.quantity ?? 1;
-			const priceBurger = burger.priceBurger ?? 0;
-
-			// Aplica descuento si el cupón es válido y la cantidad es mayor a 2
-			const cantidadFinal =
-				cuponValido && cantidad >= 2 ? cantidad - 1 : cantidad;
-
-			if (burger.subTotal !== undefined) {
-				return acc + priceBurger * cantidadFinal + (burger.priceToppings ?? 0);
-			}
-
-			return acc;
-		}, 0);
-
-		if (cuponValido) {
-			const total = subTotal + parseInt(formData.envio);
-			Swal.fire({
-				icon: "success",
-				title: "DESCUENTO",
-				text: `El total es ${currencyFormat(total)}`,
-				timer: 8000, // Cierra automáticamente después de 3 segundos
-				timerProgressBar: true, // Mostrar barra de progreso
-				showCloseButton: true, // Mostrar botón de cerrar (cruz)
-				showConfirmButton: false, // No mostrar botón de confirmación
-			});
-		}
 		const envio = parseInt(formData.envio);
-
 		const info = {
 			...formData,
 			envio,
 			detallePedido,
-			subTotal,
-			total: subTotal + envio,
+			subTotal: editableTotal - envio,
+			total: editableTotal,
 			fecha: obtenerFechaActual(),
 			elaborado: false,
 		};
+
 		UploadOrder(info, aliasDisponible)
 			.then((result) => {
 				console.log(result);
+				Swal.fire({
+					icon: "success",
+					title: "Pedido guardado",
+					text: "El pedido ha sido guardado exitosamente.",
+				});
 			})
 			.catch((error) => {
 				Swal.fire({
@@ -230,7 +210,6 @@ export const DynamicForm = () => {
 
 		addTelefonoFirebase(info.telefono, info.fecha);
 
-		// Limpia los datos del formulario después de procesarlos
 		setFormData({
 			cupon: "",
 			aclaraciones: "",
@@ -250,7 +229,6 @@ export const DynamicForm = () => {
 
 	const [seccionActiva, setSeccionActiva] = useState("elaborar");
 
-	// si es el formulario de la seccion burgers
 	const handleFormBurger = (values: DetallePedidoProps) => {
 		console.log(productos);
 		const quantity = values.quantity !== undefined ? values.quantity : 0;
@@ -259,29 +237,23 @@ export const DynamicForm = () => {
 		const priceBurger =
 			values.priceBurger !== undefined ? values.priceBurger : 0;
 
-		// Buscar el producto que coincide con el nombre de la hamburguesa seleccionada
 		const productoSeleccionado = productos.find(
 			(producto) => producto.name === values.burger
 		);
 		const toppingsSeleccionados = values.toppings;
 
-		// Inicializar el costo total de los toppings
 		let costoToppings = 0;
 
-		// Recorrer los toppings seleccionados y calcular su costo total
 		toppingsSeleccionados.forEach((topping) => {
-			// Buscar el material que coincide con el nombre del topping seleccionado
 			const materialTopping = materiales.find(
 				(material) => material.nombre.toLowerCase() === topping.toLowerCase()
 			);
 
-			// Si se encuentra el material, sumar su costo al costo total de los toppings
 			if (materialTopping) {
 				costoToppings += materialTopping.costo;
 			}
 		});
 
-		// Verificar si se encontró el producto y obtener su costo
 		const costoBurger = productoSeleccionado
 			? (productoSeleccionado.costo + costoToppings) * quantity
 			: 0;
@@ -298,58 +270,54 @@ export const DynamicForm = () => {
 	};
 
 	const inputClass = `
-		block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full   bg-gray-300
-		appearance-none focus:outline-none focus:ring-0 peer
-		placeholder-gray-400 placeholder-opacity-100
-		 text-black font-light 
-		autofill:bg-gray-300 autofill:text-black
-		focus:bg-gray-300 focus:text-black
-		hover:bg-gray-300 hover:text-black
-	`;
+    block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full bg-gray-300
+    appearance-none focus:outline-none focus:ring-0 peer
+    placeholder-gray-400 placeholder-opacity-100
+    text-black font-light 
+    autofill:bg-gray-300 autofill:text-black
+    focus:bg-gray-300 focus:text-black
+    hover:bg-gray-300 hover:text-black
+  `;
 
 	const inputStyle = {
-		backgroundColor: "rgb(209 213 219)", // Equivalente a bg-gray-300
+		backgroundColor: "rgb(209 213 219)",
 		color: "black",
 	};
+
 	return (
 		<div>
 			{productos.length > 0 && (
 				<div className="flex p-4 gap-4 justify-between bg-gray-100 flex-col md:flex-row">
-					{/* Sección carrito y productos */}
 					<div className="flex flex-col w-full md:w-2/3">
-						{detallePedido && (
-							<div className="pb-6 pr-6">
-								<CartShop
-									limpiarDetallePedido={limpiarDetallePedido}
-									detallePedido={detallePedido}
-								/>
-							</div>
-						)}
-						{/* Mostrar las tarjetas solo si los productos están cargados */}
+						<div className="pb-6 pr-6">
+							<CartShop
+								limpiarDetallePedido={limpiarDetallePedido}
+								detallePedido={detallePedido}
+								onTotalChange={handleTotalChange}
+							/>
+						</div>
 						<MenuGallery handleFormBurger={handleFormBurger} />
 					</div>
 
-					{/* Sección form */}
 					<div className="md:w-1/3 flex flex-col font-coolvetica font-black">
-						{/* Botones */}
 						<p className="bg-gray-300 rounded-t-lg text-center font-medium text-2xl pt-6 pb-2">
 							Toma pedidos
 						</p>
 						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 ">
 							<button
-								className={`    w-1/2 font-medium py-2 rounded-lg ${
+								className={`w-1/2 font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-black text-gray-200"
-										: "bg-gray-300  text-black border-black border-1 border border-opacity-20"
+										: "bg-gray-300 text-black border-black border-1 border border-opacity-20"
 								} text-black`}
 								onClick={() => setSeccionActiva("elaborar")}
 							>
 								Manualmente
 							</button>
 							<button
-								className={` w-1/2   font-medium py-2 rounded-lg ${
+								className={`w-1/2 font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
-										? "bg-gray-300  text-black border-black border-1 border border-opacity-20"
+										? "bg-gray-300 text-black border-black border-1 border border-opacity-20"
 										: "bg-black text-gray-200"
 								}`}
 								onClick={() => setSeccionActiva("hechos")}
@@ -357,7 +325,6 @@ export const DynamicForm = () => {
 								Analizar
 							</button>
 						</div>
-						{/* Contenido dinámico */}
 						<div className="bg-gray-300 rounded-b-lg shadow-lg">
 							{seccionActiva === "elaborar" ? (
 								<div className="flex flex-col items-center justify-center p-4">
@@ -365,7 +332,7 @@ export const DynamicForm = () => {
 										onSubmit={handleSubmit}
 										className="w-full flex flex-col "
 									>
-										<div className="w-full flex flex-col  border-4 border-black  rounded-xl ">
+										<div className="w-full flex flex-col border-4 border-black rounded-xl ">
 											<input
 												className={`${inputClass} rounded-t-lg`}
 												style={inputStyle}
@@ -494,7 +461,7 @@ export const DynamicForm = () => {
 										</div>
 										<button
 											type="submit"
-											className="text-gray-100 w-full py-4 rounded-lg  bg-black text-4xl font-medium  mt-4"
+											className="text-gray-100 w-full py-4 rounded-lg bg-black text-4xl font-medium mt-4"
 										>
 											Guardar
 										</button>

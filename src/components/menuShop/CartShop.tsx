@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DetallePedidoProps } from "../../pages/DynamicForm";
 import currencyFormat from "../../helpers/currencyFormat";
 
 export const CartShop = ({
 	detallePedido,
 	limpiarDetallePedido,
+	onTotalChange,
 }: {
 	detallePedido: DetallePedidoProps[];
 	limpiarDetallePedido: () => void;
+	onTotalChange: (newTotal: number) => void;
 }) => {
-	const total = detallePedido.reduce((acc, d) => acc + (d.subTotal || 0), 0);
-
-	// Agregar estado y funciones para el generador de vouchers
+	const [isEditingTotal, setIsEditingTotal] = useState(false);
+	const [editableTotal, setEditableTotal] = useState(0);
 	const [quantity, setQuantity] = useState(1);
 	const [codes, setCodes] = useState<string[]>([]);
+
+	const total = detallePedido.reduce((acc, d) => acc + (d.subTotal || 0), 0);
+
+	useEffect(() => {
+		setEditableTotal(total);
+	}, [total]);
 
 	const generateCodes = () => {
 		const newCodes = Array.from({ length: quantity }, () =>
@@ -28,6 +35,7 @@ export const CartShop = ({
 			.then(() => alert("Códigos copiados al portapapeles"))
 			.catch((err) => console.error("Error al copiar: ", err));
 	};
+
 	const capitalizeFirstLetter = (string: string): string => {
 		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 	};
@@ -49,19 +57,58 @@ export const CartShop = ({
 		);
 	};
 
+	const handleEditTotal = () => {
+		setIsEditingTotal(true);
+	};
+
+	const handleSaveTotal = () => {
+		setIsEditingTotal(false);
+		onTotalChange(editableTotal);
+	};
+
+	const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setEditableTotal(Number(e.target.value));
+	};
+
 	return (
-		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
-			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
-				<h5 className="text-6xl  font-medium">
-					Carrito: {currencyFormat(total)}
+		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg">
+			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between items-center">
+				<h5 className="text-6xl font-medium">
+					Carrito:{" "}
+					{isEditingTotal ? (
+						<input
+							type="number"
+							value={editableTotal}
+							onChange={handleTotalChange}
+							className="text-4xl w-40 bg-white text-black px-2 rounded"
+						/>
+					) : (
+						currencyFormat(editableTotal)
+					)}
 				</h5>
+
+				{isEditingTotal ? (
+					<button
+						onClick={handleSaveTotal}
+						className="bg-green-500 text-white px-4 py-2 rounded"
+					>
+						Guardar
+					</button>
+				) : (
+					<button
+						onClick={handleEditTotal}
+						className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+					>
+						Editar Total
+					</button>
+				)}
 
 				<svg
 					onClick={limpiarDetallePedido}
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					className="w-8 h-8  rounded-md p-2 mt-4 cursor-pointer"
+					className="w-8 h-8 rounded-md p-2 cursor-pointer"
 				>
 					<path
 						fillRule="evenodd"
@@ -71,10 +118,10 @@ export const CartShop = ({
 				</svg>
 			</div>
 			{detallePedido.length > 0 ? (
-				<div className=" flex flex-col  ">
+				<div className="flex flex-col">
 					{detallePedido.map((p, index) => (
 						<div key={index}>
-							<h3 className="  border-t  border-t-1  border-black  border-opacity-20 font-medium ">
+							<h3 className="border-t border-t-1 border-black border-opacity-20 font-medium">
 								<p className="pl-4 py-2">
 									{p.quantity}x {capitalizeBurgerName(p.burger ?? "")}
 									{p.toppings &&
@@ -87,8 +134,8 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="px-4 py-2 text-left  border-t border-1 border-black border-opacity-20 text-gray-400 font-light w-full">
-					El carrito esta vacio
+				<h2 className="px-4 py-2 text-left border-t border-1 border-black border-opacity-20 text-gray-400 font-light w-full">
+					El carrito está vacío
 				</h2>
 			)}
 		</div>
