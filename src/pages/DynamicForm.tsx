@@ -362,7 +362,7 @@ export const DynamicForm = () => {
 										onSubmit={handleSubmit}
 										className="w-full flex flex-col "
 									>
-										<div className="w-full flex flex-col  border-2 border-black  rounded-lg ">
+										<div className="w-full flex flex-col  border-4 border-black  rounded-lg ">
 											<input
 												className={`${inputClass} rounded-t-lg`}
 												style={inputStyle}
