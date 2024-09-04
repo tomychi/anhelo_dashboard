@@ -25,7 +25,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 					"drink",
 				].map((sectionName) => (
 					<div key={sectionName}>
-						<h1 className="text-black font-coolvetica text-2xl font-medium mb-4">
+						<h1 className="text-black font-coolvetica text-2xl font-medium mb-2">
 							{(() => {
 								switch (sectionName.toLowerCase()) {
 									case "satisfyer":
@@ -41,7 +41,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 								}
 							})()}
 						</h1>
-						<div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
+						<div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-6 gap-4 mb-2">
 							{/* Renderizar items de la sección correspondiente */}
 							{data
 								.filter((item) => item.data.type === sectionName)
