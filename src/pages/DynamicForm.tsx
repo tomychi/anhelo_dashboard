@@ -297,10 +297,25 @@ export const DynamicForm = () => {
 		setDetallePedido((prevData) => [...prevData, burger]);
 	};
 
+	const inputClass = `
+		block px-4 h-12 w-full  rounded-lg bg-gray-300
+		appearance-none focus:outline-none focus:ring-0 peer
+		placeholder-gray-400 placeholder-opacity-100
+		 text-black font-light 
+		autofill:bg-gray-300 autofill:text-black
+		focus:bg-gray-300 focus:text-black
+		hover:bg-gray-300 hover:text-black
+	`;
+
+	const inputStyle = {
+		backgroundColor: "#e5e7eb",
+		color: "black",
+	};
+
 	return (
 		<div>
 			{productos.length > 0 && (
-				<div className="flex p-4 gap-4 justify-between bg-gray-200 flex-col md:flex-row">
+				<div className="flex p-4 gap-4 justify-between bg-gray-300 flex-col md:flex-row">
 					{/* Sección carrito y productos */}
 					<div className="flex flex-col w-full md:w-2/3">
 						{detallePedido && (
@@ -319,14 +334,14 @@ export const DynamicForm = () => {
 					<div className="md:w-1/3 flex flex-col gap-4">
 						{/* Establecer el ancho de la sección */}
 
-						<div className="font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg">
+						<div className="font-coolvetica font-black bg-gray-300 rounded-lg shadow-lg">
 							<div className="flex flex-col">
 								<div className="flex w-full justify-center  p-4">
 									<button
 										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 											seccionActiva === "elaborar"
 												? "bg-black text-gray-100"
-												: "bg-gray-100 text-black border-black border-1 border border-opacity-20"
+												: "bg-gray-300 text-black border-black border-1 border border-opacity-20"
 										} text-black  `}
 										onClick={() => setSeccionActiva("elaborar")}
 									>
@@ -335,7 +350,7 @@ export const DynamicForm = () => {
 									<button
 										className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
 											seccionActiva === "elaborar"
-												? "bg-gray-100 text-black border-black border-1 border border-opacity-20"
+												? "bg-gray-300 text-black border-black border-1 border border-opacity-20"
 												: "bg-black text-gray-100"
 										}  `}
 										onClick={() => setSeccionActiva("hechos")}
@@ -346,134 +361,91 @@ export const DynamicForm = () => {
 								{seccionActiva === "elaborar" ? (
 									<div className="flex flex-col items-center justify-center">
 										<form onSubmit={handleSubmit} className="w-full p-4">
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													id="cupon"
-													name="cupon"
-													value={formData.cupon}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="cupon"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Cupón:
-												</label>
-											</div>
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													id="aclaraciones"
-													name="aclaraciones"
-													value={formData.aclaraciones}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="aclaraciones"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Aclaraciones:
-												</label>
-											</div>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												id="cupon"
+												name="cupon"
+												value={formData.cupon}
+												placeholder="Cupón"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												id="aclaraciones"
+												name="aclaraciones"
+												value={formData.aclaraciones}
+												placeholder="Aclaraciones"
+												onChange={handleChange}
+											/>
 
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													id="telefono"
-													name="telefono"
-													value={formData.telefono}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="telefono"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Telefono:
-												</label>
-											</div>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												id="telefono"
+												name="telefono"
+												value={formData.telefono}
+												placeholder="Teléfono"
+												onChange={handleChange}
+											/>
 
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													type="text"
-													id="direccion"
-													name="direccion"
-													value={formData.direccion}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="direccion"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Dirección:
-												</label>
-											</div>
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													type="text"
-													id="ubicacion"
-													name="ubicacion"
-													value={formData.ubicacion}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="ubicacion"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													ubicacion:
-												</label>
-											</div>
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													type="text"
-													id="referencias"
-													name="referencias"
-													value={formData.referencias}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="referencias"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Referencias:
-												</label>
-											</div>
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													type="number"
-													id="envio"
-													name="envio"
-													value={formData.envio}
-													onChange={handleChange}
-													required // Agregar el atributo required
-												/>
-												<label
-													htmlFor="envio"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Precio del envio:
-												</label>
-											</div>
-											<div className="relative z-0 mt-4 ">
-												<input
-													className="block py-2.5  w-full  texk-black  bg-transparent border-0 border-b-2 border-black appearance-none text-black focus:outline-none focus:ring-0 peer"
-													type="time"
-													id="hora"
-													name="hora"
-													value={formData.hora}
-													onChange={handleChange}
-												/>
-												<label
-													htmlFor="hora"
-													className="peer-focus:font-medium uppercase absolute text-sm texk-black 500 texk-black 400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-												>
-													Hora:
-												</label>
-											</div>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="direccion"
+												name="direccion"
+												value={formData.direccion}
+												placeholder="Dirección"
+												onChange={handleChange}
+											/>
+
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="ubicacion"
+												name="ubicacion"
+												value={formData.ubicacion}
+												placeholder="Coordenadas"
+												onChange={handleChange}
+											/>
+
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="referencias"
+												name="referencias"
+												value={formData.referencias}
+												placeholder="Referencias"
+												onChange={handleChange}
+											/>
+
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="number"
+												id="envio"
+												name="envio"
+												value={formData.envio}
+												placeholder="Envio"
+												onChange={handleChange}
+												required // Agregar el atributo required
+											/>
+
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="time"
+												id="hora"
+												name="hora"
+												value={formData.hora}
+												placeholder="Hora"
+												onChange={handleChange}
+											/>
+
 											<div className="py-4">
 												<select
 													id="metodoPago"
