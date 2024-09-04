@@ -18,7 +18,10 @@ import {
 import { PedidoProps } from '../types/types';
 import { ExpenseProps } from '../firebase/UploadGasto';
 import arrow from '../assets/arrowIcon.png';
-import { fetchCadetesVueltasByPeriod } from '../firebase/Cadetes';
+import {
+  fetchCadetesVueltasByPeriod,
+  fetchConstants,
+} from '../firebase/Cadetes';
 
 const Calendar = () => {
   const dispatch = useDispatch();
@@ -43,9 +46,15 @@ const Calendar = () => {
       const telefonos = await readTelefonosFromFirebase();
       dispatch(setTelefonos(telefonos));
 
-      // Lee las vueltas de los cadetes en el rango de fechas seleccionado
       const cadetesConVueltas = await fetchCadetesVueltasByPeriod(value);
-      dispatch(setCatedesVueltas(cadetesConVueltas));
+
+      // Obtener los datos de sueldos para calcular las pagas
+      const cadetesData = await fetchConstants();
+      if (cadetesData) {
+        dispatch(setCatedesVueltas(cadetesConVueltas, cadetesData));
+      } else {
+        console.error('No se pudieron obtener los datos de sueldos');
+      }
 
       dispatch(readOrdersData(ordersData));
       dispatch(readExpensesData(expensesData));

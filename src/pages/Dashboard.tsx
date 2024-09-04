@@ -36,7 +36,6 @@ import { ReadData } from '../firebase/ReadData';
 import { calcularCostoHamburguesa } from '../helpers/calculator';
 import { ProductStateProps } from '../redux/products/productReducer';
 import Swal from 'sweetalert2';
-import { fetchConstants } from '../firebase/Cadetes';
 
 export const Dashboard = () => {
   const dispatch = useDispatch();
@@ -54,27 +53,6 @@ export const Dashboard = () => {
   } = useSelector((state: RootState) => state.data);
   const currentUserEmail = projectAuth.currentUser?.email;
   const isMarketingUser = currentUserEmail === 'marketing@anhelo.com';
-  const [cadetesData, setCadetesData] = useState({
-    precioPuntoEntrega: 0,
-    precioPorKM: 0,
-  }); // Inicializar el estado con null o un objeto vacío
-
-  useEffect(() => {
-    const obtenerDatosCadetes = async () => {
-      try {
-        const data = await fetchConstants();
-        if (data) {
-          setCadetesData(data);
-        } else {
-          console.error('No se pudieron obtener los datos de sueldos');
-        }
-      } catch (error) {
-        console.error('Error al obtener los datos de sueldos:', error);
-      }
-    };
-
-    obtenerDatosCadetes();
-  }, []); // [] asegura que esto se ejecute solo al montar el componente
 
   useEffect(() => {
     const fetchData = async () => {
@@ -140,8 +118,8 @@ export const Dashboard = () => {
 
     setProductosVendidos(calculoProductosVendidos);
 
-    console.log('Total de unidades de 2x1 vendidas:', total2x1);
-    console.log('Total productos vendidos ajustado:', calculoProductosVendidos);
+    // console.log('Total de unidades de 2x1 vendidas:', total2x1);
+    // console.log('Total productos vendidos ajustado:', calculoProductosVendidos);
   }, [orders, totalProductosVendidos]);
 
   useEffect(() => {
@@ -149,11 +127,13 @@ export const Dashboard = () => {
       vueltas?.reduce((total, cadete) => {
         return (
           total +
-          (cadete.vueltas?.reduce((sum, vuelta) => sum + vuelta.paga, 0) || 0)
+          (cadete.vueltas?.reduce((sum, vuelta) => {
+            return sum + vuelta.paga;
+          }, 0) || 0)
         );
       }, 0) || 0;
 
-    setTotalPaga(totalPagaCalculated);
+    setTotalPaga(totalPagaCalculated + 6020 + 7360 + 14620 + 25460);
 
     console.log('Total paga:', totalPagaCalculated);
   }, [vueltas]);
@@ -316,14 +296,8 @@ export const Dashboard = () => {
                           Vuelta {index + 1}
                         </h4>
                         <p>
-                          <strong>Paga:</strong>{' '}
-                          {vuelta.paga !== 0
-                            ? currencyFormat(vuelta.paga)
-                            : currencyFormat(
-                                vuelta.orders.length *
-                                  cadetesData.precioPuntoEntrega +
-                                  vuelta.totalDistance * cadetesData.precioPorKM
-                              )}
+                          <strong>Paga:</strong>
+                          {currencyFormat(vuelta.paga)}
                         </p>
                         <p>
                           <strong>Distancia Total:</strong>{' '}

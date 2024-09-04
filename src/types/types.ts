@@ -121,3 +121,8 @@ export interface Vuelta {
   paga: number;
   orders: PedidoProps[];
 }
+
+export interface CadeteData {
+  precioPorKM: number;
+  precioPuntoEntrega: number;
+}
