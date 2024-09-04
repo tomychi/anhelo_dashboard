@@ -97,7 +97,7 @@ export const CartShop = ({
 					</button>
 				) : (
 					editableTotal > 0 && (
-						<div className="flex flex-row">
+						<div className="flex flex-row gap-2">
 							<img
 								src={editIcon}
 								className="h-4 cursor-pointer"
