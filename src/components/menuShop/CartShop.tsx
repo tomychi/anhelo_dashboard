@@ -95,12 +95,14 @@ export const CartShop = ({
 						Guardar
 					</button>
 				) : (
-					<button
-						onClick={handleEditTotal}
-						className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
-					>
-						Editar Total
-					</button>
+					editableTotal > 0 && (
+						<button
+							onClick={handleEditTotal}
+							className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+						>
+							Editar Total
+						</button>
+					)
 				)}
 
 				<svg
