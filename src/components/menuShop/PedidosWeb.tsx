@@ -227,7 +227,7 @@ export const PedidosWeb = ({
 			/>
 
 			<button className="text-gray-100 w-full py-4 rounded-lg  bg-black text-4xl font-medium  mt-4">
-				Analizar
+				Tomar datos
 			</button>
 		</form>
 	);

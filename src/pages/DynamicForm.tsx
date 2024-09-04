@@ -354,7 +354,7 @@ export const DynamicForm = () => {
 								}`}
 								onClick={() => setSeccionActiva("hechos")}
 							>
-								Hechos por la web
+								Analizar
 							</button>
 						</div>
 						{/* Contenido dinámico */}
