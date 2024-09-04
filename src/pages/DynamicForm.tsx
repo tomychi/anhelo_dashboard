@@ -334,14 +334,14 @@ export const DynamicForm = () => {
 					<div className="md:w-1/3 flex flex-col gap-4">
 						{/* Establecer el ancho de la sección */}
 
-						<div className="font-coolvetica font-black bg-gray-300 rounded-lg shadow-lg">
+						<div className="font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg">
 							<div className="flex flex-col">
 								<div className="flex w-full justify-center  p-4">
 									<button
 										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 											seccionActiva === "elaborar"
 												? "bg-black text-gray-100"
-												: "bg-gray-300 text-black border-black border-1 border border-opacity-20"
+												: "bg-gray-100 text-black border-black border-1 border border-opacity-20"
 										} text-black  `}
 										onClick={() => setSeccionActiva("elaborar")}
 									>
@@ -350,7 +350,7 @@ export const DynamicForm = () => {
 									<button
 										className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
 											seccionActiva === "elaborar"
-												? "bg-gray-300 text-black border-black border-1 border border-opacity-20"
+												? "bg-gray-100 text-black border-black border-1 border border-opacity-20"
 												: "bg-black text-gray-100"
 										}  `}
 										onClick={() => setSeccionActiva("hechos")}
