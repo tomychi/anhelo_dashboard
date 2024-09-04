@@ -29,7 +29,11 @@ export const CartShop = ({
 			.catch((err) => console.error("Error al copiar: ", err));
 	};
 	const capitalizeFirstLetter = (string: string): string => {
-		return string.charAt(0).toLowerCase() + string.slice(1).toLowerCase();
+		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	};
+
+	const capitalizeBurgerName = (name: string): string => {
+		return name.split(" ").map(capitalizeFirstLetter).join(" ");
 	};
 
 	const formatToppings = (toppings: string[]): string => {
@@ -44,6 +48,7 @@ export const CartShop = ({
 			capitalizedToppings.slice(-1)
 		);
 	};
+
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
@@ -71,7 +76,7 @@ export const CartShop = ({
 						<div key={index}>
 							<h3 className="  border-t  border-t-1  border-black  border-opacity-20 font-medium ">
 								<p className="pl-4 py-2">
-									{p.quantity}x {p.burger}
+									{p.quantity}x {capitalizeBurgerName(p.burger ?? "")}
 									{p.toppings &&
 										p.toppings.length > 0 &&
 										` con ${formatToppings(p.toppings)}`}
