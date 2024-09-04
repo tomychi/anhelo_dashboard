@@ -298,17 +298,17 @@ export const DynamicForm = () => {
 	};
 
 	const inputClass = `
-		block px-4 h-12 w-full  rounded-lg bg-gray-300
+		block px-4 h-12 w-full   bg-gray-100
 		appearance-none focus:outline-none focus:ring-0 peer
 		placeholder-gray-400 placeholder-opacity-100
 		 text-black font-light 
-		autofill:bg-gray-300 autofill:text-black
-		focus:bg-gray-300 focus:text-black
-		hover:bg-gray-300 hover:text-black
+		autofill:bg-gray-100 autofill:text-black
+		focus:bg-gray-100 focus:text-black
+		hover:bg-gray-100 hover:text-black
 	`;
 
 	const inputStyle = {
-		backgroundColor: "#e5e7eb",
+		backgroundColor: "rgb(229 231 235)",
 		color: "black",
 	};
 
@@ -361,133 +361,135 @@ export const DynamicForm = () => {
 								<div className="flex flex-col items-center justify-center p-4">
 									<form
 										onSubmit={handleSubmit}
-										className="w-full flex flex-col gap-2"
+										className="w-full flex flex-col "
 									>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											id="cupon"
-											name="cupon"
-											value={formData.cupon}
-											placeholder="Cupón"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											id="aclaraciones"
-											name="aclaraciones"
-											value={formData.aclaraciones}
-											placeholder="Aclaraciones"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											id="telefono"
-											name="telefono"
-											value={formData.telefono}
-											placeholder="Teléfono"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											type="text"
-											id="direccion"
-											name="direccion"
-											value={formData.direccion}
-											placeholder="Dirección"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											type="text"
-											id="ubicacion"
-											name="ubicacion"
-											value={formData.ubicacion}
-											placeholder="Coordenadas"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											type="text"
-											id="referencias"
-											name="referencias"
-											value={formData.referencias}
-											placeholder="Referencias"
-											onChange={handleChange}
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											type="number"
-											id="envio"
-											name="envio"
-											value={formData.envio}
-											placeholder="Envio"
-											onChange={handleChange}
-											required
-										/>
-										<input
-											className={inputClass}
-											style={inputStyle}
-											type="time"
-											id="hora"
-											name="hora"
-											value={formData.hora}
-											placeholder="Hora"
-											onChange={handleChange}
-										/>
-										<select
-											id="metodoPago"
-											name="metodoPago"
-											style={inputStyle}
-											className={inputClass}
-											value={formData.metodoPago}
-											onChange={handleChange}
-										>
-											<option>Metodo de pago</option>
-											<option value="efectivo">Efectivo</option>
-											<option
-												value="mercadopago"
-												onClick={() => obtenerMontos()}
+										<div className="w-full flex flex-col border border-1 border-black border-opacity-20 rounded-lg ">
+											<input
+												className={`${inputClass} rounded-t-lg`}
+												style={inputStyle}
+												id="cupon"
+												name="cupon"
+												value={formData.cupon}
+												placeholder="Cupón"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												id="aclaraciones"
+												name="aclaraciones"
+												value={formData.aclaraciones}
+												placeholder="Aclaraciones"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												id="telefono"
+												name="telefono"
+												value={formData.telefono}
+												placeholder="Teléfono"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="direccion"
+												name="direccion"
+												value={formData.direccion}
+												placeholder="Dirección"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="ubicacion"
+												name="ubicacion"
+												value={formData.ubicacion}
+												placeholder="Coordenadas"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="text"
+												id="referencias"
+												name="referencias"
+												value={formData.referencias}
+												placeholder="Referencias"
+												onChange={handleChange}
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="number"
+												id="envio"
+												name="envio"
+												value={formData.envio}
+												placeholder="Envio"
+												onChange={handleChange}
+												required
+											/>
+											<input
+												className={inputClass}
+												style={inputStyle}
+												type="time"
+												id="hora"
+												name="hora"
+												value={formData.hora}
+												placeholder="Hora"
+												onChange={handleChange}
+											/>
+											<select
+												id="metodoPago"
+												name="metodoPago"
+												style={inputStyle}
+												className={`${inputClass} rounded-b-lg`}
+												value={formData.metodoPago}
+												onChange={handleChange}
 											>
-												Mercadopago
-											</option>
-										</select>
-										{formData.metodoPago === "mercadopago" && (
-											<div className="flex flex-row">
-												<h5 className="text-black px-4 h-12 flex items-center rounded-l-lg font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black p-4">
-													Alias: {aliasDisponible}
-												</h5>
-												<button
-													className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
-													type="button"
-													onClick={() => {
-														const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
-														navigator.clipboard
-															.writeText(mensaje)
-															.then(() => {
-																console.log(
-																	"Mensaje copiado al portapapeles:",
-																	mensaje
-																);
-															})
-															.catch((error) => {
-																console.error(
-																	"Error al copiar el mensaje al portapapeles:",
-																	error
-																);
-															});
-													}}
+												<option>Metodo de pago</option>
+												<option value="efectivo">Efectivo</option>
+												<option
+													value="mercadopago"
+													onClick={() => obtenerMontos()}
 												>
-													COPIAR
-												</button>
-											</div>
-										)}
+													Mercadopago
+												</option>
+											</select>
+											{formData.metodoPago === "mercadopago" && (
+												<div className="flex flex-row">
+													<h5 className="text-black px-4 h-12 flex items-center rounded-l-lg font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black p-4">
+														Alias: {aliasDisponible}
+													</h5>
+													<button
+														className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
+														type="button"
+														onClick={() => {
+															const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
+															navigator.clipboard
+																.writeText(mensaje)
+																.then(() => {
+																	console.log(
+																		"Mensaje copiado al portapapeles:",
+																		mensaje
+																	);
+																})
+																.catch((error) => {
+																	console.error(
+																		"Error al copiar el mensaje al portapapeles:",
+																		error
+																	);
+																});
+														}}
+													>
+														COPIAR
+													</button>
+												</div>
+											)}
+										</div>
 										<button
 											type="submit"
 											className="text-gray-100 w-full pt-8 pb-8 bg-black text-2xl font-medium rounded-lg mt-4"
