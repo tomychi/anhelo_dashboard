@@ -48,7 +48,7 @@ export const CartShop = ({
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
 				<h5 className="text-6xl  font-medium">
-					Carrito {currencyFormat(total)}
+					Carrito: {currencyFormat(total)}
 				</h5>
 
 				<svg
@@ -74,7 +74,7 @@ export const CartShop = ({
 									{p.quantity}x {p.burger}
 									{p.toppings &&
 										p.toppings.length > 0 &&
-										`con ${formatToppings(p.toppings)}`}
+										` con ${formatToppings(p.toppings)}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
 							</h3>
@@ -82,7 +82,7 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4 text-left text-gray-400 font-light w-full">
+				<h2 className="p-4 text-left  border-t border-1 border-black border-opacity-20 text-gray-400 font-light w-full">
 					El carrito esta vacio
 				</h2>
 			)}
