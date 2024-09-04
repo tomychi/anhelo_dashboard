@@ -73,7 +73,7 @@ export const CartShop = ({
 
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg">
-			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between items-center">
+			<div className="flex flex-row px-4 pb-2 pt-1 w-full gap-8 items-center">
 				<h5 className="text-6xl font-medium">
 					Carrito:{" "}
 					{isEditingTotal ? (
