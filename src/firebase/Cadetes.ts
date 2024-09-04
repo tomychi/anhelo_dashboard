@@ -41,6 +41,19 @@ export const fetchCadetesNames = async () => {
   }
 };
 
+export const fetchConstants = async () => {
+  const firestore = getFirestore();
+  const constDocRef = doc(firestore, 'constantes', 'sueldos');
+  const constDoc = await getDoc(constDocRef);
+
+  if (constDoc.exists()) {
+    const data = constDoc.data().cadetes;
+    return data;
+  } else {
+    console.error('No se encontró el documento "sueldos"');
+  }
+};
+
 export const UploadVueltaCadete = async (
   ordersId: string[],
   cadete: string
