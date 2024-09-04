@@ -332,21 +332,21 @@ export const DynamicForm = () => {
 					{/* Sección form */}
 					<div className="md:w-1/3 flex flex-col font-coolvetica font-black">
 						{/* Botones */}
-						<div className="flex w-full justify-center px-4 pt-4 bg-gray-300 rounded-t-lg">
+						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 rounded-t-lg">
 							<button
-								className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
+								className={`  text-xl  w-1/2 font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-black text-gray-200"
-										: "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
+										: "bg-gray-300  text-black border-black border-1 border border-opacity-20"
 								} text-black`}
 								onClick={() => setSeccionActiva("elaborar")}
 							>
 								Tomar pedido
 							</button>
 							<button
-								className={`w-1/2 pt-8 pb-8 text-2xl font-medium rounded-r-lg ${
+								className={` w-1/2   text-xl font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
-										? "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
+										? "bg-gray-300  text-black border-black border-1 border border-opacity-20"
 										: "bg-black text-gray-200"
 								}`}
 								onClick={() => setSeccionActiva("hechos")}
@@ -362,7 +362,7 @@ export const DynamicForm = () => {
 										onSubmit={handleSubmit}
 										className="w-full flex flex-col "
 									>
-										<div className="w-full flex flex-col border border-1 border-black border-opacity-20 rounded-lg ">
+										<div className="w-full flex flex-col  border-2 border-black  rounded-lg ">
 											<input
 												className={`${inputClass} rounded-t-lg`}
 												style={inputStyle}
@@ -491,7 +491,7 @@ export const DynamicForm = () => {
 										</div>
 										<button
 											type="submit"
-											className="text-gray-100 w-full pt-8 pb-8 bg-black text-2xl font-medium rounded-lg mt-4"
+											className="text-gray-100 w-full py-2 rounded-lg  bg-black text-xl font-medium  mt-4"
 										>
 											Guardar
 										</button>
