@@ -41,7 +41,7 @@ export const CardItem = ({
 
 				<div className="cursor-pointer">
 					<div className="text-center">
-						<h5 className="text-xs p-4 font-medium text-black">
+						<h5 className=" p-4 font-medium text-black">
 							{name
 								.split(" ")
 								.map((word) =>
@@ -53,7 +53,7 @@ export const CardItem = ({
 						</h5>
 						<hr className=" border-t-1 opacity-20 w-full border-black" />
 						<div className="flex items-center p-4 justify-center">
-							<span className="text-xs font-medium text-black">
+							<span className=" font-medium text-black">
 								{currencyFormat(price)}
 							</span>
 						</div>
