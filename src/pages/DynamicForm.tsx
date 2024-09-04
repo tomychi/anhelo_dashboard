@@ -331,7 +331,7 @@ export const DynamicForm = () => {
 					</div>
 
 					{/* Sección form */}
-					<div className="md:w-1/3 flex flex-col font-coolvetica font-black bg-gray-200 rounded-lg shadow-lg">
+					<div className="md:w-1/3 flex flex-col font-coolvetica font-black bg-gray-300 shadow-lg rounded-lg shadow-lg">
 						{/* Establecer el ancho de la sección */}
 						<div className="flex flex-col">
 							{/* Botones */}
@@ -340,7 +340,7 @@ export const DynamicForm = () => {
 									className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 										seccionActiva === "elaborar"
 											? "bg-black text-gray-200"
-											: "bg-gray-200 text-black border-black border-1 border border-opacity-20"
+											: "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
 									} text-black  `}
 									onClick={() => setSeccionActiva("elaborar")}
 								>
@@ -349,7 +349,7 @@ export const DynamicForm = () => {
 								<button
 									className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
 										seccionActiva === "elaborar"
-											? "bg-gray-200 text-black border-black border-1 border border-opacity-20"
+											? "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
 											: "bg-black text-gray-200"
 									}  `}
 									onClick={() => setSeccionActiva("hechos")}
@@ -468,7 +468,7 @@ export const DynamicForm = () => {
 										</select>
 										{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
 											<div className="flex flex-row ">
-												<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-200 w-4/5 font-coolvetica border-black   p-4 ">
+												<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black   p-4 ">
 													Alias: {aliasDisponible}
 												</h5>
 												<button

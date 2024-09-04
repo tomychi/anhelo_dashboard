@@ -81,7 +81,7 @@ export const Sidebar = () => {
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block p-2 hover:bg-gray-200 rounded text-sm"
+									className="block p-2 hover:bg-gray-300 shadow-lg rounded text-sm"
 									onClick={toggleMenu}
 								>
 									{item.text}
