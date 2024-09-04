@@ -29,19 +29,25 @@ export const CardItem = ({
 		<>
 			<div
 				onClick={() => setShowModal(true)}
-				className=" h-full font-coolvetica font-black bg-gray-300 shadow-lg rounded-lg  flex flex-col justify-between"
+				className="h-full font-coolvetica font-black bg-gray-300 shadow-lg rounded-lg flex flex-col justify-between"
 			>
-				<div className="pt-4">
-					<img
-						className="mx-auto h-16"
-						src={`/menu/${img}`}
-						alt="product image"
-					/>
+				<div className="pt-4 relative">
+					{/* Gradient background container */}
+					<div className="absolute inset-0 bg-gradient-to-tr from-red-600 to-black rounded-t-lg" />
+
+					{/* Image container */}
+					<div className="relative">
+						<img
+							className="mx-auto h-16 relative z-10"
+							src={`/menu/${img}`}
+							alt="product image"
+						/>
+					</div>
 				</div>
 
 				<div className="cursor-pointer">
 					<div className="text-center">
-						<h5 className=" pb-2 px-4 font-medium  text-black">
+						<h5 className="pb-2 px-4 font-medium text-black">
 							{name
 								.split(" ")
 								.map((word) =>
@@ -51,9 +57,9 @@ export const CardItem = ({
 								)
 								.join(" ")}
 						</h5>
-						<hr className=" border-t-1 opacity-20 w-full border-black" />
+						<hr className="border-t-1 opacity-20 w-full border-black" />
 						<div className="flex items-center pb-2 pt-2 justify-center">
-							<span className=" font-medium text-black">
+							<span className="font-medium text-black">
 								{currencyFormat(price)}
 							</span>
 						</div>
