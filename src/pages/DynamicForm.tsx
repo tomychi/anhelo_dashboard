@@ -332,7 +332,7 @@ export const DynamicForm = () => {
 					{/* Sección form */}
 					<div className="md:w-1/3 flex flex-col font-coolvetica font-black">
 						{/* Botones */}
-						<p className="bg-gray-300 rounded-t-lg text-center font-medium text-2xl pt-4">
+						<p className="bg-gray-300 rounded-t-lg text-center font-medium text-2xl pt-6 pb-2">
 							Toma pedidos
 						</p>
 						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 ">
