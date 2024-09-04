@@ -25,8 +25,8 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 					"drink",
 				].map((sectionName) => (
 					<div key={sectionName}>
-						<h1 className="text-custom-red font-coolvetica text-2xl font-black mb-4 ">
-							{sectionName.toUpperCase()}
+						<h1 className="text-black font-coolvetica text-2xl font-bold mb-4">
+							{sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}
 						</h1>
 						<div className="grid md:grid-cols-3 grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
 							{/* Renderizar items de la sección correspondiente */}
