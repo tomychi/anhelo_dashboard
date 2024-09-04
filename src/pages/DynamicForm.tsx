@@ -336,6 +336,7 @@ export const DynamicForm = () => {
 
 						<div className="font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg">
 							<div className="flex flex-col">
+								{/* Botones */}
 								<div className="flex w-full justify-center  px-4 pt-4">
 									<button
 										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
@@ -358,6 +359,7 @@ export const DynamicForm = () => {
 										Hecho por la web
 									</button>
 								</div>
+								{/* Elaborar */}
 								{seccionActiva === "elaborar" ? (
 									<div className="flex flex-col items-center justify-center">
 										<form
@@ -449,54 +451,53 @@ export const DynamicForm = () => {
 												onChange={handleChange}
 											/>
 
-											<div className="py-4">
-												<select
-													id="metodoPago"
-													name="metodoPago"
-													value={formData.metodoPago}
-													onChange={handleChange}
-													className="p-4 w-full bg-black uppercase text-custom-red select-none"
+											<select
+												id="metodoPago"
+												name="metodoPago"
+												style={inputStyle}
+												className={inputClass}
+												value={formData.metodoPago}
+												onChange={handleChange}
+											>
+												<option> Metodo de pago</option>
+												<option value="efectivo">Efectivo</option>
+												<option
+													value="mercadopago"
+													onClick={() => obtenerMontos()}
 												>
-													<option> METODO DE PAGO</option>
-													<option value="efectivo">Efectivo</option>
-													<option
-														value="mercadopago"
-														onClick={() => obtenerMontos()}
+													Mercadopago
+												</option>
+											</select>
+											{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
+												<div className="flex flex-row ">
+													<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-200 w-4/5 font-coolvetica border-black   p-4 ">
+														Alias: {aliasDisponible}
+													</h5>
+													<button
+														className="w-1/5 text-gray-100  border-black h-12  flex text-center justify-center items-center  rounded-r-lg  font-medium bg-black"
+														type="button" // Cambiar el tipo de botón a "button"
+														onClick={() => {
+															const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
+															navigator.clipboard
+																.writeText(mensaje)
+																.then(() => {
+																	console.log(
+																		"Mensaje copiado al portapapeles:",
+																		mensaje
+																	);
+																})
+																.catch((error) => {
+																	console.error(
+																		"Error al copiar el mensaje al portapapeles:",
+																		error
+																	);
+																});
+														}}
 													>
-														Mercadopago
-													</option>
-												</select>
-												{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
-													<div className="flex flex-row">
-														<h5 className="text-black w-4/5 font-coolvetica border-black border-2 font-black p-4 ">
-															ALIAS: {aliasDisponible}
-														</h5>
-														<button
-															className="w-1/5 text-black border-2 border-black font-black p-4"
-															type="button" // Cambiar el tipo de botón a "button"
-															onClick={() => {
-																const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
-																navigator.clipboard
-																	.writeText(mensaje)
-																	.then(() => {
-																		console.log(
-																			"Mensaje copiado al portapapeles:",
-																			mensaje
-																		);
-																	})
-																	.catch((error) => {
-																		console.error(
-																			"Error al copiar el mensaje al portapapeles:",
-																			error
-																		);
-																	});
-															}}
-														>
-															COPIAR
-														</button>
-													</div>
-												)}
-											</div>
+														COPIAR
+													</button>
+												</div>
+											)}
 											<button
 												type="submit"
 												className="  text-custom-red w-full pt-8 pb-8 bg-black uppercase text-2xl font-black  outline-none "
