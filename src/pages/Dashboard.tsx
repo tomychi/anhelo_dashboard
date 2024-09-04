@@ -117,9 +117,6 @@ export const Dashboard = () => {
 			totalProductosVendidos - total2x1 + total2x1 * 2;
 
 		setProductosVendidos(calculoProductosVendidos);
-
-		// console.log('Total de unidades de 2x1 vendidas:', total2x1);
-		// console.log('Total productos vendidos ajustado:', calculoProductosVendidos);
 	}, [orders, totalProductosVendidos]);
 	useEffect(() => {
 		const calcularTotalPaga = () => {
@@ -138,8 +135,6 @@ export const Dashboard = () => {
 
 		const nuevoTotalPaga = calcularTotalPaga();
 		setTotalPaga(nuevoTotalPaga);
-
-		console.log("Total paga:", nuevoTotalPaga);
 	}, [vueltas]);
 
 	const marketingCards = [
@@ -174,8 +169,6 @@ export const Dashboard = () => {
 			svgComponent={<PromedioCompartidosSVG />}
 		/>,
 	];
-
-	console.log(totalPaga, orders.length);
 
 	const allCards = [
 		<CardInfo
