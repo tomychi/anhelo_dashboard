@@ -300,7 +300,7 @@ export const DynamicForm = () => {
 	return (
 		<div>
 			{productos.length > 0 && (
-				<div className="flex p-4 gap-4 justify-between flex-col md:flex-row">
+				<div className="flex p-4 gap-4 justify-between bg-gray-200 flex-col md:flex-row">
 					{/* Sección carrito y productos */}
 					<div className="flex flex-col w-full md:w-2/3">
 						{detallePedido && (

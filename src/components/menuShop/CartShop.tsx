@@ -41,7 +41,7 @@ export const CartShop = ({
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					className="w-8 h-8 bg-gray-300 rounded-md p-2 cursor-pointer"
+					className="w-8 h-8 bg-gray-300 rounded-md p-2 mt-2.5 cursor-pointer"
 				>
 					<path
 						fillRule="evenodd"
