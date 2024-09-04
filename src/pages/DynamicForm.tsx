@@ -326,7 +326,7 @@ export const DynamicForm = () => {
 										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 											seccionActiva === "elaborar"
 												? "bg-black text-gray-100"
-												: "bg-gray-100 text-black border-black border-2"
+												: "bg-gray-100 text-black border-black border-1 border border-opacity-20"
 										} text-black  `}
 										onClick={() => setSeccionActiva("elaborar")}
 									>
@@ -335,9 +335,9 @@ export const DynamicForm = () => {
 									<button
 										className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
 											seccionActiva === "elaborar"
-												? "bg-gray-100 text-black border-black border-2"
+												? "bg-gray-100 text-black border-black border-1 border border-opacity-20"
 												: "bg-black text-gray-100"
-										} font-semibold `}
+										}  `}
 										onClick={() => setSeccionActiva("hechos")}
 									>
 										Hecho por la web
