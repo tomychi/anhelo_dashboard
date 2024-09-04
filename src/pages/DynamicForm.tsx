@@ -298,20 +298,19 @@ export const DynamicForm = () => {
 	};
 
 	const inputClass = `
-		block px-4 h-12 w-full   bg-gray-100
+		block px-4 h-12 w-full   bg-gray-300
 		appearance-none focus:outline-none focus:ring-0 peer
 		placeholder-gray-400 placeholder-opacity-100
 		 text-black font-light 
-		autofill:bg-gray-100 autofill:text-black
-		focus:bg-gray-100 focus:text-black
-		hover:bg-gray-100 hover:text-black
+		autofill:bg-gray-300 autofill:text-black
+		focus:bg-gray-300 focus:text-black
+		hover:bg-gray-300 hover:text-black
 	`;
 
 	const inputStyle = {
-		backgroundColor: "rgb(229 231 235)",
+		backgroundColor: "rgb(209 213 219)", // Equivalente a bg-gray-300
 		color: "black",
 	};
-
 	return (
 		<div>
 			{productos.length > 0 && (
