@@ -335,7 +335,7 @@ export const DynamicForm = () => {
 						{/* Botones */}
 						<div className="flex w-full justify-center px-4 pt-4 bg-gray-300 rounded-t-lg">
 							<button
-								className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-tl-lg ${
+								className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 									seccionActiva === "elaborar"
 										? "bg-black text-gray-200"
 										: "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
@@ -345,7 +345,7 @@ export const DynamicForm = () => {
 								Tomar pedido
 							</button>
 							<button
-								className={`w-1/2 pt-8 pb-8 text-2xl font-medium rounded-tr-lg ${
+								className={`w-1/2 pt-8 pb-8 text-2xl font-medium rounded-r-lg ${
 									seccionActiva === "elaborar"
 										? "bg-gray-300 shadow-lg text-black border-black border-1 border border-opacity-20"
 										: "bg-black text-gray-200"
