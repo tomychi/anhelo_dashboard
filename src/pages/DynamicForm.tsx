@@ -331,12 +331,12 @@ export const DynamicForm = () => {
 					</div>
 
 					{/* Sección form */}
-					<div className="md:w-1/3 flex flex-col gap-4">
+					<div className="md:w-1/3 flex flex-col ">
 						{/* Establecer el ancho de la sección */}
 
 						<div className="font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg">
 							<div className="flex flex-col">
-								<div className="flex w-full justify-center  p-4">
+								<div className="flex w-full justify-center  px-4 pt-4">
 									<button
 										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
 											seccionActiva === "elaborar"
