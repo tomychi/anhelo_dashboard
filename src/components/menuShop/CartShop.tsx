@@ -32,7 +32,7 @@ export const CartShop = ({
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-100 rounded-lg shadow-lg">
 			<div className="flex flex-row p-4 w-full justify-between">
-				<h5 className="text-4xl mt-[-0.5rem] font-medium">
+				<h5 className="text-4xl mt-[-0.5rem] font-bold">
 					Carrito {currencyFormat(total)}
 				</h5>
 
@@ -55,7 +55,7 @@ export const CartShop = ({
 				<div className="grid grid-cols-6 p-4 gap-4">
 					{detallePedido.map((p, index) => (
 						<div className="" key={index}>
-							<h3 className="text-xs bg-gray-300 rounded-md p-2 font-black ">
+							<h3 className="text-xs bg-gray-300 rounded-md p-2 font-medium ">
 								{p.quantity}x {p.burger}
 								{p.toppings?.map((t, i) => (
 									<div key={i}>: {t}</div>
@@ -66,7 +66,9 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4 text-left text-xs w-full">El carrito esta vacio.</h2>
+				<h2 className="p-4 text-left text-xs font-medium w-full">
+					El carrito esta vacio.
+				</h2>
 			)}
 		</div>
 	);
