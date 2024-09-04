@@ -25,7 +25,7 @@ export const MenuGallery = ({ handleFormBurger }: Props) => {
 					"drink",
 				].map((sectionName) => (
 					<div key={sectionName}>
-						<h1 className="text-black font-coolvetica text-2xl font-bold mb-4">
+						<h1 className="text-black font-coolvetica text-2xl font-medium mb-4">
 							{(() => {
 								switch (sectionName.toLowerCase()) {
 									case "satisfyer":

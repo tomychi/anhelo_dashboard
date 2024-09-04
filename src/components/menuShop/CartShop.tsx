@@ -32,7 +32,9 @@ export const CartShop = ({
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-100 rounded-lg shadow-lg">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
-				<h5 className="text-6xl  font-bold">Carrito {currencyFormat(total)}</h5>
+				<h5 className="text-6xl  font-medium">
+					Carrito {currencyFormat(total)}
+				</h5>
 
 				<svg
 					onClick={limpiarDetallePedido}
