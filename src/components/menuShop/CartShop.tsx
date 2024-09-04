@@ -57,9 +57,9 @@ export const CartShop = ({
 							<h3 className="  border-t  border-t-1  border-black  border-opacity-20 font-medium ">
 								<p className="pl-4 py-2">
 									{p.quantity}x {p.burger}
-									{p.toppings?.map((t, i) => (
-										<div key={i}>: {t}</div>
-									))}
+									{p.toppings &&
+										p.toppings.length > 0 &&
+										`: ${p.toppings.join(", ")}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
 							</h3>
