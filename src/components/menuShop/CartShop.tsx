@@ -30,49 +30,10 @@ export const CartShop = ({
 	};
 
 	return (
-		<div className="flex flex-col w-full font-coolvetica justify-center bg-custom-red">
-			{/* Generador de Vouchers
-			<div className="bg-white p-4 mb-4 rounded shadow">
-				<h3 className="text-xl font-bold mb-2">
-					Generador de Códigos de Voucher 2x1
-				</h3>
-				<div className="flex items-center mb-2">
-					<input
-						type="number"
-						min="1"
-						value={quantity}
-						onChange={(e) => setQuantity(Number(e.target.value))}
-						className="border p-2 mr-2"
-						placeholder="Cantidad de códigos"
-					/>
-					<button
-						onClick={generateCodes}
-						className="bg-blue-500 text-white p-2 rounded"
-					>
-						Generar Códigos
-					</button>
-				</div>
-				{codes.length > 0 && (
-					<div>
-						<textarea
-							readOnly
-							value={codes.join("\n")}
-							className="w-full h-32 border p-2 mb-2"
-						/>
-						<button
-							onClick={copyToClipboard}
-							className="bg-green-500 text-white p-2 rounded"
-						>
-							Copiar Códigos
-						</button>
-					</div>
-				)}
-			</div> */}
-
-			{/* Contenido original del CartShop */}
+		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-100 rounded-lg shadow-lg">
 			<div className="flex flex-row p-4 w-full justify-between">
-				<h5 className="text-6xl mt-[-0.5rem] font-black">
-					CARRITO {currencyFormat(total)}
+				<h5 className="text-4xl mt-[-0.5rem] font-medium">
+					Carrito {currencyFormat(total)}
 				</h5>
 
 				<svg
@@ -80,7 +41,7 @@ export const CartShop = ({
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					className="w-10 h-10 border-2 border-black p-2 cursor-pointer"
+					className="w-8 h-8 bg-gray-300 rounded-md p-2 cursor-pointer"
 				>
 					<path
 						fillRule="evenodd"
@@ -89,12 +50,12 @@ export const CartShop = ({
 					/>
 				</svg>
 			</div>
-			<hr className="border-t-2 w-full border-black" />
+			<hr className="border-t-1 border-opacity-20 w-full border-black" />
 			{detallePedido.length > 0 ? (
 				<div className="grid grid-cols-6 p-4 gap-4">
 					{detallePedido.map((p, index) => (
 						<div className="" key={index}>
-							<h3 className="text-sm bg-black p-4 text-custom-red font-black uppercase">
+							<h3 className="text-xs bg-black p-4 text-custom-red font-black uppercase">
 								{p.quantity}x {p.burger}
 								{p.toppings?.map((t, i) => (
 									<div key={i}>: {t}</div>
@@ -105,7 +66,7 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4 text-left w-full">El carrito esta vacio.</h2>
+				<h2 className="p-4 text-left text-xs w-full">El carrito esta vacio.</h2>
 			)}
 		</div>
 	);
