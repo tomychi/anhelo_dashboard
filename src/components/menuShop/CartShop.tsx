@@ -29,7 +29,7 @@ export const CartShop = ({
 			.catch((err) => console.error("Error al copiar: ", err));
 	};
 	const capitalizeFirstLetter = (string) => {
-		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+		return string.charAt(0).toLowerCase() + string.slice(1).toLowerCase();
 	};
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
@@ -61,7 +61,7 @@ export const CartShop = ({
 									{p.quantity}x {p.burger}
 									{p.toppings &&
 										p.toppings.length > 0 &&
-										`: ${p.toppings.map(capitalizeFirstLetter).join(", ")}`}
+										` con ${p.toppings.map(capitalizeFirstLetter).join(", ")}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
 							</h3>
