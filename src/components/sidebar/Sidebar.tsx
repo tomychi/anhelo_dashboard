@@ -65,7 +65,7 @@ export const Sidebar = () => {
 			</div>
 
 			<div
-				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out shadow-lg ${
+				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out  ${
 					isMenuOpen ? "z-[10000]" : "z-[-1]"
 				}`}
 				style={{
@@ -81,7 +81,7 @@ export const Sidebar = () => {
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block p-2 hover:bg-gray-300 shadow-lg rounded text-sm"
+									className="block p-2 hover:bg-gray-300 rounded text-sm"
 									onClick={toggleMenu}
 								>
 									{item.text}
