@@ -341,7 +341,7 @@ export const DynamicForm = () => {
 								} text-black`}
 								onClick={() => setSeccionActiva("elaborar")}
 							>
-								Tomar pedido
+								Tomar manualmente
 							</button>
 							<button
 								className={` w-1/2   text-xl font-medium py-2 rounded-lg ${
