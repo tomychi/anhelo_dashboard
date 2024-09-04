@@ -28,11 +28,11 @@ export const CartShop = ({
 			.then(() => alert("Códigos copiados al portapapeles"))
 			.catch((err) => console.error("Error al copiar: ", err));
 	};
-	const capitalizeFirstLetter = (string) => {
+	const capitalizeFirstLetter = (string: string): string => {
 		return string.charAt(0).toLowerCase() + string.slice(1).toLowerCase();
 	};
 
-	const formatToppings = (toppings) => {
+	const formatToppings = (toppings: string[]): string => {
 		const capitalizedToppings = toppings.map(capitalizeFirstLetter);
 		if (capitalizedToppings.length === 0) return "";
 		if (capitalizedToppings.length === 1) return capitalizedToppings[0];
