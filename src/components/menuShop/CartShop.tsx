@@ -87,7 +87,7 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4 text-left  border-t border-1 border-black border-opacity-20 text-gray-400 font-light w-full">
+				<h2 className="px-4 py-2 text-left  border-t border-1 border-black border-opacity-20 text-gray-400 font-light w-full">
 					El carrito esta vacio
 				</h2>
 			)}
