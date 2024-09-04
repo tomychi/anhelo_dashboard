@@ -29,7 +29,7 @@ export const CardItem = ({
 		<>
 			<div
 				onClick={() => setShowModal(true)}
-				className=" h-full font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg flex flex-col justify-between"
+				className=" h-full font-coolvetica font-black bg-gray-200 rounded-lg  flex flex-col justify-between"
 			>
 				<div className="pt-4">
 					<img

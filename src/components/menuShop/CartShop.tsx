@@ -30,7 +30,7 @@ export const CartShop = ({
 	};
 
 	return (
-		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-100 rounded-lg shadow-lg">
+		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-200 rounded-lg ">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
 				<h5 className="text-6xl  font-medium">
 					Carrito {currencyFormat(total)}
@@ -41,7 +41,7 @@ export const CartShop = ({
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					className="w-8 h-8 bg-gray-300 rounded-md p-2 mt-2.5 cursor-pointer"
+					className="w-8 h-8  rounded-md p-2 mt-4 cursor-pointer"
 				>
 					<path
 						fillRule="evenodd"
@@ -66,8 +66,8 @@ export const CartShop = ({
 					))}
 				</div>
 			) : (
-				<h2 className="p-4 text-left text-xs font-medium w-full">
-					El carrito esta vacio.
+				<h2 className="p-4 text-left text-gray-400 font-light w-full">
+					El carrito esta vacio
 				</h2>
 			)}
 		</div>

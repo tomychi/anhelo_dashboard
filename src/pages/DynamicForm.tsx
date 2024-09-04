@@ -315,7 +315,7 @@ export const DynamicForm = () => {
 	return (
 		<div>
 			{productos.length > 0 && (
-				<div className="flex p-4 gap-4 justify-between bg-gray-300 flex-col md:flex-row">
+				<div className="flex p-4 gap-4 justify-between bg-gray-100 flex-col md:flex-row">
 					{/* Sección carrito y productos */}
 					<div className="flex flex-col w-full md:w-2/3">
 						{detallePedido && (
@@ -331,189 +331,186 @@ export const DynamicForm = () => {
 					</div>
 
 					{/* Sección form */}
-					<div className="md:w-1/3 flex flex-col ">
+					<div className="md:w-1/3 flex flex-col font-coolvetica font-black bg-gray-200 rounded-lg shadow-lg">
 						{/* Establecer el ancho de la sección */}
-
-						<div className="font-coolvetica font-black bg-gray-100 rounded-lg shadow-lg">
-							<div className="flex flex-col">
-								{/* Botones */}
-								<div className="flex w-full justify-center  px-4 pt-4">
-									<button
-										className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
-											seccionActiva === "elaborar"
-												? "bg-black text-gray-100"
-												: "bg-gray-100 text-black border-black border-1 border border-opacity-20"
-										} text-black  `}
-										onClick={() => setSeccionActiva("elaborar")}
-									>
-										Tomar pedido
-									</button>
-									<button
-										className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
-											seccionActiva === "elaborar"
-												? "bg-gray-100 text-black border-black border-1 border border-opacity-20"
-												: "bg-black text-gray-100"
-										}  `}
-										onClick={() => setSeccionActiva("hechos")}
-									>
-										Hecho por la web
-									</button>
-								</div>
-								{/* Elaborar */}
-								{seccionActiva === "elaborar" ? (
-									<div className="flex flex-col items-center justify-center">
-										<form
-											onSubmit={handleSubmit}
-											className="w-full p-4 flex flex-col gap-2"
-										>
-											<input
-												className={inputClass}
-												style={inputStyle}
-												id="cupon"
-												name="cupon"
-												value={formData.cupon}
-												placeholder="Cupón"
-												onChange={handleChange}
-											/>
-											<input
-												className={inputClass}
-												style={inputStyle}
-												id="aclaraciones"
-												name="aclaraciones"
-												value={formData.aclaraciones}
-												placeholder="Aclaraciones"
-												onChange={handleChange}
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												id="telefono"
-												name="telefono"
-												value={formData.telefono}
-												placeholder="Teléfono"
-												onChange={handleChange}
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="direccion"
-												name="direccion"
-												value={formData.direccion}
-												placeholder="Dirección"
-												onChange={handleChange}
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="ubicacion"
-												name="ubicacion"
-												value={formData.ubicacion}
-												placeholder="Coordenadas"
-												onChange={handleChange}
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="referencias"
-												name="referencias"
-												value={formData.referencias}
-												placeholder="Referencias"
-												onChange={handleChange}
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="number"
-												id="envio"
-												name="envio"
-												value={formData.envio}
-												placeholder="Envio"
-												onChange={handleChange}
-												required // Agregar el atributo required
-											/>
-
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="time"
-												id="hora"
-												name="hora"
-												value={formData.hora}
-												placeholder="Hora"
-												onChange={handleChange}
-											/>
-
-											<select
-												id="metodoPago"
-												name="metodoPago"
-												style={inputStyle}
-												className={inputClass}
-												value={formData.metodoPago}
-												onChange={handleChange}
-											>
-												<option> Metodo de pago</option>
-												<option value="efectivo">Efectivo</option>
-												<option
-													value="mercadopago"
-													onClick={() => obtenerMontos()}
-												>
-													Mercadopago
-												</option>
-											</select>
-											{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
-												<div className="flex flex-row ">
-													<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-200 w-4/5 font-coolvetica border-black   p-4 ">
-														Alias: {aliasDisponible}
-													</h5>
-													<button
-														className="w-1/5 text-gray-100  border-black h-12  flex text-center justify-center items-center  rounded-r-lg  font-medium bg-black"
-														type="button" // Cambiar el tipo de botón a "button"
-														onClick={() => {
-															const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
-															navigator.clipboard
-																.writeText(mensaje)
-																.then(() => {
-																	console.log(
-																		"Mensaje copiado al portapapeles:",
-																		mensaje
-																	);
-																})
-																.catch((error) => {
-																	console.error(
-																		"Error al copiar el mensaje al portapapeles:",
-																		error
-																	);
-																});
-														}}
-													>
-														COPIAR
-													</button>
-												</div>
-											)}
-											<button
-												type="submit"
-												className="  text-gray-100 w-full pt-8 pb-8 bg-black  text-2xl font-medium rounded-lg   "
-											>
-												Guardar
-											</button>
-										</form>
-									</div>
-								) : (
-									<PedidosWeb
-										handleFormBurger={handleFormBurger}
-										handleFormClient={handleFormClient}
-										setSeccionActiva={setSeccionActiva}
-									/>
-								)}
+						<div className="flex flex-col">
+							{/* Botones */}
+							<div className="flex w-full justify-center  px-4 pt-4">
+								<button
+									className={`pt-8 pb-8 text-2xl w-1/2 font-medium rounded-l-lg ${
+										seccionActiva === "elaborar"
+											? "bg-black text-gray-100"
+											: "bg-gray-100 text-black border-black border-1 border border-opacity-20"
+									} text-black  `}
+									onClick={() => setSeccionActiva("elaborar")}
+								>
+									Tomar pedido
+								</button>
+								<button
+									className={` w-1/2 pt-8 pb-8 text-2xl font-medium  rounded-r-lg ${
+										seccionActiva === "elaborar"
+											? "bg-gray-100 text-black border-black border-1 border border-opacity-20"
+											: "bg-black text-gray-100"
+									}  `}
+									onClick={() => setSeccionActiva("hechos")}
+								>
+									Hecho por la web
+								</button>
 							</div>
+							{/* Elaborar */}
+							{seccionActiva === "elaborar" ? (
+								<div className="flex flex-col items-center justify-center">
+									<form
+										onSubmit={handleSubmit}
+										className="w-full p-4 flex flex-col gap-2"
+									>
+										<input
+											className={inputClass}
+											style={inputStyle}
+											id="cupon"
+											name="cupon"
+											value={formData.cupon}
+											placeholder="Cupón"
+											onChange={handleChange}
+										/>
+										<input
+											className={inputClass}
+											style={inputStyle}
+											id="aclaraciones"
+											name="aclaraciones"
+											value={formData.aclaraciones}
+											placeholder="Aclaraciones"
+											onChange={handleChange}
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											id="telefono"
+											name="telefono"
+											value={formData.telefono}
+											placeholder="Teléfono"
+											onChange={handleChange}
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											type="text"
+											id="direccion"
+											name="direccion"
+											value={formData.direccion}
+											placeholder="Dirección"
+											onChange={handleChange}
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											type="text"
+											id="ubicacion"
+											name="ubicacion"
+											value={formData.ubicacion}
+											placeholder="Coordenadas"
+											onChange={handleChange}
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											type="text"
+											id="referencias"
+											name="referencias"
+											value={formData.referencias}
+											placeholder="Referencias"
+											onChange={handleChange}
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											type="number"
+											id="envio"
+											name="envio"
+											value={formData.envio}
+											placeholder="Envio"
+											onChange={handleChange}
+											required // Agregar el atributo required
+										/>
+
+										<input
+											className={inputClass}
+											style={inputStyle}
+											type="time"
+											id="hora"
+											name="hora"
+											value={formData.hora}
+											placeholder="Hora"
+											onChange={handleChange}
+										/>
+
+										<select
+											id="metodoPago"
+											name="metodoPago"
+											style={inputStyle}
+											className={inputClass}
+											value={formData.metodoPago}
+											onChange={handleChange}
+										>
+											<option> Metodo de pago</option>
+											<option value="efectivo">Efectivo</option>
+											<option
+												value="mercadopago"
+												onClick={() => obtenerMontos()}
+											>
+												Mercadopago
+											</option>
+										</select>
+										{formData.metodoPago === "mercadopago" && ( // Condición para mostrar el alias solo si se selecciona "mercadopago"
+											<div className="flex flex-row ">
+												<h5 className="text-black  px-4 h-12 flex items-center  rounded-l-lg  font-light bg-gray-200 w-4/5 font-coolvetica border-black   p-4 ">
+													Alias: {aliasDisponible}
+												</h5>
+												<button
+													className="w-1/5 text-gray-100  border-black h-12  flex text-center justify-center items-center  rounded-r-lg  font-medium bg-black"
+													type="button" // Cambiar el tipo de botón a "button"
+													onClick={() => {
+														const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
+														navigator.clipboard
+															.writeText(mensaje)
+															.then(() => {
+																console.log(
+																	"Mensaje copiado al portapapeles:",
+																	mensaje
+																);
+															})
+															.catch((error) => {
+																console.error(
+																	"Error al copiar el mensaje al portapapeles:",
+																	error
+																);
+															});
+													}}
+												>
+													COPIAR
+												</button>
+											</div>
+										)}
+										<button
+											type="submit"
+											className="  text-gray-100 w-full pt-8 pb-8 bg-black  text-2xl font-medium rounded-lg   "
+										>
+											Guardar
+										</button>
+									</form>
+								</div>
+							) : (
+								<PedidosWeb
+									handleFormBurger={handleFormBurger}
+									handleFormClient={handleFormClient}
+									setSeccionActiva={setSeccionActiva}
+								/>
+							)}
 						</div>
 					</div>
 				</div>
