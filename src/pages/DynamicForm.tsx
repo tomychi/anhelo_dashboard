@@ -500,7 +500,7 @@ export const DynamicForm = () => {
 											)}
 											<button
 												type="submit"
-												className="  text-custom-red w-full pt-8 pb-8 bg-black uppercase text-2xl font-black  outline-none "
+												className="  text-gray-100 w-full pt-8 pb-8 bg-black  text-2xl font-medium rounded-lg   "
 											>
 												Guardar
 											</button>
