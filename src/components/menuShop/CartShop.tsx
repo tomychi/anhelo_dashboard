@@ -28,7 +28,9 @@ export const CartShop = ({
 			.then(() => alert("Códigos copiados al portapapeles"))
 			.catch((err) => console.error("Error al copiar: ", err));
 	};
-
+	const capitalizeFirstLetter = (string) => {
+		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	};
 	return (
 		<div className="flex flex-col w-full font-coolvetica justify-center bg-gray-300 shadow-lg rounded-lg ">
 			<div className="flex flex-row px-4 pb-2 pt-1 w-full justify-between">
@@ -59,7 +61,7 @@ export const CartShop = ({
 									{p.quantity}x {p.burger}
 									{p.toppings &&
 										p.toppings.length > 0 &&
-										`: ${p.toppings.join(", ")}`}
+										`: ${p.toppings.map(capitalizeFirstLetter).join(", ")}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
 							</h3>
