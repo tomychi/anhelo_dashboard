@@ -41,7 +41,16 @@ export const CardItem = ({
 
 				<div className="cursor-pointer">
 					<div className="text-center">
-						<h5 className="text-xs p-4 font-medium text-black ">{name}</h5>
+						<h5 className="text-xs p-4 font-medium text-black">
+							{name
+								.split(" ")
+								.map((word) =>
+									word.toLowerCase() === "2x1"
+										? word
+										: word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+								)
+								.join(" ")}
+						</h5>
 						<hr className=" border-t-1 opacity-20 w-full border-black" />
 						<div className="flex items-center p-4 justify-center">
 							<span className="text-xs font-medium text-black">
