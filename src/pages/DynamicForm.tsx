@@ -332,26 +332,29 @@ export const DynamicForm = () => {
 					{/* Sección form */}
 					<div className="md:w-1/3 flex flex-col font-coolvetica font-black">
 						{/* Botones */}
-						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 rounded-t-lg">
+						<p className="bg-gray-300 rounded-t-lg text-center font-medium text-2xl pt-4">
+							Toma pedidos
+						</p>
+						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 ">
 							<button
-								className={`  text-xl  w-1/2 font-medium py-2 rounded-lg ${
+								className={`    w-1/2 font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-black text-gray-200"
 										: "bg-gray-300  text-black border-black border-1 border border-opacity-20"
 								} text-black`}
 								onClick={() => setSeccionActiva("elaborar")}
 							>
-								Tomar manualmente
+								Manualmente
 							</button>
 							<button
-								className={` w-1/2   text-xl font-medium py-2 rounded-lg ${
+								className={` w-1/2   font-medium py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-gray-300  text-black border-black border-1 border border-opacity-20"
 										: "bg-black text-gray-200"
 								}`}
 								onClick={() => setSeccionActiva("hechos")}
 							>
-								Hecho por la web
+								Hechos por la web
 							</button>
 						</div>
 						{/* Contenido dinámico */}
@@ -491,7 +494,7 @@ export const DynamicForm = () => {
 										</div>
 										<button
 											type="submit"
-											className="text-gray-100 w-full py-2 rounded-lg  bg-black text-xl font-medium  mt-4"
+											className="text-gray-100 w-full py-4 rounded-lg  bg-black text-2xl font-medium  mt-4"
 										>
 											Guardar
 										</button>
