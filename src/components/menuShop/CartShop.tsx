@@ -50,17 +50,18 @@ export const CartShop = ({
 					/>
 				</svg>
 			</div>
-			<hr className="border-t-1 border-opacity-20 w-full border-black" />
 			{detallePedido.length > 0 ? (
-				<div className="grid grid-cols-6 p-4 gap-4">
+				<div className=" flex flex-col  ">
 					{detallePedido.map((p, index) => (
-						<div className="" key={index}>
-							<h3 className="text-xs bg-gray-100 rounded-md p-2 font-medium ">
-								{p.quantity}x {p.burger}
-								{p.toppings?.map((t, i) => (
-									<div key={i}>: {t}</div>
-								))}
-								: {currencyFormat(p.subTotal)}
+						<div key={index}>
+							<h3 className="  border-t  border-t-1  border-black  border-opacity-20 font-medium ">
+								<p className="pl-4 py-2">
+									{p.quantity}x {p.burger}
+									{p.toppings?.map((t, i) => (
+										<div key={i}>: {t}</div>
+									))}
+									: {currencyFormat(p.subTotal)}
+								</p>
 							</h3>
 						</div>
 					))}
