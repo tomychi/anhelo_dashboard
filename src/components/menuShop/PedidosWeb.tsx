@@ -104,6 +104,26 @@ const extractCoordinates = (url: string) => {
   return [0, 0]; // Valor predeterminado si no se encuentran coordenadas
 };
 
+const ajustarHoraReserva = (horaReserva: string): string => {
+  // Crear un objeto Date con la hora de reserva
+  const [horas, minutos] = horaReserva.split(':').map(Number);
+  const fechaReserva = new Date();
+  fechaReserva.setHours(horas, minutos, 0, 0); // Asignar hora de reserva
+
+  // Restar 30 minutos
+  fechaReserva.setMinutes(fechaReserva.getMinutes() - 30);
+
+  // Formatear la nueva hora en formato "HH:mm" (24 horas)
+  const nuevaHora = fechaReserva
+    .toLocaleTimeString([], {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    .padStart(5, '0');
+
+  return nuevaHora;
+};
 const parsearMensajePedido = (
   mensaje: string,
   toppingsInfo: ProductStateProps[],
@@ -127,7 +147,13 @@ const parsearMensajePedido = (
     ? datosVendedorMatch.slice(1).map((value) => value.trim())
     : [];
 
-  const hora = datosVendedor[0] || obtenerHoraActual();
+  // Si el dato del vendedor es [0], ajustamos la hora
+  const horaAjustada = datosVendedor[0]
+    ? ajustarHoraReserva(datosVendedor[0])
+    : obtenerHoraActual(); // Si no hay hora de reserva, usa la actual
+
+  // Asignar las variables
+  const hora = horaAjustada;
   const telefono = datosVendedor[1];
   const direccion = datosVendedor[3];
   const metodoPago = datosVendedor[6];
