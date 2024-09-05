@@ -49,7 +49,7 @@ export const Sidebar = () => {
 				</NavLink>
 				<div className="flex flex-row gap-4 items-center">
 					<button className="bg-gray-100 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
-						<p className="text-xs font-bold">Acción rapida</p>
+						<p className=" font-medium">Acción rapida</p>
 					</button>
 					<button
 						onClick={toggleMenu}
@@ -81,7 +81,7 @@ export const Sidebar = () => {
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block p-2 hover:bg-gray-300 rounded text-sm"
+									className="block p-2 hover:bg-gray-300 rounded "
 									onClick={toggleMenu}
 								>
 									{item.text}
