@@ -444,8 +444,14 @@ export const DynamicForm = () => {
 												required
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
+												className={`${inputClass} hide-time-icon`}
+												style={{
+													...inputStyle,
+													appearance: "textfield",
+													"::-webkit-calendar-picker-indicator": {
+														display: "none",
+													},
+												}}
 												type="time"
 												id="hora"
 												name="hora"
