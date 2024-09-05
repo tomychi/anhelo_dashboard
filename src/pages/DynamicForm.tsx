@@ -70,6 +70,40 @@ const aliasTopes = {
 	onlyanhelo2: 450000,
 };
 
+const FormInput = ({
+	id,
+	name,
+	value,
+	placeholder,
+	type = "text",
+	onChange,
+	onClear,
+	className,
+	style,
+}) => (
+	<div className="relative">
+		<input
+			className={`${className} pr-10`}
+			style={style}
+			id={id}
+			name={name}
+			value={value}
+			placeholder={placeholder}
+			type={type}
+			onChange={onChange}
+		/>
+		{value && (
+			<button
+				type="button"
+				onClick={() => onClear(name)}
+				className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black text-gray-100 text-xs font-medium text-center rounded-full w-4 h-4 flex items-center justify-center"
+			>
+				X
+			</button>
+		)}
+	</div>
+);
+
 export const DynamicForm = () => {
 	const [aliasDisponible, setAliasDisponible] = useState<string>("onlyanhelo3");
 	const [editableTotal, setEditableTotal] = useState(0);
@@ -145,6 +179,10 @@ export const DynamicForm = () => {
 
 	const handleTotalChange = (newTotal: number) => {
 		setEditableTotal(newTotal);
+	};
+
+	const handleClear = (fieldName: string) => {
+		setFormData((prevState) => ({ ...prevState, [fieldName]: "" }));
 	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -333,7 +371,7 @@ export const DynamicForm = () => {
 										className="w-full flex flex-col "
 									>
 										<div className="w-full flex flex-col border-4 border-black rounded-xl ">
-											<input
+											<FormInput
 												className={`${inputClass} rounded-t-lg`}
 												style={inputStyle}
 												id="cupon"
@@ -341,8 +379,9 @@ export const DynamicForm = () => {
 												value={formData.cupon}
 												placeholder="Cupón"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												id="aclaraciones"
@@ -350,8 +389,9 @@ export const DynamicForm = () => {
 												value={formData.aclaraciones}
 												placeholder="Aclaraciones"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												id="telefono"
@@ -359,38 +399,39 @@ export const DynamicForm = () => {
 												value={formData.telefono}
 												placeholder="Teléfono"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
-												type="text"
 												id="direccion"
 												name="direccion"
 												value={formData.direccion}
 												placeholder="Dirección"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
-												type="text"
 												id="ubicacion"
 												name="ubicacion"
 												value={formData.ubicacion}
 												placeholder="Coordenadas"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
-												type="text"
 												id="referencias"
 												name="referencias"
 												value={formData.referencias}
 												placeholder="Referencias"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="number"
@@ -399,9 +440,10 @@ export const DynamicForm = () => {
 												value={formData.envio}
 												placeholder="Envio"
 												onChange={handleChange}
+												onClear={handleClear}
 												required
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="time"
@@ -410,6 +452,7 @@ export const DynamicForm = () => {
 												value={formData.hora}
 												placeholder="Hora"
 												onChange={handleChange}
+												onClear={handleClear}
 											/>
 											<select
 												id="metodoPago"
