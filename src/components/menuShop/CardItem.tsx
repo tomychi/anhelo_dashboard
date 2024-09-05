@@ -47,7 +47,7 @@ export const CardItem = ({
 
 				<div className="cursor-pointer">
 					<div className="">
-						<h5 className="pb-2 pt-6 flex  items-center font-medium text-left text-black">
+						<h5 className=" pt-6 flex  items-center font-medium text-left text-black">
 							{name
 								.split(" ")
 								.map((word) =>
@@ -57,7 +57,7 @@ export const CardItem = ({
 								)
 								.join(" ")}
 						</h5>
-						<span className="font-medium text-2xl text-left text-black ">
+						<span className="font-black text-xl text-left text-black ">
 							{currencyFormat(price)}
 						</span>
 					</div>
