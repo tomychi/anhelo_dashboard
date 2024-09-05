@@ -143,6 +143,10 @@ export const DynamicForm = () => {
 		setFormData({ ...formData, [name]: value });
 	};
 
+	const handleClear = (name: string) => {
+		setFormData((prevState) => ({ ...prevState, [name]: "" }));
+	};
+
 	const handleTotalChange = (newTotal: number) => {
 		setEditableTotal(newTotal);
 	};
@@ -313,6 +317,26 @@ export const DynamicForm = () => {
 		color: "black",
 	};
 
+	const FormInput = ({ name, ...props }: any) => (
+		<div className="relative">
+			<input
+				{...props}
+				name={name}
+				value={formData[name as keyof FormDataProps]}
+				onChange={handleChange}
+			/>
+			{formData[name as keyof FormDataProps] && (
+				<button
+					type="button"
+					className="absolute right-4 font-medium top-1/2 transform -translate-y-1/2 rounded-full bg-black text-gray-100 text-xs h-4 w-4 flex items-center text-cemter justify-center"
+					onClick={() => handleClear(name)}
+				>
+					X
+				</button>
+			)}
+		</div>
+	);
+
 	return (
 		<div>
 			{productos.length > 0 && (
@@ -362,84 +386,76 @@ export const DynamicForm = () => {
 										className="w-full flex flex-col "
 									>
 										<div className="w-full flex flex-col border-4 border-black rounded-xl ">
-											<input
+											<FormInput
 												className={`${inputClass} rounded-t-lg`}
 												style={inputStyle}
+												type="text"
 												id="cupon"
 												name="cupon"
-												value={formData.cupon}
 												placeholder="Cupón"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
+												type="text"
 												id="aclaraciones"
 												name="aclaraciones"
-												value={formData.aclaraciones}
 												placeholder="Aclaraciones"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
+												type="text"
 												id="telefono"
 												name="telefono"
-												value={formData.telefono}
 												placeholder="Teléfono"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="text"
 												id="direccion"
 												name="direccion"
-												value={formData.direccion}
 												placeholder="Dirección"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="text"
 												id="ubicacion"
 												name="ubicacion"
-												value={formData.ubicacion}
 												placeholder="Coordenadas"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="text"
 												id="referencias"
 												name="referencias"
-												value={formData.referencias}
 												placeholder="Referencias"
-												onChange={handleChange}
 											/>
-											<input
+											<FormInput
 												className={inputClass}
 												style={inputStyle}
 												type="number"
 												id="envio"
 												name="envio"
-												value={formData.envio}
 												placeholder="Envio"
-												onChange={handleChange}
 												required
 											/>
-											<input
-												className={inputClass}
-												style={inputStyle}
-												type="time"
-												id="hora"
-												name="hora"
-												value={formData.hora}
-												placeholder="Hora"
-												onChange={handleChange}
-											/>
+											<div className="relative">
+												<FormInput
+													className={`${inputClass} [&::-webkit-calendar-picker-indicator]:opacity-0`}
+													style={{
+														...inputStyle,
+														appearance: "textfield",
+													}}
+													type="time"
+													id="hora"
+													name="hora"
+													placeholder="Hora"
+												/>
+											</div>
 											<select
 												id="metodoPago"
 												name="metodoPago"
