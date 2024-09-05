@@ -47,7 +47,7 @@ export const CardItem = ({
 
 				<div className="cursor-pointer">
 					<div className="">
-						<h5 className=" pt-6 flex  items-center font-medium text-left text-black">
+						<h5 className=" pt-6 flex  items-center font-medium text-left text-xs text-black">
 							{name
 								.split(" ")
 								.map((word) =>
