@@ -25,6 +25,7 @@ export const CardItem = ({
 	const closeModal: () => void = () => {
 		setShowModal(false);
 	};
+
 	return (
 		<>
 			<div className="h-full font-coolvetica font-black bg-gray-300 shadow-lg p-2 rounded-lg flex flex-col justify-between">
@@ -42,9 +43,9 @@ export const CardItem = ({
 					</div>
 				</div>
 
-				<div className="pb-2">
+				<div className="pb-2 ">
 					<div className="">
-						<h5 className=" pt-6 flex  items-center font-medium text-left text-xs text-black">
+						<h5 className=" pt-6 flex  items-center font-medium text-left  text-black">
 							{name
 								.split(" ")
 								.map((word) =>
@@ -61,7 +62,7 @@ export const CardItem = ({
 				</div>
 				<div
 					onClick={() => setShowModal(true)}
-					className="bg-black cursor-pointer  rounded-lg text-gray-100 text-center font-medium py-2"
+					className="bg-black cursor-pointer   rounded-lg text-gray-100 text-center font-medium py-2"
 				>
 					Agregar
 				</div>
