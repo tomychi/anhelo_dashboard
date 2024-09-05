@@ -197,7 +197,9 @@ export const VoucherList: React.FC = () => {
                       t.creados
                     )}`}
                   >
-                    {`${t.canjeados}/${t.creados}`}
+                    <br />
+                    {t.codigos.filter((c) => c.estado === 'usado').length}{' '}
+                    códigos usados
                   </p>
                 </td>
                 <td

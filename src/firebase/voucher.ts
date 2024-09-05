@@ -38,6 +38,11 @@ export interface VoucherTituloConFecha {
   canjeados: number;
   usados: number;
   creados: number;
+  codigos: {
+    codigo: string;
+    estado: string;
+    num: number;
+  }[];
 }
 
 export const obtenerTitulosVouchers = async (): Promise<
@@ -58,6 +63,7 @@ export const obtenerTitulosVouchers = async (): Promise<
         canjeados: data.canjeados,
         usados: data.usados,
         creados: data.creados,
+        codigos: data.codigos,
       });
     });
 
