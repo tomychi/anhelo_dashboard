@@ -55,3 +55,17 @@ input.default-input:active {
 }
 
 /* Puedes agregar más estilos específicos aquí si es necesario */
+/* Ocultar el icono del reloj en WebKit (Chrome, Safari, etc.) */
+input[type="time"]::-webkit-calendar-picker-indicator {
+	display: none;
+}
+
+/* Ocultar el icono del reloj en Firefox */
+input[type="time"] {
+	-moz-appearance: textfield;
+}
+
+/* Estilo adicional para mantener la apariencia consistente */
+input[type="time"] {
+	appearance: textfield;
+}
