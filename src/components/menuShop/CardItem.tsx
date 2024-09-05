@@ -45,7 +45,7 @@ export const CardItem = ({
 					</div>
 				</div>
 
-				<div className="cursor-pointer">
+				<div className="cursor-pointer pb-2">
 					<div className="">
 						<h5 className=" pt-6 flex  items-center font-medium text-left text-xs text-black">
 							{name
@@ -61,6 +61,9 @@ export const CardItem = ({
 							{currencyFormat(price)}
 						</span>
 					</div>
+				</div>
+				<div className="bg-black rounded-lg text-gray-100 text-center font-medium py-2">
+					Agregar
 				</div>
 			</div>
 			{showModal && (
