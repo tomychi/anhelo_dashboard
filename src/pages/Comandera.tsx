@@ -185,6 +185,55 @@ export const Comandera = () => {
 		console.log("No hay exactamente dos órdenes no entregadas para comparar.");
 	}
 
+	// Función modificada para encontrar órdenes no entregadas a menos de 3 km de distancia entre sí
+	// y que estén asignadas a "NO ASIGNADO"
+	function obtenerOrdenesCercanas(orders, distanciaMaxima) {
+		const ordenesCercanas = [];
+
+		const ordersNoAsignadas = orders.filter(
+			(order) => order.cadete === "NO ASIGNADO"
+		);
+
+		for (let i = 0; i < ordersNoAsignadas.length; i++) {
+			for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
+				const distancia = calcularDistancia(
+					ordersNoAsignadas[i].map[0],
+					ordersNoAsignadas[i].map[1],
+					ordersNoAsignadas[j].map[0],
+					ordersNoAsignadas[j].map[1]
+				);
+
+				if (parseFloat(distancia) < distanciaMaxima) {
+					ordenesCercanas.push({
+						orden1: {
+							id: ordersNoAsignadas[i].id,
+							direccion: ordersNoAsignadas[i].direccion,
+							cadete: ordersNoAsignadas[i].cadete,
+						},
+						orden2: {
+							id: ordersNoAsignadas[j].id,
+							direccion: ordersNoAsignadas[j].direccion,
+							cadete: ordersNoAsignadas[j].cadete,
+						},
+						distancia: distancia,
+					});
+				}
+			}
+		}
+
+		return ordenesCercanas;
+	}
+
+	// Usar ordersNotDelivered en lugar de orders
+	const ordenesCercanasNoEntregadas = obtenerOrdenesCercanas(
+		ordersNotDelivered,
+		3
+	);
+	console.log(
+		"Órdenes no entregadas a menos de 3 km de distancia entre sí (solo NO ASIGNADO):",
+		ordenesCercanasNoEntregadas
+	);
+
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
