@@ -167,72 +167,72 @@ export const Comandera = () => {
 		return distanciaEstimada.toFixed(2);
 	}
 
-	if (ordersNotDelivered.length === 2) {
-		const order1 = ordersNotDelivered[0];
-		const order2 = ordersNotDelivered[1];
-
-		const distancia = calcularDistancia(
-			order1.map[0],
-			order1.map[1],
-			order2.map[0],
-			order2.map[1]
-		);
-
-		console.log(
-			`Distancia estimada de manejo entre órdenes no entregadas: ${order1.direccion} está aproximadamente a ${distancia} km de ${order2.direccion}`
-		);
-	} else {
-		console.log("No hay exactamente dos órdenes no entregadas para comparar.");
-	}
-
-	// Función modificada para encontrar órdenes no entregadas a menos de 3 km de distancia entre sí
-	// y que estén asignadas a "NO ASIGNADO"
-	function obtenerOrdenesCercanas(orders, distanciaMaxima) {
-		const ordenesCercanas = [];
-
+	// Función modificada para encontrar órdenes no entregadas en rangos de distancia incrementales
+	function obtenerOrdenesCercanas(orders) {
+		const ordenesPorRango = {};
 		const ordersNoAsignadas = orders.filter(
 			(order) => order.cadete === "NO ASIGNADO"
 		);
 
-		for (let i = 0; i < ordersNoAsignadas.length; i++) {
-			for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
-				const distancia = calcularDistancia(
-					ordersNoAsignadas[i].map[0],
-					ordersNoAsignadas[i].map[1],
-					ordersNoAsignadas[j].map[0],
-					ordersNoAsignadas[j].map[1]
-				);
+		for (let distanciaMaxima = 2; distanciaMaxima <= 20; distanciaMaxima++) {
+			const ordenesCercanas = [];
 
-				if (parseFloat(distancia) < distanciaMaxima) {
-					ordenesCercanas.push({
-						orden1: {
-							id: ordersNoAsignadas[i].id,
-							direccion: ordersNoAsignadas[i].direccion,
-							cadete: ordersNoAsignadas[i].cadete,
-						},
-						orden2: {
-							id: ordersNoAsignadas[j].id,
-							direccion: ordersNoAsignadas[j].direccion,
-							cadete: ordersNoAsignadas[j].cadete,
-						},
-						distancia: distancia,
-					});
+			for (let i = 0; i < ordersNoAsignadas.length; i++) {
+				for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
+					const distancia = parseFloat(
+						calcularDistancia(
+							ordersNoAsignadas[i].map[0],
+							ordersNoAsignadas[i].map[1],
+							ordersNoAsignadas[j].map[0],
+							ordersNoAsignadas[j].map[1]
+						)
+					);
+
+					if (distancia < distanciaMaxima && distancia >= distanciaMaxima - 1) {
+						ordenesCercanas.push({
+							orden1: {
+								id: ordersNoAsignadas[i].id,
+								direccion: ordersNoAsignadas[i].direccion,
+								cadete: ordersNoAsignadas[i].cadete,
+							},
+							orden2: {
+								id: ordersNoAsignadas[j].id,
+								direccion: ordersNoAsignadas[j].direccion,
+								cadete: ordersNoAsignadas[j].cadete,
+							},
+							distancia: distancia.toFixed(2),
+						});
+					}
 				}
+			}
+
+			if (ordenesCercanas.length > 0) {
+				ordenesPorRango[`${distanciaMaxima - 1}-${distanciaMaxima}km`] =
+					ordenesCercanas;
 			}
 		}
 
-		return ordenesCercanas;
+		return ordenesPorRango;
 	}
 
-	// Usar ordersNotDelivered en lugar de orders
-	const ordenesCercanasNoEntregadas = obtenerOrdenesCercanas(
-		ordersNotDelivered,
-		3
-	);
+	// Usar ordersNotDelivered
+	const ordenesCercanasNoEntregadas =
+		obtenerOrdenesCercanas(ordersNotDelivered);
 	console.log(
-		"Órdenes no entregadas a menos de 3 km de distancia entre sí (solo NO ASIGNADO):",
+		"Órdenes no entregadas por rango de distancia (solo NO ASIGNADO):",
 		ordenesCercanasNoEntregadas
 	);
+
+	// Imprimir resultados de manera más legible
+	Object.entries(ordenesCercanasNoEntregadas).forEach(([rango, ordenes]) => {
+		console.log(`\nÓrdenes en el rango ${rango}:`);
+		ordenes.forEach(({ orden1, orden2, distancia }) => {
+			console.log(`Distancia: ${distancia}km`);
+			console.log(`Orden 1: ${orden1.direccion}`);
+			console.log(`Orden 2: ${orden2.direccion}`);
+			console.log("---");
+		});
+	});
 
 	return (
 		<div className="p-4 flex flex-col">
