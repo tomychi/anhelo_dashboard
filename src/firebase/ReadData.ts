@@ -117,15 +117,28 @@ export const ReadDataSell = async () => {
 };
 
 type OrdersCallback = (pedidos: PedidoProps[]) => void;
-
 export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
   const firestore = getFirestore();
-  const todayDateString = obtenerFechaActual(); // Asumiendo que tienes una función obtenerFechaActual() definida en otro lugar
+  const currentDate = new Date();
+  const currentHour = currentDate.getHours();
 
-  // Obtener el año, mes y día actual
-  const [day, month, year] = todayDateString.split('/');
+  let targetDate;
 
-  // Referencia al documento del día actual dentro de la colección del mes actual
+  // Si la hora es antes de las 6 a.m., tomar el día anterior
+  if (currentHour < 6) {
+    const previousDay = new Date(currentDate);
+    previousDay.setDate(currentDate.getDate() - 1);
+    targetDate = previousDay;
+  } else {
+    targetDate = currentDate;
+  }
+
+  // Formatear la fecha para obtener día, mes y año en formato 'DD/MM/AAAA'
+  const day = String(targetDate.getDate()).padStart(2, '0');
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const year = String(targetDate.getFullYear());
+
+  // Referencia al documento del día en la colección de pedidos
   const ordersDocRef = doc(firestore, 'pedidos', year, month, day);
 
   // Escuchar cambios en el documento del día actual
@@ -135,9 +148,9 @@ export const ReadOrdersForToday = (callback: OrdersCallback): Unsubscribe => {
       if (docSnapshot.exists()) {
         // Si el documento existe, obtener el arreglo de pedidos
         const pedidosDelDia = docSnapshot.data()?.pedidos || [];
-        callback(pedidosDelDia as PedidoProps[]); // Llamar a la función de devolución de llamada con los pedidos encontrados
+        callback(pedidosDelDia as PedidoProps[]); // Llamar a la función de devolución de llamada con los pedidos
       } else {
-        // Si el documento no existe, no hay pedidos para el día actual
+        // Si el documento no existe, no hay pedidos para el día
         callback([]); // Llamar a la función de devolución de llamada con un arreglo vacío
       }
     },
