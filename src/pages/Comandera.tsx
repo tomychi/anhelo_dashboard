@@ -374,6 +374,23 @@ export const Comandera = () => {
           </ScrollContainer> */}
 				</div>
 			</div>
+			{/* Nuevo cuadro para mostrar el grupo óptimo de órdenes */}
+			<div className="mt-4 bg-gray-300 p-4 rounded-lg">
+				<h3 className="font-bold text-lg mb-2">Grupo óptimo de órdenes:</h3>
+				{grupoOptimo.grupo.map((orden, index) => (
+					<div key={orden.id} className="mb-2">
+						<p className="font-semibold">Entrega {index + 1}:</p>
+						<p>Dirección: {orden.direccion}</p>
+					</div>
+				))}
+				<p className="mt-2">
+					<strong>Tiempo total estimado del recorrido:</strong>{" "}
+					{grupoOptimo.tiempoTotal} minutos
+				</p>
+				<p>
+					<strong>Distancia total del recorrido:</strong> {distanciaTotal} km
+				</p>
+			</div>
 			<CadeteSelect
 				cadetes={cadetes}
 				handleCadeteChange={handleCadeteChange}
@@ -429,23 +446,6 @@ export const Comandera = () => {
 			</div>
 			<div className="mt-2">
 				{seccionActiva === "registro" && <RegistroEmpleado />}
-			</div>
-			{/* Nuevo cuadro para mostrar el grupo óptimo de órdenes */}
-			<div className="mt-4 bg-gray-300 p-4 rounded-lg">
-				<h3 className="font-bold text-lg mb-2">Grupo óptimo de órdenes:</h3>
-				{grupoOptimo.grupo.map((orden, index) => (
-					<div key={orden.id} className="mb-2">
-						<p className="font-semibold">Entrega {index + 1}:</p>
-						<p>Dirección: {orden.direccion}</p>
-					</div>
-				))}
-				<p className="mt-2">
-					<strong>Tiempo total estimado del recorrido:</strong>{" "}
-					{grupoOptimo.tiempoTotal} minutos
-				</p>
-				<p>
-					<strong>Distancia total del recorrido:</strong> {distanciaTotal} km
-				</p>
 			</div>
 		</div>
 	);
