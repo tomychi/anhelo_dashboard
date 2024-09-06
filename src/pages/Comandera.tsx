@@ -176,7 +176,8 @@ export const Comandera = () => {
 		const velocidadPromedioKmPorHora = 32;
 		const tiempoHoras = distanciaKm / velocidadPromedioKmPorHora;
 		const tiempoMinutos = Math.round(tiempoHoras * 60);
-		return tiempoMinutos;
+		const factorCorreccion = 1.5; // Factor de corrección para acercarnos a estimaciones de Google Maps
+		return Math.round(tiempoMinutos * factorCorreccion);
 	}
 
 	function obtenerOrdenMasCercana(grupoActual, ordenes) {
