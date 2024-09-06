@@ -315,6 +315,16 @@ export const Comandera = () => {
 		console.log("---");
 	});
 
+	const [, setTick] = useState(0);
+
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTick((prev) => prev + 1);
+		}, 60000); // Actualizar cada minuto
+
+		return () => clearInterval(timer);
+	}, []);
+
 	// Función para calcular los minutos transcurridos
 	const calcularMinutosTranscurridos = (horaString) => {
 		const [horas, minutos] = horaString.split(":").map(Number);
@@ -324,7 +334,6 @@ export const Comandera = () => {
 		const diferencia = ahora - fechaPedido;
 		return Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
 	};
-
 	// Función para calcular la demora total de un pedido
 	const calcularDemoraTotalPedido = (orden, tiempoEntrega) => {
 		const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
