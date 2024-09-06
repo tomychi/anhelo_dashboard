@@ -249,13 +249,50 @@ export const Comandera = () => {
 				);
 			}
 
+			const pedidoMayorDemora = calcularPedidoMayorDemora(
+				grupoActual,
+				puntoPartida
+			);
+
 			grupos.push({
 				grupo: grupoActual,
 				tiempoTotal: tiempoTotalRecorrido,
+				pedidoMayorDemora: pedidoMayorDemora,
 			});
 		}
 
 		return optimizarGrupos(grupos, puntoPartida);
+	}
+
+	function calcularPedidoMayorDemora(grupo, puntoPartida) {
+		let tiempoAcumulado = 0;
+		let puntoAnterior = puntoPartida;
+
+		return grupo.reduce(
+			(mayorDemora, orden, index) => {
+				const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
+
+				// Calcular el tiempo de viaje hasta esta orden
+				const distancia = calcularDistancia(
+					puntoAnterior.lat,
+					puntoAnterior.lon,
+					orden.map[0],
+					orden.map[1]
+				);
+				const tiempoViaje = calcularTiempoEnMoto(distancia);
+				tiempoAcumulado += tiempoViaje;
+
+				const demoraTotalPedido = tiempoEspera + tiempoAcumulado;
+
+				puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
+
+				if (demoraTotalPedido > mayorDemora.demoraTotalPedido) {
+					return { orden, demoraTotalPedido };
+				}
+				return mayorDemora;
+			},
+			{ orden: null, demoraTotalPedido: 0 }
+		);
 	}
 
 	function optimizarGrupos(grupos, puntoPartida) {
@@ -389,6 +426,16 @@ export const Comandera = () => {
 						<strong>Distancia total del recorrido:</strong>{" "}
 						{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
 					</p>
+					{grupo.pedidoMayorDemora.orden && (
+						<div className="mt-2 border-t pt-2">
+							<p className="font-semibold">Pedido con mayor demora total:</p>
+							<p>Dirección: {grupo.pedidoMayorDemora.orden.direccion}</p>
+							<p>
+								Demora total estimada:{" "}
+								{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
+							</p>
+						</div>
+					)}
 				</div>
 			))}
 			<CadeteSelect
