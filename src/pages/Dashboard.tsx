@@ -276,8 +276,8 @@ export const Dashboard = () => {
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola {greetingName}</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[130px] rounded-lg shadow-2xl shadow-black ">
-				<div className="mt-8 px-4">
+			<div className="absolute left-4 right-4 top-[130px] rounded-lg   ">
+				{/* <div className="mt-8 px-4">
 					{isLoading ? (
 						<p className="text-center text-white">Cargando datos...</p> // Mostrar mensaje de carga
 					) : vueltas && vueltas.length > 0 ? (
@@ -319,10 +319,23 @@ export const Dashboard = () => {
 							No hay datos de vueltas disponibles.
 						</p>
 					)}
-				</div>
+				</div> */}
 				{!isLoading && (
-					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-						{cardsToRender}
+					<div className="flex flex-col shadow-2xl shadow-black mb-8 rounded-lg">
+						{" "}
+						{cardsToRender.map((card, index) =>
+							React.cloneElement(card, {
+								key: index,
+								className: `
+                                    ${index === 0 ? "rounded-t-lg" : ""}
+                                    ${
+																			index === cardsToRender.length - 1
+																				? "rounded-b-lg"
+																				: ""
+																		}
+                                `,
+							})
+						)}
 					</div>
 				)}
 			</div>

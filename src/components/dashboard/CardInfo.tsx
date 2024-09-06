@@ -6,8 +6,7 @@ interface CardInfoProps {
 	title: string;
 	link?: string;
 	cuadrito?: number | string;
-	svgComponent?: JSX.Element;
-	className?: string; // Nueva prop
+	className?: string;
 }
 
 export const CardInfo = ({
@@ -22,9 +21,9 @@ export const CardInfo = ({
 	return (
 		<NavLink
 			to={link ? `/${link}` : ""}
-			className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${
+			className={`flex-1 bg-gray-100  text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${
 				!link && "cursor-default"
-			} ${className}`} // Agregamos la nueva className aquí
+			} ${className}`}
 		>
 			<div className="flex flex-row items-center justify-between w-full">
 				<div className="flex flex-col gap-1">
