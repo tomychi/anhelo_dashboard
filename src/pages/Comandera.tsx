@@ -42,6 +42,7 @@ export const Comandera = () => {
 		(o) => o.elaborado && !o.entregado
 	);
 	const pedidosEntregados = filteredOrders.filter((o) => o.entregado);
+
 	useEffect(() => {
 		const obtenerCadetes = async () => {
 			try {
@@ -140,6 +141,11 @@ export const Comandera = () => {
 	console.log("All orders:", orders);
 	const ordersNotDelivered = orders.filter((order) => !order.entregado);
 	console.log("Orders not delivered:", ordersNotDelivered);
+
+	const cadetesDisponibles = empleados.filter(
+		(empleado) => empleado.category === "cadete" && empleado.available === true
+	);
+	console.log("Cadetes disponibles:", cadetesDisponibles);
 
 	return (
 		<div className="p-4 flex flex-col">
