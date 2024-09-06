@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -18,30 +18,44 @@ export const Comandera = () => {
 	const [sumaTotalPedidos, setSumaTotalPedidos] = useState(0);
 	const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState(0);
 	const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
-
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
-	// const [registro, setRegistro] = useState<RegistroProps[]>([]);
+	const [, setTick] = useState(0);
+	const [gruposOptimos, setGruposOptimos] = useState([]);
 
 	const { orders } = useSelector((state: RootState) => state.data);
-
 	const location = useLocation();
 
-	const filteredOrders = orders
-		.filter((o) => !selectedCadete || o.cadete === selectedCadete)
-		.sort((a, b) => {
-			const [horaA, minutosA] = a.hora.split(":").map(Number);
-			const [horaB, minutosB] = b.hora.split(":").map(Number);
-			return horaA * 60 + minutosA - (horaB * 60 + minutosB);
-		});
+	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
+	const puntoPartida = { lat: -33.0957994, lon: -64.3337817 };
 
-	const pedidosPorHacer = filteredOrders.filter(
-		(o) => !o.elaborado && !o.entregado
-	);
-	const pedidosHechos = filteredOrders.filter(
-		(o) => o.elaborado && !o.entregado
-	);
-	const pedidosEntregados = filteredOrders.filter((o) => o.entregado);
+	const filteredOrders = useMemo(() => {
+		return orders
+			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
+			.sort((a, b) => {
+				const [horaA, minutosA] = a.hora.split(":").map(Number);
+				const [horaB, minutosB] = b.hora.split(":").map(Number);
+				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+			});
+	}, [orders, selectedCadete]);
+
+	const pedidosPorHacer = useMemo(() => {
+		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
+	}, [filteredOrders]);
+
+	const pedidosHechos = useMemo(() => {
+		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
+	}, [filteredOrders]);
+
+	const pedidosEntregados = useMemo(() => {
+		return filteredOrders.filter((o) => o.entregado);
+	}, [filteredOrders]);
+
+	const ordersNotDelivered = useMemo(() => {
+		return orders.filter(
+			(order) => !order.entregado && order.cadete === "NO ASIGNADO"
+		);
+	}, [orders]);
 
 	useEffect(() => {
 		const obtenerCadetes = async () => {
@@ -51,7 +65,6 @@ export const Comandera = () => {
 
 				const cadetesFiltrados = empleados
 					.filter((empleado) => empleado.category === "cadete")
-
 					.map((empleado) => empleado.name);
 				setCadetes(cadetesFiltrados);
 			} catch (error) {
@@ -71,32 +84,23 @@ export const Comandera = () => {
 		}
 	}, [dispatch, location]);
 
-	// useEffect(() => {
-	//   const cargarRegistro = async () => {
-	//     try {
-	//       const datosRegistro = await obtenerRegistroActual();
-	//       setRegistro(datosRegistro);
-	//     } catch (error) {
-	//       console.error('Error al cargar el registro:', error);
-	//     }
-	//   };
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTick((prev) => prev + 1);
+		}, 60000); // Actualizar cada minuto
 
-	//   cargarRegistro();
-	// }, []);
+		return () => clearInterval(timer);
+	}, []);
 
-	// const empleadoActivo = (empleadoNombre: string) => {
-	//   const empleado = registro.find(
-	//     (registroEmpleado) => registroEmpleado.nombreEmpleado === empleadoNombre
-	//   );
-	//   if (empleado) {
-	//     if (empleado.marcado) {
-	//       return { activo: true, horaSalida: null };
-	//     } else {
-	//       return { activo: false, horaSalida: empleado.horaSalida };
-	//     }
-	//   }
-	//   return { activo: false, horaSalida: null };
-	// };
+	useEffect(() => {
+		// Efecto para rearmar los grupos cada vez que cambian las órdenes
+		const armarGrupos = () => {
+			const nuevosGrupos = armarGruposOptimos(ordersNotDelivered, puntoPartida);
+			setGruposOptimos(nuevosGrupos);
+		};
+
+		armarGrupos();
+	}, [ordersNotDelivered]);
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
@@ -137,20 +141,9 @@ export const Comandera = () => {
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
 
-	// Desde aca el codigo que arma vueltas
 	const cadetesDisponibles = empleados.filter(
 		(empleado) => empleado.category === "cadete" && empleado.available === true
 	);
-	console.log("Cadetes disponibles:", cadetesDisponibles);
-
-	console.log("All orders:", orders);
-	const ordersNotDelivered = orders.filter(
-		(order) => !order.entregado && order.cadete === "NO ASIGNADO"
-	);
-	console.log("Orders not delivered and not assigned:", ordersNotDelivered);
-
-	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
-	const puntoPartida = { lat: -33.0957994, lon: -64.3337817 };
 
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
 		const R = 6371; // Radio de la Tierra en kilómetros
@@ -213,43 +206,133 @@ export const Comandera = () => {
 		return ordenMasCercana;
 	}
 
-	function armarGrupoOrdenes(ordersNotDelivered, puntoPartida) {
-		let grupoOrdenes = [];
-		let tiempoTotalRecorrido = 0;
+	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
+		const TIEMPO_MAXIMO_RECORRIDO = 40;
 		let ordenesRestantes = [...ordersNotDelivered];
+		let grupos = [];
 
-		// Agregar la primera orden (la más cercana al punto de partida)
-		const primeraOrden = obtenerOrdenMasCercana(
-			[{ map: [puntoPartida.lat, puntoPartida.lon] }],
-			ordenesRestantes
-		);
-		grupoOrdenes.push(primeraOrden.orden);
-		tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
-		ordenesRestantes = ordenesRestantes.filter(
-			(orden) => orden.id !== primeraOrden.orden.id
-		);
+		while (ordenesRestantes.length > 0) {
+			let grupoActual = [];
+			let tiempoTotalRecorrido = 0;
 
-		while (ordenesRestantes.length > 0 && tiempoTotalRecorrido <= 30) {
-			const ordenMasCercana = obtenerOrdenMasCercana(
-				grupoOrdenes,
+			// Agregar la primera orden (la más cercana al punto de partida)
+			const primeraOrden = obtenerOrdenMasCercana(
+				[{ map: [puntoPartida.lat, puntoPartida.lon] }],
 				ordenesRestantes
 			);
+			grupoActual.push(primeraOrden.orden);
+			tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
+			ordenesRestantes = ordenesRestantes.filter(
+				(orden) => orden.id !== primeraOrden.orden.id
+			);
 
-			if (tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado > 30) {
-				break; // Si agregar esta orden supera los 30 minutos, paramos
+			while (
+				ordenesRestantes.length > 0 &&
+				tiempoTotalRecorrido < TIEMPO_MAXIMO_RECORRIDO
+			) {
+				const ordenMasCercana = obtenerOrdenMasCercana(
+					grupoActual,
+					ordenesRestantes
+				);
+
+				if (
+					tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado >
+					TIEMPO_MAXIMO_RECORRIDO
+				) {
+					break;
+				}
+
+				grupoActual.push(ordenMasCercana.orden);
+				tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
+				ordenesRestantes = ordenesRestantes.filter(
+					(orden) => orden.id !== ordenMasCercana.orden.id
+				);
 			}
 
-			grupoOrdenes.push(ordenMasCercana.orden);
-			tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
-			ordenesRestantes = ordenesRestantes.filter(
-				(orden) => orden.id !== ordenMasCercana.orden.id
-			);
+			grupos.push({
+				grupo: grupoActual,
+				tiempoTotal: tiempoTotalRecorrido,
+			});
 		}
 
-		return {
-			grupo: grupoOrdenes,
-			tiempoTotal: tiempoTotalRecorrido,
-		};
+		return optimizarGrupos(grupos, puntoPartida);
+	}
+
+	function optimizarGrupos(grupos, puntoPartida) {
+		let huboMejora = true;
+		while (huboMejora) {
+			huboMejora = false;
+			for (let i = 0; i < grupos.length; i++) {
+				for (let j = i + 1; j < grupos.length; j++) {
+					const mejora = intentarIntercambio(
+						grupos[i],
+						grupos[j],
+						puntoPartida
+					);
+					if (mejora) {
+						grupos[i] = mejora.grupo1;
+						grupos[j] = mejora.grupo2;
+						huboMejora = true;
+					}
+				}
+			}
+		}
+		return grupos;
+	}
+
+	function intentarIntercambio(grupo1, grupo2, puntoPartida) {
+		for (let i = 0; i < grupo1.grupo.length; i++) {
+			for (let j = 0; j < grupo2.grupo.length; j++) {
+				const nuevoGrupo1 = [
+					...grupo1.grupo.slice(0, i),
+					grupo2.grupo[j],
+					...grupo1.grupo.slice(i + 1),
+				];
+				const nuevoGrupo2 = [
+					...grupo2.grupo.slice(0, j),
+					grupo1.grupo[i],
+					...grupo2.grupo.slice(j + 1),
+				];
+
+				const tiempoNuevoGrupo1 = calcularTiempoTotalGrupo(
+					nuevoGrupo1,
+					puntoPartida
+				);
+				const tiempoNuevoGrupo2 = calcularTiempoTotalGrupo(
+					nuevoGrupo2,
+					puntoPartida
+				);
+
+				if (
+					tiempoNuevoGrupo1 <= 40 &&
+					tiempoNuevoGrupo2 <= 40 &&
+					tiempoNuevoGrupo1 + tiempoNuevoGrupo2 <
+						grupo1.tiempoTotal + grupo2.tiempoTotal
+				) {
+					return {
+						grupo1: { grupo: nuevoGrupo1, tiempoTotal: tiempoNuevoGrupo1 },
+						grupo2: { grupo: nuevoGrupo2, tiempoTotal: tiempoNuevoGrupo2 },
+					};
+				}
+			}
+		}
+		return null;
+	}
+
+	function calcularTiempoTotalGrupo(grupo, puntoPartida) {
+		let tiempoTotal = 0;
+		let puntoAnterior = puntoPartida;
+		grupo.forEach((orden) => {
+			const distancia = calcularDistancia(
+				puntoAnterior.lat,
+				puntoAnterior.lon,
+				orden.map[0],
+				orden.map[1]
+			);
+			tiempoTotal += calcularTiempoEnMoto(distancia);
+			puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
+		});
+		return tiempoTotal;
 	}
 
 	function calcularDistanciaTotal(grupoOrdenes, puntoPartida) {
@@ -269,63 +352,6 @@ export const Comandera = () => {
 		return parseFloat(distanciaTotal.toFixed(2));
 	}
 
-	// Armar el grupo de órdenes
-	const grupoOptimo = armarGrupoOrdenes(ordersNotDelivered, puntoPartida);
-
-	// Calcular la distancia total del recorrido
-	const distanciaTotal = calcularDistanciaTotal(
-		grupoOptimo.grupo,
-		puntoPartida
-	);
-
-	console.log("Grupo óptimo de órdenes:");
-	grupoOptimo.grupo.forEach((orden, index) => {
-		console.log(`Orden ${index + 1}:`);
-		console.log(`  ID: ${orden.id}`);
-		console.log(`  Dirección: ${orden.direccion}`);
-		if (index === 0) {
-			const distanciaInicio = calcularDistancia(
-				puntoPartida.lat,
-				puntoPartida.lon,
-				orden.map[0],
-				orden.map[1]
-			);
-			console.log(
-				`  Distancia desde punto de partida: ${distanciaInicio.toFixed(2)} km`
-			);
-		}
-		console.log("---");
-	});
-
-	console.log(
-		`Tiempo total estimado del recorrido: ${grupoOptimo.tiempoTotal} minutos`
-	);
-	console.log(`Distancia total del recorrido: ${distanciaTotal} km`);
-
-	// Órdenes que quedaron fuera del grupo
-	const ordenesFuera = ordersNotDelivered.filter(
-		(orden) =>
-			!grupoOptimo.grupo.some((ordenGrupo) => ordenGrupo.id === orden.id)
-	);
-
-	console.log("Órdenes que quedaron fuera del grupo:");
-	ordenesFuera.forEach((orden) => {
-		console.log(`  ID: ${orden.id}`);
-		console.log(`  Dirección: ${orden.direccion}`);
-		console.log("---");
-	});
-
-	const [, setTick] = useState(0);
-
-	useEffect(() => {
-		const timer = setInterval(() => {
-			setTick((prev) => prev + 1);
-		}, 60000); // Actualizar cada minuto
-
-		return () => clearInterval(timer);
-	}, []);
-
-	// Función para calcular los minutos transcurridos
 	const calcularMinutosTranscurridos = (horaString) => {
 		const [horas, minutos] = horaString.split(":").map(Number);
 		const fechaPedido = new Date();
@@ -334,123 +360,44 @@ export const Comandera = () => {
 		const diferencia = ahora - fechaPedido;
 		return Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
 	};
-	// Función para calcular la demora total de un pedido
-	const calcularDemoraTotalPedido = (orden, tiempoEntrega) => {
-		const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
-		return tiempoEspera + tiempoEntrega;
-	};
-
-	// Calcular pedido con mayor demora total
-	const pedidoMayorDemora = grupoOptimo.grupo.reduce(
-		(mayorDemora, orden, index) => {
-			const tiempoEntrega = grupoOptimo.tiempoTotal - index * 5; // Estimación simple: cada entrega toma 5 minutos menos que la anterior
-			const demoraTotalPedido = calcularDemoraTotalPedido(orden, tiempoEntrega);
-
-			if (demoraTotalPedido > mayorDemora.demoraTotalPedido) {
-				return { orden, demoraTotalPedido };
-			}
-			return mayorDemora;
-		},
-		{ orden: null, demoraTotalPedido: 0 }
-	);
 
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
 				<div className="flex items-center flex-row overflow-hidden">
-					{/* <ScrollContainer>
-            <div className="flex flex-row gap-4 text-xs">
-              {empleados.map((empleado, index) => {
-                if (empleado.name === undefined) return;
-                if (empleado.name === 'NO ASIGNADO') return;
-                const { activo, horaSalida } = empleadoActivo(empleado.name);
-                const horaEntrada = activo
-                  ? (
-                      registro.find(
-                        (registroEmpleado) =>
-                          registroEmpleado.nombreEmpleado === empleado.name
-                      )?.horaEntrada || 'Hora de entrada no disponible'
-                    ).substring(0, 5)
-                  : 'Ausente';
-                const horaSalidaFormateada = horaSalida
-                  ? horaSalida.substring(0, 5)
-                  : 'Hora de salida no disponible';
-
-                return (
-                  <div key={index} className="flex items-center flex-row ">
-                    <div className="w-12 h-12 flex items-center justify-center rounded-full mr-2 relative">
-                      <div
-                        className={`w-8 h-8 rounded-none ${
-                          activo ? 'bg-green-500' : 'bg-red-main'
-                        }`}
-                      ></div>
-                    </div>
-                    <div className="flex flex-col w-full text-red-main font-coolvetica font-black uppercase">
-                      <p>{empleado.name}</p>
-                      {activo ? (
-                        <p className="flex items-center">
-                          <span className="mr-2">
-                            Ingreso {' ' + horaEntrada} hs
-                          </span>
-                        </p>
-                      ) : (
-                        <p className="flex items-center">
-                          {horaSalidaFormateada ===
-                          'Hora de salida no disponible' ? (
-                            <span>Ausente</span>
-                          ) : (
-                            <span className="mr-2">
-                              Salida {horaSalidaFormateada} hs
-                            </span>
-                          )}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </ScrollContainer> */}
+					{/* Contenido de ScrollContainer comentado */}
 				</div>
 			</div>
-			{/* Cuadro actualizado para mostrar el grupo óptimo de órdenes */}
-			<div className="mt-4 bg-gray-300 p-4 rounded-lg">
-				<h3 className="font-bold text-lg mb-2">Grupo óptimo de órdenes:</h3>
-				{grupoOptimo.grupo.map((orden, index) => (
-					<div key={orden.id} className="mb-2">
-						<p className="font-semibold">Entrega {index + 1}:</p>
-						<p>Dirección: {orden.direccion}</p>
-						<p>
-							Pidió hace: {calcularMinutosTranscurridos(orden.hora)} minutos
-						</p>
-					</div>
-				))}
-				<p className="mt-2">
-					<strong>Tiempo total estimado del recorrido:</strong>{" "}
-					{grupoOptimo.tiempoTotal} minutos
-				</p>
-				<p>
-					<strong>Distancia total del recorrido:</strong> {distanciaTotal} km
-				</p>
-				{pedidoMayorDemora.orden && (
-					<div className="mt-4 border-t pt-2">
-						<p className="font-semibold">Pedido con mayor demora total:</p>
-						<p>Dirección: {pedidoMayorDemora.orden.direccion}</p>
-						<p>
-							Demora total estimada: {pedidoMayorDemora.demoraTotalPedido}{" "}
-							minutos
-						</p>
-					</div>
-				)}
-			</div>
+			{/* Mostrar todos los grupos óptimos */}
+			{gruposOptimos.map((grupo, index) => (
+				<div key={index} className="mt-4 bg-gray-300 p-4 rounded-lg">
+					<h3 className="font-bold text-lg mb-2">Grupo óptimo {index + 1}:</h3>
+					{grupo.grupo.map((orden, ordenIndex) => (
+						<div key={orden.id} className="mb-2">
+							<p className="font-semibold">Entrega {ordenIndex + 1}:</p>
+							<p>Dirección: {orden.direccion}</p>
+							<p>
+								Pidió hace: {calcularMinutosTranscurridos(orden.hora)} minutos
+							</p>
+						</div>
+					))}
+					<p className="mt-2">
+						<strong>Tiempo total estimado del recorrido:</strong>{" "}
+						{grupo.tiempoTotal} minutos
+					</p>
+					<p>
+						<strong>Distancia total del recorrido:</strong>{" "}
+						{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
+					</p>
+				</div>
+			))}
 			<CadeteSelect
 				cadetes={cadetes}
 				handleCadeteChange={handleCadeteChange}
 				selectedCadete={selectedCadete}
 				orders={pedidosHechos}
 			/>
-			{/* un boton para copiar todas las direcciones de orders y agruparlas por la fecha */}
-
+			{/* Botón para copiar direcciones */}
 			<button
 				className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 				onClick={() => {
