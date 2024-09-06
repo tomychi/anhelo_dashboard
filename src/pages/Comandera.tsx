@@ -144,8 +144,10 @@ export const Comandera = () => {
 	console.log("Cadetes disponibles:", cadetesDisponibles);
 
 	console.log("All orders:", orders);
-	const ordersNotDelivered = orders.filter((order) => !order.entregado);
-	console.log("Orders not delivered:", ordersNotDelivered);
+	const ordersNotDelivered = orders.filter(
+		(order) => !order.entregado && order.cadete === "NO ASIGNADO"
+	);
+	console.log("Orders not delivered and not assigned:", ordersNotDelivered);
 
 	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
 	const puntoPartida = { lat: -33.0957994, lon: -64.3337817 };
@@ -249,8 +251,31 @@ export const Comandera = () => {
 		};
 	}
 
+	function calcularDistanciaTotal(grupoOrdenes, puntoPartida) {
+		let distanciaTotal = 0;
+		let puntoAnterior = puntoPartida;
+
+		grupoOrdenes.forEach((orden) => {
+			distanciaTotal += calcularDistancia(
+				puntoAnterior.lat,
+				puntoAnterior.lon,
+				orden.map[0],
+				orden.map[1]
+			);
+			puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
+		});
+
+		return parseFloat(distanciaTotal.toFixed(2));
+	}
+
 	// Armar el grupo de órdenes
 	const grupoOptimo = armarGrupoOrdenes(ordersNotDelivered, puntoPartida);
+
+	// Calcular la distancia total del recorrido
+	const distanciaTotal = calcularDistanciaTotal(
+		grupoOptimo.grupo,
+		puntoPartida
+	);
 
 	console.log("Grupo óptimo de órdenes:");
 	grupoOptimo.grupo.forEach((orden, index) => {
@@ -274,6 +299,7 @@ export const Comandera = () => {
 	console.log(
 		`Tiempo total estimado del recorrido: ${grupoOptimo.tiempoTotal} minutos`
 	);
+	console.log(`Distancia total del recorrido: ${distanciaTotal} km`);
 
 	// Órdenes que quedaron fuera del grupo
 	const ordenesFuera = ordersNotDelivered.filter(
