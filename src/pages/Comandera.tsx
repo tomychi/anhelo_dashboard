@@ -164,76 +164,99 @@ export const Comandera = () => {
 		const factorCorreccion = 1.3; // Puedes ajustar este valor según sea necesario
 		const distanciaEstimada = distanciaLineal * factorCorreccion;
 
-		return distanciaEstimada.toFixed(2);
+		return parseFloat(distanciaEstimada.toFixed(2));
 	}
 
-	// Función modificada para encontrar órdenes no entregadas en rangos de distancia incrementales
-	function obtenerOrdenesCercanas(orders) {
-		const ordenesPorRango = {};
+	function obtenerGrupoMasCercano(orders) {
 		const ordersNoAsignadas = orders.filter(
 			(order) => order.cadete === "NO ASIGNADO"
 		);
+		let grupoCercano = null;
+		let distanciaMinima = Infinity;
 
-		for (let distanciaMaxima = 2; distanciaMaxima <= 20; distanciaMaxima++) {
-			const ordenesCercanas = [];
+		for (let i = 0; i < ordersNoAsignadas.length; i++) {
+			for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
+				const distancia = calcularDistancia(
+					ordersNoAsignadas[i].map[0],
+					ordersNoAsignadas[i].map[1],
+					ordersNoAsignadas[j].map[0],
+					ordersNoAsignadas[j].map[1]
+				);
 
-			for (let i = 0; i < ordersNoAsignadas.length; i++) {
-				for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
-					const distancia = parseFloat(
-						calcularDistancia(
-							ordersNoAsignadas[i].map[0],
-							ordersNoAsignadas[i].map[1],
-							ordersNoAsignadas[j].map[0],
-							ordersNoAsignadas[j].map[1]
-						)
-					);
-
-					if (distancia < distanciaMaxima && distancia >= distanciaMaxima - 1) {
-						ordenesCercanas.push({
-							orden1: {
-								id: ordersNoAsignadas[i].id,
-								direccion: ordersNoAsignadas[i].direccion,
-								cadete: ordersNoAsignadas[i].cadete,
-							},
-							orden2: {
-								id: ordersNoAsignadas[j].id,
-								direccion: ordersNoAsignadas[j].direccion,
-								cadete: ordersNoAsignadas[j].cadete,
-							},
-							distancia: distancia.toFixed(2),
-						});
-					}
+				if (distancia < distanciaMinima) {
+					distanciaMinima = distancia;
+					grupoCercano = {
+						orden1: ordersNoAsignadas[i],
+						orden2: ordersNoAsignadas[j],
+						distancia: distancia,
+					};
 				}
-			}
-
-			if (ordenesCercanas.length > 0) {
-				ordenesPorRango[`${distanciaMaxima - 1}-${distanciaMaxima}km`] =
-					ordenesCercanas;
 			}
 		}
 
-		return ordenesPorRango;
+		return grupoCercano;
 	}
 
-	// Usar ordersNotDelivered
-	const ordenesCercanasNoEntregadas =
-		obtenerOrdenesCercanas(ordersNotDelivered);
-	console.log(
-		"Órdenes no entregadas por rango de distancia (solo NO ASIGNADO):",
-		ordenesCercanasNoEntregadas
-	);
+	function calcularDistanciasDesdeGrupo(grupo, orders) {
+		const otrasOrdenesNoAsignadas = orders.filter(
+			(order) =>
+				order.cadete === "NO ASIGNADO" &&
+				order.id !== grupo.orden1.id &&
+				order.id !== grupo.orden2.id
+		);
 
-	// Imprimir resultados de manera más legible
-	Object.entries(ordenesCercanasNoEntregadas).forEach(([rango, ordenes]) => {
-		console.log(`\nÓrdenes en el rango ${rango}:`);
-		ordenes.forEach(({ orden1, orden2, distancia }) => {
-			console.log(`Distancia: ${distancia}km`);
-			console.log(`Orden 1: ${orden1.direccion}`);
-			console.log(`Orden 2: ${orden2.direccion}`);
+		const distancias = otrasOrdenesNoAsignadas.map((orden) => {
+			const distancia1 = calcularDistancia(
+				grupo.orden1.map[0],
+				grupo.orden1.map[1],
+				orden.map[0],
+				orden.map[1]
+			);
+			const distancia2 = calcularDistancia(
+				grupo.orden2.map[0],
+				grupo.orden2.map[1],
+				orden.map[0],
+				orden.map[1]
+			);
+			return {
+				orden: orden,
+				distanciaDesdeOrden1: distancia1,
+				distanciaDesdeOrden2: distancia2,
+			};
+		});
+
+		return distancias.sort(
+			(a, b) =>
+				Math.min(a.distanciaDesdeOrden1, a.distanciaDesdeOrden2) -
+				Math.min(b.distanciaDesdeOrden1, b.distanciaDesdeOrden2)
+		);
+	}
+
+	// Obtener el grupo más cercano
+	const grupoMasCercano = obtenerGrupoMasCercano(ordersNotDelivered);
+	console.log("Grupo más cercano (NO ASIGNADO):", grupoMasCercano);
+
+	// Calcular distancias desde el grupo más cercano a otras órdenes no asignadas
+	if (grupoMasCercano) {
+		const distanciasDesdeGrupo = calcularDistanciasDesdeGrupo(
+			grupoMasCercano,
+			ordersNotDelivered
+		);
+		console.log(
+			"Distancias desde el grupo más cercano a otras órdenes NO ASIGNADAS:"
+		);
+		distanciasDesdeGrupo.forEach((item) => {
+			console.log(`Orden: ${item.orden.id}`);
+			console.log(`Dirección: ${item.orden.direccion}`);
+			console.log(
+				`Distancia desde Orden 1: ${item.distanciaDesdeOrden1.toFixed(2)} km`
+			);
+			console.log(
+				`Distancia desde Orden 2: ${item.distanciaDesdeOrden2.toFixed(2)} km`
+			);
 			console.log("---");
 		});
-	});
-
+	}
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
