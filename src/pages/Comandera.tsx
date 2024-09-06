@@ -138,14 +138,47 @@ export const Comandera = () => {
 			orders.length;
 
 	// Desde aca el codigo que arma vueltas
-	console.log("All orders:", orders);
-	const ordersNotDelivered = orders.filter((order) => !order.entregado);
-	console.log("Orders not delivered:", ordersNotDelivered);
-
 	const cadetesDisponibles = empleados.filter(
 		(empleado) => empleado.category === "cadete" && empleado.available === true
 	);
 	console.log("Cadetes disponibles:", cadetesDisponibles);
+
+	console.log("All orders:", orders);
+	const ordersNotDelivered = orders.filter((order) => !order.entregado);
+	console.log("Orders not delivered:", ordersNotDelivered);
+
+	function calcularDistancia(lat1, lon1, lat2, lon2) {
+		const R = 6371; // Radio de la Tierra en kilómetros
+		const dLat = ((lat2 - lat1) * Math.PI) / 180;
+		const dLon = ((lon2 - lon1) * Math.PI) / 180;
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos((lat1 * Math.PI) / 180) *
+				Math.cos((lat2 * Math.PI) / 180) *
+				Math.sin(dLon / 2) *
+				Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		const distancia = R * c; // Distancia en kilómetros
+		return distancia.toFixed(2);
+	}
+
+	if (ordersNotDelivered.length === 2) {
+		const order1 = ordersNotDelivered[0];
+		const order2 = ordersNotDelivered[1];
+
+		const distancia = calcularDistancia(
+			order1.map[0],
+			order1.map[1],
+			order2.map[0],
+			order2.map[1]
+		);
+
+		console.log(
+			`Distancia entre órdenes no entregadas: ${order1.direccion} está a ${distancia} km de ${order2.direccion}`
+		);
+	} else {
+		console.log("No hay exactamente dos órdenes no entregadas para comparar.");
+	}
 
 	return (
 		<div className="p-4 flex flex-col">
