@@ -194,7 +194,7 @@ export const Dashboard = () => {
 			key="costokm"
 			info={
 				orders.length > 0
-					? currencyFormat(totalPaga / orders.length)
+					? currencyFormat(totalPaga / totalDirecciones)
 					: currencyFormat(0)
 			}
 			title={"Costo promedio delivery"}
