@@ -315,6 +315,16 @@ export const Comandera = () => {
 		console.log("---");
 	});
 
+	// Función para calcular los minutos transcurridos
+	const calcularMinutosTranscurridos = (horaString) => {
+		const [horas, minutos] = horaString.split(":").map(Number);
+		const fechaPedido = new Date();
+		fechaPedido.setHours(horas, minutos, 0, 0);
+		const ahora = new Date();
+		const diferencia = ahora - fechaPedido;
+		return Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
+	};
+
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
@@ -374,13 +384,16 @@ export const Comandera = () => {
           </ScrollContainer> */}
 				</div>
 			</div>
-			{/* Nuevo cuadro para mostrar el grupo óptimo de órdenes */}
+			{/* Cuadro actualizado para mostrar el grupo óptimo de órdenes */}
 			<div className="mt-4 bg-gray-300 p-4 rounded-lg">
 				<h3 className="font-bold text-lg mb-2">Grupo óptimo de órdenes:</h3>
 				{grupoOptimo.grupo.map((orden, index) => (
 					<div key={orden.id} className="mb-2">
 						<p className="font-semibold">Entrega {index + 1}:</p>
 						<p>Dirección: {orden.direccion}</p>
+						<p>
+							Pidió hace: {calcularMinutosTranscurridos(orden.hora)} minutos
+						</p>
 					</div>
 				))}
 				<p className="mt-2">
