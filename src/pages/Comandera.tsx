@@ -197,6 +197,13 @@ export const Comandera = () => {
 		return grupoCercano;
 	}
 
+	function calcularTiempoEnMoto(distanciaKm) {
+		const velocidadPromedioKmPorHora = 32;
+		const tiempoHoras = distanciaKm / velocidadPromedioKmPorHora;
+		const tiempoMinutos = Math.round(tiempoHoras * 60);
+		return tiempoMinutos;
+	}
+
 	function calcularDistanciasDesdeGrupo(grupo, orders) {
 		const otrasOrdenesNoAsignadas = orders.filter(
 			(order) =>
@@ -222,6 +229,8 @@ export const Comandera = () => {
 				orden: orden,
 				distanciaDesdeOrden1: distancia1,
 				distanciaDesdeOrden2: distancia2,
+				tiempoDesdeOrden1: calcularTiempoEnMoto(distancia1),
+				tiempoDesdeOrden2: calcularTiempoEnMoto(distancia2),
 			};
 		});
 
@@ -236,14 +245,14 @@ export const Comandera = () => {
 	const grupoMasCercano = obtenerGrupoMasCercano(ordersNotDelivered);
 	console.log("Grupo más cercano (NO ASIGNADO):", grupoMasCercano);
 
-	// Calcular distancias desde el grupo más cercano a otras órdenes no asignadas
+	// Calcular distancias y tiempos desde el grupo más cercano a otras órdenes no asignadas
 	if (grupoMasCercano) {
 		const distanciasDesdeGrupo = calcularDistanciasDesdeGrupo(
 			grupoMasCercano,
 			ordersNotDelivered
 		);
 		console.log(
-			"Distancias desde el grupo más cercano a otras órdenes NO ASIGNADAS:"
+			"Distancias y tiempos desde el grupo más cercano a otras órdenes NO ASIGNADAS:"
 		);
 		distanciasDesdeGrupo.forEach((item) => {
 			console.log(`Orden: ${item.orden.id}`);
@@ -252,7 +261,13 @@ export const Comandera = () => {
 				`Distancia desde Orden 1: ${item.distanciaDesdeOrden1.toFixed(2)} km`
 			);
 			console.log(
+				`Tiempo estimado desde Orden 1: ${item.tiempoDesdeOrden1} minutos`
+			);
+			console.log(
 				`Distancia desde Orden 2: ${item.distanciaDesdeOrden2.toFixed(2)} km`
+			);
+			console.log(
+				`Tiempo estimado desde Orden 2: ${item.tiempoDesdeOrden2} minutos`
 			);
 			console.log("---");
 		});
