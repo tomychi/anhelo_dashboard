@@ -158,8 +158,13 @@ export const Comandera = () => {
 				Math.sin(dLon / 2) *
 				Math.sin(dLon / 2);
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		const distancia = R * c; // Distancia en kilómetros
-		return distancia.toFixed(2);
+		const distanciaLineal = R * c; // Distancia en línea recta en kilómetros
+
+		// Aplicar factor de corrección para aproximar la distancia de manejo
+		const factorCorreccion = 1.3; // Puedes ajustar este valor según sea necesario
+		const distanciaEstimada = distanciaLineal * factorCorreccion;
+
+		return distanciaEstimada.toFixed(2);
 	}
 
 	if (ordersNotDelivered.length === 2) {
@@ -174,7 +179,7 @@ export const Comandera = () => {
 		);
 
 		console.log(
-			`Distancia entre órdenes no entregadas: ${order1.direccion} está a ${distancia} km de ${order2.direccion}`
+			`Distancia estimada de manejo entre órdenes no entregadas: ${order1.direccion} está aproximadamente a ${distancia} km de ${order2.direccion}`
 		);
 	} else {
 		console.log("No hay exactamente dos órdenes no entregadas para comparar.");
