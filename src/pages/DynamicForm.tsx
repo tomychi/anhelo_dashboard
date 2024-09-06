@@ -1,5 +1,5 @@
+import React, { useState, useEffect, useCallback } from "react";
 import { CartShop, MenuGallery, PedidosWeb } from "../components/menuShop";
-import { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { UploadOrder } from "../firebase/UploadOrder";
 import Swal from "sweetalert2";
 import { obtenerFechaActual, obtenerHoraActual } from "../helpers/dateToday";
@@ -70,7 +70,7 @@ const aliasTopes = {
 	onlyanhelo2: 450000,
 };
 
-export const DynamicForm = () => {
+export const DynamicForm: React.FC = () => {
 	const [aliasDisponible, setAliasDisponible] = useState<string>("onlyanhelo3");
 	const [editableTotal, setEditableTotal] = useState(0);
 	const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
@@ -121,6 +121,10 @@ export const DynamicForm = () => {
 		}
 	};
 
+	const handleFormChange = useCallback((newData: Partial<FormDataProps>) => {
+		setFormData((prevData) => ({ ...prevData, ...newData }));
+	}, []);
+
 	const handleFormClient = (clienteInfo: FormDataProps) => {
 		const clienteInfoConEnvio = {
 			...clienteInfo,
@@ -136,22 +140,76 @@ export const DynamicForm = () => {
 		setDetallePedido([]);
 	};
 
-	const handleChange = (
-		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { name, value } = e.target;
-		setFormData({ ...formData, [name]: value });
-	};
-
-	const handleClear = (name: string) => {
-		setFormData((prevState) => ({ ...prevState, [name]: "" }));
-	};
-
 	const handleTotalChange = (newTotal: number) => {
 		setEditableTotal(newTotal);
 	};
 
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+	const inputClass = `
+    block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full bg-gray-300
+    appearance-none focus:outline-none focus:ring-0 peer
+    placeholder-gray-400 placeholder-opacity-100
+    text-black font-light 
+    autofill:bg-gray-300 autofill:text-black
+    focus:bg-gray-300 focus:text-black
+    hover:bg-gray-300 hover:text-black
+  `;
+
+	const inputStyle = {
+		backgroundColor: "rgb(209 213 219)",
+		color: "black",
+	};
+
+	const FormInput: React.FC<{
+		name: keyof FormDataProps;
+		type: string;
+		placeholder: string;
+		required?: boolean;
+	}> = ({ name, type, placeholder, required }) => {
+		const [localValue, setLocalValue] = useState(formData[name]);
+
+		useEffect(() => {
+			setLocalValue(formData[name]);
+		}, [formData[name]]);
+
+		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			setLocalValue(e.target.value);
+		};
+
+		const handleBlur = () => {
+			handleFormChange({ [name]: localValue });
+		};
+
+		return (
+			<div className="relative">
+				<input
+					className={`${inputClass} ${name === "cupon" ? "rounded-t-lg" : ""}`}
+					style={inputStyle}
+					type={type}
+					id={name}
+					name={name}
+					value={localValue}
+					onChange={handleChange}
+					onBlur={handleBlur}
+					placeholder={placeholder}
+					required={required}
+				/>
+				{localValue && (
+					<button
+						type="button"
+						className="absolute right-4 font-medium top-1/2 transform -translate-y-1/2 rounded-full bg-black text-gray-100 text-xs h-4 w-4 flex items-center text-center justify-center"
+						onClick={() => {
+							setLocalValue("");
+							handleFormChange({ [name]: "" });
+						}}
+					>
+						X
+					</button>
+				)}
+			</div>
+		);
+	};
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		if (detallePedido.length === 0) {
@@ -186,19 +244,16 @@ export const DynamicForm = () => {
 
 		let subTotal = 0;
 		if (cuponValido) {
-			// Encuentra la hamburguesa más cara, o cualquier hamburguesa si todas tienen el mismo precio
 			const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
-				// Usa coalescencia nula para asegurar que priceBurger tenga un valor por defecto de 0
 				return (burger.priceBurger ?? 0) > (maxBurger.priceBurger ?? 0)
 					? burger
 					: maxBurger;
-			}, detallePedido[0]); // Empezamos con el primer elemento de la lista
+			}, detallePedido[0]);
 
-			// Calcula el subtotal excluyendo el precio de una hamburguesa (por el 2x1)
 			subTotal =
 				detallePedido.reduce((acc, burger) => {
-					return acc + (burger.subTotal ?? 0); // Asegúrate de sumar solo si subTotal está definido
-				}, 0) - (burgerMasCara?.priceBurger ?? 0); // Resta el precio de la hamburguesa más cara o usa 0 si es undefined
+					return acc + (burger.subTotal ?? 0);
+				}, 0) - (burgerMasCara?.priceBurger ?? 0);
 
 			Swal.fire({
 				icon: "success",
@@ -206,10 +261,10 @@ export const DynamicForm = () => {
 				text: `El total es ${currencyFormat(
 					subTotal + parseInt(formData.envio)
 				)}`,
-				timer: 8000, // Cierra automáticamente después de 3 segundos
-				timerProgressBar: true, // Mostrar barra de progreso
-				showCloseButton: true, // Mostrar botón de cerrar (cruz)
-				showConfirmButton: false, // No mostrar botón de confirmación
+				timer: 8000,
+				timerProgressBar: true,
+				showCloseButton: true,
+				showConfirmButton: false,
 			});
 		} else {
 			subTotal = detallePedido.reduce((acc, burger) => {
@@ -309,41 +364,6 @@ export const DynamicForm = () => {
 		setDetallePedido((prevData) => [...prevData, burger]);
 	};
 
-	const inputClass = `
-    block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full bg-gray-300
-    appearance-none focus:outline-none focus:ring-0 peer
-    placeholder-gray-400 placeholder-opacity-100
-    text-black font-light 
-    autofill:bg-gray-300 autofill:text-black
-    focus:bg-gray-300 focus:text-black
-    hover:bg-gray-300 hover:text-black
-  `;
-
-	const inputStyle = {
-		backgroundColor: "rgb(209 213 219)",
-		color: "black",
-	};
-
-	const FormInput = ({ name, ...props }: any) => (
-		<div className="relative">
-			<input
-				{...props}
-				name={name}
-				value={formData[name as keyof FormDataProps]}
-				onChange={handleChange}
-			/>
-			{formData[name as keyof FormDataProps] && (
-				<button
-					type="button"
-					className="absolute right-4 font-medium top-1/2 transform -translate-y-1/2 rounded-full bg-black text-gray-100 text-xs h-4 w-4 flex items-center text-cemter justify-center"
-					onClick={() => handleClear(name)}
-				>
-					X
-				</button>
-			)}
-		</div>
-	);
-
 	const handleRemoveItem = (index: number) => {
 		setDetallePedido((prevDetallePedido) => {
 			const newDetallePedido = [...prevDetallePedido];
@@ -402,75 +422,40 @@ export const DynamicForm = () => {
 										className="w-full flex flex-col "
 									>
 										<div className="w-full flex flex-col border-4 border-black rounded-xl ">
+											<FormInput name="cupon" type="text" placeholder="Cupón" />
 											<FormInput
-												className={`${inputClass} rounded-t-lg`}
-												style={inputStyle}
-												type="text"
-												id="cupon"
-												name="cupon"
-												placeholder="Cupón"
-											/>
-											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="aclaraciones"
 												name="aclaraciones"
+												type="text"
 												placeholder="Aclaraciones"
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="telefono"
 												name="telefono"
+												type="text"
 												placeholder="Teléfono"
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="direccion"
 												name="direccion"
+												type="text"
 												placeholder="Dirección"
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="ubicacion"
 												name="ubicacion"
+												type="text"
 												placeholder="Coordenadas"
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="text"
-												id="referencias"
 												name="referencias"
+												type="text"
 												placeholder="Referencias"
 											/>
 											<FormInput
-												className={inputClass}
-												style={inputStyle}
-												type="number"
-												id="envio"
 												name="envio"
+												type="number"
 												placeholder="Envio"
 												required
 											/>
 											<div className="relative">
-												<FormInput
-													className={`${inputClass} [&::-webkit-calendar-picker-indicator]:opacity-0`}
-													style={{
-														...inputStyle,
-														appearance: "textfield",
-													}}
-													type="time"
-													id="hora"
-													name="hora"
-													placeholder="Hora"
-												/>
+												<FormInput name="hora" type="time" placeholder="Hora" />
 											</div>
 											<select
 												id="metodoPago"
@@ -478,7 +463,9 @@ export const DynamicForm = () => {
 												style={inputStyle}
 												className={`${inputClass} rounded-b-lg`}
 												value={formData.metodoPago}
-												onChange={handleChange}
+												onChange={(e) =>
+													handleFormChange({ metodoPago: e.target.value })
+												}
 											>
 												<option>Metodo de pago</option>
 												<option value="efectivo">Efectivo</option>
