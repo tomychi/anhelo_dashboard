@@ -325,6 +325,26 @@ export const Comandera = () => {
 		return Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
 	};
 
+	// Función para calcular la demora total de un pedido
+	const calcularDemoraTotalPedido = (orden, tiempoEntrega) => {
+		const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
+		return tiempoEspera + tiempoEntrega;
+	};
+
+	// Calcular pedido con mayor demora total
+	const pedidoMayorDemora = grupoOptimo.grupo.reduce(
+		(mayorDemora, orden, index) => {
+			const tiempoEntrega = grupoOptimo.tiempoTotal - index * 5; // Estimación simple: cada entrega toma 5 minutos menos que la anterior
+			const demoraTotalPedido = calcularDemoraTotalPedido(orden, tiempoEntrega);
+
+			if (demoraTotalPedido > mayorDemora.demoraTotalPedido) {
+				return { orden, demoraTotalPedido };
+			}
+			return mayorDemora;
+		},
+		{ orden: null, demoraTotalPedido: 0 }
+	);
+
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
@@ -403,6 +423,16 @@ export const Comandera = () => {
 				<p>
 					<strong>Distancia total del recorrido:</strong> {distanciaTotal} km
 				</p>
+				{pedidoMayorDemora.orden && (
+					<div className="mt-4 border-t pt-2">
+						<p className="font-semibold">Pedido con mayor demora total:</p>
+						<p>Dirección: {pedidoMayorDemora.orden.direccion}</p>
+						<p>
+							Demora total estimada: {pedidoMayorDemora.demoraTotalPedido}{" "}
+							minutos
+						</p>
+					</div>
+				)}
 			</div>
 			<CadeteSelect
 				cadetes={cadetes}
