@@ -435,21 +435,8 @@ export const Comandera = () => {
 				<h3 className="font-bold text-lg mb-2">Grupo óptimo de órdenes:</h3>
 				{grupoOptimo.grupo.map((orden, index) => (
 					<div key={orden.id} className="mb-2">
-						<p className="font-semibold">Orden {index + 1}:</p>
-						<p>ID: {orden.id}</p>
+						<p className="font-semibold">Entrega {index + 1}:</p>
 						<p>Dirección: {orden.direccion}</p>
-						{index === 0 && (
-							<p>
-								Distancia desde punto de partida:{" "}
-								{calcularDistancia(
-									puntoPartida.lat,
-									puntoPartida.lon,
-									orden.map[0],
-									orden.map[1]
-								).toFixed(2)}{" "}
-								km
-							</p>
-						)}
 					</div>
 				))}
 				<p className="mt-2">
