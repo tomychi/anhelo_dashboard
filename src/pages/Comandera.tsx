@@ -147,6 +147,9 @@ export const Comandera = () => {
 	const ordersNotDelivered = orders.filter((order) => !order.entregado);
 	console.log("Orders not delivered:", ordersNotDelivered);
 
+	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
+	const puntoPartida = { lat: -33.0957994, lon: -64.3337817 };
+
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
 		const R = 6371; // Radio de la Tierra en kilómetros
 		const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -167,36 +170,6 @@ export const Comandera = () => {
 		return parseFloat(distanciaEstimada.toFixed(2));
 	}
 
-	function obtenerGrupoMasCercano(orders) {
-		const ordersNoAsignadas = orders.filter(
-			(order) => order.cadete === "NO ASIGNADO"
-		);
-		let grupoCercano = null;
-		let distanciaMinima = Infinity;
-
-		for (let i = 0; i < ordersNoAsignadas.length; i++) {
-			for (let j = i + 1; j < ordersNoAsignadas.length; j++) {
-				const distancia = calcularDistancia(
-					ordersNoAsignadas[i].map[0],
-					ordersNoAsignadas[i].map[1],
-					ordersNoAsignadas[j].map[0],
-					ordersNoAsignadas[j].map[1]
-				);
-
-				if (distancia < distanciaMinima) {
-					distanciaMinima = distancia;
-					grupoCercano = {
-						orden1: ordersNoAsignadas[i],
-						orden2: ordersNoAsignadas[j],
-						distancia: distancia,
-					};
-				}
-			}
-		}
-
-		return grupoCercano;
-	}
-
 	function calcularTiempoEnMoto(distanciaKm) {
 		const velocidadPromedioKmPorHora = 32;
 		const tiempoHoras = distanciaKm / velocidadPromedioKmPorHora;
@@ -204,74 +177,116 @@ export const Comandera = () => {
 		return tiempoMinutos;
 	}
 
-	function calcularDistanciasDesdeGrupo(grupo, orders) {
-		const otrasOrdenesNoAsignadas = orders.filter(
-			(order) =>
-				order.cadete === "NO ASIGNADO" &&
-				order.id !== grupo.orden1.id &&
-				order.id !== grupo.orden2.id
+	function obtenerOrdenMasCercana(grupoActual, ordenes) {
+		let ordenMasCercana = null;
+		let distanciaMinima = Infinity;
+
+		ordenes.forEach((orden) => {
+			let distanciaMinAGrupo = Infinity;
+
+			// Calcular la distancia mínima a cualquier orden del grupo actual
+			grupoActual.forEach((ordenGrupo) => {
+				const distancia = calcularDistancia(
+					ordenGrupo.map[0],
+					ordenGrupo.map[1],
+					orden.map[0],
+					orden.map[1]
+				);
+				if (distancia < distanciaMinAGrupo) {
+					distanciaMinAGrupo = distancia;
+				}
+			});
+
+			if (distanciaMinAGrupo < distanciaMinima) {
+				distanciaMinima = distanciaMinAGrupo;
+				ordenMasCercana = {
+					orden: orden,
+					distancia: distanciaMinAGrupo,
+					tiempoEstimado: calcularTiempoEnMoto(distanciaMinAGrupo),
+				};
+			}
+		});
+
+		return ordenMasCercana;
+	}
+
+	function armarGrupoOrdenes(ordersNotDelivered, puntoPartida) {
+		let grupoOrdenes = [];
+		let tiempoTotalRecorrido = 0;
+		let ordenesRestantes = [...ordersNotDelivered];
+
+		// Agregar la primera orden (la más cercana al punto de partida)
+		const primeraOrden = obtenerOrdenMasCercana(
+			[{ map: [puntoPartida.lat, puntoPartida.lon] }],
+			ordenesRestantes
+		);
+		grupoOrdenes.push(primeraOrden.orden);
+		tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
+		ordenesRestantes = ordenesRestantes.filter(
+			(orden) => orden.id !== primeraOrden.orden.id
 		);
 
-		const distancias = otrasOrdenesNoAsignadas.map((orden) => {
-			const distancia1 = calcularDistancia(
-				grupo.orden1.map[0],
-				grupo.orden1.map[1],
+		while (ordenesRestantes.length > 0 && tiempoTotalRecorrido <= 30) {
+			const ordenMasCercana = obtenerOrdenMasCercana(
+				grupoOrdenes,
+				ordenesRestantes
+			);
+
+			if (tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado > 30) {
+				break; // Si agregar esta orden supera los 30 minutos, paramos
+			}
+
+			grupoOrdenes.push(ordenMasCercana.orden);
+			tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
+			ordenesRestantes = ordenesRestantes.filter(
+				(orden) => orden.id !== ordenMasCercana.orden.id
+			);
+		}
+
+		return {
+			grupo: grupoOrdenes,
+			tiempoTotal: tiempoTotalRecorrido,
+		};
+	}
+
+	// Armar el grupo de órdenes
+	const grupoOptimo = armarGrupoOrdenes(ordersNotDelivered, puntoPartida);
+
+	console.log("Grupo óptimo de órdenes:");
+	grupoOptimo.grupo.forEach((orden, index) => {
+		console.log(`Orden ${index + 1}:`);
+		console.log(`  ID: ${orden.id}`);
+		console.log(`  Dirección: ${orden.direccion}`);
+		if (index === 0) {
+			const distanciaInicio = calcularDistancia(
+				puntoPartida.lat,
+				puntoPartida.lon,
 				orden.map[0],
 				orden.map[1]
 			);
-			const distancia2 = calcularDistancia(
-				grupo.orden2.map[0],
-				grupo.orden2.map[1],
-				orden.map[0],
-				orden.map[1]
+			console.log(
+				`  Distancia desde punto de partida: ${distanciaInicio.toFixed(2)} km`
 			);
-			return {
-				orden: orden,
-				distanciaDesdeOrden1: distancia1,
-				distanciaDesdeOrden2: distancia2,
-				tiempoDesdeOrden1: calcularTiempoEnMoto(distancia1),
-				tiempoDesdeOrden2: calcularTiempoEnMoto(distancia2),
-			};
-		});
+		}
+		console.log("---");
+	});
 
-		return distancias.sort(
-			(a, b) =>
-				Math.min(a.distanciaDesdeOrden1, a.distanciaDesdeOrden2) -
-				Math.min(b.distanciaDesdeOrden1, b.distanciaDesdeOrden2)
-		);
-	}
+	console.log(
+		`Tiempo total estimado del recorrido: ${grupoOptimo.tiempoTotal} minutos`
+	);
 
-	// Obtener el grupo más cercano
-	const grupoMasCercano = obtenerGrupoMasCercano(ordersNotDelivered);
-	console.log("Grupo más cercano (NO ASIGNADO):", grupoMasCercano);
+	// Órdenes que quedaron fuera del grupo
+	const ordenesFuera = ordersNotDelivered.filter(
+		(orden) =>
+			!grupoOptimo.grupo.some((ordenGrupo) => ordenGrupo.id === orden.id)
+	);
 
-	// Calcular distancias y tiempos desde el grupo más cercano a otras órdenes no asignadas
-	if (grupoMasCercano) {
-		const distanciasDesdeGrupo = calcularDistanciasDesdeGrupo(
-			grupoMasCercano,
-			ordersNotDelivered
-		);
-		console.log(
-			"Distancias y tiempos desde el grupo más cercano a otras órdenes NO ASIGNADAS:"
-		);
-		distanciasDesdeGrupo.forEach((item) => {
-			console.log(`Orden: ${item.orden.id}`);
-			console.log(`Dirección: ${item.orden.direccion}`);
-			console.log(
-				`Distancia desde Orden 1: ${item.distanciaDesdeOrden1.toFixed(2)} km`
-			);
-			console.log(
-				`Tiempo estimado desde Orden 1: ${item.tiempoDesdeOrden1} minutos`
-			);
-			console.log(
-				`Distancia desde Orden 2: ${item.distanciaDesdeOrden2.toFixed(2)} km`
-			);
-			console.log(
-				`Tiempo estimado desde Orden 2: ${item.tiempoDesdeOrden2} minutos`
-			);
-			console.log("---");
-		});
-	}
+	console.log("Órdenes que quedaron fuera del grupo:");
+	ordenesFuera.forEach((orden) => {
+		console.log(`  ID: ${orden.id}`);
+		console.log(`  Dirección: ${orden.direccion}`);
+		console.log("---");
+	});
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
