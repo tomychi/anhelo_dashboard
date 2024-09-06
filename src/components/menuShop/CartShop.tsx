@@ -7,35 +7,21 @@ export const CartShop = ({
 	detallePedido,
 	limpiarDetallePedido,
 	onTotalChange,
+	onRemoveItem, // Nueva prop para manejar la eliminación de ítems individuales
 }: {
 	detallePedido: DetallePedidoProps[];
 	limpiarDetallePedido: () => void;
 	onTotalChange: (newTotal: number) => void;
+	onRemoveItem: (index: number) => void; // Tipo de la nueva prop
 }) => {
 	const [isEditingTotal, setIsEditingTotal] = useState(false);
 	const [editableTotal, setEditableTotal] = useState(0);
-	const [quantity, setQuantity] = useState(1);
-	const [codes, setCodes] = useState<string[]>([]);
 
 	const total = detallePedido.reduce((acc, d) => acc + (d.subTotal || 0), 0);
 
 	useEffect(() => {
 		setEditableTotal(total);
 	}, [total]);
-
-	const generateCodes = () => {
-		const newCodes = Array.from({ length: quantity }, () =>
-			Math.random().toString(36).substr(2, 5).toUpperCase()
-		);
-		setCodes(newCodes);
-	};
-
-	const copyToClipboard = () => {
-		navigator.clipboard
-			.writeText(codes.join("\n"))
-			.then(() => alert("Códigos copiados al portapapeles"))
-			.catch((err) => console.error("Error al copiar: ", err));
-	};
 
 	const capitalizeFirstLetter = (string: string): string => {
 		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -109,7 +95,7 @@ export const CartShop = ({
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								className="w-4  cursor-pointer"
+								className="w-4 cursor-pointer"
 							>
 								<path
 									fillRule="evenodd"
@@ -124,8 +110,11 @@ export const CartShop = ({
 			{detallePedido.length > 0 ? (
 				<div className="flex flex-col">
 					{detallePedido.map((p, index) => (
-						<div key={index}>
-							<h3 className="border-t border-t-1 border-black border-opacity-20 font-medium">
+						<div
+							key={index}
+							className="flex items-center border-t border-t-1 border-black border-opacity-20"
+						>
+							<div className="flex-grow font-medium  flex flex-row  justify-between">
 								<p className="pl-4 py-2">
 									{p.quantity}x {capitalizeBurgerName(p.burger ?? "")}
 									{p.toppings &&
@@ -133,7 +122,13 @@ export const CartShop = ({
 										` con ${formatToppings(p.toppings)}`}
 									: {currencyFormat(p.subTotal)}
 								</p>
-							</h3>
+								<button
+									onClick={() => onRemoveItem(index)}
+									className=" font-medium mt-3 mr-3  rounded-full bg-black text-gray-100 text-xs h-4 w-4 flex items-center text-cemter justify-center"
+								>
+									X
+								</button>
+							</div>
 						</div>
 					))}
 				</div>
