@@ -408,7 +408,10 @@ export const Comandera = () => {
 			</div>
 			{/* Mostrar todos los grupos óptimos */}
 			{gruposOptimos.map((grupo, index) => (
-				<div key={index} className=" bg-gray-300  w-1/4 rounded-lg">
+				<div
+					key={index}
+					className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg"
+				>
 					<div className="flex flex-row justify-center gap-2 border-b border-black border-opacity-20">
 						<div className="  ">
 							<svg
