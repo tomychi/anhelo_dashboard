@@ -407,78 +407,84 @@ export const Comandera = () => {
 				</div>
 			</div>
 			{/* Mostrar todos los grupos óptimos */}
-			{gruposOptimos.map((grupo, index) => (
-				<div
-					key={index}
-					className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg"
-				>
-					<div className="flex flex-row justify-center gap-2 border-b border-black border-opacity-20 relative">
-						<h3 className="font-bold text-lg pb-4 pt-4">
-							Grupo óptimo {index + 1} en proceso...
-						</h3>
-						<div className="absolute left-12 top-1/2 transform -translate-y-1/2">
-							<svg
-								className="w-4 h-4 animate-spin text-gray-100"
-								viewBox="0 0 64 64"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-								width="24"
-								height="24"
-							>
-								<path
-									d="M32 3C35.8083 3 39.5794 3.75011 43.0978 5.20749C46.6163 6.66488 49.8132 8.80101 52.5061 11.4939C55.199 14.1868 57.3351 17.3837 58.7925 20.9022C60.2499 24.4206 61 28.1917 61 32C61 35.8083 60.2499 39.5794 58.7925 43.0978C57.3351 46.6163 55.199 49.8132 52.5061 52.5061C49.8132 55.199 46.6163 57.3351 43.0978 58.7925C39.5794 60.2499 35.8083 61 32 61C28.1917 61 24.4206 60.2499 20.9022 58.7925C17.3837 57.3351 14.1868 55.199 11.4939 52.5061C8.801 49.8132 6.66487 46.6163 5.20749 43.0978C3.7501 39.5794 3 35.8083 3 32C3 28.1917 3.75011 24.4206 5.2075 20.9022C6.66489 17.3837 8.80101 14.1868 11.4939 11.4939C14.1868 8.80099 17.3838 6.66487 20.9022 5.20749C24.4206 3.7501 28.1917 3 32 3L32 3Z"
-									stroke="currentColor"
-									strokeWidth="5"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								></path>
-								<path
-									d="M32 3C36.5778 3 41.0906 4.08374 45.1692 6.16256C49.2477 8.24138 52.7762 11.2562 55.466 14.9605C58.1558 18.6647 59.9304 22.9531 60.6448 27.4748C61.3591 31.9965 60.9928 36.6232 59.5759 40.9762"
-									stroke="currentColor"
-									strokeWidth="5"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="text-gray-900"
-								></path>
-							</svg>
+
+			<div className="flex flex-row gap-4">
+				{gruposOptimos.map((grupo, index) => (
+					<div
+						key={index}
+						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg"
+					>
+						<div className="flex  justify-center gap-2 border-b border-black border-opacity-20 relative">
+							<h3 className="font-bold text-lg pb-4 pt-4">
+								Grupo óptimo {index + 1} en proceso...
+							</h3>
+							<div className="absolute left-12 top-1/2 transform -translate-y-1/2">
+								<svg
+									className="w-4 h-4 animate-spin text-gray-100"
+									viewBox="0 0 64 64"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+								>
+									<path
+										d="M32 3C35.8083 3 39.5794 3.75011 43.0978 5.20749C46.6163 6.66488 49.8132 8.80101 52.5061 11.4939C55.199 14.1868 57.3351 17.3837 58.7925 20.9022C60.2499 24.4206 61 28.1917 61 32C61 35.8083 60.2499 39.5794 58.7925 43.0978C57.3351 46.6163 55.199 49.8132 52.5061 52.5061C49.8132 55.199 46.6163 57.3351 43.0978 58.7925C39.5794 60.2499 35.8083 61 32 61C28.1917 61 24.4206 60.2499 20.9022 58.7925C17.3837 57.3351 14.1868 55.199 11.4939 52.5061C8.801 49.8132 6.66487 46.6163 5.20749 43.0978C3.7501 39.5794 3 35.8083 3 32C3 28.1917 3.75011 24.4206 5.2075 20.9022C6.66489 17.3837 8.80101 14.1868 11.4939 11.4939C14.1868 8.80099 17.3838 6.66487 20.9022 5.20749C24.4206 3.7501 28.1917 3 32 3L32 3Z"
+										stroke="currentColor"
+										strokeWidth="5"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									></path>
+									<path
+										d="M32 3C36.5778 3 41.0906 4.08374 45.1692 6.16256C49.2477 8.24138 52.7762 11.2562 55.466 14.9605C58.1558 18.6647 59.9304 22.9531 60.6448 27.4748C61.3591 31.9965 60.9928 36.6232 59.5759 40.9762"
+										stroke="currentColor"
+										strokeWidth="5"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										className="text-gray-900"
+									></path>
+								</svg>
+							</div>
 						</div>
-					</div>
-					{grupo.grupo.map((orden, ordenIndex) => (
-						<div key={orden.id} className="pt-3  px-4">
-							<p className="font-semibold">
-								{ordenIndex + 1}. {orden.direccion.split(",")[0]}
-							</p>
-							<p>Demora: {calcularMinutosTranscurridos(orden.hora)} minutos</p>
-						</div>
-					))}
-					<div className="pt-2 px-4">
-						<p>
-							<strong>Tiempo total estimado del recorrido:</strong>{" "}
-							{grupo.tiempoTotal} minutos
-						</p>
-						<p>
-							<strong>Distancia total del recorrido:</strong>{" "}
-							{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
-						</p>
-					</div>
-					{grupo.pedidoMayorDemora.orden && (
-						<div className="mt-2 border-t pt-2">
-							<p className="font-semibold">Pedido con mayor demora total:</p>
-							<p>Dirección: {grupo.pedidoMayorDemora.orden.direccion}</p>
+						{grupo.grupo.map((orden, ordenIndex) => (
+							<div key={orden.id} className="pt-3  px-4">
+								<p className="font-semibold">
+									{ordenIndex + 1}. {orden.direccion.split(",")[0]}
+								</p>
+								<p>
+									Demora: {calcularMinutosTranscurridos(orden.hora)} minutos
+								</p>
+							</div>
+						))}
+						<div className="pt-2 px-4">
 							<p>
-								Demora total estimada:{" "}
-								{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
+								<strong>Tiempo total estimado del recorrido:</strong>{" "}
+								{grupo.tiempoTotal} minutos
+							</p>
+							<p>
+								<strong>Distancia total del recorrido:</strong>{" "}
+								{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
 							</p>
 						</div>
-					)}
-					<div className="px-4 pb-4">
-						<div className="bg-black flex w-full  pt-2.5 pb-4 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 text-2xl  gap-2">
-							<p>Asignar cadete</p>
-							<img src={arrowIcon} className="h-2 rotate-90 invert" />
+						{grupo.pedidoMayorDemora.orden && (
+							<div className="mt-2 border-t pt-2 px-4">
+								<p className="font-semibold">Pedido con mayor demora total:</p>
+								<p>Dirección: {grupo.pedidoMayorDemora.orden.direccion}</p>
+								<p>
+									Demora total estimada:{" "}
+									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
+								</p>
+							</div>
+						)}
+						<div className="px-4 pb-4">
+							<div className="bg-black flex w-full  pt-2.5 pb-4 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 text-2xl  gap-2">
+								<p>Asignar cadete</p>
+								<img src={arrowIcon} className="h-2 rotate-90 invert" />
+							</div>
 						</div>
 					</div>
-				</div>
-			))}
+				))}
+			</div>
+
 			<CadeteSelect
 				cadetes={cadetes}
 				handleCadeteChange={handleCadeteChange}
