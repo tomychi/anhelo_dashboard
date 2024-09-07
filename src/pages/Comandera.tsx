@@ -209,7 +209,10 @@ export const Comandera = () => {
 
 	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
 		const TIEMPO_MAXIMO_RECORRIDO = 40;
-		let ordenesRestantes = [...ordersNotDelivered];
+		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
+			const demora = calcularMinutosTranscurridos(orden.hora);
+			return demora !== null; // Excluye las órdenes con demora negativa
+		});
 		let grupos = [];
 
 		while (ordenesRestantes.length > 0) {
@@ -264,7 +267,6 @@ export const Comandera = () => {
 
 		return optimizarGrupos(grupos, puntoPartida);
 	}
-
 	function calcularPedidoMayorDemora(grupo, puntoPartida) {
 		let tiempoAcumulado = 0;
 		let puntoAnterior = puntoPartida;
@@ -272,6 +274,7 @@ export const Comandera = () => {
 		return grupo.reduce(
 			(mayorDemora, orden, index) => {
 				const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
+				if (tiempoEspera === null) return mayorDemora; // Ignora las órdenes con demora negativa
 
 				// Calcular el tiempo de viaje hasta esta orden
 				const distancia = calcularDistancia(
@@ -396,7 +399,8 @@ export const Comandera = () => {
 		fechaPedido.setHours(horas, minutos, 0, 0);
 		const ahora = new Date();
 		const diferencia = ahora - fechaPedido;
-		return Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
+		const minutosTranscurridos = Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
+		return minutosTranscurridos > 0 ? minutosTranscurridos : null; // Retorna null si es una reserva futura
 	};
 
 	return (
@@ -451,7 +455,9 @@ export const Comandera = () => {
 									{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 								</p>
 								<p className="text-xs">
-									Demora: {calcularMinutosTranscurridos(orden.hora)} minutos
+									Demora:{" "}
+									{calcularMinutosTranscurridos(orden.hora) ?? "Reserva futura"}{" "}
+									minutos
 								</p>
 							</div>
 						))}
