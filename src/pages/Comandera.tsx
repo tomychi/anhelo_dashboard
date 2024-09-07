@@ -407,15 +407,14 @@ export const Comandera = () => {
 			</div>
 			{/* Mostrar todos los grupos óptimos */}
 			{gruposOptimos.map((grupo, index) => (
-				<div key={index} className="mt-4 bg-gray-300 p-4 rounded-lg">
+				<div key={index} className="mt-4 bg-gray-300 p-4 w-1/4 rounded-lg">
 					<h3 className="font-bold text-lg mb-2">Grupo óptimo {index + 1}:</h3>
 					{grupo.grupo.map((orden, ordenIndex) => (
 						<div key={orden.id} className="mb-2">
-							<p className="font-semibold">Entrega {ordenIndex + 1}:</p>
-							<p>Dirección: {orden.direccion}</p>
-							<p>
-								Pidió hace: {calcularMinutosTranscurridos(orden.hora)} minutos
+							<p className="font-semibold">
+								Entrega {ordenIndex + 1}: {orden.direccion.split(",")[0]}
 							</p>
+							<p>Demora: {calcularMinutosTranscurridos(orden.hora)} minutos</p>
 						</div>
 					))}
 					<p className="mt-2">
@@ -436,6 +435,9 @@ export const Comandera = () => {
 							</p>
 						</div>
 					)}
+					<div className="bg-black flex w-full h-10 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-2">
+						Asignar cadete
+					</div>
 				</div>
 			))}
 			<CadeteSelect
