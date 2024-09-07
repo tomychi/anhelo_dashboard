@@ -412,7 +412,7 @@ export const Comandera = () => {
 					<div className="flex flex-row justify-center gap-2">
 						<div className="  ">
 							<svg
-								className="w-8 h-8 animate-spin text-gray-100"
+								className="w-4 h-4 animate-spin text-gray-100"
 								viewBox="0 0 64 64"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +436,7 @@ export const Comandera = () => {
 								></path>
 							</svg>
 						</div>
-						<h3 className="font-bold text-lg mb-2">Grupo óptimo en proceso</h3>
+						<h3 className="font-bold text-xl mb-2">Grupo óptimo en proceso</h3>
 					</div>
 					{grupo.grupo.map((orden, ordenIndex) => (
 						<div key={orden.id} className="mb-2">
