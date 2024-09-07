@@ -58,11 +58,23 @@ export const Comandera = () => {
 		);
 	};
 
+	const cadetesDisponibles = empleados.filter(
+		(empleado) => empleado.category === "cadete" && empleado.available === true
+	);
+
+	const shouldIncludeOrder = (orden) => {
+		if (isNotAssigned(orden.cadete)) return true;
+		const cadete = cadetesDisponibles.find(
+			(c) => c.name.toLowerCase() === orden.cadete.toLowerCase()
+		);
+		return cadete && cadete.available;
+	};
+
 	const ordersNotDelivered = useMemo(() => {
 		return orders.filter(
-			(order) => !order.entregado && isNotAssigned(order.cadete)
+			(order) => !order.entregado && shouldIncludeOrder(order)
 		);
-	}, [orders]);
+	}, [orders, cadetesDisponibles]);
 
 	useEffect(() => {
 		const obtenerCadetes = async () => {
@@ -100,14 +112,14 @@ export const Comandera = () => {
 	}, []);
 
 	useEffect(() => {
-		// Efecto para rearmar los grupos cada vez que cambian las órdenes
+		// Efecto para rearmar los grupos cada vez que cambian las órdenes o la disponibilidad de los cadetes
 		const armarGrupos = () => {
 			const nuevosGrupos = armarGruposOptimos(ordersNotDelivered, puntoPartida);
 			setGruposOptimos(nuevosGrupos);
 		};
 
 		armarGrupos();
-	}, [ordersNotDelivered]);
+	}, [ordersNotDelivered, cadetesDisponibles]);
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
@@ -148,17 +160,11 @@ export const Comandera = () => {
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
 
-	const cadetesDisponibles = empleados.filter(
-		(empleado) => empleado.category === "cadete" && empleado.available === true
-	);
-
-	console.log(cadetesDisponibles);
-
 	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
 		const TIEMPO_MAXIMO_RECORRIDO = 30;
 		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
 			const demora = calcularMinutosTranscurridos(orden.hora);
-			return demora !== null && isNotAssigned(orden.cadete);
+			return demora !== null && shouldIncludeOrder(orden);
 		});
 		let grupos = [];
 
