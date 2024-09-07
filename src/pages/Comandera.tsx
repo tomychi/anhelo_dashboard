@@ -413,7 +413,7 @@ export const Comandera = () => {
 						<h3 className="font-bold text-lg mb-2">
 							Grupo óptimo {index + 1}:
 						</h3>
-						<div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+						<div className=" w-full   ">
 							<svg
 								className="w-8 h-8 animate-spin text-gray-100"
 								viewBox="0 0 64 64"
