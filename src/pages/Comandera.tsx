@@ -450,7 +450,7 @@ export const Comandera = () => {
 								<p className="font-semibold">
 									{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 								</p>
-								<p>
+								<p className="text-xs">
 									Demora: {calcularMinutosTranscurridos(orden.hora)} minutos
 								</p>
 							</div>
@@ -467,11 +467,12 @@ export const Comandera = () => {
 						</div>
 						{grupo.pedidoMayorDemora.orden && (
 							<div className="mt-2 border-t border-opacity-20 border-black pt-2 px-4">
-								<p className="font-semibold">Pedido con mayor demora total:</p>
-								<p>Dirección: {grupo.pedidoMayorDemora.orden.direccion}</p>
-								<p>
-									Demora total estimada:{" "}
+								<p className="font-semibold">
+									Pedido con mayor demora total:{" "}
 									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
+								</p>
+								<p className="text-xs">
+									{grupo.pedidoMayorDemora.orden.direccion}
 								</p>
 							</div>
 						)}
