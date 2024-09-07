@@ -412,7 +412,7 @@ export const Comandera = () => {
 					{grupo.grupo.map((orden, ordenIndex) => (
 						<div key={orden.id} className="mb-2">
 							<p className="font-semibold">
-								Entrega {ordenIndex + 1}: {orden.direccion.split(",")[0]}
+								{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 							</p>
 							<p>Demora: {calcularMinutosTranscurridos(orden.hora)} minutos</p>
 						</div>
