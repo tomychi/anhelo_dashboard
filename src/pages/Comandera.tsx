@@ -451,14 +451,16 @@ export const Comandera = () => {
 							<p>Demora: {calcularMinutosTranscurridos(orden.hora)} minutos</p>
 						</div>
 					))}
-					<p className="mt-2">
-						<strong>Tiempo total estimado del recorrido:</strong>{" "}
-						{grupo.tiempoTotal} minutos
-					</p>
-					<p>
-						<strong>Distancia total del recorrido:</strong>{" "}
-						{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
-					</p>
+					<div className="mt-2 mx-4">
+						<p>
+							<strong>Tiempo total estimado del recorrido:</strong>{" "}
+							{grupo.tiempoTotal} minutos
+						</p>
+						<p>
+							<strong>Distancia total del recorrido:</strong>{" "}
+							{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
+						</p>
+					</div>
 					{grupo.pedidoMayorDemora.orden && (
 						<div className="mt-2 border-t pt-2">
 							<p className="font-semibold">Pedido con mayor demora total:</p>
