@@ -415,7 +415,7 @@ export const Comandera = () => {
 						</h3>
 						<div className="grid min-h-[140px] w-full place-items-center overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
 							<svg
-								className="w-16 h-16 animate-spin text-gray-100"
+								className="w-8 h-8 animate-spin text-gray-100"
 								viewBox="0 0 64 64"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
