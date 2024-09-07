@@ -408,7 +408,7 @@ export const Comandera = () => {
 			</div>
 			{/* Mostrar todos los grupos óptimos */}
 
-			<div className="flex flex-row gap-4">
+			<div className="flex flex-row gap-4 mt-4">
 				{gruposOptimos.map((grupo, index) => (
 					<div
 						key={index}
@@ -418,9 +418,9 @@ export const Comandera = () => {
 							<h3 className="font-bold text-xl pb-4 pt-4">
 								Grupo óptimo {index + 1} en proceso...
 							</h3>
-							<div className="absolute left-auto top-[-8px] ">
+							<div className="absolute left-auto top-[-15px] ">
 								<svg
-									className="w-4 h-4 animate-spin text-gray-100"
+									className="w-8 h-8 animate-spin text-gray-100"
 									viewBox="0 0 64 64"
 									fill="none"
 									xmlns="http://www.w3.org/2000/svg"
