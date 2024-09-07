@@ -439,19 +439,19 @@ export const Comandera = () => {
 								></path>
 							</svg>
 						</div>
-						<h3 className="font-bold text-xl mb-4 mt-4">
+						<h3 className="font-bold text-xl pb-4 pt-4">
 							Grupo óptimo {index + 1} en proceso...
 						</h3>
 					</div>
 					{grupo.grupo.map((orden, ordenIndex) => (
-						<div key={orden.id} className="mt-3  mx-4">
+						<div key={orden.id} className="pt-3  px-4">
 							<p className="font-semibold">
 								{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 							</p>
 							<p>Demora: {calcularMinutosTranscurridos(orden.hora)} minutos</p>
 						</div>
 					))}
-					<div className="mt-2 mx-4">
+					<div className="pt-2 px-4">
 						<p>
 							<strong>Tiempo total estimado del recorrido:</strong>{" "}
 							{grupo.tiempoTotal} minutos
