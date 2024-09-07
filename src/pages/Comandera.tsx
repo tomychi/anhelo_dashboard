@@ -471,7 +471,7 @@ export const Comandera = () => {
 									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
 								</p>
 								<p className="text-xs">
-									{grupo.pedidoMayorDemora.orden.direccion}
+									{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]}
 								</p>
 							</div>
 						)}
