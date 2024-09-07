@@ -440,7 +440,7 @@ export const Comandera = () => {
 							</svg>
 						</div>
 						<h3 className="font-bold text-xl mb-4 mt-4">
-							Grupo óptimo en proceso
+							Grupo óptimo en proceso...
 						</h3>
 					</div>
 					{grupo.grupo.map((orden, ordenIndex) => (
