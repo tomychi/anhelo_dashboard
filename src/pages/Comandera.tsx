@@ -444,7 +444,7 @@ export const Comandera = () => {
 						</h3>
 					</div>
 					{grupo.grupo.map((orden, ordenIndex) => (
-						<div key={orden.id} className="mb-2">
+						<div key={orden.id} className="mb-4">
 							<p className="font-semibold">
 								{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 							</p>
@@ -469,7 +469,7 @@ export const Comandera = () => {
 							</p>
 						</div>
 					)}
-					<div className="bg-black flex w-full h-10 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-2 gap-2">
+					<div className="bg-black flex w-full  h-10 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 gap-2">
 						<p>Asignar cadete</p>
 						<img src={arrowIcon} className="h-2 rotate-90 invert" />
 					</div>
