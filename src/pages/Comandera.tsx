@@ -52,9 +52,15 @@ export const Comandera = () => {
 		return filteredOrders.filter((o) => o.entregado);
 	}, [filteredOrders]);
 
+	const isNotAssigned = (cadete) => {
+		return (
+			cadete === "NO ASIGNADO" || cadete === "no asignado" || cadete === null
+		);
+	};
+
 	const ordersNotDelivered = useMemo(() => {
 		return orders.filter(
-			(order) => !order.entregado && order.cadete === "NO ASIGNADO"
+			(order) => !order.entregado && isNotAssigned(order.cadete)
 		);
 	}, [orders]);
 
@@ -147,10 +153,10 @@ export const Comandera = () => {
 	);
 
 	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
-		const TIEMPO_MAXIMO_RECORRIDO = 40;
+		const TIEMPO_MAXIMO_RECORRIDO = 30;
 		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
 			const demora = calcularMinutosTranscurridos(orden.hora);
-			return demora !== null;
+			return demora !== null && isNotAssigned(orden.cadete);
 		});
 		let grupos = [];
 
