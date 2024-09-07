@@ -412,7 +412,7 @@ export const Comandera = () => {
 					<div className="flex flex-row justify-center gap-2">
 						<div className="  ">
 							<svg
-								className="w-4 h-4 animate-spin text-gray-100"
+								className="w-4 h-4 animate-spin mt-2 text-gray-100"
 								viewBox="0 0 64 64"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
