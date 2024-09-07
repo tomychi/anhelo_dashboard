@@ -146,6 +146,173 @@ export const Comandera = () => {
 		(empleado) => empleado.category === "cadete" && empleado.available === true
 	);
 
+	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
+		const TIEMPO_MAXIMO_RECORRIDO = 40;
+		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
+			const demora = calcularMinutosTranscurridos(orden.hora);
+			return demora !== null;
+		});
+		let grupos = [];
+
+		while (ordenesRestantes.length > 0) {
+			let grupoActual = [];
+			let tiempoTotalRecorrido = 0;
+
+			// Agregar la primera orden (la más cercana al punto de partida)
+			const primeraOrden = obtenerOrdenMasCercana(
+				[{ map: [puntoPartida.lat, puntoPartida.lon] }],
+				ordenesRestantes
+			);
+			grupoActual.push(primeraOrden.orden);
+			tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
+			ordenesRestantes = ordenesRestantes.filter(
+				(orden) => orden.id !== primeraOrden.orden.id
+			);
+
+			while (
+				ordenesRestantes.length > 0 &&
+				tiempoTotalRecorrido < TIEMPO_MAXIMO_RECORRIDO
+			) {
+				const ordenMasCercana = obtenerOrdenMasCercana(
+					grupoActual,
+					ordenesRestantes
+				);
+
+				if (
+					tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado >
+					TIEMPO_MAXIMO_RECORRIDO
+				) {
+					break;
+				}
+
+				grupoActual.push(ordenMasCercana.orden);
+				tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
+				ordenesRestantes = ordenesRestantes.filter(
+					(orden) => orden.id !== ordenMasCercana.orden.id
+				);
+			}
+
+			grupos.push(
+				recalcularGrupo(
+					{
+						grupo: grupoActual,
+						tiempoTotal: tiempoTotalRecorrido,
+					},
+					puntoPartida
+				)
+			);
+		}
+
+		return optimizarGruposGlobal(grupos, puntoPartida);
+	}
+
+	function optimizarGruposGlobal(grupos, puntoPartida) {
+		let mejorConfiguracion = [...grupos];
+		let mejorPuntuacion = evaluarConfiguracion(grupos);
+
+		// Intentar mover cada orden a cada grupo
+		for (let i = 0; i < grupos.length; i++) {
+			for (let j = 0; j < grupos[i].grupo.length; j++) {
+				for (let k = 0; k < grupos.length; k++) {
+					if (i !== k) {
+						let nuevaConfiguracion = JSON.parse(JSON.stringify(grupos));
+						const orden = nuevaConfiguracion[i].grupo.splice(j, 1)[0];
+						nuevaConfiguracion[k].grupo.push(orden);
+
+						// Recalcular tiempos y distancias
+						nuevaConfiguracion[i] = recalcularGrupo(
+							nuevaConfiguracion[i],
+							puntoPartida
+						);
+						nuevaConfiguracion[k] = recalcularGrupo(
+							nuevaConfiguracion[k],
+							puntoPartida
+						);
+
+						const nuevaPuntuacion = evaluarConfiguracion(nuevaConfiguracion);
+						if (nuevaPuntuacion > mejorPuntuacion) {
+							mejorConfiguracion = nuevaConfiguracion;
+							mejorPuntuacion = nuevaPuntuacion;
+						}
+					}
+				}
+			}
+		}
+
+		// Eliminar grupos vacíos
+		return mejorConfiguracion.filter((grupo) => grupo.grupo.length > 0);
+	}
+
+	function evaluarConfiguracion(grupos) {
+		const numGrupos = grupos.length;
+		const tiempoTotalTodos = grupos.reduce(
+			(total, grupo) => total + grupo.tiempoTotal,
+			0
+		);
+		const tamañoPromedio =
+			grupos.reduce((total, grupo) => total + grupo.grupo.length, 0) /
+			numGrupos;
+
+		// Calcular la varianza en los tiempos de los grupos
+		const varianzaTiempos =
+			grupos.reduce((varianza, grupo) => {
+				return (
+					varianza +
+					Math.pow(grupo.tiempoTotal - tiempoTotalTodos / numGrupos, 2)
+				);
+			}, 0) / numGrupos;
+
+		// Calcular la varianza en el número de órdenes por grupo
+		const varianzaTamaños =
+			grupos.reduce((varianza, grupo) => {
+				return varianza + Math.pow(grupo.grupo.length - tamañoPromedio, 2);
+			}, 0) / numGrupos;
+
+		// Puntuar la configuración (ajusta estos pesos según tus prioridades)
+		const puntuacion =
+			(1 / numGrupos) * 100 + // Menos grupos es mejor
+			(1 / tiempoTotalTodos) * 1000 + // Menos tiempo total es mejor
+			(1 / varianzaTiempos) * 10 + // Menos varianza en tiempos es mejor
+			(1 / varianzaTamaños) * 10; // Menos varianza en tamaños es mejor
+
+		return puntuacion;
+	}
+
+	function recalcularGrupo(grupo, puntoPartida) {
+		let tiempoTotal = 0;
+		let distanciaTotal = 0;
+		let puntoAnterior = puntoPartida;
+		let pedidoMayorDemora = { orden: null, demoraTotalPedido: 0 };
+
+		grupo.grupo.forEach((orden, index) => {
+			const distancia = calcularDistancia(
+				puntoAnterior.lat,
+				puntoAnterior.lon,
+				orden.map[0],
+				orden.map[1]
+			);
+			const tiempoViaje = calcularTiempoEnMoto(distancia);
+			tiempoTotal += tiempoViaje;
+			distanciaTotal += distancia;
+
+			const demoraPedido = calcularMinutosTranscurridos(orden.hora);
+			const demoraTotalPedido = demoraPedido + tiempoTotal;
+
+			if (demoraTotalPedido > pedidoMayorDemora.demoraTotalPedido) {
+				pedidoMayorDemora = { orden, demoraTotalPedido };
+			}
+
+			puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
+		});
+
+		return {
+			grupo: grupo.grupo,
+			tiempoTotal: Math.round(tiempoTotal),
+			distanciaTotal: parseFloat(distanciaTotal.toFixed(2)),
+			pedidoMayorDemora,
+		};
+	}
+
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
 		const R = 6371; // Radio de la Tierra en kilómetros
 		const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -207,173 +374,14 @@ export const Comandera = () => {
 		return ordenMasCercana;
 	}
 
-	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
-		const TIEMPO_MAXIMO_RECORRIDO = 40;
-		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
-			const demora = calcularMinutosTranscurridos(orden.hora);
-			return demora !== null; // Excluye las órdenes con demora negativa
-		});
-		let grupos = [];
-
-		while (ordenesRestantes.length > 0) {
-			let grupoActual = [];
-			let tiempoTotalRecorrido = 0;
-
-			// Agregar la primera orden (la más cercana al punto de partida)
-			const primeraOrden = obtenerOrdenMasCercana(
-				[{ map: [puntoPartida.lat, puntoPartida.lon] }],
-				ordenesRestantes
-			);
-			grupoActual.push(primeraOrden.orden);
-			tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
-			ordenesRestantes = ordenesRestantes.filter(
-				(orden) => orden.id !== primeraOrden.orden.id
-			);
-
-			while (
-				ordenesRestantes.length > 0 &&
-				tiempoTotalRecorrido < TIEMPO_MAXIMO_RECORRIDO
-			) {
-				const ordenMasCercana = obtenerOrdenMasCercana(
-					grupoActual,
-					ordenesRestantes
-				);
-
-				if (
-					tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado >
-					TIEMPO_MAXIMO_RECORRIDO
-				) {
-					break;
-				}
-
-				grupoActual.push(ordenMasCercana.orden);
-				tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
-				ordenesRestantes = ordenesRestantes.filter(
-					(orden) => orden.id !== ordenMasCercana.orden.id
-				);
-			}
-
-			const pedidoMayorDemora = calcularPedidoMayorDemora(
-				grupoActual,
-				puntoPartida
-			);
-
-			grupos.push({
-				grupo: grupoActual,
-				tiempoTotal: tiempoTotalRecorrido,
-				pedidoMayorDemora: pedidoMayorDemora,
-			});
-		}
-
-		return optimizarGrupos(grupos, puntoPartida);
-	}
-	function calcularPedidoMayorDemora(grupo, puntoPartida) {
-		let tiempoAcumulado = 0;
-		let puntoAnterior = puntoPartida;
-
-		return grupo.reduce(
-			(mayorDemora, orden, index) => {
-				const tiempoEspera = calcularMinutosTranscurridos(orden.hora);
-				if (tiempoEspera === null) return mayorDemora; // Ignora las órdenes con demora negativa
-
-				// Calcular el tiempo de viaje hasta esta orden
-				const distancia = calcularDistancia(
-					puntoAnterior.lat,
-					puntoAnterior.lon,
-					orden.map[0],
-					orden.map[1]
-				);
-				const tiempoViaje = calcularTiempoEnMoto(distancia);
-				tiempoAcumulado += tiempoViaje;
-
-				const demoraTotalPedido = tiempoEspera + tiempoAcumulado;
-
-				puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
-
-				if (demoraTotalPedido > mayorDemora.demoraTotalPedido) {
-					return { orden, demoraTotalPedido };
-				}
-				return mayorDemora;
-			},
-			{ orden: null, demoraTotalPedido: 0 }
-		);
-	}
-
-	function optimizarGrupos(grupos, puntoPartida) {
-		let huboMejora = true;
-		while (huboMejora) {
-			huboMejora = false;
-			for (let i = 0; i < grupos.length; i++) {
-				for (let j = i + 1; j < grupos.length; j++) {
-					const mejora = intentarIntercambio(
-						grupos[i],
-						grupos[j],
-						puntoPartida
-					);
-					if (mejora) {
-						grupos[i] = mejora.grupo1;
-						grupos[j] = mejora.grupo2;
-						huboMejora = true;
-					}
-				}
-			}
-		}
-		return grupos;
-	}
-
-	function intentarIntercambio(grupo1, grupo2, puntoPartida) {
-		for (let i = 0; i < grupo1.grupo.length; i++) {
-			for (let j = 0; j < grupo2.grupo.length; j++) {
-				const nuevoGrupo1 = [
-					...grupo1.grupo.slice(0, i),
-					grupo2.grupo[j],
-					...grupo1.grupo.slice(i + 1),
-				];
-				const nuevoGrupo2 = [
-					...grupo2.grupo.slice(0, j),
-					grupo1.grupo[i],
-					...grupo2.grupo.slice(j + 1),
-				];
-
-				const tiempoNuevoGrupo1 = calcularTiempoTotalGrupo(
-					nuevoGrupo1,
-					puntoPartida
-				);
-				const tiempoNuevoGrupo2 = calcularTiempoTotalGrupo(
-					nuevoGrupo2,
-					puntoPartida
-				);
-
-				if (
-					tiempoNuevoGrupo1 <= 40 &&
-					tiempoNuevoGrupo2 <= 40 &&
-					tiempoNuevoGrupo1 + tiempoNuevoGrupo2 <
-						grupo1.tiempoTotal + grupo2.tiempoTotal
-				) {
-					return {
-						grupo1: { grupo: nuevoGrupo1, tiempoTotal: tiempoNuevoGrupo1 },
-						grupo2: { grupo: nuevoGrupo2, tiempoTotal: tiempoNuevoGrupo2 },
-					};
-				}
-			}
-		}
-		return null;
-	}
-
-	function calcularTiempoTotalGrupo(grupo, puntoPartida) {
-		let tiempoTotal = 0;
-		let puntoAnterior = puntoPartida;
-		grupo.forEach((orden) => {
-			const distancia = calcularDistancia(
-				puntoAnterior.lat,
-				puntoAnterior.lon,
-				orden.map[0],
-				orden.map[1]
-			);
-			tiempoTotal += calcularTiempoEnMoto(distancia);
-			puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
-		});
-		return tiempoTotal;
+	function calcularMinutosTranscurridos(horaString) {
+		const [horas, minutos] = horaString.split(":").map(Number);
+		const fechaPedido = new Date();
+		fechaPedido.setHours(horas, minutos, 0, 0);
+		const ahora = new Date();
+		const diferencia = ahora - fechaPedido;
+		const minutosTranscurridos = Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
+		return minutosTranscurridos > 0 ? minutosTranscurridos : null; // Retorna null si es una reserva futura
 	}
 
 	function calcularDistanciaTotal(grupoOrdenes, puntoPartida) {
@@ -393,16 +401,6 @@ export const Comandera = () => {
 		return parseFloat(distanciaTotal.toFixed(2));
 	}
 
-	const calcularMinutosTranscurridos = (horaString) => {
-		const [horas, minutos] = horaString.split(":").map(Number);
-		const fechaPedido = new Date();
-		fechaPedido.setHours(horas, minutos, 0, 0);
-		const ahora = new Date();
-		const diferencia = ahora - fechaPedido;
-		const minutosTranscurridos = Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
-		return minutosTranscurridos > 0 ? minutosTranscurridos : null; // Retorna null si es una reserva futura
-	};
-
 	return (
 		<div className="p-4 flex flex-col">
 			<div className="flex flex-col gap-2">
@@ -411,7 +409,6 @@ export const Comandera = () => {
 				</div>
 			</div>
 			{/* Mostrar todos los grupos óptimos */}
-
 			<div className="flex flex-row gap-4 mt-4">
 				{gruposOptimos.map((grupo, index) => (
 					<div
