@@ -412,13 +412,13 @@ export const Comandera = () => {
 				{gruposOptimos.map((grupo, index) => (
 					<div
 						key={index}
-						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg"
+						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg relative"
 					>
-						<div className="flex  justify-center gap-2 border-b border-black border-opacity-20 relative">
-							<h3 className="font-bold text-lg pb-4 pt-4">
+						<div className="flex  justify-center gap-2  border-black border-opacity-20 ">
+							<h3 className="font-bold text-xl pb-4 pt-4">
 								Grupo óptimo {index + 1} en proceso...
 							</h3>
-							<div className="absolute left-12 top-1/2 transform -translate-y-1/2">
+							<div className="absolute left-auto top-[-8px] ">
 								<svg
 									className="w-4 h-4 animate-spin text-gray-100"
 									viewBox="0 0 64 64"
