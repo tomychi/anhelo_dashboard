@@ -466,7 +466,7 @@ export const Comandera = () => {
 							</p>
 						</div>
 						{grupo.pedidoMayorDemora.orden && (
-							<div className="mt-2 border-t pt-2 px-4">
+							<div className="mt-2 border-t border-opacity-20 border-black pt-2 px-4">
 								<p className="font-semibold">Pedido con mayor demora total:</p>
 								<p>Dirección: {grupo.pedidoMayorDemora.orden.direccion}</p>
 								<p>
