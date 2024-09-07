@@ -410,10 +410,7 @@ export const Comandera = () => {
 			{gruposOptimos.map((grupo, index) => (
 				<div key={index} className="mt-4 bg-gray-300 p-4 w-1/4 rounded-lg">
 					<div className="flex flex-row">
-						<h3 className="font-bold text-lg mb-2">
-							Grupo óptimo {index + 1}:
-						</h3>
-						<div className=" w-full   ">
+						<div className="  ">
 							<svg
 								className="w-8 h-8 animate-spin text-gray-100"
 								viewBox="0 0 64 64"
@@ -439,6 +436,7 @@ export const Comandera = () => {
 								></path>
 							</svg>
 						</div>
+						<h3 className="font-bold text-lg mb-2">Grupo óptimo en proceso</h3>
 					</div>
 					{grupo.grupo.map((orden, ordenIndex) => (
 						<div key={orden.id} className="mb-2">
