@@ -455,7 +455,7 @@ export const Comandera = () => {
 								</p>
 							</div>
 						))}
-						<div className="pt-2 px-4">
+						<div className="pt-2 px-4 border-t border-opacity-20 border-black mt-2  pt-2">
 							<p className="font-semibold">
 								Tiempo total: {grupo.tiempoTotal} minutos
 							</p>
@@ -465,7 +465,7 @@ export const Comandera = () => {
 							</p>
 						</div>
 						{grupo.pedidoMayorDemora.orden && (
-							<div className="mt-2 border-t border-opacity-20 border-black pt-2 px-4">
+							<div className=" px-4">
 								<p className="font-semibold">
 									Pedido con mayor demora total:{" "}
 									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
