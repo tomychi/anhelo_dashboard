@@ -152,6 +152,8 @@ export const Comandera = () => {
 		(empleado) => empleado.category === "cadete" && empleado.available === true
 	);
 
+	console.log(cadetesDisponibles);
+
 	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
 		const TIEMPO_MAXIMO_RECORRIDO = 30;
 		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
