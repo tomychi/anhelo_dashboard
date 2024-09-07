@@ -471,9 +471,11 @@ export const Comandera = () => {
 							</p>
 						</div>
 					)}
-					<div className="bg-black flex w-full  h-10 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4  gap-2">
-						<p>Asignar cadete</p>
-						<img src={arrowIcon} className="h-2 rotate-90 invert" />
+					<div className="px-4 pb-4">
+						<div className="bg-black flex w-full  h-10 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4  gap-2">
+							<p>Asignar cadete</p>
+							<img src={arrowIcon} className="h-2 rotate-90 invert" />
+						</div>
 					</div>
 				</div>
 			))}
