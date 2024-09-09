@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { GeneralStats, OrderList } from "../components/comandera";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
@@ -12,6 +13,7 @@ import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import RegistroEmpleado from "./Empleados";
 import arrowIcon from "../assets/arrowIcon.png";
+
 export const Comandera = () => {
 	const [seccionActiva, setSeccionActiva] = useState("porHacer");
 	const dispatch = useDispatch();
@@ -24,8 +26,10 @@ export const Comandera = () => {
 	const [gruposOptimos, setGruposOptimos] = useState([]);
 	const { orders } = useSelector((state: RootState) => state.data);
 	const location = useLocation();
+
 	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
 	const puntoPartida = { lat: -33.0957994, lon: -64.3337817 };
+
 	const filteredOrders = useMemo(() => {
 		return orders
 			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
@@ -35,26 +39,32 @@ export const Comandera = () => {
 				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
 			});
 	}, [orders, selectedCadete]);
+
 	const pedidosPorHacer = useMemo(() => {
 		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
 	}, [filteredOrders]);
+
 	const pedidosHechos = useMemo(() => {
 		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
 	}, [filteredOrders]);
+
 	const pedidosEntregados = useMemo(() => {
 		return filteredOrders.filter((o) => o.entregado);
 	}, [filteredOrders]);
+
 	const isNotAssigned = (cadete) => {
 		return (
 			cadete === "NO ASIGNADO" || cadete === "no asignado" || cadete === null
 		);
 	};
+
 	const cadetesDisponibles = useMemo(() => {
 		return empleados.filter(
 			(empleado) =>
 				empleado.category === "cadete" && empleado.available === true
 		);
 	}, [empleados]);
+
 	const shouldIncludeOrder = useCallback(
 		(orden) => {
 			if (isNotAssigned(orden.cadete)) return true;
@@ -65,11 +75,13 @@ export const Comandera = () => {
 		},
 		[cadetesDisponibles]
 	);
+
 	const ordersNotDelivered = useMemo(() => {
 		return orders.filter(
 			(order) => !order.entregado && shouldIncludeOrder(order)
 		);
 	}, [orders, shouldIncludeOrder]);
+
 	useEffect(() => {
 		const obtenerCadetes = async () => {
 			try {
@@ -93,12 +105,14 @@ export const Comandera = () => {
 			};
 		}
 	}, [dispatch, location]);
+
 	useEffect(() => {
 		const timer = setInterval(() => {
 			setTick((prev) => prev + 1);
 		}, 60000); // Actualizar cada minuto
 		return () => clearInterval(timer);
 	}, []);
+
 	const armarGruposOptimos = useCallback(
 		(ordersNotDelivered, puntoPartida) => {
 			const TIEMPO_MAXIMO_RECORRIDO = 30;
@@ -107,6 +121,7 @@ export const Comandera = () => {
 				return demora !== null && shouldIncludeOrder(orden);
 			});
 			let grupos = [];
+			let groupId = 1;
 			while (ordenesRestantes.length > 0) {
 				let grupoActual = [];
 				let tiempoTotalRecorrido = 0;
@@ -140,28 +155,31 @@ export const Comandera = () => {
 						(orden) => orden.id !== ordenMasCercana.orden.id
 					);
 				}
-				grupos.push(
-					recalcularGrupo(
-						{
-							grupo: grupoActual,
-							tiempoTotal: tiempoTotalRecorrido,
-						},
-						puntoPartida
-					)
-				);
+				grupos.push({
+					id: `grupo-${groupId++}`,
+					grupo: grupoActual.map((orden) => ({
+						...orden,
+						draggableId:
+							orden.id || `orden-${orden.direccion.replace(/\s+/g, "-")}`,
+					})),
+					tiempoTotal: tiempoTotalRecorrido,
+				});
 			}
 			return optimizarGruposGlobal(grupos, puntoPartida);
 		},
 		[shouldIncludeOrder]
 	);
+
 	const nuevosGrupos = useMemo(() => {
 		return armarGruposOptimos(ordersNotDelivered, puntoPartida);
 	}, [ordersNotDelivered, puntoPartida, armarGruposOptimos]);
+
 	useEffect(() => {
 		if (JSON.stringify(nuevosGrupos) !== JSON.stringify(gruposOptimos)) {
 			setGruposOptimos(nuevosGrupos);
 		}
 	}, [nuevosGrupos, gruposOptimos]);
+
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
 		if (nuevoCadeteSeleccionado === "") {
@@ -189,10 +207,12 @@ export const Comandera = () => {
 		}, 0);
 		setSumaTotalEfectivo(totalEfectivoCadete);
 	};
+
 	const customerSuccess =
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
+
 	function optimizarGruposGlobal(grupos, puntoPartida) {
 		let mejorConfiguracion = [...grupos];
 		let mejorPuntuacion = evaluarConfiguracion(grupos);
@@ -225,6 +245,7 @@ export const Comandera = () => {
 		// Eliminar grupos vacíos
 		return mejorConfiguracion.filter((grupo) => grupo.grupo.length > 0);
 	}
+
 	function evaluarConfiguracion(grupos) {
 		const numGrupos = grupos.length;
 		const tiempoTotalTodos = grupos.reduce(
@@ -255,6 +276,7 @@ export const Comandera = () => {
 			(1 / varianzaTamaños) * 10; // Menos varianza en tamaños es mejor
 		return puntuacion;
 	}
+
 	function recalcularGrupo(grupo, puntoPartida) {
 		let tiempoTotal = 0;
 		let distanciaTotal = 0;
@@ -278,12 +300,13 @@ export const Comandera = () => {
 			puntoAnterior = { lat: orden.map[0], lon: orden.map[1] };
 		});
 		return {
-			grupo: grupo.grupo,
+			...grupo,
 			tiempoTotal: Math.round(tiempoTotal),
 			distanciaTotal: parseFloat(distanciaTotal.toFixed(2)),
 			pedidoMayorDemora,
 		};
 	}
+
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
 		const R = 6371; // Radio de la Tierra en kilómetros
 		const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -301,6 +324,7 @@ export const Comandera = () => {
 		const distanciaEstimada = distanciaLineal * factorCorreccion;
 		return parseFloat(distanciaEstimada.toFixed(2));
 	}
+
 	function calcularTiempoEnMoto(distanciaKm) {
 		const velocidadPromedioKmPorHora = 32;
 		const tiempoHoras = distanciaKm / velocidadPromedioKmPorHora;
@@ -308,6 +332,7 @@ export const Comandera = () => {
 		const factorCorreccion = 1.5; // Factor de corrección para acercarnos a estimaciones de Google Maps
 		return Math.round(tiempoMinutos * factorCorreccion);
 	}
+
 	function obtenerOrdenMasCercana(grupoActual, ordenes) {
 		let ordenMasCercana = null;
 		let distanciaMinima = Infinity;
@@ -336,6 +361,7 @@ export const Comandera = () => {
 		});
 		return ordenMasCercana;
 	}
+
 	function calcularMinutosTranscurridos(horaString) {
 		const [horas, minutos] = horaString.split(":").map(Number);
 		const fechaPedido = new Date();
@@ -360,112 +386,187 @@ export const Comandera = () => {
 		});
 		return parseFloat(distanciaTotal.toFixed(2));
 	}
+
+	const onDragEnd = (result) => {
+		const { source, destination } = result;
+
+		// Si no hay destino, la orden fue soltada fuera de una lista
+		if (!destination) {
+			return;
+		}
+
+		// Si la orden fue soltada en la misma posición, no hacemos nada
+		if (
+			source.droppableId === destination.droppableId &&
+			source.index === destination.index
+		) {
+			return;
+		}
+
+		// Crear una copia de los grupos actuales
+		const newGrupos = Array.from(gruposOptimos);
+
+		// Encontrar los grupos de origen y destino
+		const sourceGroup = newGrupos.find(
+			(g) => g.id.toString() === source.droppableId
+		);
+		const destGroup = newGrupos.find(
+			(g) => g.id.toString() === destination.droppableId
+		);
+
+		// Remover la orden del grupo de origen
+		const [removedOrder] = sourceGroup.grupo.splice(source.index, 1);
+
+		// Añadir la orden al grupo de destino
+		destGroup.grupo.splice(destination.index, 0, removedOrder);
+
+		// Recalcular los tiempos y distancias para los grupos afectados
+		const updatedSourceGroup = recalcularGrupo(sourceGroup, puntoPartida);
+		const updatedDestGroup = recalcularGrupo(destGroup, puntoPartida);
+
+		// Actualizar los grupos en el estado
+		setGruposOptimos(
+			newGrupos.map((g) =>
+				g.id.toString() === source.droppableId
+					? updatedSourceGroup
+					: g.id.toString() === destination.droppableId
+					? updatedDestGroup
+					: g
+			)
+		);
+	};
+
 	return (
 		<div className="p-4 flex flex-col">
-			{/* Mostrar todos los grupos óptimos */}
-			<div className="flex flex-row gap-4 ">
-				{gruposOptimos.map((grupo, index) => (
-					<div
-						key={index}
-						className=" bg-gray-300 h-min  w-1/4 rounded-lg shadow-black shadow-lg "
-					>
-						<div className="flex flex-col justify-center gap-2   ">
-							<h3 className="font-bold text-2xl text-center  pt-8">
-								Grupo óptimo {index + 1}
-							</h3>
-							<div className=" px-4  mb-8 text-center ">
-								{grupo.pedidoMayorDemora.orden && (
-									<div className=" ">
-										<p className="font-semibold">
-											Pedido con peor entrega:{" "}
-											{grupo.pedidoMayorDemora.demoraTotalPedido} minutos (
-											{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]})
-										</p>
-									</div>
-								)}
-								<p className="font-semibold">
-									Tiempo del recorrido: {grupo.tiempoTotal} minutos
-								</p>
-								<p className="font-semibold">
-									Distancia del recorrido:{" "}
-									{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
-								</p>
-							</div>
-						</div>
-						<div className=" rounded-full flex justify-center mx-4 mb-4 pt-2 pb-2 items-center bg-gray-100   font-coolvetica ">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								className="w-6"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-
-							<p className="ml-1">¿Para quien?</p>
-							<img src={arrowIcon} className="w-2 rotate-90 ml-2" alt="" />
-						</div>
-
-						<div className="flex flex-col   bg-gray-100  mx-4 mb-4 rounded-lg ">
-							{grupo.grupo.map((orden, ordenIndex) => (
+			<DragDropContext onDragEnd={onDragEnd}>
+				<div className="flex flex-row gap-4 ">
+					{gruposOptimos.map((grupo) => (
+						<Droppable droppableId={grupo.id.toString()} key={grupo.id}>
+							{(provided) => (
 								<div
-									key={orden.id}
-									className="   flex pt-3  flex-row  items-center gap-2  text-black  "
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+									className="bg-gray-300 h-min w-1/4 rounded-lg shadow-black shadow-lg"
 								>
-									<div className="bg-black flex mb-3.5 text-gray-100 h-8 w-8 justify-center items-center text-center ml-4">
-										{ordenIndex + 1}
-									</div>
-									<div className="flex flex-row w-full items-center border-b border-black border-opacity-20 pb-4 justify-between">
-										<div className="ml-2 ">
-											<p className="font-semibold ">
-												{orden.direccion.split(",")[0]}
+									<div className="flex flex-col justify-center gap-2">
+										<h3 className="font-bold text-2xl text-center pt-8">
+											Grupo óptimo {grupo.id.split("-")[1]}
+										</h3>
+										<div className="px-4 mb-8 text-center">
+											{grupo.pedidoMayorDemora?.orden && (
+												<div>
+													<p className="font-semibold">
+														Pedido con peor entrega:{" "}
+														{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
+														(
+														{
+															grupo.pedidoMayorDemora.orden.direccion.split(
+																","
+															)[0]
+														}
+														)
+													</p>
+												</div>
+											)}
+											<p className="font-semibold">
+												Tiempo del recorrido: {grupo.tiempoTotal} minutos
 											</p>
-											<p className="text-xs">
-												Pidio hace:{" "}
-												{calcularMinutosTranscurridos(orden.hora) ??
-													"Reserva futura"}{" "}
-												minutos
+											<p className="font-semibold">
+												Distancia del recorrido:{" "}
+												{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
 											</p>
-											<p className="text-xs">Percibe entrega de 28 minutos</p>
 										</div>
+									</div>
+									<div className="rounded-full flex justify-center mx-4 mb-4 pt-2 pb-2 items-center bg-gray-100 font-coolvetica">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
 											viewBox="0 0 24 24"
-											stroke-width="1.5"
-											stroke="currentColor"
-											className="h-6 mr-4"
+											fill="currentColor"
+											className="w-6"
 										>
 											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												d="M3.75 9h16.5m-16.5 6.75h16.5"
+												fillRule="evenodd"
+												d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+												clipRule="evenodd"
 											/>
 										</svg>
+										<p className="ml-1">¿Para quien?</p>
+										<img
+											src={arrowIcon}
+											className="w-2 rotate-90 ml-2"
+											alt=""
+										/>
+									</div>
+									<div className="flex flex-col bg-gray-100 mx-4 mb-4 rounded-lg">
+										{grupo.grupo.map((orden, ordenIndex) => (
+											<Draggable
+												key={orden.draggableId}
+												draggableId={orden.draggableId}
+												index={ordenIndex}
+											>
+												{(provided) => (
+													<div
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+														className="flex pt-3 flex-row items-center gap-2 text-black"
+													>
+														<div className="bg-black flex mb-3.5 text-gray-100 h-8 w-8 justify-center items-center text-center ml-4">
+															{ordenIndex + 1}
+														</div>
+														<div className="flex flex-row w-full items-center border-b border-black border-opacity-20 pb-4 justify-between">
+															<div className="ml-2">
+																<p className="font-semibold">
+																	{orden.direccion.split(",")[0]}
+																</p>
+																<p className="text-xs">
+																	Pidió hace:{" "}
+																	{calcularMinutosTranscurridos(orden.hora) ??
+																		"Reserva futura"}{" "}
+																	minutos
+																</p>
+																<p className="text-xs">
+																	Percibe entrega de 28 minutos
+																</p>
+															</div>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																fill="none"
+																viewBox="0 0 24 24"
+																strokeWidth="1.5"
+																stroke="currentColor"
+																className="h-6 mr-4"
+															>
+																<path
+																	strokeLinecap="round"
+																	strokeLinejoin="round"
+																	d="M3.75 9h16.5m-16.5 6.75h16.5"
+																/>
+															</svg>
+														</div>
+													</div>
+												)}
+											</Draggable>
+										))}
+										{provided.placeholder}
+									</div>
+									<div className="px-4 pb-4">
+										<div className="bg-black flex w-full pt-2.5 pb-4 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 text-2xl gap-2">
+											<p>Listo</p>
+										</div>
 									</div>
 								</div>
-							))}
-						</div>
-
-						<div className="px-4 pb-4">
-							<div className="bg-black flex w-full  pt-2.5 pb-4 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 text-2xl  gap-2">
-								<p>Listo</p>
-							</div>
-						</div>
-					</div>
-				))}
-			</div>
+							)}
+						</Droppable>
+					))}
+				</div>
+			</DragDropContext>
 			<CadeteSelect
 				cadetes={cadetes}
 				handleCadeteChange={handleCadeteChange}
 				selectedCadete={selectedCadete}
 				orders={pedidosHechos}
 			/>
-			{/* Botón para copiar direcciones */}
 			<button
 				className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 				onClick={() => {
