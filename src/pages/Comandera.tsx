@@ -379,7 +379,7 @@ export const Comandera = () => {
 								Grupo óptimo {index + 1}
 							</h3>
 						</div>
-						<div className=" w-1/3 rounded-full flex justify-center ml-4 mb-4 pt-2 pb-2 items-center bg-gray-100 gap-2 font-coolvetica ">
+						<div className=" w-1/3 rounded-full flex justify-center ml-4 mb-4 pt-2 pb-2 items-center bg-gray-100  font-coolvetica ">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -393,7 +393,8 @@ export const Comandera = () => {
 								/>
 							</svg>
 
-							<p>¿Para quien?</p>
+							<p className="ml-1">¿Para quien?</p>
+							<img src={arrowIcon} className="w-2 rotate-90 ml-2" alt="" />
 						</div>
 
 						<div className="flex flex-col px-4  bg-gray-100  mx-4 mb-4 rounded-lg ">
