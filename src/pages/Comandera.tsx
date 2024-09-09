@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -58,23 +58,29 @@ export const Comandera = () => {
 		);
 	};
 
-	const cadetesDisponibles = empleados.filter(
-		(empleado) => empleado.category === "cadete" && empleado.available === true
-	);
-
-	const shouldIncludeOrder = (orden) => {
-		if (isNotAssigned(orden.cadete)) return true;
-		const cadete = cadetesDisponibles.find(
-			(c) => c.name.toLowerCase() === orden.cadete.toLowerCase()
+	const cadetesDisponibles = useMemo(() => {
+		return empleados.filter(
+			(empleado) =>
+				empleado.category === "cadete" && empleado.available === true
 		);
-		return cadete && cadete.available;
-	};
+	}, [empleados]);
+
+	const shouldIncludeOrder = useCallback(
+		(orden) => {
+			if (isNotAssigned(orden.cadete)) return true;
+			const cadete = cadetesDisponibles.find(
+				(c) => c.name.toLowerCase() === orden.cadete.toLowerCase()
+			);
+			return cadete && cadete.available;
+		},
+		[cadetesDisponibles]
+	);
 
 	const ordersNotDelivered = useMemo(() => {
 		return orders.filter(
 			(order) => !order.entregado && shouldIncludeOrder(order)
 		);
-	}, [orders, cadetesDisponibles]);
+	}, [orders, shouldIncludeOrder]);
 
 	useEffect(() => {
 		const obtenerCadetes = async () => {
@@ -111,15 +117,78 @@ export const Comandera = () => {
 		return () => clearInterval(timer);
 	}, []);
 
-	useEffect(() => {
-		// Efecto para rearmar los grupos cada vez que cambian las órdenes o la disponibilidad de los cadetes
-		const armarGrupos = () => {
-			const nuevosGrupos = armarGruposOptimos(ordersNotDelivered, puntoPartida);
-			setGruposOptimos(nuevosGrupos);
-		};
+	const armarGruposOptimos = useCallback(
+		(ordersNotDelivered, puntoPartida) => {
+			const TIEMPO_MAXIMO_RECORRIDO = 30;
+			let ordenesRestantes = ordersNotDelivered.filter((orden) => {
+				const demora = calcularMinutosTranscurridos(orden.hora);
+				return demora !== null && shouldIncludeOrder(orden);
+			});
+			let grupos = [];
 
-		armarGrupos();
-	}, [ordersNotDelivered, cadetesDisponibles]);
+			while (ordenesRestantes.length > 0) {
+				let grupoActual = [];
+				let tiempoTotalRecorrido = 0;
+
+				// Agregar la primera orden (la más cercana al punto de partida)
+				const primeraOrden = obtenerOrdenMasCercana(
+					[{ map: [puntoPartida.lat, puntoPartida.lon] }],
+					ordenesRestantes
+				);
+				grupoActual.push(primeraOrden.orden);
+				tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
+				ordenesRestantes = ordenesRestantes.filter(
+					(orden) => orden.id !== primeraOrden.orden.id
+				);
+
+				while (
+					ordenesRestantes.length > 0 &&
+					tiempoTotalRecorrido < TIEMPO_MAXIMO_RECORRIDO
+				) {
+					const ordenMasCercana = obtenerOrdenMasCercana(
+						grupoActual,
+						ordenesRestantes
+					);
+
+					if (
+						tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado >
+						TIEMPO_MAXIMO_RECORRIDO
+					) {
+						break;
+					}
+
+					grupoActual.push(ordenMasCercana.orden);
+					tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
+					ordenesRestantes = ordenesRestantes.filter(
+						(orden) => orden.id !== ordenMasCercana.orden.id
+					);
+				}
+
+				grupos.push(
+					recalcularGrupo(
+						{
+							grupo: grupoActual,
+							tiempoTotal: tiempoTotalRecorrido,
+						},
+						puntoPartida
+					)
+				);
+			}
+
+			return optimizarGruposGlobal(grupos, puntoPartida);
+		},
+		[shouldIncludeOrder]
+	);
+
+	const nuevosGrupos = useMemo(() => {
+		return armarGruposOptimos(ordersNotDelivered, puntoPartida);
+	}, [ordersNotDelivered, puntoPartida, armarGruposOptimos]);
+
+	useEffect(() => {
+		if (JSON.stringify(nuevosGrupos) !== JSON.stringify(gruposOptimos)) {
+			setGruposOptimos(nuevosGrupos);
+		}
+	}, [nuevosGrupos, gruposOptimos]);
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
@@ -159,66 +228,6 @@ export const Comandera = () => {
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
-
-	function armarGruposOptimos(ordersNotDelivered, puntoPartida) {
-		const TIEMPO_MAXIMO_RECORRIDO = 30;
-		let ordenesRestantes = ordersNotDelivered.filter((orden) => {
-			const demora = calcularMinutosTranscurridos(orden.hora);
-			return demora !== null && shouldIncludeOrder(orden);
-		});
-		let grupos = [];
-
-		while (ordenesRestantes.length > 0) {
-			let grupoActual = [];
-			let tiempoTotalRecorrido = 0;
-
-			// Agregar la primera orden (la más cercana al punto de partida)
-			const primeraOrden = obtenerOrdenMasCercana(
-				[{ map: [puntoPartida.lat, puntoPartida.lon] }],
-				ordenesRestantes
-			);
-			grupoActual.push(primeraOrden.orden);
-			tiempoTotalRecorrido += primeraOrden.tiempoEstimado;
-			ordenesRestantes = ordenesRestantes.filter(
-				(orden) => orden.id !== primeraOrden.orden.id
-			);
-
-			while (
-				ordenesRestantes.length > 0 &&
-				tiempoTotalRecorrido < TIEMPO_MAXIMO_RECORRIDO
-			) {
-				const ordenMasCercana = obtenerOrdenMasCercana(
-					grupoActual,
-					ordenesRestantes
-				);
-
-				if (
-					tiempoTotalRecorrido + ordenMasCercana.tiempoEstimado >
-					TIEMPO_MAXIMO_RECORRIDO
-				) {
-					break;
-				}
-
-				grupoActual.push(ordenMasCercana.orden);
-				tiempoTotalRecorrido += ordenMasCercana.tiempoEstimado;
-				ordenesRestantes = ordenesRestantes.filter(
-					(orden) => orden.id !== ordenMasCercana.orden.id
-				);
-			}
-
-			grupos.push(
-				recalcularGrupo(
-					{
-						grupo: grupoActual,
-						tiempoTotal: tiempoTotalRecorrido,
-					},
-					puntoPartida
-				)
-			);
-		}
-
-		return optimizarGruposGlobal(grupos, puntoPartida);
-	}
 
 	function optimizarGruposGlobal(grupos, puntoPartida) {
 		let mejorConfiguracion = [...grupos];
