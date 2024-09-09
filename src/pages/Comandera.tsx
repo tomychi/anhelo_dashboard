@@ -401,7 +401,7 @@ export const Comandera = () => {
 							{grupo.grupo.map((orden, ordenIndex) => (
 								<div
 									key={orden.id}
-									className=" border-b flex pt-3 pb-4 flex-row justify-between items-center gap-2  text-black  "
+									className=" border-b border-black border-opacity-20 flex pt-3 pb-4 flex-row justify-between items-center gap-2  text-black  "
 								>
 									<div>
 										<p className="font-semibold">
