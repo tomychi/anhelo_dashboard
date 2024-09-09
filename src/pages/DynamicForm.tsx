@@ -260,7 +260,7 @@ export const DynamicForm: React.FC = () => {
       }, 0);
 
       // Si hay más de una unidad de la hamburguesa más cara, aplicar el descuento 2x1
-      if (burgerMasCara.quantity > 1) {
+      if ((burgerMasCara.quantity ?? 1) > 1) {
         const descuento =
           (burgerMasCara.priceBurger ?? 0) + (burgerMasCara.priceToppings ?? 0);
         subTotal -= descuento; // Resta el precio de una unidad
