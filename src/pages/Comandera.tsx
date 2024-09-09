@@ -410,38 +410,43 @@ export const Comandera = () => {
 							<img src={arrowIcon} className="w-2 rotate-90 ml-2" alt="" />
 						</div>
 
-						<div className="flex flex-col px-4  bg-gray-100  mx-4 mb-4 rounded-lg ">
+						<div className="flex flex-col   bg-gray-100  mx-4 mb-4 rounded-lg ">
 							{grupo.grupo.map((orden, ordenIndex) => (
 								<div
 									key={orden.id}
-									className=" border-b border-black border-opacity-20 flex pt-3 pb-4 flex-row justify-between items-center gap-2  text-black  "
+									className=" border-b border-black px-4 border-opacity-20 flex pt-3 pb-4 flex-row  items-center gap-2  text-black  "
 								>
-									<div>
-										<p className="font-semibold">
-											{ordenIndex + 1}. {orden.direccion.split(",")[0]}
-										</p>
-										<p className="text-xs">
-											Pidio hace:{" "}
-											{calcularMinutosTranscurridos(orden.hora) ??
-												"Reserva futura"}{" "}
-											minutos
-										</p>
-										<p className="text-xs">Percibe entrega de 28 minutos</p>
+									<div className="bg-black flex text-gray-100 h-8 w-8 justify-center items-center text-center ">
+										{ordenIndex + 1}
 									</div>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										className="h-6 "
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M3.75 9h16.5m-16.5 6.75h16.5"
-										/>
-									</svg>
+									<div className="flex flex-row w-full items-center justify-between">
+										<div className="ml-2">
+											<p className="font-semibold ">
+												{orden.direccion.split(",")[0]}
+											</p>
+											<p className="text-xs">
+												Pidio hace:{" "}
+												{calcularMinutosTranscurridos(orden.hora) ??
+													"Reserva futura"}{" "}
+												minutos
+											</p>
+											<p className="text-xs">Percibe entrega de 28 minutos</p>
+										</div>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke-width="1.5"
+											stroke="currentColor"
+											className="h-6 "
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												d="M3.75 9h16.5m-16.5 6.75h16.5"
+											/>
+										</svg>
+									</div>
 								</div>
 							))}
 						</div>
