@@ -362,11 +362,6 @@ export const Comandera = () => {
 	}
 	return (
 		<div className="p-4 flex flex-col">
-			<div className="flex flex-col gap-2">
-				<div className="flex items-center flex-row overflow-hidden">
-					{/* Contenido de ScrollContainer comentado */}
-				</div>
-			</div>
 			{/* Mostrar todos los grupos óptimos */}
 			<div className="flex flex-row gap-4 ">
 				{gruposOptimos.map((grupo, index) => (
