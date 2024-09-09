@@ -395,6 +395,7 @@ export const Comandera = () => {
 												"Reserva futura"}{" "}
 											minutos
 										</p>
+										<p className="text-xs">Percibe entrega de 28 minutos</p>
 									</div>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
