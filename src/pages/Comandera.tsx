@@ -376,7 +376,7 @@ export const Comandera = () => {
 					>
 						<div className="flex  justify-center gap-2  border-black border-opacity-20 ">
 							<h3 className="font-bold text-xl pb-4 pt-8">
-								Grupo óptimo {index + 1} en proceso...
+								Grupo óptimo {index + 1}
 							</h3>
 							<div className="absolute left-auto top-[-15px] ">
 								<svg
@@ -405,18 +405,24 @@ export const Comandera = () => {
 								</svg>
 							</div>
 						</div>
-						{grupo.grupo.map((orden, ordenIndex) => (
-							<div key={orden.id} className="pt-3  px-4">
-								<p className="font-semibold">
-									{ordenIndex + 1}. {orden.direccion.split(",")[0]}
-								</p>
-								<p className="text-xs">
-									Demora:{" "}
-									{calcularMinutosTranscurridos(orden.hora) ?? "Reserva futura"}{" "}
-									minutos
-								</p>
-							</div>
-						))}
+						<div className="flex flex-col gap-4 ">
+							{grupo.grupo.map((orden, ordenIndex) => (
+								<div
+									key={orden.id}
+									className="pt-3 pb-4 bg-black text-gray-100  px-4"
+								>
+									<p className="font-semibold">
+										{ordenIndex + 1}. {orden.direccion.split(",")[0]}
+									</p>
+									<p className="text-xs">
+										Demora:{" "}
+										{calcularMinutosTranscurridos(orden.hora) ??
+											"Reserva futura"}{" "}
+										minutos
+									</p>
+								</div>
+							))}
+						</div>
 						<div className="pt-2 px-4 border-t border-opacity-20 border-black mt-2  pt-2">
 							<p className="font-semibold">
 								Tiempo total: {grupo.tiempoTotal} minutos
