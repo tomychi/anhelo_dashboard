@@ -244,19 +244,40 @@ export const DynamicForm: React.FC = () => {
 
     let subTotal = 0;
     if (cuponValido) {
+      // Encontrar la hamburguesa más cara (considerando la cantidad)
       const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
-        return (burger.priceBurger ?? 0) > (maxBurger.priceBurger ?? 0)
+        const totalBurgerPrice =
+          (burger.priceBurger ?? 0) * (burger.quantity ?? 1);
+        return totalBurgerPrice >
+          (maxBurger.priceBurger ?? 0) * (maxBurger.quantity ?? 1)
           ? burger
           : maxBurger;
       }, detallePedido[0]);
 
-      subTotal =
-        detallePedido.reduce((acc, burger) => {
-          return acc + (burger.subTotal ?? 0);
-        }, 0) -
-        ((burgerMasCara?.priceBurger ?? 0) +
-          (burgerMasCara?.priceToppings ?? 0)); // Restar tanto el precio de la hamburguesa como el de los toppings
+      // Calcular el subtotal total de todos los productos
+      subTotal = detallePedido.reduce((acc, burger) => {
+        return acc + (burger.subTotal ?? 0);
+      }, 0);
 
+      // Si hay más de una unidad de la hamburguesa más cara, aplicar el descuento 2x1
+      if (burgerMasCara.quantity > 1) {
+        const descuento =
+          (burgerMasCara.priceBurger ?? 0) + (burgerMasCara.priceToppings ?? 0);
+        subTotal -= descuento; // Resta el precio de una unidad
+      } else if (detallePedido.length > 1) {
+        // Si hay al menos dos hamburguesas diferentes, aplicar el 2x1 en las dos más caras
+        const [burgerMasCara1, burgerMasCara2] = detallePedido
+          .sort((a, b) => (b.priceBurger ?? 0) - (a.priceBurger ?? 0)) // Ordenar por precio en orden descendente
+          .slice(0, 2); // Tomar las dos más caras
+
+        const descuento =
+          ((burgerMasCara1?.priceBurger ?? 0) +
+            (burgerMasCara1?.priceToppings ?? 0) +
+            (burgerMasCara2?.priceBurger ?? 0) +
+            (burgerMasCara2?.priceToppings ?? 0)) /
+          2;
+        subTotal -= descuento; // Resta la mitad del precio de las dos hamburguesas más caras
+      }
       Swal.fire({
         icon: 'success',
         title: 'DESCUENTO',
