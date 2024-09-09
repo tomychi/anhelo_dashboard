@@ -375,11 +375,11 @@ export const Comandera = () => {
 						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg "
 					>
 						<div className="flex  justify-center gap-2  border-black border-opacity-20 ">
-							<h3 className="font-bold text-xl pb-6 pt-6">
+							<h3 className="font-bold text-2xl  pb-4 pt-8">
 								Grupo óptimo {index + 1}
 							</h3>
 						</div>
-						<div className=" w-1/3 rounded-full flex justify-center ml-4 mb-4 pt-2 pb-2 items-center bg-gray-100  font-coolvetica ">
+						<div className=" rounded-full flex justify-center mx-4 mb-4 pt-2 pb-2 items-center bg-gray-100   font-coolvetica ">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
