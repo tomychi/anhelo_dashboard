@@ -243,7 +243,7 @@ export const DynamicForm: React.FC = () => {
     }
 
     let subTotal = 0;
-    if (subTotal + 1) {
+    if (cuponValido) {
       const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
         return (burger.priceBurger ?? 0) > (maxBurger.priceBurger ?? 0)
           ? burger
