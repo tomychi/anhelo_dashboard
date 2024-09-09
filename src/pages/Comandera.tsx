@@ -416,7 +416,7 @@ export const Comandera = () => {
 									key={orden.id}
 									className="   flex pt-3  flex-row  items-center gap-2  text-black  "
 								>
-									<div className="bg-black flex text-gray-100 h-8 w-8 justify-center items-center text-center ml-4">
+									<div className="bg-black flex mb-3.5 text-gray-100 h-8 w-8 justify-center items-center text-center ml-4">
 										{ordenIndex + 1}
 									</div>
 									<div className="flex flex-row w-full items-center border-b border-black border-opacity-20 pb-4 justify-between">
