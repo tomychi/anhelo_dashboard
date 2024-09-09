@@ -414,13 +414,13 @@ export const Comandera = () => {
 							{grupo.grupo.map((orden, ordenIndex) => (
 								<div
 									key={orden.id}
-									className=" border-b border-black px-4 border-opacity-20 flex pt-3 pb-4 flex-row  items-center gap-2  text-black  "
+									className="   flex pt-3  flex-row  items-center gap-2  text-black  "
 								>
-									<div className="bg-black flex text-gray-100 h-8 w-8 justify-center items-center text-center ">
+									<div className="bg-black flex text-gray-100 h-8 w-8 justify-center items-center text-center ml-4">
 										{ordenIndex + 1}
 									</div>
-									<div className="flex flex-row w-full items-center justify-between">
-										<div className="ml-2">
+									<div className="flex flex-row w-full items-center border-b border-black border-opacity-20 pb-4 justify-between">
+										<div className="ml-2 ">
 											<p className="font-semibold ">
 												{orden.direccion.split(",")[0]}
 											</p>
@@ -438,7 +438,7 @@ export const Comandera = () => {
 											viewBox="0 0 24 24"
 											stroke-width="1.5"
 											stroke="currentColor"
-											className="h-6 "
+											className="h-6 mr-4"
 										>
 											<path
 												stroke-linecap="round"
