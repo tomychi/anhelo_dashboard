@@ -374,10 +374,28 @@ export const Comandera = () => {
 						key={index}
 						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg "
 					>
-						<div className="flex  justify-center gap-2  border-black border-opacity-20 ">
-							<h3 className="font-bold text-2xl  pb-4 pt-8">
+						<div className="flex flex-col justify-center gap-2   ">
+							<h3 className="font-bold text-2xl text-center  pt-8">
 								Grupo óptimo {index + 1}
 							</h3>
+							<div className=" px-4  mb-8 text-center ">
+								{grupo.pedidoMayorDemora.orden && (
+									<div className=" ">
+										<p className="font-semibold">
+											Pedido con peor entrega:{" "}
+											{grupo.pedidoMayorDemora.demoraTotalPedido} minutos (
+											{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]})
+										</p>
+									</div>
+								)}
+								<p className="font-semibold">
+									Tiempo del recorrido: {grupo.tiempoTotal} minutos
+								</p>
+								<p className="font-semibold">
+									Distancia del recorrido:{" "}
+									{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
+								</p>
+							</div>
 						</div>
 						<div className=" rounded-full flex justify-center mx-4 mb-4 pt-2 pb-2 items-center bg-gray-100   font-coolvetica ">
 							<svg
@@ -432,24 +450,7 @@ export const Comandera = () => {
 								</div>
 							))}
 						</div>
-						<div className="pt-2 px-4 border-t border-opacity-20 border-black mt-2  pt-2">
-							<p className="font-semibold">
-								Tiempo del recorrido: {grupo.tiempoTotal} minutos
-							</p>
-							<p className="font-semibold">
-								Distancia del recorrido:{" "}
-								{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
-							</p>
-						</div>
-						{grupo.pedidoMayorDemora.orden && (
-							<div className=" px-4">
-								<p className="font-semibold">
-									Pedido con peor entrega:{" "}
-									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos (
-									{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]})
-								</p>
-							</div>
-						)}
+
 						<div className="px-4 pb-4">
 							<div className="bg-black flex w-full  pt-2.5 pb-4 rounded-lg text-gray-100 items-center text-center justify-center font-medium mt-4 text-2xl  gap-2">
 								<p>Listo</p>
