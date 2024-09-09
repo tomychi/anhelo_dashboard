@@ -404,7 +404,7 @@ export const Comandera = () => {
 											{ordenIndex + 1}. {orden.direccion.split(",")[0]}
 										</p>
 										<p className="text-xs">
-											Demora:{" "}
+											Pidio hace:{" "}
 											{calcularMinutosTranscurridos(orden.hora) ??
 												"Reserva futura"}{" "}
 											minutos
