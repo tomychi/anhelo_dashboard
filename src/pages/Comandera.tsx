@@ -415,10 +415,10 @@ export const Comandera = () => {
 						</div>
 						<div className="pt-2 px-4 border-t border-opacity-20 border-black mt-2  pt-2">
 							<p className="font-semibold">
-								Tiempo total: {grupo.tiempoTotal} minutos
+								Tiempo del recorrido: {grupo.tiempoTotal} minutos
 							</p>
 							<p className="font-semibold">
-								Distancia total del recorrido:{" "}
+								Distancia del recorrido:{" "}
 								{calcularDistanciaTotal(grupo.grupo, puntoPartida)} km
 							</p>
 						</div>
