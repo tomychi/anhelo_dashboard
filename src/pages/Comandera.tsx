@@ -379,11 +379,11 @@ export const Comandera = () => {
 								Grupo óptimo {index + 1}
 							</h3>
 						</div>
-						<div className="flex flex-col gap-4 bg-gray-100  mx-4 mb-4 rounded-lg ">
+						<div className="flex flex-col px-4  bg-gray-100  mx-4 mb-4 rounded-lg ">
 							{grupo.grupo.map((orden, ordenIndex) => (
 								<div
 									key={orden.id}
-									className="pt-3 pb-4 flex flex-row justify-between items-center gap-2  text-black  px-4"
+									className=" border-b flex pt-3 pb-4 flex-row justify-between items-center gap-2  text-black  "
 								>
 									<div>
 										<p className="font-semibold">
