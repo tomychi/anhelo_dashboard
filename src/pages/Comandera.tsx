@@ -404,7 +404,7 @@ export const Comandera = () => {
 		const ahora = new Date();
 		const diferencia = ahora - fechaPedido;
 		const minutosTranscurridos = Math.floor(diferencia / 60000); // Convertir milisegundos a minutos
-		return minutosTranscurridos > 0 ? minutosTranscurridos : null; // Retorna null si es una reserva futura
+		return minutosTranscurridos >= 0 ? minutosTranscurridos : null; // Retorna null solo si es una reserva futura
 	}
 
 	function calcularDistanciaTotal(grupoOrdenes, puntoPartida) {
