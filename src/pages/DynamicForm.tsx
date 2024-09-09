@@ -6,7 +6,6 @@ import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import { addTelefonoFirebase } from '../firebase/Telefonos';
-import { obtenerMontosPorAlias } from '../firebase/afip';
 import { canjearVoucher } from '../firebase/voucher';
 import currencyFormat from '../helpers/currencyFormat';
 
@@ -22,6 +21,8 @@ export interface FormDataProps {
   referencias: string;
   map: [number, number];
   cadete: string;
+  efectivoCantidad: string;
+  mercadopagoCantidad: string;
 }
 
 export interface DetallePedidoProps {
@@ -50,28 +51,7 @@ export interface DataStateProps {
   collectionName?: string;
 }
 
-type AliasTopes = Record<string, number>;
-
-const obtenerAliasDisponible = (
-  montosPorAlias: Record<string, number>,
-  aliasTopes: AliasTopes
-): string => {
-  for (const [alias, topeTotal] of Object.entries(aliasTopes)) {
-    const montoAcumulado = montosPorAlias[alias] || 0;
-    if (montoAcumulado < topeTotal) {
-      return alias;
-    }
-  }
-  return 'onlyanhelo3';
-};
-
-const aliasTopes = {
-  'tobias.azcurra': 150000,
-  onlyanhelo2: 450000,
-};
-
 export const DynamicForm: React.FC = () => {
-  const [aliasDisponible, setAliasDisponible] = useState<string>('onlyanhelo3');
   const [editableTotal, setEditableTotal] = useState(0);
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
   const [formData, setFormData] = useState<FormDataProps>({
@@ -86,6 +66,8 @@ export const DynamicForm: React.FC = () => {
     ubicacion: '',
     referencias: '',
     cadete: 'NO ASIGNADO',
+    efectivoCantidad: '',
+    mercadopagoCantidad: '',
   });
 
   const { materiales } = useSelector((state: RootState) => state.materials);
@@ -107,19 +89,6 @@ export const DynamicForm: React.FC = () => {
     );
     setEditableTotal(newTotal);
   }, [detallePedido]);
-
-  const obtenerMontos = () => {
-    try {
-      const fechaActual = obtenerFechaActual();
-      const [, mesActual, anioActual] = fechaActual.split('/');
-      obtenerMontosPorAlias(anioActual, mesActual, (montos) => {
-        const aliasDis = obtenerAliasDisponible(montos, aliasTopes);
-        setAliasDisponible(aliasDis);
-      });
-    } catch (error) {
-      console.error('Error al obtener los montos por alias:', error);
-    }
-  };
 
   const handleFormChange = useCallback((newData: Partial<FormDataProps>) => {
     setFormData((prevData) => ({ ...prevData, ...newData }));
@@ -165,10 +134,18 @@ export const DynamicForm: React.FC = () => {
     placeholder: string;
     required?: boolean;
   }> = ({ name, type, placeholder, required }) => {
-    const [localValue, setLocalValue] = useState(formData[name]);
+    const [localValue, setLocalValue] = useState<string | number>(
+      typeof formData[name] === 'object'
+        ? JSON.stringify(formData[name]) // Convertimos la tupla a string
+        : formData[name]
+    );
 
     useEffect(() => {
-      setLocalValue(formData[name]);
+      setLocalValue(
+        typeof formData[name] === 'object'
+          ? JSON.stringify(formData[name]) // Actualizamos el valor si es una tupla
+          : formData[name]
+      );
     }, [formData[name]]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +153,18 @@ export const DynamicForm: React.FC = () => {
     };
 
     const handleBlur = () => {
-      handleFormChange({ [name]: localValue });
+      let valueToStore: string | number | [number, number] = localValue;
+
+      if (typeof formData[name] === 'object') {
+        try {
+          // Si el campo es una tupla, intentamos convertir el valor a la tupla de nuevo
+          valueToStore = JSON.parse(localValue as string);
+        } catch (error) {
+          console.error('Error parsing value to tuple:', error);
+        }
+      }
+
+      handleFormChange({ [name]: valueToStore });
     };
 
     return (
@@ -299,17 +287,35 @@ export const DynamicForm: React.FC = () => {
     }
 
     const envio = parseInt(formData.envio);
+
+    // Si el método de pago es "efectivo", asigna todo el editableTotal a efectivoCantidad
+    const efectivoCantidad =
+      formData.metodoPago === 'efectivo'
+        ? editableTotal
+        : parseInt(formData.efectivoCantidad) || 0;
+
+    // Si el método de pago es "mercadopago", asigna todo el editableTotal a mercadopagoCantidad
+    const mercadopagoCantidad =
+      formData.metodoPago === 'mercadopago'
+        ? editableTotal
+        : parseInt(formData.mercadopagoCantidad) || 0;
+
+    subTotal = editableTotal - envio;
+    const total = subTotal + envio; // Calcula el total dinámicamente
+
     const info = {
       ...formData,
       envio,
+      efectivoCantidad,
+      mercadopagoCantidad,
       detallePedido,
-      subTotal: editableTotal - envio,
-      total: subTotal + envio,
+      subTotal,
+      total,
       fecha: obtenerFechaActual(),
       elaborado: false,
     };
 
-    UploadOrder(info, aliasDisponible)
+    UploadOrder(info)
       .then((result) => {
         console.log(result);
         Swal.fire({
@@ -340,6 +346,8 @@ export const DynamicForm: React.FC = () => {
       referencias: '',
       ubicacion: '',
       cadete: 'NO ASIGNADO',
+      efectivoCantidad: '',
+      mercadopagoCantidad: '',
     });
 
     setDetallePedido([]);
@@ -491,23 +499,40 @@ export const DynamicForm: React.FC = () => {
                       >
                         <option>Metodo de pago</option>
                         <option value="efectivo">Efectivo</option>
-                        <option
-                          value="mercadopago"
-                          onClick={() => obtenerMontos()}
-                        >
-                          Mercadopago
-                        </option>
+                        <option value="mercadopago">Mercadopago</option>
+                        <option value="ambos">Ambos</option>
                       </select>
+                      {formData.metodoPago === 'ambos' && (
+                        <div className="mt-4">
+                          <FormInput
+                            name="efectivoCantidad"
+                            type="number"
+                            placeholder="Efectivo"
+                          />
+
+                          <FormInput
+                            name="mercadopagoCantidad"
+                            type="number"
+                            placeholder="Mercadopago"
+                          />
+
+                          {/* Validación de suma de cantidades */}
+                          {/* <p className="text-red-500 text-sm">
+                            {parseInt(formData.efectivoCantidad || 0) +
+                              parseInt(formData.mercadopagoCantidad || 0) !==
+                            total
+                              ? 'La suma de los montos debe ser igual al total del pedido.'
+                              : ''}
+                          </p> */}
+                        </div>
+                      )}
                       {formData.metodoPago === 'mercadopago' && (
                         <div className="flex flex-row">
-                          <h5 className="text-black px-4 h-12 flex items-center rounded-l-lg font-light bg-gray-300 shadow-lg w-4/5 font-coolvetica border-black p-4">
-                            Alias: {aliasDisponible}
-                          </h5>
                           <button
                             className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
                             type="button"
                             onClick={() => {
-                              const mensaje = `El alias es "${aliasDisponible}", aguardo comprobante para tomar tu pedido!`;
+                              const mensaje = `El alias es onlyanhelo3, aguardo comprobante para tomar tu pedido!`;
                               navigator.clipboard
                                 .writeText(mensaje)
                                 .then(() => {
