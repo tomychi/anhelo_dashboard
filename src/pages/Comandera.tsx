@@ -383,8 +383,19 @@ export const Comandera = () => {
 							{grupo.grupo.map((orden, ordenIndex) => (
 								<div
 									key={orden.id}
-									className="pt-3 pb-4 flex flex-row items-center gap-2  text-black  px-4"
+									className="pt-3 pb-4 flex flex-row justify-between items-center gap-2  text-black  px-4"
 								>
+									<div>
+										<p className="font-semibold">
+											{ordenIndex + 1}. {orden.direccion.split(",")[0]}
+										</p>
+										<p className="text-xs">
+											Pidio hace:{" "}
+											{calcularMinutosTranscurridos(orden.hora) ??
+												"Reserva futura"}{" "}
+											minutos
+										</p>
+									</div>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
@@ -399,17 +410,6 @@ export const Comandera = () => {
 											d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
 										/>
 									</svg>
-									<div>
-										<p className="font-semibold">
-											{ordenIndex + 1}. {orden.direccion.split(",")[0]}
-										</p>
-										<p className="text-xs">
-											Pidio hace:{" "}
-											{calcularMinutosTranscurridos(orden.hora) ??
-												"Reserva futura"}{" "}
-											minutos
-										</p>
-									</div>
 								</div>
 							))}
 						</div>
