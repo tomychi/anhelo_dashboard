@@ -426,10 +426,8 @@ export const Comandera = () => {
 							<div className=" px-4">
 								<p className="font-semibold">
 									Pedido con peor entrega:{" "}
-									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos
-								</p>
-								<p className="text-xs">
-									{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]}
+									{grupo.pedidoMayorDemora.demoraTotalPedido} minutos (
+									{grupo.pedidoMayorDemora.orden.direccion.split(",")[0]})
 								</p>
 							</div>
 						)}
