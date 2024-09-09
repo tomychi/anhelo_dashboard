@@ -367,7 +367,7 @@ export const Comandera = () => {
 				{gruposOptimos.map((grupo, index) => (
 					<div
 						key={index}
-						className=" bg-gray-300  w-1/4 rounded-lg shadow-black shadow-lg "
+						className=" bg-gray-300 h-min  w-1/4 rounded-lg shadow-black shadow-lg "
 					>
 						<div className="flex flex-col justify-center gap-2   ">
 							<h3 className="font-bold text-2xl text-center  pt-8">
