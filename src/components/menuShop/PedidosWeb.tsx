@@ -93,17 +93,6 @@ const procesarDetallePedido = (
   }
 };
 
-const extractCoordinates = (url: string) => {
-  const regex = /maps\?q=(-?\d+\.\d+),(-?\d+\.\d+)/;
-  const match = url.match(regex);
-  if (match) {
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
-    return [lat, lng];
-  }
-  return [0, 0]; // Valor predeterminado si no se encuentran coordenadas
-};
-
 const ajustarHoraReserva = (horaReserva: string): string => {
   // Crear un objeto Date con la hora de reserva
   const [horas, minutos] = horaReserva.split(':').map(Number);
@@ -189,10 +178,10 @@ const parsearMensajePedido = (
   if (detallePedidoMatch && detallePedidoMatch[1]) {
     const detail = detallePedidoMatch[1].trim();
     procesarDetallePedido(detail, toppingsInfo, data, handleFormBurger);
-    const coordinates = extractCoordinates(ubicacion);
+
     return {
       cupon, // Aquí se devuelve el cupón extraído
-      map: coordinates as [number, number],
+      map: [0, 0] as [number, number],
       telefono,
       direccion,
       metodoPago,

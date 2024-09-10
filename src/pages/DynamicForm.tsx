@@ -197,6 +197,17 @@ export const DynamicForm: React.FC = () => {
     );
   };
 
+  const extractCoordinates = (url: string) => {
+    const regex = /maps\?q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = url.match(regex);
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[2]);
+      return [lat, lng];
+    }
+    return [0, 0]; // Valor predeterminado si no se encuentran coordenadas
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -303,8 +314,11 @@ export const DynamicForm: React.FC = () => {
     subTotal = editableTotal - envio;
     const total = subTotal + envio; // Calcula el total dinámicamente
 
+    const coordinates = extractCoordinates(formData.ubicacion);
+
     const info = {
       ...formData,
+      map: coordinates as [number, number],
       envio,
       efectivoCantidad,
       mercadopagoCantidad,
