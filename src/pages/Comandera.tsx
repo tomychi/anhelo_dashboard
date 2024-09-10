@@ -191,6 +191,64 @@ export const Comandera = () => {
 		console.log("Pedido más cercano:", pedidoMasCercano);
 	}, [pedidoMasCercano]);
 
+	// Nueva función para armar grupos óptimos
+	function armarGruposOptimos(pedidos) {
+		if (pedidos.length === 0) return [];
+
+		const gruposOptimos = [];
+		let pedidosRestantes = [...pedidos];
+
+		while (pedidosRestantes.length > 0) {
+			const grupoActual = [];
+
+			// Encuentra el pedido más cercano al punto de origen
+			const pedidoMasCercano = encontrarPedidoMasCercano(pedidosRestantes);
+			grupoActual.push(pedidoMasCercano);
+			pedidosRestantes = pedidosRestantes.filter(
+				(p) => p.id !== pedidoMasCercano.id
+			);
+
+			if (pedidosRestantes.length > 0) {
+				// Encuentra el pedido más cercano al pedido más cercano
+				const segundoPedido = pedidosRestantes.reduce(
+					(masCercano, pedidoActual) => {
+						const distancia = calcularDistancia(
+							pedidoMasCercano.map[0],
+							pedidoMasCercano.map[1],
+							pedidoActual.map[0],
+							pedidoActual.map[1]
+						);
+						if (!masCercano || distancia < masCercano.distancia) {
+							return { ...pedidoActual, distancia };
+						}
+						return masCercano;
+					},
+					null
+				);
+
+				if (segundoPedido) {
+					grupoActual.push(segundoPedido);
+					pedidosRestantes = pedidosRestantes.filter(
+						(p) => p.id !== segundoPedido.id
+					);
+				}
+			}
+
+			gruposOptimos.push(grupoActual);
+		}
+
+		return gruposOptimos;
+	}
+
+	// Uso de la función para armar grupos óptimos
+	const gruposOptimos = useMemo(() => {
+		return armarGruposOptimos(pedidosConDistancias);
+	}, [pedidosConDistancias]);
+
+	useEffect(() => {
+		console.log("Grupos óptimos de pedidos:", gruposOptimos);
+	}, [gruposOptimos]);
+
 	return (
 		<div className="p-4 flex flex-col">
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
