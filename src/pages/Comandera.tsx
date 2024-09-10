@@ -46,6 +46,11 @@ export const Comandera = () => {
 		return filteredOrders.filter((o) => o.entregado);
 	}, [filteredOrders]);
 
+	const customerSuccess =
+		100 -
+		(orders.filter((order) => order.dislike || order.delay).length * 100) /
+			orders.length;
+
 	useEffect(() => {
 		const obtenerCadetes = async () => {
 			try {
@@ -118,11 +123,6 @@ export const Comandera = () => {
 		console.log("Pedidos disponibles para asignar:", pedidosDisponibles);
 	}, [pedidosDisponibles]);
 
-	const customerSuccess =
-		100 -
-		(orders.filter((order) => order.dislike || order.delay).length * 100) /
-			orders.length;
-
 	return (
 		<div className="p-4 flex flex-col">
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
@@ -134,7 +134,7 @@ export const Comandera = () => {
 					id="tiempoMaximo"
 					value={tiempoMaximo}
 					onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-					className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-lg"
+					className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
 				>
 					<option value={30}>30 minutos</option>
 					<option value={40}>40 minutos</option>
