@@ -27,6 +27,7 @@ export const Comandera = () => {
 	const [modoAgrupacion, setModoAgrupacion] = useState("entrega"); // 'entrega' o 'recorrido'
 	const [tiempoActual, setTiempoActual] = useState(new Date());
 	const [gruposListos, setGruposListos] = useState([]);
+	const [gruposOptimos, setGruposOptimos] = useState([]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -392,7 +393,7 @@ export const Comandera = () => {
 		return gruposOptimos;
 	}
 
-	const gruposOptimos = useMemo(() => {
+	const gruposOptimosMemo = useMemo(() => {
 		const tiempoMaximoActual =
 			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
 		return armarGruposOptimos(
@@ -405,8 +406,12 @@ export const Comandera = () => {
 		tiempoMaximo,
 		tiempoMaximoRecorrido,
 		modoAgrupacion,
-		gruposListos, // Añadir gruposListos como dependencia
+		gruposListos,
 	]);
+
+	useEffect(() => {
+		setGruposOptimos(gruposOptimosMemo);
+	}, [gruposOptimosMemo]);
 
 	const handleGrupoListo = (grupo) => {
 		setGruposListos([...gruposListos, grupo]);
@@ -416,7 +421,42 @@ export const Comandera = () => {
 		console.log("Grupos óptimos de pedidos:", gruposOptimos);
 	}, [gruposOptimos]);
 
-	console.log(gruposOptimos);
+	const cadetesDisponibles = useMemo(() => {
+		return empleados.filter(
+			(empleado) => empleado.category === "cadete" && empleado.available
+		);
+	}, [empleados]);
+
+	const handleAsignarCadete = (grupoIndex, cadeteId, esGrupoListo = false) => {
+		const grupos = esGrupoListo ? gruposListos : gruposOptimos;
+		const grupoActualizado = { ...grupos[grupoIndex] };
+		grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+			...pedido,
+			cadete: cadeteId,
+		}));
+
+		if (esGrupoListo) {
+			const nuevosGruposListos = [...gruposListos];
+			nuevosGruposListos[grupoIndex] = grupoActualizado;
+			setGruposListos(nuevosGruposListos);
+		} else {
+			const nuevosGruposOptimos = [...gruposOptimos];
+			nuevosGruposOptimos[grupoIndex] = grupoActualizado;
+			setGruposOptimos(nuevosGruposOptimos);
+		}
+
+		// Actualizar el estado global de las órdenes
+		const nuevasOrdenes = orders.map((orden) => {
+			const pedidoEnGrupo = grupoActualizado.pedidos.find(
+				(p) => p.id === orden.id
+			);
+			if (pedidoEnGrupo) {
+				return { ...orden, cadete: cadeteId };
+			}
+			return orden;
+		});
+		dispatch(readOrdersData(nuevasOrdenes));
+	};
 
 	return (
 		<div className="p-4 flex flex-col">
@@ -503,9 +543,20 @@ export const Comandera = () => {
 								</p>
 								<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
 							</div>
-							<div className="bg-gray-100 flex justify-center py-2 rounded-full mb-2">
-								¿Para quien?
-							</div>
+							<select
+								className="bg-gray-100 w-full py-2 rounded-full mb-2"
+								onChange={(e) =>
+									handleAsignarCadete(index, e.target.value, true)
+								}
+								value={grupo.pedidos[0]?.cadete || ""}
+							>
+								<option value="">¿Para quién?</option>
+								{cadetesDisponibles.map((cadete) => (
+									<option key={cadete.id} value={cadete.id}>
+										{cadete.name}
+									</option>
+								))}
+							</select>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
@@ -567,9 +618,18 @@ export const Comandera = () => {
 											hs
 										</p>
 									</div>
-									<div className="bg-gray-100 flex justify-center py-2 rounded-full mb-2">
-										¿Para quien?
-									</div>
+									<select
+										className="bg-gray-100 w-full py-2 rounded-full mb-2"
+										onChange={(e) => handleAsignarCadete(index, e.target.value)}
+										value={grupo.pedidos[0]?.cadete || ""}
+									>
+										<option value="">¿Para quién?</option>
+										{cadetesDisponibles.map((cadete) => (
+											<option key={cadete.id} value={cadete.id}>
+												{cadete.name}
+											</option>
+										))}
+									</select>
 									{grupo.pedidos.map((pedido, pedidoIndex) => (
 										<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 											<p>
