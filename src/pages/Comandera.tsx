@@ -520,13 +520,14 @@ export const Comandera = () => {
 							</div>
 						</div>
 					</div>
+					<div className=" h-10.5 bg-black w-[1px]"></div>
 					{modoAgrupacion === "entrega" ? (
 						<div>
 							<select
 								id="tiempoMaximo"
 								value={tiempoMaximo}
 								onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-								className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+								className="bg-black pt-2 pb-3 px-2.5 text-gray-100 font-medium  rounded-full"
 							>
 								<option value={30}>30 minutos</option>
 								<option value={40}>40 minutos</option>
