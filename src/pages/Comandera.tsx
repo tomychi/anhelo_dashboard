@@ -370,21 +370,29 @@ export const Comandera = () => {
 						>
 							<div className="flex flex-col mt-4 mb-6 justify-center">
 								<h3 className="font-bold text-xl">Grupo óptimo {index + 1}</h3>
-								<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
-								<p>Distancia total del recorrido: {grupo.distanciaTotal} km</p>
-								<p>
+								<p className="text-xs">
+									Tiempo total de recorrido: {grupo.tiempoTotal} minutos
+								</p>
+								<p className="text-xs">
+									Distancia total del recorrido: {grupo.distanciaTotal} km
+								</p>
+								<p className="text-xs">
 									Pedido con peor tiempo de entrega percibido:{" "}
 									{grupo.peorTiempoPercibido} minutos
 								</p>
-								<p>Dirección: {grupo.pedidoPeorTiempo.direccion}</p>
+								<p className="text-xs">
+									Dirección: {grupo.pedidoPeorTiempo.direccion}
+								</p>
 							</div>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
 										Entrega {pedidoIndex + 1}: {pedido.direccion}
 									</p>
-									<p>Distancia: {pedido.distancia} km</p>
-									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
+									<p className="text-xs">Distancia: {pedido.distancia} km</p>
+									<p className="text-xs">
+										Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+									</p>
 								</div>
 							))}
 						</div>
