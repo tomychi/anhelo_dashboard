@@ -549,20 +549,32 @@ export const Comandera = () => {
 							/>
 						</div>
 					) : (
-						<div>
+						<div className="relative inline-block">
 							<select
 								id="tiempoMaximoRecorrido"
 								value={tiempoMaximoRecorrido}
 								onChange={(e) =>
 									setTiempoMaximoRecorrido(parseInt(e.target.value))
 								}
-								className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+								className="bg-black appearance-none pt-2 pr-8  pb-3 px-3 text-gray-100 font-medium  rounded-full"
+								style={{
+									WebkitAppearance: "none",
+									MozAppearance: "none",
+								}}
 							>
 								<option value={30}>30 minutos</option>
 								<option value={40}>40 minutos</option>
 								<option value={50}>50 minutos</option>
 								<option value={60}>60 minutos</option>
 							</select>
+							<img
+								src={arrowIcon}
+								alt="Arrow Icon"
+								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2" // Posiciona la imagen a la derecha y centrada verticalmente
+								style={{
+									filter: "invert(100%)",
+								}}
+							/>
 						</div>
 					)}
 				</div>
