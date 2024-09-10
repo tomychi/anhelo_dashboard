@@ -194,6 +194,7 @@ export const Comandera = () => {
 	}, [pedidosConDistancias]);
 
 	function encontrarPedidoMasCercano(pedidos) {
+		if (pedidos.length === 0) return null;
 		return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
 			return parseFloat(pedidoActual.distancia) <
 				parseFloat(pedidoMasCercano.distancia)
@@ -202,9 +203,11 @@ export const Comandera = () => {
 		});
 	}
 
-	// Uso en el componente
+	// Modificar el useMemo para manejar el caso de pedidosConDistancias vacío
 	const pedidoMasCercano = useMemo(() => {
-		return encontrarPedidoMasCercano(pedidosConDistancias);
+		return pedidosConDistancias.length > 0
+			? encontrarPedidoMasCercano(pedidosConDistancias)
+			: null;
 	}, [pedidosConDistancias]);
 
 	useEffect(() => {
@@ -255,86 +258,96 @@ export const Comandera = () => {
 		};
 	}
 
-	function armarGruposOptimos(pedidos) {
+	function armarGruposOptimos(pedidos, tiempoMaximo) {
 		if (pedidos.length === 0) return [];
 
 		const gruposOptimos = [];
 		let pedidosRestantes = [...pedidos];
 
 		while (pedidosRestantes.length > 0) {
-			const grupoActual = [];
-
-			// Encuentra el pedido más cercano al punto de origen
-			const pedidoMasCercano = encontrarPedidoMasCercano(pedidosRestantes);
-			grupoActual.push(pedidoMasCercano);
-			pedidosRestantes = pedidosRestantes.filter(
-				(p) => p.id !== pedidoMasCercano.id
-			);
-
-			if (pedidosRestantes.length > 0) {
-				// Encuentra el pedido más cercano al pedido más cercano
-				const segundoPedido = pedidosRestantes.reduce(
-					(masCercano, pedidoActual) => {
-						const distancia = calcularDistancia(
-							pedidoMasCercano.map[0],
-							pedidoMasCercano.map[1],
-							pedidoActual.map[0],
-							pedidoActual.map[1]
-						);
-						if (!masCercano || distancia < masCercano.distancia) {
-							return { ...pedidoActual, distancia };
-						}
-						return masCercano;
-					},
-					null
-				);
-
-				if (segundoPedido) {
-					grupoActual.push(segundoPedido);
-					pedidosRestantes = pedidosRestantes.filter(
-						(p) => p.id !== segundoPedido.id
-					);
-				}
-			}
-
-			const { tiempoTotal, distanciaTotal } = calcularTiempoYDistanciaRecorrido(
-				grupoActual,
-				LATITUD_INICIO,
-				LONGITUD_INICIO
-			);
-
-			// Calcular el peor tiempo de entrega percibido
+			let grupoActual = [];
+			let tiempoTotalGrupo = 0;
+			let distanciaTotalGrupo = 0;
 			let peorTiempoPercibido = 0;
 			let pedidoPeorTiempo = null;
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
 
-			grupoActual.forEach((pedido, index) => {
+			// Función para calcular el tiempo percibido de un pedido
+			const calcularTiempoPercibido = (pedido, tiempoAcumulado) => {
 				const tiempoEspera = calcularTiempoEspera(pedido.hora);
-				const tiempoHastaEntrega =
-					index === 0 ? tiempoTotal : tiempoTotal + TIEMPO_POR_ENTREGA;
-				const tiempoPercibido = tiempoEspera + tiempoHastaEntrega;
+				return tiempoEspera + tiempoAcumulado;
+			};
 
+			while (pedidosRestantes.length > 0) {
+				// Encuentra el pedido más cercano a la ubicación actual
+				const pedidoCercano = pedidosRestantes.reduce((cercano, actual) => {
+					const distancia = calcularDistancia(
+						latitudActual,
+						longitudActual,
+						actual.map[0],
+						actual.map[1]
+					);
+					return !cercano || distancia < cercano.distancia
+						? { ...actual, distancia }
+						: cercano;
+				}, null);
+
+				if (!pedidoCercano) break; // Si no se encuentra un pedido cercano, salimos del bucle
+
+				// Calcula el tiempo adicional que tomaría incluir este pedido
+				const tiempoAdicional =
+					(pedidoCercano.distancia / VELOCIDAD_PROMEDIO_MOTO) * 60 +
+					TIEMPO_POR_ENTREGA;
+				const nuevoTiempoTotal = tiempoTotalGrupo + tiempoAdicional;
+
+				// Calcula el tiempo percibido para este pedido
+				const tiempoPercibido = calcularTiempoPercibido(
+					pedidoCercano,
+					nuevoTiempoTotal
+				);
+
+				// Verifica si añadir este pedido superaría el tiempo máximo
+				if (tiempoPercibido > tiempoMaximo && grupoActual.length > 0) {
+					break;
+				}
+
+				// Añade el pedido al grupo
+				grupoActual.push(pedidoCercano);
+				tiempoTotalGrupo = nuevoTiempoTotal;
+				distanciaTotalGrupo += pedidoCercano.distancia;
+
+				// Actualiza el peor tiempo percibido si es necesario
 				if (tiempoPercibido > peorTiempoPercibido) {
 					peorTiempoPercibido = tiempoPercibido;
-					pedidoPeorTiempo = pedido;
+					pedidoPeorTiempo = pedidoCercano;
 				}
-			});
 
-			gruposOptimos.push({
-				pedidos: grupoActual,
-				tiempoTotal,
-				distanciaTotal,
-				peorTiempoPercibido,
-				pedidoPeorTiempo,
-			});
+				// Actualiza la ubicación actual y elimina el pedido de los restantes
+				latitudActual = pedidoCercano.map[0];
+				longitudActual = pedidoCercano.map[1];
+				pedidosRestantes = pedidosRestantes.filter(
+					(p) => p.id !== pedidoCercano.id
+				);
+			}
+
+			if (grupoActual.length > 0) {
+				gruposOptimos.push({
+					pedidos: grupoActual,
+					tiempoTotal: Math.round(tiempoTotalGrupo),
+					distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
+					peorTiempoPercibido: Math.round(peorTiempoPercibido),
+					pedidoPeorTiempo,
+				});
+			}
 		}
 
 		return gruposOptimos;
 	}
-
-	// Uso en el componente Comandera
+	// En el componente Comandera, actualiza el uso de armarGruposOptimos:
 	const gruposOptimos = useMemo(() => {
-		return armarGruposOptimos(pedidosConDistancias);
-	}, [pedidosConDistancias]);
+		return armarGruposOptimos(pedidosConDistancias, tiempoMaximo);
+	}, [pedidosConDistancias, tiempoMaximo]);
 
 	useEffect(() => {
 		console.log("Grupos óptimos de pedidos:", gruposOptimos);
@@ -344,7 +357,6 @@ export const Comandera = () => {
 
 	return (
 		<div className="p-4 flex flex-col">
-			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
 			<div>
 				<div className="mb-4 flex flex-row gap-2 items-center justify-center">
 					<label htmlFor="tiempoMaximo" className="font-medium text-gray-700">
@@ -362,39 +374,44 @@ export const Comandera = () => {
 						<option value={60}>60 minutos</option>
 					</select>
 				</div>
-				<div className="flex flex-row gap-4">
-					{gruposOptimos.map((grupo, index) => (
-						<div
-							key={index}
-							className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
-						>
-							<div className="flex flex-col mt-4 mb-6 justify-center">
-								<h3 className="font-bold text-xl">Grupo óptimo {index + 1}</h3>
-								<p className="text-xs">
-									Tiempo total de recorrido: {grupo.tiempoTotal} minutos
-								</p>
-								<p className="text-xs">
-									Distancia total del recorrido: {grupo.distanciaTotal} km
-								</p>
-								<p className="text-xs">
-									Pedido con peor tiempo de entrega percibido:{" "}
-									{grupo.peorTiempoPercibido} minutos, es{" "}
-									{grupo.pedidoPeorTiempo.direccion}
-								</p>
-							</div>
-							{grupo.pedidos.map((pedido, pedidoIndex) => (
-								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+				<div className="flex flex-wrap gap-4">
+					{gruposOptimos.length > 0 ? (
+						gruposOptimos.map((grupo, index) => (
+							<div
+								key={index}
+								className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+							>
+								<div className="flex flex-col mt-4 mb-6 justify-center">
+									<h3 className="font-bold text-xl">
+										Grupo óptimo {index + 1}
+									</h3>
+									<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
+									<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
 									<p>
-										Entrega {pedidoIndex + 1}: {pedido.direccion}
+										Distancia total del recorrido: {grupo.distanciaTotal} km
 									</p>
-									<p className="text-xs">Distancia: {pedido.distancia} km</p>
-									<p className="text-xs">
-										Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+									<p>
+										Pedido con peor tiempo de entrega percibido:{" "}
+										{grupo.peorTiempoPercibido} minutos
 									</p>
+									<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
 								</div>
-							))}
-						</div>
-					))}
+								{grupo.pedidos.map((pedido, pedidoIndex) => (
+									<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+										<p>
+											Entrega {pedidoIndex + 1}: {pedido.direccion}
+										</p>
+										<p>Distancia: {pedido.distancia} km</p>
+										<p>
+											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+										</p>
+									</div>
+								))}
+							</div>
+						))
+					) : (
+						<p>No hay pedidos disponibles para agrupar.</p>
+					)}
 				</div>
 			</div>
 			<CadeteSelect
@@ -403,7 +420,6 @@ export const Comandera = () => {
 				selectedCadete={selectedCadete}
 				orders={pedidosHechos}
 			/>
-
 			<button
 				className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 				onClick={() => {
