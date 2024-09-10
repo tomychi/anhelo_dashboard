@@ -318,6 +318,19 @@ export const Comandera = () => {
 						LATITUD_INICIO,
 						LONGITUD_INICIO
 					);
+
+				// Calcular el tiempo de regreso al local
+				const distanciaRegreso = calcularDistancia(
+					mejorPedido.map[0],
+					mejorPedido.map[1],
+					LATITUD_INICIO,
+					LONGITUD_INICIO
+				);
+				const tiempoRegreso = (distanciaRegreso / VELOCIDAD_PROMEDIO_MOTO) * 60;
+
+				const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
+				const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
+
 				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 				const tiempoPercibido = tiempoEspera + tiempoTotal;
 
@@ -327,7 +340,7 @@ export const Comandera = () => {
 					excedeTiempoMaximo = tiempoPercibido > tiempoMaximo;
 				} else {
 					// modo 'recorrido'
-					excedeTiempoMaximo = tiempoTotal > tiempoMaximo;
+					excedeTiempoMaximo = tiempoTotalConRegreso > tiempoMaximo;
 				}
 
 				if (excedeTiempoMaximo && grupoActual.length > 0) {
@@ -339,8 +352,8 @@ export const Comandera = () => {
 					...mejorPedido,
 					tiempoPercibido: Math.round(tiempoPercibido),
 				});
-				tiempoTotalGrupo = tiempoTotal;
-				distanciaTotalGrupo = distanciaTotal;
+				tiempoTotalGrupo = tiempoTotalConRegreso;
+				distanciaTotalGrupo = distanciaTotalConRegreso;
 
 				if (tiempoPercibido > peorTiempoPercibido) {
 					peorTiempoPercibido = tiempoPercibido;
@@ -457,43 +470,63 @@ export const Comandera = () => {
 				</div>
 				<div className="flex flex-wrap gap-4">
 					{gruposOptimos.length > 0 ? (
-						gruposOptimos.map((grupo, index) => (
-							<div
-								key={index}
-								className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
-							>
-								<div className="flex flex-col mt-4 mb-6 justify-center">
-									<h3 className="font-bold text-xl">
-										Grupo óptimo {index + 1}
-									</h3>
-									<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
-									<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
-									<p>
-										Distancia total del recorrido: {grupo.distanciaTotal} km
-									</p>
-									<p>
-										Pedido con peor tiempo de entrega percibido:{" "}
-										{grupo.peorTiempoPercibido} minutos
-									</p>
-									<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
-								</div>
-								{grupo.pedidos.map((pedido, pedidoIndex) => (
-									<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+						gruposOptimos.map((grupo, index) => {
+							// Calcular la hora estimada de regreso
+							const horaActual = new Date();
+							const horaRegreso = new Date(
+								horaActual.getTime() + grupo.tiempoTotal * 60000
+							);
+							const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
+								"es-ES",
+								{ hour: "2-digit", minute: "2-digit" }
+							);
+
+							return (
+								<div
+									key={index}
+									className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+								>
+									<div className="flex flex-col mt-4 mb-6 justify-center">
+										<h3 className="font-bold text-xl">
+											Grupo óptimo {index + 1}
+										</h3>
+										<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
 										<p>
-											Entrega {pedidoIndex + 1}: {pedido.direccion}
-										</p>
-										<p>Distancia: {pedido.distancia} km</p>
-										<p>
-											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+											Tiempo total de recorrido: {grupo.tiempoTotal} minutos
 										</p>
 										<p>
-											El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
-											minutos
+											Distancia total del recorrido: {grupo.distanciaTotal} km
+										</p>
+										<p>
+											Pedido con peor tiempo de entrega percibido:{" "}
+											{grupo.peorTiempoPercibido} minutos
+										</p>
+										<p>
+											Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}
+										</p>
+										<p>
+											El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
+											hs
 										</p>
 									</div>
-								))}
-							</div>
-						))
+									{grupo.pedidos.map((pedido, pedidoIndex) => (
+										<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+											<p>
+												Entrega {pedidoIndex + 1}: {pedido.direccion}
+											</p>
+											<p>Distancia: {pedido.distancia} km</p>
+											<p>
+												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+											</p>
+											<p>
+												El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+												minutos
+											</p>
+										</div>
+									))}
+								</div>
+							);
+						})
 					) : (
 						<p>No hay pedidos disponibles para agrupar.</p>
 					)}
