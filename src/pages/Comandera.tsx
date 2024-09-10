@@ -273,14 +273,7 @@ export const Comandera = () => {
 			let latitudActual = LATITUD_INICIO;
 			let longitudActual = LONGITUD_INICIO;
 
-			// Función para calcular el tiempo percibido de un pedido
-			const calcularTiempoPercibido = (pedido, tiempoAcumulado) => {
-				const tiempoEspera = calcularTiempoEspera(pedido.hora);
-				return tiempoEspera + tiempoAcumulado;
-			};
-
 			while (pedidosRestantes.length > 0) {
-				// Encuentra el pedido más cercano a la ubicación actual
 				const pedidoCercano = pedidosRestantes.reduce((cercano, actual) => {
 					const distancia = calcularDistancia(
 						latitudActual,
@@ -293,37 +286,33 @@ export const Comandera = () => {
 						: cercano;
 				}, null);
 
-				if (!pedidoCercano) break; // Si no se encuentra un pedido cercano, salimos del bucle
+				if (!pedidoCercano) break;
 
-				// Calcula el tiempo adicional que tomaría incluir este pedido
 				const tiempoAdicional =
 					(pedidoCercano.distancia / VELOCIDAD_PROMEDIO_MOTO) * 60 +
 					TIEMPO_POR_ENTREGA;
 				const nuevoTiempoTotal = tiempoTotalGrupo + tiempoAdicional;
 
-				// Calcula el tiempo percibido para este pedido
-				const tiempoPercibido = calcularTiempoPercibido(
-					pedidoCercano,
-					nuevoTiempoTotal
-				);
+				const tiempoEspera = calcularTiempoEspera(pedidoCercano.hora);
+				const tiempoPercibido = tiempoEspera + nuevoTiempoTotal;
 
-				// Verifica si añadir este pedido superaría el tiempo máximo
 				if (tiempoPercibido > tiempoMaximo && grupoActual.length > 0) {
 					break;
 				}
 
-				// Añade el pedido al grupo
-				grupoActual.push(pedidoCercano);
+				grupoActual.push({
+					...pedidoCercano,
+					tiempoPercibido: Math.round(tiempoPercibido),
+				});
+
 				tiempoTotalGrupo = nuevoTiempoTotal;
 				distanciaTotalGrupo += pedidoCercano.distancia;
 
-				// Actualiza el peor tiempo percibido si es necesario
 				if (tiempoPercibido > peorTiempoPercibido) {
 					peorTiempoPercibido = tiempoPercibido;
 					pedidoPeorTiempo = pedidoCercano;
 				}
 
-				// Actualiza la ubicación actual y elimina el pedido de los restantes
 				latitudActual = pedidoCercano.map[0];
 				longitudActual = pedidoCercano.map[1];
 				pedidosRestantes = pedidosRestantes.filter(
@@ -404,6 +393,10 @@ export const Comandera = () => {
 										<p>Distancia: {pedido.distancia} km</p>
 										<p>
 											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+										</p>
+										<p>
+											El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+											minutos
 										</p>
 									</div>
 								))}
