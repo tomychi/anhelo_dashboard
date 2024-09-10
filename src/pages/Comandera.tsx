@@ -647,31 +647,30 @@ export const Comandera = () => {
 									key={index}
 									className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
 								>
-									<div className="flex flex-col mt-4 mb-6 justify-center">
-										<h3 className="font-bold text-xl">
+									<div className="flex flex-col mt-4 mb-8 text-center justify-center">
+										<h3 className="font-bold text-2xl mb-2">
 											Grupo óptimo {index + 1}
 										</h3>
-										<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
 										<p>
-											Tiempo total de recorrido: {grupo.tiempoTotal} minutos
+											Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+											minutos (
+											{grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
+												"N/A"}
+											)
 										</p>
-										<p>
-											Distancia total del recorrido: {grupo.distanciaTotal} km
-										</p>
-										<p>
-											Pedido con peor tiempo de entrega percibido:{" "}
-											{grupo.peorTiempoPercibido} minutos
-										</p>
-										<p>
-											Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}
-										</p>
+										<p>Duracion del recorrido: {grupo.tiempoTotal} minutos</p>
+										<p>Distancia del recorrido: {grupo.distanciaTotal} km</p>
 										<p>
 											El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
 											hs
 										</p>
 									</div>
 									<select
-										className="bg-gray-100 w-full py-2 rounded-full mb-2"
+										className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full mb-2"
+										style={{
+											WebkitAppearance: "none",
+											MozAppearance: "none",
+										}}
 										onChange={(e) => handleAsignarCadete(index, e.target.value)}
 										value={grupo.pedidos[0]?.cadete || ""}
 									>
@@ -682,27 +681,39 @@ export const Comandera = () => {
 											</option>
 										))}
 									</select>
-									{grupo.pedidos.map((pedido, pedidoIndex) => (
-										<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
-											<p>
-												Entrega {pedidoIndex + 1}: {pedido.direccion}
-											</p>
-											<p>Distancia: {pedido.distancia} km</p>
-											<p>
-												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
-											</p>
-											<p>
-												El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
-												minutos
-											</p>
-										</div>
-									))}
 									<button
-										className="bg-black w-full py-4 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+										className="bg-black w-full py-4 mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
 										onClick={() => handleGrupoListo(grupo)}
 									>
 										Listo
 									</button>
+
+									{grupo.pedidos.map((pedido, pedidoIndex) => (
+										<div
+											key={pedido.id}
+											className="bg-gray-100 flex flex-row mb-2 items-center rounded-lg"
+										>
+											<div className=" bg-black text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+												{pedidoIndex + 1}
+											</div>
+											<div className="flex flex-col ml-4 pb-3.5 pt-2">
+												<p className="font-bold text-lg">
+													{pedido.direccion.split(",")[0]}
+												</p>
+												<p className="text-xs">
+													Distancia: {pedido.distancia} km
+												</p>
+												<p className="text-xs">
+													Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+													minutos
+												</p>
+												<p className="text-xs">
+													El cliente percibe entrega de:{" "}
+													{pedido.tiempoPercibido} minutos
+												</p>
+											</div>
+										</div>
+									))}
 								</div>
 							);
 						})
