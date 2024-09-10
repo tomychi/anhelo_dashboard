@@ -495,20 +495,24 @@ export const Comandera = () => {
 	return (
 		<div className="p-4 flex flex-col font-coolvetica">
 			<div>
-				<div className="mb-4 flex flex-col gap-2 items-center justify-center">
+				<div className="mb-4 flex flex-row gap-2 ">
 					<div>
-						<div className="flex gap-4 mb-4 justify-center">
+						<div className="flex  gap-2">
 							<div
-								className={`bg-black text-gray-100 py-2 px-4 rounded cursor-pointer ${
-									modoAgrupacion === "entrega" ? "opacity-100" : "opacity-60"
+								className={` py-2 px-4 rounded-lg font-medium cursor-pointer ${
+									modoAgrupacion === "entrega"
+										? "bg-black text-gray-100"
+										: "text-black  border border-1 border-black"
 								}`}
 								onClick={() => setModoAgrupacion("entrega")}
 							>
 								Usar tiempo máximo de entrega
 							</div>
 							<div
-								className={`bg-black text-gray-100 py-2 px-4 rounded cursor-pointer ${
-									modoAgrupacion === "recorrido" ? "opacity-100" : "opacity-60"
+								className={` py-2 px-4 rounded-lg font-medium cursor-pointer ${
+									modoAgrupacion === "recorrido"
+										? "bg-black text-gray-100"
+										: "text-black  border border-1 border-black"
 								}`}
 								onClick={() => setModoAgrupacion("recorrido")}
 							>
@@ -518,12 +522,6 @@ export const Comandera = () => {
 					</div>
 					{modoAgrupacion === "entrega" ? (
 						<div>
-							<label
-								htmlFor="tiempoMaximo"
-								className="font-medium text-gray-700 mr-2"
-							>
-								Tiempo máximo de entrega:
-							</label>
 							<select
 								id="tiempoMaximo"
 								value={tiempoMaximo}
@@ -538,12 +536,6 @@ export const Comandera = () => {
 						</div>
 					) : (
 						<div>
-							<label
-								htmlFor="tiempoMaximoRecorrido"
-								className="font-medium text-gray-700 mr-2"
-							>
-								Tiempo máximo de recorrido:
-							</label>
 							<select
 								id="tiempoMaximoRecorrido"
 								value={tiempoMaximoRecorrido}
