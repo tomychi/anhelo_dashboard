@@ -484,7 +484,7 @@ export const Comandera = () => {
 							return (
 								<div
 									key={index}
-									className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+									className="bg-gray-300 shadow-black font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
 								>
 									<div className="flex flex-col mt-4 mb-6 justify-center">
 										<h3 className="font-bold text-xl">
@@ -524,6 +524,9 @@ export const Comandera = () => {
 											</p>
 										</div>
 									))}
+									<div className="bg-black w-full py-4 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica">
+										Listo
+									</div>
 								</div>
 							);
 						})
