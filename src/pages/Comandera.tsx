@@ -28,6 +28,7 @@ export const Comandera = () => {
 	const [tiempoActual, setTiempoActual] = useState(new Date());
 	const [gruposListos, setGruposListos] = useState([]);
 	const [gruposOptimos, setGruposOptimos] = useState([]);
+	const [grupoManual, setGrupoManual] = useState([]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -267,13 +268,21 @@ export const Comandera = () => {
 	}
 
 	function armarGruposOptimos(pedidos, tiempoMaximo, modoAgrupacion) {
-		// Filtrar los pedidos que no están en grupos listos
+		// Filtrar los pedidos que no están en grupos listos y que no son manuales
 		const pedidosDisponibles = pedidos.filter(
 			(pedido) =>
 				!gruposListos.some((grupo) =>
 					grupo.pedidos.some((p) => p.id === pedido.id)
-				)
+				) && !(pedido.map[0] === 0 && pedido.map[1] === 0)
 		);
+
+		// Separar los pedidos manuales
+		const pedidosManuales = pedidos.filter(
+			(pedido) => pedido.map[0] === 0 && pedido.map[1] === 0
+		);
+
+		// Actualizar el estado del grupo manual
+		setGrupoManual(pedidosManuales);
 
 		if (pedidosDisponibles.length === 0) return [];
 
@@ -457,6 +466,31 @@ export const Comandera = () => {
 		});
 		dispatch(readOrdersData(nuevasOrdenes));
 	};
+
+	useEffect(() => {
+		const pedidosParaBarajar = [];
+		const pedidosManuales = [];
+
+		pedidosDisponibles.forEach((pedido) => {
+			const pedidoInfo = {
+				id: pedido.id,
+				direccion: pedido.direccion,
+				cadete: pedido.cadete,
+				distancia: pedido.distancia,
+				hora: pedido.hora,
+				tiempoEspera: calcularTiempoEspera(pedido.hora),
+				map: pedido.map,
+			};
+
+			if (pedido.map[0] === 0 && pedido.map[1] === 0) {
+				pedidosManuales.push(pedidoInfo);
+			} else {
+				pedidosParaBarajar.push(pedidoInfo);
+			}
+		});
+
+		console.log("Grupo a colocar manualmente:", pedidosManuales);
+	}, [pedidosDisponibles]);
 
 	return (
 		<div className="p-4 flex flex-col">
@@ -656,6 +690,25 @@ export const Comandera = () => {
 						})
 					) : (
 						<p>No hay pedidos disponibles para agrupar.</p>
+					)}
+
+					{grupoManual.length > 0 && (
+						<div className="mt-4">
+							<h3 className="font-bold text-xl mb-2">Grupo Manual</h3>
+							<div className="bg-yellow-200 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
+								{grupoManual.map((pedido, index) => (
+									<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+										<p>
+											Entrega {index + 1}: {pedido.direccion}
+										</p>
+										<p>Teléfono: {pedido.telefono}</p>
+										<p>
+											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
 					)}
 				</div>
 			</div>
