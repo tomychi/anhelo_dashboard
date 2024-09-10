@@ -302,7 +302,30 @@ export const Comandera = () => {
 				LATITUD_INICIO,
 				LONGITUD_INICIO
 			);
-			gruposOptimos.push({ pedidos: grupoActual, tiempoTotal, distanciaTotal });
+
+			// Calcular el peor tiempo de entrega percibido
+			let peorTiempoPercibido = 0;
+			let pedidoPeorTiempo = null;
+
+			grupoActual.forEach((pedido, index) => {
+				const tiempoEspera = calcularTiempoEspera(pedido.hora);
+				const tiempoHastaEntrega =
+					index === 0 ? tiempoTotal : tiempoTotal + TIEMPO_POR_ENTREGA;
+				const tiempoPercibido = tiempoEspera + tiempoHastaEntrega;
+
+				if (tiempoPercibido > peorTiempoPercibido) {
+					peorTiempoPercibido = tiempoPercibido;
+					pedidoPeorTiempo = pedido;
+				}
+			});
+
+			gruposOptimos.push({
+				pedidos: grupoActual,
+				tiempoTotal,
+				distanciaTotal,
+				peorTiempoPercibido,
+				pedidoPeorTiempo,
+			});
 		}
 
 		return gruposOptimos;
@@ -349,6 +372,11 @@ export const Comandera = () => {
 								<h3 className="font-bold text-xl">Grupo óptimo {index + 1}</h3>
 								<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
 								<p>Distancia total del recorrido: {grupo.distanciaTotal} km</p>
+								<p>
+									Pedido con peor tiempo de entrega percibido:{" "}
+									{grupo.peorTiempoPercibido} minutos
+								</p>
+								<p>Dirección: {grupo.pedidoPeorTiempo.direccion}</p>
 							</div>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
