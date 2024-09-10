@@ -477,7 +477,7 @@ export const Comandera = () => {
 											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
 										</p>
 										<p>
-											El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+											El cliente percibe entrega de: {pedido.tiempoPercibido}
 											minutos
 										</p>
 									</div>
