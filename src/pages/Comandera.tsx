@@ -11,6 +11,7 @@ import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import RegistroEmpleado from "./Empleados";
+import arrowIcon from "../assets/arrowIcon.png";
 
 export const Comandera = () => {
 	const [seccionActiva, setSeccionActiva] = useState("porHacer");
@@ -522,18 +523,30 @@ export const Comandera = () => {
 					</div>
 					<div className=" h-10.5 bg-black w-[1px]"></div>
 					{modoAgrupacion === "entrega" ? (
-						<div>
+						<div className="relative inline-block">
 							<select
 								id="tiempoMaximo"
 								value={tiempoMaximo}
 								onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-								className="bg-black pt-2 pb-3 px-2.5 text-gray-100 font-medium  rounded-full"
+								className="bg-black appearance-none pt-2 pr-8  pb-3 px-3 text-gray-100 font-medium  rounded-full"
+								style={{
+									WebkitAppearance: "none",
+									MozAppearance: "none",
+								}}
 							>
 								<option value={30}>30 minutos</option>
 								<option value={40}>40 minutos</option>
 								<option value={50}>50 minutos</option>
 								<option value={60}>60 minutos</option>
 							</select>
+							<img
+								src={arrowIcon}
+								alt="Arrow Icon"
+								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2" // Posiciona la imagen a la derecha y centrada verticalmente
+								style={{
+									filter: "invert(100%)",
+								}}
+							/>
 						</div>
 					) : (
 						<div>
