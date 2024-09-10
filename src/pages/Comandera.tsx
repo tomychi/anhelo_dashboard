@@ -493,28 +493,28 @@ export const Comandera = () => {
 	}, [pedidosDisponibles]);
 
 	return (
-		<div className="p-4 flex flex-col">
+		<div className="p-4 flex flex-col font-coolvetica">
 			<div>
 				<div className="mb-4 flex flex-col gap-2 items-center justify-center">
 					<div>
-						<label className="mr-2">
-							<input
-								type="radio"
-								value="entrega"
-								checked={modoAgrupacion === "entrega"}
-								onChange={() => setModoAgrupacion("entrega")}
-							/>
-							Usar tiempo máximo de entrega
-						</label>
-						<label>
-							<input
-								type="radio"
-								value="recorrido"
-								checked={modoAgrupacion === "recorrido"}
-								onChange={() => setModoAgrupacion("recorrido")}
-							/>
-							Usar tiempo máximo de recorrido
-						</label>
+						<div className="flex gap-4 mb-4 justify-center">
+							<div
+								className={`bg-black text-gray-100 py-2 px-4 rounded cursor-pointer ${
+									modoAgrupacion === "entrega" ? "opacity-100" : "opacity-60"
+								}`}
+								onClick={() => setModoAgrupacion("entrega")}
+							>
+								Usar tiempo máximo de entrega
+							</div>
+							<div
+								className={`bg-black text-gray-100 py-2 px-4 rounded cursor-pointer ${
+									modoAgrupacion === "recorrido" ? "opacity-100" : "opacity-60"
+								}`}
+								onClick={() => setModoAgrupacion("recorrido")}
+							>
+								Usar tiempo máximo de recorrido
+							</div>
+						</div>
 					</div>
 					{modoAgrupacion === "entrega" ? (
 						<div>
