@@ -270,54 +270,68 @@ export const Comandera = () => {
 			let distanciaTotalGrupo = 0;
 			let peorTiempoPercibido = 0;
 			let pedidoPeorTiempo = null;
-			let latitudActual = LATITUD_INICIO;
-			let longitudActual = LONGITUD_INICIO;
 
 			while (pedidosRestantes.length > 0) {
-				const pedidoCercano = pedidosRestantes.reduce((cercano, actual) => {
-					const distancia = calcularDistancia(
-						latitudActual,
-						longitudActual,
-						actual.map[0],
-						actual.map[1]
+				let mejorPedido = null;
+				let mejorDistancia = Infinity;
+				let mejorIndice = -1;
+
+				// Buscar el pedido más cercano a cualquier punto en el grupo actual
+				pedidosRestantes.forEach((pedido, index) => {
+					let distanciaMinima = calcularDistancia(
+						LATITUD_INICIO,
+						LONGITUD_INICIO,
+						pedido.map[0],
+						pedido.map[1]
 					);
-					return !cercano || distancia < cercano.distancia
-						? { ...actual, distancia }
-						: cercano;
-				}, null);
 
-				if (!pedidoCercano) break;
+					grupoActual.forEach((pedidoGrupo) => {
+						const distancia = calcularDistancia(
+							pedidoGrupo.map[0],
+							pedidoGrupo.map[1],
+							pedido.map[0],
+							pedido.map[1]
+						);
+						if (distancia < distanciaMinima) {
+							distanciaMinima = distancia;
+						}
+					});
 
-				const tiempoAdicional =
-					(pedidoCercano.distancia / VELOCIDAD_PROMEDIO_MOTO) * 60 +
-					TIEMPO_POR_ENTREGA;
-				const nuevoTiempoTotal = tiempoTotalGrupo + tiempoAdicional;
+					if (distanciaMinima < mejorDistancia) {
+						mejorDistancia = distanciaMinima;
+						mejorPedido = pedido;
+						mejorIndice = index;
+					}
+				});
 
-				const tiempoEspera = calcularTiempoEspera(pedidoCercano.hora);
-				const tiempoPercibido = tiempoEspera + nuevoTiempoTotal;
+				if (!mejorPedido) break;
+
+				// Calcular el nuevo tiempo total y percibido si se añade este pedido
+				const nuevaRuta = [...grupoActual, mejorPedido];
+				const { tiempoTotal, distanciaTotal } =
+					calcularTiempoYDistanciaRecorrido(
+						nuevaRuta,
+						LATITUD_INICIO,
+						LONGITUD_INICIO
+					);
+				const tiempoPercibido =
+					calcularTiempoEspera(mejorPedido.hora) + tiempoTotal;
 
 				if (tiempoPercibido > tiempoMaximo && grupoActual.length > 0) {
 					break;
 				}
 
-				grupoActual.push({
-					...pedidoCercano,
-					tiempoPercibido: Math.round(tiempoPercibido),
-				});
-
-				tiempoTotalGrupo = nuevoTiempoTotal;
-				distanciaTotalGrupo += pedidoCercano.distancia;
+				// Añadir el pedido al grupo
+				grupoActual.push(mejorPedido);
+				tiempoTotalGrupo = tiempoTotal;
+				distanciaTotalGrupo = distanciaTotal;
 
 				if (tiempoPercibido > peorTiempoPercibido) {
 					peorTiempoPercibido = tiempoPercibido;
-					pedidoPeorTiempo = pedidoCercano;
+					pedidoPeorTiempo = mejorPedido;
 				}
 
-				latitudActual = pedidoCercano.map[0];
-				longitudActual = pedidoCercano.map[1];
-				pedidosRestantes = pedidosRestantes.filter(
-					(p) => p.id !== pedidoCercano.id
-				);
+				pedidosRestantes.splice(mejorIndice, 1);
 			}
 
 			if (grupoActual.length > 0) {
@@ -333,6 +347,7 @@ export const Comandera = () => {
 
 		return gruposOptimos;
 	}
+
 	// En el componente Comandera, actualiza el uso de armarGruposOptimos:
 	const gruposOptimos = useMemo(() => {
 		return armarGruposOptimos(pedidosConDistancias, tiempoMaximo);
