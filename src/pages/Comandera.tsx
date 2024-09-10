@@ -124,7 +124,7 @@ export const Comandera = () => {
 	}, [pedidosDisponibles]);
 
 	// Factor de corrección para ajustar la distancia lineal a la distancia real en la ciudad
-	const FACTOR_CORRECCION = 1.5;
+	const FACTOR_CORRECCION = 1.455;
 
 	// Función para calcular la distancia entre dos puntos usando la fórmula del haversine
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
@@ -191,7 +191,50 @@ export const Comandera = () => {
 		console.log("Pedido más cercano:", pedidoMasCercano);
 	}, [pedidoMasCercano]);
 
-	// Nueva función para armar grupos óptimos
+	// Constantes para el cálculo de tiempo
+	// Ajustamos estos valores para que se acerquen más a las estimaciones de Google Maps
+	const VELOCIDAD_PROMEDIO_MOTO = 35; // km/h (aumentamos un poco la velocidad promedio)
+	const TIEMPO_POR_ENTREGA = 3; // minutos (reducimos el tiempo por entrega)
+
+	function calcularTiempoYDistanciaRecorrido(
+		grupo,
+		latitudInicio,
+		longitudInicio
+	) {
+		let tiempoTotal = 0;
+		let distanciaTotal = 0;
+		let latitudActual = latitudInicio;
+		let longitudActual = longitudInicio;
+
+		grupo.forEach((pedido, index) => {
+			const distancia = calcularDistancia(
+				latitudActual,
+				longitudActual,
+				pedido.map[0],
+				pedido.map[1]
+			);
+			distanciaTotal += distancia;
+			const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60; // Convertir a minutos
+			tiempoTotal += tiempoViaje;
+
+			if (index < grupo.length - 1) {
+				tiempoTotal += TIEMPO_POR_ENTREGA;
+			}
+
+			latitudActual = pedido.map[0];
+			longitudActual = pedido.map[1];
+		});
+
+		// Agregamos un pequeño factor de ajuste para considerar semáforos y tráfico
+		const factorAjuste = 1.1; // 10% adicional
+		tiempoTotal *= factorAjuste;
+
+		return {
+			tiempoTotal: Math.round(tiempoTotal),
+			distanciaTotal: Number(distanciaTotal.toFixed(2)),
+		};
+	}
+
 	function armarGruposOptimos(pedidos) {
 		if (pedidos.length === 0) return [];
 
@@ -234,13 +277,18 @@ export const Comandera = () => {
 				}
 			}
 
-			gruposOptimos.push(grupoActual);
+			const { tiempoTotal, distanciaTotal } = calcularTiempoYDistanciaRecorrido(
+				grupoActual,
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+			gruposOptimos.push({ pedidos: grupoActual, tiempoTotal, distanciaTotal });
 		}
 
 		return gruposOptimos;
 	}
 
-	// Uso de la función para armar grupos óptimos
+	// Uso en el componente Comandera
 	const gruposOptimos = useMemo(() => {
 		return armarGruposOptimos(pedidosConDistancias);
 	}, [pedidosConDistancias]);
@@ -254,14 +302,14 @@ export const Comandera = () => {
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
 			<div>
 				<div className="mb-4 flex flex-row gap-2 items-center justify-center">
-					<label htmlFor="tiempoMaximo" className="  font-medium text-gray-700">
+					<label htmlFor="tiempoMaximo" className="font-medium text-gray-700">
 						Tiempo máximo de entrega:
 					</label>
 					<select
 						id="tiempoMaximo"
 						value={tiempoMaximo}
 						onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-						className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+						className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
 					>
 						<option value={30}>30 minutos</option>
 						<option value={40}>40 minutos</option>
@@ -273,13 +321,14 @@ export const Comandera = () => {
 					{gruposOptimos.map((grupo, index) => (
 						<div
 							key={index}
-							className="bg-gray-300 shadow-black w-1/4  shadow-lg p-4 mb-4 rounded-lg"
+							className="bg-gray-300 shadow-black w-1/4 shadow-lg p-4 mb-4 rounded-lg"
 						>
-							<div className="flex flex-col mt-4 mb-6  justify-center">
+							<div className="flex flex-col mt-4 mb-6 justify-center">
 								<h3 className="font-bold text-xl">Grupo óptimo {index + 1}</h3>
-								<p>Tiempo total de recorrido:</p>
+								<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
+								<p>Distancia total del recorrido: {grupo.distanciaTotal} km</p>
 							</div>
-							{grupo.map((pedido, pedidoIndex) => (
+							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
 										Entrega {pedidoIndex + 1}: {pedido.direccion}
