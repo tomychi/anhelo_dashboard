@@ -23,6 +23,8 @@ export const Comandera = () => {
 	const { orders } = useSelector((state: RootState) => state.data);
 	const location = useLocation();
 	const [tiempoMaximo, setTiempoMaximo] = useState(40);
+	const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] = useState(40);
+	const [modoAgrupacion, setModoAgrupacion] = useState("entrega"); // 'entrega' o 'recorrido'
 	const [tiempoActual, setTiempoActual] = useState(new Date());
 
 	useEffect(() => {
@@ -258,7 +260,7 @@ export const Comandera = () => {
 		};
 	}
 
-	function armarGruposOptimos(pedidos, tiempoMaximo) {
+	function armarGruposOptimos(pedidos, tiempoMaximo, modoAgrupacion) {
 		if (pedidos.length === 0) return [];
 
 		const gruposOptimos = [];
@@ -276,7 +278,6 @@ export const Comandera = () => {
 				let mejorDistancia = Infinity;
 				let mejorIndice = -1;
 
-				// Buscar el pedido más cercano a cualquier punto en el grupo actual
 				pedidosRestantes.forEach((pedido, index) => {
 					let distanciaMinima = calcularDistancia(
 						LATITUD_INICIO,
@@ -306,7 +307,6 @@ export const Comandera = () => {
 
 				if (!mejorPedido) break;
 
-				// Calcular el nuevo tiempo total y percibido si se añade este pedido
 				const nuevaRuta = [...grupoActual, mejorPedido];
 				const { tiempoTotal, distanciaTotal } =
 					calcularTiempoYDistanciaRecorrido(
@@ -317,11 +317,19 @@ export const Comandera = () => {
 				const tiempoPercibido =
 					calcularTiempoEspera(mejorPedido.hora) + tiempoTotal;
 
-				if (tiempoPercibido > tiempoMaximo && grupoActual.length > 0) {
+				// Aplicar la lógica según el modo de agrupación
+				let excedeTiempoMaximo = false;
+				if (modoAgrupacion === "entrega") {
+					excedeTiempoMaximo = tiempoPercibido > tiempoMaximo;
+				} else {
+					// modo 'recorrido'
+					excedeTiempoMaximo = tiempoTotal > tiempoMaximo;
+				}
+
+				if (excedeTiempoMaximo && grupoActual.length > 0) {
 					break;
 				}
 
-				// Añadir el pedido al grupo
 				grupoActual.push(mejorPedido);
 				tiempoTotalGrupo = tiempoTotal;
 				distanciaTotalGrupo = distanciaTotal;
@@ -348,10 +356,20 @@ export const Comandera = () => {
 		return gruposOptimos;
 	}
 
-	// En el componente Comandera, actualiza el uso de armarGruposOptimos:
 	const gruposOptimos = useMemo(() => {
-		return armarGruposOptimos(pedidosConDistancias, tiempoMaximo);
-	}, [pedidosConDistancias, tiempoMaximo]);
+		const tiempoMaximoActual =
+			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
+		return armarGruposOptimos(
+			pedidosConDistancias,
+			tiempoMaximoActual,
+			modoAgrupacion
+		);
+	}, [
+		pedidosConDistancias,
+		tiempoMaximo,
+		tiempoMaximoRecorrido,
+		modoAgrupacion,
+	]);
 
 	useEffect(() => {
 		console.log("Grupos óptimos de pedidos:", gruposOptimos);
@@ -362,21 +380,70 @@ export const Comandera = () => {
 	return (
 		<div className="p-4 flex flex-col">
 			<div>
-				<div className="mb-4 flex flex-row gap-2 items-center justify-center">
-					<label htmlFor="tiempoMaximo" className="font-medium text-gray-700">
-						Tiempo máximo de entrega:
-					</label>
-					<select
-						id="tiempoMaximo"
-						value={tiempoMaximo}
-						onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-						className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
-					>
-						<option value={30}>30 minutos</option>
-						<option value={40}>40 minutos</option>
-						<option value={50}>50 minutos</option>
-						<option value={60}>60 minutos</option>
-					</select>
+				<div className="mb-4 flex flex-col gap-2 items-center justify-center">
+					<div>
+						<label className="mr-2">
+							<input
+								type="radio"
+								value="entrega"
+								checked={modoAgrupacion === "entrega"}
+								onChange={() => setModoAgrupacion("entrega")}
+							/>
+							Usar tiempo máximo de entrega
+						</label>
+						<label>
+							<input
+								type="radio"
+								value="recorrido"
+								checked={modoAgrupacion === "recorrido"}
+								onChange={() => setModoAgrupacion("recorrido")}
+							/>
+							Usar tiempo máximo de recorrido
+						</label>
+					</div>
+					{modoAgrupacion === "entrega" ? (
+						<div>
+							<label
+								htmlFor="tiempoMaximo"
+								className="font-medium text-gray-700 mr-2"
+							>
+								Tiempo máximo de entrega:
+							</label>
+							<select
+								id="tiempoMaximo"
+								value={tiempoMaximo}
+								onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+								className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+							>
+								<option value={30}>30 minutos</option>
+								<option value={40}>40 minutos</option>
+								<option value={50}>50 minutos</option>
+								<option value={60}>60 minutos</option>
+							</select>
+						</div>
+					) : (
+						<div>
+							<label
+								htmlFor="tiempoMaximoRecorrido"
+								className="font-medium text-gray-700 mr-2"
+							>
+								Tiempo máximo de recorrido:
+							</label>
+							<select
+								id="tiempoMaximoRecorrido"
+								value={tiempoMaximoRecorrido}
+								onChange={(e) =>
+									setTiempoMaximoRecorrido(parseInt(e.target.value))
+								}
+								className="bg-gray-300 pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+							>
+								<option value={30}>30 minutos</option>
+								<option value={40}>40 minutos</option>
+								<option value={50}>50 minutos</option>
+								<option value={60}>60 minutos</option>
+							</select>
+						</div>
+					)}
 				</div>
 				<div className="flex flex-wrap gap-4">
 					{gruposOptimos.length > 0 ? (
