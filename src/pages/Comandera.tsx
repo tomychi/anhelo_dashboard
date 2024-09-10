@@ -47,6 +47,10 @@ export const Comandera = () => {
 		return minutosEspera;
 	};
 
+	const handleDeshacerGrupo = (index) => {
+		setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
+	};
+
 	const filteredOrders = useMemo(() => {
 		return orders
 			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
@@ -512,6 +516,12 @@ export const Comandera = () => {
 									</p>
 								</div>
 							))}
+							<button
+								className="bg-red-500 w-full py-4 text-white rounded-lg flex justify-center items-center text-2xl font-coolvetica mt-4"
+								onClick={() => handleDeshacerGrupo(index)}
+							>
+								Deshacer
+							</button>
 						</div>
 					))}
 					{gruposOptimos.length > 0 ? (
