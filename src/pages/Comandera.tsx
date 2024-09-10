@@ -703,7 +703,13 @@ export const Comandera = () => {
 												{pedidoIndex + 1}
 											</div>
 											<div className="w-1.5 bg-black absolute left-[23.5px] h-full "></div>
-											<div className="flex flex-col border-b w-full border-black border-opacity-20 ml-4 pb-3.5 pt-2">
+											<div
+												className={`flex flex-col ${
+													pedidoIndex !== grupo.pedidos.length - 1
+														? "border-b border-black border-opacity-20"
+														: ""
+												} w-full ml-4 pb-3.5 pt-2`}
+											>
 												<p className="font-bold text-lg">
 													{pedido.direccion.split(",")[0]}
 												</p>
