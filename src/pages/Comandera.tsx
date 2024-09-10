@@ -123,6 +123,9 @@ export const Comandera = () => {
 		console.log("Pedidos disponibles para barajar:", pedidosDisponibles);
 	}, [pedidosDisponibles]);
 
+	// Factor de corrección para ajustar la distancia lineal a la distancia real en la ciudad
+	const FACTOR_CORRECCION = 1.5;
+
 	// Función para calcular la distancia entre dos puntos usando la fórmula del haversine
 	function calcularDistancia(lat1, lon1, lat2, lon2) {
 		const R = 6371; // Radio de la Tierra en kilómetros
@@ -135,8 +138,9 @@ export const Comandera = () => {
 				Math.sin(dLon / 2) *
 				Math.sin(dLon / 2);
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		const distancia = R * c; // Distancia en kilómetros
-		return distancia;
+		const distanciaLineal = R * c; // Distancia en kilómetros
+		const distanciaAjustada = distanciaLineal * FACTOR_CORRECCION;
+		return distanciaAjustada;
 	}
 
 	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
