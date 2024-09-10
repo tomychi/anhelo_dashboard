@@ -276,7 +276,7 @@ export const Comandera = () => {
 							className="bg-gray-300 shadow-black w-1/4  shadow-lg p-4 mb-4 rounded-lg"
 						>
 							<div className="flex justify-center">
-								<h3 className="font-bold mt-4 text-xl">
+								<h3 className="font-bold mt-4 mb-6 text-xl">
 									Grupo óptimo {index + 1}
 								</h3>
 							</div>
