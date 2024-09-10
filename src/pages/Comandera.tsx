@@ -127,17 +127,14 @@ export const Comandera = () => {
 		<div className="p-4 flex flex-col">
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
 			<div className="mb-4 flex flex-row gap-2 items-center justify-center">
-				<label
-					htmlFor="tiempoMaximo"
-					className="block text-sm font-medium text-gray-700"
-				>
+				<label htmlFor="tiempoMaximo" className="  font-medium text-gray-700">
 					Tiempo máximo de entrega:
 				</label>
 				<select
 					id="tiempoMaximo"
 					value={tiempoMaximo}
 					onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-					className="mt-1 block bg-gray-300  pt-2 pb-3 px-2.5  border-gray-300 rounded-lg"
+					className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-lg"
 				>
 					<option value={30}>30 minutos</option>
 					<option value={40}>40 minutos</option>
