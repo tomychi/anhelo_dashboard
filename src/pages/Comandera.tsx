@@ -283,9 +283,10 @@ export const Comandera = () => {
 							{grupo.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
-										<strong>Pedido {pedidoIndex + 1}:</strong>
+										<strong>
+											Entrega {pedidoIndex + 1}: {pedido.direccion}
+										</strong>
 									</p>
-									<p>Dirección: {pedido.direccion}</p>
 									<p>Distancia: {pedido.distancia} km</p>
 								</div>
 							))}
