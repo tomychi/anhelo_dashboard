@@ -503,6 +503,9 @@ export const Comandera = () => {
 								</p>
 								<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
 							</div>
+							<div className="bg-gray-100 flex justify-center py-2 rounded-full mb-2">
+								¿Para quien?
+							</div>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
@@ -524,6 +527,7 @@ export const Comandera = () => {
 							</button>
 						</div>
 					))}
+
 					{gruposOptimos.length > 0 ? (
 						gruposOptimos.map((grupo, index) => {
 							const horaActual = new Date();
@@ -562,6 +566,9 @@ export const Comandera = () => {
 											El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
 											hs
 										</p>
+									</div>
+									<div className="bg-gray-100 flex justify-center py-2 rounded-full mb-2">
+										¿Para quien?
 									</div>
 									{grupo.pedidos.map((pedido, pedidoIndex) => (
 										<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
