@@ -120,8 +120,72 @@ export const Comandera = () => {
 	}, [orders, empleados]);
 
 	useEffect(() => {
-		console.log("Pedidos disponibles para asignar:", pedidosDisponibles);
+		console.log("Pedidos disponibles para barajar:", pedidosDisponibles);
 	}, [pedidosDisponibles]);
+
+	// Función para calcular la distancia entre dos puntos usando la fórmula del haversine
+	function calcularDistancia(lat1, lon1, lat2, lon2) {
+		const R = 6371; // Radio de la Tierra en kilómetros
+		const dLat = ((lat2 - lat1) * Math.PI) / 180;
+		const dLon = ((lon2 - lon1) * Math.PI) / 180;
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos((lat1 * Math.PI) / 180) *
+				Math.cos((lat2 * Math.PI) / 180) *
+				Math.sin(dLon / 2) *
+				Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		const distancia = R * c; // Distancia en kilómetros
+		return distancia;
+	}
+
+	// Coordenadas del punto de partida (Neri Guerra 352, Río Cuarto)
+	const LATITUD_INICIO = -33.0957994;
+	const LONGITUD_INICIO = -64.3337817;
+
+	// Función para calcular y agregar distancias a los pedidos
+	function agregarDistanciasAPedidos(pedidos) {
+		return pedidos.map((pedido) => {
+			const [latitud, longitud] = pedido.map;
+			const distancia = calcularDistancia(
+				LATITUD_INICIO,
+				LONGITUD_INICIO,
+				latitud,
+				longitud
+			);
+			return {
+				...pedido,
+				distancia: distancia.toFixed(2), // Distancia en km con 2 decimales
+			};
+		});
+	}
+
+	// Uso en el componente Comandera
+	const pedidosConDistancias = useMemo(() => {
+		return agregarDistanciasAPedidos(pedidosDisponibles);
+	}, [pedidosDisponibles]);
+
+	useEffect(() => {
+		console.log("Pedidos disponibles con distancias:", pedidosConDistancias);
+	}, [pedidosConDistancias]);
+
+	function encontrarPedidoMasCercano(pedidos) {
+		return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
+			return parseFloat(pedidoActual.distancia) <
+				parseFloat(pedidoMasCercano.distancia)
+				? pedidoActual
+				: pedidoMasCercano;
+		});
+	}
+
+	// Uso en el componente
+	const pedidoMasCercano = useMemo(() => {
+		return encontrarPedidoMasCercano(pedidosConDistancias);
+	}, [pedidosConDistancias]);
+
+	useEffect(() => {
+		console.log("Pedido más cercano:", pedidoMasCercano);
+	}, [pedidoMasCercano]);
 
 	return (
 		<div className="p-4 flex flex-col">
