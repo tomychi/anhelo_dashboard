@@ -124,6 +124,7 @@ const ajustarHoraReserva = (horaReserva: string): string => {
 
   return nuevaHora;
 };
+
 const parsearMensajePedido = (
   mensaje: string,
   toppingsInfo: ProductStateProps[],
@@ -135,37 +136,53 @@ const parsearMensajePedido = (
   const cuponMatch = cuponRegex.exec(mensaje);
   const cupon = cuponMatch ? cuponMatch[1].trim() : '';
 
-  // Expresiones regulares para encontrar las secciones relevantes
+  // Expresión regular para los datos principales (sin los montos)
   const datosVendedorRegex =
-    /Reserva:\s*(.*?)\s*-\s*Teléfono:\s*(.*?)\s*-\s*Forma de entrega:\s*(.*?)\s*-\s*Dirección:\s*(.*?)\s*-\s*Ubicación:\s*(.*?)\s*-\s*Referencias:\s*(.*?)\s*-\s*Forma de pago:\s*(.*?)\s*-\s*Monto en efectivo:\s*\$([\d.,]+)\s*-\s*Monto con transferencia:\s*\$([\d.,]+)\s*/;
+    /Reserva:\s*(.*?)(?:\s*-\s*|\s+)Teléfono:\s*(.*?)(?:\s*-\s*|\s+)Forma de entrega:\s*(.*?)(?:\s*-\s*|\s+)Dirección:\s*(.*?)(?:\s*-\s*|\s+)Ubicación:\s*(.*?)(?:\s*-\s*|\s+)Referencias:\s*(.*?)(?:\s*-\s*|\s+)Forma de pago:\s*(.*?)(?:\s*-\s*|\s+)/;
 
-  // Buscar coincidencias en el mensaje
+  // Buscar coincidencias en el mensaje para los datos principales
   const datosVendedorMatch = datosVendedorRegex.exec(mensaje);
+
+  // Si no se encuentran los datos principales, retornar null
+  if (!datosVendedorMatch) {
+    console.error('No se encontraron los datos principales del vendedor.');
+    return null;
+  }
 
   // Extraer datos del vendedor y detalle del pedido
   const datosVendedor = datosVendedorMatch
-    ? datosVendedorMatch.slice(1).map((value) => value.trim())
-    : [];
+    .slice(1)
+    .map((value) => value?.trim() || '');
+
+  // Buscar montos en efectivo y transferencia de forma separada
+  const efectivoRegex = /Monto en efectivo:\s*\$([\d.,]+)/;
+  const transferenciaRegex = /Monto con transferencia:\s*\$([\d.,]+)/;
+
+  const efectivoMatch = efectivoRegex.exec(mensaje);
+  const transferenciaMatch = transferenciaRegex.exec(mensaje);
+
+  // Asignar las variables de montos con valores por defecto si no se encuentran
+  const efectivoCantidad = efectivoMatch
+    ? efectivoMatch[1].replace(',', '.')
+    : '';
+  const mercadopagoCantidad = transferenciaMatch
+    ? transferenciaMatch[1].replace(',', '.')
+    : '';
 
   // Si el dato del vendedor es [0], ajustamos la hora
   const horaAjustada = datosVendedor[0]
     ? ajustarHoraReserva(datosVendedor[0])
     : obtenerHoraActual(); // Si no hay hora de reserva, usa la actual
 
-  // Asignar las variables
+  // Asignar el resto de las variables
   const hora = horaAjustada;
   const telefono = datosVendedor[1];
   const direccion = datosVendedor[3];
   const metodoPago = datosVendedor[6];
   const ubicacion = datosVendedor[4];
   const referencias = datosVendedor[5];
-  const efectivoCantidad = datosVendedor[7]
-    ? datosVendedor[7].replace(',', '.')
-    : '';
-  const mercadopagoCantidad = datosVendedor[8]
-    ? datosVendedor[8].replace(',', '.')
-    : '';
 
+  // Extraer el detalle del pedido
   const detallePedidoRegex = /Aquí está el detalle de mi pedido:(.*)/s;
   const detallePedidoMatch = mensaje.match(detallePedidoRegex);
 
