@@ -699,7 +699,7 @@ export const Comandera = () => {
 													: ""
 											}`}
 										>
-											<div className="bg-black text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+											<div className="bg-black text-center ml-4  justify-center font-bold text-gray-100 h-6 w-6">
 												{pedidoIndex + 1}
 											</div>
 											<div
