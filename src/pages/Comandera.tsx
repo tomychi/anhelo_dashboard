@@ -252,21 +252,39 @@ export const Comandera = () => {
 	return (
 		<div className="p-4 flex flex-col">
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
-			<div className="mb-4 flex flex-row gap-2 items-center justify-center">
-				<label htmlFor="tiempoMaximo" className="  font-medium text-gray-700">
-					Tiempo máximo de entrega:
-				</label>
-				<select
-					id="tiempoMaximo"
-					value={tiempoMaximo}
-					onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-					className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
-				>
-					<option value={30}>30 minutos</option>
-					<option value={40}>40 minutos</option>
-					<option value={50}>50 minutos</option>
-					<option value={60}>60 minutos</option>
-				</select>
+			<div>
+				<div className="mb-4 flex flex-row gap-2 items-center justify-center">
+					<label htmlFor="tiempoMaximo" className="  font-medium text-gray-700">
+						Tiempo máximo de entrega:
+					</label>
+					<select
+						id="tiempoMaximo"
+						value={tiempoMaximo}
+						onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+						className="  bg-gray-300  pt-2 pb-3 px-2.5 font-medium border-gray-300 rounded-full"
+					>
+						<option value={30}>30 minutos</option>
+						<option value={40}>40 minutos</option>
+						<option value={50}>50 minutos</option>
+						<option value={60}>60 minutos</option>
+					</select>
+				</div>
+				<div className="flex flex-row">
+					{gruposOptimos.map((grupo, index) => (
+						<div key={index} className="bg-gray-100 p-4 mb-4 rounded-lg">
+							<h3 className="font-bold mb-2">Grupo óptimo {index + 1}</h3>
+							{grupo.map((pedido, pedidoIndex) => (
+								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+									<p>
+										<strong>Pedido {pedidoIndex + 1}:</strong>
+									</p>
+									<p>Dirección: {pedido.direccion}</p>
+									<p>Distancia: {pedido.distancia} km</p>
+								</div>
+							))}
+						</div>
+					))}
+				</div>
 			</div>
 			<CadeteSelect
 				cadetes={cadetes}
