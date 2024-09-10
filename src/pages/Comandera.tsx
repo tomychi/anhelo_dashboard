@@ -297,6 +297,8 @@ export const Comandera = () => {
 		console.log("Grupos óptimos de pedidos:", gruposOptimos);
 	}, [gruposOptimos]);
 
+	console.log(gruposOptimos);
+
 	return (
 		<div className="p-4 flex flex-col">
 			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
@@ -334,6 +336,7 @@ export const Comandera = () => {
 										Entrega {pedidoIndex + 1}: {pedido.direccion}
 									</p>
 									<p>Distancia: {pedido.distancia} km</p>
+									<p>Pidio hace: minutos</p>
 								</div>
 							))}
 						</div>
