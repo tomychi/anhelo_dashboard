@@ -275,17 +275,14 @@ export const Comandera = () => {
 							key={index}
 							className="bg-gray-300 shadow-black w-1/4  shadow-lg p-4 mb-4 rounded-lg"
 						>
-							<div className="flex justify-center">
-								<h3 className="font-bold mt-4 mb-6 text-xl">
-									Grupo óptimo {index + 1}
-								</h3>
+							<div className="flex flex-col mt-4 mb-6  justify-center">
+								<h3 className="font-bold text-xl">Grupo óptimo {index + 1}</h3>
+								<p>Tiempo total de recorrido:</p>
 							</div>
 							{grupo.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
-										<strong>
-											Entrega {pedidoIndex + 1}: {pedido.direccion}
-										</strong>
+										Entrega {pedidoIndex + 1}: {pedido.direccion}
 									</p>
 									<p>Distancia: {pedido.distancia} km</p>
 								</div>
