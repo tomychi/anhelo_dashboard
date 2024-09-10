@@ -23,6 +23,26 @@ export const Comandera = () => {
 	const { orders } = useSelector((state: RootState) => state.data);
 	const location = useLocation();
 	const [tiempoMaximo, setTiempoMaximo] = useState(40);
+	const [tiempoActual, setTiempoActual] = useState(new Date());
+
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTiempoActual(new Date());
+		}, 60000); // Actualiza cada minuto
+
+		return () => clearInterval(timer);
+	}, []);
+
+	const calcularTiempoEspera = (horaPedido) => {
+		const [horas, minutos] = horaPedido.split(":").map(Number);
+		const fechaPedido = new Date(tiempoActual);
+		fechaPedido.setHours(horas, minutos, 0, 0);
+
+		const diferencia = tiempoActual.getTime() - fechaPedido.getTime();
+		const minutosEspera = Math.floor(diferencia / 60000);
+
+		return minutosEspera;
+	};
 
 	const filteredOrders = useMemo(() => {
 		return orders
@@ -336,7 +356,7 @@ export const Comandera = () => {
 										Entrega {pedidoIndex + 1}: {pedido.direccion}
 									</p>
 									<p>Distancia: {pedido.distancia} km</p>
-									<p>Pidio hace: minutos</p>
+									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
 								</div>
 							))}
 						</div>
