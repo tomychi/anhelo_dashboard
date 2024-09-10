@@ -26,6 +26,7 @@ export const Comandera = () => {
 	const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] = useState(40);
 	const [modoAgrupacion, setModoAgrupacion] = useState("entrega"); // 'entrega' o 'recorrido'
 	const [tiempoActual, setTiempoActual] = useState(new Date());
+	const [gruposListos, setGruposListos] = useState([]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -261,10 +262,18 @@ export const Comandera = () => {
 	}
 
 	function armarGruposOptimos(pedidos, tiempoMaximo, modoAgrupacion) {
-		if (pedidos.length === 0) return [];
+		// Filtrar los pedidos que no están en grupos listos
+		const pedidosDisponibles = pedidos.filter(
+			(pedido) =>
+				!gruposListos.some((grupo) =>
+					grupo.pedidos.some((p) => p.id === pedido.id)
+				)
+		);
+
+		if (pedidosDisponibles.length === 0) return [];
 
 		const gruposOptimos = [];
-		let pedidosRestantes = [...pedidos];
+		let pedidosRestantes = [...pedidosDisponibles];
 
 		while (pedidosRestantes.length > 0) {
 			let grupoActual = [];
@@ -392,7 +401,12 @@ export const Comandera = () => {
 		tiempoMaximo,
 		tiempoMaximoRecorrido,
 		modoAgrupacion,
+		gruposListos, // Añadir gruposListos como dependencia
 	]);
+
+	const handleGrupoListo = (grupo) => {
+		setGruposListos([...gruposListos, grupo]);
+	};
 
 	useEffect(() => {
 		console.log("Grupos óptimos de pedidos:", gruposOptimos);
@@ -469,9 +483,39 @@ export const Comandera = () => {
 					)}
 				</div>
 				<div className="flex flex-wrap gap-4">
+					{gruposListos.map((grupo, index) => (
+						<div
+							key={`listo-${index}`}
+							className="bg-green-200 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+						>
+							<div className="flex flex-col mt-4 mb-6 justify-center">
+								<h3 className="font-bold text-xl">Grupo Listo {index + 1}</h3>
+								<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
+								<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
+								<p>Distancia total del recorrido: {grupo.distanciaTotal} km</p>
+								<p>
+									Pedido con peor tiempo de entrega percibido:{" "}
+									{grupo.peorTiempoPercibido} minutos
+								</p>
+								<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
+							</div>
+							{grupo.pedidos.map((pedido, pedidoIndex) => (
+								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+									<p>
+										Entrega {pedidoIndex + 1}: {pedido.direccion}
+									</p>
+									<p>Distancia: {pedido.distancia} km</p>
+									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
+									<p>
+										El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+										minutos
+									</p>
+								</div>
+							))}
+						</div>
+					))}
 					{gruposOptimos.length > 0 ? (
 						gruposOptimos.map((grupo, index) => {
-							// Calcular la hora estimada de regreso
 							const horaActual = new Date();
 							const horaRegreso = new Date(
 								horaActual.getTime() + grupo.tiempoTotal * 60000
@@ -524,9 +568,12 @@ export const Comandera = () => {
 											</p>
 										</div>
 									))}
-									<div className="bg-black w-full py-4 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica">
+									<button
+										className="bg-black w-full py-4 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+										onClick={() => handleGrupoListo(grupo)}
+									>
 										Listo
-									</div>
+									</button>
 								</div>
 							);
 						})
