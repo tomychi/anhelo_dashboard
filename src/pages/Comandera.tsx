@@ -708,8 +708,8 @@ export const Comandera = () => {
 													minutos
 												</p>
 												<p className="text-xs">
-													El cliente percibe entrega de:{" "}
-													{pedido.tiempoPercibido} minutos
+													Cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+													minutos
 												</p>
 											</div>
 										</div>
