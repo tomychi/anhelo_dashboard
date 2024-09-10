@@ -272,16 +272,19 @@ export const Comandera = () => {
 			let distanciaTotalGrupo = 0;
 			let peorTiempoPercibido = 0;
 			let pedidoPeorTiempo = null;
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
 
 			while (pedidosRestantes.length > 0) {
 				let mejorPedido = null;
 				let mejorDistancia = Infinity;
 				let mejorIndice = -1;
 
+				// Buscar el pedido más cercano a cualquier punto en el grupo actual
 				pedidosRestantes.forEach((pedido, index) => {
 					let distanciaMinima = calcularDistancia(
-						LATITUD_INICIO,
-						LONGITUD_INICIO,
+						latitudActual,
+						longitudActual,
 						pedido.map[0],
 						pedido.map[1]
 					);
@@ -307,6 +310,7 @@ export const Comandera = () => {
 
 				if (!mejorPedido) break;
 
+				// Calcular el nuevo tiempo total y percibido si se añade este pedido
 				const nuevaRuta = [...grupoActual, mejorPedido];
 				const { tiempoTotal, distanciaTotal } =
 					calcularTiempoYDistanciaRecorrido(
@@ -314,8 +318,8 @@ export const Comandera = () => {
 						LATITUD_INICIO,
 						LONGITUD_INICIO
 					);
-				const tiempoPercibido =
-					calcularTiempoEspera(mejorPedido.hora) + tiempoTotal;
+				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+				const tiempoPercibido = tiempoEspera + tiempoTotal;
 
 				// Aplicar la lógica según el modo de agrupación
 				let excedeTiempoMaximo = false;
@@ -330,7 +334,11 @@ export const Comandera = () => {
 					break;
 				}
 
-				grupoActual.push(mejorPedido);
+				// Añadir el pedido al grupo
+				grupoActual.push({
+					...mejorPedido,
+					tiempoPercibido: Math.round(tiempoPercibido),
+				});
 				tiempoTotalGrupo = tiempoTotal;
 				distanciaTotalGrupo = distanciaTotal;
 
@@ -339,6 +347,8 @@ export const Comandera = () => {
 					pedidoPeorTiempo = mejorPedido;
 				}
 
+				latitudActual = mejorPedido.map[0];
+				longitudActual = mejorPedido.map[1];
 				pedidosRestantes.splice(mejorIndice, 1);
 			}
 
@@ -477,7 +487,7 @@ export const Comandera = () => {
 											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
 										</p>
 										<p>
-											El cliente percibe entrega de: {pedido.tiempoPercibido}
+											El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
 											minutos
 										</p>
 									</div>
