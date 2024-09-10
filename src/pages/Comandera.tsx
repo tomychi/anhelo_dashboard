@@ -666,16 +666,20 @@ export const Comandera = () => {
 												Grupo óptimo {index + 1}
 											</h3>
 										</div>
-										<p>
+										<p className="text-xs">
 											Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
 											minutos (
 											{grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
 												"N/A"}
 											)
 										</p>
-										<p>Duracion del recorrido: {grupo.tiempoTotal} minutos</p>
-										<p>Distancia del recorrido: {grupo.distanciaTotal} km</p>
-										<p>
+										<p className="text-xs">
+											Duracion del recorrido: {grupo.tiempoTotal} minutos
+										</p>
+										<p className="text-xs">
+											Distancia del recorrido: {grupo.distanciaTotal} km
+										</p>
+										<p className="text-xs">
 											El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
 											hs
 										</p>
