@@ -484,7 +484,7 @@ export const Comandera = () => {
 							return (
 								<div
 									key={index}
-									className="bg-gray-300 shadow-black font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+									className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
 								>
 									<div className="flex flex-col mt-4 mb-6 justify-center">
 										<h3 className="font-bold text-xl">
