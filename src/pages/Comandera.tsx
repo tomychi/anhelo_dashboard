@@ -721,15 +721,17 @@ export const Comandera = () => {
 											<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 												{pedidoIndex + 1}
 											</div>
-											<div
-												className={`w-1.5 bg-black absolute left-[23.5px] ${
-													pedidoIndex === 0
-														? "h-1/2 bottom-0"
-														: pedidoIndex === grupo.pedidos.length - 1
-														? "h-1/2 top-0"
-														: "h-full"
-												}`}
-											></div>
+											{grupo.pedidos.length > 1 && (
+												<div
+													className={`w-1.5 bg-black absolute left-[23.5px] ${
+														pedidoIndex === 0
+															? "h-1/2 bottom-0"
+															: pedidoIndex === grupo.pedidos.length - 1
+															? "h-1/2 top-0"
+															: "h-full"
+													}`}
+												></div>
+											)}
 											<div
 												className={`flex flex-col ${
 													pedidoIndex !== grupo.pedidos.length - 1
