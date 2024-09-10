@@ -22,6 +22,7 @@ export const Comandera = () => {
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 	const { orders } = useSelector((state: RootState) => state.data);
 	const location = useLocation();
+	const [tiempoMaximo, setTiempoMaximo] = useState(40);
 
 	const filteredOrders = useMemo(() => {
 		return orders
@@ -97,6 +98,26 @@ export const Comandera = () => {
 		setSumaTotalEfectivo(totalEfectivoCadete);
 	};
 
+	const pedidosDisponibles = useMemo(() => {
+		return orders.filter((order) => {
+			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
+				return true;
+			}
+
+			const cadeteAsignado = empleados.find(
+				(empleado) =>
+					empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
+					empleado.category === "cadete"
+			);
+
+			return cadeteAsignado && cadeteAsignado.available;
+		});
+	}, [orders, empleados]);
+
+	useEffect(() => {
+		console.log("Pedidos disponibles para asignar:", pedidosDisponibles);
+	}, [pedidosDisponibles]);
+
 	const customerSuccess =
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
@@ -104,12 +125,33 @@ export const Comandera = () => {
 
 	return (
 		<div className="p-4 flex flex-col">
+			{/* Aca el algoritmo de entregas eficientes a traves de grupos optimos */}
+			<div className="mb-4 flex flex-row gap-2 items-center justify-center">
+				<label
+					htmlFor="tiempoMaximo"
+					className="block text-sm font-medium text-gray-700"
+				>
+					Tiempo máximo de entrega:
+				</label>
+				<select
+					id="tiempoMaximo"
+					value={tiempoMaximo}
+					onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+					className="mt-1 block bg-gray-300  pt-2 pb-3 px-2.5  border-gray-300 rounded-lg"
+				>
+					<option value={30}>30 minutos</option>
+					<option value={40}>40 minutos</option>
+					<option value={50}>50 minutos</option>
+					<option value={60}>60 minutos</option>
+				</select>
+			</div>
 			<CadeteSelect
 				cadetes={cadetes}
 				handleCadeteChange={handleCadeteChange}
 				selectedCadete={selectedCadete}
 				orders={pedidosHechos}
 			/>
+
 			<button
 				className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 				onClick={() => {
