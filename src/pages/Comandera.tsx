@@ -269,10 +269,15 @@ export const Comandera = () => {
 						<option value={60}>60 minutos</option>
 					</select>
 				</div>
-				<div className="flex flex-row">
+				<div className="flex flex-row gap-4">
 					{gruposOptimos.map((grupo, index) => (
-						<div key={index} className="bg-gray-100 p-4 mb-4 rounded-lg">
-							<h3 className="font-bold mb-2">Grupo óptimo {index + 1}</h3>
+						<div
+							key={index}
+							className="bg-gray-300 shadow-black w-1/4  shadow-lg p-4 mb-4 rounded-lg"
+						>
+							<div className="flex justify-center">
+								<h3 className="font-bold mt-4 ">Grupo óptimo {index + 1}</h3>
+							</div>
 							{grupo.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
 									<p>
