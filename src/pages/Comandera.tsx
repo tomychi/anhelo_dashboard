@@ -691,12 +691,18 @@ export const Comandera = () => {
 									{grupo.pedidos.map((pedido, pedidoIndex) => (
 										<div
 											key={pedido.id}
-											className="bg-gray-100 flex flex-row mb-2 items-center rounded-lg"
+											className={`bg-gray-100 flex flex-row items-center ${
+												pedidoIndex === 0
+													? "rounded-t-lg "
+													: pedidoIndex === grupo.pedidos.length - 1
+													? "rounded-b-lg"
+													: ""
+											}`}
 										>
-											<div className=" bg-black text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+											<div className="bg-black text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 												{pedidoIndex + 1}
 											</div>
-											<div className="flex flex-col ml-4 pb-3.5 pt-2">
+											<div className="flex flex-col border-b w-full border-black border-opacity-20 ml-4 pb-3.5 pt-2">
 												<p className="font-bold text-lg">
 													{pedido.direccion.split(",")[0]}
 												</p>
