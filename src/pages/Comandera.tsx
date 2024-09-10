@@ -378,10 +378,8 @@ export const Comandera = () => {
 								</p>
 								<p className="text-xs">
 									Pedido con peor tiempo de entrega percibido:{" "}
-									{grupo.peorTiempoPercibido} minutos
-								</p>
-								<p className="text-xs">
-									Dirección: {grupo.pedidoPeorTiempo.direccion}
+									{grupo.peorTiempoPercibido} minutos, es{" "}
+									{grupo.pedidoPeorTiempo.direccion}
 								</p>
 							</div>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
