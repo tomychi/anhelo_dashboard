@@ -599,7 +599,7 @@ export const Comandera = () => {
 	return (
 		<div className="p-4 flex flex-col font-coolvetica">
 			<div>
-				<div className="mb-4 flex flex-row gap-2 ">
+				<div className="mb-4 flex flex-row justify-center gap-2 ">
 					<div>
 						<div className="flex  gap-2">
 							<div
@@ -682,7 +682,7 @@ export const Comandera = () => {
 					)}
 				</div>
 
-				<div className="flex flex-wrap gap-4">
+				<div className="grid grid-cols-4 gap-4">
 					<DragDropContext onDragEnd={onDragEnd}>
 						{gruposListos.map((grupo, index) => (
 							<Droppable droppableId={index.toString()} key={`listo-${index}`}>
@@ -690,7 +690,7 @@ export const Comandera = () => {
 									<div
 										{...provided.droppableProps}
 										ref={provided.innerRef}
-										className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 											<div className="flex flex-row items-center justify-center gap-2">
@@ -829,8 +829,8 @@ export const Comandera = () => {
 						))}
 					</DragDropContext>
 					{grupoManual.length > 0 && (
-						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
-							<h3 className="font-bold text-2xl mt-4 mb-8  text-center">
+						<div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
+							<h3 className="font-medium text-gray-100 text- mt-4 mb-4  text-center">
 								Asignar manualmente
 							</h3>
 							<div className="flex flex-col gap-2">
@@ -884,7 +884,7 @@ export const Comandera = () => {
 							return (
 								<div
 									key={index}
-									className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
+									className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 								>
 									<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 										<div className="flex flex-row items-center justify-center gap-2">
