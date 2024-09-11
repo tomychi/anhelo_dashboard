@@ -242,6 +242,7 @@ export const DynamicForm: React.FC = () => {
     }
 
     let subTotal = 0;
+    // cuponValido
     if (cuponValido) {
       // Encontrar la hamburguesa más cara (considerando la cantidad)
       const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
@@ -302,17 +303,14 @@ export const DynamicForm: React.FC = () => {
     // Si el método de pago es "efectivo", asigna todo el editableTotal a efectivoCantidad
     const efectivoCantidad =
       formData.metodoPago === 'efectivo'
-        ? editableTotal
+        ? subTotal + envio
         : parseInt(formData.efectivoCantidad) || 0;
 
     // Si el método de pago es "mercadopago", asigna todo el editableTotal a mercadopagoCantidad
     const mercadopagoCantidad =
       formData.metodoPago === 'mercadopago'
-        ? editableTotal
+        ? subTotal + envio
         : parseInt(formData.mercadopagoCantidad) || 0;
-
-    subTotal = editableTotal - envio;
-    const total = subTotal + envio; // Calcula el total dinámicamente
 
     const coordinates = extractCoordinates(formData.ubicacion);
 
@@ -323,8 +321,8 @@ export const DynamicForm: React.FC = () => {
       efectivoCantidad,
       mercadopagoCantidad,
       detallePedido,
-      subTotal,
-      total,
+      subTotal: editableTotal - envio,
+      total: subTotal + envio,
       fecha: obtenerFechaActual(),
       elaborado: false,
     };
