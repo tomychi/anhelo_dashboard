@@ -53,8 +53,32 @@ export const Comandera = () => {
     return minutosEspera;
   };
 
-  const handleDeshacerGrupo = (index) => {
-    setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
+  const handleDeshacerGrupo = async (index) => {
+    const grupoActualizado = gruposListos[index];
+
+    try {
+      // Itera sobre los pedidos del grupo para actualizar cada uno en la base de datos
+      for (const pedido of grupoActualizado.pedidos) {
+        // Llama a la función para actualizar el cadete para cada pedido
+        await updateCadeteForOrder(pedido.fecha, pedido.id, 'NO ASIGNADO');
+      }
+
+      // Si todo es exitoso, muestra un mensaje de éxito
+      Swal.fire({
+        icon: 'success',
+        title: 'CADETE ASIGNADO',
+        text: `El viaje lo lleva: NO ASIGNADO`,
+      });
+      setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
+    } catch (error) {
+      // Muestra un mensaje de error en caso de fallo
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al asignar el cadete.',
+      });
+      console.error('Error al actualizar el cadete del pedido:', error);
+    }
   };
 
   const filteredOrders = useMemo(() => {
@@ -439,7 +463,6 @@ export const Comandera = () => {
         ...pedido,
         cadete: cadeteId,
       }));
-      console.log(cadeteId);
       nuevosGruposListos[grupoIndex] = grupoActualizado;
       setGruposListos(nuevosGruposListos);
 
