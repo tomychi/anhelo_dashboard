@@ -15,6 +15,8 @@ import arrowIcon from '../assets/arrowIcon.png';
 import listoIcon from '../assets/listoIcon.png';
 import Swal from 'sweetalert2';
 import { updateCadeteForOrder } from '../firebase/UploadOrder';
+import { format, isToday, isAfter, startOfDay, addHours } from 'date-fns';
+import { obtenerHoraActual } from '../helpers/dateToday';
 
 export const Comandera = () => {
   const [seccionActiva, setSeccionActiva] = useState('porHacer');
@@ -163,6 +165,10 @@ export const Comandera = () => {
 
   const pedidosDisponibles = useMemo(() => {
     return orders.filter((order) => {
+      if (order.hora > obtenerHoraActual()) {
+        return false;
+      }
+
       if (order.cadete === 'NO ASIGNADO' || order.cadete === 'no asignado') {
         return true;
       }
@@ -175,7 +181,7 @@ export const Comandera = () => {
 
       return cadeteAsignado && cadeteAsignado.available;
     });
-  }, [orders, empleados]);
+  }, [orders, empleados, tiempoActual]);
 
   // Factor de corrección para ajustar la distancia lineal a la distancia real en la ciudad
   const FACTOR_CORRECCION = 1.455;
