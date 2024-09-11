@@ -809,21 +809,17 @@ export const Comandera = () => {
 					)}
 
 					{grupoManual.length > 0 && (
-						<div className="mt-4">
+						<div className="w-1/4 bg-gray-300 rounded-lg shadow-lg shadow-black">
 							<h3 className="font-bold text-xl mb-2">Grupo Manual</h3>
-							<div className="bg-yellow-200 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
-								{grupoManual.map((pedido, index) => (
-									<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
-										<p>
-											Entrega {index + 1}: {pedido.direccion}
-										</p>
-										<p>Teléfono: {pedido.telefono}</p>
-										<p>
-											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
-										</p>
-									</div>
-								))}
-							</div>
+							{grupoManual.map((pedido, index) => (
+								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+									<p>
+										Entrega {index + 1}: {pedido.direccion}
+									</p>
+									<p>Teléfono: {pedido.telefono}</p>
+									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
+								</div>
+							))}
 						</div>
 					)}
 				</div>
