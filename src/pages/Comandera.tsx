@@ -845,9 +845,14 @@ export const Comandera = () => {
 											</div>
 											<div className="pl-4 pb-3.5 pt-2">
 												<p className="font-bold text-lg">{pedido.direccion}</p>
+												<p className="text-xs">Distancia: Desconocido</p>
 												<p className="text-xs">
 													Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 													minutos
+												</p>
+
+												<p className="text-xs">
+													Cliente percibe entrega de: Desconocido
 												</p>
 											</div>
 										</div>
