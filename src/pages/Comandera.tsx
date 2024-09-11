@@ -548,7 +548,7 @@ export const Comandera = () => {
 							<img
 								src={arrowIcon}
 								alt="Arrow Icon"
-								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2" // Posiciona la imagen a la derecha y centrada verticalmente
+								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2"
 								style={{
 									filter: "invert(100%)",
 								}}
@@ -576,7 +576,7 @@ export const Comandera = () => {
 							<img
 								src={arrowIcon}
 								alt="Arrow Icon"
-								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2" // Posiciona la imagen a la derecha y centrada verticalmente
+								className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2"
 								style={{
 									filter: "invert(100%)",
 								}}
@@ -610,8 +610,14 @@ export const Comandera = () => {
 								</p>
 								<p className="text-xs">El cadete regresa a ANHELO a las hs</p>
 							</div>
+							<button
+								className="bg-gray-400 bg-opacity-50 w-full py-4 mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+								onClick={() => handleDeshacerGrupo(index)}
+							>
+								Deshacer
+							</button>
 							<select
-								className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full mb-2"
+								className="bg-gray-100 appearance-none mb-8 w-full text-center py-2 rounded-full "
 								style={{
 									WebkitAppearance: "none",
 									MozAppearance: "none",
@@ -628,12 +634,6 @@ export const Comandera = () => {
 									</option>
 								))}
 							</select>
-							<button
-								className="bg-gray-400 bg-opacity-50 w-full py-4 mb-8 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
-								onClick={() => handleDeshacerGrupo(index)}
-							>
-								Deshacer
-							</button>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div
 									key={pedido.id}
@@ -791,24 +791,6 @@ export const Comandera = () => {
 											hs
 										</p>
 									</div>
-									<select
-										className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full mb-2"
-										style={{
-											WebkitAppearance: "none",
-											MozAppearance: "none",
-										}}
-										onChange={(e) =>
-											handleAsignarCadete(index, e.target.value, false)
-										}
-										value={grupo.pedidos[0]?.cadete || ""}
-									>
-										<option value="">¿Para quién?</option>
-										{cadetesDisponibles.map((cadete) => (
-											<option key={cadete.id} value={cadete.id}>
-												{cadete.name}
-											</option>
-										))}
-									</select>
 									<button
 										className="bg-black w-full py-4 mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
 										onClick={() => handleGrupoListo(grupo)}
