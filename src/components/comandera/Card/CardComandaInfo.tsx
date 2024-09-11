@@ -182,9 +182,9 @@ export const CardComandaInfo = ({
                 )}
               </p>
               {user.email === 'cadetes@anhelo.com' ? (
-                metodoPago === 'efectivo' ? (
+                metodoPago === 'efectivo' || metodoPago === 'ambos' ? (
                   <p className="text-lg font-black">
-                    MONTO: {currencyFormat(total)}
+                    MONTO: {currencyFormat(efectivoCantidad)}
                   </p>
                 ) : (
                   <p className="text-lg font-black">MONTO: Pagado</p>

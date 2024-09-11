@@ -243,7 +243,7 @@ export const DynamicForm: React.FC = () => {
 
     let subTotal = 0;
     // cuponValido
-    if (subTotal + 1) {
+    if (cuponValido) {
       // Encontrar la hamburguesa más cara (considerando la cantidad)
       const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
         const totalBurgerPrice =
