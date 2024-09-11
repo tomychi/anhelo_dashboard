@@ -580,6 +580,20 @@ export const Comandera = () => {
 					)}
 				</div>
 				<div className="flex flex-wrap gap-4">
+					{grupoManual.length > 0 && (
+						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
+							<h3 className="font-bold text-xl mb-2">Asignar manualmente</h3>
+							{grupoManual.map((pedido, index) => (
+								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+									<p>
+										Entrega {index + 1}: {pedido.direccion}
+									</p>
+									<p>Teléfono: {pedido.telefono}</p>
+									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
+								</div>
+							))}
+						</div>
+					)}
 					{gruposListos.map((grupo, index) => (
 						<div
 							key={`listo-${index}`}
@@ -806,21 +820,6 @@ export const Comandera = () => {
 						})
 					) : (
 						<p>No hay pedidos disponibles para agrupar.</p>
-					)}
-
-					{grupoManual.length > 0 && (
-						<div className="w-1/4 bg-gray-300 rounded-lg shadow-lg shadow-black">
-							<h3 className="font-bold text-xl mb-2">Grupo Manual</h3>
-							{grupoManual.map((pedido, index) => (
-								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
-									<p>
-										Entrega {index + 1}: {pedido.direccion}
-									</p>
-									<p>Teléfono: {pedido.telefono}</p>
-									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
-								</div>
-							))}
-						</div>
 					)}
 				</div>
 			</div>
