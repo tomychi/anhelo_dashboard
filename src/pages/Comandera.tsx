@@ -150,10 +150,6 @@ export const Comandera = () => {
 		});
 	}, [orders, empleados]);
 
-	useEffect(() => {
-		console.log("Pedidos disponibles para barajar:", pedidosDisponibles);
-	}, [pedidosDisponibles]);
-
 	// Factor de corrección para ajustar la distancia lineal a la distancia real en la ciudad
 	const FACTOR_CORRECCION = 1.455;
 
@@ -200,10 +196,6 @@ export const Comandera = () => {
 		return agregarDistanciasAPedidos(pedidosDisponibles);
 	}, [pedidosDisponibles]);
 
-	useEffect(() => {
-		console.log("Pedidos disponibles con distancias:", pedidosConDistancias);
-	}, [pedidosConDistancias]);
-
 	function encontrarPedidoMasCercano(pedidos) {
 		if (pedidos.length === 0) return null;
 		return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
@@ -220,10 +212,6 @@ export const Comandera = () => {
 			? encontrarPedidoMasCercano(pedidosConDistancias)
 			: null;
 	}, [pedidosConDistancias]);
-
-	useEffect(() => {
-		console.log("Pedido más cercano:", pedidoMasCercano);
-	}, [pedidoMasCercano]);
 
 	// Constantes para el cálculo de tiempo
 	// Ajustamos estos valores para que se acerquen más a las estimaciones de Google Maps
@@ -428,10 +416,6 @@ export const Comandera = () => {
 		setGruposListos([...gruposListos, grupo]);
 	};
 
-	useEffect(() => {
-		console.log("Grupos óptimos de pedidos:", gruposOptimos);
-	}, [gruposOptimos]);
-
 	const cadetesDisponibles = useMemo(() => {
 		return empleados.filter(
 			(empleado) => empleado.category === "cadete" && empleado.available
@@ -495,8 +479,6 @@ export const Comandera = () => {
 				pedidosParaBarajar.push(pedidoInfo);
 			}
 		});
-
-		console.log("Grupo a colocar manualmente:", pedidosManuales);
 	}, [pedidosDisponibles]);
 
 	return (
