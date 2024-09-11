@@ -655,14 +655,14 @@ export const Comandera = () => {
 								<p className="text-xs">El cadete regresa a ANHELO a las hs</p>
 							</div>
 							<button
-								className="bg-gray-400 bg-opacity-50 w-full py-4 mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+								className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
 								onClick={() => handleDeshacerGrupo(index)}
 							>
 								{loadingStates[index] ? (
-									<div className="flex space-x-2">
-										<div className="w-3 h-3 bg-gray-900 rounded-full animate-pulse"></div>
-										<div className="w-3 h-3 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-										<div className="w-3 h-3 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+									<div className="flex flex-row gap-1">
+										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse"></div>
+										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse delay-75"></div>
+										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse delay-150"></div>
 									</div>
 								) : (
 									"Deshacer"
@@ -844,7 +844,7 @@ export const Comandera = () => {
 										</p>
 									</div>
 									<button
-										className="bg-black w-full py-4 mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+										className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
 										onClick={() => handleGrupoListo(grupo)}
 									>
 										Listo
