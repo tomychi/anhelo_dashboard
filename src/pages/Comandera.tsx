@@ -607,10 +607,12 @@ export const Comandera = () => {
 								<p className="text-xs">El cadete regresa a ANHELO a las hs</p>
 							</div>
 							<select
-								className="bg-gray-100 w-full py-2 rounded-full mb-2"
-								onChange={(e) =>
-									handleAsignarCadete(index, e.target.value, true)
-								}
+								className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full mb-2"
+								style={{
+									WebkitAppearance: "none",
+									MozAppearance: "none",
+								}}
+								onChange={(e) => handleAsignarCadete(index, e.target.value)}
 								value={grupo.pedidos[0]?.cadete || ""}
 							>
 								<option value="">¿Para quién?</option>
