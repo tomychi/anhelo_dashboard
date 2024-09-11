@@ -678,6 +678,20 @@ export const Comandera = () => {
 											minutos
 										</p>
 									</div>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										className="w-6 mr-4"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M3.75 9h16.5m-16.5 6.75h16.5"
+										/>
+									</svg>
 								</div>
 							))}
 						</div>
@@ -691,17 +705,34 @@ export const Comandera = () => {
 								{grupoManual.map((pedido, index) => (
 									<div
 										key={pedido.id}
-										className="bg-gray-100 rounded-lg flex items-center flex-row"
+										className="bg-gray-100 rounded-lg flex  justify-between flex-row"
 									>
-										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-											{index + 1}
+										<div className="flex flex-row items-center">
+											<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+												{index + 1}
+											</div>
+											<div className="pl-4 pb-3.5 pt-2">
+												<p className="font-bold text-lg">{pedido.direccion}</p>
+												<p className="text-xs">
+													Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+													minutos
+												</p>
+											</div>
 										</div>
-										<div className="pl-4 pb-3.5 pt-2">
-											<p className="font-bold text-lg">{pedido.direccion}</p>
-											<p className="text-xs">
-												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
-											</p>
-										</div>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke-width="1.5"
+											stroke="currentColor"
+											className="w-6 mr-4"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												d="M3.75 9h16.5m-16.5 6.75h16.5"
+											/>
+										</svg>
 									</div>
 								))}
 							</div>
@@ -832,6 +863,20 @@ export const Comandera = () => {
 													minutos
 												</p>
 											</div>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke-width="1.5"
+												stroke="currentColor"
+												className="w-6 mr-4"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													d="M3.75 9h16.5m-16.5 6.75h16.5"
+												/>
+											</svg>
 										</div>
 									))}
 								</div>
