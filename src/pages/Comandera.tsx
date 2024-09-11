@@ -35,6 +35,7 @@ export const Comandera = () => {
 	const [gruposOptimos, setGruposOptimos] = useState([]);
 	const [grupoManual, setGrupoManual] = useState([]);
 	const [loadingStates, setLoadingStates] = useState({});
+	const [tooltipVisibility, setTooltipVisibility] = useState({});
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -897,20 +898,39 @@ export const Comandera = () => {
 													minutos
 												</p>
 											</div>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke-width="1.5"
-												stroke="currentColor"
-												className="w-6 mr-4 cursor-pointer"
-											>
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													d="M3.75 9h16.5m-16.5 6.75h16.5"
-												/>
-											</svg>
+											<div className="relative">
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													fill="none"
+													viewBox="0 0 24 24"
+													strokeWidth="1.5"
+													stroke="currentColor"
+													className="w-6 mr-4 cursor-pointer"
+													onMouseEnter={() =>
+														setTooltipVisibility((prev) => ({
+															...prev,
+															[`${index}-${pedidoIndex}`]: true,
+														}))
+													}
+													onMouseLeave={() =>
+														setTooltipVisibility((prev) => ({
+															...prev,
+															[`${index}-${pedidoIndex}`]: false,
+														}))
+													}
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														d="M3.75 9h16.5m-16.5 6.75h16.5"
+													/>
+												</svg>
+												{tooltipVisibility[`${index}-${pedidoIndex}`] && (
+													<div className="absolute z-10 px-3 py-2  font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs  bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
+														Solo puedes mover pedidos de grupos listos.
+													</div>
+												)}
+											</div>
 										</div>
 									))}
 								</div>
