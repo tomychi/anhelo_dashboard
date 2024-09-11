@@ -587,12 +587,12 @@ export const Comandera = () => {
 								{grupoManual.map((pedido, index) => (
 									<div
 										key={pedido.id}
-										className="bg-gray-100 rounded flex flex-row"
+										className="bg-gray-100 rounded flex items-center flex-row"
 									>
 										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 											{index + 1}
 										</div>
-										<div>
+										<div className="pl-4 pb-3.5 pt-2">
 											<p className="font-bold text-lg">{pedido.direccion}</p>
 											<p className="text-xs">
 												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
