@@ -885,41 +885,43 @@ export const Comandera = () => {
 															></div>
 														)}
 														<div
-															className={`flex flex-col ${
+															className={`flex flex-row justify-between ${
 																pedidoIndex !== grupo.pedidos.length - 1
 																	? "border-b border-black border-opacity-20"
 																	: ""
 															} w-full ml-4 pb-3.5 pt-2`}
 														>
-															<p className="font-bold text-lg">
-																{pedido.direccion.split(",")[0]}
-															</p>
-															<p className="text-xs">
-																Distancia: {pedido.distancia} km
-															</p>
-															<p className="text-xs">
-																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-																minutos
-															</p>
-															<p className="text-xs">
-																Cliente percibe entrega de:{" "}
-																{pedido.tiempoPercibido} minutos
-															</p>
+															<div>
+																<p className="font-bold text-lg">
+																	{pedido.direccion.split(",")[0]}
+																</p>
+																<p className="text-xs">
+																	Distancia: {pedido.distancia} km
+																</p>
+																<p className="text-xs">
+																	Pidió hace:{" "}
+																	{calcularTiempoEspera(pedido.hora)} minutos
+																</p>
+																<p className="text-xs">
+																	Cliente percibe entrega de:{" "}
+																	{pedido.tiempoPercibido} minutos
+																</p>
+															</div>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																fill="none"
+																viewBox="0 0 24 24"
+																stroke-width="1.5"
+																stroke="currentColor"
+																className="w-6 mr-4"
+															>
+																<path
+																	stroke-linecap="round"
+																	stroke-linejoin="round"
+																	d="M3.75 9h16.5m-16.5 6.75h16.5"
+																/>
+															</svg>
 														</div>
-														<svg
-															xmlns="http://www.w3.org/2000/svg"
-															fill="none"
-															viewBox="0 0 24 24"
-															stroke-width="1.5"
-															stroke="currentColor"
-															className="w-6 mr-4"
-														>
-															<path
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																d="M3.75 9h16.5m-16.5 6.75h16.5"
-															/>
-														</svg>
 													</div>
 												)}
 											</Draggable>
