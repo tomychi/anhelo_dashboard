@@ -660,9 +660,9 @@ export const Comandera = () => {
 							>
 								{loadingStates[index] ? (
 									<div className="flex flex-row gap-1">
-										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse"></div>
-										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse delay-75"></div>
-										<div className="w-2 h-2 bg-red-main rounded-full animate-pulse delay-150"></div>
+										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
 									</div>
 								) : (
 									"Deshacer"
