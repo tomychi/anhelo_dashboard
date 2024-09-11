@@ -439,19 +439,24 @@ export const Comandera = () => {
 	}, [empleados]);
 
 	const handleAsignarCadete = (grupoIndex, cadeteId, esGrupoListo = false) => {
-		const grupos = esGrupoListo ? gruposListos : gruposOptimos;
-		const grupoActualizado = { ...grupos[grupoIndex] };
-		grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
-			...pedido,
-			cadete: cadeteId,
-		}));
+		let grupoActualizado;
 
 		if (esGrupoListo) {
 			const nuevosGruposListos = [...gruposListos];
+			grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
+			grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+				...pedido,
+				cadete: cadeteId,
+			}));
 			nuevosGruposListos[grupoIndex] = grupoActualizado;
 			setGruposListos(nuevosGruposListos);
 		} else {
 			const nuevosGruposOptimos = [...gruposOptimos];
+			grupoActualizado = { ...nuevosGruposOptimos[grupoIndex] };
+			grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+				...pedido,
+				cadete: cadeteId,
+			}));
 			nuevosGruposOptimos[grupoIndex] = grupoActualizado;
 			setGruposOptimos(nuevosGruposOptimos);
 		}
@@ -611,7 +616,9 @@ export const Comandera = () => {
 									WebkitAppearance: "none",
 									MozAppearance: "none",
 								}}
-								onChange={(e) => handleAsignarCadete(index, e.target.value)}
+								onChange={(e) =>
+									handleAsignarCadete(index, e.target.value, true)
+								}
 								value={grupo.pedidos[0]?.cadete || ""}
 							>
 								<option value="">¿Para quién?</option>
@@ -759,7 +766,9 @@ export const Comandera = () => {
 											WebkitAppearance: "none",
 											MozAppearance: "none",
 										}}
-										onChange={(e) => handleAsignarCadete(index, e.target.value)}
+										onChange={(e) =>
+											handleAsignarCadete(index, e.target.value, false)
+										}
 										value={grupo.pedidos[0]?.cadete || ""}
 									>
 										<option value="">¿Para quién?</option>
