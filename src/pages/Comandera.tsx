@@ -733,10 +733,56 @@ export const Comandera = () => {
 								</div>
 							</div>
 						)}
-						<div className="w-full bg-black opacity-30 rounded-lg ">
-							<p className="font-medium text-gray-100  mt-4 mb-8  text-center">
-								Reservas
-							</p>
+						<div className="w-full bg-black shadow-black rounded-lg h-min font-coolvetica  shadow-lg p-4 mb-4  ">
+							{grupoManual.length > 0 && (
+								<div className=" ">
+									<h3 className="font-medium text-gray-100  mt-4 mb-8  text-center">
+										Reservas
+									</h3>
+									<div className="flex flex-col gap-2">
+										{grupoManual.map((pedido, index) => (
+											<div
+												key={pedido.id}
+												className="bg-gray-100 rounded-lg flex  justify-between flex-row"
+											>
+												<div className="flex flex-row items-center">
+													<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+														{index + 1}
+													</div>
+													<div className="pl-4 pb-3.5 pt-2">
+														<p className="font-bold text-lg">
+															{pedido.direccion}
+														</p>
+														<p className="text-xs">Distancia: Desconocido</p>
+														<p className="text-xs">
+															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+															minutos
+														</p>
+
+														<p className="text-xs">
+															Cliente percibe entrega de: Desconocido
+														</p>
+													</div>
+												</div>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke-width="1.5"
+													stroke="currentColor"
+													className="w-6 mr-4"
+												>
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														d="M3.75 9h16.5m-16.5 6.75h16.5"
+													/>
+												</svg>
+											</div>
+										))}
+									</div>
+								</div>
+							)}
 						</div>
 					</div>
 
