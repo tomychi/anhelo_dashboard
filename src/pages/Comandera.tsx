@@ -599,7 +599,7 @@ export const Comandera = () => {
 	return (
 		<div className="p-4 flex flex-col font-coolvetica">
 			<div>
-				<div className="mb-4 flex flex-row justify-center gap-2 ">
+				<div className="mb-8 mt-4 flex flex-row justify-center gap-2 ">
 					<div>
 						<div className="flex  gap-2">
 							<div
