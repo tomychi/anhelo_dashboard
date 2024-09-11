@@ -229,55 +229,98 @@ export const DynamicForm: React.FC = () => {
       return;
     }
 
-    let cuponValido = false;
+    let cuponValido = true;
+
+    let cantidadCuponesValidos = 0;
+
+    // Verificamos si hay cupones y los procesamos
     if (formData.cupon) {
-      cuponValido = await canjearVoucher(formData.cupon);
+      // Dividimos los cupones por comas y eliminamos espacios en blanco alrededor
+      const cupones = formData.cupon.split(',').map((cupon) => cupon.trim());
+
+      // Usamos Promise.all para validar todos los cupones
+      const validacionCupones = await Promise.all(
+        cupones.map(async (cupon) => {
+          return await canjearVoucher(cupon); // canjearVoucher devuelve true o false
+        })
+      );
+
+      // Filtramos cupones válidos
+      cantidadCuponesValidos = validacionCupones.filter(
+        (esValido) => esValido
+      ).length;
+
+      // Revisamos si al menos uno de los cupones es válido
+      cuponValido = cantidadCuponesValidos > 0;
+
+      // Si ningún cupón es válido, mostrar alerta de error
       if (!cuponValido) {
         Swal.fire({
           icon: 'error',
-          title: 'Cupón inválido',
-          text: 'El cupón que ingresaste no es válido o ya ha sido canjeado.',
+          title: 'Cupones inválidos',
+          text: 'Ninguno de los cupones ingresados es válido o ya ha sido canjeado.',
         });
       }
     }
-
     let subTotal = 0;
-    // cuponValido
-    if (cuponValido) {
-      // Encontrar la hamburguesa más cara (considerando la cantidad)
-      const burgerMasCara = detallePedido.reduce((maxBurger, burger) => {
-        const totalBurgerPrice =
-          (burger.priceBurger ?? 0) * (burger.quantity ?? 1);
-        return totalBurgerPrice >
-          (maxBurger.priceBurger ?? 0) * (maxBurger.quantity ?? 1)
-          ? burger
-          : maxBurger;
-      }, detallePedido[0]);
+    if (subTotal + 1) {
+      // Calcular el subtotal total de todos los productos sin aplicar descuentos
+      subTotal = detallePedido.reduce(
+        (acc, burger) => acc + (burger.subTotal ?? 0),
+        0
+      );
 
-      // Calcular el subtotal total de todos los productos
-      subTotal = detallePedido.reduce((acc, burger) => {
-        return acc + (burger.subTotal ?? 0);
-      }, 0);
+      // Crear una lista de hamburguesas "expandida" para manejar cantidades > 1
+      const hamburguesasExpandida = detallePedido.flatMap((burger) =>
+        Array(burger.quantity ?? 1).fill(burger)
+      );
 
-      // Si hay más de una unidad de la hamburguesa más cara, aplicar el descuento 2x1
-      if ((burgerMasCara.quantity ?? 1) > 1) {
-        const descuento =
-          (burgerMasCara.priceBurger ?? 0) + (burgerMasCara.priceToppings ?? 0);
-        subTotal -= descuento; // Resta el precio de una unidad
-      } else if (detallePedido.length > 1) {
-        // Si hay al menos dos hamburguesas diferentes, aplicar el 2x1 en las dos más caras
-        const [burgerMasCara1, burgerMasCara2] = detallePedido
-          .sort((a, b) => (b.priceBurger ?? 0) - (a.priceBurger ?? 0)) // Ordenar por precio en orden descendente
-          .slice(0, 2); // Tomar las dos más caras
+      // Ordenamos las hamburguesas por precio (sumando priceBurger y priceToppings) en orden descendente
+      const hamburguesasOrdenadas = hamburguesasExpandida.sort((a, b) => {
+        const totalA = (a.priceBurger ?? 0) + (a.priceToppings ?? 0);
+        const totalB = (b.priceBurger ?? 0) + (b.priceToppings ?? 0);
+        return totalB - totalA; // Ordenar de mayor a menor
+      });
 
-        const descuento =
-          ((burgerMasCara1?.priceBurger ?? 0) +
-            (burgerMasCara1?.priceToppings ?? 0) +
-            (burgerMasCara2?.priceBurger ?? 0) +
-            (burgerMasCara2?.priceToppings ?? 0)) /
-          2;
-        subTotal -= descuento; // Resta la mitad del precio de las dos hamburguesas más caras
+      // Determinamos cuántas hamburguesas entran en la promoción
+      const hamburguesasParaDescuento = cantidadCuponesValidos * 2;
+      let totalConDescuento = 0;
+
+      // Aplicamos el 2x1 a las hamburguesas más caras
+      for (let i = 0; i < hamburguesasParaDescuento; i += 2) {
+        const burger1 = hamburguesasOrdenadas[i]; // La hamburguesa más cara
+        const burger2 = hamburguesasOrdenadas[i + 1]; // La segunda más cara
+
+        // Si hay al menos dos hamburguesas para aplicar el descuento 2x1
+        if (burger1 && burger2) {
+          const precio1 =
+            (burger1.priceBurger ?? 0) + (burger1.priceToppings ?? 0);
+          const precio2 =
+            (burger2.priceBurger ?? 0) + (burger2.priceToppings ?? 0);
+
+          // Sumar los precios y dividir entre 2 para aplicar el descuento 2x1
+          const totalPar = (precio1 + precio2) / 2;
+          totalConDescuento += totalPar;
+        }
       }
+
+      // Ahora sumamos las hamburguesas que no entraron en la promoción (si quedaron)
+      const hamburguesasSinDescuento = hamburguesasOrdenadas.slice(
+        hamburguesasParaDescuento
+      );
+      const totalSinDescuento = hamburguesasSinDescuento.reduce(
+        (acc, burger) => {
+          const precioBurger =
+            (burger.priceBurger ?? 0) + (burger.priceToppings ?? 0);
+          return acc + precioBurger;
+        },
+        0
+      );
+
+      // Calculamos el nuevo subtotal con descuento aplicado
+      subTotal = totalConDescuento + totalSinDescuento;
+
+      // Mostrar el nuevo total con el descuento aplicado
       Swal.fire({
         icon: 'success',
         title: 'DESCUENTO',
