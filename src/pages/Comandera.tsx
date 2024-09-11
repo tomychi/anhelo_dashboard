@@ -16,6 +16,7 @@ import listoIcon from "../assets/listoIcon.png";
 import Swal from "sweetalert2";
 import { updateCadeteForOrder } from "../firebase/UploadOrder";
 import { obtenerHoraActual } from "../helpers/dateToday";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export const Comandera = () => {
 	const [seccionActiva, setSeccionActiva] = useState("porHacer");
@@ -544,6 +545,57 @@ export const Comandera = () => {
 		});
 	}, [pedidosDisponibles]);
 
+	const onDragEnd = (result) => {
+		const { source, destination } = result;
+
+		// Si no hay destino válido, no hacemos nada
+		if (!destination) {
+			return;
+		}
+
+		// Si el origen y el destino son el mismo, no hacemos nada
+		if (
+			source.droppableId === destination.droppableId &&
+			source.index === destination.index
+		) {
+			return;
+		}
+
+		// Encontrar los grupos de origen y destino
+		const sourceGroup = gruposListos[parseInt(source.droppableId)];
+		const destGroup = gruposListos[parseInt(destination.droppableId)];
+
+		// Crear nuevos arrays para los pedidos
+		const newSourcePedidos = Array.from(sourceGroup.pedidos);
+		const newDestPedidos =
+			source.droppableId === destination.droppableId
+				? newSourcePedidos
+				: Array.from(destGroup.pedidos);
+
+		// Remover el pedido del grupo de origen
+		const [movedPedido] = newSourcePedidos.splice(source.index, 1);
+
+		// Añadir el pedido al grupo de destino
+		newDestPedidos.splice(destination.index, 0, movedPedido);
+
+		// Crear nuevos grupos con los pedidos actualizados
+		const newGruposListos = [...gruposListos];
+		newGruposListos[parseInt(source.droppableId)] = {
+			...sourceGroup,
+			pedidos: newSourcePedidos,
+		};
+
+		if (source.droppableId !== destination.droppableId) {
+			newGruposListos[parseInt(destination.droppableId)] = {
+				...destGroup,
+				pedidos: newDestPedidos,
+			};
+		}
+
+		// Actualizar el estado
+		setGruposListos(newGruposListos);
+	};
+
 	return (
 		<div className="p-4 flex flex-col font-coolvetica">
 			<div>
@@ -629,126 +681,153 @@ export const Comandera = () => {
 						</div>
 					)}
 				</div>
-				<div className="flex flex-wrap gap-4">
-					{gruposListos.map((grupo, index) => (
-						<div
-							key={`listo-${index}`}
-							className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
-						>
-							<div className="flex flex-col mt-4 mb-8 text-center justify-center">
-								<div className="flex flex-row items-center justify-center gap-2">
-									<img src={listoIcon} className="h-3 mb-1" alt="" />
-									<h3 className="font-bold text-2xl mb-2">
-										Grupo listo {index + 1}
-									</h3>
-								</div>
 
-								<p className="text-xs">
-									Pedido con peor entrega: {grupo.peorTiempoPercibido} minutos (
-									{grupo.pedidoPeorTiempo?.direccion.split(",")[0] || "N/A"})
-								</p>
-								<p className="text-xs">
-									Duracion del recorrido: {grupo.tiempoTotal} minutos
-								</p>
-								<p className="text-xs">
-									Distancia del recorrido: {grupo.distanciaTotal} km
-								</p>
-								<p className="text-xs">El cadete regresa a ANHELO a las hs</p>
-							</div>
-							<button
-								className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
-								onClick={() => handleDeshacerGrupo(index)}
-							>
-								{loadingStates[index] ? (
-									<div className="flex flex-row gap-1">
-										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-										<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
-									</div>
-								) : (
-									"Deshacer"
-								)}
-							</button>
-							<select
-								className="bg-gray-100 appearance-none mb-8 w-full text-center py-2 rounded-full "
-								style={{
-									WebkitAppearance: "none",
-									MozAppearance: "none",
-								}}
-								onChange={(e) =>
-									handleAsignarCadete(index, e.target.value, true)
-								}
-								value={grupo.pedidos[0]?.cadete || ""}
-							>
-								<option value="">¿Para quién?</option>
-								{cadetesDisponibles.map((cadete) => (
-									<option key={cadete.id} value={cadete.id}>
-										{cadete.name}
-									</option>
-								))}
-							</select>
-							{grupo.pedidos.map((pedido, pedidoIndex) => (
-								<div
-									key={pedido.id}
-									className={`bg-gray-100 relative flex flex-row items-center ${
-										pedidoIndex === 0
-											? "rounded-t-lg"
-											: pedidoIndex === grupo.pedidos.length - 1
-											? "rounded-b-lg"
-											: ""
-									}`}
-								>
-									<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-										{pedidoIndex + 1}
-									</div>
-									{grupo.pedidos.length > 1 && (
-										<div
-											className={`w-1.5 bg-black absolute left-[23.5px] ${
-												pedidoIndex === 0
-													? "h-1/2 bottom-0"
-													: pedidoIndex === grupo.pedidos.length - 1
-													? "h-1/2 top-0"
-													: "h-full"
-											}`}
-										></div>
-									)}
+				<div className="flex flex-wrap gap-4">
+					<DragDropContext onDragEnd={onDragEnd}>
+						{gruposListos.map((grupo, index) => (
+							<Droppable droppableId={index.toString()} key={`listo-${index}`}>
+								{(provided) => (
 									<div
-										className={`flex flex-col ${
-											pedidoIndex !== grupo.pedidos.length - 1
-												? "border-b border-black border-opacity-20"
-												: ""
-										} w-full ml-4 pb-3.5 pt-2`}
+										{...provided.droppableProps}
+										ref={provided.innerRef}
+										className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg"
 									>
-										<p className="font-bold text-lg">
-											{pedido.direccion.split(",")[0]}
-										</p>
-										<p className="text-xs">Distancia: {pedido.distancia} km</p>
-										<p className="text-xs">
-											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
-										</p>
-										<p className="text-xs">
-											Cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
-											minutos
-										</p>
+										<div className="flex flex-col mt-4 mb-8 text-center justify-center">
+											<div className="flex flex-row items-center justify-center gap-2">
+												<img src={listoIcon} className="h-3 mb-1" alt="" />
+												<h3 className="font-bold text-2xl mb-2">
+													Grupo listo {index + 1}
+												</h3>
+											</div>
+
+											<p className="text-xs">
+												Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+												minutos (
+												{grupo.pedidoPeorTiempo?.direccion.split(",")[0] ||
+													"N/A"}
+												)
+											</p>
+											<p className="text-xs">
+												Duracion del recorrido: {grupo.tiempoTotal} minutos
+											</p>
+											<p className="text-xs">
+												Distancia del recorrido: {grupo.distanciaTotal} km
+											</p>
+											<p className="text-xs">
+												El cadete regresa a ANHELO a las hs
+											</p>
+										</div>
+										<button
+											className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+											onClick={() => handleDeshacerGrupo(index)}
+										>
+											{loadingStates[index] ? (
+												<div className="flex flex-row gap-1">
+													<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+													<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+													<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+												</div>
+											) : (
+												"Deshacer"
+											)}
+										</button>
+										<select
+											className="bg-gray-100 appearance-none mb-8 w-full text-center py-2 rounded-full "
+											style={{
+												WebkitAppearance: "none",
+												MozAppearance: "none",
+											}}
+											onChange={(e) =>
+												handleAsignarCadete(index, e.target.value, true)
+											}
+											value={grupo.pedidos[0]?.cadete || ""}
+										>
+											<option value="">¿Para quién?</option>
+											{cadetesDisponibles.map((cadete) => (
+												<option key={cadete.id} value={cadete.id}>
+													{cadete.name}
+												</option>
+											))}
+										</select>
+										{grupo.pedidos.map((pedido, pedidoIndex) => (
+											<Draggable
+												key={pedido.id}
+												draggableId={pedido.id}
+												index={pedidoIndex}
+											>
+												{(provided) => (
+													<div
+														ref={provided.innerRef}
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+														className={`bg-gray-100 relative flex flex-row items-center ${
+															pedidoIndex === 0
+																? "rounded-t-lg"
+																: pedidoIndex === grupo.pedidos.length - 1
+																? "rounded-b-lg"
+																: ""
+														}`}
+													>
+														<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+															{pedidoIndex + 1}
+														</div>
+														{grupo.pedidos.length > 1 && (
+															<div
+																className={`w-1.5 bg-black absolute left-[23.5px] ${
+																	pedidoIndex === 0
+																		? "h-1/2 bottom-0"
+																		: pedidoIndex === grupo.pedidos.length - 1
+																		? "h-1/2 top-0"
+																		: "h-full"
+																}`}
+															></div>
+														)}
+														<div
+															className={`flex flex-col ${
+																pedidoIndex !== grupo.pedidos.length - 1
+																	? "border-b border-black border-opacity-20"
+																	: ""
+															} w-full ml-4 pb-3.5 pt-2`}
+														>
+															<p className="font-bold text-lg">
+																{pedido.direccion.split(",")[0]}
+															</p>
+															<p className="text-xs">
+																Distancia: {pedido.distancia} km
+															</p>
+															<p className="text-xs">
+																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+																minutos
+															</p>
+															<p className="text-xs">
+																Cliente percibe entrega de:{" "}
+																{pedido.tiempoPercibido} minutos
+															</p>
+														</div>
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															stroke-width="1.5"
+															stroke="currentColor"
+															className="w-6 mr-4"
+														>
+															<path
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																d="M3.75 9h16.5m-16.5 6.75h16.5"
+															/>
+														</svg>
+													</div>
+												)}
+											</Draggable>
+										))}
+										{provided.placeholder}
 									</div>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke-width="1.5"
-										stroke="currentColor"
-										className="w-6 mr-4"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											d="M3.75 9h16.5m-16.5 6.75h16.5"
-										/>
-									</svg>
-								</div>
-							))}
-						</div>
-					))}
+								)}
+							</Droppable>
+						))}
+					</DragDropContext>
 					{grupoManual.length > 0 && (
 						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
 							<h3 className="font-bold text-2xl mt-4 mb-8  text-center">
@@ -953,7 +1032,9 @@ export const Comandera = () => {
 							);
 						})
 					) : (
-						<p>No hay pedidos disponibles para agrupar.</p>
+						<p className="mt-[-8px]">
+							No hay pedidos disponibles para agrupar.
+						</p>
 					)}
 				</div>
 			</div>
