@@ -603,14 +603,19 @@ export const Comandera = () => {
 										Grupo listo {index + 1}
 									</h3>
 								</div>
-								<p>Cantidad de pedidos: {grupo.pedidos.length}</p>
-								<p>Tiempo total de recorrido: {grupo.tiempoTotal} minutos</p>
-								<p>Distancia total del recorrido: {grupo.distanciaTotal} km</p>
-								<p>
+
+								<p className="text-xs">
 									Pedido con peor tiempo de entrega percibido:{" "}
-									{grupo.peorTiempoPercibido} minutos
+									{grupo.peorTiempoPercibido} minutos (
+									{grupo.pedidoPeorTiempo?.direccion.split(",")[0] || "N/A"})
 								</p>
-								<p>Dirección: {grupo.pedidoPeorTiempo?.direccion || "N/A"}</p>
+								<p className="text-xs">
+									Duracion del recorrido: {grupo.tiempoTotal} minutos
+								</p>
+								<p className="text-xs">
+									Distancia del recorrido: {grupo.distanciaTotal} km
+								</p>
+								<p className="text-xs">El cadete regresa a ANHELO a las hs</p>
 							</div>
 							<select
 								className="bg-gray-100 w-full py-2 rounded-full mb-2"
@@ -627,7 +632,7 @@ export const Comandera = () => {
 								))}
 							</select>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
-								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
+								<div key={pedido.id} className="bg-black p-2 mb-2 rounded">
 									<p>
 										Entrega {pedidoIndex + 1}: {pedido.direccion}
 									</p>
