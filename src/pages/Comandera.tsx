@@ -594,8 +594,7 @@ export const Comandera = () => {
 								</div>
 
 								<p className="text-xs">
-									Pedido con peor tiempo de entrega percibido:{" "}
-									{grupo.peorTiempoPercibido} minutos (
+									Pedido con peor entrega: {grupo.peorTiempoPercibido} minutos (
 									{grupo.pedidoPeorTiempo?.direccion.split(",")[0] || "N/A"})
 								</p>
 								<p className="text-xs">
@@ -629,16 +628,49 @@ export const Comandera = () => {
 								Deshacer
 							</button>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
-								<div key={pedido.id} className="bg-black p-2 mb-2 rounded">
-									<p>
-										Entrega {pedidoIndex + 1}: {pedido.direccion}
-									</p>
-									<p>Distancia: {pedido.distancia} km</p>
-									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
-									<p>
-										El cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
-										minutos
-									</p>
+								<div
+									key={pedido.id}
+									className={`bg-gray-100 relative flex flex-row items-center ${
+										pedidoIndex === 0
+											? "rounded-t-lg"
+											: pedidoIndex === grupo.pedidos.length - 1
+											? "rounded-b-lg"
+											: ""
+									}`}
+								>
+									<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+										{pedidoIndex + 1}
+									</div>
+									{grupo.pedidos.length > 1 && (
+										<div
+											className={`w-1.5 bg-black absolute left-[23.5px] ${
+												pedidoIndex === 0
+													? "h-1/2 bottom-0"
+													: pedidoIndex === grupo.pedidos.length - 1
+													? "h-1/2 top-0"
+													: "h-full"
+											}`}
+										></div>
+									)}
+									<div
+										className={`flex flex-col ${
+											pedidoIndex !== grupo.pedidos.length - 1
+												? "border-b border-black border-opacity-20"
+												: ""
+										} w-full ml-4 pb-3.5 pt-2`}
+									>
+										<p className="font-bold text-lg">
+											{pedido.direccion.split(",")[0]}
+										</p>
+										<p className="text-xs">Distancia: {pedido.distancia} km</p>
+										<p className="text-xs">
+											Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+										</p>
+										<p className="text-xs">
+											Cliente percibe entrega de: {pedido.tiempoPercibido}{" "}
+											minutos
+										</p>
+									</div>
 								</div>
 							))}
 						</div>
