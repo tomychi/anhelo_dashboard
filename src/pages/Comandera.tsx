@@ -582,12 +582,14 @@ export const Comandera = () => {
 				<div className="flex flex-wrap gap-4">
 					{grupoManual.length > 0 && (
 						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
-							<h3 className="font-bold text-xl mb-2">Asignar manualmente</h3>
+							<h3 className="font-bold text-2xl mt-4 mb-8  text-center">
+								Asignar manualmente
+							</h3>
 							<div className="flex flex-col gap-2">
 								{grupoManual.map((pedido, index) => (
 									<div
 										key={pedido.id}
-										className="bg-gray-100 rounded flex items-center flex-row"
+										className="bg-gray-100 rounded-lg flex items-center flex-row"
 									>
 										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 											{index + 1}
