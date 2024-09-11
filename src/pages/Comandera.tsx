@@ -583,15 +583,24 @@ export const Comandera = () => {
 					{grupoManual.length > 0 && (
 						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
 							<h3 className="font-bold text-xl mb-2">Asignar manualmente</h3>
-							{grupoManual.map((pedido, index) => (
-								<div key={pedido.id} className="bg-white p-2 mb-2 rounded">
-									<p>
-										Entrega {index + 1}: {pedido.direccion}
-									</p>
-									<p>Teléfono: {pedido.telefono}</p>
-									<p>Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos</p>
-								</div>
-							))}
+							<div className="flex flex-col gap-2">
+								{grupoManual.map((pedido, index) => (
+									<div
+										key={pedido.id}
+										className="bg-gray-100 rounded flex flex-row"
+									>
+										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+											{index + 1}
+										</div>
+										<div>
+											<p className="font-bold text-lg">{pedido.direccion}</p>
+											<p className="text-xs">
+												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+											</p>
+										</div>
+									</div>
+								))}
+							</div>
 						</div>
 					)}
 					{gruposListos.map((grupo, index) => (
