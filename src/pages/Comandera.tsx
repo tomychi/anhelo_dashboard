@@ -708,7 +708,7 @@ export const Comandera = () => {
 												/>
 											</svg>
 											<h3 className="font-bold text-2xl mb-2">
-												Grupo óptimo {index + 1}
+												Grupo óptimo {index + 1} en proceso...
 											</h3>
 										</div>
 										<p className="text-xs">
