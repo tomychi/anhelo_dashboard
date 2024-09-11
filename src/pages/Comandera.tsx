@@ -580,31 +580,6 @@ export const Comandera = () => {
 					)}
 				</div>
 				<div className="flex flex-wrap gap-4">
-					{grupoManual.length > 0 && (
-						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
-							<h3 className="font-bold text-2xl mt-4 mb-8  text-center">
-								Asignar manualmente
-							</h3>
-							<div className="flex flex-col gap-2">
-								{grupoManual.map((pedido, index) => (
-									<div
-										key={pedido.id}
-										className="bg-gray-100 rounded-lg flex items-center flex-row"
-									>
-										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-											{index + 1}
-										</div>
-										<div className="pl-4 pb-3.5 pt-2">
-											<p className="font-bold text-lg">{pedido.direccion}</p>
-											<p className="text-xs">
-												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
-											</p>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-					)}
 					{gruposListos.map((grupo, index) => (
 						<div
 							key={`listo-${index}`}
@@ -700,7 +675,31 @@ export const Comandera = () => {
 							))}
 						</div>
 					))}
-
+					{grupoManual.length > 0 && (
+						<div className="bg-gray-300 shadow-black h-min font-coolvetica w-1/4 shadow-lg p-4 mb-4 rounded-lg">
+							<h3 className="font-bold text-2xl mt-4 mb-8  text-center">
+								Asignar manualmente
+							</h3>
+							<div className="flex flex-col gap-2">
+								{grupoManual.map((pedido, index) => (
+									<div
+										key={pedido.id}
+										className="bg-gray-100 rounded-lg flex items-center flex-row"
+									>
+										<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+											{index + 1}
+										</div>
+										<div className="pl-4 pb-3.5 pt-2">
+											<p className="font-bold text-lg">{pedido.direccion}</p>
+											<p className="text-xs">
+												Pidió hace: {calcularTiempoEspera(pedido.hora)} minutos
+											</p>
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 					{gruposOptimos.length > 0 ? (
 						gruposOptimos.map((grupo, index) => {
 							const horaActual = new Date();
