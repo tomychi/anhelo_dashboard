@@ -830,7 +830,7 @@ export const Comandera = () => {
 					</DragDropContext>
 					{grupoManual.length > 0 && (
 						<div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
-							<h3 className="font-medium text-gray-100 text- mt-4 mb-4  text-center">
+							<h3 className="font-medium text-gray-100 text- mt-4 mb-8  text-center">
 								Asignar manualmente
 							</h3>
 							<div className="flex flex-col gap-2">
