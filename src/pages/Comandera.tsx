@@ -622,6 +622,12 @@ export const Comandera = () => {
 									</option>
 								))}
 							</select>
+							<button
+								className="bg-gray-400 bg-opacity-50 w-full py-4 mb-8 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+								onClick={() => handleDeshacerGrupo(index)}
+							>
+								Deshacer
+							</button>
 							{grupo.pedidos.map((pedido, pedidoIndex) => (
 								<div key={pedido.id} className="bg-black p-2 mb-2 rounded">
 									<p>
@@ -635,12 +641,6 @@ export const Comandera = () => {
 									</p>
 								</div>
 							))}
-							<button
-								className="bg-red-500 w-full py-4 text-white rounded-lg flex justify-center items-center text-2xl font-coolvetica mt-4"
-								onClick={() => handleDeshacerGrupo(index)}
-							>
-								Deshacer
-							</button>
 						</div>
 					))}
 
