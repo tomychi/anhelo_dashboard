@@ -926,8 +926,24 @@ export const Comandera = () => {
 													/>
 												</svg>
 												{tooltipVisibility[`${index}-${pedidoIndex}`] && (
-													<div className="absolute z-10 px-3 py-2  font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs  bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap">
-														Solo puedes mover pedidos de grupos listos.
+													<div className="absolute z-10 px-3 py-2  font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs  bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2">
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															stroke-width="1.5"
+															stroke="currentColor"
+															className="w-4"
+														>
+															<path
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+															/>
+														</svg>
+														<p className="mb-[1.5px]">
+															Solo puedes mover pedidos de grupos listos.
+														</p>
 													</div>
 												)}
 											</div>
