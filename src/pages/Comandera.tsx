@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, {
+	useEffect,
+	useState,
+	useMemo,
+	useRef,
+	useCallback,
+} from "react";
 import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -172,7 +178,6 @@ export const Comandera = () => {
 	}, [orders, tiempoActual]);
 
 	const pedidosDisponibles = useMemo(() => {
-		console.log(orders);
 		return orders.filter((order) => {
 			if (order.hora > obtenerHoraActual()) {
 				return false; // Este es un pedido de reserva
