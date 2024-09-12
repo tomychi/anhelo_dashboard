@@ -263,7 +263,7 @@ export const DynamicForm: React.FC = () => {
       }
     }
     let subTotal = 0;
-    if (subTotal + 1) {
+    if (cuponValido) {
       // Calcular el subtotal total de todos los productos sin aplicar descuentos
       subTotal = detallePedido.reduce(
         (acc, burger) => acc + (burger.subTotal ?? 0),
