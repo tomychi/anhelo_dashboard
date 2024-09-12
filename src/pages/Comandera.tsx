@@ -1106,7 +1106,7 @@ export const Comandera = () => {
 										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center justify-center">
-											<div className="flex flex-row items-center justify-center gap-2">
+											<div className="flex flex-row  items-center justify-center ">
 												<svg
 													className="w-4 h-4 mb-1 text-gray-100 animate-spin   dark:fill-black"
 													viewBox="0 0 100 101"
@@ -1120,7 +1120,7 @@ export const Comandera = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												<h3 className="font-medium text-3xl mb-2">
+												<h3 className="font-medium w-9/12 text-3xl mb-2">
 													Grupo {index + 1} en proceso...
 												</h3>
 											</div>
