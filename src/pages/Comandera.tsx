@@ -1246,7 +1246,7 @@ export const Comandera = () => {
 								);
 							})
 						) : (
-							<p className="mt-[-8px]">
+							<p className="mt-[-8px] text-center w-full">
 								No hay pedidos disponibles para agrupar.
 							</p>
 						)}
