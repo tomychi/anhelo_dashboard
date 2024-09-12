@@ -878,7 +878,7 @@ export const Comandera = () => {
 																</svg>
 																{tooltipVisibility[index] && (
 																	<div
-																		className={`absolute z-50 px-3 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 overflow-hidden ${
+																		className={`absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 overflow-hidden h-[30px] ${
 																			unlocking[index] ? "unlocking" : ""
 																		}`}
 																	>
@@ -886,8 +886,8 @@ export const Comandera = () => {
 																		<svg
 																			xmlns="http://www.w3.org/2000/svg"
 																			version="1.0"
-																			width="20"
-																			height="20"
+																			width="16"
+																			height="16"
 																			viewBox="0 0 838.000000 1280.000000"
 																			preserveAspectRatio="xMidYMid meet"
 																			className="relative z-10"
@@ -900,8 +900,8 @@ export const Comandera = () => {
 																				<path d="M5925 12794 c-568 -60 -1036 -276 -1416 -654 -341 -339 -547 -740 -642 -1245 -20 -107 -21 -148 -24 -1452 l-4 -1343 -1917 -2 -1917 -3 0 -2070 0 -2070 1128 -5 1128 -5 -1 -315 c0 -173 -3 -345 -7 -381 l-6 -66 -96 0 c-109 1 -151 -14 -170 -61 -12 -28 -7 -51 18 -92 5 -8 26 -66 46 -129 20 -63 63 -181 96 -264 33 -82 59 -150 57 -152 -2 -1 -39 -23 -83 -50 -304 -182 -515 -471 -610 -836 -21 -83 -28 -136 -32 -258 -8 -228 21 -391 104 -574 70 -154 139 -256 256 -376 502 -515 1321 -520 1828 -10 148 149 254 323 325 536 52 153 68 254 67 423 -1 277 -77 505 -242 728 -103 139 -267 288 -419 381 -28 18 -52 39 -52 46 0 8 18 87 40 176 61 248 101 453 103 532 l2 70 -143 71 c-160 79 -148 63 -127 162 7 30 1 36 -147 164 -84 74 -155 135 -157 136 -1 2 2 34 9 73 l12 71 1048 0 c954 0 1049 1 1061 16 20 25 21 4093 0 4117 -12 15 -45 17 -292 17 l-279 0 0 1264 c0 1065 2 1283 15 1378 65 496 344 924 775 1191 282 174 649 259 983 229 411 -38 735 -188 1023 -476 278 -279 430 -595 473 -988 7 -59 11 -348 11 -727 l0 -630 22 -20 c72 -68 325 -89 480 -41 76 23 108 44 108 71 0 10 5 19 11 19 7 0 9 207 6 703 -5 755 -5 758 -62 994 -216 896 -949 1565 -1870 1708 -97 15 -438 27 -520 19z m-3070 -11601 c109 -38 209 -146 235 -254 39 -160 -42 -339 -176 -389 -194 -72 -397 2 -495 182 -32 60 -34 68 -34 163 0 118 15 155 90 224 100 92 247 121 380 74z m215 -120 c43 -59 70 -141 70 -208 0 -60 -17 -142 -31 -151 -4 -2 -2 17 6 43 18 58 19 104 4 175 -15 72 -42 121 -97 181 -38 40 -41 46 -15 27 17 -12 46 -42 63 -67z" />
 																			</g>
 																		</svg>
-																		<p className="mb-[1.5px] relative z-10">
-																			Mantén pulsado para distribuirlo en grupos
+																		<p className="mb-[1.5px] relative z-10 text-xs">
+																			Mantén pulsado para distribuir en grupos
 																		</p>
 																	</div>
 																)}
@@ -1202,14 +1202,14 @@ export const Comandera = () => {
 															/>
 														</svg>
 														{tooltipVisibility[`${index}-${pedidoIndex}`] && (
-															<div className="absolute z-50 px-3 py-2  font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs  bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2">
+															<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
 																<svg
 																	xmlns="http://www.w3.org/2000/svg"
 																	fill="none"
 																	viewBox="0 0 24 24"
 																	stroke-width="1.5"
 																	stroke="currentColor"
-																	className="w-4 "
+																	className="w-3 h-3"
 																>
 																	<path
 																		stroke-linecap="round"
@@ -1217,7 +1217,7 @@ export const Comandera = () => {
 																		d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
 																	/>
 																</svg>
-																<p className="mb-[1.5px]">
+																<p className="mb-[1.5px] text-xs">
 																	Solo puedes mover pedidos de grupos listos.
 																</p>
 															</div>
