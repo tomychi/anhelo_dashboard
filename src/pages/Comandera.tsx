@@ -742,7 +742,7 @@ export const Comandera = () => {
 												{pedidosReserva.map((pedido, index) => (
 													<div
 														key={pedido.id}
-														className="bg-gray-100 rounded-lg flex items-center justify-between flex-row"
+														className="bg-gray-100 h-[95px] rounded-lg flex items-center justify-between flex-row"
 													>
 														<div className="flex flex-row items-center">
 															<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
