@@ -770,7 +770,7 @@ export const Comandera = () => {
 														version="1.0"
 														viewBox="0 0 1138.000000 1280.000000"
 														preserveAspectRatio="xMidYMid meet"
-														className="h-4 pr-4 opacity-50"
+														className="h-6 pr-4 opacity-50"
 													>
 														<g
 															transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
