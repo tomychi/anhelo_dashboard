@@ -745,39 +745,42 @@ export const Comandera = () => {
 												key={pedido.id}
 												className="bg-gray-100 rounded-lg flex  justify-between flex-row"
 											>
-												<div className="flex flex-row items-center">
-													<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-														{index + 1}
-													</div>
-													<div className="pl-4 pb-3.5 pt-2">
-														<p className="font-bold text-lg">
-															{pedido.direccion}
-														</p>
-														<p className="text-xs">Distancia: Desconocido</p>
-														<p className="text-xs">
-															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-															minutos
-														</p>
+												<div className="flex flex-row w-full justify-between items-center">
+													<div className="flex flex-row items-center">
+														<div className="bg-black z-50 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+															{index + 1}
+														</div>
+														<div className="pl-4 pb-3.5 pt-2">
+															<p className="font-bold text-lg">
+																{pedido.direccion}
+															</p>
+															<p className="text-xs">Distancia: Desconocido</p>
+															<p className="text-xs">
+																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+																minutos
+															</p>
 
-														<p className="text-xs">
-															Cliente percibe entrega de: Desconocido
-														</p>
+															<p className="text-xs">
+																Cliente percibe entrega de: Desconocido
+															</p>
+														</div>
 													</div>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														version="1.0"
+														viewBox="0 0 1138.000000 1280.000000"
+														preserveAspectRatio="xMidYMid meet"
+														className="h-4 pr-4 opacity-50"
+													>
+														<g
+															transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
+															fill="#000000"
+															stroke="none"
+														>
+															<path d="M5465 12794 c-207 -20 -279 -29 -402 -49 -971 -163 -1838 -722 -2402 -1550 -286 -419 -476 -887 -570 -1400 -55 -304 -61 -447 -61 -1582 l0 -1003 -189 0 c-143 0 -191 -3 -199 -13 -8 -9 -11 -960 -12 -3318 0 -1817 -1 -3309 0 -3316 0 -6 7 -19 16 -27 14 -14 136 -16 1172 -18 636 -1 1063 -5 947 -8 -115 -3 -203 -8 -195 -11 25 -11 284 -54 385 -65 28 -2 77 -9 110 -13 33 -5 63 -7 68 -4 4 2 31 0 60 -6 28 -5 93 -12 142 -15 50 -3 110 -7 135 -10 150 -18 757 -35 1220 -35 463 0 1070 17 1220 35 25 3 86 7 135 10 50 3 114 10 142 15 29 6 56 8 60 6 5 -3 35 -1 68 4 33 4 83 11 110 13 101 11 360 54 385 65 8 3 -79 8 -195 11 -115 3 311 7 947 8 1036 2 1158 4 1172 18 9 8 16 21 16 27 1 7 0 1499 0 3316 -1 2358 -4 3309 -12 3318 -8 10 -56 13 -199 13 l-189 0 0 1003 c0 1135 -6 1278 -61 1582 -133 725 -463 1369 -969 1889 -605 622 -1330 980 -2210 1091 -118 15 -554 28 -645 19z m645 -1043 c568 -97 1058 -348 1452 -744 434 -436 696 -995 758 -1616 6 -63 10 -504 10 -1142 l0 -1039 -2640 0 -2640 0 0 1039 c0 638 4 1079 10 1142 62 621 324 1180 758 1616 395 397 898 654 1452 742 177 29 187 29 465 26 199 -2 275 -7 375 -24z" />
+														</g>
+													</svg>
 												</div>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													fill="none"
-													viewBox="0 0 24 24"
-													stroke-width="1.5"
-													stroke="currentColor"
-													className="w-6 mr-4"
-												>
-													<path
-														stroke-linecap="round"
-														stroke-linejoin="round"
-														d="M3.75 9h16.5m-16.5 6.75h16.5"
-													/>
-												</svg>
 											</div>
 										))}
 									</div>
