@@ -953,8 +953,8 @@ export const Comandera = () => {
 											<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 												<div className="flex flex-row items-center justify-center gap-2">
 													<img src={listoIcon} className="h-3 mb-1" alt="" />
-													<h3 className="font-bold text-2xl mb-2">
-														Grupo listo {index + 1}
+													<h3 className="font-medium text-3xl mb-2">
+														Grupo {index + 1} listo
 													</h3>
 												</div>
 
@@ -977,7 +977,7 @@ export const Comandera = () => {
 												</p>
 											</div>
 											<button
-												className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+												className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-3xl font-coolvetica"
 												onClick={() => handleDeshacerGrupo(index)}
 											>
 												{loadingStates[index] ? (
@@ -1120,8 +1120,8 @@ export const Comandera = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												<h3 className="font-bold text-2xl mb-2">
-													Grupo óptimo {index + 1} en proceso...
+												<h3 className="font-medium text-3xl mb-2">
+													Grupo {index + 1} en proceso...
 												</h3>
 											</div>
 											<p className="text-xs">
@@ -1143,7 +1143,7 @@ export const Comandera = () => {
 											</p>
 										</div>
 										<button
-											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl font-coolvetica"
+											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-3xl font-coolvetica"
 											onClick={() => handleGrupoListo(grupo)}
 										>
 											Listo
