@@ -901,7 +901,7 @@ export const Comandera = () => {
 																			</g>
 																		</svg>
 																		<p className="mb-[1.5px] relative z-10">
-																			Mantén pulsado para distribuir en grupos
+																			Mantén pulsado para distribuirlo en grupos
 																		</p>
 																	</div>
 																)}
