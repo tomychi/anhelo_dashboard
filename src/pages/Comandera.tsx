@@ -635,6 +635,21 @@ export const Comandera = () => {
 		};
 	}, []);
 
+	function sumar30Minutos(hora) {
+		const [horas, minutos] = hora.split(":").map(Number);
+		let nuevosMinutos = minutos + 30;
+		let nuevasHoras = horas;
+
+		if (nuevosMinutos >= 60) {
+			nuevasHoras = (nuevasHoras + 1) % 24;
+			nuevosMinutos = nuevosMinutos - 60;
+		}
+
+		return `${nuevasHoras.toString().padStart(2, "0")}:${nuevosMinutos
+			.toString()
+			.padStart(2, "0")}`;
+	}
+
 	return (
 		<>
 			<style>
@@ -854,7 +869,10 @@ export const Comandera = () => {
 																{pedido.direccion.split(",")[0]}
 															</p>
 															<p className="text-xs">
-																Hora de reserva: {pedido.hora}
+																Pidio para las: {sumar30Minutos(pedido.hora)}
+															</p>
+															<p className="text-xs">
+																Largar recien a las: {pedido.hora}
 															</p>
 														</div>
 													</div>
