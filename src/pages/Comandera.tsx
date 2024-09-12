@@ -735,6 +735,9 @@ export const Comandera = () => {
 									<option value={40}>40 minutos</option>
 									<option value={50}>50 minutos</option>
 									<option value={60}>60 minutos</option>
+									<option value={70}>70 minutos</option>
+									<option value={80}>80 minutos</option>
+									<option value={90}>90 minutos</option>
 								</select>
 								<img
 									src={arrowIcon}
@@ -763,6 +766,9 @@ export const Comandera = () => {
 									<option value={40}>40 minutos</option>
 									<option value={50}>50 minutos</option>
 									<option value={60}>60 minutos</option>
+									<option value={70}>70 minutos</option>
+									<option value={80}>80 minutos</option>
+									<option value={90}>90 minutos</option>
 								</select>
 								<img
 									src={arrowIcon}
