@@ -172,6 +172,7 @@ export const Comandera = () => {
 	}, [orders, tiempoActual]);
 
 	const pedidosDisponibles = useMemo(() => {
+		console.log(orders);
 		return orders.filter((order) => {
 			if (order.hora > obtenerHoraActual()) {
 				return false; // Este es un pedido de reserva
@@ -179,6 +180,10 @@ export const Comandera = () => {
 
 			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
 				return true;
+			}
+
+			if (order.entregado) {
+				return false;
 			}
 
 			const cadeteAsignado = empleados.find(
