@@ -1,17 +1,15 @@
-import React, {
-	useEffect,
-	useState,
-	useMemo,
-	useRef,
-	useCallback,
-} from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { GeneralStats, OrderList } from "../components/comandera";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
-import { EmpleadosProps, readEmpleados } from "../firebase/registroEmpleados";
+import { Unsubscribe } from "firebase/firestore";
+import {
+	EmpleadosProps,
+	listenToEmpleadosChanges,
+} from "../firebase/registroEmpleados";
 import { ReadOrdersForToday } from "../firebase/ReadData";
 import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
@@ -121,28 +119,46 @@ export const Comandera = () => {
 			orders.length;
 
 	useEffect(() => {
-		const obtenerCadetes = async () => {
-			try {
-				const empleados = await readEmpleados();
-				setEmpleados(empleados);
-				const cadetesFiltrados = empleados
-					.filter((empleado) => empleado.category === "cadete")
-					.map((empleado) => empleado.name);
-				setCadetes(cadetesFiltrados);
-			} catch (error) {
-				console.error("Error al obtener los cadetes:", error);
+		let unsubscribeEmpleados: Unsubscribe | null = null;
+		let unsubscribeOrders: Unsubscribe | null = null;
+
+		const iniciarEscuchas = async () => {
+			// Escucha de cambios en empleados
+			unsubscribeEmpleados = listenToEmpleadosChanges(
+				(empleadosActualizados) => {
+					setEmpleados(empleadosActualizados);
+					const cadetesFiltrados = empleadosActualizados
+						.filter((empleado) => empleado.category === "cadete")
+						.map((empleado) => empleado.name);
+					setCadetes(cadetesFiltrados);
+					console.log("cadetes", cadetesFiltrados);
+				}
+			);
+
+			// Escucha de cambios en pedidos
+			if (location.pathname === "/comandas") {
+				unsubscribeOrders = ReadOrdersForToday(
+					async (pedidos: PedidoProps[]) => {
+						dispatch(readOrdersData(pedidos));
+					}
+				);
 			}
 		};
-		obtenerCadetes();
-		if (location.pathname === "/comandas") {
-			const unsubscribe = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
-				dispatch(readOrdersData(pedidos));
-			});
-			return () => {
-				unsubscribe();
-			};
-		}
+
+		iniciarEscuchas();
+
+		// Limpieza de las escuchas al desmontar el componente
+		return () => {
+			if (unsubscribeEmpleados) {
+				unsubscribeEmpleados();
+			}
+			if (unsubscribeOrders) {
+				unsubscribeOrders();
+			}
+		};
 	}, [dispatch, location]);
+
+	console.log(cadetes);
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
@@ -659,6 +675,27 @@ export const Comandera = () => {
 			.toString()
 			.padStart(2, "0")}`;
 	}
+
+	useEffect(() => {
+		// Verificar si hay grupos listos y empleados
+		if (gruposListos.length > 0 && empleados.length > 0) {
+			const gruposActualizados = gruposListos.filter((grupo) => {
+				// Obtener el cadete asignado al grupo (asumiendo que todos los pedidos en un grupo tienen el mismo cadete)
+				const cadeteName = grupo.pedidos[0]?.cadete;
+
+				// Buscar el empleado correspondiente
+				const empleado = empleados.find((emp) => emp.name === cadeteName);
+
+				// Mantener el grupo si el cadete está disponible o si no se encuentra el empleado
+				return empleado ? empleado.available : true;
+			});
+
+			// Actualizar gruposListos solo si hay cambios
+			if (gruposActualizados.length !== gruposListos.length) {
+				setGruposListos(gruposActualizados);
+			}
+		}
+	}, [empleados, gruposListos]);
 
 	return (
 		<>
