@@ -447,7 +447,22 @@ export const Comandera = () => {
 	}, [gruposOptimosMemo]);
 
 	const handleGrupoListo = (grupo) => {
-		setGruposListos([...gruposListos, grupo]);
+		const horaActual = new Date();
+		const horaRegreso = new Date(
+			horaActual.getTime() + grupo.tiempoTotal * 60000
+		);
+		const horaRegresoFormateada = horaRegreso.toLocaleTimeString("es-ES", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+
+		setGruposListos([
+			...gruposListos,
+			{
+				...grupo,
+				horaRegreso: horaRegresoFormateada,
+			},
+		]);
 	};
 
 	const cadetesDisponibles = useMemo(() => {
@@ -951,7 +966,8 @@ export const Comandera = () => {
 													Distancia del recorrido: {grupo.distanciaTotal} km
 												</p>
 												<p className="text-xs">
-													El cadete regresa a ANHELO a las hs
+													El cadete regresa a ANHELO a las {grupo.horaRegreso}{" "}
+													hs
 												</p>
 											</div>
 											<button
