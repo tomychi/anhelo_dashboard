@@ -192,11 +192,9 @@ export const Dashboard = () => {
 		/>,
 		<CardInfo
 			key="costokm"
-			info={
-				orders.length > 0
-					? currencyFormat(totalPaga / totalDirecciones)
-					: currencyFormat(0)
-			}
+			info={currencyFormat(
+				orders.length > 0 ? totalPaga / totalDirecciones || 0 : 0
+			)}
 			title={"Costo promedio delivery"}
 		/>,
 		<CardInfo
