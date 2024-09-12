@@ -804,7 +804,7 @@ export const Comandera = () => {
 																		</g>
 																	</svg>
 																	<p className="mb-[1.5px]">
-																		Mantén pulsado para desbloquear
+																		Mantén pulsado para distribuir en grupos
 																	</p>
 																</div>
 															)}
