@@ -755,9 +755,6 @@ export const Comandera = () => {
 																<p className="text-xs">
 																	Hora de reserva: {pedido.hora}
 																</p>
-																<p className="text-xs">
-																	Distancia: {pedido.distancia || "Desconocida"}
-																</p>
 															</div>
 														</div>
 														<svg
