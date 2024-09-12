@@ -954,7 +954,7 @@ export const Comandera = () => {
 												<div className="flex flex-row items-center justify-center gap-2">
 													<img src={listoIcon} className="h-3 mb-1" alt="" />
 													<h3 className="font-medium text-3xl mb-2">
-														Grupo {index + 1} listo
+														Grupo {index + 1}
 													</h3>
 												</div>
 
