@@ -277,17 +277,19 @@ export const Dashboard = () => {
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola {greetingName}</p>
 			</div>
-			<div className="flex flex-col shadow-2xl shadow-black mb-8 rounded-lg">
-				{cardsToRender.map((card, index) =>
-					React.cloneElement(card, {
-						key: index,
-						className: `
+			<div className="absolute left-4 right-4 top-[130px] rounded-lg   ">
+				<div className="flex flex-col shadow-2xl shadow-black mb-8 rounded-lg">
+					{cardsToRender.map((card, index) =>
+						React.cloneElement(card, {
+							key: index,
+							className: `
 								${index === 0 ? "rounded-t-lg" : ""}
 								${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
 							`,
-						isLoading: isLoading,
-					})
-				)}
+							isLoading: isLoading,
+						})
+					)}
+				</div>
 			</div>
 		</div>
 	);
