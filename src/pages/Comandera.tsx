@@ -31,6 +31,7 @@ import {
 interface PedidosGrupos extends PedidoProps {
   distancia?: number;
   tiempoPercibido?: number;
+  tiempoEspera?: number;
 }
 
 type Grupo = {
@@ -50,6 +51,7 @@ export const Comandera: React.FC = () => {
   const [cadetes, setCadetes] = useState<string[]>([]);
   const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
   const { orders } = useSelector((state: RootState) => state.data);
+  const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [tiempoMaximo, setTiempoMaximo] = useState<number>(40);
   const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] =
@@ -535,11 +537,11 @@ export const Comandera: React.FC = () => {
     const pedidosParaBarajar: PedidoProps[] = [];
     const pedidosManuales: PedidoProps[] = [];
     pedidosDisponibles.forEach((pedido) => {
-      const pedidoInfo: PedidoProps = {
+      const pedidoInfo: PedidosGrupos = {
         id: pedido.id,
         direccion: pedido.direccion,
         cadete: pedido.cadete,
-        distancia: pedido.distancia,
+        distancia: pedido.kms,
         hora: pedido.hora,
         tiempoEspera: calcularTiempoEspera(pedido.hora),
         map: pedido.map,
@@ -630,6 +632,69 @@ export const Comandera: React.FC = () => {
       }
     }
   }, [empleados, gruposListos]);
+
+  if (
+    user.email === 'cocina@anhelo.com' ||
+    user.email === 'cadetes@anhelo.com'
+  ) {
+    return (
+      <div>
+        <CadeteSelect
+          cadetes={cadetes}
+          handleCadeteChange={handleCadeteChange}
+          selectedCadete={selectedCadete}
+          orders={pedidosHechos}
+        />
+        <button
+          className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
+          onClick={() => {
+            const ordersByDate = orders.reduce((acc, order) => {
+              const date = order.fecha;
+              if (!acc[date]) {
+                acc[date] = [];
+              }
+              acc[date].push(order.direccion);
+              return acc;
+            }, {} as Record<string, string[]>);
+            navigator.clipboard.writeText(JSON.stringify(ordersByDate));
+          }}
+        >
+          Copiar direcciones
+        </button>
+        <GeneralStats
+          customerSuccess={customerSuccess}
+          orders={orders}
+          cadeteSeleccionado={selectedCadete}
+          sumaTotalPedidos={sumaTotalPedidos}
+          sumaTotalEfectivo={sumaTotalEfectivo}
+          empleados={empleados}
+        />
+        <NavButtons
+          seccionActiva={seccionActiva}
+          setSeccionActiva={setSeccionActiva}
+        />
+        <OrderList
+          seccionActiva={seccionActiva}
+          pedidosPorHacer={pedidosPorHacer}
+          pedidosHechos={pedidosHechos}
+          pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
+          cadetes={cadetes}
+        />
+        <div className="mt-2">
+          {seccionActiva === 'mapa' &&
+            (location.pathname === '/comandas' ? (
+              <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
+            ) : (
+              <DeliveryMap orders={orders} />
+            ))}
+        </div>
+        <div className="mt-2">
+          {seccionActiva === 'registro' && <RegistroEmpleado />}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <style>
