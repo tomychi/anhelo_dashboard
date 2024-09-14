@@ -572,45 +572,36 @@ export const DynamicForm: React.FC = () => {
 														type="number"
 														placeholder="Mercadopago"
 													/>
-
-													{/* Validación de suma de cantidades */}
-													{/* <p className="text-red-500 text-sm">
-                            {parseInt(formData.efectivoCantidad || 0) +
-                              parseInt(formData.mercadopagoCantidad || 0) !==
-                            total
-                              ? 'La suma de los montos debe ser igual al total del pedido.'
-                              : ''}
-                          </p> */}
 												</div>
 											)}
-											{formData.metodoPago === "mercadopago" ||
-												("ambos" && (
-													<div className="flex flex-row">
-														<button
-															className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
-															type="button"
-															onClick={() => {
-																const mensaje = `El alias es onlyanhelo3, aguardo comprobante para tomar tu pedido!`;
-																navigator.clipboard
-																	.writeText(mensaje)
-																	.then(() => {
-																		console.log(
-																			"Mensaje copiado al portapapeles:",
-																			mensaje
-																		);
-																	})
-																	.catch((error) => {
-																		console.error(
-																			"Error al copiar el mensaje al portapapeles:",
-																			error
-																		);
-																	});
-															}}
-														>
-															COPIAR ALIAS
-														</button>
-													</div>
-												))}
+											{(formData.metodoPago === "mercadopago" ||
+												formData.metodoPago === "ambos") && (
+												<div className="flex flex-row">
+													<button
+														className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
+														type="button"
+														onClick={() => {
+															const mensaje = `El alias es onlyanhelo3, aguardo comprobante para tomar tu pedido!`;
+															navigator.clipboard
+																.writeText(mensaje)
+																.then(() => {
+																	console.log(
+																		"Mensaje copiado al portapapeles:",
+																		mensaje
+																	);
+																})
+																.catch((error) => {
+																	console.error(
+																		"Error al copiar el mensaje al portapapeles:",
+																		error
+																	);
+																});
+														}}
+													>
+														COPIAR ALIAS
+													</button>
+												</div>
+											)}
 										</div>
 										<button
 											type="submit"
