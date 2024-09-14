@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import Absolute from "../../assets/absoluteIsologo.avif";
-import items from "../../assets/itemsIcon.png";
 
 export const Sidebar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
