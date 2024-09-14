@@ -1,6 +1,5 @@
 import currencyFormat from "../../helpers/currencyFormat";
-import { PedidoProps } from "../../types/types";
-import { EmpleadosProps } from "../../firebase/registroEmpleados";
+import { PedidoProps, EmpleadosProps } from "../../types/types";
 import { copyToClipboard } from "../../helpers/copy";
 
 interface GeneralStatsProps {
