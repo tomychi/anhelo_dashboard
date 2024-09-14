@@ -1336,8 +1336,8 @@ export const Comandera: React.FC = () => {
 								);
 							})
 						) : (
-							<p className="mt-[-8px] text-center w-full">
-								No hay pedidos disponibles para agrupar.
+							<p className="mt-[-8px] text-left w-full">
+								Si hay pedidos para agrupar los veras aca.
 							</p>
 						)}
 					</div>
