@@ -27,7 +27,7 @@ export const Sidebar = () => {
 				{ to: "/", text: "Dashboard" },
 
 				{ to: "/pedidos", text: "Tomar pedidos" },
-				{ to: "/comandas", text: "Comandas" },
+				{ to: "/comandas", text: "Comandas y grupos optimos" },
 				// { to: "/marketing", text: "Marketing" },
 				{ to: "/gastos", text: "Gastos" },
 
