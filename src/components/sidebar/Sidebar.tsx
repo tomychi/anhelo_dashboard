@@ -50,17 +50,22 @@ export const Sidebar = () => {
 					/>
 				</NavLink>
 				<div className="flex flex-row gap-4 items-center">
-					<button className="bg-gray-100 rounded-md flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
-						<p className=" font-medium">Acción rapida</p>
+					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
+						<p className=" font-medium font-coolvetica">Acción rapida</p>
 					</button>
 					<button
 						onClick={toggleMenu}
-						className="bg-gray-100 rounded-md flex items-center px-2 h-9 w-9 justify-center"
+						className=" rounded-md flex items-center px-2 h-9 w-9 justify-center"
 					>
 						{isMenuOpen ? (
 							<p className="mt-[-5px] font-black">×</p>
 						) : (
-							<img src={items} alt="Menu" className="h-3 object-contain" />
+							<img
+								src={items}
+								alt="Menu"
+								style={{ filter: "invert(100%)" }}
+								className="h-3 object-contain"
+							/>
 						)}
 					</button>
 				</div>
