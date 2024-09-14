@@ -57,12 +57,22 @@ export const Sidebar = () => {
 						{isMenuOpen ? (
 							<p className="mt-[-5px] font-black text-gray-100">×</p>
 						) : (
-							<img
-								src={items}
-								alt="Menu"
-								style={{ filter: "invert(100%)" }}
-								className="h-3 object-contain"
-							/>
+							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 p-2.5 rounded-full focus:outline-none">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="4"
+									stroke="currentColor"
+									className="w-4 text-gray-100"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M3.75 9h16.5m-16.5 6.75h16.5"
+									/>
+								</svg>
+							</div>
 						)}
 					</button>
 					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
