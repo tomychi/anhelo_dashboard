@@ -640,9 +640,9 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica">
 				<div>
-					<div className="mb-8 mt-4 flex flex-row justify-center gap-2 ">
+					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center gap-2 ">
 						<div>
-							<div className="flex  gap-2">
+							<div className="flex flex-col md:flex-row  gap-2">
 								<div
 									className={` py-2 px-4 rounded-lg font-medium cursor-pointer ${
 										modoAgrupacion === "entrega"
@@ -728,7 +728,7 @@ export const Comandera: React.FC = () => {
 							</div>
 						)}
 					</div>
-					<div className="grid grid-cols-4 gap-4">
+					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
 						<div className="flex flex-col">
 							{grupoManual.length > 0 && (
 								<div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
