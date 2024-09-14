@@ -42,7 +42,7 @@ export const CardInfo = ({
 			<div className="flex flex-row items-center justify-between w-full">
 				<div className="flex flex-col gap-1">
 					{isLoading ? (
-						<LoadingElement className="h-4 w-24" />
+						<LoadingElement className="h-4 w-44" />
 					) : (
 						<p className="text-sm font-medium">
 							{title}
@@ -63,7 +63,7 @@ export const CardInfo = ({
 					{!isLoading && <img src={arrow} className="h-2 w-1.5" alt="" />}
 				</div>
 				{isLoading ? (
-					<LoadingElement className="h-8 w-16" />
+					<LoadingElement className="h-8 w-44" />
 				) : (
 					<p className="text-4xl font-medium">{info}</p>
 				)}
