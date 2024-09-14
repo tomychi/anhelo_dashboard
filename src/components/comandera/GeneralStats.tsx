@@ -1,5 +1,6 @@
 import currencyFormat from "../../helpers/currencyFormat";
-import { PedidoProps, EmpleadosProps } from "../../types/types";
+import { PedidoProps } from "../../types/types";
+import { EmpleadosProps } from "../../firebase/registroEmpleados";
 import { copyToClipboard } from "../../helpers/copy";
 
 interface GeneralStatsProps {
@@ -10,7 +11,6 @@ interface GeneralStatsProps {
 	sumaTotalEfectivo: number;
 	empleados: EmpleadosProps[];
 }
-
 export const GeneralStats = ({
 	customerSuccess,
 	cadeteSeleccionado,

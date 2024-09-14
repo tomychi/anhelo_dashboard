@@ -33,8 +33,6 @@ export interface PedidoProps {
 	map: [number, number];
 	kms: number;
 	minutosDistancia: number;
-	distancia: string;
-	tiempoPercibido?: number;
 }
 
 export interface ReadDataProps {
@@ -51,7 +49,6 @@ export interface ToppingsProps {
 	id?: string;
 	price?: number;
 }
-
 export interface ItemProps {
 	quantity: number;
 	name: string;
@@ -79,7 +76,6 @@ export interface ValuesProps {
 	paymentMethod: string;
 	money: string;
 }
-
 export interface FormSubmitProps {
 	values: ValuesProps;
 	cart: ItemProps[];
@@ -116,7 +112,6 @@ export interface Cadete {
 	category?: string;
 	vueltas?: Vuelta[];
 }
-
 export interface Vuelta {
 	startTime: Date;
 	endTime?: Date;
@@ -131,28 +126,4 @@ export interface Vuelta {
 export interface CadeteData {
 	precioPorKM: number;
 	precioPuntoEntrega: number;
-}
-
-export interface RegistroProps {
-	horaEntrada: string;
-	nombreEmpleado: string;
-	horaSalida: string;
-	marcado: boolean;
-}
-
-export interface VueltasProps {
-	orders: PedidoProps[];
-	rideId: string;
-	startTime: string;
-	endTime: string;
-	status: string;
-	totalDistance: number;
-	totalDuration: number;
-}
-
-export interface EmpleadosProps {
-	category: string;
-	name: string;
-	vueltas: VueltasProps[];
-	available: boolean;
 }

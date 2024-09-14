@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import "firebase/firestore";
 import {
-	marcarEntrada,
-	marcarSalida,
-	obtenerRegistroActual,
-	readEmpleados,
-} from "../firebase/registroEmpleados";
-import { RootState } from "../redux/configureStore";
-import { useSelector } from "react-redux";
-import { PedidoProps, EmpleadosProps } from "../types/types";
+	getFirestore,
+	collection,
+	onSnapshot,
+	updateDoc,
+	doc,
+	getDoc,
+	serverTimestamp,
+	setDoc,
+	getDocs,
+} from "firebase/firestore";
+import { Unsubscribe } from "firebase/auth";
+import { obtenerFechaActual } from "../helpers/dateToday";
 
+// Define y exporta la interfaz RegistroProps
 export interface RegistroProps {
 	horaEntrada: string;
 	nombreEmpleado: string;
@@ -16,238 +21,151 @@ export interface RegistroProps {
 	marcado: boolean;
 }
 
-const handleMarcarEntrada = async (
-	nombreEmpleado: string,
-	setEmpleados: React.Dispatch<React.SetStateAction<EmpleadosProps[]>>
-) => {
-	await marcarEntrada(nombreEmpleado);
-	setEmpleados((prevEmpleados) => [...prevEmpleados]);
-};
-
-const handleMarcarSalida = async (
-	nombreEmpleado: string,
-	setEmpleados: React.Dispatch<React.SetStateAction<EmpleadosProps[]>>
-) => {
-	await marcarSalida(nombreEmpleado);
-	setEmpleados((prevEmpleados) => [...prevEmpleados]);
-};
-
-const RegistroEmpleado = () => {
-	const [registro, setRegistro] = useState<RegistroProps[]>([]);
-	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
-
-	useEffect(() => {
-		const getEmpleados = async () => {
-			const cade = await readEmpleados();
-			setEmpleados(cade);
-		};
-		getEmpleados();
-	}, []);
-
-	useEffect(() => {
-		const cargarRegistro = async () => {
-			try {
-				const datosRegistro = await obtenerRegistroActual();
-				setRegistro(datosRegistro);
-			} catch (error) {
-				console.error("Error al cargar el registro:", error);
-			}
-		};
-
-		cargarRegistro();
-	}, [empleados]);
-
-	const { orders } = useSelector((state: RootState) => state.data);
-	interface GroupedOrders {
-		[date: string]: PedidoProps[];
-	}
-
-	const groupOrdersByDate = (orders: PedidoProps[]) => {
-		return orders.reduce((groupedOrders: GroupedOrders, order) => {
-			const date: string = order.fecha;
-			if (!groupedOrders[date]) {
-				groupedOrders[date] = [];
-			}
-			groupedOrders[date].push(order);
-			return groupedOrders;
-		}, {});
-	};
-
-	// Llama a la función para obtener los pedidos agrupados por fecha
-	const ordersByDate = groupOrdersByDate(orders);
-
-	// Muestra los pedidos agrupados por fecha
-	// console.log(ordersByDate);
-
-	// Función para sumar el largo de detallePedido teniendo en cuenta la cantidad
-	interface OrdersByDate {
-		[date: string]: PedidoProps[];
-	}
-
-	const sumDetallePedidoLength = (ordersByDate: OrdersByDate) => {
-		const result: { [date: string]: number } = {}; // Especificamos el tipo de resultado como un objeto con claves de fecha (string) y valores de longitud (number)
-
-		for (const fecha in ordersByDate) {
-			if (Object.hasOwnProperty.call(ordersByDate, fecha)) {
-				let totalDetallePedidoLength = 0;
-				const orders = ordersByDate[fecha];
-
-				for (const order of orders) {
-					for (const detalle of order.detallePedido) {
-						totalDetallePedidoLength +=
-							detalle.quantity > 1 ? detalle.quantity : 1;
-					}
-				}
-
-				result[fecha] = totalDetallePedidoLength;
-			}
-		}
-
-		return result;
-	};
-
-	// Llama a la función para obtener la suma del largo de detallePedido por fecha
-	const detallePedidoLengthByDate = sumDetallePedidoLength(ordersByDate);
-
-	// Muestra el resultado
-	//Aca tengo las burgers por dia
-	// console.log(detallePedidoLengthByDate);
-
-	function calcularSalario(
-		cantidadProductosVendidos: number,
-		cantidadHoras: string
-	) {
-		// Parsear la cantidad de horas en formato de cadena 'HH:MM' a horas y minutos
-		const [horas, minutos] = cantidadHoras.split(":").map(Number);
-
-		// Convertir las horas y minutos a minutos totales
-		const minutosTotales = horas * 60 + minutos;
-
-		let salarioPorHora;
-
-		if (cantidadProductosVendidos < 70) {
-			salarioPorHora = 3000;
-		} else if (
-			cantidadProductosVendidos >= 70 &&
-			cantidadProductosVendidos <= 99
-		) {
-			salarioPorHora = 4000;
-		} else if (
-			cantidadProductosVendidos >= 100 &&
-			cantidadProductosVendidos <= 129
-		) {
-			salarioPorHora = 5000;
-		} else if (
-			cantidadProductosVendidos >= 130 &&
-			cantidadProductosVendidos <= 159
-		) {
-			salarioPorHora = 6000;
+export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
+	const firestore = getFirestore();
+	const fechaFormateada = obtenerFechaActual();
+	const [dia, mes, anio] = fechaFormateada.split("/");
+	const horaActual = new Date().toLocaleTimeString("en-US", { hour12: false });
+	try {
+		const registroDocRef = doc(
+			collection(firestore, "registros", anio, mes),
+			dia
+		);
+		const docSnapshot = await getDoc(registroDocRef);
+		const registroData = docSnapshot.exists() ? docSnapshot.data() : {};
+		if (!docSnapshot.exists()) {
+			await setDoc(registroDocRef, {
+				fecha: serverTimestamp(),
+				empleados: [{ nombreEmpleado, horaEntrada: horaActual, marcado: true }],
+			});
 		} else {
-			salarioPorHora = 7000;
+			const updatedEmpleados = [
+				...(registroData.empleados || []),
+				{ nombreEmpleado, horaEntrada: horaActual, marcado: true },
+			];
+			await updateDoc(registroDocRef, { empleados: updatedEmpleados });
 		}
-
-		// Calcular el salario total
-		const salarioTotal = salarioPorHora * (minutosTotales / 60);
-
-		return salarioTotal;
+		console.log(
+			"Entrada registrada exitosamente para el día:",
+			fechaFormateada
+		);
+	} catch (error) {
+		console.error("Error al registrar la entrada:", error);
+		throw error;
 	}
+};
+export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
+	const firestore = getFirestore();
+	const horaActual = new Date().toLocaleTimeString("en-US", { hour12: false });
+	const fechaActual = obtenerFechaActual();
+	const [dia, mes, anio] = fechaActual.split("/");
+	try {
+		const registroDocRef = doc(
+			collection(firestore, "registros", anio, mes),
+			dia
+		);
+		const docSnapshot = await getDoc(registroDocRef);
+		if (docSnapshot.exists()) {
+			const registroData = docSnapshot.data();
+			const empleados = registroData.empleados || [];
+			const empleadoIndex = empleados.findIndex(
+				(empleado: RegistroProps) => empleado.nombreEmpleado === nombreEmpleado
+			);
 
-	// Ejemplo de uso:
-	const cantidadProductosVendidos = 100;
-	const cantidadHorasTrabajadas = "08:17"; // Horas: 8, Minutos: 17
-	const salario = calcularSalario(
-		cantidadProductosVendidos,
-		cantidadHorasTrabajadas
-	);
-	console.log("El salario a pagar es: $" + salario.toFixed(2));
-
-	return (
-		<div className="p-4 font-coolvetica flex flex-row gap-4 font-black">
-			<div className="w-1/4">
-				<p className="text-4xl text-custom-red">REGISTRO DE HORARIOS</p>
-				{/* Filtrar empleados por categoría y mapear sobre cada grupo */}
-				{["cocina", "mostrador", "cadete"].map((categoria, categoriaIndex) => (
-					<div key={categoriaIndex} className="text-custom-red">
-						<p className="text-2xl mt-4">{categoria.toUpperCase()}</p>
-						{empleados
-							.filter((empleado) => empleado.category === categoria)
-							.map((empleado, index) => {
-								// Verifica si el nombre del empleado está presente en el registro del día actual
-								const estaEnRegistro = registro.some(
-									(registroEmpleado) =>
-										registroEmpleado.nombreEmpleado === empleado.name
-								);
-
-								// Verifica si el empleado está marcado en el registro
-								const empleadoMarcado = registro.find(
-									(registroEmpleado) =>
-										registroEmpleado.nombreEmpleado === empleado.name &&
-										registroEmpleado.marcado
-								);
-
-								// Determina el color del fondo del botón basado en la presencia del empleado en el registro y su estado de marcado
-								const colorFondo = empleadoMarcado
-									? "bg-green-600"
-									: "bg-custom-red";
-
-								return (
-									<button
-										key={index}
-										className={`text-black mt-2 p-4 w-full flex flex-col ${colorFondo} font-black uppercase text-4x1 outline-none`}
-										onClick={() =>
-											estaEnRegistro
-												? handleMarcarSalida(empleado.name, setEmpleados)
-												: handleMarcarEntrada(empleado.name, setEmpleados)
-										}
-									>
-										{empleado.name}
-									</button>
-								);
-							})}
-					</div>
-				))}
-			</div>
-			{/* SUELDOS */}
-			<div className=" w-3/4 flex flex-col gap-4">
-				<p className="text-4xl text-custom-red ">SUELDOS</p>
-
-				<table className="h-min w-full font-coolvetica text-sm text-left rtl:text-right text-black">
-					<thead className="text-xs uppercase text-black border border-red-main bg-custom-red ">
-						<tr>
-							<th scope="col" className="px-6 py-3">
-								FECHA
-							</th>
-							<th scope="col" className="px-6 py-3">
-								CANTIDAD DE PRODUCTOS
-							</th>
-							<th scope="col" className="px-6 py-3">
-								CANTIDAD DE VIAJES
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{Object.entries(detallePedidoLengthByDate).map(
-							([fecha, cantidadPedidos]) => (
-								<tr
-									key={fecha}
-									className="bg-black text-custom-red uppercase font-black border border-red-main"
-								>
-									<th
-										scope="row"
-										className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-									>
-										{fecha}
-									</th>
-									<td className="px-6 py-4">{cantidadPedidos} = $</td>
-									<td className="px-6 py-4">{cantidadPedidos} = $</td>
-								</tr>
-							)
-						)}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	);
+			if (empleadoIndex !== -1 && !empleados[empleadoIndex].horaSalida) {
+				empleados[empleadoIndex].marcado = false; // Actualizamos la propiedad marcado dentro del empleado
+				empleados[empleadoIndex].horaSalida = horaActual;
+				await updateDoc(registroDocRef, { empleados }); // Aquí actualizamos marcado a false
+				console.log("Salida registrada exitosamente.");
+			} else {
+				console.log(
+					"No se encontró registro de entrada para el empleado en la fecha actual o ya se registró la salida."
+				);
+			}
+		} else {
+			console.log("No hay registros para el día de hoy");
+		}
+	} catch (error) {
+		console.error("Error al registrar la salida:", error);
+		throw error;
+	}
+};
+export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
+	const firestore = getFirestore();
+	const fechaActual = obtenerFechaActual();
+	const [dia, mes, anio] = fechaActual.split("/");
+	try {
+		const registroDocRef = doc(
+			collection(firestore, "registros", anio, mes),
+			dia
+		);
+		const docSnapshot = await getDoc(registroDocRef);
+		if (docSnapshot.exists()) {
+			const registroData = docSnapshot.data();
+			return registroData.empleados || [];
+		} else {
+			return [];
+		}
+	} catch (error) {
+		console.error("Error al obtener el registro actual:", error);
+		throw error;
+	}
 };
 
-export default RegistroEmpleado;
+interface VueltasProps {
+	orders: [];
+	rideId: string;
+	startTime: string;
+	endTime: string;
+	status: string;
+	totalDistance: number;
+	totalDuration: number;
+}
+export interface EmpleadosProps {
+	category: string;
+	name: string;
+	vueltas: VueltasProps[];
+	available: boolean;
+}
+
+export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
+	const firestore = getFirestore();
+	const collectionRef = collection(firestore, "empleados");
+	const snapshot = await getDocs(collectionRef);
+
+	// Mapear los nombres de los empleados desde los documentos de Firestore
+	const empleados = snapshot.docs.map((doc) => {
+		const data = doc.data();
+		return {
+			name: data.name,
+			category: data.category,
+			vueltas: data.vueltas || [],
+			available: data.available || false,
+		};
+	});
+	return empleados;
+};
+export const listenToEmpleadosChanges = (
+	callback: (empleados: EmpleadosProps[]) => void
+): Unsubscribe => {
+	const firestore = getFirestore();
+	const empleadosCollectionRef = collection(firestore, "empleados");
+	return onSnapshot(
+		empleadosCollectionRef,
+		(snapshot) => {
+			const empleadosData: EmpleadosProps[] = snapshot.docs.map((doc) => {
+				const data = doc.data();
+				return {
+					name: data.name,
+					category: data.category,
+					vueltas: data.vueltas || [],
+					available: data.available || false,
+				};
+			});
+			callback(empleadosData);
+		},
+		(error) => {
+			console.error("Error al escuchar cambios en empleados:", error);
+		}
+	);
+};

@@ -6,12 +6,26 @@ import { GeneralStats, OrderList } from "../components/comandera";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 import { Unsubscribe } from "firebase/firestore";
-import { listenToEmpleadosChanges } from "../firebase/registroEmpleados";
+import {
+	EmpleadosProps,
+	listenToEmpleadosChanges,
+} from "../firebase/registroEmpleados";
 import { ReadOrdersForToday } from "../firebase/ReadData";
-import { PedidoProps, EmpleadosProps } from "../types/types";
+import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import RegistroEmpleado from "./Empleados";
+
+    
+          
+            
+    
+
+          
+          Expand Down
+    
+    
+  
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
 import Swal from "sweetalert2";
@@ -23,7 +37,6 @@ import {
 	Draggable,
 	DropResult,
 } from "react-beautiful-dnd";
-
 // Definición de tipos
 type Grupo = {
 	pedidos: PedidoProps[];
@@ -33,7 +46,6 @@ type Grupo = {
 	pedidoPeorTiempo: PedidoProps | null;
 	horaRegreso?: string;
 };
-
 export const Comandera: React.FC = () => {
 	const [seccionActiva, setSeccionActiva] = useState<string>("porHacer");
 	const dispatch = useDispatch();
@@ -60,38 +72,29 @@ export const Comandera: React.FC = () => {
 	const [tooltipVisibility, setTooltipVisibility] = useState<
 		Record<string, boolean>
 	>({});
-
 	useEffect(() => {
 		const timer = setInterval(() => {
 			setTiempoActual(new Date());
 		}, 60000); // Actualiza cada minuto
-
 		return () => clearInterval(timer);
 	}, []);
-
 	const calcularTiempoEspera = (horaPedido: string): number => {
 		const [horas, minutos] = horaPedido.split(":").map(Number);
 		const fechaPedido = new Date(tiempoActual);
 		fechaPedido.setHours(horas, minutos, 0, 0);
-
 		const diferencia = tiempoActual.getTime() - fechaPedido.getTime();
 		const minutosEspera = Math.floor(diferencia / 60000);
-
 		return minutosEspera;
 	};
-
 	const handleDeshacerGrupo = async (index: number) => {
 		setLoadingStates((prev) => ({ ...prev, [index]: true }));
 		try {
 			const grupoActualizado = gruposListos[index];
-
 			// Aquí iría la lógica para deshacer el grupo
 			for (const pedido of grupoActualizado.pedidos) {
 				await updateCadeteForOrder(pedido.fecha, pedido.id, "NO ASIGNADO");
 			}
-
 			setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
-
 			Swal.fire({
 				icon: "success",
 				title: "Grupo deshecho",
@@ -108,7 +111,6 @@ export const Comandera: React.FC = () => {
 			setLoadingStates((prev) => ({ ...prev, [index]: false }));
 		}
 	};
-
 	const filteredOrders = useMemo(() => {
 		return orders
 			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
@@ -118,28 +120,22 @@ export const Comandera: React.FC = () => {
 				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
 			});
 	}, [orders, selectedCadete]);
-
 	const pedidosPorHacer = useMemo(() => {
 		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
 	}, [filteredOrders]);
-
 	const pedidosHechos = useMemo(() => {
 		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
 	}, [filteredOrders]);
-
 	const pedidosEntregados = useMemo(() => {
 		return filteredOrders.filter((o) => o.entregado);
 	}, [filteredOrders]);
-
 	const customerSuccess =
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
-
 	useEffect(() => {
 		let unsubscribeEmpleados: Unsubscribe | null = null;
 		let unsubscribeOrders: Unsubscribe | null = null;
-
 		const iniciarEscuchas = async () => {
 			unsubscribeEmpleados = listenToEmpleadosChanges(
 				(empleadosActualizados) => {
@@ -150,7 +146,6 @@ export const Comandera: React.FC = () => {
 					setCadetes(cadetesFiltrados);
 				}
 			);
-
 			if (location.pathname === "/comandas") {
 				unsubscribeOrders = ReadOrdersForToday(
 					async (pedidos: PedidoProps[]) => {
@@ -159,9 +154,7 @@ export const Comandera: React.FC = () => {
 				);
 			}
 		};
-
 		iniciarEscuchas();
-
 		return () => {
 			if (unsubscribeEmpleados) {
 				unsubscribeEmpleados();
@@ -171,14 +164,12 @@ export const Comandera: React.FC = () => {
 			}
 		};
 	}, [dispatch, location]);
-
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
 		if (nuevoCadeteSeleccionado === "") {
 			setSelectedCadete(null);
 			return;
 		}
-
 		setSelectedCadete(nuevoCadeteSeleccionado);
 		const totalPedidosCadete = orders.reduce((total, pedido) => {
 			if (pedido.cadete === nuevoCadeteSeleccionado) {
@@ -200,37 +191,29 @@ export const Comandera: React.FC = () => {
 		}, 0);
 		setSumaTotalEfectivo(totalEfectivoCadete);
 	};
-
 	const pedidosReserva = useMemo(() => {
 		return orders.filter((order) => order.hora > obtenerHoraActual());
 	}, [orders, tiempoActual]);
-
 	const pedidosDisponibles = useMemo(() => {
 		return orders.filter((order) => {
 			if (order.hora > obtenerHoraActual()) {
 				return false; // Este es un pedido de reserva
 			}
-
 			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
 				return true;
 			}
-
 			if (order.entregado) {
 				return false;
 			}
-
 			const cadeteAsignado = empleados.find(
 				(empleado) =>
 					empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
 					empleado.category === "cadete"
 			);
-
 			return cadeteAsignado && cadeteAsignado.available;
 		});
 	}, [orders, empleados, tiempoActual]);
-
 	const FACTOR_CORRECCION = 1.455;
-
 	function calcularDistancia(
 		lat1: number,
 		lon1: number,
@@ -251,10 +234,8 @@ export const Comandera: React.FC = () => {
 		const distanciaAjustada = distanciaLineal * FACTOR_CORRECCION;
 		return distanciaAjustada;
 	}
-
 	const LATITUD_INICIO = -33.0957994;
 	const LONGITUD_INICIO = -64.3337817;
-
 	function agregarDistanciasAPedidos(pedidos: PedidoProps[]): PedidoProps[] {
 		return pedidos.map((pedido) => {
 			const [latitud, longitud] = pedido.map;
@@ -270,11 +251,9 @@ export const Comandera: React.FC = () => {
 			};
 		});
 	}
-
 	const pedidosConDistancias = useMemo(() => {
 		return agregarDistanciasAPedidos(pedidosDisponibles);
 	}, [pedidosDisponibles]);
-
 	function encontrarPedidoMasCercano(
 		pedidos: PedidoProps[]
 	): PedidoProps | null {
@@ -286,10 +265,8 @@ export const Comandera: React.FC = () => {
 				: pedidoMasCercano;
 		});
 	}
-
 	const VELOCIDAD_PROMEDIO_MOTO = 35;
 	const TIEMPO_POR_ENTREGA = 3;
-
 	function calcularTiempoYDistanciaRecorrido(
 		grupo: PedidoProps[],
 		latitudInicio: number,
@@ -299,7 +276,6 @@ export const Comandera: React.FC = () => {
 		let distanciaTotal = 0;
 		let latitudActual = latitudInicio;
 		let longitudActual = longitudInicio;
-
 		grupo.forEach((pedido, index) => {
 			const distancia = calcularDistancia(
 				latitudActual,
@@ -310,24 +286,19 @@ export const Comandera: React.FC = () => {
 			distanciaTotal += distancia;
 			const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
 			tiempoTotal += tiempoViaje;
-
 			if (index < grupo.length - 1) {
 				tiempoTotal += TIEMPO_POR_ENTREGA;
 			}
-
 			latitudActual = pedido.map[0];
 			longitudActual = pedido.map[1];
 		});
-
 		const factorAjuste = 1.1;
 		tiempoTotal *= factorAjuste;
-
 		return {
 			tiempoTotal: Math.round(tiempoTotal),
 			distanciaTotal: Number(distanciaTotal.toFixed(2)),
 		};
 	}
-
 	function armarGruposOptimos(
 		pedidos: PedidoProps[],
 		tiempoMaximo: number,
@@ -339,18 +310,13 @@ export const Comandera: React.FC = () => {
 					grupo.pedidos.some((p) => p.id === pedido.id)
 				) && !(pedido.map[0] === 0 && pedido.map[1] === 0)
 		);
-
 		const pedidosManuales = pedidos.filter(
 			(pedido) => pedido.map[0] === 0 && pedido.map[1] === 0
 		);
-
 		setGrupoManual(pedidosManuales);
-
 		if (pedidosDisponibles.length === 0) return [];
-
 		const gruposOptimos: Grupo[] = [];
 		let pedidosRestantes = [...pedidosDisponibles];
-
 		while (pedidosRestantes.length > 0) {
 			let grupoActual: PedidoProps[] = [];
 			let tiempoTotalGrupo = 0;
@@ -359,12 +325,10 @@ export const Comandera: React.FC = () => {
 			let pedidoPeorTiempo: PedidoProps | null = null;
 			let latitudActual = LATITUD_INICIO;
 			let longitudActual = LONGITUD_INICIO;
-
 			while (pedidosRestantes.length > 0) {
 				let mejorPedido: PedidoProps | null = null;
 				let mejorDistancia = Infinity;
 				let mejorIndice = -1;
-
 				pedidosRestantes.forEach((pedido, index) => {
 					let distanciaMinima = calcularDistancia(
 						latitudActual,
@@ -372,7 +336,6 @@ export const Comandera: React.FC = () => {
 						pedido.map[0],
 						pedido.map[1]
 					);
-
 					grupoActual.forEach((pedidoGrupo) => {
 						const distancia = calcularDistancia(
 							pedidoGrupo.map[0],
@@ -384,16 +347,13 @@ export const Comandera: React.FC = () => {
 							distanciaMinima = distancia;
 						}
 					});
-
 					if (distanciaMinima < mejorDistancia) {
 						mejorDistancia = distanciaMinima;
 						mejorPedido = pedido;
 						mejorIndice = index;
 					}
 				});
-
 				if (!mejorPedido) break;
-
 				const nuevaRuta = [...grupoActual, mejorPedido];
 				const { tiempoTotal, distanciaTotal } =
 					calcularTiempoYDistanciaRecorrido(
@@ -401,7 +361,6 @@ export const Comandera: React.FC = () => {
 						LATITUD_INICIO,
 						LONGITUD_INICIO
 					);
-
 				const distanciaRegreso = calcularDistancia(
 					mejorPedido.map[0],
 					mejorPedido.map[1],
@@ -409,41 +368,33 @@ export const Comandera: React.FC = () => {
 					LONGITUD_INICIO
 				);
 				const tiempoRegreso = (distanciaRegreso / VELOCIDAD_PROMEDIO_MOTO) * 60;
-
 				const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
 				const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
-
 				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 				const tiempoPercibido = tiempoEspera + tiempoTotal;
-
 				let excedeTiempoMaximo = false;
 				if (modoAgrupacion === "entrega") {
 					excedeTiempoMaximo = tiempoPercibido > tiempoMaximo;
 				} else {
 					excedeTiempoMaximo = tiempoTotalConRegreso > tiempoMaximo;
 				}
-
 				if (excedeTiempoMaximo && grupoActual.length > 0) {
 					break;
 				}
-
 				grupoActual.push({
 					...mejorPedido,
 					tiempoPercibido: Math.round(tiempoPercibido),
 				});
 				tiempoTotalGrupo = tiempoTotalConRegreso;
 				distanciaTotalGrupo = distanciaTotalConRegreso;
-
 				if (tiempoPercibido > peorTiempoPercibido) {
 					peorTiempoPercibido = tiempoPercibido;
 					pedidoPeorTiempo = mejorPedido;
 				}
-
 				latitudActual = mejorPedido.map[0];
 				longitudActual = mejorPedido.map[1];
 				pedidosRestantes.splice(mejorIndice, 1);
 			}
-
 			if (grupoActual.length > 0) {
 				gruposOptimos.push({
 					pedidos: grupoActual,
@@ -454,10 +405,8 @@ export const Comandera: React.FC = () => {
 				});
 			}
 		}
-
 		return gruposOptimos;
 	}
-
 	const gruposOptimosMemo = useMemo(() => {
 		const tiempoMaximoActual =
 			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
@@ -473,11 +422,9 @@ export const Comandera: React.FC = () => {
 		modoAgrupacion,
 		gruposListos,
 	]);
-
 	useEffect(() => {
 		setGruposOptimos(gruposOptimosMemo);
 	}, [gruposOptimosMemo]);
-
 	const handleGrupoListo = (grupo: Grupo) => {
 		const horaActual = new Date();
 		const horaRegreso = new Date(
@@ -487,7 +434,6 @@ export const Comandera: React.FC = () => {
 			hour: "2-digit",
 			minute: "2-digit",
 		});
-
 		setGruposListos([
 			...gruposListos,
 			{
@@ -496,20 +442,17 @@ export const Comandera: React.FC = () => {
 			},
 		]);
 	};
-
 	const cadetesDisponibles = useMemo(() => {
 		return empleados.filter(
 			(empleado) => empleado.category === "cadete" && empleado.available
 		);
 	}, [empleados]);
-
 	const handleAsignarCadete = async (
 		grupoIndex: number,
 		cadeteId: string,
 		esGrupoListo: boolean = false
 	) => {
 		let grupoActualizado: Grupo;
-
 		if (esGrupoListo) {
 			const nuevosGruposListos = [...gruposListos];
 			grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
@@ -519,12 +462,10 @@ export const Comandera: React.FC = () => {
 			}));
 			nuevosGruposListos[grupoIndex] = grupoActualizado;
 			setGruposListos(nuevosGruposListos);
-
 			try {
 				for (const pedido of grupoActualizado.pedidos) {
 					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteId);
 				}
-
 				Swal.fire({
 					icon: "success",
 					title: "CADETE ASIGNADO",
@@ -548,7 +489,6 @@ export const Comandera: React.FC = () => {
 			nuevosGruposOptimos[grupoIndex] = grupoActualizado;
 			setGruposOptimos(nuevosGruposOptimos);
 		}
-
 		const nuevasOrdenes = orders.map((orden) => {
 			const pedidoEnGrupo = grupoActualizado.pedidos.find(
 				(p) => p.id === orden.id
@@ -560,11 +500,9 @@ export const Comandera: React.FC = () => {
 		});
 		dispatch(readOrdersData(nuevasOrdenes));
 	};
-
 	useEffect(() => {
 		const pedidosParaBarajar: PedidoProps[] = [];
 		const pedidosManuales: PedidoProps[] = [];
-
 		pedidosDisponibles.forEach((pedido) => {
 			const pedidoInfo: PedidoProps = {
 				id: pedido.id,
@@ -575,7 +513,6 @@ export const Comandera: React.FC = () => {
 				tiempoEspera: calcularTiempoEspera(pedido.hora),
 				map: pedido.map,
 			};
-
 			if (pedido.map[0] === 0 && pedido.map[1] === 0) {
 				pedidosManuales.push(pedidoInfo);
 			} else {
@@ -583,53 +520,41 @@ export const Comandera: React.FC = () => {
 			}
 		});
 	}, [pedidosDisponibles]);
-
 	const onDragEnd = (result: DropResult) => {
 		const { source, destination } = result;
-
 		if (!destination) {
 			return;
 		}
-
 		if (
 			source.droppableId === destination.droppableId &&
 			source.index === destination.index
 		) {
 			return;
 		}
-
 		const sourceGroup = gruposListos[parseInt(source.droppableId)];
 		const destGroup = gruposListos[parseInt(destination.droppableId)];
-
 		const newSourcePedidos = Array.from(sourceGroup.pedidos);
 		const newDestPedidos =
 			source.droppableId === destination.droppableId
 				? newSourcePedidos
 				: Array.from(destGroup.pedidos);
-
 		const [movedPedido] = newSourcePedidos.splice(source.index, 1);
-
 		newDestPedidos.splice(destination.index, 0, movedPedido);
-
 		const newGruposListos = [...gruposListos];
 		newGruposListos[parseInt(source.droppableId)] = {
 			...sourceGroup,
 			pedidos: newSourcePedidos,
 		};
-
 		if (source.droppableId !== destination.droppableId) {
 			newGruposListos[parseInt(destination.droppableId)] = {
 				...destGroup,
 				pedidos: newDestPedidos,
 			};
 		}
-
 		setGruposListos(newGruposListos);
 	};
-
 	const [unlocking, setUnlocking] = useState<Record<number, boolean>>({});
 	const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
-
 	const handleLockMouseDown = (index: number) => {
 		setUnlocking((prev) => ({ ...prev, [index]: true }));
 		lockTimerRef.current = setTimeout(() => {
@@ -637,14 +562,12 @@ export const Comandera: React.FC = () => {
 			setTooltipVisibility((prev) => ({ ...prev, [index]: false }));
 		}, 2000);
 	};
-
 	const handleLockMouseUp = (index: number) => {
 		if (lockTimerRef.current) {
 			clearTimeout(lockTimerRef.current);
 		}
 		setUnlocking((prev) => ({ ...prev, [index]: false }));
 	};
-
 	useEffect(() => {
 		return () => {
 			if (lockTimerRef.current) {
@@ -652,22 +575,18 @@ export const Comandera: React.FC = () => {
 			}
 		};
 	}, []);
-
 	function sumar30Minutos(hora: string): string {
 		const [horas, minutos] = hora.split(":").map(Number);
 		let nuevosMinutos = minutos + 30;
 		let nuevasHoras = horas;
-
 		if (nuevosMinutos >= 60) {
 			nuevasHoras = (nuevasHoras + 1) % 24;
 			nuevosMinutos = nuevosMinutos - 60;
 		}
-
 		return `${nuevasHoras.toString().padStart(2, "0")}:${nuevosMinutos
 			.toString()
 			.padStart(2, "0")}`;
 	}
-
 	useEffect(() => {
 		if (gruposListos.length > 0 && empleados.length > 0) {
 			const gruposActualizados = gruposListos.filter((grupo) => {
@@ -675,13 +594,11 @@ export const Comandera: React.FC = () => {
 				const empleado = empleados.find((emp) => emp.name === cadeteName);
 				return empleado ? empleado.available : true;
 			});
-
 			if (gruposActualizados.length !== gruposListos.length) {
 				setGruposListos(gruposActualizados);
 			}
 		}
 	}, [empleados, gruposListos]);
-
 	return (
 		<>
 			<style>
@@ -696,19 +613,15 @@ export const Comandera: React.FC = () => {
         transform: scale(1);
       }
     }
-
     .animate-pulse {
       animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-
     .delay-75 {
       animation-delay: 0.25s;
     }
-
     .delay-150 {
       animation-delay: 0.5s;
     }
-
     @keyframes unlockAnimation {
       0% {
         clip-path: inset(0 100% 0 0);
@@ -717,7 +630,6 @@ export const Comandera: React.FC = () => {
         clip-path: inset(0 0 0 0);
       }
     }
-
     .tooltip-background {
       position: absolute;
       top: 0;
@@ -727,11 +639,9 @@ export const Comandera: React.FC = () => {
       background-color: #111827; /* bg-gray-900 */
       clip-path: inset(0 100% 0 0);
     }
-
     .unlocking .tooltip-background {
       animation: unlockAnimation 2s linear forwards;
     }
-
     .unlocking svg {
       opacity: 0.5;
       transition: opacity 0.3s ease;
@@ -828,7 +738,6 @@ export const Comandera: React.FC = () => {
 							</div>
 						)}
 					</div>
-
 					<div className="grid grid-cols-4 gap-4">
 						<div className="flex flex-col">
 							{grupoManual.length > 0 && (
@@ -855,7 +764,6 @@ export const Comandera: React.FC = () => {
 															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 															minutos
 														</p>
-
 														<p className="text-xs">
 															Cliente percibe entrega de: Desconocido
 														</p>
@@ -980,7 +888,6 @@ export const Comandera: React.FC = () => {
 								)}
 							</div>
 						</div>
-
 						<DragDropContext onDragEnd={onDragEnd}>
 							{gruposListos.map((grupo, index) => (
 								<Droppable
@@ -1000,7 +907,6 @@ export const Comandera: React.FC = () => {
 														Grupo {index + 1}
 													</h3>
 												</div>
-
 												<p className="text-xs">
 													Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
 													minutos (
@@ -1131,7 +1037,6 @@ export const Comandera: React.FC = () => {
 								</Droppable>
 							))}
 						</DragDropContext>
-
 						{gruposOptimos.length > 0 ? (
 							gruposOptimos.map((grupo, index) => {
 								const horaActual = new Date();
@@ -1142,7 +1047,6 @@ export const Comandera: React.FC = () => {
 									"es-ES",
 									{ hour: "2-digit", minute: "2-digit" }
 								);
-
 								return (
 									<div
 										key={index}
@@ -1191,7 +1095,6 @@ export const Comandera: React.FC = () => {
 										>
 											Listo
 										</button>
-
 										{grupo.pedidos.map((pedido, pedidoIndex) => (
 											<div
 												key={pedido.id}
