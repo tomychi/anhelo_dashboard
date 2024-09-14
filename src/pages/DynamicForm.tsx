@@ -172,7 +172,9 @@ export const DynamicForm: React.FC = () => {
 		return (
 			<div className="relative">
 				<input
-					className={`${inputClass} ${name === "cupon" ? "rounded-t-lg" : ""}`}
+					className={`${inputClass} ${name === "cupon" ? "rounded-t-lg" : ""} ${
+						name === "efectivoCantidad" ? "rounded-bl-lg border" : ""
+					}${name === "mercadopagoCantidad" ? "rounded-br-lg border" : ""}`}
 					style={inputStyle}
 					type={type}
 					id={name}
