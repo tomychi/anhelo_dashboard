@@ -170,11 +170,13 @@ export const DynamicForm: React.FC = () => {
 			handleFormChange({ [name]: valueToStore });
 		};
 		return (
-			<div className="relative">
+			<div className="relative w-full">
 				<input
 					className={`${inputClass} ${name === "cupon" ? "rounded-t-lg" : ""} ${
-						name === "efectivoCantidad" ? "rounded-bl-lg border" : ""
-					}${name === "mercadopagoCantidad" ? "rounded-br-lg border" : ""}`}
+						name === "efectivoCantidad" ? "rounded-bl-lg border w-1/2" : ""
+					}${
+						name === "mercadopagoCantidad" ? "rounded-br-lg border w-1/2" : ""
+					}`}
 					style={inputStyle}
 					type={type}
 					id={name}
@@ -594,7 +596,7 @@ export const DynamicForm: React.FC = () => {
 												)}
 											</div>
 											{formData.metodoPago === "ambos" && (
-												<div className="flex flex-row  ">
+												<div className="flex flex-row">
 													<FormInput
 														name="efectivoCantidad"
 														type="number"
