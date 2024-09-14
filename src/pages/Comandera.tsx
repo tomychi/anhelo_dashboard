@@ -650,8 +650,8 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center gap-2 ">
-						<div>
+					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center    w-full">
+						<div className="mb-2 md:mb-0">
 							<div className="flex w-full flex-row  gap-2">
 								<div
 									className={` py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
@@ -675,15 +675,15 @@ export const Comandera: React.FC = () => {
 								</div>
 							</div>
 						</div>
-						<div className=" h-10.5 bg-black w-[1px]"></div>
+						<div className=" h-10.5 bg-black w-[1px] ml-4 mr-3"></div>
 						{modoAgrupacion === "entrega" ? (
-							<div className="relative inline-block">
+							<div className="relative  inline-block">
 								<div className="relative inline-block">
 									<select
 										id="tiempoMaximo"
 										value={tiempoMaximo}
 										onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+										className="bg-black  appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
 										style={{
 											WebkitAppearance: "none",
 											MozAppearance: "none",
