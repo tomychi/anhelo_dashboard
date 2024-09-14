@@ -545,7 +545,27 @@ export const Comandera: React.FC = () => {
         hora: pedido.hora,
         tiempoEspera: calcularTiempoEspera(pedido.hora),
         map: pedido.map,
+        aclaraciones: pedido.aclaraciones || '', // Valor predeterminado si falta
+        detallePedido: pedido.detallePedido || [], // Valor predeterminado si falta
+        elaborado: pedido.elaborado || false, // Valor predeterminado si falta
+        envio: pedido.envio || 0, // Valor predeterminado
+        fecha: pedido.fecha || '', // Valor predeterminado
+        metodoPago: pedido.metodoPago || '', // Valor predeterminado
+        subTotal: pedido.subTotal || 0, // Valor predeterminado
+        telefono: pedido.telefono || '', // Valor predeterminado
+        total: pedido.total || 0, // Valor predeterminado
+        efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
+        referencias: pedido.referencias || '', // Valor predeterminado
+        ubicacion: pedido.ubicacion || '', // Valor predeterminado
+        dislike: pedido.dislike || false, // Valor predeterminado
+        delay: pedido.delay || false, // Valor predeterminado
+        tiempoElaborado: pedido.tiempoElaborado || '', // Valor predeterminado
+        tiempoEntregado: pedido.tiempoEntregado || '', // Valor predeterminado
+        entregado: pedido.entregado || false, // Valor predeterminado
+        minutosDistancia: pedido.minutosDistancia || 0, // Valor predeterminado
+        kms: pedido.kms,
       };
+
       if (pedido.map[0] === 0 && pedido.map[1] === 0) {
         pedidosManuales.push(pedidoInfo);
       } else {

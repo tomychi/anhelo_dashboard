@@ -134,39 +134,41 @@ export const DynamicForm: React.FC = () => {
     placeholder: string;
     required?: boolean;
   }> = ({ name, type, placeholder, required }) => {
-    const [localValue, setLocalValue] = useState<string | number>(
+    // Siempre usa un string en el estado local
+    const [localValue, setLocalValue] = useState<string>(
       typeof formData[name] === 'object'
         ? JSON.stringify(formData[name]) // Convertimos la tupla a string
-        : formData[name]
+        : String(formData[name]) // Convertimos números o cadenas a string
     );
 
     useEffect(() => {
       setLocalValue(
         typeof formData[name] === 'object'
-          ? JSON.stringify(formData[name]) // Actualizamos el valor si es una tupla
-          : formData[name]
+          ? JSON.stringify(formData[name]) // Convertimos la tupla a string
+          : String(formData[name]) // Convertimos números o cadenas a string
       );
     }, [formData[name]]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setLocalValue(e.target.value);
+      setLocalValue(e.target.value); // Siempre es un string
     };
-
     const handleBlur = () => {
       let valueToStore: string | number | [number, number] = localValue;
 
-      if (typeof formData[name] === 'object') {
+      if (localValue.startsWith('[') && localValue.endsWith(']')) {
         try {
-          // Si el campo es una tupla, intentamos convertir el valor a la tupla de nuevo
-          valueToStore = JSON.parse(localValue as string);
+          // Convertimos de vuelta a tupla si es un JSON válido
+          valueToStore = JSON.parse(localValue);
         } catch (error) {
           console.error('Error parsing value to tuple:', error);
         }
+      } else if (!isNaN(Number(localValue))) {
+        // Si es un número, lo convertimos a número
+        valueToStore = Number(localValue);
       }
 
       handleFormChange({ [name]: valueToStore });
     };
-
     return (
       <div className="relative">
         <input
@@ -229,7 +231,7 @@ export const DynamicForm: React.FC = () => {
       return;
     }
 
-    let cuponValido = true;
+    let cuponValido = false;
 
     let cantidadCuponesValidos = 0;
 
