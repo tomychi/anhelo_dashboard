@@ -10,6 +10,9 @@ module.exports = {
 			backgroundColor: {
 				"custom-red": "#FE0000",
 			},
+			animation: {
+				shimmer: "shimmer 2s infinite",
+			},
 			textColor: {
 				"custom-red": "#FE0000",
 			},
@@ -34,6 +37,13 @@ module.exports = {
 			},
 			colors: {
 				"red-main": "#ff0000",
+			},
+			keyframes: {
+				shimmer: {
+					"100%": {
+						transform: "translateX(100%)",
+					},
+				},
 			},
 		},
 	},

@@ -127,11 +127,36 @@ export const Dashboard = () => {
 
 	console.log(totalDirecciones);
 	const marketingCards = [
-		<CardInfo key="visualizacion" info={0} title={"Visualización local"} />,
-		<CardInfo key="seguidores" info={0} title={"Nuevos seguidores"} />,
-		<CardInfo key="likes" info={0} title={"Promedio de likes"} />,
-		<CardInfo key="comentarios" info={0} title={"Promedio de comentarios"} />,
-		<CardInfo key="compartidos" info={0} title={"Promedio de compartidos"} />,
+		<CardInfo
+			key="visualizacion"
+			info={0}
+			title={"Visualización local"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="seguidores"
+			info={0}
+			title={"Nuevos seguidores"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="likes"
+			info={0}
+			title={"Promedio de likes"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="comentarios"
+			info={0}
+			title={"Promedio de comentarios"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="compartidos"
+			info={0}
+			title={"Promedio de compartidos"}
+			isLoading={isLoading}
+		/>,
 	];
 
 	const allCards = [
@@ -140,6 +165,7 @@ export const Dashboard = () => {
 			info={currencyFormat(facturacionTotal)}
 			link={"bruto"}
 			title={"Facturación bruta"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="neto"
@@ -147,24 +173,28 @@ export const Dashboard = () => {
 			link={"neto"}
 			cuadrito={(neto * 100) / facturacionTotal}
 			title={"Facturación neta"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="productos"
 			info={productosVendidos}
 			link={"productosVendidos"}
 			title={"Productos vendidos"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="delivery"
 			info={orders.length}
 			link={"ventas"}
 			title={"Ventas delivery"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="takeaway"
 			info="-"
 			link={"ventas"}
 			title={"Ventas take away"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="success"
@@ -174,21 +204,25 @@ export const Dashboard = () => {
 					: 0
 			)}%`}
 			title={"Customer success"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="coccion"
 			info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
 			title={"Tiempo cocción promedio"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="entrega"
 			info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
 			title={"Tiempo total promedio"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="km"
 			info={`${Math.round(calculateKMS(orders))} km`}
 			title={"Km recorridos"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="costokm"
@@ -196,12 +230,14 @@ export const Dashboard = () => {
 				orders.length > 0 ? totalPaga / totalDirecciones || 0 : 0
 			)}
 			title={"Costo promedio delivery"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="clientes"
 			info={customers.newCustomers.length}
 			link={"clientes"}
 			title={"Nuevos clientes"}
+			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="ticket"
@@ -211,6 +247,7 @@ export const Dashboard = () => {
 					: currencyFormat(0)
 			}
 			title={"Ticket promedio"}
+			isLoading={isLoading}
 		/>,
 	];
 
@@ -240,67 +277,16 @@ export const Dashboard = () => {
 				<Calendar />
 				<p className="text-white text-5xl mt-8 mb-4">Hola {greetingName}</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[130px] rounded-lg   ">
-				{/* <div className="mt-8 px-4">
-					{isLoading ? (
-						<p className="text-center text-white">Cargando datos...</p> // Mostrar mensaje de carga
-					) : vueltas && vueltas.length > 0 ? (
-						vueltas.map((cadete) => (
-							<div key={cadete.id} className="mb-8">
-								<h3 className="text-2xl font-semibold">{cadete.name}</h3>
-								<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-									{cadete.vueltas && cadete.vueltas.length > 0 ? (
-										cadete.vueltas.map((vuelta, index) => (
-											<div
-												key={vuelta.rideId}
-												className="p-4 bg-white rounded-lg shadow-md"
-											>
-												<h4 className="text-xl font-bold mb-2">
-													Vuelta {index + 1}
-												</h4>
-												<p>
-													<strong>Paga:</strong>
-													{currencyFormat(vuelta.paga)}
-												</p>
-												<p>
-													<strong>Distancia Total:</strong>{" "}
-													{vuelta.totalDistance} km
-												</p>
-												<p>
-													<strong>Duración Total:</strong>{" "}
-													{vuelta.totalDuration.toFixed(2)} min
-												</p>
-											</div>
-										))
-									) : (
-										<p>No hay vueltas disponibles para este cadete.</p>
-									)}
-								</div>
-							</div>
-						))
-					) : (
-						<p className="text-center text-white">
-							No hay datos de vueltas disponibles.
-						</p>
-					)}
-				</div> */}
-				{!isLoading && (
-					<div className="flex flex-col shadow-2xl shadow-black mb-8 rounded-lg">
-						{" "}
-						{cardsToRender.map((card, index) =>
-							React.cloneElement(card, {
-								key: index,
-								className: `
-                                    ${index === 0 ? "rounded-t-lg" : ""}
-                                    ${
-																			index === cardsToRender.length - 1
-																				? "rounded-b-lg"
-																				: ""
-																		}
-                                `,
-							})
-						)}
-					</div>
+			<div className="flex flex-col shadow-2xl shadow-black mb-8 rounded-lg">
+				{cardsToRender.map((card, index) =>
+					React.cloneElement(card, {
+						key: index,
+						className: `
+								${index === 0 ? "rounded-t-lg" : ""}
+								${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
+							`,
+						isLoading: isLoading,
+					})
 				)}
 			</div>
 		</div>
