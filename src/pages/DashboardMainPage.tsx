@@ -17,7 +17,6 @@ import {
 } from "../pages";
 import { MonthData } from "./MonthData";
 import { Stock } from "./Stock";
-import RegistroEmpleado from "./Empleados";
 import { Marketing } from "../components/marketing/Marketing";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
 import { NuevaCompra } from "./NuevaCompra";
@@ -47,7 +46,6 @@ export const DashboardMainPage = () => {
 						<Route path="productosVendidos" element={<ProductosVendidos />} />
 						<Route path="ventas" element={<Comandera />} />
 						<Route path="monthdata" element={<MonthData />} />
-						<Route path="empleados" element={<RegistroEmpleado />} />
 						<Route path="AnheloRiders" element={<AnheloRiders />} />
 						<Route path="anheloriders_stats" element={<AnheloRidersStats />} />
 					</Route>

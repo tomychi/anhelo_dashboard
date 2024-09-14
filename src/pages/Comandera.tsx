@@ -14,18 +14,6 @@ import { ReadOrdersForToday } from "../firebase/ReadData";
 import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
-import RegistroEmpleado from "./Empleados";
-
-    
-          
-            
-    
-
-          
-          Expand Down
-    
-    
-  
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
 import Swal from "sweetalert2";
@@ -164,6 +152,7 @@ export const Comandera: React.FC = () => {
 			}
 		};
 	}, [dispatch, location]);
+
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
 		if (nuevoCadeteSeleccionado === "") {
@@ -1253,9 +1242,6 @@ export const Comandera: React.FC = () => {
 						) : (
 							<DeliveryMap orders={orders} />
 						))}
-				</div>
-				<div className="mt-2">
-					{seccionActiva === "registro" && <RegistroEmpleado />}
 				</div>
 			</div>
 		</>
