@@ -60,7 +60,7 @@ export const CardInfo = ({
 							)}
 						</p>
 					)}
-					{!isLoading && <img src={arrow} className="h-2 w-1.5" alt="" />}
+					<img src={arrow} className="h-2 w-1.5" alt="" />
 				</div>
 				{isLoading ? (
 					<LoadingElement className="h-8 w-44" />
