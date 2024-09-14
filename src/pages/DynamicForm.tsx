@@ -563,7 +563,11 @@ export const DynamicForm: React.FC = () => {
 												{(formData.metodoPago === "mercadopago" ||
 													formData.metodoPago === "ambos") && (
 													<button
-														className="w-1/5 text-gray-100 h-12 flex text-center justify-center items-center rounded-br-lg font-medium bg-black"
+														className={`w-1/5 text-gray-100 h-12 flex text-center justify-center items-center font-medium bg-black ${
+															formData.metodoPago === "mercadopago"
+																? "rounded-br-lg"
+																: ""
+														}`}
 														type="button"
 														onClick={() => {
 															const mensaje = `El alias es onlyanhelo3, aguardo comprobante para tomar tu pedido!`;
@@ -588,7 +592,7 @@ export const DynamicForm: React.FC = () => {
 												)}
 											</div>
 											{formData.metodoPago === "ambos" && (
-												<div className="mt-4">
+												<div className="">
 													<FormInput
 														name="efectivoCantidad"
 														type="number"
