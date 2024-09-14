@@ -12,7 +12,15 @@ interface CardInfoProps {
 	isLoading?: boolean;
 }
 
-const LoadingElement = ({ className, width }) => (
+interface LoadingElementProps {
+	className: string;
+	width?: number | string;
+}
+
+const LoadingElement: React.FC<LoadingElementProps> = ({
+	className,
+	width,
+}) => (
 	<div
 		className={`bg-gray-200 rounded overflow-hidden ${className}`}
 		style={{ width }}
@@ -25,14 +33,14 @@ const LoadingElement = ({ className, width }) => (
 	</div>
 );
 
-export const CardInfo = ({
+export const CardInfo: React.FC<CardInfoProps> = ({
 	info,
 	title,
 	link,
 	cuadrito,
 	className = "",
 	isLoading = false,
-}: CardInfoProps) => {
+}) => {
 	const displayPercentage = !isNaN(cuadrito as number) && cuadrito;
 	const titleRef = useRef<HTMLParagraphElement>(null);
 	const infoRef = useRef<HTMLParagraphElement>(null);
