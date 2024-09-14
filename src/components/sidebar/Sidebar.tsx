@@ -27,7 +27,7 @@ export const Sidebar = () => {
 				{ to: "/", text: "Dashboard" },
 
 				{ to: "/pedidos", text: "Tomar pedidos" },
-				{ to: "/comandas", text: "Comandas y grupos optimos" },
+				{ to: "/comandas", text: "Comandas y Grupos" },
 				// { to: "/marketing", text: "Marketing" },
 				{ to: "/gastos", text: "Gastos" },
 
@@ -82,13 +82,13 @@ export const Sidebar = () => {
 					visibility: isMenuOpen ? "visible" : "hidden",
 				}}
 			>
-				<nav className="pl-2 pt-2 h-full overflow-y-auto">
-					<ul className="gap-4">
+				<nav className="pl-[2px] pt-6 h-full overflow-y-auto">
+					<ul className="flex flex-col gap-6 px-4">
 						{menuItems.map((item, index) => (
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block p-2 hover:bg-gray-300 rounded "
+									className="block  text-2xl font-coolvetica font-medium "
 									onClick={toggleMenu}
 								>
 									{item.text}
