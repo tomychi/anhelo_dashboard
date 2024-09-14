@@ -52,12 +52,14 @@ export const Sidebar = () => {
 				<div className="flex flex-row  items-center">
 					<button
 						onClick={toggleMenu}
-						className="  flex items-center mr-2  h-9 w-9 justify-center"
+						className="  flex items-center mr-2  h-10 w-10 justify-center"
 					>
 						{isMenuOpen ? (
-							<p className="mt-[-5px] font-black text-gray-100">×</p>
+							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10  rounded-full focus:outline-none transition duration-300 ease-in-out">
+								<p className=" font-medium mt-1.5 ">x</p>
+							</div>
 						) : (
-							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 p-2 rounded-full focus:outline-none">
+							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 flex items-center justify-center rounded-full focus:outline-none transition duration-300 ease-in-out">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
