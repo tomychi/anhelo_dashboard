@@ -55,7 +55,7 @@ export const Comandera: React.FC = () => {
 	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
 	const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
 	const [grupoManual, setGrupoManual] = useState<PedidoProps[]>([]);
-	const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>(
+	const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
 		{}
 	);
 	const [tooltipVisibility, setTooltipVisibility] = useState<
@@ -437,59 +437,69 @@ export const Comandera: React.FC = () => {
 			(empleado) => empleado.category === "cadete" && empleado.available
 		);
 	}, [empleados]);
+
 	const handleAsignarCadete = async (
 		grupoIndex: number,
 		cadeteId: string,
 		esGrupoListo: boolean = false
 	) => {
-		let grupoActualizado: Grupo;
-		if (esGrupoListo) {
-			const nuevosGruposListos = [...gruposListos];
-			grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
-			grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
-				...pedido,
-				cadete: cadeteId,
-			}));
-			nuevosGruposListos[grupoIndex] = grupoActualizado;
-			setGruposListos(nuevosGruposListos);
-			try {
+		const loadingKey = `asignar-${grupoIndex}`;
+		setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
+
+		try {
+			let grupoActualizado: Grupo;
+			if (esGrupoListo) {
+				const nuevosGruposListos = [...gruposListos];
+				grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
+				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+					...pedido,
+					cadete: cadeteId,
+				}));
+				nuevosGruposListos[grupoIndex] = grupoActualizado;
+				setGruposListos(nuevosGruposListos);
+
 				for (const pedido of grupoActualizado.pedidos) {
 					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteId);
 				}
+
 				Swal.fire({
 					icon: "success",
 					title: "CADETE ASIGNADO",
 					text: `El viaje lo lleva: ${cadeteId}`,
 				});
-			} catch (error) {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Hubo un problema al asignar el cadete.",
-				});
-				console.error("Error al actualizar el cadete del pedido:", error);
+			} else {
+				const nuevosGruposOptimos = [...gruposOptimos];
+				grupoActualizado = { ...nuevosGruposOptimos[grupoIndex] };
+				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+					...pedido,
+					cadete: cadeteId,
+				}));
+				nuevosGruposOptimos[grupoIndex] = grupoActualizado;
+				setGruposOptimos(nuevosGruposOptimos);
 			}
-		} else {
-			const nuevosGruposOptimos = [...gruposOptimos];
-			grupoActualizado = { ...nuevosGruposOptimos[grupoIndex] };
-			grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
-				...pedido,
-				cadete: cadeteId,
-			}));
-			nuevosGruposOptimos[grupoIndex] = grupoActualizado;
-			setGruposOptimos(nuevosGruposOptimos);
+
+			const nuevasOrdenes = orders.map((orden) => {
+				const pedidoEnGrupo = grupoActualizado.pedidos.find(
+					(p) => p.id === orden.id
+				);
+				if (pedidoEnGrupo) {
+					return { ...orden, cadete: cadeteId };
+				}
+				return orden;
+			});
+			dispatch(readOrdersData(nuevasOrdenes));
+		} catch (error) {
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un problema al asignar el cadete.",
+			});
+			console.error("Error al asignar el cadete:", error);
+		} finally {
+			setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
 		}
-		const nuevasOrdenes = orders.map((orden) => {
-			const pedidoEnGrupo = grupoActualizado.pedidos.find(
-				(p) => p.id === orden.id
-			);
-			if (pedidoEnGrupo) {
-				return { ...orden, cadete: cadeteId };
-			}
-			return orden;
-		});
-		dispatch(readOrdersData(nuevasOrdenes));
 	};
+
 	useEffect(() => {
 		const pedidosParaBarajar: PedidoProps[] = [];
 		const pedidosManuales: PedidoProps[] = [];
@@ -638,7 +648,7 @@ export const Comandera: React.FC = () => {
     }
   `}
 			</style>
-			<div className="p-4 flex flex-col font-coolvetica">
+			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
 					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center gap-2 ">
 						<div>
@@ -893,7 +903,7 @@ export const Comandera: React.FC = () => {
 											<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 												<div className="flex flex-row items-center justify-center gap-2">
 													<img src={listoIcon} className="h-3 mb-1" alt="" />
-													<h3 className="font-medium text-3xl mb-2">
+													<h3 className="font-medium text-2xl md:text-3xl mb-2">
 														Grupo {index + 1}
 													</h3>
 												</div>
@@ -916,7 +926,7 @@ export const Comandera: React.FC = () => {
 												</p>
 											</div>
 											<button
-												className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-3xl font-coolvetica"
+												className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
 												onClick={() => handleDeshacerGrupo(index)}
 											>
 												{loadingStates[index] ? (
@@ -929,23 +939,35 @@ export const Comandera: React.FC = () => {
 													"Deshacer"
 												)}
 											</button>
-											<select
-												className="bg-gray-100 appearance-none mb-8 w-full text-center py-2 rounded-full "
-												style={{
-													WebkitAppearance: "none",
-													MozAppearance: "none",
-												}}
-												onChange={(e) =>
-													handleAsignarCadete(index, e.target.value, true)
-												}
-												value={grupo.pedidos[0]?.cadete || ""}
-											>
-												{cadetesDisponibles.map((cadete) => (
-													<option key={cadete.id} value={cadete.id}>
-														{cadete.name}
-													</option>
-												))}
-											</select>
+											<div className="relative mb-8">
+												<select
+													className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
+													style={{
+														WebkitAppearance: "none",
+														MozAppearance: "none",
+													}}
+													onChange={(e) =>
+														handleAsignarCadete(index, e.target.value, true)
+													}
+													value={grupo.pedidos[0]?.cadete || ""}
+													disabled={loadingStates[`asignar-${index}`]}
+												>
+													{cadetesDisponibles.map((cadete) => (
+														<option key={cadete.id} value={cadete.id}>
+															{cadete.name}
+														</option>
+													))}
+												</select>
+												{loadingStates[`asignar-${index}`] && (
+													<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
+														<div className="flex flex-row gap-1">
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+														</div>
+													</div>
+												)}
+											</div>
 											{grupo.pedidos.map((pedido, pedidoIndex) => (
 												<Draggable
 													key={pedido.id}
@@ -1057,7 +1079,7 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												<h3 className="font-medium w-9/12 text-3xl mb-2">
+												<h3 className="font-medium w-9/12 text-2xl md:text-3xl mb-2">
 													Grupo {index + 1} en proceso...
 												</h3>
 											</div>
@@ -1080,7 +1102,7 @@ export const Comandera: React.FC = () => {
 											</p>
 										</div>
 										<button
-											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-3xl font-coolvetica"
+											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
 											onClick={() => handleGrupoListo(grupo)}
 										>
 											Listo
