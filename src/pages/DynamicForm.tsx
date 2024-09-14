@@ -544,41 +544,26 @@ export const DynamicForm: React.FC = () => {
 											<div className="relative">
 												<FormInput name="hora" type="time" placeholder="Hora" />
 											</div>
-											<select
-												id="metodoPago"
-												name="metodoPago"
-												style={inputStyle}
-												className={`${inputClass} rounded-b-lg`}
-												value={formData.metodoPago}
-												onChange={(e) =>
-													handleFormChange({ metodoPago: e.target.value })
-												}
-											>
-												<option>Metodo de pago</option>
-												<option value="efectivo">Efectivo</option>
-												<option value="mercadopago">Mercadopago</option>
-												<option value="ambos">Ambos</option>
-											</select>
-											{formData.metodoPago === "ambos" && (
-												<div className="mt-4">
-													<FormInput
-														name="efectivoCantidad"
-														type="number"
-														placeholder="Efectivo"
-													/>
-
-													<FormInput
-														name="mercadopagoCantidad"
-														type="number"
-														placeholder="Mercadopago"
-													/>
-												</div>
-											)}
-											{(formData.metodoPago === "mercadopago" ||
-												formData.metodoPago === "ambos") && (
-												<div className="flex flex-row">
+											<div className="flex flex-row w-full justify-between">
+												<select
+													id="metodoPago"
+													name="metodoPago"
+													style={inputStyle}
+													className={`${inputClass} rounded-b-lg`}
+													value={formData.metodoPago}
+													onChange={(e) =>
+														handleFormChange({ metodoPago: e.target.value })
+													}
+												>
+													<option>Metodo de pago</option>
+													<option value="efectivo">Efectivo</option>
+													<option value="mercadopago">Mercadopago</option>
+													<option value="ambos">Ambos</option>
+												</select>
+												{(formData.metodoPago === "mercadopago" ||
+													formData.metodoPago === "ambos") && (
 													<button
-														className="w-1/5 text-gray-100 border-black h-12 flex text-center justify-center items-center rounded-r-lg font-medium bg-black"
+														className="w-1/5 text-gray-100 h-12 flex text-center justify-center items-center rounded-br-lg font-medium bg-black"
 														type="button"
 														onClick={() => {
 															const mensaje = `El alias es onlyanhelo3, aguardo comprobante para tomar tu pedido!`;
@@ -598,8 +583,23 @@ export const DynamicForm: React.FC = () => {
 																});
 														}}
 													>
-														COPIAR ALIAS
+														Alias
 													</button>
+												)}
+											</div>
+											{formData.metodoPago === "ambos" && (
+												<div className="mt-4">
+													<FormInput
+														name="efectivoCantidad"
+														type="number"
+														placeholder="Efectivo"
+													/>
+
+													<FormInput
+														name="mercadopagoCantidad"
+														type="number"
+														placeholder="Mercadopago"
+													/>
 												</div>
 											)}
 										</div>
