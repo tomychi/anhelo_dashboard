@@ -24,16 +24,18 @@ export const Sidebar = () => {
 				{ to: "/vouchers", text: "2x1 Manager" },
 		  ]
 		: [
-				{ to: "/pedidos", text: "Pedidos" },
-				{ to: "/comandas", text: "Comandas" },
-				{ to: "/marketing", text: "Marketing" },
-				{ to: "/vouchers", text: "Vouchers" },
 				{ to: "/", text: "Dashboard" },
-				{ to: "/empleados", text: "Empleados" },
+
+				{ to: "/pedidos", text: "Tomar pedidos" },
+				{ to: "/comandas", text: "Comandas" },
+				// { to: "/marketing", text: "Marketing" },
 				{ to: "/gastos", text: "Gastos" },
-				{ to: "/monthdata", text: "Datos Mensuales" },
-				{ to: "/stock", text: "Stock" },
-				{ to: "/AnheloRiders", text: "Anhelo Riders" },
+
+				{ to: "/vouchers", text: "Vouchers manager" },
+				// { to: "/empleados", text: "Empleados" },
+				// { to: "/monthdata", text: "Datos Mensuales" },
+				// { to: "/stock", text: "Stock" },
+				// { to: "/AnheloRiders", text: "Anhelo Riders" },
 				{ to: "/settings", text: "Configuración" },
 		  ];
 
