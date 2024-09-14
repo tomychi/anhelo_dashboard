@@ -49,16 +49,16 @@ export const Sidebar = () => {
 						alt="Absolute Logo"
 					/>
 				</NavLink>
-				<div className="flex flex-row gap-4 items-center">
+				<div className="flex flex-row gap-2 items-center">
 					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
 						<p className=" font-medium font-coolvetica">Acción rapida</p>
 					</button>
 					<button
 						onClick={toggleMenu}
-						className=" rounded-md flex items-center px-2 h-9 w-9 justify-center"
+						className=" rounded-md flex items-center  h-9 w-9 justify-center"
 					>
 						{isMenuOpen ? (
-							<p className="mt-[-5px] font-black">×</p>
+							<p className="mt-[-5px] font-black text-gray-100">×</p>
 						) : (
 							<img
 								src={items}
