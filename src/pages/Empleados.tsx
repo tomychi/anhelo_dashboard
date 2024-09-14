@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-	EmpleadosProps,
 	marcarEntrada,
 	marcarSalida,
 	obtenerRegistroActual,
@@ -8,7 +7,7 @@ import {
 } from "../firebase/registroEmpleados";
 import { RootState } from "../redux/configureStore";
 import { useSelector } from "react-redux";
-import { PedidoProps } from "../types/types";
+import { PedidoProps, EmpleadosProps } from "../types/types";
 
 export interface RegistroProps {
 	horaEntrada: string;
