@@ -41,7 +41,7 @@ export const Sidebar = () => {
 
 	return (
 		<>
-			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30">
+			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 ">
 				<NavLink to={"/"} className="ml-[-3px] items-center">
 					<img
 						src={Absolute}
@@ -49,13 +49,10 @@ export const Sidebar = () => {
 						alt="Absolute Logo"
 					/>
 				</NavLink>
-				<div className="flex flex-row gap-2 items-center">
-					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
-						<p className=" font-medium font-coolvetica">Acción rapida</p>
-					</button>
+				<div className="flex flex-row  items-center">
 					<button
 						onClick={toggleMenu}
-						className=" rounded-md flex items-center  h-9 w-9 justify-center"
+						className="  flex items-center pr-1  h-9 w-9 justify-center"
 					>
 						{isMenuOpen ? (
 							<p className="mt-[-5px] font-black text-gray-100">×</p>
@@ -67,6 +64,9 @@ export const Sidebar = () => {
 								className="h-3 object-contain"
 							/>
 						)}
+					</button>
+					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9">
+						<p className=" font-medium font-coolvetica">Acción rapida</p>
 					</button>
 				</div>
 			</div>
