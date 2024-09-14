@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import arrow from "../../assets/arrowIcon.png";
@@ -12,8 +12,11 @@ interface CardInfoProps {
 	isLoading?: boolean;
 }
 
-const LoadingElement = ({ className }) => (
-	<div className={`bg-gray-200 rounded overflow-hidden ${className}`}>
+const LoadingElement = ({ className, width }) => (
+	<div
+		className={`bg-gray-200 rounded overflow-hidden ${className}`}
+		style={{ width }}
+	>
 		<motion.div
 			className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
 			animate={{ x: ["100%", "-100%"] }}
@@ -31,6 +34,19 @@ export const CardInfo = ({
 	isLoading = false,
 }: CardInfoProps) => {
 	const displayPercentage = !isNaN(cuadrito as number) && cuadrito;
+	const titleRef = useRef<HTMLParagraphElement>(null);
+	const infoRef = useRef<HTMLParagraphElement>(null);
+	const [titleWidth, setTitleWidth] = useState<number | undefined>(undefined);
+	const [infoWidth, setInfoWidth] = useState<number | undefined>(undefined);
+
+	useEffect(() => {
+		if (titleRef.current) {
+			setTitleWidth(titleRef.current.offsetWidth);
+		}
+		if (infoRef.current) {
+			setInfoWidth(infoRef.current.offsetWidth);
+		}
+	}, [info, title, cuadrito]);
 
 	return (
 		<NavLink
@@ -42,9 +58,9 @@ export const CardInfo = ({
 			<div className="flex flex-row items-center justify-between w-full">
 				<div className="flex flex-col gap-1">
 					{isLoading ? (
-						<LoadingElement className="h-4 w-44" />
+						<LoadingElement className="h-4" width={titleWidth} />
 					) : (
-						<p className="text-sm font-medium">
+						<p ref={titleRef} className="text-sm font-medium">
 							{title}
 							{displayPercentage && (
 								<>
@@ -60,12 +76,18 @@ export const CardInfo = ({
 							)}
 						</p>
 					)}
-					<img src={arrow} className="h-2 w-1.5" alt="" />
+					{isLoading ? (
+						<LoadingElement className="h-2 w-1.5" />
+					) : (
+						<img src={arrow} className="h-2 w-1.5" alt="" />
+					)}
 				</div>
 				{isLoading ? (
-					<LoadingElement className="h-8 w-44" />
+					<LoadingElement className="h-8" width={infoWidth} />
 				) : (
-					<p className="text-4xl font-medium">{info}</p>
+					<p ref={infoRef} className="text-4xl font-medium">
+						{info}
+					</p>
 				)}
 			</div>
 		</NavLink>
