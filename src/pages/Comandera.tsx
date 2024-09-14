@@ -652,26 +652,26 @@ export const Comandera: React.FC = () => {
 				<div>
 					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center gap-2 ">
 						<div>
-							<div className="flex flex-col md:flex-row  gap-2">
+							<div className="flex w-full flex-row  gap-2">
 								<div
-									className={` py-2 px-4 rounded-lg font-medium cursor-pointer ${
+									className={` py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
 										modoAgrupacion === "entrega"
 											? "bg-black text-gray-100"
 											: "text-black  border border-1 border-black"
 									}`}
 									onClick={() => setModoAgrupacion("entrega")}
 								>
-									Usar tiempo máximo de entrega
+									Máximo de entrega
 								</div>
 								<div
-									className={` py-2 px-4 rounded-lg font-medium cursor-pointer ${
+									className={` py-2 px-4 w-1/2 md:w-auto  rounded-lg font-medium cursor-pointer ${
 										modoAgrupacion === "recorrido"
 											? "bg-black text-gray-100"
 											: "text-black  border border-1 border-black"
 									}`}
 									onClick={() => setModoAgrupacion("recorrido")}
 								>
-									Usar tiempo máximo de recorrido
+									Máximo de recorrido
 								</div>
 							</div>
 						</div>
