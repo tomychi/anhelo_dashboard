@@ -104,7 +104,7 @@ export const Sidebar = () => {
 							</li>
 						))}
 						<p className="font-medium text-sm mt-12 ">
-							Ⓡ 2024, Absolute Technologies{" "}
+							Ⓡ 2024, Absolute Business Solutions
 						</p>
 					</ul>
 				</nav>
