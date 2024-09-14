@@ -747,7 +747,7 @@ export const Comandera: React.FC = () => {
 													</div>
 													<div className="pl-4 pb-3.5 pt-2">
 														<p className="font-bold text-lg">
-															{pedido.direccion}
+															{pedido.direccion.split(",")[0]}
 														</p>
 														<p className="text-xs">Distancia: Desconocido</p>
 														<p className="text-xs">
