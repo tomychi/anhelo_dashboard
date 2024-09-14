@@ -678,32 +678,35 @@ export const Comandera: React.FC = () => {
 						<div className=" h-10.5 bg-black w-[1px]"></div>
 						{modoAgrupacion === "entrega" ? (
 							<div className="relative inline-block">
-								<select
-									id="tiempoMaximo"
-									value={tiempoMaximo}
-									onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-									className="bg-black appearance-none pt-2 pr-8  pb-3 px-3 text-gray-100 font-medium  rounded-full"
-									style={{
-										WebkitAppearance: "none",
-										MozAppearance: "none",
-									}}
-								>
-									<option value={30}>30 minutos</option>
-									<option value={40}>40 minutos</option>
-									<option value={50}>50 minutos</option>
-									<option value={60}>60 minutos</option>
-									<option value={70}>70 minutos</option>
-									<option value={80}>80 minutos</option>
-									<option value={90}>90 minutos</option>
-								</select>
-								<img
-									src={arrowIcon}
-									alt="Arrow Icon"
-									className="absolute right-3 h-2 top-1/2  rotate-90 -translate-y-1/2"
-									style={{
-										filter: "invert(100%)",
-									}}
-								/>
+								<div className="relative inline-block">
+									<select
+										id="tiempoMaximo"
+										value={tiempoMaximo}
+										onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+										style={{
+											WebkitAppearance: "none",
+											MozAppearance: "none",
+											width: "auto", // Mantiene el select con su ancho original
+										}}
+									>
+										<option value={30}>30 minutos</option>
+										<option value={40}>40 minutos</option>
+										<option value={50}>50 minutos</option>
+										<option value={60}>60 minutos</option>
+										<option value={70}>70 minutos</option>
+										<option value={80}>80 minutos</option>
+										<option value={90}>90 minutos</option>
+									</select>
+									<img
+										src={arrowIcon}
+										alt="Arrow Icon"
+										className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+										style={{
+											filter: "invert(100%)",
+										}}
+									/>
+								</div>
 							</div>
 						) : (
 							<div className="relative inline-block">
