@@ -19,6 +19,7 @@ import listoIcon from "../assets/listoIcon.png";
 import Swal from "sweetalert2";
 import { updateCadeteForOrder } from "../firebase/UploadOrder";
 import { obtenerHoraActual } from "../helpers/dateToday";
+import RegistroEmpleado from "./Empleados";
 import {
 	DragDropContext,
 	Droppable,
@@ -1242,6 +1243,9 @@ export const Comandera: React.FC = () => {
 						) : (
 							<DeliveryMap orders={orders} />
 						))}
+				</div>
+				<div className="mt-2">
+					{seccionActiva === "registro" && <RegistroEmpleado />}
 				</div>
 			</div>
 		</>
