@@ -592,7 +592,7 @@ export const DynamicForm: React.FC = () => {
 												)}
 											</div>
 											{formData.metodoPago === "ambos" && (
-												<div className="">
+												<div className="flex flex-row  ">
 													<FormInput
 														name="efectivoCantidad"
 														type="number"
