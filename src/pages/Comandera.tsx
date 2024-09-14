@@ -6,12 +6,9 @@ import { GeneralStats, OrderList } from "../components/comandera";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 import { Unsubscribe } from "firebase/firestore";
-import {
-	EmpleadosProps,
-	listenToEmpleadosChanges,
-} from "../firebase/registroEmpleados";
+import { listenToEmpleadosChanges } from "../firebase/registroEmpleados";
 import { ReadOrdersForToday } from "../firebase/ReadData";
-import { PedidoProps } from "../types/types";
+import { PedidoProps, EmpleadosProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import RegistroEmpleado from "./Empleados";

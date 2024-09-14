@@ -12,14 +12,7 @@ import {
 } from "firebase/firestore";
 import { Unsubscribe } from "firebase/auth";
 import { obtenerFechaActual } from "../helpers/dateToday";
-
-// Define y exporta la interfaz RegistroProps
-export interface RegistroProps {
-	horaEntrada: string;
-	nombreEmpleado: string;
-	horaSalida: string;
-	marcado: boolean;
-}
+import { EmpleadosProps, RegistroProps } from "../types/types";
 
 export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
 	const firestore = getFirestore();
@@ -80,9 +73,9 @@ export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
 			);
 
 			if (empleadoIndex !== -1 && !empleados[empleadoIndex].horaSalida) {
-				empleados[empleadoIndex].marcado = false; // Actualizamos la propiedad marcado dentro del empleado
+				empleados[empleadoIndex].marcado = false;
 				empleados[empleadoIndex].horaSalida = horaActual;
-				await updateDoc(registroDocRef, { empleados }); // Aquí actualizamos marcado a false
+				await updateDoc(registroDocRef, { empleados });
 				console.log("Salida registrada exitosamente.");
 			} else {
 				console.log(
@@ -122,31 +115,15 @@ export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
 	}
 };
 
-interface VueltasProps {
-	orders: [];
-	rideId: string;
-	startTime: string;
-	endTime: string;
-	status: string;
-	totalDistance: number;
-	totalDuration: number;
-}
-export interface EmpleadosProps {
-	category: string;
-	name: string;
-	vueltas: VueltasProps[];
-	available: boolean;
-}
-
 export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
 	const firestore = getFirestore();
 	const collectionRef = collection(firestore, "empleados");
 	const snapshot = await getDocs(collectionRef);
 
-	// Mapear los nombres de los empleados desde los documentos de Firestore
 	const empleados = snapshot.docs.map((doc) => {
 		const data = doc.data();
 		return {
+			id: doc.id,
 			name: data.name,
 			category: data.category,
 			vueltas: data.vueltas || [],
@@ -169,6 +146,7 @@ export const listenToEmpleadosChanges = (
 			const empleadosData: EmpleadosProps[] = snapshot.docs.map((doc) => {
 				const data = doc.data();
 				return {
+					id: doc.id,
 					name: data.name,
 					category: data.category,
 					vueltas: data.vueltas || [],
