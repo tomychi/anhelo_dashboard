@@ -33,9 +33,9 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "entregados"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
+							? "bg-black rounded-lg text-gray-100"
+							: "border border-1 rounded-lg border-black text-black"
+					} text-black font-medium w-40  `}
 					onClick={() => setSeccionActiva("entregados")}
 				>
 					Entregados
@@ -43,9 +43,9 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "mapa"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
+							? "bg-black rounded-lg text-gray-100"
+							: "border border-1 rounded-lg border-black text-black"
+					} text-black font-medium w-40 `}
 					onClick={() => setSeccionActiva("mapa")}
 				>
 					Mapa
@@ -54,12 +54,12 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "registro"
-							? "bg-custom-red"
-							: "border-2 border-red-main text-custom-red"
-					} text-black font-black uppercase `}
+							? "bg-black rounded-lg text-gray-100"
+							: "border border-1 rounded-lg border-black text-black"
+					} text-black font-medium w-40 `}
 					onClick={() => setSeccionActiva("registro")}
 				>
-					registro
+					Registro
 				</button>
 			</div>
 		</div>
