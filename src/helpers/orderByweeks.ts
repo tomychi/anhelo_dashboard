@@ -60,8 +60,10 @@ export const groupOrdersByWeek = (
 };
 
 export const cleanPhoneNumber = (phoneNumber: string) => {
+  // Asegurarse de que phoneNumber es una cadena
+  const phoneStr = String(phoneNumber);
   // Remover todo excepto los dígitos
-  const digitsOnly = phoneNumber.replace(/\D/g, '');
+  const digitsOnly = phoneStr.replace(/\D/g, '');
   // Si el número comienza con "54", eliminarlo
   const without54 = digitsOnly.startsWith('54')
     ? digitsOnly.slice(2)
