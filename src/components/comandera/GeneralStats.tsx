@@ -18,7 +18,7 @@ export const GeneralStats = ({
 	sumaTotalEfectivo,
 }: GeneralStatsProps) => {
 	return (
-		<div className="text-custom-red uppercase font-coolvetica flex flex-col gap-4 mb-2">
+		<div className="text-black font-coolvetica flex flex-col gap-4 mb-2">
 			{cadeteSeleccionado && (
 				<div>
 					<div></div>
@@ -39,8 +39,8 @@ export const GeneralStats = ({
 				</div>
 			)}
 			<div className="mt-4">
-				<p className="border-b-2 w-fit  font-black  text-2xl border-red-main">
-					ENTREGAS A TIEMPO:{" "}
+				<p className=" w-fit  font-black  text-2xl text-black font-coolvetica">
+					Entregas a tiempo:{" "}
 					{isNaN(customerSuccess) ? "0%" : Math.round(customerSuccess) + "%"}
 				</p>
 			</div>
