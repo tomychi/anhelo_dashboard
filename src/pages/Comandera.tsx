@@ -665,7 +665,7 @@ export const Comandera: React.FC = () => {
 					selectedCadete={selectedCadete}
 					orders={pedidosHechos}
 				/>
-				<button
+				{/* <button
 					className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 					onClick={() => {
 						const ordersByDate = orders.reduce((acc, order) => {
@@ -680,7 +680,7 @@ export const Comandera: React.FC = () => {
 					}}
 				>
 					Copiar direcciones
-				</button>
+				</button> */}
 				<GeneralStats
 					customerSuccess={customerSuccess}
 					orders={orders}
@@ -1348,7 +1348,7 @@ export const Comandera: React.FC = () => {
 					selectedCadete={selectedCadete}
 					orders={pedidosHechos}
 				/>
-				<button
+				{/* <button
 					className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 					onClick={() => {
 						const ordersByDate = orders.reduce((acc, order) => {
@@ -1363,7 +1363,7 @@ export const Comandera: React.FC = () => {
 					}}
 				>
 					Copiar direcciones
-				</button>
+				</button> */}
 				<GeneralStats
 					customerSuccess={customerSuccess}
 					orders={orders}
