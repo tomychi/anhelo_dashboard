@@ -1351,7 +1351,7 @@ export const Comandera: React.FC = () => {
 															)}
 															<p className="text-xs">
 																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-																minutos
+																minutos ({pedido.hora} hs)
 															</p>
 														</div>
 
