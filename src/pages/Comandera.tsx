@@ -1281,6 +1281,9 @@ export const Comandera: React.FC = () => {
 													} w-full ml-4 pb-3.5 pt-2`}
 												>
 													<div className="flex flex-col">
+														<p className="font-bold text-lg">
+															{pedido.direccion.split(",")[0]}
+														</p>
 														<div className="flex flex-row items-center gap-1.5">
 															<svg
 																xmlns="http://www.w3.org/2000/svg"
@@ -1306,20 +1309,17 @@ export const Comandera: React.FC = () => {
 																	fill="#FF0000"
 																/>
 															</svg>
-															<p className="font-bold text-lg">
-																{pedido.direccion.split(",")[0]}
+															<p
+																className={`text-xs ${
+																	calcularTiempoEspera(pedido.hora) >= 30
+																		? "text-red-main"
+																		: "text-black"
+																}`}
+															>
+																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+																minutos
 															</p>
 														</div>
-														<p
-															className={`text-xs ${
-																calcularTiempoEspera(pedido.hora) >= 30
-																	? "text-red-main"
-																	: "text-black"
-															}`}
-														>
-															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-															minutos
-														</p>
 
 														<p
 															className={`text-xs ${
