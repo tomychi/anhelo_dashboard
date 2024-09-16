@@ -1281,14 +1281,7 @@ export const Comandera: React.FC = () => {
 													} w-full ml-4 pb-3.5 pt-2`}
 												>
 													<div className="flex flex-col">
-														<p className="font-bold text-lg">
-															{pedido.direccion.split(",")[0]}
-														</p>
-
-														<p className="text-xs">
-															Distancia: {pedido.distancia} km
-														</p>
-														<div className="flex flex-row gap-1 items-center">
+														<div className="flex flex-row gap-2">
 															<svg
 																xmlns="http://www.w3.org/2000/svg"
 																viewBox="0 0 24 24"
@@ -1301,6 +1294,15 @@ export const Comandera: React.FC = () => {
 																	clip-rule="evenodd"
 																/>
 															</svg>
+															<p className="font-bold text-lg">
+																{pedido.direccion.split(",")[0]}
+															</p>
+														</div>
+
+														<p className="text-xs">
+															Distancia: {pedido.distancia} km
+														</p>
+														<div className="flex flex-row gap-1 items-center">
 															<p className="text-xs">
 																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 																minutos
