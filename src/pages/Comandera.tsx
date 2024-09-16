@@ -1308,21 +1308,19 @@ export const Comandera: React.FC = () => {
 															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 															minutos
 														</p>
-														<div className="flex flex-row items-baseline gap-1">
-															<div
-																className={`h-2 w-2 rounded-full  ${
-																	(pedido.tiempoPercibido ?? 0) < 30
-																		? "bg-green-500"
-																		: (pedido.tiempoPercibido ?? 0) < 50
-																		? "bg-yellow-500"
-																		: "bg-red-main"
-																}`}
-															></div>
-															<p className="text-xs">
-																Cliente percibe entrega de:{" "}
-																{pedido.tiempoPercibido ?? 0} minutos
-															</p>
-														</div>
+
+														<p
+															className={`text-xs ${
+																(pedido.tiempoPercibido ?? 0) < 30
+																	? "text-green-500"
+																	: (pedido.tiempoPercibido ?? 0) < 50
+																	? "bg-yellow-500"
+																	: "text-red-main"
+															}`}
+														>
+															Cliente percibe entrega de:{" "}
+															{pedido.tiempoPercibido ?? 0} minutos
+														</p>
 
 														<p className="text-xs">
 															Distancia: {pedido.distancia} km
