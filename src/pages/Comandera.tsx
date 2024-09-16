@@ -1142,28 +1142,62 @@ export const Comandera: React.FC = () => {
 																} w-full ml-4 pb-3.5 pt-2`}
 															>
 																<div>
-																	<p className="font-bold text-lg">
-																		{pedido.direccion.split(",")[0]}
+																	<p className="font-bold text-lg leading-none mb-2 mt-1">
+																		{pedido.direccion.split(",")[0]}{" "}
+																		<span className="text-xs font-normal">
+																			({pedido.distancia} km)
+																		</span>
 																	</p>
-																	<p className="text-xs">
-																		Distancia: {pedido.distancia} km
-																	</p>
-																	<p className="text-xs">
-																		Pidió hace:{" "}
-																		{calcularTiempoEspera(pedido.hora)} minutos
-																	</p>
-																	<p
-																		className={`text-xs ${
-																			(pedido.tiempoPercibido ?? 0) < 30
-																				? "text-green-500"
-																				: (pedido.tiempoPercibido ?? 0) < 50
-																				? "text-yellow-500"
-																				: "text-red-500"
-																		}`}
-																	>
-																		Cliente percibe entrega de:{" "}
-																		{pedido.tiempoPercibido ?? 0} minutos
-																	</p>
+
+																	<div className="flex flex-row items-center gap-1.5">
+																		{calcularTiempoEspera(pedido.hora) > 30 && (
+																			<svg
+																				xmlns="http://www.w3.org/2000/svg"
+																				viewBox="0 0 200 500"
+																				className="h-3"
+																			>
+																				<rect
+																					x="75"
+																					y="400"
+																					width="100"
+																					height="75"
+																					rx="20"
+																					ry="20"
+																					fill="#FF0000"
+																				/>
+																				<rect
+																					x="75"
+																					y="50"
+																					width="100"
+																					height="300"
+																					rx="20"
+																					ry="20"
+																					fill="#FF0000"
+																				/>
+																			</svg>
+																		)}
+																		<p className="text-xs">
+																			Pidió hace:{" "}
+																			{calcularTiempoEspera(pedido.hora)}{" "}
+																			minutos
+																		</p>
+																	</div>
+
+																	<div className="flex flex-row gap-1.5 items-center">
+																		<div
+																			className={`text-xs h-1.5 w-1.5 rounded-full ${
+																				(pedido.tiempoPercibido ?? 0) < 30
+																					? "bg-black"
+																					: (pedido.tiempoPercibido ?? 0) < 50
+																					? "bg-yellow-500"
+																					: "bg-red-main"
+																			}`}
+																		></div>
+																		<p className="text-xs">
+																			Cliente percibe entrega de:{" "}
+																			{pedido.tiempoPercibido ?? 0} minutos
+																		</p>
+																	</div>
 																</div>
 																<svg
 																	xmlns="http://www.w3.org/2000/svg"
