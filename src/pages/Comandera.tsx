@@ -1284,25 +1284,43 @@ export const Comandera: React.FC = () => {
 														<p className="font-bold text-lg">
 															{pedido.direccion.split(",")[0]}
 														</p>
+
 														<p className="text-xs">
 															Distancia: {pedido.distancia} km
 														</p>
-														<p className="text-xs">
-															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-															minutos
-														</p>
-														<p
-															className={`text-xs ${
-																(pedido.tiempoPercibido ?? 0) < 30
-																	? "text-green-500"
-																	: (pedido.tiempoPercibido ?? 0) < 50
-																	? "text-yellow-500"
-																	: "text-red-500"
-															}`}
-														>
-															Cliente percibe entrega de:{" "}
-															{pedido.tiempoPercibido ?? 0} minutos
-														</p>
+														<div className="flex flex-row gap-1 items-center">
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																viewBox="0 0 24 24"
+																fill="currentColor"
+																className="w-6 ml-[-3px] text-red-main"
+															>
+																<path
+																	fill-rule="evenodd"
+																	d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+																	clip-rule="evenodd"
+																/>
+															</svg>
+															<p className="text-xs">
+																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+																minutos
+															</p>
+														</div>
+														<div className="flex flex-row items-baseline gap-1">
+															<div
+																className={`h-2 w-2 rounded-full  ${
+																	(pedido.tiempoPercibido ?? 0) < 30
+																		? "bg-green-500"
+																		: (pedido.tiempoPercibido ?? 0) < 50
+																		? "bg-yellow-500"
+																		: "bg-red-main"
+																}`}
+															></div>
+															<p className="text-xs">
+																Cliente percibe entrega de:{" "}
+																{pedido.tiempoPercibido ?? 0} minutos
+															</p>
+														</div>
 													</div>
 													<div className="relative">
 														<svg
