@@ -1298,7 +1298,13 @@ export const Comandera: React.FC = () => {
 																{pedido.direccion.split(",")[0]}
 															</p>
 														</div>
-														<p className="text-xs">
+														<p
+															className={`text-xs ${
+																calcularTiempoEspera(pedido.hora) >= 30
+																	? "text-red-main"
+																	: "text-black"
+															}`}
+														>
 															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 															minutos
 														</p>
