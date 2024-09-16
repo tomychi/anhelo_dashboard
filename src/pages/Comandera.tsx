@@ -1152,9 +1152,17 @@ export const Comandera: React.FC = () => {
 																		Pidió hace:{" "}
 																		{calcularTiempoEspera(pedido.hora)} minutos
 																	</p>
-																	<p className="text-xs">
+																	<p
+																		className={`text-xs ${
+																			(pedido.tiempoPercibido ?? 0) < 30
+																				? "text-green-500"
+																				: (pedido.tiempoPercibido ?? 0) < 50
+																				? "text-yellow-500"
+																				: "text-red-500"
+																		}`}
+																	>
 																		Cliente percibe entrega de:{" "}
-																		{pedido.tiempoPercibido} minutos
+																		{pedido.tiempoPercibido ?? 0} minutos
 																	</p>
 																</div>
 																<svg
@@ -1283,9 +1291,17 @@ export const Comandera: React.FC = () => {
 															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 															minutos
 														</p>
-														<p className="text-xs">
+														<p
+															className={`text-xs ${
+																(pedido.tiempoPercibido ?? 0) < 30
+																	? "text-green-500"
+																	: (pedido.tiempoPercibido ?? 0) < 50
+																	? "text-yellow-500"
+																	: "text-red-500"
+															}`}
+														>
 															Cliente percibe entrega de:{" "}
-															{pedido.tiempoPercibido} minutos
+															{pedido.tiempoPercibido ?? 0} minutos
 														</p>
 													</div>
 													<div className="relative">
