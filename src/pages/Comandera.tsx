@@ -1309,13 +1309,7 @@ export const Comandera: React.FC = () => {
 																	fill="#FF0000"
 																/>
 															</svg>
-															<p
-																className={`text-xs ${
-																	calcularTiempoEspera(pedido.hora) >= 30
-																		? "text-red-main"
-																		: "text-black"
-																}`}
-															>
+															<p className="text-xs">
 																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 																minutos
 															</p>
