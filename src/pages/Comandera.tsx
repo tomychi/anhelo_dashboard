@@ -1285,30 +1285,32 @@ export const Comandera: React.FC = () => {
 															{pedido.direccion.split(",")[0]}
 														</p>
 														<div className="flex flex-row items-center gap-1.5">
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																viewBox="0 0 200 500"
-																className="h-3"
-															>
-																<rect
-																	x="75"
-																	y="400"
-																	width="100"
-																	height="75"
-																	rx="20"
-																	ry="20"
-																	fill="#FF0000"
-																/>
-																<rect
-																	x="75"
-																	y="50"
-																	width="100"
-																	height="300"
-																	rx="20"
-																	ry="20"
-																	fill="#FF0000"
-																/>
-															</svg>
+															{calcularTiempoEspera(pedido.hora) > 30 && (
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	viewBox="0 0 200 500"
+																	className="h-3"
+																>
+																	<rect
+																		x="75"
+																		y="400"
+																		width="100"
+																		height="75"
+																		rx="20"
+																		ry="20"
+																		fill="#FF0000"
+																	/>
+																	<rect
+																		x="75"
+																		y="50"
+																		width="100"
+																		height="300"
+																		rx="20"
+																		ry="20"
+																		fill="#FF0000"
+																	/>
+																</svg>
+															)}
 															<p className="text-xs">
 																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 																minutos
