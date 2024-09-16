@@ -1281,7 +1281,7 @@ export const Comandera: React.FC = () => {
 													} w-full ml-4 pb-3.5 pt-2`}
 												>
 													<div className="flex flex-col">
-														<div className="flex flex-row gap-2">
+														<div className="flex flex-row gap-1.5">
 															<svg
 																xmlns="http://www.w3.org/2000/svg"
 																viewBox="0 0 24 24"
