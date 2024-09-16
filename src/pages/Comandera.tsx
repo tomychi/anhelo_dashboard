@@ -1298,16 +1298,10 @@ export const Comandera: React.FC = () => {
 																{pedido.direccion.split(",")[0]}
 															</p>
 														</div>
-
 														<p className="text-xs">
-															Distancia: {pedido.distancia} km
+															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+															minutos
 														</p>
-														<div className="flex flex-row gap-1 items-center">
-															<p className="text-xs">
-																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
-																minutos
-															</p>
-														</div>
 														<div className="flex flex-row items-baseline gap-1">
 															<div
 																className={`h-2 w-2 rounded-full  ${
@@ -1323,6 +1317,10 @@ export const Comandera: React.FC = () => {
 																{pedido.tiempoPercibido ?? 0} minutos
 															</p>
 														</div>
+
+														<p className="text-xs">
+															Distancia: {pedido.distancia} km
+														</p>
 													</div>
 													<div className="relative">
 														<svg
