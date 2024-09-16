@@ -1324,7 +1324,7 @@ export const Comandera: React.FC = () => {
 														<p
 															className={`text-xs ${
 																(pedido.tiempoPercibido ?? 0) < 30
-																	? "text-green-500"
+																	? "text-black"
 																	: (pedido.tiempoPercibido ?? 0) < 50
 																	? "bg-yellow-500"
 																	: "text-red-main"
