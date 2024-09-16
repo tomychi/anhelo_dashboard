@@ -890,7 +890,7 @@ export const Comandera: React.FC = () => {
 																minutos
 															</p>
 															<p className="text-xs">
-																Cliente percibe entrega de: Desconocido
+																Percibe entrega de: Desconocido
 															</p>
 														</div>
 													</div>
@@ -1194,7 +1194,7 @@ export const Comandera: React.FC = () => {
 																			}`}
 																		></div>
 																		<p className="text-xs">
-																			Cliente percibe entrega de:{" "}
+																			Percibe entrega de:{" "}
 																			{pedido.tiempoPercibido ?? 0} minutos
 																		</p>
 																	</div>
@@ -1366,8 +1366,17 @@ export const Comandera: React.FC = () => {
 																}`}
 															></div>
 															<p className="text-xs">
-																Cliente percibe entrega de:{" "}
-																{pedido.tiempoPercibido ?? 0} minutos
+																Percibe entrega de:{" "}
+																{pedido.tiempoPercibido ?? 0} minutos (
+																{new Date(
+																	Date.now() -
+																		calcularTiempoEspera(pedido.hora) * 60000 +
+																		(pedido.tiempoPercibido ?? 0) * 60000
+																).toLocaleTimeString([], {
+																	hour: "2-digit",
+																	minute: "2-digit",
+																})}{" "}
+																hs)
 															</p>
 														</div>
 													</div>
