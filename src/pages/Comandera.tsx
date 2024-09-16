@@ -1,671 +1,673 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { RootState } from '../redux/configureStore';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
-import { GeneralStats, OrderList } from '../components/comandera';
-import { NavButtons } from '../components/comandera/NavButtons';
-import CadeteSelect from '../components/Cadet/CadeteSelect';
-import { Unsubscribe } from 'firebase/firestore';
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { RootState } from "../redux/configureStore";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { GeneralStats, OrderList } from "../components/comandera";
+import { NavButtons } from "../components/comandera/NavButtons";
+import CadeteSelect from "../components/Cadet/CadeteSelect";
+import { Unsubscribe } from "firebase/firestore";
 import {
-  EmpleadosProps,
-  listenToEmpleadosChanges,
-} from '../firebase/registroEmpleados';
-import { ReadOrdersForToday } from '../firebase/ReadData';
-import { PedidoProps } from '../types/types';
-import { readOrdersData } from '../redux/data/dataAction';
-import { DeliveryMap } from '../components/maps/DeliveryMap';
-import arrowIcon from '../assets/arrowIcon.png';
-import listoIcon from '../assets/listoIcon.png';
-import Swal from 'sweetalert2';
-import { updateCadeteForOrder } from '../firebase/UploadOrder';
-import { obtenerHoraActual } from '../helpers/dateToday';
-import RegistroEmpleado from './Empleados';
+	EmpleadosProps,
+	listenToEmpleadosChanges,
+} from "../firebase/registroEmpleados";
+import { ReadOrdersForToday } from "../firebase/ReadData";
+import { PedidoProps } from "../types/types";
+import { readOrdersData } from "../redux/data/dataAction";
+import { DeliveryMap } from "../components/maps/DeliveryMap";
+import arrowIcon from "../assets/arrowIcon.png";
+import listoIcon from "../assets/listoIcon.png";
+import Swal from "sweetalert2";
+import { updateCadeteForOrder } from "../firebase/UploadOrder";
+import { obtenerHoraActual } from "../helpers/dateToday";
+import RegistroEmpleado from "./Empleados";
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from 'react-beautiful-dnd';
+	DragDropContext,
+	Droppable,
+	Draggable,
+	DropResult,
+} from "react-beautiful-dnd";
 // Definición de tipos
 
 interface PedidosGrupos extends PedidoProps {
-  distancia?: number;
-  tiempoPercibido?: number;
-  tiempoEspera?: number;
+	distancia?: number;
+	tiempoPercibido?: number;
+	tiempoEspera?: number;
 }
 
 type Grupo = {
-  pedidos: PedidosGrupos[];
-  tiempoTotal: number;
-  distanciaTotal: number;
-  peorTiempoPercibido: number;
-  pedidoPeorTiempo: PedidoProps | null;
-  horaRegreso?: string;
+	pedidos: PedidosGrupos[];
+	tiempoTotal: number;
+	distanciaTotal: number;
+	peorTiempoPercibido: number;
+	pedidoPeorTiempo: PedidoProps | null;
+	horaRegreso?: string;
 };
 export const Comandera: React.FC = () => {
-  const [seccionActiva, setSeccionActiva] = useState<string>('porHacer');
-  const dispatch = useDispatch();
-  const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
-  const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
-  const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
-  const [cadetes, setCadetes] = useState<string[]>([]);
-  const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
-  const { orders } = useSelector((state: RootState) => state.data);
-  const { user } = useSelector((state: RootState) => state.auth);
-  const location = useLocation();
-  const [tiempoMaximo, setTiempoMaximo] = useState<number>(40);
-  const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] =
-    useState<number>(40);
-  const [modoAgrupacion, setModoAgrupacion] = useState<'entrega' | 'recorrido'>(
-    'entrega'
-  );
-  const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
-  const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
-  const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
-  const [grupoManual, setGrupoManual] = useState<PedidoProps[]>([]);
-  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
-    {}
-  );
-  const [tooltipVisibility, setTooltipVisibility] = useState<
-    Record<string, boolean>
-  >({});
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTiempoActual(new Date());
-    }, 60000); // Actualiza cada minuto
-    return () => clearInterval(timer);
-  }, []);
-  const calcularTiempoEspera = (horaPedido: string): number => {
-    const [horas, minutos] = horaPedido.split(':').map(Number);
-    const fechaPedido = new Date(tiempoActual);
-    fechaPedido.setHours(horas, minutos, 0, 0);
-    const diferencia = tiempoActual.getTime() - fechaPedido.getTime();
-    const minutosEspera = Math.floor(diferencia / 60000);
-    return minutosEspera;
-  };
-  const handleDeshacerGrupo = async (index: number) => {
-    setLoadingStates((prev) => ({ ...prev, [index]: true }));
-    try {
-      const grupoActualizado = gruposListos[index];
-      // Aquí iría la lógica para deshacer el grupo
-      for (const pedido of grupoActualizado.pedidos) {
-        await updateCadeteForOrder(pedido.fecha, pedido.id, 'NO ASIGNADO');
-      }
-      setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
-      Swal.fire({
-        icon: 'success',
-        title: 'Grupo deshecho',
-        text: 'El grupo ha sido deshecho exitosamente.',
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al deshacer el grupo.',
-      });
-      console.error('Error al deshacer el grupo:', error);
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, [index]: false }));
-    }
-  };
-  const filteredOrders = useMemo(() => {
-    return orders
-      .filter((o) => !selectedCadete || o.cadete === selectedCadete)
-      .sort((a, b) => {
-        const [horaA, minutosA] = a.hora.split(':').map(Number);
-        const [horaB, minutosB] = b.hora.split(':').map(Number);
-        return horaA * 60 + minutosA - (horaB * 60 + minutosB);
-      });
-  }, [orders, selectedCadete]);
-  const pedidosPorHacer = useMemo(() => {
-    return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
-  }, [filteredOrders]);
-  const pedidosHechos = useMemo(() => {
-    return filteredOrders.filter((o) => o.elaborado && !o.entregado);
-  }, [filteredOrders]);
-  const pedidosEntregados = useMemo(() => {
-    return filteredOrders.filter((o) => o.entregado);
-  }, [filteredOrders]);
-  const customerSuccess =
-    100 -
-    (orders.filter((order) => order.dislike || order.delay).length * 100) /
-      orders.length;
-  useEffect(() => {
-    let unsubscribeEmpleados: Unsubscribe | null = null;
-    let unsubscribeOrders: Unsubscribe | null = null;
-    const iniciarEscuchas = async () => {
-      unsubscribeEmpleados = listenToEmpleadosChanges(
-        (empleadosActualizados) => {
-          setEmpleados(empleadosActualizados);
-          const cadetesFiltrados = empleadosActualizados
-            .filter((empleado) => empleado.category === 'cadete')
-            .map((empleado) => empleado.name);
-          setCadetes(cadetesFiltrados);
-        }
-      );
-      if (location.pathname === '/comandas') {
-        unsubscribeOrders = ReadOrdersForToday(
-          async (pedidos: PedidoProps[]) => {
-            dispatch(readOrdersData(pedidos));
-          }
-        );
-      }
-    };
-    iniciarEscuchas();
-    return () => {
-      if (unsubscribeEmpleados) {
-        unsubscribeEmpleados();
-      }
-      if (unsubscribeOrders) {
-        unsubscribeOrders();
-      }
-    };
-  }, [dispatch, location]);
+	const [seccionActiva, setSeccionActiva] = useState<string>("porHacer");
+	const dispatch = useDispatch();
+	const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
+	const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
+	const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
+	const [cadetes, setCadetes] = useState<string[]>([]);
+	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
+	const { orders } = useSelector((state: RootState) => state.data);
+	const { user } = useSelector((state: RootState) => state.auth);
+	const location = useLocation();
+	const [tiempoMaximo, setTiempoMaximo] = useState<number>(40);
+	const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] =
+		useState<number>(40);
+	const [modoAgrupacion, setModoAgrupacion] = useState<"entrega" | "recorrido">(
+		"entrega"
+	);
+	const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
+	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
+	const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
+	const [grupoManual, setGrupoManual] = useState<PedidoProps[]>([]);
+	const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
+		{}
+	);
+	const [tooltipVisibility, setTooltipVisibility] = useState<
+		Record<string, boolean>
+	>({});
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTiempoActual(new Date());
+		}, 60000); // Actualiza cada minuto
+		return () => clearInterval(timer);
+	}, []);
+	const calcularTiempoEspera = (horaPedido: string): number => {
+		const [horas, minutos] = horaPedido.split(":").map(Number);
+		const fechaPedido = new Date(tiempoActual);
+		fechaPedido.setHours(horas, minutos, 0, 0);
+		const diferencia = tiempoActual.getTime() - fechaPedido.getTime();
+		const minutosEspera = Math.floor(diferencia / 60000);
+		return minutosEspera;
+	};
+	const handleDeshacerGrupo = async (index: number) => {
+		setLoadingStates((prev) => ({ ...prev, [index]: true }));
+		try {
+			const grupoActualizado = gruposListos[index];
+			// Aquí iría la lógica para deshacer el grupo
+			for (const pedido of grupoActualizado.pedidos) {
+				await updateCadeteForOrder(pedido.fecha, pedido.id, "NO ASIGNADO");
+			}
+			setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
+			Swal.fire({
+				icon: "success",
+				title: "Grupo deshecho",
+				text: "El grupo ha sido deshecho exitosamente.",
+			});
+		} catch (error) {
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un problema al deshacer el grupo.",
+			});
+			console.error("Error al deshacer el grupo:", error);
+		} finally {
+			setLoadingStates((prev) => ({ ...prev, [index]: false }));
+		}
+	};
+	const filteredOrders = useMemo(() => {
+		return orders
+			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
+			.sort((a, b) => {
+				const [horaA, minutosA] = a.hora.split(":").map(Number);
+				const [horaB, minutosB] = b.hora.split(":").map(Number);
+				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+			});
+	}, [orders, selectedCadete]);
+	const pedidosPorHacer = useMemo(() => {
+		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
+	}, [filteredOrders]);
+	const pedidosHechos = useMemo(() => {
+		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
+	}, [filteredOrders]);
+	const pedidosEntregados = useMemo(() => {
+		return filteredOrders.filter((o) => o.entregado);
+	}, [filteredOrders]);
+	const customerSuccess =
+		100 -
+		(orders.filter((order) => order.dislike || order.delay).length * 100) /
+			orders.length;
+	useEffect(() => {
+		let unsubscribeEmpleados: Unsubscribe | null = null;
+		let unsubscribeOrders: Unsubscribe | null = null;
+		const iniciarEscuchas = async () => {
+			unsubscribeEmpleados = listenToEmpleadosChanges(
+				(empleadosActualizados) => {
+					setEmpleados(empleadosActualizados);
+					const cadetesFiltrados = empleadosActualizados
+						.filter((empleado) => empleado.category === "cadete")
+						.map((empleado) => empleado.name);
+					setCadetes(cadetesFiltrados);
+				}
+			);
+			if (location.pathname === "/comandas") {
+				unsubscribeOrders = ReadOrdersForToday(
+					async (pedidos: PedidoProps[]) => {
+						dispatch(readOrdersData(pedidos));
+					}
+				);
+			}
+		};
+		iniciarEscuchas();
+		return () => {
+			if (unsubscribeEmpleados) {
+				unsubscribeEmpleados();
+			}
+			if (unsubscribeOrders) {
+				unsubscribeOrders();
+			}
+		};
+	}, [dispatch, location]);
 
-  const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const nuevoCadeteSeleccionado = event.target.value;
-    if (nuevoCadeteSeleccionado === '') {
-      setSelectedCadete(null);
-      return;
-    }
-    setSelectedCadete(nuevoCadeteSeleccionado);
-    const totalPedidosCadete = orders.reduce((total, pedido) => {
-      if (pedido.cadete === nuevoCadeteSeleccionado) {
-        return total + 1;
-      } else {
-        return total;
-      }
-    }, 0);
-    setSumaTotalPedidos(totalPedidosCadete);
-    const totalEfectivoCadete = orders.reduce((total, pedido) => {
-      if (
-        pedido.cadete === nuevoCadeteSeleccionado &&
-        pedido.metodoPago === 'efectivo'
-      ) {
-        return total + pedido.total;
-      } else {
-        return total;
-      }
-    }, 0);
-    setSumaTotalEfectivo(totalEfectivoCadete);
-  };
-  const pedidosReserva = useMemo(() => {
-    return orders.filter((order) => order.hora > obtenerHoraActual());
-  }, [orders, tiempoActual]);
-  const pedidosDisponibles = useMemo(() => {
-    return orders.filter((order) => {
-      if (order.hora > obtenerHoraActual()) {
-        return false; // Este es un pedido de reserva
-      }
-      if (order.cadete === 'NO ASIGNADO' || order.cadete === 'no asignado') {
-        return true;
-      }
-      if (order.entregado) {
-        return false;
-      }
-      const cadeteAsignado = empleados.find(
-        (empleado) =>
-          empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
-          empleado.category === 'cadete'
-      );
-      return cadeteAsignado && cadeteAsignado.available;
-    });
-  }, [orders, empleados, tiempoActual]);
-  const FACTOR_CORRECCION = 1.455;
-  function calcularDistancia(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distanciaLineal = R * c;
-    const distanciaAjustada = distanciaLineal * FACTOR_CORRECCION;
-    return distanciaAjustada;
-  }
-  const LATITUD_INICIO = -33.0957994;
-  const LONGITUD_INICIO = -64.3337817;
-  function agregarDistanciasAPedidos(pedidos: PedidoProps[]): PedidoProps[] {
-    return pedidos.map((pedido) => {
-      const [latitud, longitud] = pedido.map;
-      const distancia = calcularDistancia(
-        LATITUD_INICIO,
-        LONGITUD_INICIO,
-        latitud,
-        longitud
-      );
-      return {
-        ...pedido,
-        distancia: distancia.toFixed(2),
-      };
-    });
-  }
-  const pedidosConDistancias = useMemo(() => {
-    return agregarDistanciasAPedidos(pedidosDisponibles);
-  }, [pedidosDisponibles]);
-  //   function encontrarPedidoMasCercano(
-  //     pedidos: PedidoProps[]
-  //   ): PedidoProps | null {
-  //     if (pedidos.length === 0) return null;
-  //     return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
-  //       return parseFloat(pedidoActual.distancia) <
-  //         parseFloat(pedidoMasCercano.distancia)
-  //         ? pedidoActual
-  //         : pedidoMasCercano;
-  //     });
-  //   }
-  const VELOCIDAD_PROMEDIO_MOTO = 35;
-  const TIEMPO_POR_ENTREGA = 3;
-  function calcularTiempoYDistanciaRecorrido(
-    grupo: PedidoProps[],
-    latitudInicio: number,
-    longitudInicio: number
-  ): { tiempoTotal: number; distanciaTotal: number } {
-    let tiempoTotal = 0;
-    let distanciaTotal = 0;
-    let latitudActual = latitudInicio;
-    let longitudActual = longitudInicio;
-    grupo.forEach((pedido, index) => {
-      const distancia = calcularDistancia(
-        latitudActual,
-        longitudActual,
-        pedido.map[0],
-        pedido.map[1]
-      );
-      distanciaTotal += distancia;
-      const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
-      tiempoTotal += tiempoViaje;
-      if (index < grupo.length - 1) {
-        tiempoTotal += TIEMPO_POR_ENTREGA;
-      }
-      latitudActual = pedido.map[0];
-      longitudActual = pedido.map[1];
-    });
-    const factorAjuste = 1.1;
-    tiempoTotal *= factorAjuste;
-    return {
-      tiempoTotal: Math.round(tiempoTotal),
-      distanciaTotal: Number(distanciaTotal.toFixed(2)),
-    };
-  }
-  function armarGruposOptimos(
-    pedidos: PedidoProps[],
-    tiempoMaximo: number,
-    modoAgrupacion: string
-  ): Grupo[] {
-    const pedidosDisponibles = pedidos.filter(
-      (pedido) =>
-        !gruposListos.some((grupo) =>
-          grupo.pedidos.some((p) => p.id === pedido.id)
-        ) && !(pedido.map[0] === 0 && pedido.map[1] === 0)
-    );
-    const pedidosManuales = pedidos.filter(
-      (pedido) => pedido.map[0] === 0 && pedido.map[1] === 0
-    );
-    setGrupoManual(pedidosManuales);
-    if (pedidosDisponibles.length === 0) return [];
-    const gruposOptimos: Grupo[] = [];
-    const pedidosRestantes = [...pedidosDisponibles];
-    while (pedidosRestantes.length > 0) {
-      const grupoActual: PedidosGrupos[] = [];
-      let tiempoTotalGrupo = 0;
-      let distanciaTotalGrupo = 0;
-      let peorTiempoPercibido = 0;
-      let pedidoPeorTiempo: PedidoProps | null = null;
-      let latitudActual = LATITUD_INICIO;
-      let longitudActual = LONGITUD_INICIO;
-      while (pedidosRestantes.length > 0) {
-        let mejorPedido: PedidoProps = {
-          aclaraciones: '',
-          detallePedido: [],
-          direccion: '',
-          elaborado: false,
-          envio: 0,
-          fecha: '',
-          hora: '',
-          metodoPago: '',
-          subTotal: 0,
-          telefono: '',
-          total: 0,
-          efectivoCantidad: 0,
-          referencias: '',
-          id: '',
-          ubicacion: '',
-          cadete: '',
-          dislike: false,
-          delay: false,
-          tiempoElaborado: '',
-          tiempoEntregado: '',
-          entregado: false,
-          map: [0, 0],
-          kms: 0,
-          minutosDistancia: 0,
-        };
-        let mejorDistancia = Infinity;
-        let mejorIndice = -1;
-        pedidosRestantes.forEach((pedido, index) => {
-          let distanciaMinima = calcularDistancia(
-            latitudActual,
-            longitudActual,
-            pedido.map[0],
-            pedido.map[1]
-          );
-          grupoActual.forEach((pedidoGrupo) => {
-            const distancia = calcularDistancia(
-              pedidoGrupo.map[0],
-              pedidoGrupo.map[1],
-              pedido.map[0],
-              pedido.map[1]
-            );
-            if (distancia < distanciaMinima) {
-              distanciaMinima = distancia;
-            }
-          });
-          if (distanciaMinima < mejorDistancia) {
-            mejorDistancia = distanciaMinima;
-            mejorPedido = pedido;
-            mejorIndice = index;
-          }
-        });
-        if (!mejorPedido) break;
-        const nuevaRuta = [...grupoActual, mejorPedido];
-        const { tiempoTotal, distanciaTotal } =
-          calcularTiempoYDistanciaRecorrido(
-            nuevaRuta,
-            LATITUD_INICIO,
-            LONGITUD_INICIO
-          );
-        const distanciaRegreso = calcularDistancia(
-          mejorPedido.map[0],
-          mejorPedido.map[1],
-          LATITUD_INICIO,
-          LONGITUD_INICIO
-        );
-        const tiempoRegreso = (distanciaRegreso / VELOCIDAD_PROMEDIO_MOTO) * 60;
-        const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
-        const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
-        const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
-        const tiempoPercibido = tiempoEspera + tiempoTotal;
-        let excedeTiempoMaximo = false;
-        if (modoAgrupacion === 'entrega') {
-          excedeTiempoMaximo = tiempoPercibido > tiempoMaximo;
-        } else {
-          excedeTiempoMaximo = tiempoTotalConRegreso > tiempoMaximo;
-        }
-        if (excedeTiempoMaximo && grupoActual.length > 0) {
-          break;
-        }
-        grupoActual.push({
-          ...mejorPedido,
-          tiempoPercibido: Math.round(tiempoPercibido),
-        });
-        tiempoTotalGrupo = tiempoTotalConRegreso;
-        distanciaTotalGrupo = distanciaTotalConRegreso;
-        if (tiempoPercibido > peorTiempoPercibido) {
-          peorTiempoPercibido = tiempoPercibido;
-          pedidoPeorTiempo = mejorPedido;
-        }
-        latitudActual = mejorPedido.map[0];
-        longitudActual = mejorPedido.map[1];
-        pedidosRestantes.splice(mejorIndice, 1);
-      }
-      if (grupoActual.length > 0) {
-        gruposOptimos.push({
-          pedidos: grupoActual,
-          tiempoTotal: Math.round(tiempoTotalGrupo),
-          distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
-          peorTiempoPercibido: Math.round(peorTiempoPercibido),
-          pedidoPeorTiempo,
-        });
-      }
-    }
-    return gruposOptimos;
-  }
-  const gruposOptimosMemo = useMemo(() => {
-    const tiempoMaximoActual =
-      modoAgrupacion === 'entrega' ? tiempoMaximo : tiempoMaximoRecorrido;
-    return armarGruposOptimos(
-      pedidosConDistancias,
-      tiempoMaximoActual,
-      modoAgrupacion
-    );
-  }, [
-    pedidosConDistancias,
-    tiempoMaximo,
-    tiempoMaximoRecorrido,
-    modoAgrupacion,
-    gruposListos,
-  ]);
-  useEffect(() => {
-    setGruposOptimos(gruposOptimosMemo);
-  }, [gruposOptimosMemo]);
-  const handleGrupoListo = (grupo: Grupo) => {
-    const horaActual = new Date();
-    const horaRegreso = new Date(
-      horaActual.getTime() + grupo.tiempoTotal * 60000
-    );
-    const horaRegresoFormateada = horaRegreso.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    setGruposListos([
-      ...gruposListos,
-      {
-        ...grupo,
-        horaRegreso: horaRegresoFormateada,
-      },
-    ]);
-  };
-  const cadetesDisponibles = useMemo(() => {
-    return empleados.filter(
-      (empleado) => empleado.category === 'cadete' && empleado.available
-    );
-  }, [empleados]);
+	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+		const nuevoCadeteSeleccionado = event.target.value;
+		if (nuevoCadeteSeleccionado === "") {
+			setSelectedCadete(null);
+			return;
+		}
+		setSelectedCadete(nuevoCadeteSeleccionado);
+		const totalPedidosCadete = orders.reduce((total, pedido) => {
+			if (pedido.cadete === nuevoCadeteSeleccionado) {
+				return total + 1;
+			} else {
+				return total;
+			}
+		}, 0);
+		setSumaTotalPedidos(totalPedidosCadete);
+		const totalEfectivoCadete = orders.reduce((total, pedido) => {
+			if (
+				pedido.cadete === nuevoCadeteSeleccionado &&
+				pedido.metodoPago === "efectivo"
+			) {
+				return total + pedido.total;
+			} else {
+				return total;
+			}
+		}, 0);
+		setSumaTotalEfectivo(totalEfectivoCadete);
+	};
+	const pedidosReserva = useMemo(() => {
+		return orders.filter((order) => order.hora > obtenerHoraActual());
+	}, [orders, tiempoActual]);
+	const pedidosDisponibles = useMemo(() => {
+		return orders.filter((order) => {
+			if (order.hora > obtenerHoraActual()) {
+				return false; // Este es un pedido de reserva
+			}
+			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
+				return true;
+			}
+			if (order.entregado) {
+				return false;
+			}
+			const cadeteAsignado = empleados.find(
+				(empleado) =>
+					empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
+					empleado.category === "cadete"
+			);
+			return cadeteAsignado && cadeteAsignado.available;
+		});
+	}, [orders, empleados, tiempoActual]);
+	const FACTOR_CORRECCION = 1.455;
+	function calcularDistancia(
+		lat1: number,
+		lon1: number,
+		lat2: number,
+		lon2: number
+	): number {
+		const R = 6371;
+		const dLat = ((lat2 - lat1) * Math.PI) / 180;
+		const dLon = ((lon2 - lon1) * Math.PI) / 180;
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos((lat1 * Math.PI) / 180) *
+				Math.cos((lat2 * Math.PI) / 180) *
+				Math.sin(dLon / 2) *
+				Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		const distanciaLineal = R * c;
+		const distanciaAjustada = distanciaLineal * FACTOR_CORRECCION;
+		return distanciaAjustada;
+	}
+	const LATITUD_INICIO = -33.0957994;
+	const LONGITUD_INICIO = -64.3337817;
+	function agregarDistanciasAPedidos(pedidos: PedidoProps[]): PedidoProps[] {
+		return pedidos.map((pedido) => {
+			const [latitud, longitud] = pedido.map;
+			const distancia = calcularDistancia(
+				LATITUD_INICIO,
+				LONGITUD_INICIO,
+				latitud,
+				longitud
+			);
+			return {
+				...pedido,
+				distancia: distancia.toFixed(2),
+			};
+		});
+	}
+	const pedidosConDistancias = useMemo(() => {
+		return agregarDistanciasAPedidos(pedidosDisponibles);
+	}, [pedidosDisponibles]);
+	//   function encontrarPedidoMasCercano(
+	//     pedidos: PedidoProps[]
+	//   ): PedidoProps | null {
+	//     if (pedidos.length === 0) return null;
+	//     return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
+	//       return parseFloat(pedidoActual.distancia) <
+	//         parseFloat(pedidoMasCercano.distancia)
+	//         ? pedidoActual
+	//         : pedidoMasCercano;
+	//     });
+	//   }
+	const VELOCIDAD_PROMEDIO_MOTO = 35;
+	const TIEMPO_POR_ENTREGA = 3;
+	function calcularTiempoYDistanciaRecorrido(
+		grupo: PedidoProps[],
+		latitudInicio: number,
+		longitudInicio: number
+	): { tiempoTotal: number; distanciaTotal: number } {
+		let tiempoTotal = 0;
+		let distanciaTotal = 0;
+		let latitudActual = latitudInicio;
+		let longitudActual = longitudInicio;
+		grupo.forEach((pedido, index) => {
+			const distancia = calcularDistancia(
+				latitudActual,
+				longitudActual,
+				pedido.map[0],
+				pedido.map[1]
+			);
+			distanciaTotal += distancia;
+			const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+			tiempoTotal += tiempoViaje;
+			if (index < grupo.length - 1) {
+				tiempoTotal += TIEMPO_POR_ENTREGA;
+			}
+			latitudActual = pedido.map[0];
+			longitudActual = pedido.map[1];
+		});
+		const factorAjuste = 1.1;
+		tiempoTotal *= factorAjuste;
+		return {
+			tiempoTotal: Math.round(tiempoTotal),
+			distanciaTotal: Number(distanciaTotal.toFixed(2)),
+		};
+	}
+	function armarGruposOptimos(
+		pedidos: PedidoProps[],
+		tiempoMaximo: number,
+		modoAgrupacion: string
+	): Grupo[] {
+		const pedidosDisponibles = pedidos.filter(
+			(pedido) =>
+				!gruposListos.some((grupo) =>
+					grupo.pedidos.some((p) => p.id === pedido.id)
+				) && !(pedido.map[0] === 0 && pedido.map[1] === 0)
+		);
+		const pedidosManuales = pedidos.filter(
+			(pedido) => pedido.map[0] === 0 && pedido.map[1] === 0
+		);
+		setGrupoManual(pedidosManuales);
+		if (pedidosDisponibles.length === 0) return [];
+		const gruposOptimos: Grupo[] = [];
+		const pedidosRestantes = [...pedidosDisponibles];
+		while (pedidosRestantes.length > 0) {
+			const grupoActual: PedidosGrupos[] = [];
+			let tiempoTotalGrupo = 0;
+			let distanciaTotalGrupo = 0;
+			let peorTiempoPercibido = 0;
+			let pedidoPeorTiempo: PedidoProps | null = null;
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
+			while (pedidosRestantes.length > 0) {
+				let mejorPedido: PedidoProps = {
+					aclaraciones: "",
+					detallePedido: [],
+					direccion: "",
+					elaborado: false,
+					envio: 0,
+					fecha: "",
+					hora: "",
+					metodoPago: "",
+					subTotal: 0,
+					telefono: "",
+					total: 0,
+					efectivoCantidad: 0,
+					referencias: "",
+					id: "",
+					ubicacion: "",
+					cadete: "",
+					dislike: false,
+					delay: false,
+					tiempoElaborado: "",
+					tiempoEntregado: "",
+					entregado: false,
+					map: [0, 0],
+					kms: 0,
+					minutosDistancia: 0,
+				};
+				let mejorDistancia = Infinity;
+				let mejorIndice = -1;
+				pedidosRestantes.forEach((pedido, index) => {
+					let distanciaMinima = calcularDistancia(
+						latitudActual,
+						longitudActual,
+						pedido.map[0],
+						pedido.map[1]
+					);
+					grupoActual.forEach((pedidoGrupo) => {
+						const distancia = calcularDistancia(
+							pedidoGrupo.map[0],
+							pedidoGrupo.map[1],
+							pedido.map[0],
+							pedido.map[1]
+						);
+						if (distancia < distanciaMinima) {
+							distanciaMinima = distancia;
+						}
+					});
+					if (distanciaMinima < mejorDistancia) {
+						mejorDistancia = distanciaMinima;
+						mejorPedido = pedido;
+						mejorIndice = index;
+					}
+				});
+				if (!mejorPedido) break;
+				const nuevaRuta = [...grupoActual, mejorPedido];
+				const { tiempoTotal, distanciaTotal } =
+					calcularTiempoYDistanciaRecorrido(
+						nuevaRuta,
+						LATITUD_INICIO,
+						LONGITUD_INICIO
+					);
+				const distanciaRegreso = calcularDistancia(
+					mejorPedido.map[0],
+					mejorPedido.map[1],
+					LATITUD_INICIO,
+					LONGITUD_INICIO
+				);
+				const tiempoRegreso = (distanciaRegreso / VELOCIDAD_PROMEDIO_MOTO) * 60;
+				const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
+				const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
+				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+				const tiempoPercibido = tiempoEspera + tiempoTotal;
+				let excedeTiempoMaximo = false;
+				if (modoAgrupacion === "entrega") {
+					excedeTiempoMaximo = tiempoPercibido > tiempoMaximo;
+				} else {
+					excedeTiempoMaximo = tiempoTotalConRegreso > tiempoMaximo;
+				}
+				if (excedeTiempoMaximo && grupoActual.length > 0) {
+					break;
+				}
+				grupoActual.push({
+					...mejorPedido,
+					tiempoPercibido: Math.round(tiempoPercibido),
+				});
+				tiempoTotalGrupo = tiempoTotalConRegreso;
+				distanciaTotalGrupo = distanciaTotalConRegreso;
+				if (tiempoPercibido > peorTiempoPercibido) {
+					peorTiempoPercibido = tiempoPercibido;
+					pedidoPeorTiempo = mejorPedido;
+				}
+				latitudActual = mejorPedido.map[0];
+				longitudActual = mejorPedido.map[1];
+				pedidosRestantes.splice(mejorIndice, 1);
+			}
+			if (grupoActual.length > 0) {
+				gruposOptimos.push({
+					pedidos: grupoActual,
+					tiempoTotal: Math.round(tiempoTotalGrupo),
+					distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
+					peorTiempoPercibido: Math.round(peorTiempoPercibido),
+					pedidoPeorTiempo,
+				});
+			}
+		}
+		return gruposOptimos;
+	}
+	const gruposOptimosMemo = useMemo(() => {
+		const tiempoMaximoActual =
+			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
+		return armarGruposOptimos(
+			pedidosConDistancias,
+			tiempoMaximoActual,
+			modoAgrupacion
+		);
+	}, [
+		pedidosConDistancias,
+		tiempoMaximo,
+		tiempoMaximoRecorrido,
+		modoAgrupacion,
+		gruposListos,
+	]);
+	useEffect(() => {
+		setGruposOptimos(gruposOptimosMemo);
+	}, [gruposOptimosMemo]);
+	const handleGrupoListo = (grupo: Grupo) => {
+		const horaActual = new Date();
+		const horaRegreso = new Date(
+			horaActual.getTime() + grupo.tiempoTotal * 60000
+		);
+		const horaRegresoFormateada = horaRegreso.toLocaleTimeString("es-ES", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+		setGruposListos([
+			...gruposListos,
+			{
+				...grupo,
+				horaRegreso: horaRegresoFormateada,
+			},
+		]);
+	};
+	const cadetesDisponibles = useMemo(() => {
+		return empleados.filter(
+			(empleado) => empleado.category === "cadete" && empleado.available
+		);
+	}, [empleados]);
 
-  const handleAsignarCadete = async (
-    grupoIndex: number,
-    cadeteId: string,
-    esGrupoListo: boolean = false
-  ) => {
-    const loadingKey = `asignar-${grupoIndex}`;
-    setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
+	const handleAsignarCadete = async (
+		grupoIndex: number,
+		cadeteId: string,
+		esGrupoListo: boolean = false
+	) => {
+		const loadingKey = `asignar-${grupoIndex}`;
+		setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
-    try {
-      let grupoActualizado: Grupo;
-      if (esGrupoListo) {
-        const nuevosGruposListos = [...gruposListos];
-        grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
-        grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
-          ...pedido,
-          cadete: cadeteId,
-        }));
-        nuevosGruposListos[grupoIndex] = grupoActualizado;
-        setGruposListos(nuevosGruposListos);
+		try {
+			let grupoActualizado: Grupo;
+			if (esGrupoListo) {
+				const nuevosGruposListos = [...gruposListos];
+				grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
+				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+					...pedido,
+					cadete: cadeteId,
+				}));
+				nuevosGruposListos[grupoIndex] = grupoActualizado;
+				setGruposListos(nuevosGruposListos);
 
-        for (const pedido of grupoActualizado.pedidos) {
-          await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteId);
-        }
+				for (const pedido of grupoActualizado.pedidos) {
+					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteId);
+				}
 
-        Swal.fire({
-          icon: 'success',
-          title: 'CADETE ASIGNADO',
-          text: `El viaje lo lleva: ${cadeteId}`,
-        });
-      } else {
-        const nuevosGruposOptimos = [...gruposOptimos];
-        grupoActualizado = { ...nuevosGruposOptimos[grupoIndex] };
-        grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
-          ...pedido,
-          cadete: cadeteId,
-        }));
-        nuevosGruposOptimos[grupoIndex] = grupoActualizado;
-        setGruposOptimos(nuevosGruposOptimos);
-      }
+				Swal.fire({
+					icon: "success",
+					title: "CADETE ASIGNADO",
+					text: `El viaje lo lleva: ${cadeteId}`,
+				});
+			} else {
+				const nuevosGruposOptimos = [...gruposOptimos];
+				grupoActualizado = { ...nuevosGruposOptimos[grupoIndex] };
+				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
+					...pedido,
+					cadete: cadeteId,
+				}));
+				nuevosGruposOptimos[grupoIndex] = grupoActualizado;
+				setGruposOptimos(nuevosGruposOptimos);
+			}
 
-      const nuevasOrdenes = orders.map((orden) => {
-        const pedidoEnGrupo = grupoActualizado.pedidos.find(
-          (p) => p.id === orden.id
-        );
-        if (pedidoEnGrupo) {
-          return { ...orden, cadete: cadeteId };
-        }
-        return orden;
-      });
-      dispatch(readOrdersData(nuevasOrdenes));
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al asignar el cadete.',
-      });
-      console.error('Error al asignar el cadete:', error);
-    } finally {
-      setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
-    }
-  };
+			const nuevasOrdenes = orders.map((orden) => {
+				const pedidoEnGrupo = grupoActualizado.pedidos.find(
+					(p) => p.id === orden.id
+				);
+				if (pedidoEnGrupo) {
+					return { ...orden, cadete: cadeteId };
+				}
+				return orden;
+			});
+			dispatch(readOrdersData(nuevasOrdenes));
+		} catch (error) {
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un problema al asignar el cadete.",
+			});
+			console.error("Error al asignar el cadete:", error);
+		} finally {
+			setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
+		}
+	};
 
-  useEffect(() => {
-    const pedidosParaBarajar: PedidoProps[] = [];
-    const pedidosManuales: PedidoProps[] = [];
-    pedidosDisponibles.forEach((pedido) => {
-      const pedidoInfo: PedidosGrupos = {
-        id: pedido.id,
-        direccion: pedido.direccion,
-        cadete: pedido.cadete,
-        distancia: pedido.kms,
-        hora: pedido.hora,
-        tiempoEspera: calcularTiempoEspera(pedido.hora),
-        map: pedido.map,
-        aclaraciones: pedido.aclaraciones || '', // Valor predeterminado si falta
-        detallePedido: pedido.detallePedido || [], // Valor predeterminado si falta
-        elaborado: pedido.elaborado || false, // Valor predeterminado si falta
-        envio: pedido.envio || 0, // Valor predeterminado
-        fecha: pedido.fecha || '', // Valor predeterminado
-        metodoPago: pedido.metodoPago || '', // Valor predeterminado
-        subTotal: pedido.subTotal || 0, // Valor predeterminado
-        telefono: pedido.telefono || '', // Valor predeterminado
-        total: pedido.total || 0, // Valor predeterminado
-        efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
-        referencias: pedido.referencias || '', // Valor predeterminado
-        ubicacion: pedido.ubicacion || '', // Valor predeterminado
-        dislike: pedido.dislike || false, // Valor predeterminado
-        delay: pedido.delay || false, // Valor predeterminado
-        tiempoElaborado: pedido.tiempoElaborado || '', // Valor predeterminado
-        tiempoEntregado: pedido.tiempoEntregado || '', // Valor predeterminado
-        entregado: pedido.entregado || false, // Valor predeterminado
-        minutosDistancia: pedido.minutosDistancia || 0, // Valor predeterminado
-        kms: pedido.kms,
-      };
+	useEffect(() => {
+		const pedidosParaBarajar: PedidoProps[] = [];
+		const pedidosManuales: PedidoProps[] = [];
+		pedidosDisponibles.forEach((pedido) => {
+			const pedidoInfo: PedidosGrupos = {
+				id: pedido.id,
+				direccion: pedido.direccion,
+				cadete: pedido.cadete,
+				distancia: pedido.kms,
+				hora: pedido.hora,
+				tiempoEspera: calcularTiempoEspera(pedido.hora),
+				map: pedido.map,
+				aclaraciones: pedido.aclaraciones || "", // Valor predeterminado si falta
+				detallePedido: pedido.detallePedido || [], // Valor predeterminado si falta
+				elaborado: pedido.elaborado || false, // Valor predeterminado si falta
+				envio: pedido.envio || 0, // Valor predeterminado
+				fecha: pedido.fecha || "", // Valor predeterminado
+				metodoPago: pedido.metodoPago || "", // Valor predeterminado
+				subTotal: pedido.subTotal || 0, // Valor predeterminado
+				telefono: pedido.telefono || "", // Valor predeterminado
+				total: pedido.total || 0, // Valor predeterminado
+				efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
+				referencias: pedido.referencias || "", // Valor predeterminado
+				ubicacion: pedido.ubicacion || "", // Valor predeterminado
+				dislike: pedido.dislike || false, // Valor predeterminado
+				delay: pedido.delay || false, // Valor predeterminado
+				tiempoElaborado: pedido.tiempoElaborado || "", // Valor predeterminado
+				tiempoEntregado: pedido.tiempoEntregado || "", // Valor predeterminado
+				entregado: pedido.entregado || false, // Valor predeterminado
+				minutosDistancia: pedido.minutosDistancia || 0, // Valor predeterminado
+				kms: pedido.kms,
+			};
 
-      if (pedido.map[0] === 0 && pedido.map[1] === 0) {
-        pedidosManuales.push(pedidoInfo);
-      } else {
-        pedidosParaBarajar.push(pedidoInfo);
-      }
-    });
-  }, [pedidosDisponibles]);
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) {
-      return;
-    }
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
-    const sourceGroup = gruposListos[parseInt(source.droppableId)];
-    const destGroup = gruposListos[parseInt(destination.droppableId)];
-    const newSourcePedidos = Array.from(sourceGroup.pedidos);
-    const newDestPedidos =
-      source.droppableId === destination.droppableId
-        ? newSourcePedidos
-        : Array.from(destGroup.pedidos);
-    const [movedPedido] = newSourcePedidos.splice(source.index, 1);
-    newDestPedidos.splice(destination.index, 0, movedPedido);
-    const newGruposListos = [...gruposListos];
-    newGruposListos[parseInt(source.droppableId)] = {
-      ...sourceGroup,
-      pedidos: newSourcePedidos,
-    };
-    if (source.droppableId !== destination.droppableId) {
-      newGruposListos[parseInt(destination.droppableId)] = {
-        ...destGroup,
-        pedidos: newDestPedidos,
-      };
-    }
-    setGruposListos(newGruposListos);
-  };
-  const [unlocking, setUnlocking] = useState<Record<number, boolean>>({});
-  const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const handleLockMouseDown = (index: number) => {
-    setUnlocking((prev) => ({ ...prev, [index]: true }));
-    lockTimerRef.current = setTimeout(() => {
-      setUnlocking((prev) => ({ ...prev, [index]: false }));
-      setTooltipVisibility((prev) => ({ ...prev, [index]: false }));
-    }, 2000);
-  };
-  const handleLockMouseUp = (index: number) => {
-    if (lockTimerRef.current) {
-      clearTimeout(lockTimerRef.current);
-    }
-    setUnlocking((prev) => ({ ...prev, [index]: false }));
-  };
-  useEffect(() => {
-    return () => {
-      if (lockTimerRef.current) {
-        clearTimeout(lockTimerRef.current);
-      }
-    };
-  }, []);
-  function sumar30Minutos(hora: string): string {
-    const [horas, minutos] = hora.split(':').map(Number);
-    let nuevosMinutos = minutos + 30;
-    let nuevasHoras = horas;
-    if (nuevosMinutos >= 60) {
-      nuevasHoras = (nuevasHoras + 1) % 24;
-      nuevosMinutos = nuevosMinutos - 60;
-    }
-    return `${nuevasHoras.toString().padStart(2, '0')}:${nuevosMinutos
-      .toString()
-      .padStart(2, '0')}`;
-  }
-  useEffect(() => {
-    if (gruposListos.length > 0 && empleados.length > 0) {
-      const gruposActualizados = gruposListos.filter((grupo) => {
-        const cadeteName = grupo.pedidos[0]?.cadete;
-        const empleado = empleados.find((emp) => emp.name === cadeteName);
-        return empleado ? empleado.available : true;
-      });
-      if (gruposActualizados.length !== gruposListos.length) {
-        setGruposListos(gruposActualizados);
-      }
-    }
-  }, [empleados, gruposListos]);
+			if (pedido.map[0] === 0 && pedido.map[1] === 0) {
+				pedidosManuales.push(pedidoInfo);
+			} else {
+				pedidosParaBarajar.push(pedidoInfo);
+			}
+		});
+	}, [pedidosDisponibles]);
+	const onDragEnd = (result: DropResult) => {
+		const { source, destination } = result;
+		if (!destination) {
+			return;
+		}
+		if (
+			source.droppableId === destination.droppableId &&
+			source.index === destination.index
+		) {
+			return;
+		}
+		const sourceGroup = gruposListos[parseInt(source.droppableId)];
+		const destGroup = gruposListos[parseInt(destination.droppableId)];
+		const newSourcePedidos = Array.from(sourceGroup.pedidos);
+		const newDestPedidos =
+			source.droppableId === destination.droppableId
+				? newSourcePedidos
+				: Array.from(destGroup.pedidos);
+		const [movedPedido] = newSourcePedidos.splice(source.index, 1);
+		newDestPedidos.splice(destination.index, 0, movedPedido);
+		const newGruposListos = [...gruposListos];
+		newGruposListos[parseInt(source.droppableId)] = {
+			...sourceGroup,
+			pedidos: newSourcePedidos,
+		};
+		if (source.droppableId !== destination.droppableId) {
+			newGruposListos[parseInt(destination.droppableId)] = {
+				...destGroup,
+				pedidos: newDestPedidos,
+			};
+		}
+		setGruposListos(newGruposListos);
+	};
+	const [unlocking, setUnlocking] = useState<Record<number, boolean>>({});
+	const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+	const handleLockMouseDown = (index: number) => {
+		setUnlocking((prev) => ({ ...prev, [index]: true }));
+		lockTimerRef.current = setTimeout(() => {
+			setUnlocking((prev) => ({ ...prev, [index]: false }));
+			setTooltipVisibility((prev) => ({ ...prev, [index]: false }));
+		}, 2000);
+	};
+	const handleLockMouseUp = (index: number) => {
+		if (lockTimerRef.current) {
+			clearTimeout(lockTimerRef.current);
+		}
+		setUnlocking((prev) => ({ ...prev, [index]: false }));
+	};
+	useEffect(() => {
+		return () => {
+			if (lockTimerRef.current) {
+				clearTimeout(lockTimerRef.current);
+			}
+		};
+	}, []);
+	function sumar30Minutos(hora: string): string {
+		const [horas, minutos] = hora.split(":").map(Number);
+		let nuevosMinutos = minutos + 30;
+		let nuevasHoras = horas;
+		if (nuevosMinutos >= 60) {
+			nuevasHoras = (nuevasHoras + 1) % 24;
+			nuevosMinutos = nuevosMinutos - 60;
+		}
+		return `${nuevasHoras.toString().padStart(2, "0")}:${nuevosMinutos
+			.toString()
+			.padStart(2, "0")}`;
+	}
+	useEffect(() => {
+		if (gruposListos.length > 0 && empleados.length > 0) {
+			const gruposActualizados = gruposListos.filter((grupo) => {
+				const cadeteName = grupo.pedidos[0]?.cadete;
+				const empleado = empleados.find((emp) => emp.name === cadeteName);
+				return empleado ? empleado.available : true;
+			});
+			if (gruposActualizados.length !== gruposListos.length) {
+				setGruposListos(gruposActualizados);
+			}
+		}
+	}, [empleados, gruposListos]);
 
-  if (
-    user.email === 'cocina@anhelo.com' ||
-    user.email === 'cadetes@anhelo.com'
-  ) {
-    return (
-      <div>
-        <CadeteSelect
-          cadetes={cadetes}
-          handleCadeteChange={handleCadeteChange}
-          selectedCadete={selectedCadete}
-          orders={pedidosHechos}
-        />
-        {/* <button
+	console.log(gruposListos);
+
+	if (
+		user.email === "cocina@anhelo.com" ||
+		user.email === "cadetes@anhelo.com"
+	) {
+		return (
+			<div>
+				<CadeteSelect
+					cadetes={cadetes}
+					handleCadeteChange={handleCadeteChange}
+					selectedCadete={selectedCadete}
+					orders={pedidosHechos}
+				/>
+				{/* <button
 					className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 					onClick={() => {
 						const ordersByDate = orders.reduce((acc, order) => {
@@ -681,44 +683,44 @@ export const Comandera: React.FC = () => {
 				>
 					Copiar direcciones
 				</button> */}
-        <GeneralStats
-          customerSuccess={customerSuccess}
-          orders={orders}
-          cadeteSeleccionado={selectedCadete}
-          sumaTotalPedidos={sumaTotalPedidos}
-          sumaTotalEfectivo={sumaTotalEfectivo}
-          empleados={empleados}
-        />
-        <NavButtons
-          seccionActiva={seccionActiva}
-          setSeccionActiva={setSeccionActiva}
-        />
-        <OrderList
-          seccionActiva={seccionActiva}
-          pedidosPorHacer={pedidosPorHacer}
-          pedidosHechos={pedidosHechos}
-          pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
-          cadetes={cadetes}
-        />
-        <div className="mt-2">
-          {seccionActiva === 'mapa' &&
-            (location.pathname === '/comandas' ? (
-              <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
-            ) : (
-              <DeliveryMap orders={orders} />
-            ))}
-        </div>
-        <div className="mt-2">
-          {seccionActiva === 'registro' && <RegistroEmpleado />}
-        </div>
-      </div>
-    );
-  }
+				<GeneralStats
+					customerSuccess={customerSuccess}
+					orders={orders}
+					cadeteSeleccionado={selectedCadete}
+					sumaTotalPedidos={sumaTotalPedidos}
+					sumaTotalEfectivo={sumaTotalEfectivo}
+					empleados={empleados}
+				/>
+				<NavButtons
+					seccionActiva={seccionActiva}
+					setSeccionActiva={setSeccionActiva}
+				/>
+				<OrderList
+					seccionActiva={seccionActiva}
+					pedidosPorHacer={pedidosPorHacer}
+					pedidosHechos={pedidosHechos}
+					pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
+					cadetes={cadetes}
+				/>
+				<div className="mt-2">
+					{seccionActiva === "mapa" &&
+						(location.pathname === "/comandas" ? (
+							<DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
+						) : (
+							<DeliveryMap orders={orders} />
+						))}
+				</div>
+				<div className="mt-2">
+					{seccionActiva === "registro" && <RegistroEmpleado />}
+				</div>
+			</div>
+		);
+	}
 
-  return (
-    <>
-      <style>
-        {`
+	return (
+		<>
+			<style>
+				{`
     @keyframes pulse {
       0%, 100% {
         opacity: 0.2;
@@ -763,592 +765,598 @@ export const Comandera: React.FC = () => {
       transition: opacity 0.3s ease;
     }
   `}
-      </style>
-      <div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-        <div>
-          <div className="mb-8 mt-4 flex flex-col md:flex-row justify-center    w-full">
-            <div className="mb-2 md:mb-0">
-              <div className="flex w-full flex-row  gap-2">
-                <div
-                  className={` py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
-                    modoAgrupacion === 'entrega'
-                      ? 'bg-black text-gray-100'
-                      : 'text-black  border border-1 border-black'
-                  }`}
-                  onClick={() => setModoAgrupacion('entrega')}
-                >
-                  Máximo de entrega
-                </div>
-                <div
-                  className={` py-2 px-4 w-1/2 md:w-auto  rounded-lg font-medium cursor-pointer ${
-                    modoAgrupacion === 'recorrido'
-                      ? 'bg-black text-gray-100'
-                      : 'text-black  border border-1 border-black'
-                  }`}
-                  onClick={() => setModoAgrupacion('recorrido')}
-                >
-                  Máximo de recorrido
-                </div>
-              </div>
-            </div>
-            <div className=" h-10.5 bg-black w-[1px] ml-4 mr-3"></div>
-            {modoAgrupacion === 'entrega' ? (
-              <div className="relative  inline-block">
-                <div className="relative inline-block">
-                  <select
-                    id="tiempoMaximo"
-                    value={tiempoMaximo}
-                    onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-                    className="bg-black  appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
-                    style={{
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none',
-                      width: 'auto', // Mantiene el select con su ancho original
-                    }}
-                  >
-                    <option value={30}>30 minutos</option>
-                    <option value={40}>40 minutos</option>
-                    <option value={50}>50 minutos</option>
-                    <option value={60}>60 minutos</option>
-                    <option value={70}>70 minutos</option>
-                    <option value={80}>80 minutos</option>
-                    <option value={90}>90 minutos</option>
-                  </select>
-                  <img
-                    src={arrowIcon}
-                    alt="Arrow Icon"
-                    className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
-                    style={{
-                      filter: 'invert(100%)',
-                    }}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="relative inline-block">
-                <div className="relative inline-block">
-                  <select
-                    id="tiempoMaximoRecorrido"
-                    value={tiempoMaximoRecorrido}
-                    onChange={(e) =>
-                      setTiempoMaximoRecorrido(parseInt(e.target.value))
-                    }
-                    className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
-                    style={{
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none',
-                      width: 'auto', // Mantiene el select con su ancho original
-                    }}
-                  >
-                    <option value={30}>30 minutos</option>
-                    <option value={40}>40 minutos</option>
-                    <option value={50}>50 minutos</option>
-                    <option value={60}>60 minutos</option>
-                    <option value={70}>70 minutos</option>
-                    <option value={80}>80 minutos</option>
-                    <option value={90}>90 minutos</option>
-                  </select>
-                  <img
-                    src={arrowIcon}
-                    alt="Arrow Icon"
-                    className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
-                    style={{
-                      filter: 'invert(100%)',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="flex-col md:grid md:grid-cols-4 gap-4 ">
-            {(grupoManual.length > 0 || pedidosReserva.length > 0) && (
-              <div className="flex flex-col">
-                {grupoManual.length > 0 && (
-                  <div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
-                    <h3 className="font-medium text-gray-100  mt-4 mb-8  text-center">
-                      Asignar manualmente
-                    </h3>
-                    <div className="flex flex-col gap-2">
-                      {grupoManual.map((pedido, index) => (
-                        <div
-                          key={pedido.id}
-                          className="bg-gray-100 rounded-lg flex  justify-between flex-row"
-                        >
-                          <div className="flex flex-row items-center">
-                            <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-                              {index + 1}
-                            </div>
-                            <div className="pl-4 pb-3.5 pt-2">
-                              <p className="font-bold text-lg">
-                                {pedido.direccion.split(',')[0]}
-                              </p>
-                              <p className="text-xs">Distancia: Desconocido</p>
-                              <p className="text-xs">
-                                Pidió hace: {calcularTiempoEspera(pedido.hora)}{' '}
-                                minutos
-                              </p>
-                              <p className="text-xs">
-                                Cliente percibe entrega de: Desconocido
-                              </p>
-                            </div>
-                          </div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 mr-4 opacity-50"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M3.75 9h16.5m-16.5 6.75h16.5"
-                            />
-                          </svg>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-col gap-2">
-                  {pedidosReserva.length > 0 && (
-                    <div className="bg-black  shadow-black rounded-lg  p-4 mb-4   h-min font-coolvetica w-full shadow-lg  ">
-                      <h3 className="font-medium text-gray-100 mt-4 mb-8 text-center">
-                        Reservas
-                      </h3>
-                      <div className="flex flex-col gap-2">
-                        {pedidosReserva.map((pedido, index) => (
-                          <div
-                            key={pedido.id}
-                            className="bg-gray-100 h-[95px] rounded-lg flex items-center justify-between flex-row"
-                          >
-                            <div className="flex flex-row items-center">
-                              <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-                                {index + 1}
-                              </div>
-                              <div className="pl-4 pb-3.5 pt-2">
-                                <p className="font-bold text-lg">
-                                  {pedido.direccion.split(',')[0]}
-                                </p>
-                                <p className="text-xs">
-                                  Pidio para las: {sumar30Minutos(pedido.hora)}
-                                </p>
-                                <p className="text-xs">
-                                  Largar recien a las: {pedido.hora}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="relative">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                version="1.0"
-                                viewBox="0 0 1138.000000 1280.000000"
-                                preserveAspectRatio="xMidYMid meet"
-                                className={`h-5 pr-4 cursor-pointer ${
-                                  unlocking[index] ? 'unlocking' : ''
-                                }`}
-                                onMouseEnter={() =>
-                                  setTooltipVisibility((prev) => ({
-                                    ...prev,
-                                    [index]: true,
-                                  }))
-                                }
-                                onMouseLeave={() =>
-                                  setTooltipVisibility((prev) => ({
-                                    ...prev,
-                                    [index]: false,
-                                  }))
-                                }
-                                onMouseDown={() => handleLockMouseDown(index)}
-                                onMouseUp={() => handleLockMouseUp(index)}
-                                onTouchStart={() => handleLockMouseDown(index)}
-                                onTouchEnd={() => handleLockMouseUp(index)}
-                              >
-                                <g
-                                  transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
-                                  fill="#000000"
-                                  stroke="none"
-                                  className="opacity-50"
-                                >
-                                  <path d="M5465 12794 c-207 -20 -279 -29 -402 -49 -971 -163 -1838 -722 -2402 -1550 -286 -419 -476 -887 -570 -1400 -55 -304 -61 -447 -61 -1582 l0 -1003 -189 0 c-143 0 -191 -3 -199 -13 -8 -9 -11 -960 -12 -3318 0 -1817 -1 -3309 0 -3316 0 -6 7 -19 16 -27 14 -14 136 -16 1172 -18 636 -1 1063 -5 947 -8 -115 -3 -203 -8 -195 -11 25 -11 284 -54 385 -65 28 -2 77 -9 110 -13 33 -5 63 -7 68 -4 4 2 31 0 60 -6 28 -5 93 -12 142 -15 50 -3 110 -7 135 -10 150 -18 757 -35 1220 -35 463 0 1070 17 1220 35 25 3 86 7 135 10 50 3 114 10 142 15 29 6 56 8 60 6 5 -3 35 -1 68 4 33 4 83 11 110 13 101 11 360 54 385 65 8 3 -79 8 -195 11 -115 3 311 7 947 8 1036 2 1158 4 1172 18 9 8 16 21 16 27 1 7 0 1499 0 3316 -1 2358 -4 3309 -12 3318 -8 10 -56 13 -199 13 l-189 0 0 1003 c0 1135 -6 1278 -61 1582 -133 725 -463 1369 -969 1889 -605 622 -1330 980 -2210 1091 -118 15 -554 28 -645 19z m645 -1043 c568 -97 1058 -348 1452 -744 434 -436 696 -995 758 -1616 6 -63 10 -504 10 -1142 l0 -1039 -2640 0 -2640 0 0 1039 c0 638 4 1079 10 1142 62 621 324 1180 758 1616 395 397 898 654 1452 742 177 29 187 29 465 26 199 -2 275 -7 375 -24z" />
-                                </g>
-                              </svg>
-                              {tooltipVisibility[index] && (
-                                <div
-                                  className={`absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 overflow-hidden h-[30px] ${
-                                    unlocking[index] ? 'unlocking' : ''
-                                  }`}
-                                >
-                                  <div className="tooltip-background"></div>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    version="1.0"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 838.000000 1280.000000"
-                                    preserveAspectRatio="xMidYMid meet"
-                                    className="relative z-10"
-                                  >
-                                    <g
-                                      transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
-                                      fill="#FFFFFF"
-                                      stroke="none"
-                                    >
-                                      <path d="M5925 12794 c-568 -60 -1036 -276 -1416 -654 -341 -339 -547 -740 -642 -1245 -20 -107 -21 -148 -24 -1452 l-4 -1343 -1917 -2 -1917 -3 0 -2070 0 -2070 1128 -5 1128 -5 -1 -315 c0 -173 -3 -345 -7 -381 l-6 -66 -96 0 c-109 1 -151 -14 -170 -61 -12 -28 -7 -51 18 -92 5 -8 26 -66 46 -129 20 -63 63 -181 96 -264 33 -82 59 -150 57 -152 -2 -1 -39 -23 -83 -50 -304 -182 -515 -471 -610 -836 -21 -83 -28 -136 -32 -258 -8 -228 21 -391 104 -574 70 -154 139 -256 256 -376 502 -515 1321 -520 1828 -10 148 149 254 323 325 536 52 153 68 254 67 423 -1 277 -77 505 -242 728 -103 139 -267 288 -419 381 -28 18 -52 39 -52 46 0 8 18 87 40 176 61 248 101 453 103 532 l2 70 -143 71 c-160 79 -148 63 -127 162 7 30 1 36 -147 164 -84 74 -155 135 -157 136 -1 2 2 34 9 73 l12 71 1048 0 c954 0 1049 1 1061 16 20 25 21 4093 0 4117 -12 15 -45 17 -292 17 l-279 0 0 1264 c0 1065 2 1283 15 1378 65 496 344 924 775 1191 282 174 649 259 983 229 411 -38 735 -188 1023 -476 278 -279 430 -595 473 -988 7 -59 11 -348 11 -727 l0 -630 22 -20 c72 -68 325 -89 480 -41 76 23 108 44 108 71 0 10 5 19 11 19 7 0 9 207 6 703 -5 755 -5 758 -62 994 -216 896 -949 1565 -1870 1708 -97 15 -438 27 -520 19z m-3070 -11601 c109 -38 209 -146 235 -254 39 -160 -42 -339 -176 -389 -194 -72 -397 2 -495 182 -32 60 -34 68 -34 163 0 118 15 155 90 224 100 92 247 121 380 74z m215 -120 c43 -59 70 -141 70 -208 0 -60 -17 -142 -31 -151 -4 -2 -2 17 6 43 18 58 19 104 4 175 -15 72 -42 121 -97 181 -38 40 -41 46 -15 27 17 -12 46 -42 63 -67z" />
-                                    </g>
-                                  </svg>
-                                  <p className="mb-[1.5px] relative z-10 text-xs">
-                                    Mantén presionado para distribuir en grupos
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+			</style>
+			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
+				<div>
+					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center    w-full">
+						<div className="mb-2 md:mb-0">
+							<div className="flex w-full flex-row  gap-2">
+								<div
+									className={` py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
+										modoAgrupacion === "entrega"
+											? "bg-black text-gray-100"
+											: "text-black  border border-1 border-black"
+									}`}
+									onClick={() => setModoAgrupacion("entrega")}
+								>
+									Máximo de entrega
+								</div>
+								<div
+									className={` py-2 px-4 w-1/2 md:w-auto  rounded-lg font-medium cursor-pointer ${
+										modoAgrupacion === "recorrido"
+											? "bg-black text-gray-100"
+											: "text-black  border border-1 border-black"
+									}`}
+									onClick={() => setModoAgrupacion("recorrido")}
+								>
+									Máximo de recorrido
+								</div>
+							</div>
+						</div>
+						<div className=" h-10.5 bg-black w-[1px] ml-4 mr-3"></div>
+						{modoAgrupacion === "entrega" ? (
+							<div className="relative  inline-block">
+								<div className="relative inline-block">
+									<select
+										id="tiempoMaximo"
+										value={tiempoMaximo}
+										onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+										className="bg-black  appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+										style={{
+											WebkitAppearance: "none",
+											MozAppearance: "none",
+											width: "auto", // Mantiene el select con su ancho original
+										}}
+									>
+										<option value={30}>30 minutos</option>
+										<option value={40}>40 minutos</option>
+										<option value={50}>50 minutos</option>
+										<option value={60}>60 minutos</option>
+										<option value={70}>70 minutos</option>
+										<option value={80}>80 minutos</option>
+										<option value={90}>90 minutos</option>
+									</select>
+									<img
+										src={arrowIcon}
+										alt="Arrow Icon"
+										className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+										style={{
+											filter: "invert(100%)",
+										}}
+									/>
+								</div>
+							</div>
+						) : (
+							<div className="relative inline-block">
+								<div className="relative inline-block">
+									<select
+										id="tiempoMaximoRecorrido"
+										value={tiempoMaximoRecorrido}
+										onChange={(e) =>
+											setTiempoMaximoRecorrido(parseInt(e.target.value))
+										}
+										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+										style={{
+											WebkitAppearance: "none",
+											MozAppearance: "none",
+											width: "auto", // Mantiene el select con su ancho original
+										}}
+									>
+										<option value={30}>30 minutos</option>
+										<option value={40}>40 minutos</option>
+										<option value={50}>50 minutos</option>
+										<option value={60}>60 minutos</option>
+										<option value={70}>70 minutos</option>
+										<option value={80}>80 minutos</option>
+										<option value={90}>90 minutos</option>
+									</select>
+									<img
+										src={arrowIcon}
+										alt="Arrow Icon"
+										className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+										style={{
+											filter: "invert(100%)",
+										}}
+									/>
+								</div>
+							</div>
+						)}
+					</div>
+					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
+						{(grupoManual.length > 0 || pedidosReserva.length > 0) && (
+							<div className="flex flex-col">
+								{grupoManual.length > 0 && (
+									<div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
+										<h3 className="font-medium text-gray-100  mt-4 mb-8  text-center">
+											Asignar manualmente
+										</h3>
+										<div className="flex flex-col gap-2">
+											{grupoManual.map((pedido, index) => (
+												<div
+													key={pedido.id}
+													className="bg-gray-100 rounded-lg flex  justify-between flex-row"
+												>
+													<div className="flex flex-row items-center">
+														<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+															{index + 1}
+														</div>
+														<div className="pl-4 pb-3.5 pt-2">
+															<p className="font-bold text-lg">
+																{pedido.direccion.split(",")[0]}
+															</p>
+															<p className="text-xs">Distancia: Desconocido</p>
+															<p className="text-xs">
+																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+																minutos
+															</p>
+															<p className="text-xs">
+																Cliente percibe entrega de: Desconocido
+															</p>
+														</div>
+													</div>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+														strokeWidth="1.5"
+														stroke="currentColor"
+														className="w-6 mr-4 opacity-50"
+													>
+														<path
+															stroke-linecap="round"
+															stroke-linejoin="round"
+															d="M3.75 9h16.5m-16.5 6.75h16.5"
+														/>
+													</svg>
+												</div>
+											))}
+										</div>
+									</div>
+								)}
+								<div className="flex flex-col gap-2">
+									{pedidosReserva.length > 0 && (
+										<div className="bg-black  shadow-black rounded-lg  p-4 mb-4   h-min font-coolvetica w-full shadow-lg  ">
+											<h3 className="font-medium text-gray-100 mt-4 mb-8 text-center">
+												Reservas
+											</h3>
+											<div className="flex flex-col gap-2">
+												{pedidosReserva.map((pedido, index) => (
+													<div
+														key={pedido.id}
+														className="bg-gray-100 h-[95px] rounded-lg flex items-center justify-between flex-row"
+													>
+														<div className="flex flex-row items-center">
+															<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+																{index + 1}
+															</div>
+															<div className="pl-4 pb-3.5 pt-2">
+																<p className="font-bold text-lg">
+																	{pedido.direccion.split(",")[0]}
+																</p>
+																<p className="text-xs">
+																	Pidio para las: {sumar30Minutos(pedido.hora)}
+																</p>
+																<p className="text-xs">
+																	Largar recien a las: {pedido.hora}
+																</p>
+															</div>
+														</div>
+														<div className="relative">
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																version="1.0"
+																viewBox="0 0 1138.000000 1280.000000"
+																preserveAspectRatio="xMidYMid meet"
+																className={`h-5 pr-4 cursor-pointer ${
+																	unlocking[index] ? "unlocking" : ""
+																}`}
+																onMouseEnter={() =>
+																	setTooltipVisibility((prev) => ({
+																		...prev,
+																		[index]: true,
+																	}))
+																}
+																onMouseLeave={() =>
+																	setTooltipVisibility((prev) => ({
+																		...prev,
+																		[index]: false,
+																	}))
+																}
+																onMouseDown={() => handleLockMouseDown(index)}
+																onMouseUp={() => handleLockMouseUp(index)}
+																onTouchStart={() => handleLockMouseDown(index)}
+																onTouchEnd={() => handleLockMouseUp(index)}
+															>
+																<g
+																	transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
+																	fill="#000000"
+																	stroke="none"
+																	className="opacity-50"
+																>
+																	<path d="M5465 12794 c-207 -20 -279 -29 -402 -49 -971 -163 -1838 -722 -2402 -1550 -286 -419 -476 -887 -570 -1400 -55 -304 -61 -447 -61 -1582 l0 -1003 -189 0 c-143 0 -191 -3 -199 -13 -8 -9 -11 -960 -12 -3318 0 -1817 -1 -3309 0 -3316 0 -6 7 -19 16 -27 14 -14 136 -16 1172 -18 636 -1 1063 -5 947 -8 -115 -3 -203 -8 -195 -11 25 -11 284 -54 385 -65 28 -2 77 -9 110 -13 33 -5 63 -7 68 -4 4 2 31 0 60 -6 28 -5 93 -12 142 -15 50 -3 110 -7 135 -10 150 -18 757 -35 1220 -35 463 0 1070 17 1220 35 25 3 86 7 135 10 50 3 114 10 142 15 29 6 56 8 60 6 5 -3 35 -1 68 4 33 4 83 11 110 13 101 11 360 54 385 65 8 3 -79 8 -195 11 -115 3 311 7 947 8 1036 2 1158 4 1172 18 9 8 16 21 16 27 1 7 0 1499 0 3316 -1 2358 -4 3309 -12 3318 -8 10 -56 13 -199 13 l-189 0 0 1003 c0 1135 -6 1278 -61 1582 -133 725 -463 1369 -969 1889 -605 622 -1330 980 -2210 1091 -118 15 -554 28 -645 19z m645 -1043 c568 -97 1058 -348 1452 -744 434 -436 696 -995 758 -1616 6 -63 10 -504 10 -1142 l0 -1039 -2640 0 -2640 0 0 1039 c0 638 4 1079 10 1142 62 621 324 1180 758 1616 395 397 898 654 1452 742 177 29 187 29 465 26 199 -2 275 -7 375 -24z" />
+																</g>
+															</svg>
+															{tooltipVisibility[index] && (
+																<div
+																	className={`absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 overflow-hidden h-[30px] ${
+																		unlocking[index] ? "unlocking" : ""
+																	}`}
+																>
+																	<div className="tooltip-background"></div>
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		version="1.0"
+																		width="16"
+																		height="16"
+																		viewBox="0 0 838.000000 1280.000000"
+																		preserveAspectRatio="xMidYMid meet"
+																		className="relative z-10"
+																	>
+																		<g
+																			transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
+																			fill="#FFFFFF"
+																			stroke="none"
+																		>
+																			<path d="M5925 12794 c-568 -60 -1036 -276 -1416 -654 -341 -339 -547 -740 -642 -1245 -20 -107 -21 -148 -24 -1452 l-4 -1343 -1917 -2 -1917 -3 0 -2070 0 -2070 1128 -5 1128 -5 -1 -315 c0 -173 -3 -345 -7 -381 l-6 -66 -96 0 c-109 1 -151 -14 -170 -61 -12 -28 -7 -51 18 -92 5 -8 26 -66 46 -129 20 -63 63 -181 96 -264 33 -82 59 -150 57 -152 -2 -1 -39 -23 -83 -50 -304 -182 -515 -471 -610 -836 -21 -83 -28 -136 -32 -258 -8 -228 21 -391 104 -574 70 -154 139 -256 256 -376 502 -515 1321 -520 1828 -10 148 149 254 323 325 536 52 153 68 254 67 423 -1 277 -77 505 -242 728 -103 139 -267 288 -419 381 -28 18 -52 39 -52 46 0 8 18 87 40 176 61 248 101 453 103 532 l2 70 -143 71 c-160 79 -148 63 -127 162 7 30 1 36 -147 164 -84 74 -155 135 -157 136 -1 2 2 34 9 73 l12 71 1048 0 c954 0 1049 1 1061 16 20 25 21 4093 0 4117 -12 15 -45 17 -292 17 l-279 0 0 1264 c0 1065 2 1283 15 1378 65 496 344 924 775 1191 282 174 649 259 983 229 411 -38 735 -188 1023 -476 278 -279 430 -595 473 -988 7 -59 11 -348 11 -727 l0 -630 22 -20 c72 -68 325 -89 480 -41 76 23 108 44 108 71 0 10 5 19 11 19 7 0 9 207 6 703 -5 755 -5 758 -62 994 -216 896 -949 1565 -1870 1708 -97 15 -438 27 -520 19z m-3070 -11601 c109 -38 209 -146 235 -254 39 -160 -42 -339 -176 -389 -194 -72 -397 2 -495 182 -32 60 -34 68 -34 163 0 118 15 155 90 224 100 92 247 121 380 74z m215 -120 c43 -59 70 -141 70 -208 0 -60 -17 -142 -31 -151 -4 -2 -2 17 6 43 18 58 19 104 4 175 -15 72 -42 121 -97 181 -38 40 -41 46 -15 27 17 -12 46 -42 63 -67z" />
+																		</g>
+																	</svg>
+																	<p className="mb-[1.5px] relative z-10 text-xs">
+																		Mantén presionado para distribuir en grupos
+																	</p>
+																</div>
+															)}
+														</div>
+													</div>
+												))}
+											</div>
+										</div>
+									)}
+								</div>
+							</div>
+						)}
 
-            <DragDropContext onDragEnd={onDragEnd}>
-              {gruposListos.map((grupo, index) => (
-                <Droppable
-                  droppableId={index.toString()}
-                  key={`listo-${index}`}
-                >
-                  {(provided) => (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
-                    >
-                      <div className="flex flex-col mt-4 mb-8 text-center justify-center">
-                        <div className="flex flex-row items-center justify-center gap-2">
-                          <img src={listoIcon} className="h-3 mb-1" alt="" />
-                          <h3 className="font-medium text-2xl md:text-3xl mb-2">
-                            Grupo {index + 1}
-                          </h3>
-                        </div>
-                        <p className="text-xs">
-                          Pedido con peor entrega: {grupo.peorTiempoPercibido}{' '}
-                          minutos (
-                          {grupo.pedidoPeorTiempo?.direccion.split(',')[0] ||
-                            'N/A'}
-                          )
-                        </p>
-                        <p className="text-xs">
-                          Duracion del recorrido: {grupo.tiempoTotal} minutos
-                        </p>
-                        <p className="text-xs">
-                          Distancia del recorrido: {grupo.distanciaTotal} km
-                        </p>
-                        <p className="text-xs">
-                          El cadete regresa a ANHELO a las {grupo.horaRegreso}{' '}
-                          hs
-                        </p>
-                      </div>
-                      <button
-                        className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
-                        onClick={() => handleDeshacerGrupo(index)}
-                      >
-                        {loadingStates[index] ? (
-                          <div className="flex flex-row gap-1">
-                            <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-                            <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-                            <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
-                          </div>
-                        ) : (
-                          'Deshacer'
-                        )}
-                      </button>
-                      <div className="relative mb-8">
-                        <select
-                          className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
-                          style={{
-                            WebkitAppearance: 'none',
-                            MozAppearance: 'none',
-                          }}
-                          onChange={(e) =>
-                            handleAsignarCadete(index, e.target.value, true)
-                          }
-                          value={grupo.pedidos[0]?.cadete || ''}
-                          disabled={loadingStates[`asignar-${index}`]}
-                        >
-                          {cadetesDisponibles.map((cadete) => (
-                            <option key={cadete.id} value={cadete.id}>
-                              {cadete.name}
-                            </option>
-                          ))}
-                        </select>
-                        {loadingStates[`asignar-${index}`] && (
-                          <div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
-                            <div className="flex flex-row gap-1">
-                              <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-                              <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-                              <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      {grupo.pedidos.map((pedido, pedidoIndex) => (
-                        <Draggable
-                          key={pedido.id}
-                          draggableId={pedido.id}
-                          index={pedidoIndex}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`bg-gray-100 relative flex flex-row items-center ${
-                                pedidoIndex === 0
-                                  ? 'rounded-t-lg'
-                                  : pedidoIndex === grupo.pedidos.length - 1
-                                  ? 'rounded-b-lg'
-                                  : ''
-                              }`}
-                            >
-                              <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-                                {pedidoIndex + 1}
-                              </div>
-                              {grupo.pedidos.length > 1 && (
-                                <div
-                                  className={`w-1.5 bg-black absolute left-[23.5px] ${
-                                    pedidoIndex === 0
-                                      ? 'h-1/2 bottom-0'
-                                      : pedidoIndex === grupo.pedidos.length - 1
-                                      ? 'h-1/2 top-0'
-                                      : 'h-full'
-                                  }`}
-                                ></div>
-                              )}
-                              <div
-                                className={`flex flex-row justify-between ${
-                                  pedidoIndex !== grupo.pedidos.length - 1
-                                    ? 'border-b border-black border-opacity-20'
-                                    : ''
-                                } w-full ml-4 pb-3.5 pt-2`}
-                              >
-                                <div>
-                                  <p className="font-bold text-lg">
-                                    {pedido.direccion.split(',')[0]}
-                                  </p>
-                                  <p className="text-xs">
-                                    Distancia: {pedido.distancia} km
-                                  </p>
-                                  <p className="text-xs">
-                                    Pidió hace:{' '}
-                                    {calcularTiempoEspera(pedido.hora)} minutos
-                                  </p>
-                                  <p className="text-xs">
-                                    Cliente percibe entrega de:{' '}
-                                    {pedido.tiempoPercibido} minutos
-                                  </p>
-                                </div>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  stroke="currentColor"
-                                  className="w-6 mr-4 opacity-50"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M3.75 9h16.5m-16.5 6.75h16.5"
-                                  />
-                                </svg>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              ))}
-            </DragDropContext>
-            {gruposOptimos.length > 0 ? (
-              gruposOptimos.map((grupo, index) => {
-                const horaActual = new Date();
-                const horaRegreso = new Date(
-                  horaActual.getTime() + grupo.tiempoTotal * 60000
-                );
-                const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
-                  'es-ES',
-                  { hour: '2-digit', minute: '2-digit' }
-                );
-                return (
-                  <div
-                    key={index}
-                    className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
-                  >
-                    <div className="flex flex-col mt-4 mb-8 text-center justify-center">
-                      <div className="flex flex-row  items-center justify-center ">
-                        <svg
-                          className="w-4 h-4 mb-2 text-gray-100 animate-spin   dark:fill-black"
-                          viewBox="0 0 100 101"
-                        >
-                          <path
-                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="currentColor"
-                          />
-                          <path
-                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentFill"
-                          />
-                        </svg>
-                        <h3 className="font-medium w-9/12 text-2xl md:text-3xl mb-2">
-                          Grupo {index + 1} en proceso...
-                        </h3>
-                      </div>
-                      <p className="text-xs">
-                        Pedido con peor entrega: {grupo.peorTiempoPercibido}{' '}
-                        minutos (
-                        {grupo.pedidoPeorTiempo?.direccion?.split(',')[0] ||
-                          'N/A'}
-                        )
-                      </p>
-                      <p className="text-xs">
-                        Duracion del recorrido: {grupo.tiempoTotal} minutos
-                      </p>
-                      <p className="text-xs">
-                        Distancia del recorrido: {grupo.distanciaTotal} km
-                      </p>
-                      <p className="text-xs">
-                        El cadete regresa a ANHELO a las {horaRegresoFormateada}{' '}
-                        hs
-                      </p>
-                    </div>
-                    <button
-                      className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
-                      onClick={() => handleGrupoListo(grupo)}
-                    >
-                      Listo
-                    </button>
-                    {grupo.pedidos.map((pedido, pedidoIndex) => (
-                      <div
-                        key={pedido.id}
-                        className={`bg-gray-100 relative flex flex-row items-center ${
-                          pedidoIndex === 0
-                            ? 'rounded-t-lg '
-                            : pedidoIndex === grupo.pedidos.length - 1
-                            ? 'rounded-b-lg'
-                            : ''
-                        }`}
-                      >
-                        <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
-                          {pedidoIndex + 1}
-                        </div>
-                        {grupo.pedidos.length > 1 && (
-                          <div
-                            className={`w-1.5 bg-black absolute left-[23.5px] ${
-                              pedidoIndex === 0
-                                ? 'h-1/2 bottom-0'
-                                : pedidoIndex === grupo.pedidos.length - 1
-                                ? 'h-1/2 top-0'
-                                : 'h-full'
-                            }`}
-                          ></div>
-                        )}
-                        <div
-                          className={`flex flex-row justify-between items-center ${
-                            pedidoIndex !== grupo.pedidos.length - 1
-                              ? 'border-b border-black border-opacity-20'
-                              : ''
-                          } w-full ml-4 pb-3.5 pt-2`}
-                        >
-                          <div className="flex flex-col">
-                            <p className="font-bold text-lg">
-                              {pedido.direccion.split(',')[0]}
-                            </p>
-                            <p className="text-xs">
-                              Distancia: {pedido.distancia} km
-                            </p>
-                            <p className="text-xs">
-                              Pidió hace: {calcularTiempoEspera(pedido.hora)}{' '}
-                              minutos
-                            </p>
-                            <p className="text-xs">
-                              Cliente percibe entrega de:{' '}
-                              {pedido.tiempoPercibido} minutos
-                            </p>
-                          </div>
-                          <div className="relative">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6 mr-4 cursor-pointer opacity-50"
-                              onMouseEnter={() =>
-                                setTooltipVisibility((prev) => ({
-                                  ...prev,
-                                  [`${index}-${pedidoIndex}`]: true,
-                                }))
-                              }
-                              onMouseLeave={() =>
-                                setTooltipVisibility((prev) => ({
-                                  ...prev,
-                                  [`${index}-${pedidoIndex}`]: false,
-                                }))
-                              }
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M3.75 9h16.5m-16.5 6.75h16.5"
-                              />
-                            </svg>
-                            {tooltipVisibility[`${index}-${pedidoIndex}`] && (
-                              <div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  stroke="currentColor"
-                                  className="w-3 h-3"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-                                  />
-                                </svg>
-                                <p className="mb-[1.5px] text-xs">
-                                  Solo puedes mover pedidos de grupos listos.
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })
-            ) : (
-              <p className="mt-[-8px] text-left w-full">
-                Si hay pedidos para agrupar los veras aca.
-              </p>
-            )}
-          </div>
-        </div>
-        <CadeteSelect
-          cadetes={cadetes}
-          handleCadeteChange={handleCadeteChange}
-          selectedCadete={selectedCadete}
-          orders={pedidosHechos}
-        />
-        {/* <button
+						<DragDropContext onDragEnd={onDragEnd}>
+							{gruposListos.map((grupo, index) => (
+								<Droppable
+									droppableId={index.toString()}
+									key={`listo-${index}`}
+								>
+									{(provided) => (
+										<div
+											{...provided.droppableProps}
+											ref={provided.innerRef}
+											className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
+										>
+											<div className="flex flex-col mt-4 mb-8 text-center justify-center">
+												<div className="flex flex-row items-center justify-center gap-2">
+													<img src={listoIcon} className="h-3 mb-1" alt="" />
+													<h3 className="font-medium text-2xl md:text-3xl mb-2">
+														Grupo {index + 1}
+													</h3>
+												</div>
+												<p className="text-xs">
+													Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+													minutos (
+													{grupo.pedidoPeorTiempo?.direccion.split(",")[0] ||
+														"N/A"}
+													)
+												</p>
+												<p className="text-xs">
+													Duracion del recorrido: {grupo.tiempoTotal} minutos
+												</p>
+												<p className="text-xs">
+													Distancia del recorrido: {grupo.distanciaTotal} km
+												</p>
+												<p className="text-xs">
+													El cadete regresa a ANHELO a las {grupo.horaRegreso}{" "}
+													hs
+												</p>
+												<p className="text-xs">
+													Costo por entrega: $
+													{(grupo.distanciaTotal * 200 +
+														grupo.pedidos.length * 1200) /
+														grupo.pedidos.length}
+												</p>
+											</div>
+											<button
+												className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
+												onClick={() => handleDeshacerGrupo(index)}
+											>
+												{loadingStates[index] ? (
+													<div className="flex flex-row gap-1">
+														<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+														<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+														<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+													</div>
+												) : (
+													"Deshacer"
+												)}
+											</button>
+											<div className="relative mb-8">
+												<select
+													className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
+													style={{
+														WebkitAppearance: "none",
+														MozAppearance: "none",
+													}}
+													onChange={(e) =>
+														handleAsignarCadete(index, e.target.value, true)
+													}
+													value={grupo.pedidos[0]?.cadete || ""}
+													disabled={loadingStates[`asignar-${index}`]}
+												>
+													{cadetesDisponibles.map((cadete) => (
+														<option key={cadete.id} value={cadete.id}>
+															{cadete.name}
+														</option>
+													))}
+												</select>
+												{loadingStates[`asignar-${index}`] && (
+													<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
+														<div className="flex flex-row gap-1">
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+															<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+														</div>
+													</div>
+												)}
+											</div>
+											{grupo.pedidos.map((pedido, pedidoIndex) => (
+												<Draggable
+													key={pedido.id}
+													draggableId={pedido.id}
+													index={pedidoIndex}
+												>
+													{(provided) => (
+														<div
+															ref={provided.innerRef}
+															{...provided.draggableProps}
+															{...provided.dragHandleProps}
+															className={`bg-gray-100 relative flex flex-row items-center ${
+																pedidoIndex === 0
+																	? "rounded-t-lg"
+																	: pedidoIndex === grupo.pedidos.length - 1
+																	? "rounded-b-lg"
+																	: ""
+															}`}
+														>
+															<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+																{pedidoIndex + 1}
+															</div>
+															{grupo.pedidos.length > 1 && (
+																<div
+																	className={`w-1.5 bg-black absolute left-[23.5px] ${
+																		pedidoIndex === 0
+																			? "h-1/2 bottom-0"
+																			: pedidoIndex === grupo.pedidos.length - 1
+																			? "h-1/2 top-0"
+																			: "h-full"
+																	}`}
+																></div>
+															)}
+															<div
+																className={`flex flex-row justify-between ${
+																	pedidoIndex !== grupo.pedidos.length - 1
+																		? "border-b border-black border-opacity-20"
+																		: ""
+																} w-full ml-4 pb-3.5 pt-2`}
+															>
+																<div>
+																	<p className="font-bold text-lg">
+																		{pedido.direccion.split(",")[0]}
+																	</p>
+																	<p className="text-xs">
+																		Distancia: {pedido.distancia} km
+																	</p>
+																	<p className="text-xs">
+																		Pidió hace:{" "}
+																		{calcularTiempoEspera(pedido.hora)} minutos
+																	</p>
+																	<p className="text-xs">
+																		Cliente percibe entrega de:{" "}
+																		{pedido.tiempoPercibido} minutos
+																	</p>
+																</div>
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	fill="none"
+																	viewBox="0 0 24 24"
+																	strokeWidth="1.5"
+																	stroke="currentColor"
+																	className="w-6 mr-4 opacity-50"
+																>
+																	<path
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
+																		d="M3.75 9h16.5m-16.5 6.75h16.5"
+																	/>
+																</svg>
+															</div>
+														</div>
+													)}
+												</Draggable>
+											))}
+											{provided.placeholder}
+										</div>
+									)}
+								</Droppable>
+							))}
+						</DragDropContext>
+						{gruposOptimos.length > 0 ? (
+							gruposOptimos.map((grupo, index) => {
+								const horaActual = new Date();
+								const horaRegreso = new Date(
+									horaActual.getTime() + grupo.tiempoTotal * 60000
+								);
+								const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
+									"es-ES",
+									{ hour: "2-digit", minute: "2-digit" }
+								);
+								return (
+									<div
+										key={index}
+										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
+									>
+										<div className="flex flex-col mt-4 mb-8 text-center justify-center">
+											<div className="flex flex-row  items-center justify-center ">
+												<svg
+													className="w-4 h-4 mb-2 text-gray-100 animate-spin   dark:fill-black"
+													viewBox="0 0 100 101"
+												>
+													<path
+														d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+														fill="currentColor"
+													/>
+													<path
+														d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+														fill="currentFill"
+													/>
+												</svg>
+												<h3 className="font-medium w-9/12 text-2xl md:text-3xl mb-2">
+													Grupo {index + 1} en proceso...
+												</h3>
+											</div>
+											<p className="text-xs">
+												Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+												minutos (
+												{grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
+													"N/A"}
+												)
+											</p>
+											<p className="text-xs">
+												Duracion del recorrido: {grupo.tiempoTotal} minutos
+											</p>
+											<p className="text-xs">
+												Distancia del recorrido: {grupo.distanciaTotal} km
+											</p>
+											<p className="text-xs">
+												El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
+												hs
+											</p>
+										</div>
+										<button
+											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
+											onClick={() => handleGrupoListo(grupo)}
+										>
+											Listo
+										</button>
+										{grupo.pedidos.map((pedido, pedidoIndex) => (
+											<div
+												key={pedido.id}
+												className={`bg-gray-100 relative flex flex-row items-center ${
+													pedidoIndex === 0
+														? "rounded-t-lg "
+														: pedidoIndex === grupo.pedidos.length - 1
+														? "rounded-b-lg"
+														: ""
+												}`}
+											>
+												<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+													{pedidoIndex + 1}
+												</div>
+												{grupo.pedidos.length > 1 && (
+													<div
+														className={`w-1.5 bg-black absolute left-[23.5px] ${
+															pedidoIndex === 0
+																? "h-1/2 bottom-0"
+																: pedidoIndex === grupo.pedidos.length - 1
+																? "h-1/2 top-0"
+																: "h-full"
+														}`}
+													></div>
+												)}
+												<div
+													className={`flex flex-row justify-between items-center ${
+														pedidoIndex !== grupo.pedidos.length - 1
+															? "border-b border-black border-opacity-20"
+															: ""
+													} w-full ml-4 pb-3.5 pt-2`}
+												>
+													<div className="flex flex-col">
+														<p className="font-bold text-lg">
+															{pedido.direccion.split(",")[0]}
+														</p>
+														<p className="text-xs">
+															Distancia: {pedido.distancia} km
+														</p>
+														<p className="text-xs">
+															Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
+															minutos
+														</p>
+														<p className="text-xs">
+															Cliente percibe entrega de:{" "}
+															{pedido.tiempoPercibido} minutos
+														</p>
+													</div>
+													<div className="relative">
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															strokeWidth="1.5"
+															stroke="currentColor"
+															className="w-6 mr-4 cursor-pointer opacity-50"
+															onMouseEnter={() =>
+																setTooltipVisibility((prev) => ({
+																	...prev,
+																	[`${index}-${pedidoIndex}`]: true,
+																}))
+															}
+															onMouseLeave={() =>
+																setTooltipVisibility((prev) => ({
+																	...prev,
+																	[`${index}-${pedidoIndex}`]: false,
+																}))
+															}
+														>
+															<path
+																strokeLinecap="round"
+																strokeLinejoin="round"
+																d="M3.75 9h16.5m-16.5 6.75h16.5"
+															/>
+														</svg>
+														{tooltipVisibility[`${index}-${pedidoIndex}`] && (
+															<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	fill="none"
+																	viewBox="0 0 24 24"
+																	strokeWidth="1.5"
+																	stroke="currentColor"
+																	className="w-3 h-3"
+																>
+																	<path
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
+																		d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+																	/>
+																</svg>
+																<p className="mb-[1.5px] text-xs">
+																	Solo puedes mover pedidos de grupos listos.
+																</p>
+															</div>
+														)}
+													</div>
+												</div>
+											</div>
+										))}
+									</div>
+								);
+							})
+						) : (
+							<p className="mt-[-8px] text-left w-full">
+								Si hay pedidos para agrupar los veras aca.
+							</p>
+						)}
+					</div>
+				</div>
+				<CadeteSelect
+					cadetes={cadetes}
+					handleCadeteChange={handleCadeteChange}
+					selectedCadete={selectedCadete}
+					orders={pedidosHechos}
+				/>
+				{/* <button
 					className="bg-red-main text-white font-coolvetica font-bold p-2 rounded-lg"
 					onClick={() => {
 						const ordersByDate = orders.reduce((acc, order) => {
@@ -1364,37 +1372,37 @@ export const Comandera: React.FC = () => {
 				>
 					Copiar direcciones
 				</button> */}
-        <GeneralStats
-          customerSuccess={customerSuccess}
-          orders={orders}
-          cadeteSeleccionado={selectedCadete}
-          sumaTotalPedidos={sumaTotalPedidos}
-          sumaTotalEfectivo={sumaTotalEfectivo}
-          empleados={empleados}
-        />
-        <NavButtons
-          seccionActiva={seccionActiva}
-          setSeccionActiva={setSeccionActiva}
-        />
-        <OrderList
-          seccionActiva={seccionActiva}
-          pedidosPorHacer={pedidosPorHacer}
-          pedidosHechos={pedidosHechos}
-          pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
-          cadetes={cadetes}
-        />
-        <div className="mt-2">
-          {seccionActiva === 'mapa' &&
-            (location.pathname === '/comandas' ? (
-              <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
-            ) : (
-              <DeliveryMap orders={orders} />
-            ))}
-        </div>
-        <div className="mt-2">
-          {seccionActiva === 'registro' && <RegistroEmpleado />}
-        </div>
-      </div>
-    </>
-  );
+				<GeneralStats
+					customerSuccess={customerSuccess}
+					orders={orders}
+					cadeteSeleccionado={selectedCadete}
+					sumaTotalPedidos={sumaTotalPedidos}
+					sumaTotalEfectivo={sumaTotalEfectivo}
+					empleados={empleados}
+				/>
+				<NavButtons
+					seccionActiva={seccionActiva}
+					setSeccionActiva={setSeccionActiva}
+				/>
+				<OrderList
+					seccionActiva={seccionActiva}
+					pedidosPorHacer={pedidosPorHacer}
+					pedidosHechos={pedidosHechos}
+					pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
+					cadetes={cadetes}
+				/>
+				<div className="mt-2">
+					{seccionActiva === "mapa" &&
+						(location.pathname === "/comandas" ? (
+							<DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
+						) : (
+							<DeliveryMap orders={orders} />
+						))}
+				</div>
+				<div className="mt-2">
+					{seccionActiva === "registro" && <RegistroEmpleado />}
+				</div>
+			</div>
+		</>
+	);
 };
