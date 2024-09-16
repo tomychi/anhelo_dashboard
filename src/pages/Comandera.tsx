@@ -1281,12 +1281,13 @@ export const Comandera: React.FC = () => {
 													} w-full ml-4 pb-3.5 pt-2`}
 												>
 													<div className="flex flex-col">
-														<p className="font-bold text-lg">
+														<p className="font-bold text-lg leading-none mb-2 mt-1">
 															{pedido.direccion.split(",")[0]}{" "}
-															<span className="text-xs font-base">
+															<span className="text-xs font-normal">
 																({pedido.distancia} km)
 															</span>
 														</p>
+
 														<div className="flex flex-row items-center gap-1.5">
 															{calcularTiempoEspera(pedido.hora) > 30 && (
 																<svg
