@@ -1281,17 +1281,29 @@ export const Comandera: React.FC = () => {
 													} w-full ml-4 pb-3.5 pt-2`}
 												>
 													<div className="flex flex-col">
-														<div className="flex flex-row gap-1.5">
+														<div className="flex flex-row items-center gap-1.5">
 															<svg
 																xmlns="http://www.w3.org/2000/svg"
-																viewBox="0 0 24 24"
-																fill="currentColor"
-																className="w-4 ml-[-3px] text-red-main"
+																viewBox="0 0 200 500"
+																className="h-3"
 															>
-																<path
-																	fill-rule="evenodd"
-																	d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-																	clip-rule="evenodd"
+																<rect
+																	x="75"
+																	y="400"
+																	width="100"
+																	height="75"
+																	rx="20"
+																	ry="20"
+																	fill="#FF0000"
+																/>
+																<rect
+																	x="75"
+																	y="50"
+																	width="100"
+																	height="300"
+																	rx="20"
+																	ry="20"
+																	fill="#FF0000"
 																/>
 															</svg>
 															<p className="font-bold text-lg">
