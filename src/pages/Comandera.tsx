@@ -1150,7 +1150,7 @@ export const Comandera: React.FC = () => {
 																	</p>
 
 																	<div className="flex flex-row items-center gap-1.5">
-																		{calcularTiempoEspera(pedido.hora) > 30 && (
+																		{calcularTiempoEspera(pedido.hora) > 20 && (
 																			<svg
 																				xmlns="http://www.w3.org/2000/svg"
 																				viewBox="0 0 200 500"
@@ -1163,7 +1163,12 @@ export const Comandera: React.FC = () => {
 																					height="75"
 																					rx="20"
 																					ry="20"
-																					fill="#FF0000"
+																					fill={
+																						calcularTiempoEspera(pedido.hora) >
+																						30
+																							? "#FF0000"
+																							: "#F59E0B"
+																					}
 																				/>
 																				<rect
 																					x="75"
@@ -1172,10 +1177,16 @@ export const Comandera: React.FC = () => {
 																					height="300"
 																					rx="20"
 																					ry="20"
-																					fill="#FF0000"
+																					fill={
+																						calcularTiempoEspera(pedido.hora) >
+																						30
+																							? "#FF0000"
+																							: "#F59E0B"
+																					}
 																				/>
 																			</svg>
 																		)}
+
 																		<p className="text-xs">
 																			Pidió hace:{" "}
 																			{calcularTiempoEspera(pedido.hora)}{" "}
@@ -1323,7 +1334,7 @@ export const Comandera: React.FC = () => {
 														</p>
 
 														<div className="flex flex-row items-center gap-1.5">
-															{calcularTiempoEspera(pedido.hora) > 30 && (
+															{calcularTiempoEspera(pedido.hora) > 20 && (
 																<svg
 																	xmlns="http://www.w3.org/2000/svg"
 																	viewBox="0 0 200 500"
@@ -1336,7 +1347,11 @@ export const Comandera: React.FC = () => {
 																		height="75"
 																		rx="20"
 																		ry="20"
-																		fill="#FF0000"
+																		fill={
+																			calcularTiempoEspera(pedido.hora) > 30
+																				? "#FF0000"
+																				: "#F59E0B"
+																		}
 																	/>
 																	<rect
 																		x="75"
@@ -1345,10 +1360,15 @@ export const Comandera: React.FC = () => {
 																		height="300"
 																		rx="20"
 																		ry="20"
-																		fill="#FF0000"
+																		fill={
+																			calcularTiempoEspera(pedido.hora) > 30
+																				? "#FF0000"
+																				: "#F59E0B"
+																		}
 																	/>
 																</svg>
 															)}
+
 															<p className="text-xs">
 																Pidió hace: {calcularTiempoEspera(pedido.hora)}{" "}
 																minutos ({pedido.hora} hs)
