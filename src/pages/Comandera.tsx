@@ -51,6 +51,10 @@ export const Comandera: React.FC = () => {
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 	const { orders } = useSelector((state: RootState) => state.data);
+	const [pedidosPrioritarios, setPedidosPrioritarios] = useState<PedidoProps[]>(
+		[]
+	);
+
 	const { user } = useSelector((state: RootState) => state.auth);
 	const location = useLocation();
 	const [tiempoMaximo, setTiempoMaximo] = useState<number>(40);
@@ -252,17 +256,7 @@ export const Comandera: React.FC = () => {
 	const pedidosConDistancias = useMemo(() => {
 		return agregarDistanciasAPedidos(pedidosDisponibles);
 	}, [pedidosDisponibles]);
-	//   function encontrarPedidoMasCercano(
-	//     pedidos: PedidoProps[]
-	//   ): PedidoProps | null {
-	//     if (pedidos.length === 0) return null;
-	//     return pedidos.reduce((pedidoMasCercano, pedidoActual) => {
-	//       return parseFloat(pedidoActual.distancia) <
-	//         parseFloat(pedidoMasCercano.distancia)
-	//         ? pedidoActual
-	//         : pedidoMasCercano;
-	//     });
-	//   }
+
 	const VELOCIDAD_PROMEDIO_MOTO = 35;
 	const TIEMPO_POR_ENTREGA = 3;
 	function calcularTiempoYDistanciaRecorrido(
@@ -430,6 +424,7 @@ export const Comandera: React.FC = () => {
 		}
 		return gruposOptimos;
 	}
+
 	const gruposOptimosMemo = useMemo(() => {
 		const tiempoMaximoActual =
 			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
@@ -653,8 +648,6 @@ export const Comandera: React.FC = () => {
 		}
 	}, [empleados, gruposListos]);
 
-	console.log(gruposListos);
-
 	if (
 		user.email === "cocina@anhelo.com" ||
 		user.email === "cadetes@anhelo.com"
@@ -717,75 +710,88 @@ export const Comandera: React.FC = () => {
 		);
 	}
 
+	const togglePedidoPrioritario = (pedido: PedidoProps) => {
+		setPedidosPrioritarios((prevPrioritarios) => {
+			const isPrioritario = prevPrioritarios.some((p) => p.id === pedido.id);
+			if (isPrioritario) {
+				return prevPrioritarios.filter((p) => p.id !== pedido.id);
+			} else {
+				return [...prevPrioritarios, pedido];
+			}
+		});
+	};
+
+	console.log(pedidosPrioritarios);
+
 	return (
 		<>
 			<style>
 				{`
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 0.2;
-        transform: scale(0.8);
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 0.2;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
-      50% {
-        opacity: 1;
-        transform: scale(1);
+      .animate-pulse {
+        animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       }
-    }
-    .animate-pulse {
-      animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    .delay-75 {
-      animation-delay: 0.25s;
-    }
-    .delay-150 {
-      animation-delay: 0.5s;
-    }
-    @keyframes unlockAnimation {
-      0% {
+      .delay-75 {
+        animation-delay: 0.25s;
+      }
+      .delay-150 {
+        animation-delay: 0.5s;
+      }
+      @keyframes unlockAnimation {
+        0% {
+          clip-path: inset(0 100% 0 0);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+        }
+      }
+      .tooltip-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #111827; /* bg-gray-900 */
         clip-path: inset(0 100% 0 0);
       }
-      100% {
-        clip-path: inset(0 0 0 0);
+      .unlocking .tooltip-background {
+        animation: unlockAnimation 2s linear forwards;
       }
-    }
-    .tooltip-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #111827; /* bg-gray-900 */
-      clip-path: inset(0 100% 0 0);
-    }
-    .unlocking .tooltip-background {
-      animation: unlockAnimation 2s linear forwards;
-    }
-    .unlocking svg {
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-    }
-  `}
+      .unlocking svg {
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+      }
+    `}
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center    w-full">
+					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center w-full">
 						<div className="mb-2 md:mb-0">
-							<div className="flex w-full flex-row  gap-2">
+							<div className="flex w-full flex-row gap-2">
 								<div
-									className={` py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
+									className={`py-2 w-1/2 md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
 										modoAgrupacion === "entrega"
 											? "bg-black text-gray-100"
-											: "text-black  border border-1 border-black"
+											: "text-black border border-1 border-black"
 									}`}
 									onClick={() => setModoAgrupacion("entrega")}
 								>
 									Máximo de entrega
 								</div>
 								<div
-									className={` py-2 px-4 w-1/2 md:w-auto  rounded-lg font-medium cursor-pointer ${
+									className={`py-2 px-4 w-1/2 md:w-auto rounded-lg font-medium cursor-pointer ${
 										modoAgrupacion === "recorrido"
 											? "bg-black text-gray-100"
-											: "text-black  border border-1 border-black"
+											: "text-black border border-1 border-black"
 									}`}
 									onClick={() => setModoAgrupacion("recorrido")}
 								>
@@ -793,19 +799,19 @@ export const Comandera: React.FC = () => {
 								</div>
 							</div>
 						</div>
-						<div className=" h-10.5 bg-black w-[1px] ml-4 mr-3"></div>
+						<div className="h-10.5 bg-black w-[1px] ml-4 mr-3"></div>
 						{modoAgrupacion === "entrega" ? (
-							<div className="relative  inline-block">
+							<div className="relative inline-block">
 								<div className="relative inline-block">
 									<select
 										id="tiempoMaximo"
 										value={tiempoMaximo}
 										onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
-										className="bg-black  appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
 										style={{
 											WebkitAppearance: "none",
 											MozAppearance: "none",
-											width: "auto", // Mantiene el select con su ancho original
+											width: "auto",
 										}}
 									>
 										<option value={30}>30 minutos</option>
@@ -839,7 +845,7 @@ export const Comandera: React.FC = () => {
 										style={{
 											WebkitAppearance: "none",
 											MozAppearance: "none",
-											width: "auto", // Mantiene el select con su ancho original
+											width: "auto",
 										}}
 									>
 										<option value={30}>30 minutos</option>
@@ -903,8 +909,8 @@ export const Comandera: React.FC = () => {
 														className="w-6 mr-4 opacity-50"
 													>
 														<path
-															stroke-linecap="round"
-															stroke-linejoin="round"
+															strokeLinecap="round"
+															strokeLinejoin="round"
 															d="M3.75 9h16.5m-16.5 6.75h16.5"
 														/>
 													</svg>
@@ -1210,20 +1216,60 @@ export const Comandera: React.FC = () => {
 																		</p>
 																	</div>
 																</div>
-																<svg
-																	xmlns="http://www.w3.org/2000/svg"
-																	fill="none"
-																	viewBox="0 0 24 24"
-																	strokeWidth="1.5"
-																	stroke="currentColor"
-																	className="w-6 mr-4 opacity-50"
-																>
-																	<path
-																		stroke-linecap="round"
-																		stroke-linejoin="round"
-																		d="M3.75 9h16.5m-16.5 6.75h16.5"
-																	/>
-																</svg>
+																<div className="flex items-center">
+																	<button
+																		onClick={() =>
+																			togglePedidoPrioritario(pedido)
+																		}
+																		className="ml-2 p-1 rounded-full"
+																	>
+																		{pedidosPrioritarios.some(
+																			(p) => p.id === pedido.id
+																		) ? (
+																			<svg
+																				xmlns="http://www.w3.org/2000/svg"
+																				viewBox="0 0 24 24"
+																				fill="currentColor"
+																				className="w-6 h-6 text-yellow-500"
+																			>
+																				<path
+																					fillRule="evenodd"
+																					d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+																					clipRule="evenodd"
+																				/>
+																			</svg>
+																		) : (
+																			<svg
+																				xmlns="http://www.w3.org/2000/svg"
+																				fill="none"
+																				viewBox="0 0 24 24"
+																				strokeWidth="1.5"
+																				stroke="currentColor"
+																				className="w-6 h-6 text-gray-400"
+																			>
+																				<path
+																					strokeLinecap="round"
+																					strokeLinejoin="round"
+																					d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+																				/>
+																			</svg>
+																		)}
+																	</button>
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		fill="none"
+																		viewBox="0 0 24 24"
+																		strokeWidth="1.5"
+																		stroke="currentColor"
+																		className="w-6 mr-4 opacity-50"
+																	>
+																		<path
+																			strokeLinecap="round"
+																			strokeLinejoin="round"
+																			d="M3.75 9h16.5m-16.5 6.75h16.5"
+																		/>
+																	</svg>
+																</div>
 															</div>
 														</div>
 													)}
@@ -1401,7 +1447,43 @@ export const Comandera: React.FC = () => {
 															</p>
 														</div>
 													</div>
-													<div className="relative">
+													<div className="flex items-center">
+														<button
+															onClick={() => togglePedidoPrioritario(pedido)}
+															className="ml-2 p-1 rounded-full"
+														>
+															{pedidosPrioritarios.some(
+																(p) => p.id === pedido.id
+															) ? (
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	viewBox="0 0 24 24"
+																	fill="currentColor"
+																	className="w-6 h-6 text-yellow-500"
+																>
+																	<path
+																		fillRule="evenodd"
+																		d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+																		clipRule="evenodd"
+																	/>
+																</svg>
+															) : (
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	fill="none"
+																	viewBox="0 0 24 24"
+																	strokeWidth="1.5"
+																	stroke="currentColor"
+																	className="w-6 h-6 text-gray-400"
+																>
+																	<path
+																		strokeLinecap="round"
+																		strokeLinejoin="round"
+																		d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+																	/>
+																</svg>
+															)}
+														</button>
 														<svg
 															xmlns="http://www.w3.org/2000/svg"
 															fill="none"
@@ -1439,8 +1521,8 @@ export const Comandera: React.FC = () => {
 																	className="w-3 h-3"
 																>
 																	<path
-																		stroke-linecap="round"
-																		stroke-linejoin="round"
+																		strokeLinecap="round"
+																		strokeLinejoin="round"
 																		d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
 																	/>
 																</svg>
