@@ -1245,7 +1245,7 @@ export const Comandera: React.FC = () => {
 																				viewBox="0 0 24 24"
 																				strokeWidth="1.5"
 																				stroke="currentColor"
-																				className="w-4 text-gray-400"
+																				className="w-4 text-gray-500"
 																			>
 																				<path
 																					strokeLinecap="round"
@@ -1474,7 +1474,7 @@ export const Comandera: React.FC = () => {
 																	viewBox="0 0 24 24"
 																	strokeWidth="1.5"
 																	stroke="currentColor"
-																	className="w-4 text-gray-400"
+																	className="w-4 text-gray-500"
 																>
 																	<path
 																		strokeLinecap="round"
