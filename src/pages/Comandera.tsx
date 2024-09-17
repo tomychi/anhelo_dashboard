@@ -1230,7 +1230,7 @@ export const Comandera: React.FC = () => {
 																				xmlns="http://www.w3.org/2000/svg"
 																				viewBox="0 0 24 24"
 																				fill="currentColor"
-																				className="w-6 h-6 text-yellow-500"
+																				className="w-4 text-red-main"
 																			>
 																				<path
 																					fillRule="evenodd"
@@ -1245,7 +1245,7 @@ export const Comandera: React.FC = () => {
 																				viewBox="0 0 24 24"
 																				strokeWidth="1.5"
 																				stroke="currentColor"
-																				className="w-6 h-6 text-gray-400"
+																				className="w-4 text-gray-400"
 																			>
 																				<path
 																					strokeLinecap="round"
@@ -1459,7 +1459,7 @@ export const Comandera: React.FC = () => {
 																	xmlns="http://www.w3.org/2000/svg"
 																	viewBox="0 0 24 24"
 																	fill="currentColor"
-																	className="w-6 h-6 text-yellow-500"
+																	className=" w-4   text-red-main"
 																>
 																	<path
 																		fillRule="evenodd"
@@ -1474,7 +1474,7 @@ export const Comandera: React.FC = () => {
 																	viewBox="0 0 24 24"
 																	strokeWidth="1.5"
 																	stroke="currentColor"
-																	className="w-6 h-6 text-gray-400"
+																	className="w-4 text-gray-400"
 																>
 																	<path
 																		strokeLinecap="round"
