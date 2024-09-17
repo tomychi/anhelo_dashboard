@@ -1356,15 +1356,15 @@ export const Comandera: React.FC = () => {
 														</div>
 
 														<div className="flex flex-row gap-1.5 items-center">
-															<div
-																className={`text-xs h-1.5 w-1.5 rounded-full ${
-																	(pedido.tiempoPercibido ?? 0) < 30
-																		? "bg-black"
-																		: (pedido.tiempoPercibido ?? 0) < 50
-																		? "bg-yellow-500"
-																		: "bg-red-main"
-																}`}
-															></div>
+															{pedido.tiempoPercibido >= 30 && (
+																<div
+																	className={`text-xs h-1.5 w-1.5 rounded-full ${
+																		(pedido.tiempoPercibido ?? 0) < 50
+																			? "bg-yellow-500"
+																			: "bg-red-main"
+																	}`}
+																></div>
+															)}
 															<p className="text-xs">
 																Percibe entrega de:{" "}
 																{pedido.tiempoPercibido ?? 0} minutos (
