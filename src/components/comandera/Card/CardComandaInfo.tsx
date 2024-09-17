@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import currencyFormat from '../../../helpers/currencyFormat';
-import { TiempoEditable } from '../../Card/TiempoEditable';
-import { updateOrderFields } from '../../../firebase/UploadOrder';
-import Swal from 'sweetalert2';
+import { useState } from "react";
+import currencyFormat from "../../../helpers/currencyFormat";
+import { TiempoEditable } from "../../Card/TiempoEditable";
+import { updateOrderFields } from "../../../firebase/UploadOrder";
+import Swal from "sweetalert2";
 
 interface CardComandaInfoProps {
   direccion: string;
@@ -20,12 +20,12 @@ interface CardComandaInfoProps {
   updateTiempoElaboradoForOrder: (
     fechaPedido: string,
     pedidoId: string,
-    nuevoTiempo: string
+    nuevoTiempo: string,
   ) => Promise<void>;
   updateTiempoEntregaForOrder: (
     fechaPedido: string,
     pedidoId: string,
-    nuevoTiempo: string
+    nuevoTiempo: string,
   ) => Promise<void>;
   entregado: boolean;
 }
@@ -56,10 +56,10 @@ export const CardComandaInfo = ({
   const [metodoPago, setMetodoPago] = useState(initialMetodoPago);
   const [total, setTotal] = useState(initialTotal);
   const [efectivoCantidad, setEfectivoCantidad] = useState(
-    initialEfectivoCantidad
+    initialEfectivoCantidad,
   );
 
-  const canEdit = user.email === 'tomas.arcostanzo5@gmail.com';
+  const canEdit = user.email === "tomas.arcostanzo5@gmail.com";
 
   const handleGuardarCambios = async () => {
     try {
@@ -70,17 +70,18 @@ export const CardComandaInfo = ({
         telefono,
         metodoPago,
         total,
+        efectivoCantidad,
       });
       Swal.fire({
-        icon: 'success',
-        title: 'Cambios guardados',
-        text: 'Los datos del pedido han sido actualizados correctamente.',
+        icon: "success",
+        title: "Cambios guardados",
+        text: "Los datos del pedido han sido actualizados correctamente.",
       });
       setEditando(false);
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error al actualizar',
+        icon: "error",
+        title: "Error al actualizar",
         text: `Hubo un problema al actualizar los datos: ${error}`,
       });
     }
@@ -92,10 +93,10 @@ export const CardComandaInfo = ({
         <div className="flex flex-row w-full">
           <p
             className={`uppercase border-4 font-black ${
-              mostrarInfoCompleta ? 'w-full' : 'w-2/3'
+              mostrarInfoCompleta ? "w-full" : "w-2/3"
             } text-white border-white pl-1 pr-1`}
           >
-            Dirección:{' '}
+            Dirección:{" "}
             {editando ? (
               <input
                 type="text"
@@ -121,7 +122,7 @@ export const CardComandaInfo = ({
         {mostrarInfoCompleta && (
           <div className="mt-4 mb-4 font-black text-white">
             <p className="text-base">
-              Ubicación:{' '}
+              Ubicación:{" "}
               {editando ? (
                 <input
                   type="text"
@@ -134,7 +135,7 @@ export const CardComandaInfo = ({
               )}
             </p>
             <p className="text-base">
-              Referencias:{' '}
+              Referencias:{" "}
               {editando ? (
                 <input
                   type="text"
@@ -147,7 +148,7 @@ export const CardComandaInfo = ({
               )}
             </p>
             <p className="text-base">
-              TELEFONO:{' '}
+              TELEFONO:{" "}
               {editando ? (
                 <input
                   type="text"
@@ -166,7 +167,7 @@ export const CardComandaInfo = ({
             </p>
             <div>
               <p className="text-base">
-                Método de pago:{' '}
+                Método de pago:{" "}
                 {editando ? (
                   <select
                     value={metodoPago}
@@ -181,17 +182,25 @@ export const CardComandaInfo = ({
                   metodoPago
                 )}
               </p>
-              {user.email === 'cadetes@anhelo.com' ? (
-                metodoPago === 'efectivo' || metodoPago === 'ambos' ? (
-                  <p className="text-lg font-black">
+              {user.email === "cadetes@anhelo.com" ? (
+                metodoPago === "efectivo" || metodoPago === "ambos" ? (
+                  <div className="text-lg font-black">
                     MONTO: {currencyFormat(efectivoCantidad)}
-                  </p>
+                    <input
+                      type="number"
+                      value={efectivoCantidad}
+                      onChange={(e) =>
+                        setEfectivoCantidad(Number(e.target.value))
+                      }
+                      className="text-black p-1"
+                    />
+                  </div>
                 ) : (
                   <p className="text-lg font-black">MONTO: Pagado</p>
                 )
               ) : (
                 <div className="text-lg font-black">
-                  MONTO:{' '}
+                  MONTO:{" "}
                   {editando ? (
                     <input
                       type="number"
@@ -205,7 +214,19 @@ export const CardComandaInfo = ({
                   <p className="text-lg font-black">
                     {efectivoCantidad !== 0 ? (
                       <span>
-                        MONTO EFECTIVO: {currencyFormat(efectivoCantidad)}
+                        MONTO EFECTIVO:{" "}
+                        {editando ? (
+                          <input
+                            type="number"
+                            value={efectivoCantidad}
+                            onChange={(e) =>
+                              setEfectivoCantidad(Number(e.target.value))
+                            }
+                            className="text-black p-1"
+                          />
+                        ) : (
+                          currencyFormat(efectivoCantidad)
+                        )}
                       </span>
                     ) : null}
                   </p>
