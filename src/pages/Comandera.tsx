@@ -26,6 +26,7 @@ import {
 	Draggable,
 	DropResult,
 } from "react-beautiful-dnd";
+
 // Definición de tipos
 
 interface PedidosGrupos extends PedidoProps {
@@ -42,6 +43,7 @@ type Grupo = {
 	pedidoPeorTiempo: PedidoProps | null;
 	horaRegreso?: string;
 };
+
 export const Comandera: React.FC = () => {
 	const [seccionActiva, setSeccionActiva] = useState<string>("porHacer");
 	const dispatch = useDispatch();
@@ -50,6 +52,7 @@ export const Comandera: React.FC = () => {
 	const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
+
 	const { orders } = useSelector((state: RootState) => state.data);
 	const [pedidosPrioritarios, setPedidosPrioritarios] = useState<PedidoProps[]>(
 		[]
@@ -73,12 +76,24 @@ export const Comandera: React.FC = () => {
 	const [tooltipVisibility, setTooltipVisibility] = useState<
 		Record<string, boolean>
 	>({});
+
+	// Nuevo estado para la velocidad promedio
+	const [velocidadPromedio, setVelocidadPromedio] = useState<number | null>(
+		null
+	);
+
+	// Nueva función para obtener la velocidad actual
+	const getVelocidadActual = () => {
+		return velocidadPromedio || VELOCIDAD_PROMEDIO_MOTO;
+	};
+
 	useEffect(() => {
 		const timer = setInterval(() => {
 			setTiempoActual(new Date());
 		}, 60000); // Actualiza cada minuto
 		return () => clearInterval(timer);
 	}, []);
+
 	const calcularTiempoEspera = (horaPedido: string): number => {
 		const [horas, minutos] = horaPedido.split(":").map(Number);
 		const fechaPedido = new Date(tiempoActual);
@@ -87,6 +102,7 @@ export const Comandera: React.FC = () => {
 		const minutosEspera = Math.floor(diferencia / 60000);
 		return minutosEspera;
 	};
+
 	const handleDeshacerGrupo = async (index: number) => {
 		setLoadingStates((prev) => ({ ...prev, [index]: true }));
 		try {
@@ -112,6 +128,7 @@ export const Comandera: React.FC = () => {
 			setLoadingStates((prev) => ({ ...prev, [index]: false }));
 		}
 	};
+
 	const filteredOrders = useMemo(() => {
 		return orders
 			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
@@ -121,19 +138,24 @@ export const Comandera: React.FC = () => {
 				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
 			});
 	}, [orders, selectedCadete]);
+
 	const pedidosPorHacer = useMemo(() => {
 		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
 	}, [filteredOrders]);
+
 	const pedidosHechos = useMemo(() => {
 		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
 	}, [filteredOrders]);
+
 	const pedidosEntregados = useMemo(() => {
 		return filteredOrders.filter((o) => o.entregado);
 	}, [filteredOrders]);
+
 	const customerSuccess =
 		100 -
 		(orders.filter((order) => order.dislike || order.delay).length * 100) /
 			orders.length;
+
 	useEffect(() => {
 		let unsubscribeEmpleados: Unsubscribe | null = null;
 		let unsubscribeOrders: Unsubscribe | null = null;
@@ -193,9 +215,11 @@ export const Comandera: React.FC = () => {
 		}, 0);
 		setSumaTotalEfectivo(totalEfectivoCadete);
 	};
+
 	const pedidosReserva = useMemo(() => {
 		return orders.filter((order) => order.hora > obtenerHoraActual());
 	}, [orders, tiempoActual]);
+
 	const pedidosDisponibles = useMemo(() => {
 		return orders.filter((order) => {
 			if (order.hora > obtenerHoraActual()) {
@@ -215,6 +239,7 @@ export const Comandera: React.FC = () => {
 			return cadeteAsignado && cadeteAsignado.available;
 		});
 	}, [orders, empleados, tiempoActual]);
+
 	const FACTOR_CORRECCION = 1.455;
 	function calcularDistancia(
 		lat1: number,
@@ -236,6 +261,7 @@ export const Comandera: React.FC = () => {
 		const distanciaAjustada = distanciaLineal * FACTOR_CORRECCION;
 		return distanciaAjustada;
 	}
+
 	const LATITUD_INICIO = -33.0957994;
 	const LONGITUD_INICIO = -64.3337817;
 	function agregarDistanciasAPedidos(pedidos: PedidoProps[]): PedidoProps[] {
@@ -253,6 +279,7 @@ export const Comandera: React.FC = () => {
 			};
 		});
 	}
+
 	const pedidosConDistancias = useMemo(() => {
 		return agregarDistanciasAPedidos(pedidosDisponibles);
 	}, [pedidosDisponibles]);
@@ -268,6 +295,7 @@ export const Comandera: React.FC = () => {
 		let distanciaTotal = 0;
 		let latitudActual = latitudInicio;
 		let longitudActual = longitudInicio;
+		const velocidadActual = getVelocidadActual();
 		grupo.forEach((pedido, index) => {
 			const distancia = calcularDistancia(
 				latitudActual,
@@ -276,7 +304,7 @@ export const Comandera: React.FC = () => {
 				pedido.map[1]
 			);
 			distanciaTotal += distancia;
-			const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+			const tiempoViaje = (distancia / velocidadActual) * 60;
 			tiempoTotal += tiempoViaje;
 			if (index < grupo.length - 1) {
 				tiempoTotal += TIEMPO_POR_ENTREGA;
@@ -291,6 +319,41 @@ export const Comandera: React.FC = () => {
 			distanciaTotal: Number(distanciaTotal.toFixed(2)),
 		};
 	}
+
+	const calcularVelocidadPromedio = (cadete: EmpleadosProps) => {
+		if (!cadete.vueltas || cadete.vueltas.length === 0) {
+			return VELOCIDAD_PROMEDIO_MOTO; // Velocidad por defecto si no hay vueltas
+		}
+
+		// Tomamos las últimas 5 vueltas o todas si hay menos de 5
+		const ultimasVueltas = cadete.vueltas.slice(-5);
+		const velocidades = ultimasVueltas
+			.map((vuelta) => parseFloat(vuelta.kmPorHora))
+			.filter((velocidad) => !isNaN(velocidad));
+
+		if (velocidades.length === 0) {
+			return VELOCIDAD_PROMEDIO_MOTO; // Velocidad por defecto si no hay velocidades válidas
+		}
+
+		const velocidadPromedio =
+			velocidades.reduce((sum, speed) => sum + speed, 0) / velocidades.length;
+		return Number(velocidadPromedio.toFixed(2)); // Redondeamos a 2 decimales
+	};
+
+	const handleCadeteVelocidadChange = (
+		e: React.ChangeEvent<HTMLSelectElement>
+	) => {
+		const selectedCadeteId = e.target.value;
+		const selectedCadete = cadetesDisponibles.find(
+			(cadete) => cadete.name === selectedCadeteId
+		);
+		if (selectedCadete) {
+			const velocidad = calcularVelocidadPromedio(selectedCadete);
+			setVelocidadPromedio(velocidad);
+		} else {
+			setVelocidadPromedio(null);
+		}
+	};
 
 	function armarGruposOptimos(
 		pedidos: PedidoProps[],
@@ -369,7 +432,7 @@ export const Comandera: React.FC = () => {
 				pedidoInicial.map[0],
 				pedidoInicial.map[1]
 			);
-			const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+			const tiempoViaje = (distancia / getVelocidadActual()) * 60;
 			const tiempoPercibido = tiempoEspera + tiempoViaje;
 
 			grupoActual.push({
@@ -385,7 +448,7 @@ export const Comandera: React.FC = () => {
 			latitudActual = pedidoInicial.map[0];
 			longitudActual = pedidoInicial.map[1];
 			pedidosDisponibles = pedidosDisponibles.filter(
-				(p) => p.id !== pedidoInicial.id
+				(p) => p.id !== pedidoInicial!.id
 			);
 		}
 
@@ -410,7 +473,7 @@ export const Comandera: React.FC = () => {
 				LATITUD_INICIO,
 				LONGITUD_INICIO
 			);
-			const tiempoRegreso = (distanciaRegreso / VELOCIDAD_PROMEDIO_MOTO) * 60;
+			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
 			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
 			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
 
@@ -495,11 +558,13 @@ export const Comandera: React.FC = () => {
 		modoAgrupacion,
 		gruposListos,
 		pedidosPrioritarios,
+		velocidadPromedio, // Agregamos velocidadPromedio como dependencia
 	]);
 
 	useEffect(() => {
 		setGruposOptimos(gruposOptimosMemo);
 	}, [gruposOptimosMemo]);
+
 	const handleGrupoListo = (grupo: Grupo) => {
 		const horaActual = new Date();
 		const horaRegreso = new Date(
@@ -778,7 +843,7 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	console.log(pedidosPrioritarios);
+	console.log(velocidadPromedio);
 
 	return (
 		<>
@@ -924,6 +989,34 @@ export const Comandera: React.FC = () => {
 								</div>
 							</div>
 						)}
+						{/* Este select que sea para traer la velocidad de los cadetes */}
+						<div className="relative inline-block ml-2">
+							<select
+								id="cadeteVelocidad"
+								onChange={handleCadeteVelocidadChange}
+								className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+								style={{
+									WebkitAppearance: "none",
+									MozAppearance: "none",
+									width: "auto",
+								}}
+							>
+								<option value="">Velocidad promedio</option>
+								{cadetesDisponibles.map((cadete) => (
+									<option key={cadete.name} value={cadete.name}>
+										{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
+									</option>
+								))}
+							</select>
+							<img
+								src={arrowIcon}
+								alt="Arrow Icon"
+								className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+								style={{
+									filter: "invert(100%)",
+								}}
+							/>
+						</div>
 					</div>
 					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
 						{(grupoManual.length > 0 || pedidosReserva.length > 0) && (
