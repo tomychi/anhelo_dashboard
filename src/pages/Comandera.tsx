@@ -326,24 +326,46 @@ export const Comandera: React.FC = () => {
 		};
 	}
 
-	const calcularVelocidadPromedio = (cadete: EmpleadosProps) => {
+	const calcularVelocidadPromedio = (cadete) => {
 		if (!cadete.vueltas || cadete.vueltas.length === 0) {
-			return VELOCIDAD_PROMEDIO_MOTO; // Velocidad por defecto si no hay vueltas
+			console.log("No hay vueltas registradas, usando velocidad por defecto.");
+			return VELOCIDAD_PROMEDIO_MOTO;
 		}
 
-		// Tomamos las últimas 5 vueltas o todas si hay menos de 5
 		const ultimasVueltas = cadete.vueltas.slice(-5);
-		const velocidades = ultimasVueltas
-			.map((vuelta) => parseFloat(vuelta.kmPorHora))
-			.filter((velocidad) => !isNaN(velocidad));
+		console.log(`Número de vueltas consideradas: ${ultimasVueltas.length}`);
 
-		if (velocidades.length === 0) {
-			return VELOCIDAD_PROMEDIO_MOTO; // Velocidad por defecto si no hay velocidades válidas
+		let distanciaTotal = 0;
+		let tiempoTotal = 0;
+
+		ultimasVueltas.forEach((vuelta, index) => {
+			if (vuelta.totalDistance && vuelta.totalDuration) {
+				distanciaTotal += vuelta.totalDistance;
+				tiempoTotal += vuelta.totalDuration;
+				console.log(
+					`Vuelta ${index + 1}: Distancia = ${vuelta.totalDistance.toFixed(
+						2
+					)} km, Tiempo = ${vuelta.totalDuration.toFixed(2)} min`
+				);
+			} else {
+				console.log(`Vuelta ${index + 1}: Datos incompletos`);
+			}
+		});
+
+		console.log(`Distancia total: ${distanciaTotal.toFixed(2)} km`);
+		console.log(`Tiempo total: ${tiempoTotal.toFixed(2)} min`);
+
+		if (tiempoTotal === 0) {
+			console.log("Tiempo total es cero, usando velocidad por defecto.");
+			return VELOCIDAD_PROMEDIO_MOTO;
 		}
 
-		const velocidadPromedio =
-			velocidades.reduce((sum, speed) => sum + speed, 0) / velocidades.length;
-		return Number(velocidadPromedio.toFixed(2)); // Redondeamos a 2 decimales
+		const velocidadPromedio = (distanciaTotal / tiempoTotal) * 60;
+		console.log(
+			`Velocidad promedio calculada: ${velocidadPromedio.toFixed(2)} km/h`
+		);
+
+		return Number(velocidadPromedio.toFixed(2));
 	};
 
 	const handleCadeteVelocidadChange = (
@@ -849,7 +871,7 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	console.log(velocidadPromedio);
+	console.log(cadetesDisponibles);
 
 	return (
 		<>
