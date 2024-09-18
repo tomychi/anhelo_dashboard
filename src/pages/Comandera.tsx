@@ -924,7 +924,7 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-8 mt-4 flex flex-col md:flex-row justify-center w-full">
+					<div className="mb-8 mt-4 flex flex-col md:flex-row md:justify-start justify-center w-full">
 						<div className="mb-2 md:mb-0">
 							<div className="flex w-full flex-row gap-2">
 								<div
@@ -998,6 +998,8 @@ export const Comandera: React.FC = () => {
 											width: "auto",
 										}}
 									>
+										<option value="">Minutos maximos</option>
+
 										<option value={30}>30 minutos</option>
 										<option value={40}>40 minutos</option>
 										<option value={50}>50 minutos</option>
@@ -1031,11 +1033,13 @@ export const Comandera: React.FC = () => {
 									}}
 								>
 									<option value="">Velocidad promedio</option>
-									{cadetesDisponibles.map((cadete) => (
-										<option key={cadete.name} value={cadete.name}>
-											{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
-										</option>
-									))}
+									{cadetesDisponibles
+										.filter((cadete) => cadete.name !== "NO ASIGNADO")
+										.map((cadete) => (
+											<option key={cadete.name} value={cadete.name}>
+												{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
+											</option>
+										))}
 								</select>
 								<img
 									src={arrowIcon}
