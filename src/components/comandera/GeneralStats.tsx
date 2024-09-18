@@ -12,7 +12,6 @@ interface GeneralStatsProps {
 	empleados: EmpleadosProps[];
 }
 export const GeneralStats = ({
-	customerSuccess,
 	cadeteSeleccionado,
 	sumaTotalPedidos,
 	sumaTotalEfectivo,
@@ -38,12 +37,6 @@ export const GeneralStats = ({
 					</p>
 				</div>
 			)}
-			<div className="mt-4">
-				<p className=" w-fit  font-black  text-2xl text-black font-coolvetica">
-					Entregas a tiempo:{" "}
-					{isNaN(customerSuccess) ? "0%" : Math.round(customerSuccess) + "%"}
-				</p>
-			</div>
 		</div>
 	);
 };
