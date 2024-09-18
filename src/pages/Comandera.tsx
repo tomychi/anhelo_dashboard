@@ -1796,9 +1796,7 @@ export const Comandera: React.FC = () => {
 								);
 							})
 						) : (
-							<div className="bg-gray-300 h-min pt-2 pb-2 items-center  shadow-black shadow-md font-coolvetica  flex justify-center rounded-lg opacity-50 text-center  ">
-								Si hay pedidos para agrupar los veras aca...
-							</div>
+							<></>
 						)}
 					</div>
 				</div>
