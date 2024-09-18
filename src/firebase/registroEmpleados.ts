@@ -1,4 +1,4 @@
-import 'firebase/firestore';
+import "firebase/firestore";
 import {
   getFirestore,
   collection,
@@ -9,9 +9,9 @@ import {
   serverTimestamp,
   setDoc,
   getDocs,
-} from 'firebase/firestore';
-import { Unsubscribe } from 'firebase/auth';
-import { obtenerFechaActual } from '../helpers/dateToday';
+} from "firebase/firestore";
+import { Unsubscribe } from "firebase/auth";
+import { obtenerFechaActual } from "../helpers/dateToday";
 
 // Define y exporta la interfaz RegistroProps
 export interface RegistroProps {
@@ -24,12 +24,12 @@ export interface RegistroProps {
 export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
   const firestore = getFirestore();
   const fechaFormateada = obtenerFechaActual();
-  const [dia, mes, anio] = fechaFormateada.split('/');
-  const horaActual = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const [dia, mes, anio] = fechaFormateada.split("/");
+  const horaActual = new Date().toLocaleTimeString("en-US", { hour12: false });
   try {
     const registroDocRef = doc(
-      collection(firestore, 'registros', anio, mes),
-      dia
+      collection(firestore, "registros", anio, mes),
+      dia,
     );
     const docSnapshot = await getDoc(registroDocRef);
     const registroData = docSnapshot.exists() ? docSnapshot.data() : {};
@@ -46,58 +46,58 @@ export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
       await updateDoc(registroDocRef, { empleados: updatedEmpleados });
     }
     console.log(
-      'Entrada registrada exitosamente para el día:',
-      fechaFormateada
+      "Entrada registrada exitosamente para el día:",
+      fechaFormateada,
     );
   } catch (error) {
-    console.error('Error al registrar la entrada:', error);
+    console.error("Error al registrar la entrada:", error);
     throw error;
   }
 };
 export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
   const firestore = getFirestore();
-  const horaActual = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const horaActual = new Date().toLocaleTimeString("en-US", { hour12: false });
   const fechaActual = obtenerFechaActual();
-  const [dia, mes, anio] = fechaActual.split('/');
+  const [dia, mes, anio] = fechaActual.split("/");
   try {
     const registroDocRef = doc(
-      collection(firestore, 'registros', anio, mes),
-      dia
+      collection(firestore, "registros", anio, mes),
+      dia,
     );
     const docSnapshot = await getDoc(registroDocRef);
     if (docSnapshot.exists()) {
       const registroData = docSnapshot.data();
       const empleados = registroData.empleados || [];
       const empleadoIndex = empleados.findIndex(
-        (empleado: RegistroProps) => empleado.nombreEmpleado === nombreEmpleado
+        (empleado: RegistroProps) => empleado.nombreEmpleado === nombreEmpleado,
       );
 
       if (empleadoIndex !== -1 && !empleados[empleadoIndex].horaSalida) {
         empleados[empleadoIndex].marcado = false; // Actualizamos la propiedad marcado dentro del empleado
         empleados[empleadoIndex].horaSalida = horaActual;
         await updateDoc(registroDocRef, { empleados }); // Aquí actualizamos marcado a false
-        console.log('Salida registrada exitosamente.');
+        console.log("Salida registrada exitosamente.");
       } else {
         console.log(
-          'No se encontró registro de entrada para el empleado en la fecha actual o ya se registró la salida.'
+          "No se encontró registro de entrada para el empleado en la fecha actual o ya se registró la salida.",
         );
       }
     } else {
-      console.log('No hay registros para el día de hoy');
+      console.log("No hay registros para el día de hoy");
     }
   } catch (error) {
-    console.error('Error al registrar la salida:', error);
+    console.error("Error al registrar la salida:", error);
     throw error;
   }
 };
 export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
   const firestore = getFirestore();
   const fechaActual = obtenerFechaActual();
-  const [dia, mes, anio] = fechaActual.split('/');
+  const [dia, mes, anio] = fechaActual.split("/");
   try {
     const registroDocRef = doc(
-      collection(firestore, 'registros', anio, mes),
-      dia
+      collection(firestore, "registros", anio, mes),
+      dia,
     );
     const docSnapshot = await getDoc(registroDocRef);
     if (docSnapshot.exists()) {
@@ -107,7 +107,7 @@ export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
       return [];
     }
   } catch (error) {
-    console.error('Error al obtener el registro actual:', error);
+    console.error("Error al obtener el registro actual:", error);
     throw error;
   }
 };
@@ -120,6 +120,7 @@ interface VueltasProps {
   status: string;
   totalDistance: number;
   totalDuration: number;
+  kmPorHora: string;
 }
 export interface EmpleadosProps {
   id: string;
@@ -131,7 +132,7 @@ export interface EmpleadosProps {
 
 export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
   const firestore = getFirestore();
-  const collectionRef = collection(firestore, 'empleados');
+  const collectionRef = collection(firestore, "empleados");
   const snapshot = await getDocs(collectionRef);
 
   // Mapear los nombres de los empleados desde los documentos de Firestore
@@ -148,10 +149,10 @@ export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
   return empleados;
 };
 export const listenToEmpleadosChanges = (
-  callback: (empleados: EmpleadosProps[]) => void
+  callback: (empleados: EmpleadosProps[]) => void,
 ): Unsubscribe => {
   const firestore = getFirestore();
-  const empleadosCollectionRef = collection(firestore, 'empleados');
+  const empleadosCollectionRef = collection(firestore, "empleados");
   return onSnapshot(
     empleadosCollectionRef,
     (snapshot) => {
@@ -168,7 +169,7 @@ export const listenToEmpleadosChanges = (
       callback(empleadosData);
     },
     (error) => {
-      console.error('Error al escuchar cambios en empleados:', error);
-    }
+      console.error("Error al escuchar cambios en empleados:", error);
+    },
   );
 };

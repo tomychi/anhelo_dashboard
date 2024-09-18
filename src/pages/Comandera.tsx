@@ -504,7 +504,7 @@ export const Comandera: React.FC = () => {
 			latitudActual = mejorPedido.map[0];
 			longitudActual = mejorPedido.map[1];
 			pedidosDisponibles = pedidosDisponibles.filter(
-				(p) => p.id !== mejorPedido.id
+				(p) => p.id !== mejorPedido!.id
 			);
 		}
 

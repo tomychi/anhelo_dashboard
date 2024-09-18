@@ -1,8 +1,8 @@
-import { CustomerType, PedidoProps, TelefonosProps } from '../types/types';
-import { startOfWeek, endOfWeek, addWeeks, isDate } from 'date-fns';
-import { calcularTotales } from './calculator';
-import { convertDateFormat } from './dateToday';
-import { ExpenseProps } from '../firebase/UploadGasto';
+import { CustomerType, PedidoProps, TelefonosProps } from "../types/types";
+import { startOfWeek, endOfWeek, addWeeks, isDate } from "date-fns";
+import { calcularTotales } from "./calculator";
+import { convertDateFormat } from "./dateToday";
+import { ExpenseProps } from "../firebase/UploadGasto";
 
 const getWeekRange = (startDate: Date): [Date, Date] => {
   const start = startOfWeek(startDate, { weekStartsOn: 1 }); // El segundo parámetro indica que la semana empieza en lunes (lunes = 1, domingo = 0)
@@ -13,7 +13,7 @@ const getWeekRange = (startDate: Date): [Date, Date] => {
 export const groupOrdersByWeek = (
   ordersData: (PedidoProps | ExpenseProps)[],
   startDate: Date | undefined,
-  endDate: Date | undefined
+  endDate: Date | undefined,
 ): {
   productsSoldByWeek: Record<string, number>;
   salesByWeek: Record<string, number>;
@@ -30,7 +30,7 @@ export const groupOrdersByWeek = (
 
   // Calcular la diferencia en días entre startDate y endDate
   const differenceInDays = Math.floor(
-    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   // Calcular el número de semanas
@@ -44,8 +44,8 @@ export const groupOrdersByWeek = (
       const orderDate = new Date(convertedDate);
       return orderDate >= weekStart && orderDate <= weekEnd;
     });
-    const weekKey = `${weekStart.toISOString().split('T')[0]}_${
-      weekEnd.toISOString().split('T')[0]
+    const weekKey = `${weekStart.toISOString().split("T")[0]}_${
+      weekEnd.toISOString().split("T")[0]
     }`;
     // Calcular la cantidad de productos vendidos en la semana
     const { totalProductosVendidos, facturacionTotal } =
@@ -63,15 +63,15 @@ export const cleanPhoneNumber = (phoneNumber: string) => {
   // Asegurarse de que phoneNumber es una cadena
   const phoneStr = String(phoneNumber);
   // Remover todo excepto los dígitos
-  const digitsOnly = phoneStr.replace(/\D/g, '');
+  const digitsOnly = phoneStr.replace(/\D/g, "");
   // Si el número comienza con "54", eliminarlo
-  const without54 = digitsOnly.startsWith('54')
+  const without54 = digitsOnly.startsWith("54")
     ? digitsOnly.slice(2)
     : digitsOnly;
   // Si el número comienza con "9", eliminarlo
-  const without9 = without54.startsWith('9') ? without54.slice(1) : without54;
+  const without9 = without54.startsWith("9") ? without54.slice(1) : without54;
   // Si el número comienza con "0", eliminarlo
-  const without0 = without9.startsWith('0') ? without9.slice(1) : without9;
+  const without0 = without9.startsWith("0") ? without9.slice(1) : without9;
   // Retornar el número limpio
   return without0;
 };
@@ -79,7 +79,7 @@ export const cleanPhoneNumber = (phoneNumber: string) => {
 export const getCustomers = (
   telefonos: TelefonosProps[],
   orders: PedidoProps[],
-  startDate: Date
+  startDate: Date,
 ): CustomerType => {
   // Verificar si telefonos es un array y no está vacío
   if (!Array.isArray(telefonos) || telefonos.length === 0) {
@@ -92,7 +92,7 @@ export const getCustomers = (
     return telefonos.some(
       (cliente) =>
         cliente.telefono === cleanPhoneNumber(order.telefono) &&
-        new Date(convertDateFormat(cliente.fecha)) < startDate
+        new Date(convertDateFormat(cliente.fecha)) < startDate,
     );
   });
 
@@ -102,7 +102,7 @@ export const getCustomers = (
     return !telefonos.some(
       (cliente) =>
         cliente.telefono === cleanPhoneNumber(order.telefono) &&
-        new Date(convertDateFormat(cliente.fecha)) < startDate
+        new Date(convertDateFormat(cliente.fecha)) < startDate,
     );
   });
 
@@ -110,7 +110,7 @@ export const getCustomers = (
 };
 export const getOrdersByPhoneNumber = (
   phoneNumber: string,
-  orders: PedidoProps[]
+  orders: PedidoProps[],
 ): PedidoProps[] => {
   // Filtrar los pedidos que coinciden con el número de teléfono proporcionado
   const ordersByPhoneNumber = orders.filter((order) => {
