@@ -1800,25 +1800,28 @@ export const Comandera: React.FC = () => {
 						)}
 					</div>
 				</div>
-				<CadeteSelect
-					cadetes={cadetes}
-					handleCadeteChange={handleCadeteChange}
-					selectedCadete={selectedCadete}
-					orders={pedidosHechos}
-				/>
+				<div className="flex flex-row mt-6">
+					<GeneralStats
+						customerSuccess={customerSuccess}
+						orders={orders}
+						cadeteSeleccionado={selectedCadete}
+						sumaTotalPedidos={sumaTotalPedidos}
+						sumaTotalEfectivo={sumaTotalEfectivo}
+						empleados={empleados}
+					/>
+					<NavButtons
+						seccionActiva={seccionActiva}
+						setSeccionActiva={setSeccionActiva}
+					/>
+					<div className="h-10 bg-black w-[1px] ml-4 mr-3"></div>
 
-				<GeneralStats
-					customerSuccess={customerSuccess}
-					orders={orders}
-					cadeteSeleccionado={selectedCadete}
-					sumaTotalPedidos={sumaTotalPedidos}
-					sumaTotalEfectivo={sumaTotalEfectivo}
-					empleados={empleados}
-				/>
-				<NavButtons
-					seccionActiva={seccionActiva}
-					setSeccionActiva={setSeccionActiva}
-				/>
+					<CadeteSelect
+						cadetes={cadetes}
+						handleCadeteChange={handleCadeteChange}
+						selectedCadete={selectedCadete}
+						orders={pedidosHechos}
+					/>
+				</div>
 				<OrderList
 					seccionActiva={seccionActiva}
 					pedidosPorHacer={pedidosPorHacer}

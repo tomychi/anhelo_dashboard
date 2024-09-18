@@ -40,7 +40,7 @@ export const NavButtons = ({
 				>
 					Entregados
 				</button>
-				<button
+				{/* <button
 					className={`p-2 ${
 						seccionActiva === "mapa"
 							? "bg-black rounded-lg text-gray-100"
@@ -60,7 +60,7 @@ export const NavButtons = ({
 					onClick={() => setSeccionActiva("registro")}
 				>
 					Registro
-				</button>
+				</button> */}
 			</div>
 		</div>
 	);
