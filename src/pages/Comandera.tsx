@@ -938,7 +938,7 @@ export const Comandera: React.FC = () => {
 									}`}
 									onClick={() => setModoAgrupacion("entrega")}
 								>
-									Máximo de entrega
+									Usar tiempo maximo de entrega
 								</div>
 								<div
 									className={`py-2 px-4 w-1/2 md:w-auto rounded-lg font-medium cursor-pointer ${
@@ -948,7 +948,7 @@ export const Comandera: React.FC = () => {
 									}`}
 									onClick={() => setModoAgrupacion("recorrido")}
 								>
-									Máximo de recorrido
+									Usar tiempo maximo de recorrido
 								</div>
 							</div>
 						</div>
