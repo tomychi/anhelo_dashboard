@@ -1388,7 +1388,7 @@ export const Comandera: React.FC = () => {
 															</div>
 															{grupo.pedidos.length > 1 && (
 																<div
-																	className={`w-1.5 bg-black absolute  transform -translate-x-1/2 ${
+																	className={`w-1.5 bg-black absolute left-[23.5px]  ${
 																		pedidoIndex === 0
 																			? "h-1/2 bottom-0"
 																			: pedidoIndex === grupo.pedidos.length - 1
