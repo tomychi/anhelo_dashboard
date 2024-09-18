@@ -1099,12 +1099,19 @@ export const Comandera: React.FC = () => {
 									<option value="">¿Velocidad promedio?</option>
 									{cadetesDisponibles
 										.filter((cadete) => cadete.name !== "NO ASIGNADO")
-										.map((cadete) => (
-											<option key={cadete.name} value={cadete.name}>
-												{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
-											</option>
-										))}
+										.map((cadete) => {
+											const cadeteNameFormatted =
+												cadete.name.charAt(0).toUpperCase() +
+												cadete.name.slice(1).toLowerCase();
+											return (
+												<option key={cadete.name} value={cadete.name}>
+													{cadeteNameFormatted} -{" "}
+													{calcularVelocidadPromedio(cadete)} km/h
+												</option>
+											);
+										})}
 								</select>
+
 								<img
 									src={arrowIcon}
 									alt="Arrow Icon"
