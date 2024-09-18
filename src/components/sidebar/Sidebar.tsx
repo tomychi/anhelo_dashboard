@@ -68,7 +68,7 @@ export const Sidebar = () => {
 					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9 focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300">
 						<p className=" font-medium font-coolvetica ">Accion rapida</p>
 					</button>
-					<div className="relative bg-gray-100 h-9 w-9 ml-2 rounded-full justify-center items-center flex font-coolvetica font-bold">
+					<div className="relative bg-gray-100 h-9 w-9 ml-2 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer">
 						TA
 						<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 					</div>
