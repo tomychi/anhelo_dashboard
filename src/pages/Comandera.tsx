@@ -1629,7 +1629,7 @@ export const Comandera: React.FC = () => {
 															</p>
 														</div>
 													</div>
-													<div className="flex items-center">
+													<div className="flex items-center relative">
 														<button
 															onClick={() => togglePedidoPrioritario(pedido)}
 															className="ml-2 p-1 rounded-full"
