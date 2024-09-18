@@ -60,9 +60,12 @@ export const Comandera: React.FC = () => {
 
 	const { user } = useSelector((state: RootState) => state.auth);
 	const location = useLocation();
-	const [tiempoMaximo, setTiempoMaximo] = useState<number>(40);
-	const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] =
-		useState<number>(40);
+	const [tiempoMaximo, setTiempoMaximo] = useState<number | null>(null);
+
+	const [tiempoMaximoRecorrido, setTiempoMaximoRecorrido] = useState<
+		number | null
+	>(null);
+
 	const [modoAgrupacion, setModoAgrupacion] = useState<"entrega" | "recorrido">(
 		"entrega"
 	);
@@ -955,8 +958,13 @@ export const Comandera: React.FC = () => {
 								<div className="relative inline-block">
 									<select
 										id="tiempoMaximo"
-										value={tiempoMaximo}
-										onChange={(e) => setTiempoMaximo(parseInt(e.target.value))}
+										value={tiempoMaximo !== null ? tiempoMaximo : ""}
+										onChange={(e) => {
+											const value = e.target.value
+												? parseInt(e.target.value)
+												: null;
+											setTiempoMaximo(value);
+										}}
 										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
 										style={{
 											WebkitAppearance: "none",
@@ -964,6 +972,8 @@ export const Comandera: React.FC = () => {
 											width: "auto",
 										}}
 									>
+										<option value="">¿Minutos maximos?</option>
+
 										<option value={30}>30 minutos</option>
 										<option value={40}>40 minutos</option>
 										<option value={50}>50 minutos</option>
@@ -987,10 +997,17 @@ export const Comandera: React.FC = () => {
 								<div className="relative inline-block">
 									<select
 										id="tiempoMaximoRecorrido"
-										value={tiempoMaximoRecorrido}
-										onChange={(e) =>
-											setTiempoMaximoRecorrido(parseInt(e.target.value))
+										value={
+											tiempoMaximoRecorrido !== null
+												? tiempoMaximoRecorrido
+												: ""
 										}
+										onChange={(e) => {
+											const value = e.target.value
+												? parseInt(e.target.value)
+												: null;
+											setTiempoMaximoRecorrido(value);
+										}}
 										className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
 										style={{
 											WebkitAppearance: "none",
@@ -998,7 +1015,7 @@ export const Comandera: React.FC = () => {
 											width: "auto",
 										}}
 									>
-										<option value="">Minutos maximos</option>
+										<option value="">¿Minutos maximos?</option>
 
 										<option value={30}>30 minutos</option>
 										<option value={40}>40 minutos</option>
@@ -1032,7 +1049,7 @@ export const Comandera: React.FC = () => {
 										width: "auto",
 									}}
 								>
-									<option value="">Velocidad promedio</option>
+									<option value="">¿Velocidad promedio?</option>
 									{cadetesDisponibles
 										.filter((cadete) => cadete.name !== "NO ASIGNADO")
 										.map((cadete) => (
