@@ -24,17 +24,10 @@ export const Sidebar = () => {
 		  ]
 		: [
 				{ to: "/", text: "Dashboard" },
-
 				{ to: "/pedidos", text: "Tomar pedidos" },
 				{ to: "/comandas", text: "Comandas y Grupos" },
-				// { to: "/marketing", text: "Marketing" },
 				{ to: "/gastos", text: "Gastos" },
-
 				{ to: "/vouchers", text: "Vouchers manager" },
-				// { to: "/empleados", text: "Empleados" },
-				// { to: "/monthdata", text: "Datos Mensuales" },
-				// { to: "/stock", text: "Stock" },
-				// { to: "/AnheloRiders", text: "Anhelo Riders" },
 				{ to: "/settings", text: "Configuración" },
 		  ];
 
@@ -48,7 +41,7 @@ export const Sidebar = () => {
 						alt="Absolute Logo"
 					/>
 				</NavLink>
-				<div className="flex flex-row  items-center">
+				<div className="flex flex-row items-center">
 					<button
 						onClick={toggleMenu}
 						className="  flex items-center mr-2  h-10 w-10 justify-center"
@@ -75,8 +68,9 @@ export const Sidebar = () => {
 					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9 focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300">
 						<p className=" font-medium font-coolvetica ">Accion rapida</p>
 					</button>
-					<div className="bg-gray-100 h-9 w-9 ml-4 rounded-full justify-center items-center flex font-coolvetica font-bold">
+					<div className="relative bg-gray-100 h-9 w-9 ml-2 rounded-full justify-center items-center flex font-coolvetica font-bold">
 						TA
+						<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 					</div>
 				</div>
 			</div>
