@@ -284,8 +284,12 @@ export const Comandera: React.FC = () => {
 		return agregarDistanciasAPedidos(pedidosDisponibles);
 	}, [pedidosDisponibles]);
 
-	const VELOCIDAD_PROMEDIO_MOTO = 35;
+	const VELOCIDAD_PROMEDIO_MOTO = 27.3425;
+	// const VELOCIDAD_PROMEDIO_MOTO = 35;
+	// Esto lo reemplazamos por el promedio de los cadetes disponibles
 	const TIEMPO_POR_ENTREGA = 0;
+	// const TIEMPO_POR_ENTREGA = 3;
+	// Esto lo quitamos porque las demoras por entrega ya se ven reflejadas en la velocidad promedio de cada cadete
 	function calcularTiempoYDistanciaRecorrido(
 		grupo: PedidoProps[],
 		latitudInicio: number,
@@ -312,7 +316,9 @@ export const Comandera: React.FC = () => {
 			latitudActual = pedido.map[0];
 			longitudActual = pedido.map[1];
 		});
-		const factorAjuste = 1.1;
+		const factorAjuste = 1;
+		// const factorAjuste = 1.1;
+		// Esto lo quitamos porque las demoras por 'factor ajuste' ya se ven reflejadas en la velocidad promedio de cada cadete
 		tiempoTotal *= factorAjuste;
 		return {
 			tiempoTotal: Math.round(tiempoTotal),
