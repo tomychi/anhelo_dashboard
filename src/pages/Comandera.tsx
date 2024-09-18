@@ -285,7 +285,7 @@ export const Comandera: React.FC = () => {
 	}, [pedidosDisponibles]);
 
 	const VELOCIDAD_PROMEDIO_MOTO = 35;
-	const TIEMPO_POR_ENTREGA = 3;
+	const TIEMPO_POR_ENTREGA = 0;
 	function calcularTiempoYDistanciaRecorrido(
 		grupo: PedidoProps[],
 		latitudInicio: number,
