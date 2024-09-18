@@ -997,31 +997,33 @@ export const Comandera: React.FC = () => {
 						)}
 						{/* Este select que sea para traer la velocidad de los cadetes */}
 						<div className="relative inline-block ml-2">
-							<select
-								id="cadeteVelocidad"
-								onChange={handleCadeteVelocidadChange}
-								className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
-								style={{
-									WebkitAppearance: "none",
-									MozAppearance: "none",
-									width: "auto",
-								}}
-							>
-								<option value="">Velocidad promedio</option>
-								{cadetesDisponibles.map((cadete) => (
-									<option key={cadete.name} value={cadete.name}>
-										{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
-									</option>
-								))}
-							</select>
-							<img
-								src={arrowIcon}
-								alt="Arrow Icon"
-								className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
-								style={{
-									filter: "invert(100%)",
-								}}
-							/>
+							<div className="relative inline-block ">
+								<select
+									id="cadeteVelocidad"
+									onChange={handleCadeteVelocidadChange}
+									className="bg-black appearance-none pt-2 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
+									style={{
+										WebkitAppearance: "none",
+										MozAppearance: "none",
+										width: "auto",
+									}}
+								>
+									<option value="">Velocidad promedio</option>
+									{cadetesDisponibles.map((cadete) => (
+										<option key={cadete.name} value={cadete.name}>
+											{cadete.name} - {calcularVelocidadPromedio(cadete)} km/h
+										</option>
+									))}
+								</select>
+								<img
+									src={arrowIcon}
+									alt="Arrow Icon"
+									className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+									style={{
+										filter: "invert(100%)",
+									}}
+								/>
+							</div>
 						</div>
 					</div>
 					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
