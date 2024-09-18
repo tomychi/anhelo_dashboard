@@ -1105,7 +1105,7 @@ export const Comandera: React.FC = () => {
 												cadete.name.slice(1).toLowerCase();
 											return (
 												<option key={cadete.name} value={cadete.name}>
-													{cadeteNameFormatted} -{" "}
+													{cadeteNameFormatted}:{" "}
 													{calcularVelocidadPromedio(cadete)} km/h
 												</option>
 											);
