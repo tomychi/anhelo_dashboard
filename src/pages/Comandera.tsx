@@ -1006,10 +1006,12 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-8 mt-2  flex flex-col md:flex-row items-center w-full">
+					<div className="mb-8 mt-2  flex flex-col md:flex-row items-center  w-full">
 						{/* Aca las opciones de agrupacion */}
 						<div className="mb-2 md:mb-0">
-							<p className="mb-2 font-bold">Opciones de agrupación</p>
+							<p className="mb-2 font-bold text-center md:text-left">
+								Opciones de agrupación
+							</p>
 							<div className="flex w-full flex-col md:flex-row gap-2">
 								<div
 									className={`py-2 w-full text-center md:w-auto px-4 rounded-full font-medium cursor-pointer ${
@@ -1034,14 +1036,16 @@ export const Comandera: React.FC = () => {
 							</div>
 						</div>
 
-						<div className="w-[1px] h-16 mt-2 opacity-20 bg-black ml-2 mr-4 "></div>
+						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-2 mr-4 "></div>
 
 						{/* Aca los parametros */}
 						<div className="flex flex-col md:flex-row items-center md:items-start">
 							{modoAgrupacion === "entrega" ? (
 								<div className="flex flex-col">
-									<p className="mb-2 font-bold">Parametros</p>
-									<div className="flex flex-row">
+									<p className="mb-2 font-bold text-center md:text-left mt-4 md:mt-0">
+										Parametros
+									</p>
+									<div className="flex md:flex-row flex-col">
 										<div className="relative inline-block mb-2 md:mb-0">
 											<div className="relative inline-block">
 												<svg
