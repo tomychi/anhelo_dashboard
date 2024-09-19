@@ -1490,17 +1490,16 @@ export const Comandera: React.FC = () => {
 													</h3>
 												</div>
 												<p className="text-xs">
-													Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
-													minutos (
+													Peor entrega: {grupo.peorTiempoPercibido} minutos (
 													{grupo.pedidoPeorTiempo?.direccion.split(",")[0] ||
 														"N/A"}
 													)
 												</p>
 												<p className="text-xs">
-													Duracion del recorrido: {grupo.tiempoTotal} minutos
+													Duracion: {grupo.tiempoTotal} minutos
 												</p>
 												<p className="text-xs">
-													Distancia del recorrido: {grupo.distanciaTotal} km
+													Distancia: {grupo.distanciaTotal} km
 												</p>
 												<p className="text-xs">
 													El cadete regresa a ANHELO a las {grupo.horaRegreso}{" "}
@@ -1796,17 +1795,16 @@ export const Comandera: React.FC = () => {
 												</h3>
 											</div>
 											<p className="text-xs">
-												Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
-												minutos (
+												Peor entrega: {grupo.peorTiempoPercibido} minutos (
 												{grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
 													"N/A"}
 												)
 											</p>
 											<p className="text-xs">
-												Duracion del recorrido: {grupo.tiempoTotal} minutos
+												Duracion: {grupo.tiempoTotal} minutos
 											</p>
 											<p className="text-xs">
-												Distancia del recorrido: {grupo.distanciaTotal} km
+												Distancia: {grupo.distanciaTotal} km
 											</p>
 											<p className="text-xs">
 												El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
