@@ -1776,7 +1776,7 @@ export const Comandera: React.FC = () => {
 										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
-											<h3 className="font-medium  text-2xl md:text-3xl mb-2 items-center gap-2  flex flex-row">
+											<h3 className="font-medium  text-2xl md:text-3xl mb-2 items-center gap-2.5  flex flex-row">
 												<svg
 													className="w-3 h-3  text-gray-100 animate-spin   dark:fill-black"
 													viewBox="0 0 100 101"
