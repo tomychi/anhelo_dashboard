@@ -975,7 +975,7 @@ export const Comandera: React.FC = () => {
 						<div className="mb-2 md:mb-0">
 							<div className="flex w-full flex-col md:flex-row gap-2">
 								<div
-									className={`py-2 w-full text-center md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
+									className={`py-2 w-full text-center md:w-auto px-4 rounded-full font-medium cursor-pointer ${
 										modoAgrupacion === "entrega"
 											? "bg-black text-gray-100"
 											: "text-black border border-1 border-black"
@@ -985,7 +985,7 @@ export const Comandera: React.FC = () => {
 									Usar tiempo maximo de entrega
 								</div>
 								<div
-									className={`py-2 px-4 w-full text-center md:w-auto rounded-lg font-medium cursor-pointer ${
+									className={`py-2 px-4 w-full text-center md:w-auto rounded-full font-medium cursor-pointer ${
 										modoAgrupacion === "recorrido"
 											? "bg-black text-gray-100"
 											: "text-black border border-1 border-black"
