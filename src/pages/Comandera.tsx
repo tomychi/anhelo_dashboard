@@ -3,6 +3,7 @@ import { RootState } from "../redux/configureStore";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { GeneralStats, OrderList } from "../components/comandera";
+import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 import { Unsubscribe } from "firebase/firestore";
@@ -909,7 +910,15 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	console.log(gruposListos);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [selectedPedido, setSelectedPedido] = useState<PedidoProps | null>(
+		null
+	);
+
+	const handlePedidoClick = (pedido: PedidoProps) => {
+		setSelectedPedido(pedido);
+		setModalIsOpen(true);
+	};
 
 	return (
 		<>
@@ -1458,6 +1467,7 @@ export const Comandera: React.FC = () => {
 																	? "rounded-b-lg"
 																	: ""
 															}`}
+															onClick={() => handlePedidoClick(pedido)}
 														>
 															<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 																{pedidoIndex + 1}
@@ -1700,6 +1710,7 @@ export const Comandera: React.FC = () => {
 															? "rounded-b-lg"
 															: ""
 													}`}
+													onClick={() => handlePedidoClick(pedido)}
 												>
 													<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 														{pedidoIndex + 1}
@@ -1913,6 +1924,23 @@ export const Comandera: React.FC = () => {
 						)}
 					</div>
 				</div>
+				{modalIsOpen && selectedPedido && (
+					<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
+						<div className="relative bg-white rounded-lg  max-w-lg m-4 max-h-[90vh] flex flex-col">
+							<div className="overflow-y-auto p-6 flex-grow">
+								<CardComanda {...selectedPedido} cadetes={cadetes} />
+							</div>
+							<div className="sticky bottom-0 bg-white p-4 border-t">
+								<button
+									onClick={() => setModalIsOpen(false)}
+									className="w-full bg-black text-white px-4 py-2 rounded"
+								>
+									Cerrar
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 				<div className="flex flex-row justify-center mt-8">
 					<GeneralStats
 						customerSuccess={customerSuccess}
