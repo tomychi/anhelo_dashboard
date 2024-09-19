@@ -1556,7 +1556,7 @@ export const Comandera: React.FC = () => {
 													"Deshacer"
 												)}
 											</button>
-											<div className="relative mb-8">
+											<div className="relative mt-8 mb-2">
 												<select
 													className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
 													style={{
