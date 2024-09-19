@@ -939,7 +939,7 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-4 mt-6 justify-center flex flex-col md:flex-row w-full">
+					<div className="mb-4 mt-6  flex flex-col md:flex-row w-full">
 						<div className="mb-2 md:mb-0">
 							<div className="flex w-full flex-col md:flex-row gap-2">
 								<div
