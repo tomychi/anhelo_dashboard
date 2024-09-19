@@ -13,8 +13,8 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "porHacer"
-							? "bg-black rounded-lg text-gray-100"
-							: "border border-1 rounded-lg border-black text-black"
+							? "bg-black rounded-full text-gray-100"
+							: "border border-1 rounded-full border-black text-black"
 					} text-black font-medium w-40 `}
 					onClick={() => setSeccionActiva("porHacer")}
 				>
@@ -23,8 +23,8 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "hechos"
-							? "bg-black rounded-lg text-gray-100"
-							: "border border-1 rounded-lg border-black text-black"
+							? "bg-black rounded-full text-gray-100"
+							: "border border-1 rounded-full border-black text-black"
 					} text-black font-medium w-40  `}
 					onClick={() => setSeccionActiva("hechos")}
 				>
@@ -33,8 +33,8 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "entregados"
-							? "bg-black rounded-lg text-gray-100"
-							: "border border-1 rounded-lg border-black text-black"
+							? "bg-black rounded-full text-gray-100"
+							: "border border-1 rounded-full border-black text-black"
 					} text-black font-medium w-40  `}
 					onClick={() => setSeccionActiva("entregados")}
 				>
@@ -43,8 +43,8 @@ export const NavButtons = ({
 				{/* <button
 					className={`p-2 ${
 						seccionActiva === "mapa"
-							? "bg-black rounded-lg text-gray-100"
-							: "border border-1 rounded-lg border-black text-black"
+							? "bg-black rounded-full text-gray-100"
+							: "border border-1 rounded-full border-black text-black"
 					} text-black font-medium w-40 `}
 					onClick={() => setSeccionActiva("mapa")}
 				>
@@ -54,8 +54,8 @@ export const NavButtons = ({
 				<button
 					className={`p-2 ${
 						seccionActiva === "registro"
-							? "bg-black rounded-lg text-gray-100"
-							: "border border-1 rounded-lg border-black text-black"
+							? "bg-black rounded-full text-gray-100"
+							: "border border-1 rounded-full border-black text-black"
 					} text-black font-medium w-40 `}
 					onClick={() => setSeccionActiva("registro")}
 				>

@@ -2210,7 +2210,7 @@ export const Comandera: React.FC = () => {
 						</div>
 					</div>
 				)}
-				<div className="flex flex-row justify-center mt-8">
+				<div className="flex flex-row mt-8">
 					<GeneralStats
 						customerSuccess={customerSuccess}
 						orders={orders}
