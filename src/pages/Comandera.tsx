@@ -1404,7 +1404,7 @@ export const Comandera: React.FC = () => {
 													hs
 												</p>
 												<p className="text-xs">
-													Costo por entrega: $
+													Costo por entrega aproximado: $
 													{Math.round(
 														(grupo.distanciaTotal * 200 +
 															grupo.pedidos.length * 1200) /
