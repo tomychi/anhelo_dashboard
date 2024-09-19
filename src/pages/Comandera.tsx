@@ -971,7 +971,7 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div>
-					<div className="mb-4 mt-6  flex flex-col md:flex-row items-center w-full">
+					<div className="mb-8 mt-2  flex flex-col md:flex-row items-center w-full">
 						{/* Aca las opciones de agrupacion */}
 						<div className="mb-2 md:mb-0">
 							<p className="mb-2 font-bold">Opciones de agrupación</p>
@@ -1359,8 +1359,8 @@ export const Comandera: React.FC = () => {
 									)}
 									<div className="flex flex-col gap-2">
 										{pedidosReserva.length > 0 && (
-											<div className="bg-black  shadow-black rounded-lg  p-4 mb-4   h-min font-coolvetica w-full shadow-lg  ">
-												<h3 className="font-medium text-gray-100 mt-4 mb-8 text-center">
+											<div className="bg-gray-300  shadow-black rounded-lg  p-4 mb-4   h-min font-coolvetica w-full shadow-lg  ">
+												<h3 className="font-medium text-black mt-4 mb-8 text-center">
 													Reservas
 												</h3>
 												<div className="flex flex-col gap-2">
