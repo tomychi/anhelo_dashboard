@@ -1720,7 +1720,7 @@ export const Comandera: React.FC = () => {
 											<div className="flex flex-row ">
 												<div
 													key={`${pedido.id}-gruposDepedidos`}
-													className={`bg-gray-100 relative w-11/12 flex flex-row items-center ${
+													className={`bg-gray-100 relative w-full flex flex-row items-center ${
 														pedidoIndex === 0
 															? "rounded-t-lg "
 															: pedidoIndex === grupo.pedidos.length - 1
@@ -1922,22 +1922,6 @@ export const Comandera: React.FC = () => {
 															)}
 														</div>
 													</div>
-												</div>
-												<div className="flex items-center ml-4">
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														fill="none"
-														viewBox="0 0 24 24"
-														strokeWidth="3"
-														stroke="currentColor"
-														className="h-4"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															d="M6 18 18 6M6 6l12 12"
-														/>
-													</svg>
 												</div>
 											</div>
 										))}
