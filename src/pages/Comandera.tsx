@@ -1773,9 +1773,6 @@ export const Comandera: React.FC = () => {
 																</div>
 																<div className="flex items-center relative">
 																	<button
-																		onClick={() =>
-																			togglePedidoPrioritario(pedido)
-																		}
 																		className="ml-2 p-1 rounded-full relative"
 																		onMouseEnter={() =>
 																			setStarTooltipVisibility((prev) => ({
@@ -2178,8 +2175,8 @@ export const Comandera: React.FC = () => {
 																		/>
 																	</svg>
 																	<p className="mb-[1.5px] text-xs">
-																		No puedes arrastrar pedidos de grupos en
-																		proceso
+																		Para arrastrar pedidos tenes que marcar como
+																		listo el grupo
 																	</p>
 																</div>
 															)}
