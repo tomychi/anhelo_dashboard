@@ -1,5 +1,5 @@
-import { PedidoProps } from '../../types/types';
-import { CardComanda } from './Card/CardComanda';
+import { PedidoProps } from "../../types/types";
+import { CardComanda } from "./Card/CardComanda";
 
 interface OrderSectionProps {
   orders: PedidoProps[];
@@ -39,7 +39,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           minutosDistancia,
           efectivoCantidad,
         }) => (
-          <div key={id}>
+          <div key={`comanda-${hora}-${id}`}>
             <CardComanda
               aclaraciones={aclaraciones}
               direccion={direccion}
@@ -68,7 +68,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               cadetes={cadetes}
             />
           </div>
-        )
+        ),
       )}
     </div>
   );
