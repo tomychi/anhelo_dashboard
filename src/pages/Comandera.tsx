@@ -999,7 +999,7 @@ export const Comandera: React.FC = () => {
 							</div>
 						</div>
 
-						<div className="w-[1px] h-16 mt-2 bg-black ml-2 mr-4 "></div>
+						<div className="w-[1px] h-16 mt-2 opacity-30 bg-black ml-2 mr-4 "></div>
 
 						{/* Aca los parametros */}
 						<div className="flex flex-col md:flex-row items-center md:items-start">
