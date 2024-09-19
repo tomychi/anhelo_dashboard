@@ -1853,6 +1853,14 @@ export const Comandera: React.FC = () => {
 												El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
 												hs
 											</p>
+											<p className="text-xs">
+												Costo por entrega aproximado: $
+												{Math.round(
+													(grupo.distanciaTotal * 200 +
+														grupo.pedidos.length * 1200) /
+														grupo.pedidos.length
+												)}
+											</p>
 										</div>
 										<button
 											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
