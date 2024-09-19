@@ -1785,7 +1785,7 @@ export const Comandera: React.FC = () => {
 																	{tooltipVisibility[
 																		`listo-${index}-${pedidoIndex}`
 																	] && (
-																		<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																		<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex  flex-row items-center gap-2 h-[30px]">
 																			<p className="mb-[1.5px] text-xs">
 																				Presiona para arrastrar este pedido
 																			</p>
