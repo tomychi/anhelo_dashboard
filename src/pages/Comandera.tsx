@@ -1775,10 +1775,10 @@ export const Comandera: React.FC = () => {
 										key={uniqueKey}
 										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
-										<div className="flex flex-col mt-4 mb-8 text-center justify-center">
-											<div className="flex flex-row  items-center justify-center ">
+										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
+											<h3 className="font-medium  text-2xl md:text-3xl mb-2 items-center gap-2  flex flex-row">
 												<svg
-													className="w-3 h-3 mb-2  text-gray-100 animate-spin   dark:fill-black"
+													className="w-3 h-3  text-gray-100 animate-spin   dark:fill-black"
 													viewBox="0 0 100 101"
 												>
 													<path
@@ -1790,10 +1790,8 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												<h3 className="font-medium w-9/12 text-2xl md:text-3xl mb-2">
-													Grupo {index + 1} en proceso
-												</h3>
-											</div>
+												Grupo {index + 1} en proceso
+											</h3>
 											<p className="text-xs">
 												Peor entrega: {grupo.peorTiempoPercibido} minutos (
 												{grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
