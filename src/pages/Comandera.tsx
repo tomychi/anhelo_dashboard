@@ -978,7 +978,7 @@ export const Comandera: React.FC = () => {
 									className={`py-2 w-full text-center md:w-auto px-4 rounded-full font-medium cursor-pointer ${
 										modoAgrupacion === "entrega"
 											? "bg-black text-gray-100"
-											: "text-black border border-1 border-black"
+											: "text-black bg-gray-300"
 									}`}
 									onClick={() => setModoAgrupacion("entrega")}
 								>
@@ -988,7 +988,7 @@ export const Comandera: React.FC = () => {
 									className={`py-2 px-4 w-full text-center md:w-auto rounded-full font-medium cursor-pointer ${
 										modoAgrupacion === "recorrido"
 											? "bg-black text-gray-100"
-											: "text-black border border-1 border-black"
+											: "text-black bg-gray-300"
 									}`}
 									onClick={() => setModoAgrupacion("recorrido")}
 								>
@@ -1174,8 +1174,8 @@ export const Comandera: React.FC = () => {
 							{(grupoManual.length > 0 || pedidosReserva.length > 0) && (
 								<div className="flex flex-col">
 									{grupoManual.length > 0 && (
-										<div className="bg-black shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
-											<h3 className="font-medium text-gray-100  mt-4 mb-8  text-center">
+										<div className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
+											<h3 className="font-medium text-black  mt-4 mb-8  text-center">
 												Asignar manualmente
 											</h3>
 											<div className="flex flex-col gap-2">
