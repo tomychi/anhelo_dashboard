@@ -1697,7 +1697,7 @@ export const Comandera: React.FC = () => {
 																		)}
 																	</div>
 																</div>
-																<div className="flex items-center">
+																<div className="flex items-center relative">
 																	<button
 																		onClick={() =>
 																			togglePedidoPrioritario(pedido)
@@ -1749,9 +1749,6 @@ export const Comandera: React.FC = () => {
 																		)}
 																		{starTooltipVisibility[pedido.id] && (
 																			<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-																				<p className="mb-[1.5px] text-xs font-black">
-																					1ro
-																				</p>
 																				<p className="mb-[1.5px] text-xs">
 																					Presiona para priorizar este pedido
 																				</p>
@@ -1764,7 +1761,20 @@ export const Comandera: React.FC = () => {
 																		viewBox="0 0 24 24"
 																		strokeWidth="1.5"
 																		stroke="currentColor"
-																		className="w-6 mr-4 opacity-50"
+																		className="w-6 mr-4 cursor-pointer opacity-50"
+																		onMouseEnter={() =>
+																			setTooltipVisibility((prev) => ({
+																				...prev,
+																				[`listo-${index}-${pedidoIndex}`]: true,
+																			}))
+																		}
+																		onMouseLeave={() =>
+																			setTooltipVisibility((prev) => ({
+																				...prev,
+																				[`listo-${index}-${pedidoIndex}`]:
+																					false,
+																			}))
+																		}
 																	>
 																		<path
 																			strokeLinecap="round"
@@ -1772,6 +1782,15 @@ export const Comandera: React.FC = () => {
 																			d="M3.75 9h16.5m-16.5 6.75h16.5"
 																		/>
 																	</svg>
+																	{tooltipVisibility[
+																		`listo-${index}-${pedidoIndex}`
+																	] && (
+																		<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																			<p className="mb-[1.5px] text-xs">
+																				Presiona para arrastrar este pedido
+																			</p>
+																		</div>
+																	)}
 																</div>
 															</div>
 														</div>
@@ -2013,9 +2032,6 @@ export const Comandera: React.FC = () => {
 																	`process-${pedido.id}`
 																] && (
 																	<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-																		<p className="mb-[1.5px] text-xs font-black">
-																			1ro
-																		</p>
 																		<p className="mb-[1.5px] text-xs">
 																			Presiona para priorizar este pedido
 																		</p>
