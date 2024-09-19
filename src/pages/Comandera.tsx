@@ -47,6 +47,10 @@ type Grupo = {
 export const Comandera: React.FC = () => {
 	const [seccionActiva, setSeccionActiva] = useState<string>("porHacer");
 	const dispatch = useDispatch();
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [selectedPedido, setSelectedPedido] = useState<PedidoProps | null>(
+		null
+	);
 	const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
 	const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
 	const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
@@ -878,7 +882,10 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	console.log(cadetesDisponibles);
+	const handlePedidoClick = (pedido: PedidoProps) => {
+		setSelectedPedido(pedido);
+		setModalIsOpen(true);
+	};
 
 	return (
 		<>
@@ -1378,13 +1385,14 @@ export const Comandera: React.FC = () => {
 															ref={provided.innerRef}
 															{...provided.draggableProps}
 															{...provided.dragHandleProps}
-															className={`bg-gray-100 relative flex flex-row items-center ${
+															className={`bg-gray-100 relative flex flex-row items-center cursor-pointer ${
 																pedidoIndex === 0
 																	? "rounded-t-lg"
 																	: pedidoIndex === grupo.pedidos.length - 1
 																	? "rounded-b-lg"
 																	: ""
 															}`}
+															onClick={() => handlePedidoClick(pedido)}
 														>
 															<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 																{pedidoIndex + 1}
@@ -1622,16 +1630,16 @@ export const Comandera: React.FC = () => {
 											Listo
 										</button>
 										{grupo.pedidos.map((pedido, pedidoIndex) => (
-											<div className="flex flex-row ">
+											<div className="flex flex-row" key={pedido.id}>
 												<div
-													key={pedido.id}
-													className={`bg-gray-100 relative w-11/12 flex flex-row items-center ${
+													className={`bg-gray-100 relative w-11/12 flex flex-row items-center cursor-pointer ${
 														pedidoIndex === 0
 															? "rounded-t-lg "
 															: pedidoIndex === grupo.pedidos.length - 1
 															? "rounded-b-lg"
 															: ""
 													}`}
+													onClick={() => handlePedidoClick(pedido)}
 												>
 													<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 														{pedidoIndex + 1}
@@ -1866,6 +1874,41 @@ export const Comandera: React.FC = () => {
 							<></>
 						)}
 					</div>
+					{modalIsOpen && selectedPedido && (
+						<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+							<div className="bg-white p-6 rounded-lg max-w-lg w-full">
+								<h2 className="text-2xl font-bold mb-4">Detalles del Pedido</h2>
+								<p>
+									<strong>Dirección:</strong> {selectedPedido.direccion}
+								</p>
+								<p>
+									<strong>Hora:</strong> {selectedPedido.hora}
+								</p>
+								<p>
+									<strong>Distancia:</strong>
+								</p>
+								<p>
+									<strong>Tiempo de Espera:</strong>{" "}
+									{calcularTiempoEspera(selectedPedido.hora)} minutos
+								</p>
+								<p>
+									<strong>Tiempo Percibido:</strong>{" "}
+								</p>
+								<p>
+									<strong>Cadete:</strong> {selectedPedido.cadete}
+								</p>
+								<p>
+									<strong>Total:</strong> ${selectedPedido.total}
+								</p>
+								<button
+									onClick={() => setModalIsOpen(false)}
+									className="mt-4 bg-black text-white px-4 py-2 rounded"
+								>
+									Cerrar
+								</button>
+							</div>
+						</div>
+					)}
 				</div>
 				<div className="flex flex-row justify-center mt-8">
 					<GeneralStats
