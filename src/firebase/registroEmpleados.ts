@@ -112,7 +112,7 @@ export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
   }
 };
 
-interface VueltasProps {
+export interface VueltasProps {
   orders: [];
   rideId: string;
   startTime: string;
