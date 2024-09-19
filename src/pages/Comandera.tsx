@@ -1336,20 +1336,44 @@ export const Comandera: React.FC = () => {
 																					</p>
 																				</div>
 																			</div>
-																			<svg
-																				xmlns="http://www.w3.org/2000/svg"
-																				fill="none"
-																				viewBox="0 0 24 24"
-																				strokeWidth="1.5"
-																				stroke="currentColor"
-																				className="w-6 mr-4 opacity-50"
-																			>
-																				<path
-																					strokeLinecap="round"
-																					strokeLinejoin="round"
-																					d="M3.75 9h16.5m-16.5 6.75h16.5"
-																				/>
-																			</svg>
+																			<div className="flex items-center relative">
+																				<svg
+																					xmlns="http://www.w3.org/2000/svg"
+																					fill="none"
+																					viewBox="0 0 24 24"
+																					strokeWidth="1.5"
+																					stroke="currentColor"
+																					className="w-6 mr-4 opacity-50"
+																					onMouseEnter={() =>
+																						setTooltipVisibility((prev) => ({
+																							...prev,
+																							[`manual-${index}`]: true,
+																						}))
+																					}
+																					onMouseLeave={() =>
+																						setTooltipVisibility((prev) => ({
+																							...prev,
+																							[`manual-${index}`]: false,
+																						}))
+																					}
+																				>
+																					<path
+																						strokeLinecap="round"
+																						strokeLinejoin="round"
+																						d="M3.75 9h16.5m-16.5 6.75h16.5"
+																					/>
+																				</svg>
+																				{tooltipVisibility[
+																					`manual-${index}`
+																				] && (
+																					<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																						<p className="mb-[1.5px] text-xs">
+																							Presiona para arrastrar este
+																							pedido a un grupo listo.
+																						</p>
+																					</div>
+																				)}
+																			</div>
 																		</div>
 																	)}
 																</Draggable>
@@ -2089,7 +2113,8 @@ export const Comandera: React.FC = () => {
 																		/>
 																	</svg>
 																	<p className="mb-[1.5px] text-xs">
-																		Solo puedes mover pedidos de grupos listos.
+																		No puedes arrastrar pedidos de grupos en
+																		proceso
 																	</p>
 																</div>
 															)}
