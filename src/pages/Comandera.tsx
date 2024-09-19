@@ -1,31 +1,31 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
-import { RootState } from "../redux/configureStore";
-import { useSelector, useDispatch } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { GeneralStats, OrderList } from "../components/comandera";
-import { NavButtons } from "../components/comandera/NavButtons";
-import CadeteSelect from "../components/Cadet/CadeteSelect";
-import { Unsubscribe } from "firebase/firestore";
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { RootState } from '../redux/configureStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { GeneralStats, OrderList } from '../components/comandera';
+import { NavButtons } from '../components/comandera/NavButtons';
+import CadeteSelect from '../components/Cadet/CadeteSelect';
+import { Unsubscribe } from 'firebase/firestore';
 import {
   EmpleadosProps,
   listenToEmpleadosChanges,
-} from "../firebase/registroEmpleados";
-import { ReadOrdersForToday } from "../firebase/ReadData";
-import { PedidoProps } from "../types/types";
-import { readOrdersData } from "../redux/data/dataAction";
-import { DeliveryMap } from "../components/maps/DeliveryMap";
-import arrowIcon from "../assets/arrowIcon.png";
-import listoIcon from "../assets/listoIcon.png";
-import Swal from "sweetalert2";
-import { updateCadeteForOrder } from "../firebase/UploadOrder";
-import { obtenerHoraActual } from "../helpers/dateToday";
-import RegistroEmpleado from "./Empleados";
+} from '../firebase/registroEmpleados';
+import { ReadOrdersForToday } from '../firebase/ReadData';
+import { PedidoProps } from '../types/types';
+import { readOrdersData } from '../redux/data/dataAction';
+import { DeliveryMap } from '../components/maps/DeliveryMap';
+import arrowIcon from '../assets/arrowIcon.png';
+import listoIcon from '../assets/listoIcon.png';
+import Swal from 'sweetalert2';
+import { updateCadeteForOrder } from '../firebase/UploadOrder';
+import { obtenerHoraActual } from '../helpers/dateToday';
+import RegistroEmpleado from './Empleados';
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
-} from "react-beautiful-dnd";
+} from 'react-beautiful-dnd';
 
 // Definición de tipos
 
@@ -45,7 +45,7 @@ type Grupo = {
 };
 
 export const Comandera: React.FC = () => {
-  const [seccionActiva, setSeccionActiva] = useState<string>("porHacer");
+  const [seccionActiva, setSeccionActiva] = useState<string>('porHacer');
   const dispatch = useDispatch();
   const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
   const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
@@ -55,7 +55,7 @@ export const Comandera: React.FC = () => {
 
   const { orders } = useSelector((state: RootState) => state.data);
   const [pedidosPrioritarios, setPedidosPrioritarios] = useState<PedidoProps[]>(
-    [],
+    []
   );
 
   const { user } = useSelector((state: RootState) => state.auth);
@@ -66,15 +66,15 @@ export const Comandera: React.FC = () => {
     number | null
   >(null);
 
-  const [modoAgrupacion, setModoAgrupacion] = useState<"entrega" | "recorrido">(
-    "entrega",
+  const [modoAgrupacion, setModoAgrupacion] = useState<'entrega' | 'recorrido'>(
+    'entrega'
   );
   const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
   const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
   const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
   const [grupoManual, setGrupoManual] = useState<PedidoProps[]>([]);
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
-    {},
+    {}
   );
   const [tooltipVisibility, setTooltipVisibility] = useState<
     Record<string, boolean>
@@ -82,7 +82,7 @@ export const Comandera: React.FC = () => {
 
   // Nuevo estado para la velocidad promedio
   const [velocidadPromedio, setVelocidadPromedio] = useState<number | null>(
-    null,
+    null
   );
 
   // Nueva función para obtener la velocidad actual
@@ -98,7 +98,7 @@ export const Comandera: React.FC = () => {
   }, []);
 
   const calcularTiempoEspera = (horaPedido: string): number => {
-    const [horas, minutos] = horaPedido.split(":").map(Number);
+    const [horas, minutos] = horaPedido.split(':').map(Number);
     const fechaPedido = new Date(tiempoActual);
     fechaPedido.setHours(horas, minutos, 0, 0);
     const diferencia = tiempoActual.getTime() - fechaPedido.getTime();
@@ -112,21 +112,21 @@ export const Comandera: React.FC = () => {
       const grupoActualizado = gruposListos[index];
       // Aquí iría la lógica para deshacer el grupo
       for (const pedido of grupoActualizado.pedidos) {
-        await updateCadeteForOrder(pedido.fecha, pedido.id, "NO ASIGNADO");
+        await updateCadeteForOrder(pedido.fecha, pedido.id, 'NO ASIGNADO');
       }
       setGruposListos((prevGrupos) => prevGrupos.filter((_, i) => i !== index));
       Swal.fire({
-        icon: "success",
-        title: "Grupo deshecho",
-        text: "El grupo ha sido deshecho exitosamente.",
+        icon: 'success',
+        title: 'Grupo deshecho',
+        text: 'El grupo ha sido deshecho exitosamente.',
       });
     } catch (error) {
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al deshacer el grupo.",
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al deshacer el grupo.',
       });
-      console.error("Error al deshacer el grupo:", error);
+      console.error('Error al deshacer el grupo:', error);
     } finally {
       setLoadingStates((prev) => ({ ...prev, [index]: false }));
     }
@@ -136,8 +136,8 @@ export const Comandera: React.FC = () => {
     return orders
       .filter((o) => !selectedCadete || o.cadete === selectedCadete)
       .sort((a, b) => {
-        const [horaA, minutosA] = a.hora.split(":").map(Number);
-        const [horaB, minutosB] = b.hora.split(":").map(Number);
+        const [horaA, minutosA] = a.hora.split(':').map(Number);
+        const [horaB, minutosB] = b.hora.split(':').map(Number);
         return horaA * 60 + minutosA - (horaB * 60 + minutosB);
       });
   }, [orders, selectedCadete]);
@@ -167,16 +167,16 @@ export const Comandera: React.FC = () => {
         (empleadosActualizados) => {
           setEmpleados(empleadosActualizados);
           const cadetesFiltrados = empleadosActualizados
-            .filter((empleado) => empleado.category === "cadete")
+            .filter((empleado) => empleado.category === 'cadete')
             .map((empleado) => empleado.name);
           setCadetes(cadetesFiltrados);
-        },
+        }
       );
-      if (location.pathname === "/comandas") {
+      if (location.pathname === '/comandas') {
         unsubscribeOrders = ReadOrdersForToday(
           async (pedidos: PedidoProps[]) => {
             dispatch(readOrdersData(pedidos));
-          },
+          }
         );
       }
     };
@@ -193,7 +193,7 @@ export const Comandera: React.FC = () => {
 
   const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nuevoCadeteSeleccionado = event.target.value;
-    if (nuevoCadeteSeleccionado === "") {
+    if (nuevoCadeteSeleccionado === '') {
       setSelectedCadete(null);
       return;
     }
@@ -209,7 +209,7 @@ export const Comandera: React.FC = () => {
     const totalEfectivoCadete = orders.reduce((total, pedido) => {
       if (
         pedido.cadete === nuevoCadeteSeleccionado &&
-        pedido.metodoPago === "efectivo"
+        pedido.metodoPago === 'efectivo'
       ) {
         return total + pedido.total;
       } else {
@@ -228,7 +228,7 @@ export const Comandera: React.FC = () => {
       if (order.hora > obtenerHoraActual()) {
         return false; // Este es un pedido de reserva
       }
-      if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
+      if (order.cadete === 'NO ASIGNADO' || order.cadete === 'no asignado') {
         return true;
       }
       if (order.entregado) {
@@ -237,7 +237,7 @@ export const Comandera: React.FC = () => {
       const cadeteAsignado = empleados.find(
         (empleado) =>
           empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
-          empleado.category === "cadete",
+          empleado.category === 'cadete'
       );
       return cadeteAsignado && cadeteAsignado.available;
     });
@@ -248,7 +248,7 @@ export const Comandera: React.FC = () => {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number,
+    lon2: number
   ): number {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -274,7 +274,7 @@ export const Comandera: React.FC = () => {
         LATITUD_INICIO,
         LONGITUD_INICIO,
         latitud,
-        longitud,
+        longitud
       );
       return {
         ...pedido,
@@ -296,7 +296,7 @@ export const Comandera: React.FC = () => {
   function calcularTiempoYDistanciaRecorrido(
     grupo: PedidoProps[],
     latitudInicio: number,
-    longitudInicio: number,
+    longitudInicio: number
   ): { tiempoTotal: number; distanciaTotal: number } {
     let tiempoTotal = 0;
     let distanciaTotal = 0;
@@ -308,7 +308,7 @@ export const Comandera: React.FC = () => {
         latitudActual,
         longitudActual,
         pedido.map[0],
-        pedido.map[1],
+        pedido.map[1]
       );
       distanciaTotal += distancia;
       const tiempoViaje = (distancia / velocidadActual) * 60;
@@ -372,11 +372,11 @@ export const Comandera: React.FC = () => {
   };
 
   const handleCadeteVelocidadChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const selectedCadeteId = e.target.value;
     const selectedCadete = cadetesDisponibles.find(
-      (cadete) => cadete.name === selectedCadeteId,
+      (cadete) => cadete.name === selectedCadeteId
     );
     if (selectedCadete) {
       const velocidad = calcularVelocidadPromedio(selectedCadete);
@@ -390,13 +390,13 @@ export const Comandera: React.FC = () => {
     pedidos: PedidoProps[],
     tiempoMaximo: number,
     modoAgrupacion: string,
-    pedidosPrioritarios: PedidoProps[],
+    pedidosPrioritarios: PedidoProps[]
   ): Grupo[] {
     const pedidosDisponibles = pedidos.filter(
       (pedido) =>
         !gruposListos.some((grupo) =>
-          grupo.pedidos.some((p) => p.id === pedido.id),
-        ) && !(pedido.map[0] === 0 && pedido.map[1] === 0),
+          grupo.pedidos.some((p) => p.id === pedido.id)
+        ) && !(pedido.map[0] === 0 && pedido.map[1] === 0)
     );
 
     const pedidosManuales = pedidos.filter(
@@ -404,8 +404,8 @@ export const Comandera: React.FC = () => {
         pedido.map[0] === 0 &&
         pedido.map[1] === 0 &&
         !gruposListos.some((grupo) =>
-          grupo.pedidos.some((p) => p.id === pedido.id),
-        ),
+          grupo.pedidos.some((p) => p.id === pedido.id)
+        )
     );
     setGrupoManual(pedidosManuales);
 
@@ -419,15 +419,15 @@ export const Comandera: React.FC = () => {
         pedidosRestantes,
         tiempoMaximo,
         modoAgrupacion,
-        pedidosPrioritarios,
+        pedidosPrioritarios
       );
       gruposOptimos.push(grupo);
       pedidosRestantes = pedidosRestantes.filter(
-        (pedido) => !grupo.pedidos.some((p) => p.id === pedido.id),
+        (pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
       );
       // Actualizar pedidosPrioritarios eliminando los que ya se han incluido en un grupo
       pedidosPrioritarios = pedidosPrioritarios.filter(
-        (pedido) => !grupo.pedidos.some((p) => p.id === pedido.id),
+        (pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
       );
     }
 
@@ -438,7 +438,7 @@ export const Comandera: React.FC = () => {
     pedidosDisponibles: PedidoProps[],
     tiempoMaximo: number,
     modoAgrupacion: string,
-    pedidosPrioritarios: PedidoProps[],
+    pedidosPrioritarios: PedidoProps[]
   ): Grupo {
     const grupoActual: PedidosGrupos[] = [];
     let tiempoTotalGrupo = 0;
@@ -456,7 +456,7 @@ export const Comandera: React.FC = () => {
       pedidoInicial = encontrarMejorPedido(
         pedidosDisponibles,
         latitudActual,
-        longitudActual,
+        longitudActual
       );
     }
 
@@ -466,7 +466,7 @@ export const Comandera: React.FC = () => {
         latitudActual,
         longitudActual,
         pedidoInicial.map[0],
-        pedidoInicial.map[1],
+        pedidoInicial.map[1]
       );
       const tiempoViaje = (distancia / getVelocidadActual()) * 60;
       const tiempoPercibido = tiempoEspera + tiempoViaje;
@@ -484,7 +484,7 @@ export const Comandera: React.FC = () => {
       latitudActual = pedidoInicial.map[0];
       longitudActual = pedidoInicial.map[1];
       pedidosDisponibles = pedidosDisponibles.filter(
-        (p) => p.id !== pedidoInicial!.id,
+        (p) => p.id !== pedidoInicial!.id
       );
     }
 
@@ -492,7 +492,7 @@ export const Comandera: React.FC = () => {
       let mejorPedido = encontrarMejorPedido(
         pedidosDisponibles,
         latitudActual,
-        longitudActual,
+        longitudActual
       );
       if (!mejorPedido) break;
 
@@ -500,14 +500,14 @@ export const Comandera: React.FC = () => {
       const { tiempoTotal, distanciaTotal } = calcularTiempoYDistanciaRecorrido(
         nuevaRuta,
         LATITUD_INICIO,
-        LONGITUD_INICIO,
+        LONGITUD_INICIO
       );
 
       const distanciaRegreso = calcularDistancia(
         mejorPedido.map[0],
         mejorPedido.map[1],
         LATITUD_INICIO,
-        LONGITUD_INICIO,
+        LONGITUD_INICIO
       );
       const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
       const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
@@ -517,7 +517,7 @@ export const Comandera: React.FC = () => {
       const tiempoPercibido = tiempoEspera + tiempoTotal;
 
       let excedeTiempoMaximo =
-        modoAgrupacion === "entrega"
+        modoAgrupacion === 'entrega'
           ? tiempoPercibido > tiempoMaximo
           : tiempoTotalConRegreso > tiempoMaximo;
 
@@ -540,7 +540,7 @@ export const Comandera: React.FC = () => {
       latitudActual = mejorPedido.map[0];
       longitudActual = mejorPedido.map[1];
       pedidosDisponibles = pedidosDisponibles.filter(
-        (p) => p.id !== mejorPedido!.id,
+        (p) => p.id !== mejorPedido!.id
       );
     }
 
@@ -556,7 +556,7 @@ export const Comandera: React.FC = () => {
   function encontrarMejorPedido(
     pedidosDisponibles: PedidoProps[],
     latitudActual: number,
-    longitudActual: number,
+    longitudActual: number
   ): PedidoProps | null {
     let mejorPedido: PedidoProps | null = null;
     let mejorDistancia = Infinity;
@@ -566,7 +566,7 @@ export const Comandera: React.FC = () => {
         latitudActual,
         longitudActual,
         pedido.map[0],
-        pedido.map[1],
+        pedido.map[1]
       );
 
       if (distancia < mejorDistancia) {
@@ -580,12 +580,12 @@ export const Comandera: React.FC = () => {
 
   const gruposOptimosMemo = useMemo(() => {
     const tiempoMaximoActual =
-      modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
+      modoAgrupacion === 'entrega' ? tiempoMaximo : tiempoMaximoRecorrido;
     return armarGruposOptimos(
       pedidosConDistancias,
       tiempoMaximoActual,
       modoAgrupacion,
-      pedidosPrioritarios,
+      pedidosPrioritarios
     );
   }, [
     pedidosConDistancias,
@@ -604,11 +604,11 @@ export const Comandera: React.FC = () => {
   const handleGrupoListo = (grupo: Grupo) => {
     const horaActual = new Date();
     const horaRegreso = new Date(
-      horaActual.getTime() + grupo.tiempoTotal * 60000,
+      horaActual.getTime() + grupo.tiempoTotal * 60000
     );
-    const horaRegresoFormateada = horaRegreso.toLocaleTimeString("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit",
+    const horaRegresoFormateada = horaRegreso.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
     });
     setGruposListos([
       ...gruposListos,
@@ -620,14 +620,14 @@ export const Comandera: React.FC = () => {
   };
   const cadetesDisponibles = useMemo(() => {
     return empleados.filter(
-      (empleado) => empleado.category === "cadete" && empleado.available,
+      (empleado) => empleado.category === 'cadete' && empleado.available
     );
   }, [empleados]);
 
   const handleAsignarCadete = async (
     grupoIndex: number,
     cadeteId: string,
-    esGrupoListo: boolean = false,
+    esGrupoListo: boolean = false
   ) => {
     const loadingKey = `asignar-${grupoIndex}`;
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
@@ -649,8 +649,8 @@ export const Comandera: React.FC = () => {
         }
 
         Swal.fire({
-          icon: "success",
-          title: "CADETE ASIGNADO",
+          icon: 'success',
+          title: 'CADETE ASIGNADO',
           text: `El viaje lo lleva: ${cadeteId}`,
         });
       } else {
@@ -666,7 +666,7 @@ export const Comandera: React.FC = () => {
 
       const nuevasOrdenes = orders.map((orden) => {
         const pedidoEnGrupo = grupoActualizado.pedidos.find(
-          (p) => p.id === orden.id,
+          (p) => p.id === orden.id
         );
         if (pedidoEnGrupo) {
           return { ...orden, cadete: cadeteId };
@@ -676,11 +676,11 @@ export const Comandera: React.FC = () => {
       dispatch(readOrdersData(nuevasOrdenes));
     } catch (error) {
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al asignar el cadete.",
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al asignar el cadete.',
       });
-      console.error("Error al asignar el cadete:", error);
+      console.error('Error al asignar el cadete:', error);
     } finally {
       setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
     }
@@ -698,22 +698,22 @@ export const Comandera: React.FC = () => {
         hora: pedido.hora,
         tiempoEspera: calcularTiempoEspera(pedido.hora),
         map: pedido.map,
-        aclaraciones: pedido.aclaraciones || "", // Valor predeterminado si falta
+        aclaraciones: pedido.aclaraciones || '', // Valor predeterminado si falta
         detallePedido: pedido.detallePedido || [], // Valor predeterminado si falta
         elaborado: pedido.elaborado || false, // Valor predeterminado si falta
         envio: pedido.envio || 0, // Valor predeterminado
-        fecha: pedido.fecha || "", // Valor predeterminado
-        metodoPago: pedido.metodoPago || "", // Valor predeterminado
+        fecha: pedido.fecha || '', // Valor predeterminado
+        metodoPago: pedido.metodoPago || '', // Valor predeterminado
         subTotal: pedido.subTotal || 0, // Valor predeterminado
-        telefono: pedido.telefono || "", // Valor predeterminado
+        telefono: pedido.telefono || '', // Valor predeterminado
         total: pedido.total || 0, // Valor predeterminado
         efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
-        referencias: pedido.referencias || "", // Valor predeterminado
-        ubicacion: pedido.ubicacion || "", // Valor predeterminado
+        referencias: pedido.referencias || '', // Valor predeterminado
+        ubicacion: pedido.ubicacion || '', // Valor predeterminado
         dislike: pedido.dislike || false, // Valor predeterminado
         delay: pedido.delay || false, // Valor predeterminado
-        tiempoElaborado: pedido.tiempoElaborado || "", // Valor predeterminado
-        tiempoEntregado: pedido.tiempoEntregado || "", // Valor predeterminado
+        tiempoElaborado: pedido.tiempoElaborado || '', // Valor predeterminado
+        tiempoEntregado: pedido.tiempoEntregado || '', // Valor predeterminado
         entregado: pedido.entregado || false, // Valor predeterminado
         minutosDistancia: pedido.minutosDistancia || 0, // Valor predeterminado
         kms: pedido.kms,
@@ -740,7 +740,7 @@ export const Comandera: React.FC = () => {
       return;
     }
 
-    if (source.droppableId === "grupoManual") {
+    if (source.droppableId === 'grupoManual') {
       const newGruposListos = [...gruposListos];
       const movedPedido = grupoManual[source.index];
       const destGroup = newGruposListos[parseInt(destination.droppableId)];
@@ -760,7 +760,7 @@ export const Comandera: React.FC = () => {
       }
 
       const newGrupoManual = grupoManual.filter(
-        (_, index) => index !== source.index,
+        (_, index) => index !== source.index
       );
       console.log(newGrupoManual);
       setGrupoManual(newGrupoManual);
@@ -812,16 +812,16 @@ export const Comandera: React.FC = () => {
     };
   }, []);
   function sumar30Minutos(hora: string): string {
-    const [horas, minutos] = hora.split(":").map(Number);
+    const [horas, minutos] = hora.split(':').map(Number);
     let nuevosMinutos = minutos + 30;
     let nuevasHoras = horas;
     if (nuevosMinutos >= 60) {
       nuevasHoras = (nuevasHoras + 1) % 24;
       nuevosMinutos = nuevosMinutos - 60;
     }
-    return `${nuevasHoras.toString().padStart(2, "0")}:${nuevosMinutos
+    return `${nuevasHoras.toString().padStart(2, '0')}:${nuevosMinutos
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, '0')}`;
   }
   useEffect(() => {
     if (gruposListos.length > 0 && empleados.length > 0) {
@@ -837,8 +837,8 @@ export const Comandera: React.FC = () => {
   }, [empleados, gruposListos]);
 
   if (
-    user.email === "cocina@anhelo.com" ||
-    user.email === "cadetes@anhelo.com"
+    user.email === 'cocina@anhelo.com' ||
+    user.email === 'cadetes@anhelo.com'
   ) {
     return (
       <div>
@@ -880,19 +880,19 @@ export const Comandera: React.FC = () => {
           seccionActiva={seccionActiva}
           pedidosPorHacer={pedidosPorHacer}
           pedidosHechos={pedidosHechos}
-          pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
+          pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
           cadetes={cadetes}
         />
         <div className="mt-2">
-          {seccionActiva === "mapa" &&
-            (location.pathname === "/comandas" ? (
+          {seccionActiva === 'mapa' &&
+            (location.pathname === '/comandas' ? (
               <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
             ) : (
               <DeliveryMap orders={orders} />
             ))}
         </div>
         <div className="mt-2">
-          {seccionActiva === "registro" && <RegistroEmpleado />}
+          {seccionActiva === 'registro' && <RegistroEmpleado />}
         </div>
       </div>
     );
@@ -965,21 +965,21 @@ export const Comandera: React.FC = () => {
               <div className="flex w-full flex-col md:flex-row gap-2">
                 <div
                   className={`py-2 w-full text-center md:w-auto px-4 rounded-lg font-medium cursor-pointer ${
-                    modoAgrupacion === "entrega"
-                      ? "bg-black text-gray-100"
-                      : "text-black border border-1 border-black"
+                    modoAgrupacion === 'entrega'
+                      ? 'bg-black text-gray-100'
+                      : 'text-black border border-1 border-black'
                   }`}
-                  onClick={() => setModoAgrupacion("entrega")}
+                  onClick={() => setModoAgrupacion('entrega')}
                 >
                   Usar tiempo maximo de entrega
                 </div>
                 <div
                   className={`py-2 px-4 w-full text-center md:w-auto rounded-lg font-medium cursor-pointer ${
-                    modoAgrupacion === "recorrido"
-                      ? "bg-black text-gray-100"
-                      : "text-black border border-1 border-black"
+                    modoAgrupacion === 'recorrido'
+                      ? 'bg-black text-gray-100'
+                      : 'text-black border border-1 border-black'
                   }`}
-                  onClick={() => setModoAgrupacion("recorrido")}
+                  onClick={() => setModoAgrupacion('recorrido')}
                 >
                   Usar tiempo maximo de recorrido
                 </div>
@@ -987,7 +987,7 @@ export const Comandera: React.FC = () => {
             </div>
             <div className="h-10.5 bg-black w-[1px] ml-4 mr-3 hidden md:block"></div>
             <div className="flex flex-col md:flex-row items-center md:items-start">
-              {modoAgrupacion === "entrega" ? (
+              {modoAgrupacion === 'entrega' ? (
                 <div className="relative inline-block mb-2 md:mb-0">
                   <div className="relative inline-block">
                     <svg
@@ -996,7 +996,7 @@ export const Comandera: React.FC = () => {
                       fill="currentColor"
                       className="h-6 absolute left-3 top-1/2  -translate-y-1/2"
                       style={{
-                        filter: "invert(100%)",
+                        filter: 'invert(100%)',
                       }}
                     >
                       <path
@@ -1007,7 +1007,7 @@ export const Comandera: React.FC = () => {
                     </svg>
                     <select
                       id="tiempoMaximo"
-                      value={tiempoMaximo !== null ? tiempoMaximo : ""}
+                      value={tiempoMaximo !== null ? tiempoMaximo : ''}
                       onChange={(e) => {
                         const value = e.target.value
                           ? parseInt(e.target.value)
@@ -1016,9 +1016,9 @@ export const Comandera: React.FC = () => {
                       }}
                       className="bg-black appearance-none pt-2 pl-11 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
                       style={{
-                        WebkitAppearance: "none",
-                        MozAppearance: "none",
-                        width: "auto",
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none',
+                        width: 'auto',
                       }}
                     >
                       <option value="">¿Minutos maximos?</option>
@@ -1035,7 +1035,7 @@ export const Comandera: React.FC = () => {
                       alt="Arrow Icon"
                       className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
                       style={{
-                        filter: "invert(100%)",
+                        filter: 'invert(100%)',
                       }}
                     />
                   </div>
@@ -1049,7 +1049,7 @@ export const Comandera: React.FC = () => {
                       fill="currentColor"
                       className="h-6 absolute left-3 top-1/2  -translate-y-1/2"
                       style={{
-                        filter: "invert(100%)",
+                        filter: 'invert(100%)',
                       }}
                     >
                       <path
@@ -1064,7 +1064,7 @@ export const Comandera: React.FC = () => {
                       value={
                         tiempoMaximoRecorrido !== null
                           ? tiempoMaximoRecorrido
-                          : ""
+                          : ''
                       }
                       onChange={(e) => {
                         const value = e.target.value
@@ -1074,9 +1074,9 @@ export const Comandera: React.FC = () => {
                       }}
                       className="bg-black appearance-none pt-2 pl-11 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
                       style={{
-                        WebkitAppearance: "none",
-                        MozAppearance: "none",
-                        width: "auto",
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none',
+                        width: 'auto',
                       }}
                     >
                       <option value="">¿Minutos maximos?</option>
@@ -1093,7 +1093,7 @@ export const Comandera: React.FC = () => {
                       alt="Arrow Icon"
                       className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
                       style={{
-                        filter: "invert(100%)",
+                        filter: 'invert(100%)',
                       }}
                     />
                   </div>
@@ -1107,7 +1107,7 @@ export const Comandera: React.FC = () => {
                     fill="currentColor"
                     className="h-6 absolute left-3 top-1/2  -translate-y-1/2"
                     style={{
-                      filter: "invert(100%)",
+                      filter: 'invert(100%)',
                     }}
                   >
                     <path
@@ -1122,14 +1122,14 @@ export const Comandera: React.FC = () => {
                     onChange={handleCadeteVelocidadChange}
                     className="bg-black appearance-none pt-2 pl-11 pr-8 pb-3 px-3 text-gray-100 font-medium rounded-full"
                     style={{
-                      WebkitAppearance: "none",
-                      MozAppearance: "none",
-                      width: "auto",
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      width: 'auto',
                     }}
                   >
                     <option value="">¿Velocidad promedio?</option>
                     {cadetesDisponibles
-                      .filter((cadete) => cadete.name !== "NO ASIGNADO")
+                      .filter((cadete) => cadete.name !== 'NO ASIGNADO')
                       .map((cadete) => {
                         const cadeteNameFormatted =
                           cadete.name.charAt(0).toUpperCase() +
@@ -1139,7 +1139,7 @@ export const Comandera: React.FC = () => {
                             key={`${cadete.name}-${cadete.id}-filter`}
                             value={cadete.name}
                           >
-                            {cadeteNameFormatted}:{" "}
+                            {cadeteNameFormatted}:{' '}
                             {calcularVelocidadPromedio(cadete)} km/h
                           </option>
                         );
@@ -1151,7 +1151,7 @@ export const Comandera: React.FC = () => {
                     alt="Arrow Icon"
                     className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
                     style={{
-                      filter: "invert(100%)",
+                      filter: 'invert(100%)',
                     }}
                   />
                 </div>
@@ -1194,14 +1194,14 @@ export const Comandera: React.FC = () => {
                                         </div>
                                         <div className="pl-4 pb-3.5 pt-2">
                                           <p className="font-bold text-lg">
-                                            {pedido.direccion.split(",")[0]}
+                                            {pedido.direccion.split(',')[0]}
                                           </p>
                                           <p className="text-xs">
                                             Distancia: Desconocido
                                           </p>
                                           <p className="text-xs">
-                                            Pidió hace:{" "}
-                                            {calcularTiempoEspera(pedido.hora)}{" "}
+                                            Pidió hace:{' '}
+                                            {calcularTiempoEspera(pedido.hora)}{' '}
                                             minutos
                                           </p>
                                           <p className="text-xs">
@@ -1252,10 +1252,10 @@ export const Comandera: React.FC = () => {
                                 </div>
                                 <div className="pl-4 pb-3.5 pt-2">
                                   <p className="font-bold text-lg">
-                                    {pedido.direccion.split(",")[0]}
+                                    {pedido.direccion.split(',')[0]}
                                   </p>
                                   <p className="text-xs">
-                                    Pidio para las:{" "}
+                                    Pidio para las:{' '}
                                     {sumar30Minutos(pedido.hora)}
                                   </p>
                                   <p className="text-xs">
@@ -1270,7 +1270,7 @@ export const Comandera: React.FC = () => {
                                   viewBox="0 0 1138.000000 1280.000000"
                                   preserveAspectRatio="xMidYMid meet"
                                   className={`h-5 pr-4 cursor-pointer ${
-                                    unlocking[index] ? "unlocking" : ""
+                                    unlocking[index] ? 'unlocking' : ''
                                   }`}
                                   onMouseEnter={() =>
                                     setTooltipVisibility((prev) => ({
@@ -1303,7 +1303,7 @@ export const Comandera: React.FC = () => {
                                 {tooltipVisibility[index] && (
                                   <div
                                     className={`absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 overflow-hidden h-[30px] ${
-                                      unlocking[index] ? "unlocking" : ""
+                                      unlocking[index] ? 'unlocking' : ''
                                     }`}
                                   >
                                     <div className="tooltip-background"></div>
@@ -1358,10 +1358,10 @@ export const Comandera: React.FC = () => {
                           </h3>
                         </div>
                         <p className="text-xs">
-                          Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+                          Pedido con peor entrega: {grupo.peorTiempoPercibido}{' '}
                           minutos (
-                          {grupo.pedidoPeorTiempo?.direccion.split(",")[0] ||
-                            "N/A"}
+                          {grupo.pedidoPeorTiempo?.direccion.split(',')[0] ||
+                            'N/A'}
                           )
                         </p>
                         <p className="text-xs">
@@ -1371,7 +1371,7 @@ export const Comandera: React.FC = () => {
                           Distancia del recorrido: {grupo.distanciaTotal} km
                         </p>
                         <p className="text-xs">
-                          El cadete regresa a ANHELO a las {grupo.horaRegreso}{" "}
+                          El cadete regresa a ANHELO a las {grupo.horaRegreso}{' '}
                           hs
                         </p>
                         <p className="text-xs">
@@ -1379,7 +1379,7 @@ export const Comandera: React.FC = () => {
                           {Math.round(
                             (grupo.distanciaTotal * 200 +
                               grupo.pedidos.length * 1200) /
-                              grupo.pedidos.length,
+                              grupo.pedidos.length
                           )}
                         </p>
                       </div>
@@ -1394,20 +1394,20 @@ export const Comandera: React.FC = () => {
                             <div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
                           </div>
                         ) : (
-                          "Deshacer"
+                          'Deshacer'
                         )}
                       </button>
                       <div className="relative mb-8">
                         <select
                           className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
                           style={{
-                            WebkitAppearance: "none",
-                            MozAppearance: "none",
+                            WebkitAppearance: 'none',
+                            MozAppearance: 'none',
                           }}
                           onChange={(e) =>
                             handleAsignarCadete(index, e.target.value, true)
                           }
-                          value={grupo.pedidos[0]?.cadete || ""}
+                          value={grupo.pedidos[0]?.cadete || ''}
                           disabled={loadingStates[`asignar-${index}`]}
                         >
                           {cadetesDisponibles.map((cadete) => (
@@ -1442,10 +1442,10 @@ export const Comandera: React.FC = () => {
                               {...provided.dragHandleProps}
                               className={`bg-gray-100 relative flex flex-row items-center ${
                                 pedidoIndex === 0
-                                  ? "rounded-t-lg"
+                                  ? 'rounded-t-lg'
                                   : pedidoIndex === grupo.pedidos.length - 1
-                                    ? "rounded-b-lg"
-                                    : ""
+                                  ? 'rounded-b-lg'
+                                  : ''
                               }`}
                             >
                               <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
@@ -1455,23 +1455,23 @@ export const Comandera: React.FC = () => {
                                 <div
                                   className={`w-1.5 bg-black absolute left-[23.5px]  ${
                                     pedidoIndex === 0
-                                      ? "h-1/2 bottom-0"
+                                      ? 'h-1/2 bottom-0'
                                       : pedidoIndex === grupo.pedidos.length - 1
-                                        ? "h-1/2 top-0"
-                                        : "h-full"
+                                      ? 'h-1/2 top-0'
+                                      : 'h-full'
                                   }`}
                                 ></div>
                               )}
                               <div
                                 className={`flex flex-row justify-between ${
                                   pedidoIndex !== grupo.pedidos.length - 1
-                                    ? "border-b border-black border-opacity-20"
-                                    : ""
+                                    ? 'border-b border-black border-opacity-20'
+                                    : ''
                                 } w-full ml-4 pb-3.5 pt-2`}
                               >
                                 <div>
                                   <p className="font-bold text-lg leading-none mb-2 mt-1">
-                                    {pedido.direccion.split(",")[0]}{" "}
+                                    {pedido.direccion.split(',')[0]}{' '}
                                     <span className="text-xs font-normal">
                                       ({pedido.distancia} km)
                                     </span>
@@ -1494,8 +1494,8 @@ export const Comandera: React.FC = () => {
                                           fill={
                                             calcularTiempoEspera(pedido.hora) >
                                             30
-                                              ? "#FF0000"
-                                              : "#F59E0B"
+                                              ? '#FF0000'
+                                              : '#F59E0B'
                                           }
                                         />
                                         <rect
@@ -1508,16 +1508,16 @@ export const Comandera: React.FC = () => {
                                           fill={
                                             calcularTiempoEspera(pedido.hora) >
                                             30
-                                              ? "#FF0000"
-                                              : "#F59E0B"
+                                              ? '#FF0000'
+                                              : '#F59E0B'
                                           }
                                         />
                                       </svg>
                                     )}
 
                                     <p className="text-xs">
-                                      Pidió hace:{" "}
-                                      {calcularTiempoEspera(pedido.hora)}{" "}
+                                      Pidió hace:{' '}
+                                      {calcularTiempoEspera(pedido.hora)}{' '}
                                       minutos
                                     </p>
                                   </div>
@@ -1526,14 +1526,14 @@ export const Comandera: React.FC = () => {
                                     <div
                                       className={`text-xs h-1.5 w-1.5 rounded-full ${
                                         (pedido.tiempoPercibido ?? 0) < 30
-                                          ? "bg-black"
+                                          ? 'bg-black'
                                           : (pedido.tiempoPercibido ?? 0) < 50
-                                            ? "bg-yellow-500"
-                                            : "bg-red-main"
+                                          ? 'bg-yellow-500'
+                                          : 'bg-red-main'
                                       }`}
                                     ></div>
                                     <p className="text-xs">
-                                      Percibe entrega de:{" "}
+                                      Percibe entrega de:{' '}
                                       {pedido.tiempoPercibido ?? 0} minutos
                                     </p>
                                   </div>
@@ -1546,7 +1546,7 @@ export const Comandera: React.FC = () => {
                                     className="ml-2 p-1 rounded-full"
                                   >
                                     {pedidosPrioritarios.some(
-                                      (p) => p.id === pedido.id,
+                                      (p) => p.id === pedido.id
                                     ) ? (
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -1607,11 +1607,11 @@ export const Comandera: React.FC = () => {
               gruposOptimos.map((grupo, index) => {
                 const horaActual = new Date();
                 const horaRegreso = new Date(
-                  horaActual.getTime() + grupo.tiempoTotal * 60000,
+                  horaActual.getTime() + grupo.tiempoTotal * 60000
                 );
                 const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
-                  "es-ES",
-                  { hour: "2-digit", minute: "2-digit" },
+                  'es-ES',
+                  { hour: '2-digit', minute: '2-digit' }
                 );
                 const uniqueKey = `${grupo.tiempoTotal}-${grupo.distanciaTotal}-${index}`;
 
@@ -1640,10 +1640,10 @@ export const Comandera: React.FC = () => {
                         </h3>
                       </div>
                       <p className="text-xs">
-                        Pedido con peor entrega: {grupo.peorTiempoPercibido}{" "}
+                        Pedido con peor entrega: {grupo.peorTiempoPercibido}{' '}
                         minutos (
-                        {grupo.pedidoPeorTiempo?.direccion?.split(",")[0] ||
-                          "N/A"}
+                        {grupo.pedidoPeorTiempo?.direccion?.split(',')[0] ||
+                          'N/A'}
                         )
                       </p>
                       <p className="text-xs">
@@ -1653,7 +1653,7 @@ export const Comandera: React.FC = () => {
                         Distancia del recorrido: {grupo.distanciaTotal} km
                       </p>
                       <p className="text-xs">
-                        El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
+                        El cadete regresa a ANHELO a las {horaRegresoFormateada}{' '}
                         hs
                       </p>
                     </div>
@@ -1669,10 +1669,10 @@ export const Comandera: React.FC = () => {
                           key={`${pedido.id}-gruposDepedidos`}
                           className={`bg-gray-100 relative w-11/12 flex flex-row items-center ${
                             pedidoIndex === 0
-                              ? "rounded-t-lg "
+                              ? 'rounded-t-lg '
                               : pedidoIndex === grupo.pedidos.length - 1
-                                ? "rounded-b-lg"
-                                : ""
+                              ? 'rounded-b-lg'
+                              : ''
                           }`}
                         >
                           <div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
@@ -1682,23 +1682,23 @@ export const Comandera: React.FC = () => {
                             <div
                               className={`w-1.5 bg-black absolute left-[23.5px] ${
                                 pedidoIndex === 0
-                                  ? "h-1/2 bottom-0"
+                                  ? 'h-1/2 bottom-0'
                                   : pedidoIndex === grupo.pedidos.length - 1
-                                    ? "h-1/2 top-0"
-                                    : "h-full"
+                                  ? 'h-1/2 top-0'
+                                  : 'h-full'
                               }`}
                             ></div>
                           )}
                           <div
                             className={`flex flex-row justify-between items-center ${
                               pedidoIndex !== grupo.pedidos.length - 1
-                                ? "border-b border-black border-opacity-20"
-                                : ""
+                                ? 'border-b border-black border-opacity-20'
+                                : ''
                             } w-full ml-4 pb-3.5 pt-2`}
                           >
                             <div className="flex flex-col">
                               <p className="font-bold text-lg leading-none mb-2 mt-1">
-                                {pedido.direccion.split(",")[0]}{" "}
+                                {pedido.direccion.split(',')[0]}{' '}
                                 <span className="text-xs font-normal">
                                   ({pedido.distancia} km)
                                 </span>
@@ -1720,8 +1720,8 @@ export const Comandera: React.FC = () => {
                                       ry="20"
                                       fill={
                                         calcularTiempoEspera(pedido.hora) > 30
-                                          ? "#FF0000"
-                                          : "#F59E0B"
+                                          ? '#FF0000'
+                                          : '#F59E0B'
                                       }
                                     />
                                     <rect
@@ -1733,15 +1733,15 @@ export const Comandera: React.FC = () => {
                                       ry="20"
                                       fill={
                                         calcularTiempoEspera(pedido.hora) > 30
-                                          ? "#FF0000"
-                                          : "#F59E0B"
+                                          ? '#FF0000'
+                                          : '#F59E0B'
                                       }
                                     />
                                   </svg>
                                 )}
 
                                 <p className="text-xs">
-                                  Pidió hace:{" "}
+                                  Pidió hace:{' '}
                                   {calcularTiempoEspera(pedido.hora)} minutos (
                                   {pedido.hora} hs)
                                 </p>
@@ -1753,23 +1753,23 @@ export const Comandera: React.FC = () => {
                                     <div
                                       className={`text-xs h-1.5 w-1.5 rounded-full ${
                                         pedido.tiempoPercibido < 50
-                                          ? "bg-yellow-500"
-                                          : "bg-red-main"
+                                          ? 'bg-yellow-500'
+                                          : 'bg-red-main'
                                       }`}
                                     ></div>
                                   )}
                                 <p className="text-xs">
-                                  Percibe entrega de:{" "}
+                                  Percibe entrega de:{' '}
                                   {pedido.tiempoPercibido ?? 0} minutos (
                                   {new Date(
                                     Date.now() -
                                       calcularTiempoEspera(pedido.hora) *
                                         60000 +
-                                      (pedido.tiempoPercibido ?? 0) * 60000,
+                                      (pedido.tiempoPercibido ?? 0) * 60000
                                   ).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}{" "}
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })}{' '}
                                   hs)
                                 </p>
                               </div>
@@ -1780,7 +1780,7 @@ export const Comandera: React.FC = () => {
                                 className="ml-2 p-1 rounded-full"
                               >
                                 {pedidosPrioritarios.some(
-                                  (p) => p.id === pedido.id,
+                                  (p) => p.id === pedido.id
                                 ) ? (
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1913,19 +1913,19 @@ export const Comandera: React.FC = () => {
           seccionActiva={seccionActiva}
           pedidosPorHacer={pedidosPorHacer}
           pedidosHechos={pedidosHechos}
-          pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
+          pedidosEntregados={seccionActiva !== 'mapa' ? pedidosEntregados : []}
           cadetes={cadetes}
         />
         <div className="mt-2">
-          {seccionActiva === "mapa" &&
-            (location.pathname === "/comandas" ? (
+          {seccionActiva === 'mapa' &&
+            (location.pathname === '/comandas' ? (
               <DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
             ) : (
               <DeliveryMap orders={orders} />
             ))}
         </div>
         <div className="mt-2">
-          {seccionActiva === "registro" && <RegistroEmpleado />}
+          {seccionActiva === 'registro' && <RegistroEmpleado />}
         </div>
       </div>
     </>
