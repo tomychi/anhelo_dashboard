@@ -18,7 +18,7 @@ import { DeliveryMap } from "../components/maps/DeliveryMap";
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
 import Swal from "sweetalert2";
-import { updateCadeteForOrder } from "../firebase/UploadOrder";
+import { updateCadeteForOrder, updateOrderTime } from "../firebase/UploadOrder";
 import { obtenerHoraActual } from "../helpers/dateToday";
 import RegistroEmpleado from "./Empleados";
 import {
@@ -792,19 +792,23 @@ export const Comandera: React.FC = () => {
 	};
 	const [unlocking, setUnlocking] = useState<Record<number, boolean>>({});
 	const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+
 	const handleLockMouseDown = (index: number) => {
 		setUnlocking((prev) => ({ ...prev, [index]: true }));
 		lockTimerRef.current = setTimeout(() => {
 			setUnlocking((prev) => ({ ...prev, [index]: false }));
 			setTooltipVisibility((prev) => ({ ...prev, [index]: false }));
+			updatePedidoReservaHora(index);
 		}, 2000);
 	};
+
 	const handleLockMouseUp = (index: number) => {
 		if (lockTimerRef.current) {
 			clearTimeout(lockTimerRef.current);
 		}
 		setUnlocking((prev) => ({ ...prev, [index]: false }));
 	};
+
 	useEffect(() => {
 		return () => {
 			if (lockTimerRef.current) {
@@ -923,6 +927,33 @@ export const Comandera: React.FC = () => {
 	const [starTooltipVisibility, setStarTooltipVisibility] = useState<
 		Record<string, boolean>
 	>({});
+
+	const updatePedidoReservaHora = (index: number) => {
+		const pedido = pedidosReserva[index];
+		const nuevaHora = obtenerHoraActual();
+		updateOrderTime(pedido.fecha, pedido.id, nuevaHora)
+			.then(() => {
+				Swal.fire({
+					icon: "success",
+					title: "Hora Actualizada",
+					text: `La hora del pedido ha sido actualizada a ${nuevaHora}.`,
+				});
+
+				// Actualizar el estado global de orders
+				const updatedOrders = orders.map((order) =>
+					order.id === pedido.id ? { ...order, hora: nuevaHora } : order
+				);
+				dispatch(readOrdersData(updatedOrders));
+			})
+			.catch((error) => {
+				console.error("Error al actualizar la hora del pedido:", error);
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: `No se pudo actualizar la hora: ${error.message}`,
+				});
+			});
+	};
 
 	return (
 		<>
