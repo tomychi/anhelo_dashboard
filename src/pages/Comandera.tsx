@@ -1561,7 +1561,7 @@ export const Comandera: React.FC = () => {
 													xmlns="http://www.w3.org/2000/svg"
 													viewBox="0 0 24 24"
 													fill="currentColor"
-													className="h-6 absolute left-24 "
+													className="h-6 absolute left-3 "
 												>
 													<path
 														fill-rule="evenodd"
@@ -1571,7 +1571,7 @@ export const Comandera: React.FC = () => {
 												</svg>
 
 												<select
-													className="bg-gray-100 appearance-none w-full text-center py-2 rounded-full"
+													className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full"
 													style={{
 														WebkitAppearance: "none",
 														MozAppearance: "none",
@@ -1591,6 +1591,11 @@ export const Comandera: React.FC = () => {
 														</option>
 													))}
 												</select>
+												<img
+													src={arrowIcon}
+													alt="Arrow Icon"
+													className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+												/>
 												{loadingStates[`asignar-${index}`] && (
 													<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
 														<div className="flex flex-row gap-1">
