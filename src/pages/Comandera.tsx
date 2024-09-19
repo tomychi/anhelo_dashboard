@@ -1272,8 +1272,17 @@ export const Comandera: React.FC = () => {
 																</div>
 																<div className="pl-4 pb-3.5 pt-2">
 																	<p className="font-bold text-lg">
-																		{pedido.direccion.split(",")[0]}
+																		{pedido.direccion
+																			.split(",")[0]
+																			.toLowerCase()
+																			.charAt(0)
+																			.toUpperCase() +
+																			pedido.direccion
+																				.split(",")[0]
+																				.slice(1)
+																				.toLowerCase()}
 																	</p>
+
 																	<p className="text-xs">
 																		Pidio para las:{" "}
 																		{sumar30Minutos(pedido.hora)}
@@ -1492,7 +1501,15 @@ export const Comandera: React.FC = () => {
 															>
 																<div>
 																	<p className="font-bold text-lg leading-none mb-2 mt-1">
-																		{pedido.direccion.split(",")[0]}{" "}
+																		{pedido.direccion
+																			.split(",")[0]
+																			.toLowerCase()
+																			.charAt(0)
+																			.toUpperCase() +
+																			pedido.direccion
+																				.split(",")[0]
+																				.slice(1)
+																				.toLowerCase()}{" "}
 																		<span className="text-xs font-normal">
 																			(
 																			{pedido.map[0] === 0 &&
@@ -1735,7 +1752,15 @@ export const Comandera: React.FC = () => {
 													>
 														<div className="flex flex-col">
 															<p className="font-bold text-lg leading-none mb-2 mt-1">
-																{pedido.direccion.split(",")[0]}{" "}
+																{pedido.direccion
+																	.split(",")[0]
+																	.toLowerCase()
+																	.charAt(0)
+																	.toUpperCase() +
+																	pedido.direccion
+																		.split(",")[0]
+																		.slice(1)
+																		.toLowerCase()}{" "}
 																<span className="text-xs font-normal">
 																	({pedido.distancia} km)
 																</span>
