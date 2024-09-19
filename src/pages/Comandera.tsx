@@ -1877,8 +1877,7 @@ export const Comandera: React.FC = () => {
 					</div>
 					{modalIsOpen && selectedPedido && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-							<div className="bg-white p-6 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-								<h2 className="text-2xl font-bold mb-4">Detalles del Pedido</h2>
+							<div className="bg-white p-6 rounded-lg max-w-lg  max-h-[90vh] overflow-y-auto">
 								<CardComanda {...selectedPedido} cadetes={cadetes} />
 								<button
 									onClick={() => setModalIsOpen(false)}
