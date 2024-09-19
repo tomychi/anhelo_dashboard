@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { GeneralStats, OrderList } from "../components/comandera";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
+import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { Unsubscribe } from "firebase/firestore";
 import {
 	EmpleadosProps,
@@ -1876,30 +1877,9 @@ export const Comandera: React.FC = () => {
 					</div>
 					{modalIsOpen && selectedPedido && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-							<div className="bg-white p-6 rounded-lg max-w-lg w-full">
+							<div className="bg-white p-6 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
 								<h2 className="text-2xl font-bold mb-4">Detalles del Pedido</h2>
-								<p>
-									<strong>Dirección:</strong> {selectedPedido.direccion}
-								</p>
-								<p>
-									<strong>Hora:</strong> {selectedPedido.hora}
-								</p>
-								<p>
-									<strong>Distancia:</strong>
-								</p>
-								<p>
-									<strong>Tiempo de Espera:</strong>{" "}
-									{calcularTiempoEspera(selectedPedido.hora)} minutos
-								</p>
-								<p>
-									<strong>Tiempo Percibido:</strong>{" "}
-								</p>
-								<p>
-									<strong>Cadete:</strong> {selectedPedido.cadete}
-								</p>
-								<p>
-									<strong>Total:</strong> ${selectedPedido.total}
-								</p>
+								<CardComanda {...selectedPedido} cadetes={cadetes} />
 								<button
 									onClick={() => setModalIsOpen(false)}
 									className="mt-4 bg-black text-white px-4 py-2 rounded"
