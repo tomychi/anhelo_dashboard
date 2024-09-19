@@ -1571,7 +1571,7 @@ export const Comandera: React.FC = () => {
 												</svg>
 
 												<select
-													className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full"
+													className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full capitalize"
 													style={{
 														WebkitAppearance: "none",
 														MozAppearance: "none",
@@ -1586,6 +1586,7 @@ export const Comandera: React.FC = () => {
 														<option
 															key={`${cadete.id}-${cadete.name}`}
 															value={cadete.id}
+															className="capitalize"
 														>
 															{cadete.name}
 														</option>
