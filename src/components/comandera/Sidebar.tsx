@@ -10,6 +10,8 @@ interface SidebarProps {
 	setTiempoMaximo: (tiempo: number | null) => void;
 	tiempoMaximoRecorrido: number | null;
 	setTiempoMaximoRecorrido: (tiempo: number | null) => void;
+	showComandas: boolean;
+	setShowComandas: (show: boolean) => void;
 	velocidadPromedio: number | null;
 	handleCadeteVelocidadChange: (
 		e: React.ChangeEvent<HTMLSelectElement>
@@ -17,6 +19,24 @@ interface SidebarProps {
 	cadetesDisponibles: any[];
 	calcularVelocidadPromedio: (cadete: any) => number;
 }
+
+const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
+	isOn,
+	onToggle,
+}) => (
+	<div
+		className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+			isOn ? "bg-black" : "bg-gray-300"
+		}`}
+		onClick={onToggle}
+	>
+		<div
+			className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+				isOn ? "translate-x-6" : ""
+			}`}
+		/>
+	</div>
+);
 
 const Sidebar: React.FC<SidebarProps> = ({
 	isOpen,
@@ -27,6 +47,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 	setTiempoMaximo,
 	tiempoMaximoRecorrido,
 	setTiempoMaximoRecorrido,
+	showComandas,
+	setShowComandas,
 	velocidadPromedio,
 	handleCadeteVelocidadChange,
 	cadetesDisponibles,
@@ -58,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-2xl font-bold mb-4">Configuracion</h2>
+				<h2 className="text-2xl font-bold mb-4">Configuración</h2>
 
 				<div className="mb-4">
 					<p className="font-bold mb-2 text-sm">Modo de Agrupación</p>
@@ -212,6 +234,16 @@ const Sidebar: React.FC<SidebarProps> = ({
 							style={
 								velocidadPromedio === null ? {} : { filter: "invert(100%)" }
 							}
+						/>
+					</div>
+				</div>
+
+				<div className="mb-4">
+					<p className="font-bold mb-2 text-sm">Mostrar Comandas</p>
+					<div className="flex items-center justify-between">
+						<Toggle
+							isOn={showComandas}
+							onToggle={() => setShowComandas(!showComandas)}
 						/>
 					</div>
 				</div>

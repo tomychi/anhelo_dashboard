@@ -1032,6 +1032,8 @@ export const Comandera: React.FC = () => {
 					modoAgrupacion={modoAgrupacion}
 					setModoAgrupacion={setModoAgrupacion}
 					tiempoMaximo={tiempoMaximo}
+					showComandas={showComandas}
+					setShowComandas={setShowComandas}
 					setTiempoMaximo={setTiempoMaximo}
 					tiempoMaximoRecorrido={tiempoMaximoRecorrido}
 					setTiempoMaximoRecorrido={setTiempoMaximoRecorrido}
