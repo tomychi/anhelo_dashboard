@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import arrowIcon from "../../assets/arrowIcon.png"; // Asegúrate de que la ruta sea correcta
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -90,41 +91,132 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 				<div className="mb-4">
 					<p className="font-bold mb-2">Parámetros</p>
-					<select
-						value={
-							modoAgrupacion === "entrega"
-								? tiempoMaximo || ""
-								: tiempoMaximoRecorrido || ""
-						}
-						onChange={(e) => {
-							const value = e.target.value ? parseInt(e.target.value) : null;
-							modoAgrupacion === "entrega"
-								? setTiempoMaximo(value)
-								: setTiempoMaximoRecorrido(value);
-						}}
-						className="w-full p-2 rounded border mb-2"
-					>
-						<option value="">¿Minutos máximos?</option>
-						{[30, 40, 50, 60, 70, 80, 90].map((tiempo) => (
-							<option key={tiempo} value={tiempo}>
-								{tiempo} minutos
-							</option>
-						))}
-					</select>
-
-					<select
-						onChange={handleCadeteVelocidadChange}
-						className="w-full p-2 rounded border"
-					>
-						<option value="">¿Velocidad promedio?</option>
-						{cadetesDisponibles
-							.filter((cadete) => cadete.name !== "NO ASIGNADO")
-							.map((cadete) => (
-								<option key={cadete.id} value={cadete.name}>
-									{cadete.name}: {calcularVelocidadPromedio(cadete)} km/h
+					<div className="relative inline-block mb-2 w-full">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 absolute left-3 top-1/2 -translate-y-1/2"
+							style={
+								modoAgrupacion === "entrega"
+									? tiempoMaximo === null
+										? {}
+										: { filter: "invert(100%)" }
+									: tiempoMaximoRecorrido === null
+									? {}
+									: { filter: "invert(100%)" }
+							}
+						>
+							<path
+								fillRule="evenodd"
+								d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z"
+								clipRule="evenodd"
+							/>
+						</svg>
+						<select
+							value={
+								modoAgrupacion === "entrega"
+									? tiempoMaximo || ""
+									: tiempoMaximoRecorrido || ""
+							}
+							onChange={(e) => {
+								const value = e.target.value ? parseInt(e.target.value) : null;
+								modoAgrupacion === "entrega"
+									? setTiempoMaximo(value)
+									: setTiempoMaximoRecorrido(value);
+							}}
+							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
+								modoAgrupacion === "entrega"
+									? tiempoMaximo === null
+										? "bg-gray-300 text-black"
+										: "bg-black text-gray-100"
+									: tiempoMaximoRecorrido === null
+									? "bg-gray-300 text-black"
+									: "bg-black text-gray-100"
+							}`}
+							style={{
+								WebkitAppearance: "none",
+								MozAppearance: "none",
+							}}
+						>
+							<option value="">¿Minutos máximos?</option>
+							{[30, 40, 50, 60, 70, 80, 90].map((tiempo) => (
+								<option key={tiempo} value={tiempo}>
+									{tiempo} minutos
 								</option>
 							))}
-					</select>
+						</select>
+						<img
+							src={arrowIcon}
+							alt="Arrow Icon"
+							className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+							style={
+								modoAgrupacion === "entrega"
+									? tiempoMaximo === null
+										? {}
+										: { filter: "invert(100%)" }
+									: tiempoMaximoRecorrido === null
+									? {}
+									: { filter: "invert(100%)" }
+							}
+						/>
+					</div>
+
+					<div className="relative inline-block w-full">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 absolute left-3 top-1/2 -translate-y-1/2"
+							style={
+								velocidadPromedio === null ? {} : { filter: "invert(100%)" }
+							}
+						>
+							<path
+								fillRule="evenodd"
+								d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
+								clipRule="evenodd"
+							/>
+						</svg>
+						<select
+							onChange={handleCadeteVelocidadChange}
+							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
+								velocidadPromedio === null
+									? "bg-gray-300 text-black"
+									: "bg-black text-gray-100"
+							}`}
+							style={{
+								WebkitAppearance: "none",
+								MozAppearance: "none",
+							}}
+						>
+							<option value="">¿Velocidad promedio?</option>
+							{cadetesDisponibles
+								.filter((cadete) => cadete.name !== "NO ASIGNADO")
+								.map((cadete) => {
+									const cadeteNameFormatted =
+										cadete.name.charAt(0).toUpperCase() +
+										cadete.name.slice(1).toLowerCase();
+									return (
+										<option
+											key={`${cadete.name}-${cadete.id}-filter`}
+											value={cadete.name}
+										>
+											{cadeteNameFormatted}: {calcularVelocidadPromedio(cadete)}{" "}
+											km/h
+										</option>
+									);
+								})}
+						</select>
+						<img
+							src={arrowIcon}
+							alt="Arrow Icon"
+							className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+							style={
+								velocidadPromedio === null ? {} : { filter: "invert(100%)" }
+							}
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
