@@ -1041,9 +1041,11 @@ export const Comandera: React.FC = () => {
 				/>
 				<div>
 					<div className="hidden md:flex md:flex-row items-center w-full mb-8 mt-2">
-						{/* Aca las opciones de agrupacion */}
 						<p className="text-6xl  font-bold ">Grupos</p>
+
 						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-4 mr-4 "></div>
+
+						{/* Aca las opciones de agrupacion */}
 						<div className="">
 							<p className="mb-2 font-bold text-center md:text-left">
 								Opciones de agrupación
