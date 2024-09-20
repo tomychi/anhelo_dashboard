@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Logo from "../assets/anheloXAbsolute.png";
+import Logo from "../assets/isologoAbsolte.png";
 
 type SplashScreenProps = {
 	onFinish: () => void;
