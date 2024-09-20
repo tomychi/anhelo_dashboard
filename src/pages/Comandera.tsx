@@ -1346,6 +1346,14 @@ export const Comandera: React.FC = () => {
 								</div>
 							)}
 						</div>
+
+						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-4 mr-4 "></div>
+
+						{/* Aca el ver como va todo */}
+						<div className="flex flex-col">
+							<p className="text-2xl font-medium">Ver comandas</p>
+							<img src={arrowIcon} className="w-2" alt="" />
+						</div>
 					</div>
 					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
 						<DragDropContext onDragEnd={onDragEnd}>
