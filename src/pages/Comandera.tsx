@@ -10,10 +10,11 @@ import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
 	EmpleadosProps,
+	VueltasProps,
 	listenToEmpleadosChanges,
 } from "../firebase/registroEmpleados";
 import { ReadOrdersForToday } from "../firebase/ReadData";
-import { PedidoProps } from "../types/types";
+import { Cadete, PedidoProps, Vuelta } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import arrowIcon from "../assets/arrowIcon.png";
@@ -28,6 +29,7 @@ import {
 	Draggable,
 	DropResult,
 } from "react-beautiful-dnd";
+import { VueltaInfo } from "../firebase/Cadetes";
 
 // Definición de tipos
 
@@ -331,7 +333,7 @@ export const Comandera: React.FC = () => {
 		};
 	}
 
-	const calcularVelocidadPromedio = (cadete) => {
+	const calcularVelocidadPromedio = (cadete: EmpleadosProps) => {
 		if (!cadete.vueltas || cadete.vueltas.length === 0) {
 			// console.log("No hay vueltas registradas, usando velocidad por defecto.");
 			return VELOCIDAD_PROMEDIO_MOTO;
@@ -343,7 +345,7 @@ export const Comandera: React.FC = () => {
 		let distanciaTotal = 0;
 		let tiempoTotal = 0;
 
-		ultimasVueltas.forEach((vuelta, index) => {
+		ultimasVueltas.forEach((vuelta: VueltasProps) => {
 			if (vuelta.totalDistance && vuelta.totalDuration) {
 				distanciaTotal += vuelta.totalDistance;
 				tiempoTotal += vuelta.totalDuration;
@@ -390,7 +392,7 @@ export const Comandera: React.FC = () => {
 
 	function armarGruposOptimos(
 		pedidos: PedidoProps[],
-		tiempoMaximo: number,
+		tiempoMaximo: number | null,
 		modoAgrupacion: string,
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo[] {
@@ -438,7 +440,7 @@ export const Comandera: React.FC = () => {
 
 	function formarGrupo(
 		pedidosDisponibles: PedidoProps[],
-		tiempoMaximo: number,
+		tiempoMaximo: number | null,
 		modoAgrupacion: string,
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo {
@@ -518,10 +520,11 @@ export const Comandera: React.FC = () => {
 			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 			const tiempoPercibido = tiempoEspera + tiempoTotal;
 
-			let excedeTiempoMaximo =
-				modoAgrupacion === "entrega"
-					? tiempoPercibido > tiempoMaximo
-					: tiempoTotalConRegreso > tiempoMaximo;
+			const excedeTiempoMaximo =
+  tiempoMaximo !== null &&
+  (modoAgrupacion === "entrega"
+    ? tiempoPercibido > tiempoMaximo
+    : tiempoTotalConRegreso > tiempoMaximo);
 
 			if (excedeTiempoMaximo && grupoActual.length > 0) {
 				break;
