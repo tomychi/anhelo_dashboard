@@ -521,10 +521,10 @@ export const Comandera: React.FC = () => {
 			const tiempoPercibido = tiempoEspera + tiempoTotal;
 
 			const excedeTiempoMaximo =
-  tiempoMaximo !== null &&
-  (modoAgrupacion === "entrega"
-    ? tiempoPercibido > tiempoMaximo
-    : tiempoTotalConRegreso > tiempoMaximo);
+				tiempoMaximo !== null &&
+				(modoAgrupacion === "entrega"
+					? tiempoPercibido > tiempoMaximo
+					: tiempoTotalConRegreso > tiempoMaximo);
 
 			if (excedeTiempoMaximo && grupoActual.length > 0) {
 				break;
@@ -1040,9 +1040,9 @@ export const Comandera: React.FC = () => {
 					calcularVelocidadPromedio={calcularVelocidadPromedio}
 				/>
 				<div>
-					<div className="hidden md:block mb-8 mt-2 flex flex-col md:flex-row items-center w-full">
+					<div className="hidden md:flex md:flex-row items-center w-full mb-8 mt-2">
 						{/* Aca las opciones de agrupacion */}
-						<div className="mb-2 md:mb-0">
+						<div className="">
 							<p className="mb-2 font-bold text-center md:text-left">
 								Opciones de agrupación
 							</p>
