@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-3xl font-medium mb-4">Opciones</h2>
+				<h2 className="text-3xl font-medium mb-4">Configuracion</h2>
 
 				<div className="mb-4">
 					<p className="font-bold mb-2">Modo de Agrupación</p>
