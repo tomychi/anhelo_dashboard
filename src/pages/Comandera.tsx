@@ -960,6 +960,7 @@ export const Comandera: React.FC = () => {
 	};
 
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [showComandas, setShowComandas] = useState(false);
 
 	return (
 		<>
@@ -1352,9 +1353,16 @@ export const Comandera: React.FC = () => {
 						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-4 mr-4 "></div>
 
 						{/* Aca el ver como va todo */}
-						<div className="flex flex-col">
+						<div
+							className="flex flex-col"
+							onClick={() => setShowComandas(!showComandas)}
+						>
 							<p className="text-2xl font-medium">Ver comandas</p>
-							<img src={arrowIcon} className="w-2" alt="" />
+							<img
+								src={arrowIcon}
+								className={`w-2 transform ${showComandas ? "rotate-180" : ""}`}
+								alt=""
+							/>
 						</div>
 					</div>
 					<div className="flex-col md:grid md:grid-cols-4 gap-4 ">
@@ -2260,46 +2268,55 @@ export const Comandera: React.FC = () => {
 						</div>
 					</div>
 				)}
-				<div className="flex flex-row mt-8">
-					<GeneralStats
-						customerSuccess={customerSuccess}
-						orders={orders}
-						cadeteSeleccionado={selectedCadete}
-						sumaTotalPedidos={sumaTotalPedidos}
-						sumaTotalEfectivo={sumaTotalEfectivo}
-						empleados={empleados}
-					/>
-					<NavButtons
-						seccionActiva={seccionActiva}
-						setSeccionActiva={setSeccionActiva}
-					/>
-					<div className="h-10 bg-black w-[1px] ml-4 mr-3"></div>
 
-					<CadeteSelect
-						cadetes={cadetes}
-						handleCadeteChange={handleCadeteChange}
-						selectedCadete={selectedCadete}
-						orders={pedidosHechos}
-					/>
-				</div>
-				<OrderList
-					seccionActiva={seccionActiva}
-					pedidosPorHacer={pedidosPorHacer}
-					pedidosHechos={pedidosHechos}
-					pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
-					cadetes={cadetes}
-				/>
-				<div className="mt-2">
-					{seccionActiva === "mapa" &&
-						(location.pathname === "/comandas" ? (
-							<DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
-						) : (
-							<DeliveryMap orders={orders} />
-						))}
-				</div>
-				<div className="mt-2">
-					{seccionActiva === "registro" && <RegistroEmpleado />}
-				</div>
+				{showComandas && (
+					<>
+						<div className="flex flex-row mt-8">
+							<GeneralStats
+								customerSuccess={customerSuccess}
+								orders={orders}
+								cadeteSeleccionado={selectedCadete}
+								sumaTotalPedidos={sumaTotalPedidos}
+								sumaTotalEfectivo={sumaTotalEfectivo}
+								empleados={empleados}
+							/>
+							<NavButtons
+								seccionActiva={seccionActiva}
+								setSeccionActiva={setSeccionActiva}
+							/>
+							<div className="h-10 bg-black w-[1px] ml-4 mr-3"></div>
+
+							<CadeteSelect
+								cadetes={cadetes}
+								handleCadeteChange={handleCadeteChange}
+								selectedCadete={selectedCadete}
+								orders={pedidosHechos}
+							/>
+						</div>
+						<OrderList
+							seccionActiva={seccionActiva}
+							pedidosPorHacer={pedidosPorHacer}
+							pedidosHechos={pedidosHechos}
+							pedidosEntregados={
+								seccionActiva !== "mapa" ? pedidosEntregados : []
+							}
+							cadetes={cadetes}
+						/>
+						<div className="mt-2">
+							{seccionActiva === "mapa" &&
+								(location.pathname === "/comandas" ? (
+									<DeliveryMap
+										orders={[...pedidosHechos, ...pedidosPorHacer]}
+									/>
+								) : (
+									<DeliveryMap orders={orders} />
+								))}
+						</div>
+						<div className="mt-2">
+							{seccionActiva === "registro" && <RegistroEmpleado />}
+						</div>
+					</>
+				)}
 			</div>
 		</>
 	);
