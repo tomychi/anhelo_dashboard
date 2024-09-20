@@ -66,7 +66,6 @@ export const Dashboard = () => {
 
 				dispatch(readProductsAll(formattedData));
 
-				// La alerta de éxito ha sido comentada
 				/*
       Swal.fire({
         icon: "success",
