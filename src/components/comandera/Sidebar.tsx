@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import arrowIcon from "../../assets/arrowIcon.png"; // Asegúrate de que la ruta sea correcta
+import arrowIcon from "../../assets/arrowIcon.png";
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -58,9 +58,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<button onClick={onClose} className="absolute top-2 right-2 text-2xl">
-					&times;
-				</button>
 				<h2 className="text-3xl font-medium mb-4">Opciones</h2>
 
 				<div className="mb-4">
