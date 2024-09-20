@@ -58,13 +58,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-3xl font-medium mb-4">Configuracion</h2>
+				<h2 className="text-2xl font-bold mb-4">Configuracion</h2>
 
 				<div className="mb-4">
-					<p className="font-bold mb-2">Modo de Agrupación</p>
+					<p className="font-bold mb-2 text-sm">Modo de Agrupación</p>
 					<div className="flex flex-col gap-2">
 						<button
-							className={`py-2 px-4 rounded-full font-medium ${
+							className={`py-2 px-4 rounded-full text-sm font-medium ${
 								modoAgrupacion === "entrega"
 									? "bg-black text-white"
 									: "bg-gray-200"
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 							Tiempo máximo de entrega
 						</button>
 						<button
-							className={`py-2 px-4 rounded-full font-medium ${
+							className={`py-2 px-4 rounded-full text-sm font-medium ${
 								modoAgrupacion === "recorrido"
 									? "bg-black text-white"
 									: "bg-gray-200"
@@ -87,13 +87,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 				</div>
 
 				<div className="mb-4">
-					<p className="font-bold mb-2">Parámetros</p>
+					<p className="font-bold mb-2 text-sm">Parámetros</p>
 					<div className="relative inline-block mb-2 w-full">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-6 absolute left-3 top-1/2 -translate-y-1/2"
+							className="h-6 absolute left-3  top-1/2 -translate-y-1/2"
 							style={
 								modoAgrupacion === "entrega"
 									? tiempoMaximo === null
@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 									? setTiempoMaximo(value)
 									: setTiempoMaximoRecorrido(value);
 							}}
-							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
+							className={`h-10 appearance-none text-sm  pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
 								modoAgrupacion === "entrega"
 									? tiempoMaximo === null
 										? "bg-gray-300 text-black"
@@ -177,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 						</svg>
 						<select
 							onChange={handleCadeteVelocidadChange}
-							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
+							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full text-sm ${
 								velocidadPromedio === null
 									? "bg-gray-300 text-black"
 									: "bg-black text-gray-100"
