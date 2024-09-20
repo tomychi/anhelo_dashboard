@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -31,11 +31,32 @@ const Sidebar: React.FC<SidebarProps> = ({
 	cadetesDisponibles,
 	calcularVelocidadPromedio,
 }) => {
-	if (!isOpen) return null;
+	const [isRendered, setIsRendered] = useState(false);
+
+	useEffect(() => {
+		if (isOpen) {
+			setIsRendered(true);
+		} else {
+			const timer = setTimeout(() => setIsRendered(false), 300);
+			return () => clearTimeout(timer);
+		}
+	}, [isOpen]);
+
+	if (!isRendered && !isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 z-50">
-			<div className="fixed right-0 top-0 h-full w-64 bg-white shadow-lg p-4">
+		<div
+			className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+				isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+			}`}
+			onClick={onClose}
+		>
+			<div
+				className={`fixed right-0 top-0 h-full w-64 bg-white shadow-lg p-4 transition-transform duration-300 ease-in-out transform ${
+					isOpen ? "translate-x-0" : "translate-x-full"
+				}`}
+				onClick={(e) => e.stopPropagation()}
+			>
 				<button onClick={onClose} className="absolute top-2 right-2 text-2xl">
 					&times;
 				</button>
