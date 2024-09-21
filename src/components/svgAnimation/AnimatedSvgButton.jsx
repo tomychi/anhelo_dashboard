@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AnimatedSvgButton = ({ onToggleSidebar }) => {
+const AnimatedSvgButton = ({ onToggleSidebar, isSidebarOpen }) => {
 	const [isAnimating, setIsAnimating] = useState(false);
 
 	const handleClick = () => {
@@ -10,8 +10,12 @@ const AnimatedSvgButton = ({ onToggleSidebar }) => {
 	};
 
 	const getTransform = (direction) => {
-		if (!isAnimating) return "translateX(0)";
-		return direction === "right" ? "translateX(13.5px)" : "translateX(-13.5px)";
+		if (isSidebarOpen) {
+			return direction === "right"
+				? "translateX(13.5px)"
+				: "translateX(-13.5px)";
+		}
+		return "translateX(0)";
 	};
 
 	return (
@@ -39,7 +43,7 @@ const AnimatedSvgButton = ({ onToggleSidebar }) => {
 					stroke="white"
 					strokeWidth="1"
 					style={{
-						transition: "transform 1s",
+						transition: "transform 0.3s",
 						transform: getTransform("right"),
 					}}
 				/>
@@ -50,7 +54,7 @@ const AnimatedSvgButton = ({ onToggleSidebar }) => {
 					stroke="white"
 					strokeWidth="1"
 					style={{
-						transition: "transform 1s",
+						transition: "transform 0.3s",
 						transform: getTransform("left"),
 					}}
 				/>
@@ -61,7 +65,7 @@ const AnimatedSvgButton = ({ onToggleSidebar }) => {
 					stroke="white"
 					strokeWidth="1"
 					style={{
-						transition: "transform 1s",
+						transition: "transform 0.3s",
 						transform: getTransform("right"),
 					}}
 				/>

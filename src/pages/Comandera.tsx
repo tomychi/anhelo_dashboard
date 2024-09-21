@@ -1003,7 +1003,10 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div className="md:hidden flex items-center gap-2.5  mt-2 mb-6">
-					<AnimatedSvgButton onToggleSidebar={toggleSidebar} />
+					<AnimatedSvgButton
+						onToggleSidebar={toggleSidebar}
+						isSidebarOpen={sidebarOpen}
+					/>
 					<h1 className="text-4xl font-bold">Grupos</h1>
 				</div>
 
