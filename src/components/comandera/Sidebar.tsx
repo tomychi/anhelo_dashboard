@@ -31,7 +31,7 @@ const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
 		onClick={onToggle}
 	>
 		<div
-			className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+			className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
 				isOn ? "translate-x-6" : ""
 			}`}
 		/>
