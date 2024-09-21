@@ -89,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 							className={`py-2 px-4 rounded-full text-sm font-medium ${
 								modoAgrupacion === "entrega"
 									? "bg-black text-white"
-									: "bg-gray-200"
+									: "bg-gray-300"
 							}`}
 							onClick={() => setModoAgrupacion("entrega")}
 						>
@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 							className={`py-2 px-4 rounded-full text-sm font-medium ${
 								modoAgrupacion === "recorrido"
 									? "bg-black text-white"
-									: "bg-gray-200"
+									: "bg-gray-300"
 							}`}
 							onClick={() => setModoAgrupacion("recorrido")}
 						>

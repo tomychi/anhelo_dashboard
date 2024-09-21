@@ -20,7 +20,7 @@ const AnimatedSvgButton = ({ onToggleSidebar }) => {
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
 				fill="currentColor"
-				className="w-10 h-10 cursor-pointer"
+				className="w-9 h-9 cursor-pointer"
 				onClick={handleClick}
 			>
 				{/* Líneas horizontales continuas */}
