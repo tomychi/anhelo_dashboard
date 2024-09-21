@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-2xl font-bold mb-4">Configuración</h2>
+				<h2 className="text-4xl font-bold mb-4">Configuración</h2>
 
 				<div className="mb-4">
 					<p className="font-bold mb-2 text-sm">Modo de Agrupación</p>
@@ -238,8 +238,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 					</div>
 				</div>
 
-				<div className="mb-4">
-					<p className="font-bold mb-2 text-sm">Mostrar Comandas</p>
+				<div className="mb-4 mt-8 flex flex-row items-center justify-between  gap-2">
+					<p className="font-bold text-sm">Mostrar Comandas</p>
 					<div className="flex items-center justify-between">
 						<Toggle
 							isOn={showComandas}
