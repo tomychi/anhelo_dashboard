@@ -266,7 +266,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 					</div>
 				</div>
 
-				<div className="mb-4 mt-8 flex flex-row items-center justify-between  gap-2">
+				<div className="mb-4 mt-10 flex flex-row items-center justify-between  gap-2">
 					<p className="font-bold text-sm">Mostrar Comandas</p>
 					<div className="flex items-center justify-between">
 						<Toggle
