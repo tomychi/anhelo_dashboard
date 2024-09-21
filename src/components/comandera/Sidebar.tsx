@@ -80,13 +80,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-3xl font-bold mb-4">Configuración</h2>
+				<h2 className="text-2xl text-center  font-bold mb-6 mt-2">
+					Configuración
+				</h2>
 
 				<div className="mb-4">
 					<p className="font-bold mb-2 text-sm">Modo de Agrupación</p>
 					<div className="flex flex-col gap-2">
 						<button
-							className={`py-2  rounded-full flex flex-row text-sm font-medium ${
+							className={`py-2  rounded-full h-10 flex flex-row text-sm font-medium ${
 								modoAgrupacion === "entrega"
 									? "bg-black text-white"
 									: "bg-gray-300"
@@ -109,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 							<p>Tiempo máximo de entrega</p>
 						</button>
 						<button
-							className={`py-2  rounded-full flex flex-row text-sm font-medium ${
+							className={`py-2  rounded-full h-10  flex flex-row text-sm font-medium ${
 								modoAgrupacion === "recorrido"
 									? "bg-black text-white"
 									: "bg-gray-300"
