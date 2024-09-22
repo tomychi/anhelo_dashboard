@@ -33,6 +33,7 @@ export interface PedidoProps {
   map: [number, number];
   kms: number;
   minutosDistancia: number;
+  cerca?: boolean;
 }
 
 export interface ReadDataProps {

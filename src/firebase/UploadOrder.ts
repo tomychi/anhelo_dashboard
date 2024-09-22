@@ -21,6 +21,7 @@ interface OrderDetailProps {
   direccion: string;
   telefono: string;
   hora: string;
+  cerca?: boolean;
 }
 export const UploadOrder = async (
   orderDetail: OrderDetailProps,
@@ -37,7 +38,7 @@ export const UploadOrder = async (
       const docSnapshot = await transaction.get(pedidoDocRef);
       const existingData = docSnapshot.exists() ? docSnapshot.data() : {};
       const pedidosDelDia = existingData.pedidos || [];
-      pedidosDelDia.push({ ...orderDetail, id: pedidoId });
+      pedidosDelDia.push({ ...orderDetail, id: pedidoId, cerca: false });
       transaction.set(pedidoDocRef, {
         ...existingData,
         pedidos: pedidosDelDia,
