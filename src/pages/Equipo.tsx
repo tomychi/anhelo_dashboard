@@ -173,6 +173,9 @@ export const Equipo = () => {
 								Sueldo
 							</th>
 							<th scope="col" className=" w-1/7 h-10">
+								Depto
+							</th>
+							<th scope="col" className=" w-1/7 h-10">
 								Area
 							</th>
 							<th scope="col" className=" w-1/7 h-10">
@@ -226,6 +229,7 @@ export const Equipo = () => {
 										: ""}
 								</th>
 								<td className=" w-1/7 font-light h-10">$50.000</td>
+								<td className=" w-1/7 font-light h-10">Marketing</td>
 								<td className=" w-1/7 font-light h-10">
 									{empleado.category
 										? empleado.category.charAt(0).toUpperCase() +
