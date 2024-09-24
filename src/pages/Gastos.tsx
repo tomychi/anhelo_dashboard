@@ -26,6 +26,9 @@ export const Gastos: React.FC = () => {
 	const [selectedCategory, setSelectedCategory] = useState("Todos");
 	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const [openSelects, setOpenSelects] = useState<{ [key: string]: boolean }>(
+		{}
+	);
 
 	const toggleModal = () => {
 		setShowModal(!showModal);
@@ -81,6 +84,9 @@ export const Gastos: React.FC = () => {
 			) {
 				setShowCategoryDropdown(false);
 			}
+
+			// Cerrar todos los selects cuando se hace clic fuera
+			setOpenSelects({});
 		};
 
 		document.addEventListener("mousedown", handleClickOutside);
@@ -89,22 +95,46 @@ export const Gastos: React.FC = () => {
 		};
 	}, []);
 
+	const handleSelectClick = (id: string) => {
+		setOpenSelects((prev) => ({ ...prev, [id]: !prev[id] }));
+	};
+
 	return (
 		<div className="flex flex-col">
 			<style>
 				{`
 					.arrow-down {
 						transition: transform 0.3s ease;
+						transform: rotate(90deg); /* Inicialmente apunta hacia abajo */
 					}
 					.arrow-down.open {
-						transform: rotate(-90deg);
+						transform: rotate(-90deg); /* Apunta hacia arriba cuando está abierto */
+					}
+					.select-wrapper {
+						position: relative;
+						display: inline-block;
+					}
+					.select-wrapper select {
+						appearance: none;
+						padding-right: 25px;
+					}
+					.select-wrapper .arrow-down {
+						position: absolute;
+						right: 10px;
+						top: 50%;
+						transform: translateY(-50%) rotate(90deg); /* Ajustado para apuntar hacia abajo */
+						pointer-events: none;
+						transition: transform 0.3s ease;
+					}
+					.select-wrapper .arrow-down.open {
+						transform: translateY(-50%) rotate(-90deg); /* Ajustado para apuntar hacia arriba */
 					}
 				`}
 			</style>
-			<div className="flex flex-row justify-between items-center  mt-7 mx-4 mb-4">
-				<p className="text-black font-bold text-4xl mt-1 ">Gastos</p>
+			<div className="flex flex-row justify-between items-center mt-7 mx-4 mb-4">
+				<p className="text-black font-bold text-4xl mt-1">Gastos</p>
 				<NavLink
-					className="bg-gray-300 gap-2 text-black  rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
 					onClick={toggleModal}
 					to={"/nuevaCompra"}
 				>
@@ -116,10 +146,10 @@ export const Gastos: React.FC = () => {
 					>
 						<path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z" />
 					</svg>
-					<p className=" font-bold ">Nueva compra </p>
+					<p className="font-bold">Nueva compra</p>
 				</NavLink>
 			</div>
-			<div className="p-4 ">
+			<div className="p-4">
 				<Calendar />
 				<div className="flex flex-row gap-2 mt-2">
 					<div
@@ -169,7 +199,7 @@ export const Gastos: React.FC = () => {
 							</div>
 						)}
 					</div>
-					<div className=" flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black   text-xs font-light">
+					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -186,7 +216,7 @@ export const Gastos: React.FC = () => {
 						</svg>
 						<input
 							type="text"
-							placeholder="Buscar "
+							placeholder="Buscar"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							className="w-full bg-transparent outline-none"
@@ -195,21 +225,20 @@ export const Gastos: React.FC = () => {
 				</div>
 			</div>
 
-			<div className=" font-coolvetica">
-				<table className=" w-full text-xs text-left text-black">
-					<thead className=" text-black border-b  ">
+			<div className="font-coolvetica">
+				<table className="w-full text-xs text-left text-black">
+					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4 w-2/5 py-3">
+							<th scope="col" className="pl-4 w-2/5 ">
 								Descripcion
 							</th>
-
-							<th scope="col" className="pl-4 w-1/6 py-3">
+							<th scope="col" className="pl-4 w-1/6 ">
 								Total
 							</th>
-							<th scope="col" className="pl-4 w-1/6 py-3">
+							<th scope="col" className="pl-4 w-1/6 ">
 								Estado
 							</th>
-							<th scope="col" className="pl-4 w-1/6 py-3 "></th>
+							<th scope="col" className="pl-4 w-1/6 "></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -227,31 +256,40 @@ export const Gastos: React.FC = () => {
 							}) => (
 								<tr
 									key={id}
-									className=" text-black border font-light border-black border-opacity-20"
+									className="text-black border font-light h-10 border-black border-opacity-20"
 								>
-									<th scope="row" className="pl-4 w-1/5 font-light py-3">
+									<th scope="row" className="pl-4 w-1/5 font-light ">
 										{name} ({quantity} u.)
 									</th>
-
-									<td className="pl-4 w-1/7 font-light py-3">
+									<td className="pl-4 w-1/7 font-light ">
 										{currencyFormat(total)}
 									</td>
 									<td className="pl-4 w-1/7 font-light">
-										<select
-											className="bg-gray-300 p-1 rounded-full"
-											value={estado}
-											onChange={(e) =>
-												handleStatusChange(
-													id,
-													e.target.value as "pendiente" | "pagado"
-												)
-											}
-										>
-											<option value="pendiente">Pendiente</option>
-											<option value="pagado">Pagado</option>
-										</select>
+										<div className="select-wrapper ">
+											<select
+												className="bg-gray-300  py-1 pl-2   rounded-full"
+												value={estado}
+												onChange={(e) =>
+													handleStatusChange(
+														id,
+														e.target.value as "pendiente" | "pagado"
+													)
+												}
+												onClick={() => handleSelectClick(id)}
+											>
+												<option value="pendiente">Pendiente</option>
+												<option value="pagado">Pagado</option>
+											</select>
+											<img
+												src={arrow}
+												className={`h-2 arrow-down   ${
+													openSelects[id] ? "open" : ""
+												}`}
+												alt=""
+											/>
+										</div>
 									</td>
-									<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
+									<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2">
 										. . .
 									</td>
 								</tr>
