@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { FormGasto } from "../components/gastos";
 import { eliminarDocumento } from "../firebase/ReadData";
 import currencyFormat from "../helpers/currencyFormat";
@@ -5,12 +6,11 @@ import Calendar from "../components/Calendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Swal from "sweetalert2";
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
 import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
 
-export const Gastos = () => {
+export const Gastos: React.FC = () => {
 	const { expenseData } = useSelector((state: RootState) => state.data);
 	const currentUserEmail = projectAuth.currentUser?.email;
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
@@ -21,6 +21,7 @@ export const Gastos = () => {
 	const [expenses, setExpenses] = useState<ExpenseProps[]>(filteredExpenseData);
 
 	const [showModal, setShowModal] = useState(false);
+	const [searchTerm, setSearchTerm] = useState("");
 
 	const toggleModal = () => {
 		setShowModal(!showModal);
@@ -31,14 +32,12 @@ export const Gastos = () => {
 		newStatus: "pendiente" | "pagado"
 	) => {
 		try {
-			// Actualiza el estado en la base de datos
 			await UpdateExpenseStatus(
 				id,
 				newStatus,
 				expenses.find((exp) => exp.id === id)?.fecha || ""
 			);
 
-			// Actualiza el estado local
 			setExpenses(
 				expenses.map((exp) =>
 					exp.id === id ? { ...exp, estado: newStatus } : exp
@@ -49,13 +48,20 @@ export const Gastos = () => {
 		}
 	};
 
+	useEffect(() => {
+		const filtered = filteredExpenseData.filter((expense) =>
+			expense.name.toLowerCase().includes(searchTerm.toLowerCase())
+		);
+		setExpenses(filtered);
+	}, [searchTerm, filteredExpenseData]);
+
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between items-center  mt-7 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1 ">Gastos</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black  rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
-					onClick={toggleModal} // Llama a toggleModal al hacer clic
+					onClick={toggleModal}
 					to={"/nuevaCompra"}
 				>
 					<svg
@@ -104,7 +110,13 @@ export const Gastos = () => {
 								d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
 							/>
 						</svg>
-						<p>Buscar</p>
+						<input
+							type="text"
+							placeholder="Buscar "
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className="w-full bg-transparent outline-none"
+						/>
 					</div>
 				</div>
 			</div>
@@ -127,7 +139,7 @@ export const Gastos = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{filteredExpenseData.map(
+						{expenses.map(
 							({
 								quantity,
 								fecha,
@@ -168,43 +180,6 @@ export const Gastos = () => {
 									<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
 										. . .
 									</td>
-									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
-										<div
-											className="font-black border border-red-main text-custom-red hover:underline px-1"
-											onClick={() =>
-												Swal.fire({
-													title: "¿Estás seguro?",
-													text: "¡No podrás revertir esto!",
-													icon: "warning",
-													showCancelButton: true,
-													confirmButtonColor: "#3085d6",
-													cancelButtonColor: "#d33",
-													confirmButtonText: "Sí, eliminarlo",
-													cancelButtonText: "Cancelar",
-												}).then((result) => {
-													if (result.isConfirmed) {
-														eliminarDocumento("gastos", id, fecha)
-															.then(() => {
-																Swal.fire({
-																	icon: "success",
-																	title: "¡Eliminado!",
-																	text: `El gasto con ID ${id} ha sido eliminado.`,
-																});
-															})
-															.catch(() => {
-																Swal.fire({
-																	icon: "error",
-																	title: "Error",
-																	text: "No se pudo eliminar el gasto.",
-																});
-															});
-													}
-												})
-											}
-										>
-											Borrar
-										</div>
-									</td> */}
 								</tr>
 							)
 						)}
