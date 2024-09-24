@@ -228,8 +228,8 @@ export const Equipo = () => {
 					<p className="font-medium text-black">Nuevo miembro</p>
 				</button>
 			</div>
-			<div className="p-4">
-				<div className="flex flex-col w-1/3 mx-auto mb-2 gap-2 mt-2">
+			<div className="mb-8">
+				<div className="flex flex-col w-1/3 mx-auto  gap-2 mt-2">
 					<Calendar />
 					<div className="flex flex-row gap-2">
 						<div className="relative w-1/3" ref={filterRef}>
