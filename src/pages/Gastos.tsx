@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FormGasto } from "../components/gastos";
 import { eliminarDocumento } from "../firebase/ReadData";
 import currencyFormat from "../helpers/currencyFormat";
@@ -23,6 +23,9 @@ export const Gastos: React.FC = () => {
 
 	const [showModal, setShowModal] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [selectedCategory, setSelectedCategory] = useState("Todos");
+	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	const toggleModal = () => {
 		setShowModal(!showModal);
@@ -49,15 +52,55 @@ export const Gastos: React.FC = () => {
 		}
 	};
 
+	const uniqueCategories = [
+		"Todos",
+		...new Set(filteredExpenseData.map((expense) => expense.category)),
+	];
+
 	useEffect(() => {
-		const filtered = filteredExpenseData.filter((expense) =>
+		let filtered = filteredExpenseData;
+
+		if (selectedCategory !== "Todos") {
+			filtered = filtered.filter(
+				(expense) => expense.category === selectedCategory
+			);
+		}
+
+		filtered = filtered.filter((expense) =>
 			expense.name.toLowerCase().includes(searchTerm.toLowerCase())
 		);
+
 		setExpenses(filtered);
-	}, [searchTerm, filteredExpenseData]);
+	}, [searchTerm, selectedCategory, filteredExpenseData]);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setShowCategoryDropdown(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	return (
 		<div className="flex flex-col">
+			<style>
+				{`
+					.arrow-down {
+						transition: transform 0.3s ease;
+					}
+					.arrow-down.open {
+						transform: rotate(-90deg);
+					}
+				`}
+			</style>
 			<div className="flex flex-row justify-between items-center  mt-7 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1 ">Gastos</p>
 				<NavLink
@@ -79,9 +122,14 @@ export const Gastos: React.FC = () => {
 			<div className="p-4 ">
 				<Calendar />
 				<div className="flex flex-row gap-2 mt-2">
-					<div className=" flex items-center pr-2  w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
-						{/* Aca el svg y el titulo */}
-						<div className="flex flex-row items-center gap-1">
+					<div
+						ref={dropdownRef}
+						className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light"
+					>
+						<div
+							className="flex flex-row items-center gap-1 cursor-pointer"
+							onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
@@ -96,10 +144,30 @@ export const Gastos: React.FC = () => {
 									d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
 								/>
 							</svg>
-							<p>Todos</p>
+							<p>{selectedCategory}</p>
 						</div>
-						{/* Aca el arrow */}
-						<img src={arrow} className="h-2 rotate-90 " alt="" />
+						<img
+							src={arrow}
+							className={`h-2 arrow-down ${showCategoryDropdown ? "open" : ""}`}
+							alt=""
+							onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+						/>
+						{showCategoryDropdown && (
+							<div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10">
+								{uniqueCategories.map((category) => (
+									<div
+										key={category}
+										className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+										onClick={() => {
+											setSelectedCategory(category);
+											setShowCategoryDropdown(false);
+										}}
+									>
+										{category}
+									</div>
+								))}
+							</div>
+						)}
 					</div>
 					<div className=" flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black   text-xs font-light">
 						<svg
