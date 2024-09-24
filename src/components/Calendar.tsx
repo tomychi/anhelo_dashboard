@@ -127,7 +127,7 @@ const Calendar = () => {
 					separator={"hasta"}
 					i18n={"es"}
 					primaryColor={"blue"}
-					inputClassName={`w-full h-10 rounded-lg      md border focus:ring-0 font-coolvetica  px-4 pl-10 pr-8 ${bgColor} ${textColor} ${borderColor} text-xs font-light`}
+					inputClassName={`w-full h-10 rounded-lg  border-4    md border focus:ring-0 font-coolvetica  px-4 pl-10 pr-8 ${bgColor} ${textColor} ${borderColor} text-xs font-light`}
 					toggleClassName={`absolute rounded-lg      l-md font-coolvetica ${textColor} font-black left-0 h-full px-3 focus:outline-none`}
 					containerClassName={`
 						relative rounded-lg      md font-coolvetica ${textColor} font-black
