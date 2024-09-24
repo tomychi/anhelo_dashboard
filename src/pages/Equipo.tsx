@@ -254,17 +254,17 @@ export const Equipo = () => {
 				>
 					<div className="flex items-center space-x-4">
 						<span>{selectedItems.length} seleccionados</span>
-						<button className="bg-gray-100 rounded-full  text-black  px-3 py-1  ">
-							Eliminar empleados
-						</button>
-						<button className="bg-gray-100 rounded-full text-black px-3 py-1 ">
-							Asignar puesto
+						<button className="bg-gray-100 rounded-full text-black  px-3 py-1 ">
+							Asignar depto
 						</button>
 						<button className="bg-gray-100 rounded-full text-black px-3 py-1  ">
 							Asignar área
 						</button>
-						<button className="bg-gray-100 rounded-full text-black  px-3 py-1 ">
-							Asignar depto
+						<button className="bg-gray-100 rounded-full text-black px-3 py-1 ">
+							Asignar puesto
+						</button>
+						<button className="bg-gray-100 rounded-full  text-black  px-3 py-1  ">
+							Eliminar empleados
 						</button>
 					</div>
 					<button onClick={handleCloseActionBar} className="text-2xl">
