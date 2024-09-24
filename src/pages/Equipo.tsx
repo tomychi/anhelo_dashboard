@@ -83,11 +83,53 @@ export const Equipo = () => {
 			</div>
 			<div className="p-4">
 				<div className="flex flex-row w-1/3 mx-auto mb-2 gap-2 mt-2">
-					<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
-						Todos
+					<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1"
+							stroke="currentColor"
+							className="h-6 ml-2"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+							/>
+						</svg>
+
+						{/* Este para cuando haya un filtro aplicado  */}
+						{/* <svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="w-6 ml-2"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
+								clip-rule="evenodd"
+							/>
+						</svg> */}
+						<p className="ml-1">Todos</p>
 					</div>
-					<div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
-						Buscar
+					<div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black  text-xs font-light">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1"
+							stroke="currentColor"
+							className="h-6 ml-2 mb-0.5"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+							/>
+						</svg>
+						<p className="ml-1">Buscar</p>
 					</div>
 				</div>
 			</div>
