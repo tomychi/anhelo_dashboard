@@ -85,7 +85,7 @@ export const Equipo = () => {
 			<div className="p-4">
 				<div className="flex flex-col w-1/3 mx-auto mb-2 gap-2 mt-2">
 					<Calendar />
-					<div className="flex flex-row">
+					<div className="flex flex-row gap-2">
 						<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
