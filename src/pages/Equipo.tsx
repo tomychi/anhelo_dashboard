@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { collection, getFirestore, onSnapshot } from 'firebase/firestore';
-import { readEmpleados } from '../firebase/registroEmpleados';
-import Calendar from '../components/Calendar';
-import { RootState } from '../redux/configureStore';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { readEmpleados } from "../firebase/registroEmpleados";
+import Calendar from "../components/Calendar";
+import { RootState } from "../redux/configureStore";
+import { useSelector } from "react-redux";
 
 interface Empleado {
   name: string;
@@ -21,16 +21,18 @@ export const Equipo = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showActionBar, setShowActionBar] = useState(false);
-
+  const { totalProductosVendidos } = useSelector(
+    (state: RootState) => state.data,
+  );
   const fetchEmpleados = async () => {
     try {
       const empleadosData = await readEmpleados();
       const filteredEmpleados = empleadosData.filter(
-        (empleado) => empleado.name !== 'NO ASIGNADO'
+        (empleado) => empleado.name !== "NO ASIGNADO",
       );
       setEmpleados(filteredEmpleados);
     } catch (error) {
-      console.error('Error al obtener los empleados:', error);
+      console.error("Error al obtener los empleados:", error);
     }
   };
 
@@ -40,8 +42,8 @@ export const Equipo = () => {
     fetchEmpleados();
 
     const unsubscribe = onSnapshot(
-      collection(firestore, 'empleados'),
-      fetchEmpleados
+      collection(firestore, "empleados"),
+      fetchEmpleados,
     );
     return () => unsubscribe();
   }, []);
@@ -59,7 +61,7 @@ export const Equipo = () => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(name)
         ? prevSelected.filter((item) => item !== name)
-        : [...prevSelected, name]
+        : [...prevSelected, name],
     );
   };
 
@@ -148,7 +150,7 @@ export const Equipo = () => {
                   />
                   <span
                     className={`w-6 h-6 flex items-center justify-center ${
-                      selectAll ? 'text-black' : 'text-gray-300'
+                      selectAll ? "text-black" : "text-gray-300"
                     }`}
                   >
                     <svg
@@ -203,8 +205,8 @@ export const Equipo = () => {
                     <span
                       className={`w-6 h-6 flex items-center justify-center ${
                         selectedItems.includes(empleado.name)
-                          ? 'text-black'
-                          : 'text-gray-300'
+                          ? "text-black"
+                          : "text-gray-300"
                       }`}
                     >
                       <svg
@@ -226,21 +228,25 @@ export const Equipo = () => {
                   {empleado.name
                     ? empleado.name.charAt(0).toUpperCase() +
                       empleado.name.slice(1).toLowerCase()
-                    : ''}
+                    : ""}
                 </th>
-                <td className=" w-1/7 font-light h-10">$50.000</td>
+                <td className=" w-1/7 font-light h-10">
+                  {empleado.area === "cocina"
+                    ? totalProductosVendidos * 230
+                    : 0}
+                </td>
                 <td className=" w-1/7 font-light h-10">{empleado.depto}</td>
                 <td className=" w-1/7 font-light h-10">
                   {empleado.area
                     ? empleado.area.charAt(0).toUpperCase() +
                       empleado.area.slice(1).toLowerCase()
-                    : ''}
+                    : ""}
                 </td>
                 <td className=" w-1/7 font-light h-10">
                   {empleado.puesto
                     ? empleado.puesto.charAt(0).toUpperCase() +
                       empleado.puesto.slice(1).toLowerCase()
-                    : ''}
+                    : ""}
                 </td>
                 <td className=" w-4/7 font-light h-10">{empleado.correo}</td>
               </tr>
