@@ -170,6 +170,12 @@ export const Equipo = () => {
 								Nombre
 							</th>
 							<th scope="col" className=" w-1/7 h-10">
+								Sueldo
+							</th>
+							<th scope="col" className=" w-1/7 h-10">
+								Equipo
+							</th>
+							<th scope="col" className=" w-1/7 h-10">
 								Puesto
 							</th>
 							<th scope="col" className=" w-4/7 h-10">
@@ -219,6 +225,13 @@ export const Equipo = () => {
 										  empleado.name.slice(1).toLowerCase()
 										: ""}
 								</th>
+								<td className=" w-1/7 font-light h-10">$50.000</td>
+								<td className=" w-1/7 font-light h-10">
+									{empleado.category
+										? empleado.category.charAt(0).toUpperCase() +
+										  empleado.category.slice(1).toLowerCase()
+										: ""}
+								</td>
 								<td className=" w-1/7 font-light h-10">
 									{empleado.category
 										? empleado.category.charAt(0).toUpperCase() +
@@ -226,7 +239,10 @@ export const Equipo = () => {
 										: ""}
 								</td>
 
-								<td className=" w-4/7 font-light h-10">{empleado.email}</td>
+								<td className=" w-4/7 font-light h-10">
+									{/* {empleado.email} */}
+									anhelo@gmail.com
+								</td>
 							</tr>
 						))}
 					</tbody>
