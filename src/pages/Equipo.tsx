@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
-import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import {
+	collection,
+	getFirestore,
+	onSnapshot,
+	addDoc,
+} from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
 import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
@@ -36,6 +41,30 @@ const useOutsideClick = (callback: () => void) => {
 	return ref;
 };
 
+// Componente Modal
+const Modal = ({
+	isOpen,
+	onClose,
+	children,
+}: {
+	isOpen: boolean;
+	onClose: () => void;
+	children: React.ReactNode;
+}) => {
+	if (!isOpen) return null;
+
+	return (
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+			<div className="bg-white p-6 rounded-lg relative">
+				<button onClick={onClose} className="absolute top-2 right-2 text-xl">
+					&times;
+				</button>
+				{children}
+			</div>
+		</div>
+	);
+};
+
 export const Equipo = () => {
 	const [empleados, setEmpleados] = useState<Empleado[]>([]);
 	const [selectAll, setSelectAll] = useState(false);
@@ -51,6 +80,16 @@ export const Equipo = () => {
 		puesto: string[];
 	}>({ depto: [], area: [], puesto: [] });
 	const [searchTerm, setSearchTerm] = useState("");
+	const [showModal, setShowModal] = useState(false);
+	const [newMember, setNewMember] = useState<Empleado>({
+		name: "",
+		category: "",
+		correo: "",
+		available: true,
+		area: "",
+		puesto: "",
+		depto: "",
+	});
 
 	const fetchEmpleados = async () => {
 		try {
@@ -139,6 +178,32 @@ export const Equipo = () => {
 			emp.name.toLowerCase().includes(searchTerm)
 	);
 
+	const handleNewMemberSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const firestore = getFirestore();
+		try {
+			await addDoc(collection(firestore, "empleados"), newMember);
+			setShowModal(false);
+			setNewMember({
+				name: "",
+				category: "",
+				correo: "",
+				available: true,
+				area: "",
+				puesto: "",
+				depto: "",
+			});
+			fetchEmpleados(); // Actualizar la lista de empleados
+		} catch (error) {
+			console.error("Error al añadir nuevo miembro:", error);
+		}
+	};
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setNewMember((prev) => ({ ...prev, [name]: value }));
+	};
+
 	// Usar el hook personalizado para cerrar el filtro al hacer clic fuera
 	const filterRef = useOutsideClick(() => {
 		setShowFilter(false);
@@ -148,9 +213,9 @@ export const Equipo = () => {
 		<div className="flex flex-col relative">
 			<div className="flex flex-row  gap-4 items-center  mt-6 mb-2  mx-auto">
 				<p className="text-black font-bold text-4xl ">Equipo</p>
-				<NavLink
+				<button
+					onClick={() => setShowModal(true)}
 					className="bg-gray-200 ease-in-out duration-300 hover:bg-gray-300 h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4"
-					to="/nuevaCompra"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -160,14 +225,14 @@ export const Equipo = () => {
 					>
 						<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
 					</svg>
-					<p className="font-medium text-black">Nuevo miembro </p>
-				</NavLink>
+					<p className="font-medium text-black">Nuevo miembro</p>
+				</button>
 			</div>
 			<div className="p-4">
 				<div className="flex flex-col w-1/3 mx-auto mb-2 gap-2 mt-2">
 					<Calendar />
 					<div className="flex flex-row gap-2">
-						<div className="relative" ref={filterRef}>
+						<div className="relative w-1/3" ref={filterRef}>
 							<button
 								onClick={toggleFilter}
 								className="flex items-center w-full h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light px-2"
@@ -408,6 +473,88 @@ export const Equipo = () => {
 					</button>
 				</div>
 			)}
+
+			<Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+				<h2 className="text-2xl font-bold mb-4">Añadir Nuevo Miembro</h2>
+				<form onSubmit={handleNewMemberSubmit} className="space-y-4">
+					<div>
+						<label htmlFor="name" className="block mb-1">
+							Nombre
+						</label>
+						<input
+							type="text"
+							id="name"
+							name="name"
+							value={newMember.name}
+							onChange={handleInputChange}
+							className="w-full border rounded px-2 py-1"
+							required
+						/>
+					</div>
+					<div>
+						<label htmlFor="correo" className="block mb-1">
+							Correo
+						</label>
+						<input
+							type="email"
+							id="correo"
+							name="correo"
+							value={newMember.correo}
+							onChange={handleInputChange}
+							className="w-full border rounded px-2 py-1"
+							required
+						/>
+					</div>
+					<div>
+						<label htmlFor="area" className="block mb-1">
+							Área
+						</label>
+						<input
+							type="text"
+							id="area"
+							name="area"
+							value={newMember.area}
+							onChange={handleInputChange}
+							className="w-full border rounded px-2 py-1"
+							required
+						/>
+					</div>
+					<div>
+						<label htmlFor="puesto" className="block mb-1">
+							Puesto
+						</label>
+						<input
+							type="text"
+							id="puesto"
+							name="puesto"
+							value={newMember.puesto}
+							onChange={handleInputChange}
+							className="w-full border rounded px-2 py-1"
+							required
+						/>
+					</div>
+					<div>
+						<label htmlFor="depto" className="block mb-1">
+							Departamento
+						</label>
+						<input
+							type="text"
+							id="depto"
+							name="depto"
+							value={newMember.depto}
+							onChange={handleInputChange}
+							className="w-full border rounded px-2 py-1"
+							required
+						/>
+					</div>
+					<button
+						type="submit"
+						className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+					>
+						Añadir Miembro
+					</button>
+				</form>
+			</Modal>
 		</div>
 	);
 };
