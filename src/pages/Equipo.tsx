@@ -249,11 +249,13 @@ export const Equipo = () => {
 
 			{showActionBar && (
 				<div
-					className="fixed bottom-0 left-0 right-0 bg-black text-gray-100 font-coolvetica
+					className="fixed bottom-0 left-0 right-0 bg-black  text-gray-100 font-coolvetica
 				 p-4 flex justify-between items-center"
 				>
 					<div className="flex items-center  gap-2">
-						<span className="mr-2">{selectedItems.length} seleccionados</span>
+						<span className="mr-8 font-medium text-4xl">
+							{selectedItems.length} seleccionados
+						</span>
 						<button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black  px-3 py-1 ">
 							Asignar depto
 						</button>
