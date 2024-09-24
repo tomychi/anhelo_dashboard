@@ -173,7 +173,7 @@ export const Equipo = () => {
 								Sueldo
 							</th>
 							<th scope="col" className=" w-1/7 h-10">
-								Equipo
+								Area
 							</th>
 							<th scope="col" className=" w-1/7 h-10">
 								Puesto
