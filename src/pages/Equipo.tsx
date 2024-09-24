@@ -107,7 +107,7 @@ export const Equipo = () => {
 										className="form-checkbox hidden"
 									/>
 									<span
-										className={`w-5 h-5 inline-block rounded-full border border-black flex items-center justify-center ${
+										className={`w-4 h-4  rounded-full border border-black flex items-center justify-center ${
 											selectAll ? "bg-black" : "bg-gray-100"
 										}`}
 									>
@@ -147,7 +147,7 @@ export const Equipo = () => {
 											className="form-checkbox hidden"
 										/>
 										<span
-											className={`w-5 h-5 inline-block rounded-full border border-black flex items-center justify-center ${
+											className={`w-4 h-4  rounded-full border border-black flex items-center justify-center ${
 												selectedItems.includes(empleado.name)
 													? "bg-black"
 													: "bg-gray-100"
