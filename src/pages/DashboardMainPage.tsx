@@ -14,6 +14,7 @@ import {
 	Clientes,
 	AnheloRiders,
 	AnheloRidersStats,
+	Equipo,
 } from "../pages";
 import { MonthData } from "./MonthData";
 import { Stock } from "./Stock";
@@ -48,6 +49,7 @@ export const DashboardMainPage = () => {
 						<Route path="ventas" element={<Comandera />} />
 						<Route path="monthdata" element={<MonthData />} />
 						<Route path="empleados" element={<RegistroEmpleado />} />
+						<Route path="equipo" element={<Equipo />} />
 						<Route path="AnheloRiders" element={<AnheloRiders />} />
 						<Route path="anheloriders_stats" element={<AnheloRidersStats />} />
 					</Route>
