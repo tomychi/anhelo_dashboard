@@ -193,7 +193,8 @@ export const Gastos: React.FC = () => {
 											setShowCategoryDropdown(false);
 										}}
 									>
-										{category}
+										{category.charAt(0).toUpperCase() +
+											category.slice(1).toLowerCase()}
 									</div>
 								))}
 							</div>
