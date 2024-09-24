@@ -49,7 +49,7 @@ export const Sidebar = () => {
 					>
 						{isMenuOpen ? (
 							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10  rounded-full focus:outline-none transition duration-300 ease-in-out">
-								<p className=" font-medium mt-1.5 ">x</p>
+								<p className=" font-bold font-coolvetica mt-1.5 ">x</p>
 							</div>
 						) : (
 							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 flex items-center justify-center rounded-full focus:outline-none transition duration-300 ease-in-out">
@@ -57,7 +57,7 @@ export const Sidebar = () => {
 									xmlns="http://www.w3.org/2000/svg"
 									fill="none"
 									viewBox="0 0 24 24"
-									strokeWidth="2"
+									strokeWidth="3"
 									stroke="currentColor"
 									className="w-6 text-gray-100"
 								>
@@ -67,6 +67,15 @@ export const Sidebar = () => {
 						)}
 					</button>
 					<button className="bg-gray-100 rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-9 focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 mr-2"
+						>
+							<path d="M5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628L12 14.471v2.34c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256l-7.108-4.061C13.555 6.346 12 7.249 12 8.689v2.34L5.055 7.061Z" />
+						</svg>
+
 						<p className=" font-bold font-coolvetica ">Accion rapida</p>
 					</button>
 					<div className="relative bg-gray-100 h-9 w-9 ml-2 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer">
