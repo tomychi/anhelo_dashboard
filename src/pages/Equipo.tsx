@@ -1,59 +1,74 @@
-import currencyFormat from "../helpers/currencyFormat";
-import Calendar from "../components/Calendar";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/configureStore";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { projectAuth } from "../firebase/config";
-import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { readEmpleados } from "../firebase/registroEmpleados";
+
+interface Empleado {
+	id: string;
+	name: string;
+	category: string;
+	email: string;
+	available: boolean;
+}
 
 export const Equipo = () => {
-	const { expenseData } = useSelector((state: RootState) => state.data);
-	const currentUserEmail = projectAuth.currentUser?.email;
-	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+	const [empleados, setEmpleados] = useState<Empleado[]>([]);
+	const [selectAll, setSelectAll] = useState(false);
+	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-	const filteredExpenseData = isMarketingUser
-		? expenseData.filter((expense) => expense.category === "marketing")
-		: expenseData;
-	const [expenses, setExpenses] = useState<ExpenseProps[]>(filteredExpenseData);
-
-	const [showModal, setShowModal] = useState(false);
-
-	const toggleModal = () => {
-		setShowModal(!showModal);
-	};
-
-	const handleStatusChange = async (
-		id: string,
-		newStatus: "pendiente" | "pagado"
-	) => {
+	const fetchEmpleados = async () => {
 		try {
-			// Actualiza el estado en la base de datos
-			await UpdateExpenseStatus(
-				id,
-				newStatus,
-				expenses.find((exp) => exp.id === id)?.fecha || ""
+			const empleadosData = await readEmpleados();
+			// Filtrar para excluir al empleado con name: "NO ASIGNADO"
+			const filteredEmpleados = empleadosData.filter(
+				(empleado) => empleado.name !== "NO ASIGNADO"
 			);
-
-			// Actualiza el estado local
-			setExpenses(
-				expenses.map((exp) =>
-					exp.id === id ? { ...exp, estado: newStatus } : exp
-				)
-			);
+			setEmpleados(filteredEmpleados);
 		} catch (error) {
-			console.error("Error actualizando el estado:", error);
+			console.error("Error al obtener los empleados:", error);
 		}
 	};
+
+	useEffect(() => {
+		const firestore = getFirestore();
+
+		fetchEmpleados();
+
+		const unsubscribe = onSnapshot(
+			collection(firestore, "empleados"),
+			fetchEmpleados
+		);
+		return () => unsubscribe();
+	}, []);
+
+	const handleSelectAll = () => {
+		setSelectAll(!selectAll);
+		if (!selectAll) {
+			setSelectedItems(empleados.map((empleado) => empleado.id));
+		} else {
+			setSelectedItems([]);
+		}
+	};
+
+	const handleSelectItem = (id: string) => {
+		setSelectedItems((prevSelected) =>
+			prevSelected.includes(id)
+				? prevSelected.filter((item) => item !== id)
+				: [...prevSelected, id]
+		);
+	};
+
+	useEffect(() => {
+		setSelectAll(selectedItems.length === empleados.length);
+	}, [selectedItems, empleados]);
 
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between items-center mt-8 mx-4">
 				<p className="text-black font-bold text-4xl ">Equipo</p>
 				<NavLink
-					className="bg-black h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4 "
-					onClick={toggleModal} // Llama a toggleModal al hacer clic
-					to={"/nuevaCompra"}
+					className="bg-black h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4"
+					to="/nuevaCompra"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -69,114 +84,59 @@ export const Equipo = () => {
 			<div className="w-1/3 bg-black h-[0.5px] mt-4"></div>
 			<div className="p-4">
 				<div className="flex flex-row gap-2 mt-2">
-					<div className=" flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
+					<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
 						Todos
 					</div>
-					<div className=" flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
+					<div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
 						Buscar
 					</div>
 				</div>
 			</div>
 
-			<div className=" font-coolvetica">
-				<table className=" w-full text-xs text-left text-black">
-					<thead className=" text-black border  ">
+			<div className="font-coolvetica">
+				<table className="w-full text-xs text-left text-black">
+					<thead className="text-black border">
 						<tr>
-							<th scope="col" className="pl-4 w-2/5 py-3">
+							<th scope="col" className="pl-4 w-1/7 py-3">
+								<input
+									type="checkbox"
+									checked={selectAll}
+									onChange={handleSelectAll}
+									className="form-checkbox  h-5 w-5 text-blue-600"
+								/>
+							</th>
+							<th scope="col" className=" w-1/7 py-3">
 								Nombre
 							</th>
-
-							<th scope="col" className="pl-4 w-1/6 py-3">
+							<th scope="col" className=" w-1/7 py-3">
 								Puesto
 							</th>
-							<th scope="col" className="pl-4 w-1/6 py-3">
+							<th scope="col" className=" w-4/7 py-3">
 								Correo
 							</th>
-							<th scope="col" className="pl-4 w-1/6 py-3 "></th>
 						</tr>
 					</thead>
 					<tbody>
-						{filteredExpenseData.map(
-							({
-								quantity,
-								fecha,
-								category,
-								name,
-								total,
-								unit,
-								description,
-								estado,
-								id,
-							}) => (
-								<tr
-									key={id}
-									className=" text-black border font-light border-black border-opacity-20"
-								>
-									<th scope="row" className="pl-4 w-1/5 font-light py-3">
-										{name} ({quantity} u.)
-									</th>
-
-									<td className="pl-4 w-1/7 font-light py-3">
-										{currencyFormat(total)}
-									</td>
-									<td className="pl-4 w-1/7 font-light">
-										<select
-											className="bg-gray-300 p-1 rounded-lg"
-											value={estado}
-											onChange={(e) =>
-												handleStatusChange(
-													id,
-													e.target.value as "pendiente" | "pagado"
-												)
-											}
-										>
-											<option value="pendiente">Pendiente</option>
-											<option value="pagado">Pagado</option>
-										</select>
-									</td>
-									<td className="pl-4 w-1/7 font-black text-2xl relative bottom-2 ">
-										. . .
-									</td>
-									{/* <td className="px-6 py-4 text-center hidden md:table-cell">
-										<div
-											className="font-black border border-red-main text-custom-red hover:underline px-1"
-											onClick={() =>
-												Swal.fire({
-													title: "¿Estás seguro?",
-													text: "¡No podrás revertir esto!",
-													icon: "warning",
-													showCancelButton: true,
-													confirmButtonColor: "#3085d6",
-													cancelButtonColor: "#d33",
-													confirmButtonText: "Sí, eliminarlo",
-													cancelButtonText: "Cancelar",
-												}).then((result) => {
-													if (result.isConfirmed) {
-														eliminarDocumento("gastos", id, fecha)
-															.then(() => {
-																Swal.fire({
-																	icon: "success",
-																	title: "¡Eliminado!",
-																	text: `El gasto con ID ${id} ha sido eliminado.`,
-																});
-															})
-															.catch(() => {
-																Swal.fire({
-																	icon: "error",
-																	title: "Error",
-																	text: "No se pudo eliminar el gasto.",
-																});
-															});
-													}
-												})
-											}
-										>
-											Borrar
-										</div>
-									</td> */}
-								</tr>
-							)
-						)}
+						{empleados.map((empleado) => (
+							<tr
+								key={empleado.id}
+								className="text-black border font-light border-black border-opacity-20"
+							>
+								<td className="pl-4 w-1/7 py-3">
+									<input
+										type="checkbox"
+										checked={selectedItems.includes(empleado.id)}
+										onChange={() => handleSelectItem(empleado.id)}
+										className="form-checkbox h-5 w-5 text-blue-600"
+									/>
+								</td>
+								<th scope="row" className=" w-1/7 font-light py-3">
+									{empleado.name}
+								</th>
+								<td className=" w-1/7 font-light py-3">{empleado.category}</td>
+								<td className=" w-4/7 font-light py-3">{empleado.email}</td>
+							</tr>
+						))}
 					</tbody>
 				</table>
 			</div>
