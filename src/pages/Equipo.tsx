@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
+import checkIcon from "../assets/listoIcon.png"; // Asegúrate de tener este ícono importado correctamente
 
 interface Empleado {
 	name: string;
@@ -98,12 +99,27 @@ export const Equipo = () => {
 					<thead className="text-black border">
 						<tr>
 							<th scope="col" className="pl-4 w-1/7 py-3">
-								<input
-									type="checkbox"
-									checked={selectAll}
-									onChange={handleSelectAll}
-									className="form-checkbox h-5 w-5 text-blue-600"
-								/>
+								<label className="inline-flex items-center">
+									<input
+										type="checkbox"
+										checked={selectAll}
+										onChange={handleSelectAll}
+										className="form-checkbox hidden"
+									/>
+									<span
+										className={`w-5 h-5 inline-block rounded-full border border-black flex items-center justify-center ${
+											selectAll ? "bg-black" : "bg-gray-100"
+										}`}
+									>
+										{selectAll && (
+											<img
+												src={checkIcon}
+												alt="Check"
+												className="w-2 h-2 text-gray-100"
+											/>
+										)}
+									</span>
+								</label>
 							</th>
 							<th scope="col" className=" w-1/7 py-3">
 								Nombre
@@ -123,12 +139,25 @@ export const Equipo = () => {
 								className="text-black border font-light border-black border-opacity-20"
 							>
 								<td className="pl-4 w-1/7 py-3">
-									<input
-										type="checkbox"
-										checked={selectedItems.includes(empleado.name)}
-										onChange={() => handleSelectItem(empleado.name)}
-										className="form-checkbox h-5 w-5 text-blue-600"
-									/>
+									<label className="inline-flex items-center">
+										<input
+											type="checkbox"
+											checked={selectedItems.includes(empleado.name)}
+											onChange={() => handleSelectItem(empleado.name)}
+											className="form-checkbox hidden"
+										/>
+										<span
+											className={`w-5 h-5 inline-block rounded-full border border-black flex items-center justify-center ${
+												selectedItems.includes(empleado.name)
+													? "bg-black"
+													: "bg-gray-100"
+											}`}
+										>
+											{selectedItems.includes(empleado.name) && (
+												<img src={checkIcon} alt="Check" className="w-2 h-2" />
+											)}
+										</span>
+									</label>
 								</td>
 								<th scope="row" className=" w-1/7 font-light py-3">
 									{empleado.name}
