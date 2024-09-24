@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import { collection, getFirestore, onSnapshot } from "firebase/firestore";
-import { readEmpleados } from "../firebase/registroEmpleados";
-import Calendar from "../components/Calendar";
-import { RootState } from "../redux/configureStore";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import { collection, getFirestore, onSnapshot } from 'firebase/firestore';
+import { readEmpleados } from '../firebase/registroEmpleados';
+import Calendar from '../components/Calendar';
+import { RootState } from '../redux/configureStore';
+import { useSelector } from 'react-redux';
 
 interface Empleado {
   name: string;
@@ -20,18 +20,17 @@ export const Equipo = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const { totalProductosVendidos } = useSelector(
-    (state: RootState) => state.data,
-  );
+  const [showActionBar, setShowActionBar] = useState(false);
+
   const fetchEmpleados = async () => {
     try {
       const empleadosData = await readEmpleados();
       const filteredEmpleados = empleadosData.filter(
-        (empleado) => empleado.name !== "NO ASIGNADO",
+        (empleado) => empleado.name !== 'NO ASIGNADO'
       );
       setEmpleados(filteredEmpleados);
     } catch (error) {
-      console.error("Error al obtener los empleados:", error);
+      console.error('Error al obtener los empleados:', error);
     }
   };
 
@@ -41,8 +40,8 @@ export const Equipo = () => {
     fetchEmpleados();
 
     const unsubscribe = onSnapshot(
-      collection(firestore, "empleados"),
-      fetchEmpleados,
+      collection(firestore, 'empleados'),
+      fetchEmpleados
     );
     return () => unsubscribe();
   }, []);
@@ -60,18 +59,22 @@ export const Equipo = () => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(name)
         ? prevSelected.filter((item) => item !== name)
-        : [...prevSelected, name],
+        : [...prevSelected, name]
     );
   };
 
   useEffect(() => {
     setSelectAll(selectedItems.length === empleados.length);
+    setShowActionBar(selectedItems.length > 0);
   }, [selectedItems, empleados]);
 
-  console.log(selectedItems);
+  const handleCloseActionBar = () => {
+    setSelectedItems([]);
+    setShowActionBar(false);
+  };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative">
       <div className="flex flex-row  gap-4 items-center  mt-6 mb-2  mx-auto">
         <p className="text-black font-bold text-4xl ">Equipo</p>
         <NavLink
@@ -108,20 +111,6 @@ export const Equipo = () => {
                   d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
                 />
               </svg>
-
-              {/* Este para cuando haya un filtro aplicado  */}
-              {/* <svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							className="w-6 ml-2"
-						>
-							<path
-								fill-rule="evenodd"
-								d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
-								clip-rule="evenodd"
-							/>
-						</svg> */}
               <p className="ml-1">Todos</p>
             </div>
             <div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black  text-xs font-light">
@@ -159,7 +148,7 @@ export const Equipo = () => {
                   />
                   <span
                     className={`w-6 h-6 flex items-center justify-center ${
-                      selectAll ? "text-black" : "text-gray-300"
+                      selectAll ? 'text-black' : 'text-gray-300'
                     }`}
                   >
                     <svg
@@ -214,8 +203,8 @@ export const Equipo = () => {
                     <span
                       className={`w-6 h-6 flex items-center justify-center ${
                         selectedItems.includes(empleado.name)
-                          ? "text-black"
-                          : "text-gray-300"
+                          ? 'text-black'
+                          : 'text-gray-300'
                       }`}
                     >
                       <svg
@@ -237,33 +226,56 @@ export const Equipo = () => {
                   {empleado.name
                     ? empleado.name.charAt(0).toUpperCase() +
                       empleado.name.slice(1).toLowerCase()
-                    : ""}
+                    : ''}
                 </th>
-                <td className=" w-1/7 font-light h-10">
-                  {empleado.area === "cocina"
-                    ? totalProductosVendidos * 230
-                    : 0}
-                </td>
+                <td className=" w-1/7 font-light h-10">$50.000</td>
                 <td className=" w-1/7 font-light h-10">{empleado.depto}</td>
                 <td className=" w-1/7 font-light h-10">
                   {empleado.area
                     ? empleado.area.charAt(0).toUpperCase() +
                       empleado.area.slice(1).toLowerCase()
-                    : ""}
+                    : ''}
                 </td>
                 <td className=" w-1/7 font-light h-10">
                   {empleado.puesto
                     ? empleado.puesto.charAt(0).toUpperCase() +
                       empleado.puesto.slice(1).toLowerCase()
-                    : ""}
+                    : ''}
                 </td>
-
                 <td className=" w-4/7 font-light h-10">{empleado.correo}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {showActionBar && (
+        <div
+          className="fixed bottom-0 left-0 right-0 bg-black  text-gray-100 font-coolvetica
+				 p-4 flex justify-between items-center"
+        >
+          <div className="flex items-center  gap-2">
+            <span className="mr-8 font-medium text-4xl">
+              {selectedItems.length} seleccionados
+            </span>
+            <button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black  px-3 py-1 ">
+              Asignar depto
+            </button>
+            <button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black px-3 py-1  ">
+              Asignar área
+            </button>
+            <button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black px-3 py-1 ">
+              Asignar puesto
+            </button>
+            <button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full  text-black  px-3 py-1  ">
+              Eliminar miembro/s
+            </button>
+          </div>
+          <button onClick={handleCloseActionBar} className="text-2xl">
+            &times;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
