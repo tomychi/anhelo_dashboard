@@ -99,6 +99,10 @@ export const Gastos: React.FC = () => {
 		setOpenSelects((prev) => ({ ...prev, [id]: !prev[id] }));
 	};
 
+	const capitalizeFirstLetter = (string: string) => {
+		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+	};
+
 	return (
 		<div className="flex flex-col">
 			<style>
@@ -155,7 +159,7 @@ export const Gastos: React.FC = () => {
 				<div className="flex flex-row gap-2 mt-2">
 					<div
 						ref={dropdownRef}
-						className="relative flex items-center pr-2 w-1/2 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light"
+						className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light"
 					>
 						<div
 							className="flex flex-row items-center gap-1 cursor-pointer"
@@ -178,11 +182,11 @@ export const Gastos: React.FC = () => {
 							<p
 								className={
 									selectedCategory === "Todos"
-										? " text-black text-opacity-40"
+										? "text-black text-opacity-40"
 										: ""
 								}
 							>
-								{selectedCategory}
+								{capitalizeFirstLetter(selectedCategory)}
 							</p>
 						</div>
 						<img
@@ -202,15 +206,14 @@ export const Gastos: React.FC = () => {
 											setShowCategoryDropdown(false);
 										}}
 									>
-										{category.charAt(0).toUpperCase() +
-											category.slice(1).toLowerCase()}
+										{capitalizeFirstLetter(category)}
 									</div>
 								))}
 							</div>
 						)}
 					</div>
 
-					<div className="flex items-center w-1/2 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
+					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
