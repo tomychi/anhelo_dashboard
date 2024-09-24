@@ -254,16 +254,16 @@ export const Equipo = () => {
 				>
 					<div className="flex items-center space-x-4">
 						<span>{selectedItems.length} seleccionados</span>
-						<button className="bg-gray-100 rounded-full text-black  px-3 py-1 ">
+						<button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black  px-3 py-1 ">
 							Asignar depto
 						</button>
-						<button className="bg-gray-100 rounded-full text-black px-3 py-1  ">
+						<button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black px-3 py-1  ">
 							Asignar área
 						</button>
-						<button className="bg-gray-100 rounded-full text-black px-3 py-1 ">
+						<button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full text-black px-3 py-1 ">
 							Asignar puesto
 						</button>
-						<button className="bg-gray-100 rounded-full  text-black  px-3 py-1  ">
+						<button className="bg-gray-100 hover:bg-gray-300 ease-in-out duration-300 rounded-full  text-black  px-3 py-1  ">
 							Eliminar miembro/s
 						</button>
 					</div>
