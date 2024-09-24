@@ -49,13 +49,13 @@ export const Equipo = () => {
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between items-center mt-8 mx-4">
-				<p className="text-black font-medium text-5xl ">Equipo</p>
+				<p className="text-black font-bold text-4xl ">Equipo</p>
 				<NavLink
-					className="bg-black gap-4 text-gray-100 mt-2 rounded-lg flex items-center pt-3 pb-4 pl-3 pr-4 h-9"
+					className="bg-black h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4 "
 					onClick={toggleModal} // Llama a toggleModal al hacer clic
 					to={"/nuevaCompra"}
 				>
-					<p className="text-xs font-light">Nuevo miembro </p>
+					<p className="font-medium">Nuevo miembro </p>
 					<p className="text-lg mb-[2px] font-black">+ </p>
 				</NavLink>
 			</div>
