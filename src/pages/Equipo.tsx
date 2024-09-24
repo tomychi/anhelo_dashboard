@@ -107,7 +107,7 @@ export const Equipo = () => {
 										className="form-checkbox hidden"
 									/>
 									<span
-										className={`w-4 h-4  rounded-full border border-black flex items-center justify-center ${
+										className={`w-4 h-4  rounded-full border border-black flex items-center  justify-center ${
 											selectAll ? "bg-black" : "bg-gray-100"
 										}`}
 									>
@@ -115,7 +115,7 @@ export const Equipo = () => {
 											<img
 												src={checkIcon}
 												alt="Check"
-												className="w-2 h-2 text-gray-100"
+												className="w-2 h-2  text-gray-100"
 											/>
 										)}
 									</span>
@@ -160,9 +160,18 @@ export const Equipo = () => {
 									</label>
 								</td>
 								<th scope="row" className=" w-1/7 font-light py-3">
-									{empleado.name}
+									{empleado.name
+										? empleado.name.charAt(0).toUpperCase() +
+										  empleado.name.slice(1).toLowerCase()
+										: ""}
 								</th>
-								<td className=" w-1/7 font-light py-3">{empleado.category}</td>
+								<td className=" w-1/7 font-light py-3">
+									{empleado.category
+										? empleado.category.charAt(0).toUpperCase() +
+										  empleado.category.slice(1).toLowerCase()
+										: ""}
+								</td>
+
 								<td className=" w-4/7 font-light py-3">{empleado.email}</td>
 							</tr>
 						))}
