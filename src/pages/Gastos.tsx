@@ -135,7 +135,7 @@ export const Gastos: React.FC = () => {
 					}
 				`}
 			</style>
-			<div className="flex flex-row justify-between items-center mt-7 mx-4 mb-4">
+			<div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Gastos</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
@@ -154,7 +154,7 @@ export const Gastos: React.FC = () => {
 				</NavLink>
 			</div>
 
-			<div className="p-4">
+			<div className=" px-4 pb-8">
 				<Calendar />
 				<div className="flex flex-row gap-2 mt-2">
 					<div
@@ -212,7 +212,6 @@ export const Gastos: React.FC = () => {
 							</div>
 						)}
 					</div>
-
 					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
