@@ -65,26 +65,25 @@ export const Equipo = () => {
 
 	return (
 		<div className="flex flex-col">
-			<div className="flex flex-row justify-between items-center mt-8 mx-4">
+			<div className="flex flex-row  gap-4 items-center  mt-6 mb-2 mx-auto">
 				<p className="text-black font-bold text-4xl ">Equipo</p>
 				<NavLink
-					className="bg-black h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4"
+					className="bg-gray-200 ease-in-out duration-300 hover:bg-gray-300 h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4"
 					to="/nuevaCompra"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
-						fill="currentColor"
+						fill="black"
 						className="w-6 mt-1"
 					>
 						<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
 					</svg>
-					<p className="font-medium">Nuevo miembro </p>
+					<p className="font-medium text-black">Nuevo miembro </p>
 				</NavLink>
 			</div>
-			<div className="w-1/3 bg-black h-[0.5px] mt-4"></div>
 			<div className="p-4">
-				<div className="flex flex-row gap-2 mt-2">
+				<div className="flex flex-row w-1/3 mx-auto mb-2 gap-2 mt-2">
 					<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black px-4 pr-8 text-xs font-light">
 						Todos
 					</div>
@@ -96,7 +95,7 @@ export const Equipo = () => {
 
 			<div className="font-coolvetica">
 				<table className="w-full text-xs text-left text-black">
-					<thead className="text-black border">
+					<thead className="text-black border-b">
 						<tr>
 							<th scope="col" className="pl-4 w-1/7 py-3">
 								<label className="inline-flex items-center">
