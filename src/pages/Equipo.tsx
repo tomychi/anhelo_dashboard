@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
 import Calendar from "../components/Calendar";
+import { RootState } from "../redux/configureStore";
+import { useSelector } from "react-redux";
 
 interface Empleado {
   name: string;
@@ -18,7 +20,9 @@ export const Equipo = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
+  const { totalProductosVendidos } = useSelector(
+    (state: RootState) => state.data,
+  );
   const fetchEmpleados = async () => {
     try {
       const empleadosData = await readEmpleados();
@@ -235,7 +239,11 @@ export const Equipo = () => {
                       empleado.name.slice(1).toLowerCase()
                     : ""}
                 </th>
-                <td className=" w-1/7 font-light h-10">$50.000</td>
+                <td className=" w-1/7 font-light h-10">
+                  {empleado.area === "cocina"
+                    ? totalProductosVendidos * 230
+                    : 0}
+                </td>
                 <td className=" w-1/7 font-light h-10">{empleado.depto}</td>
                 <td className=" w-1/7 font-light h-10">
                   {empleado.area
