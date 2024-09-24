@@ -128,6 +128,10 @@ export interface EmpleadosProps {
   name: string;
   vueltas: VueltasProps[];
   available: boolean;
+  correo: string;
+  area: string;
+  puesto: string;
+  depto: string;
 }
 
 export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
@@ -144,6 +148,10 @@ export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
       category: data.category,
       vueltas: data.vueltas || [],
       available: data.available || false,
+      depto: data.depto || "",
+      area: data.area || "",
+      puesto: data.puesto || "",
+      correo: data.correo || "",
     };
   });
   return empleados;

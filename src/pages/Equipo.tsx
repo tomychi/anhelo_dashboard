@@ -7,11 +7,11 @@ import Calendar from "../components/Calendar";
 interface Empleado {
   name: string;
   category: string;
-  email: string;
+  correo: string;
   available: boolean;
   area: string;
-  correo: string;
   puesto: string;
+  depto: string;
 }
 
 export const Equipo = () => {
@@ -88,19 +88,19 @@ export const Equipo = () => {
       <div className="p-4">
         <div className="flex flex-col w-1/3 mx-auto mb-2 gap-2 mt-2">
           <Calendar />
-          <div className="flex flex-row">
+          <div className="flex flex-row gap-2">
             <div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1"
+                strokeWidth="1"
                 stroke="currentColor"
                 className="h-6 ml-2"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
                 />
               </svg>
@@ -125,13 +125,13 @@ export const Equipo = () => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1"
+                strokeWidth="1"
                 stroke="currentColor"
                 className="h-6 ml-2 mb-0.5"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
                 />
               </svg>
@@ -236,24 +236,21 @@ export const Equipo = () => {
                     : ""}
                 </th>
                 <td className=" w-1/7 font-light h-10">$50.000</td>
-                <td className=" w-1/7 font-light h-10">Marketing</td>
+                <td className=" w-1/7 font-light h-10">{empleado.depto}</td>
                 <td className=" w-1/7 font-light h-10">
-                  {empleado.category
-                    ? empleado.category.charAt(0).toUpperCase() +
-                      empleado.category.slice(1).toLowerCase()
+                  {empleado.area
+                    ? empleado.area.charAt(0).toUpperCase() +
+                      empleado.area.slice(1).toLowerCase()
                     : ""}
                 </td>
                 <td className=" w-1/7 font-light h-10">
-                  {empleado.category
-                    ? empleado.category.charAt(0).toUpperCase() +
-                      empleado.category.slice(1).toLowerCase()
+                  {empleado.puesto
+                    ? empleado.puesto.charAt(0).toUpperCase() +
+                      empleado.puesto.slice(1).toLowerCase()
                     : ""}
                 </td>
 
-                <td className=" w-4/7 font-light h-10">
-                  {/* {empleado.email} */}
-                  anhelo@gmail.com
-                </td>
+                <td className=" w-4/7 font-light h-10">{empleado.correo}</td>
               </tr>
             ))}
           </tbody>
