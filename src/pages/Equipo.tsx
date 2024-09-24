@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
-import checkIcon from "../assets/listoIcon.png"; // Asegúrate de tener este ícono importado correctamente
 
 interface Empleado {
 	name: string;
@@ -65,7 +64,7 @@ export const Equipo = () => {
 
 	return (
 		<div className="flex flex-col">
-			<div className="flex flex-row  gap-4 items-center  mt-6 mb-2 mx-auto">
+			<div className="flex flex-row  gap-4 items-center  mt-6 mb-2  mx-auto">
 				<p className="text-black font-bold text-4xl ">Equipo</p>
 				<NavLink
 					className="bg-gray-200 ease-in-out duration-300 hover:bg-gray-300 h-10 gap-2 text-gray-100 mt-2 rounded-full flex items-center pt-3 pb-4 pl-4 pr-4"
@@ -97,7 +96,7 @@ export const Equipo = () => {
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b">
 						<tr>
-							<th scope="col" className="pl-4 w-1/7 py-3">
+							<th scope="col" className="pl-4 w-1/7 h-10">
 								<label className="inline-flex items-center">
 									<input
 										type="checkbox"
@@ -106,27 +105,32 @@ export const Equipo = () => {
 										className="form-checkbox hidden"
 									/>
 									<span
-										className={`w-4 h-4  rounded-full border border-black flex items-center  justify-center ${
-											selectAll ? "bg-black" : "bg-gray-100"
+										className={`w-6 h-6 flex items-center justify-center ${
+											selectAll ? "text-black" : "text-gray-300"
 										}`}
 									>
-										{selectAll && (
-											<img
-												src={checkIcon}
-												alt="Check"
-												className="w-2 h-2  text-gray-100"
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24"
+											fill="currentColor"
+											className="size-6"
+										>
+											<path
+												fillRule="evenodd"
+												d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+												clipRule="evenodd"
 											/>
-										)}
+										</svg>
 									</span>
 								</label>
 							</th>
-							<th scope="col" className=" w-1/7 py-3">
+							<th scope="col" className=" w-1/7 h-10">
 								Nombre
 							</th>
-							<th scope="col" className=" w-1/7 py-3">
+							<th scope="col" className=" w-1/7 h-10">
 								Puesto
 							</th>
-							<th scope="col" className=" w-4/7 py-3">
+							<th scope="col" className=" w-4/7 h-10">
 								Correo
 							</th>
 						</tr>
@@ -137,7 +141,7 @@ export const Equipo = () => {
 								key={empleado.name}
 								className="text-black border font-light border-black border-opacity-20"
 							>
-								<td className="pl-4 w-1/7 py-3">
+								<td className="pl-4 w-1/7 h-10">
 									<label className="inline-flex items-center">
 										<input
 											type="checkbox"
@@ -146,32 +150,41 @@ export const Equipo = () => {
 											className="form-checkbox hidden"
 										/>
 										<span
-											className={`w-4 h-4  rounded-full border border-black flex items-center justify-center ${
+											className={`w-6 h-6 flex items-center justify-center ${
 												selectedItems.includes(empleado.name)
-													? "bg-black"
-													: "bg-gray-100"
+													? "text-black"
+													: "text-gray-300"
 											}`}
 										>
-											{selectedItems.includes(empleado.name) && (
-												<img src={checkIcon} alt="Check" className="w-2 h-2" />
-											)}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												viewBox="0 0 24 24"
+												fill="currentColor"
+												className="size-6"
+											>
+												<path
+													fillRule="evenodd"
+													d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+													clipRule="evenodd"
+												/>
+											</svg>
 										</span>
 									</label>
 								</td>
-								<th scope="row" className=" w-1/7 font-light py-3">
+								<th scope="row" className=" w-1/7 font-light h-10">
 									{empleado.name
 										? empleado.name.charAt(0).toUpperCase() +
 										  empleado.name.slice(1).toLowerCase()
 										: ""}
 								</th>
-								<td className=" w-1/7 font-light py-3">
+								<td className=" w-1/7 font-light h-10">
 									{empleado.category
 										? empleado.category.charAt(0).toUpperCase() +
 										  empleado.category.slice(1).toLowerCase()
 										: ""}
 								</td>
 
-								<td className=" w-4/7 font-light py-3">{empleado.email}</td>
+								<td className=" w-4/7 font-light h-10">{empleado.email}</td>
 							</tr>
 						))}
 					</tbody>
