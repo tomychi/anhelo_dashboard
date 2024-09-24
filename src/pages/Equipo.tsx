@@ -50,6 +50,7 @@ export const Equipo = () => {
 		area: string[];
 		puesto: string[];
 	}>({ depto: [], area: [], puesto: [] });
+	const [searchTerm, setSearchTerm] = useState("");
 
 	const fetchEmpleados = async () => {
 		try {
@@ -102,6 +103,47 @@ export const Equipo = () => {
 		setShowActionBar(false);
 	};
 
+	const toggleFilter = () => {
+		setShowFilter(!showFilter);
+	};
+
+	const handleFilterChange = (
+		category: "depto" | "area" | "puesto",
+		value: string
+	) => {
+		setFilters((prev) => {
+			if (prev[category].includes(value)) {
+				return {
+					...prev,
+					[category]: prev[category].filter((item) => item !== value),
+				};
+			} else {
+				return { ...prev, [category]: [...prev[category], value] };
+			}
+		});
+	};
+
+	const getUniqueValues = (key: "depto" | "area" | "puesto") => {
+		return Array.from(new Set(empleados.map((emp) => emp[key])));
+	};
+
+	const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchTerm(event.target.value.toLowerCase());
+	};
+
+	const filteredEmpleados = empleados.filter(
+		(emp) =>
+			(filters.depto.length === 0 || filters.depto.includes(emp.depto)) &&
+			(filters.area.length === 0 || filters.area.includes(emp.area)) &&
+			(filters.puesto.length === 0 || filters.puesto.includes(emp.puesto)) &&
+			emp.name.toLowerCase().includes(searchTerm)
+	);
+
+	// Usar el hook personalizado para cerrar el filtro al hacer clic fuera
+	const filterRef = useOutsideClick(() => {
+		setShowFilter(false);
+	});
+
 	return (
 		<div className="flex flex-col relative">
 			<div className="flex flex-row  gap-4 items-center  mt-6 mb-2  mx-auto">
@@ -125,24 +167,75 @@ export const Equipo = () => {
 				<div className="flex flex-col w-1/3 mx-auto mb-2 gap-2 mt-2">
 					<Calendar />
 					<div className="flex flex-row gap-2">
-						<div className="flex items-center w-1/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								strokeWidth="1"
-								stroke="currentColor"
-								className="h-6 ml-2"
+						<div className="relative" ref={filterRef}>
+							<button
+								onClick={toggleFilter}
+								className="flex items-center w-full h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light px-2"
 							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
-								/>
-							</svg>
-							<p className="ml-1">Todos</p>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									strokeWidth="1"
+									stroke="currentColor"
+									className="h-6 mr-2"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+									/>
+								</svg>
+								Filtrar
+							</button>
+							{showFilter && (
+								<div className="absolute z-10 mt-1 w-64 bg-white rounded-md shadow-lg">
+									<div className="p-2">
+										<h3 className="font-semibold mb-2">Departamento</h3>
+										{getUniqueValues("depto").map((depto) => (
+											<label key={depto} className="flex items-center mb-1">
+												<input
+													type="checkbox"
+													checked={filters.depto.includes(depto)}
+													onChange={() => handleFilterChange("depto", depto)}
+													className="mr-2"
+												/>
+												{depto}
+											</label>
+										))}
+									</div>
+									<div className="p-2">
+										<h3 className="font-semibold mb-2">Área</h3>
+										{getUniqueValues("area").map((area) => (
+											<label key={area} className="flex items-center mb-1">
+												<input
+													type="checkbox"
+													checked={filters.area.includes(area)}
+													onChange={() => handleFilterChange("area", area)}
+													className="mr-2"
+												/>
+												{area}
+											</label>
+										))}
+									</div>
+									<div className="p-2">
+										<h3 className="font-semibold mb-2">Puesto</h3>
+										{getUniqueValues("puesto").map((puesto) => (
+											<label key={puesto} className="flex items-center mb-1">
+												<input
+													type="checkbox"
+													checked={filters.puesto.includes(puesto)}
+													onChange={() => handleFilterChange("puesto", puesto)}
+													className="mr-2"
+												/>
+												{puesto}
+											</label>
+										))}
+									</div>
+								</div>
+							)}
 						</div>
-						<div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black  text-xs font-light">
+						<div className="flex items-center w-2/3 h-10 rounded-lg border border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
@@ -157,7 +250,13 @@ export const Equipo = () => {
 									d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
 								/>
 							</svg>
-							<p className="ml-1">Buscar</p>
+							<input
+								type="text"
+								placeholder="Buscar miembro"
+								value={searchTerm}
+								onChange={handleSearch}
+								className="ml-1 w-full bg-transparent focus:outline-none"
+							/>
 						</div>
 					</div>
 				</div>
@@ -216,7 +315,7 @@ export const Equipo = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{empleados.map((empleado) => (
+						{filteredEmpleados.map((empleado) => (
 							<tr
 								key={empleado.name}
 								className="text-black border font-light border-black border-opacity-20"
@@ -285,7 +384,7 @@ export const Equipo = () => {
 			{showActionBar && (
 				<div
 					className="fixed bottom-0 left-0 right-0 bg-black  text-gray-100 font-coolvetica
-				 p-4 flex justify-between items-center"
+         p-4 flex justify-between items-center"
 				>
 					<div className="flex items-center  gap-2">
 						<span className="mr-8 font-medium text-4xl">
