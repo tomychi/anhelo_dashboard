@@ -164,7 +164,7 @@ export const Gastos: React.FC = () => {
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
 								viewBox="0 0 24 24"
-								strokeWidth="1"
+								strokeWidth="1.5"
 								stroke="currentColor"
 								className="h-6 ml-1.5"
 							>
@@ -204,7 +204,7 @@ export const Gastos: React.FC = () => {
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
 							viewBox="0 0 24 24"
-							strokeWidth="1"
+							strokeWidth="1.5"
 							stroke="currentColor"
 							className="h-6 ml-1.5 mb-0.5"
 						>
@@ -259,7 +259,8 @@ export const Gastos: React.FC = () => {
 									className="text-black border font-light h-10 border-black border-opacity-20"
 								>
 									<th scope="row" className="pl-4 w-1/5 font-light ">
-										{name} ({quantity} u.)
+										{name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()}{" "}
+										({quantity} u.)
 									</th>
 									<td className="pl-4 w-1/7 font-light ">
 										{currencyFormat(total)}
