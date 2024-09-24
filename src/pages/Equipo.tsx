@@ -264,7 +264,7 @@ export const Equipo = () => {
 							Asignar puesto
 						</button>
 						<button className="bg-gray-100 rounded-full  text-black  px-3 py-1  ">
-							Eliminar empleados
+							Eliminar miembro/s
 						</button>
 					</div>
 					<button onClick={handleCloseActionBar} className="text-2xl">
