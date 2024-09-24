@@ -4,7 +4,6 @@ import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
 
 interface Empleado {
-	id: string;
 	name: string;
 	category: string;
 	email: string;
@@ -19,7 +18,6 @@ export const Equipo = () => {
 	const fetchEmpleados = async () => {
 		try {
 			const empleadosData = await readEmpleados();
-			// Filtrar para excluir al empleado con name: "NO ASIGNADO"
 			const filteredEmpleados = empleadosData.filter(
 				(empleado) => empleado.name !== "NO ASIGNADO"
 			);
@@ -44,23 +42,25 @@ export const Equipo = () => {
 	const handleSelectAll = () => {
 		setSelectAll(!selectAll);
 		if (!selectAll) {
-			setSelectedItems(empleados.map((empleado) => empleado.id));
+			setSelectedItems(empleados.map((empleado) => empleado.name));
 		} else {
 			setSelectedItems([]);
 		}
 	};
 
-	const handleSelectItem = (id: string) => {
+	const handleSelectItem = (name: string) => {
 		setSelectedItems((prevSelected) =>
-			prevSelected.includes(id)
-				? prevSelected.filter((item) => item !== id)
-				: [...prevSelected, id]
+			prevSelected.includes(name)
+				? prevSelected.filter((item) => item !== name)
+				: [...prevSelected, name]
 		);
 	};
 
 	useEffect(() => {
 		setSelectAll(selectedItems.length === empleados.length);
 	}, [selectedItems, empleados]);
+
+	console.log(selectedItems);
 
 	return (
 		<div className="flex flex-col">
@@ -102,7 +102,7 @@ export const Equipo = () => {
 									type="checkbox"
 									checked={selectAll}
 									onChange={handleSelectAll}
-									className="form-checkbox  h-5 w-5 text-blue-600"
+									className="form-checkbox h-5 w-5 text-blue-600"
 								/>
 							</th>
 							<th scope="col" className=" w-1/7 py-3">
@@ -119,14 +119,14 @@ export const Equipo = () => {
 					<tbody>
 						{empleados.map((empleado) => (
 							<tr
-								key={empleado.id}
+								key={empleado.name}
 								className="text-black border font-light border-black border-opacity-20"
 							>
 								<td className="pl-4 w-1/7 py-3">
 									<input
 										type="checkbox"
-										checked={selectedItems.includes(empleado.id)}
-										onChange={() => handleSelectItem(empleado.id)}
+										checked={selectedItems.includes(empleado.name)}
+										onChange={() => handleSelectItem(empleado.name)}
 										className="form-checkbox h-5 w-5 text-blue-600"
 									/>
 								</td>
