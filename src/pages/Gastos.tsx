@@ -135,7 +135,7 @@ export const Gastos: React.FC = () => {
 					}
 				`}
 			</style>
-			<div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
+			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Gastos</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
@@ -150,7 +150,7 @@ export const Gastos: React.FC = () => {
 					>
 						<path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z" />
 					</svg>
-					<p className="font-bold">Nueva compra</p>
+					<p className="font-bold ">Nueva compra</p>
 				</NavLink>
 			</div>
 
