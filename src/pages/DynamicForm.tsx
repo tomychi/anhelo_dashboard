@@ -485,7 +485,7 @@ export const DynamicForm: React.FC = () => {
 						</p>
 						<div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 ">
 							<button
-								className={`w-1/2 font-medium py-2 rounded-lg ${
+								className={`w-1/2 font-bold py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-black text-gray-200"
 										: "bg-gray-300 text-black border-black border-1 border border-opacity-20"
@@ -495,7 +495,7 @@ export const DynamicForm: React.FC = () => {
 								Manualmente
 							</button>
 							<button
-								className={`w-1/2 font-medium py-2 rounded-lg ${
+								className={`w-1/2 font-bold py-2 rounded-lg ${
 									seccionActiva === "elaborar"
 										? "bg-gray-300 text-black border-black border-1 border border-opacity-20"
 										: "bg-black text-gray-200"
