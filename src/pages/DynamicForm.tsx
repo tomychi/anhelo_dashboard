@@ -613,7 +613,7 @@ export const DynamicForm: React.FC = () => {
 										</div>
 										<button
 											type="submit"
-											className="text-gray-100 w-full py-4 rounded-lg bg-black text-4xl font-medium mt-4"
+											className="text-gray-100 w-full py-4 rounded-lg bg-black text-4xl font-bold mt-4"
 										>
 											Guardar
 										</button>

@@ -62,7 +62,7 @@ export const CardItem = ({
 				</div>
 				<div
 					onClick={() => setShowModal(true)}
-					className="bg-black cursor-pointer   rounded-lg text-gray-100 text-center font-medium py-2"
+					className="bg-black cursor-pointer   rounded-lg text-gray-100 text-center font-bold py-2"
 				>
 					Agregar
 				</div>
