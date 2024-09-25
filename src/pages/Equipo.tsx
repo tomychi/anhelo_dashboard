@@ -32,7 +32,8 @@ export const Equipo: React.FC = () => {
 		try {
 			const empleadosData = await readEmpleados();
 			const filteredEmpleados = empleadosData.filter(
-				(empleado) => empleado.name !== "NO ASIGNADO"
+				(empleado) =>
+					empleado.name !== "NO ASIGNADO" && empleado.name !== "test"
 			);
 			setEmpleados(filteredEmpleados);
 		} catch (error) {
