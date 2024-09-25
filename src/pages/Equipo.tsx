@@ -210,24 +210,24 @@ export const Equipo: React.FC = () => {
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4 w-1/6">
+							<th scope="col" className="pl-4 w-2/5 ">
 								Nombre
 							</th>
-							<th scope="col" className="pl-4 w-1/6">
+							<th scope="col" className="pl-4 w-1/6 ">
 								Sueldo
 							</th>
-							<th scope="col" className="pl-4 hidden w-1/6">
+							{/* <th scope="col" className="pl-4 hidden w-1/6">
 								Depto
 							</th>
 							<th scope="col" className="pl-4 hidden w-1/6">
 								Área
-							</th>
-							<th scope="col" className="pl-4  w-1/6">
+							</th> */}
+							<th scope="col" className="pl-4 w-1/6 ">
 								Puesto
 							</th>
-							<th scope="col" className="pl-4 hidden w-1/6">
+							{/* <th scope="col" className="pl-4 hidden w-1/6">
 								Correo
-							</th>
+							</th> */}
 							<th scope="col" className="pl-4 w-1/6 "></th>
 						</tr>
 					</thead>
@@ -245,18 +245,18 @@ export const Equipo: React.FC = () => {
 										? `$${totalProductosVendidos * 230}`
 										: "$0"}
 								</td>
-								<td className="pl-4 w-1/6 hidden font-light">
+								{/* <td className="pl-4 w-1/6 hidden font-light">
 									{capitalizeFirstLetter(empleado.depto)}
 								</td>
 								<td className="pl-4 w-1/6 hidden font-light">
 									{capitalizeFirstLetter(empleado.area)}
-								</td>
+								</td> */}
 								<td className="pl-4 w-1/7 font-light">
 									{capitalizeFirstLetter(empleado.puesto)}
 								</td>
-								<td className="pl-4 w-1/6 hidden font-light">
+								{/* <td className="pl-4 w-1/7 hidden font-light">
 									{empleado.correo}
-								</td>
+								</td> */}
 								<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full">
 									. . .
 								</td>
