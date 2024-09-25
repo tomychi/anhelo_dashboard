@@ -181,12 +181,12 @@ export const Equipo: React.FC = () => {
 								<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
 							</div>
 						) : (
-							<div className="ml-[-6px] flex flex-row">
+							<div className="ml-[-7px] flex flex-row">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="h-6 mr-2.5"
+									className="h-6 mr-2"
 								>
 									<path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
 									<path
