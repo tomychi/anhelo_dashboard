@@ -27,6 +27,7 @@ export const Equipo: React.FC = () => {
 	const { totalProductosVendidos, vueltas } = useSelector(
 		(state: RootState) => state.data
 	);
+	const [isPaying, setIsPaying] = useState(false);
 
 	const fetchEmpleados = async () => {
 		try {
@@ -100,6 +101,42 @@ export const Equipo: React.FC = () => {
 		return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 	};
 
+	const handlePayAllSalaries = async () => {
+		setIsPaying(true);
+		try {
+			// Aquí iría la lógica para crear un pago en MercadoPago
+			// Por ejemplo:
+			// const response = await createMercadoPagoPayment(totalSalaries);
+			// if (response.success) {
+			//   // Actualizar el estado de los pagos en Firebase
+			//   await updatePaymentStatus(empleados);
+			// }
+			console.log("Procesando pago de todos los sueldos...");
+			// Simular un proceso de pago
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			alert("Todos los sueldos han sido pagados exitosamente");
+		} catch (error) {
+			console.error("Error al procesar el pago:", error);
+			alert(
+				"Hubo un error al procesar el pago. Por favor, intente nuevamente."
+			);
+		} finally {
+			setIsPaying(false);
+		}
+	};
+
+	const totalSalaries = useMemo(() => {
+		return filteredEmpleados.reduce((total, empleado) => {
+			let salary = 0;
+			if (empleado.area === "cocina") {
+				salary = totalProductosVendidos * 230;
+			} else if (empleado.puesto === "cadete") {
+				salary = cadetePagas[empleado.name] || 0;
+			}
+			return total + salary;
+		}, 0);
+	}, [filteredEmpleados, totalProductosVendidos, cadetePagas]);
+
 	return (
 		<div className="flex flex-col">
 			<style>
@@ -115,20 +152,46 @@ export const Equipo: React.FC = () => {
 			</style>
 			<div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Equipo</p>
-				<NavLink
-					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
-					to={"/nuevoMiembro"}
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						className="h-6 mt-1"
+				<div className="flex gap-2 flex-col">
+					<NavLink
+						className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+						to={"/nuevoMiembro"}
 					>
-						<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
-					</svg>
-					<p className="font-bold">Nuevo miembro</p>
-				</NavLink>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 mt-1"
+						>
+							<path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+						</svg>
+						<p className="font-bold">Nuevo miembro</p>
+					</NavLink>
+					<button
+						className={`text-black font-coolvetica bg-gray-300 font-black  rounded-full flex items-center  justify-center h-10 ${
+							isPaying ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+						}`}
+						onClick={handlePayAllSalaries}
+						disabled={isPaying}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 mr-2"
+						>
+							<path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+							<path
+								fill-rule="evenodd"
+								d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 14.625v-9.75ZM8.25 9.75a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM18.75 9a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V9.75a.75.75 0 0 0-.75-.75h-.008ZM4.5 9.75A.75.75 0 0 1 5.25 9h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75V9.75Z"
+								clip-rule="evenodd"
+							/>
+							<path d="M2.25 18a.75.75 0 0 0 0 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 0 0-.75-.75H2.25Z" />
+						</svg>
+
+						{isPaying ? "Procesando..." : `Pagar: $${totalSalaries.toFixed(0)}`}
+					</button>
+				</div>
 			</div>
 
 			<div className=" px-4 pb-8">
