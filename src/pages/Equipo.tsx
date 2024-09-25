@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink } from "react-router-dom";
-import {
-	collection,
-	getFirestore,
-	onSnapshot,
-	addDoc,
-} from "firebase/firestore";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import { readEmpleados } from "../firebase/registroEmpleados";
 import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
 import { useSelector } from "react-redux";
 import arrow from "../assets/arrowIcon.png";
+import { Cadete, Vuelta } from "../types/types";
 
 interface Empleado {
 	name: string;
@@ -29,7 +25,7 @@ export const Equipo: React.FC = () => {
 	const [selectedCategory, setSelectedCategory] = useState("Todos");
 	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const { totalProductosVendidos } = useSelector(
+	const { totalProductosVendidos, vueltas } = useSelector(
 		(state: RootState) => state.data
 	);
 
@@ -70,6 +66,20 @@ export const Equipo: React.FC = () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, []);
+
+	const cadetePagas = useMemo(() => {
+		const pagas: { [key: string]: number } = {};
+		vueltas.forEach((cadete: Cadete) => {
+			if (cadete.name && cadete.vueltas) {
+				const totalPaga = cadete.vueltas.reduce(
+					(sum, vuelta) => sum + (vuelta.paga || 0),
+					0
+				);
+				pagas[cadete.name] = totalPaga;
+			}
+		});
+		return pagas;
+	}, [vueltas]);
 
 	const uniqueCategories = [
 		"Todos",
@@ -216,18 +226,9 @@ export const Equipo: React.FC = () => {
 							<th scope="col" className="pl-4 w-1/6 ">
 								Sueldo
 							</th>
-							{/* <th scope="col" className="pl-4 hidden w-1/6">
-								Depto
-							</th>
-							<th scope="col" className="pl-4 hidden w-1/6">
-								Área
-							</th> */}
 							<th scope="col" className="pl-4 w-1/6 ">
 								Puesto
 							</th>
-							{/* <th scope="col" className="pl-4 hidden w-1/6">
-								Correo
-							</th> */}
 							<th scope="col" className="pl-4 w-1/6 "></th>
 						</tr>
 					</thead>
@@ -243,20 +244,17 @@ export const Equipo: React.FC = () => {
 								<td className="pl-4 w-1/7 font-light ">
 									{empleado.area === "cocina"
 										? `$${totalProductosVendidos * 230}`
+										: empleado.puesto === "cadete"
+										? `$${
+												cadetePagas[empleado.name]
+													? cadetePagas[empleado.name].toFixed(2)
+													: "0.00"
+										  }`
 										: "$0"}
 								</td>
-								{/* <td className="pl-4 w-1/6 hidden font-light">
-									{capitalizeFirstLetter(empleado.depto)}
-								</td>
-								<td className="pl-4 w-1/6 hidden font-light">
-									{capitalizeFirstLetter(empleado.area)}
-								</td> */}
 								<td className="pl-4 w-1/7 font-light">
 									{capitalizeFirstLetter(empleado.puesto)}
 								</td>
-								{/* <td className="pl-4 w-1/7 hidden font-light">
-									{empleado.correo}
-								</td> */}
 								<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
 									<p className="absolute top-[-4px]">. . .</p>
 								</td>
