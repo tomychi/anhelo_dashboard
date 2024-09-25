@@ -6,7 +6,7 @@ import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
 import { useSelector } from "react-redux";
 import arrow from "../assets/arrowIcon.png";
-import { Cadete, Vuelta } from "../types/types";
+import { Cadete } from "../types/types";
 
 interface Empleado {
 	name: string;
@@ -20,7 +20,6 @@ interface Empleado {
 
 export const Equipo: React.FC = () => {
 	const [empleados, setEmpleados] = useState<Empleado[]>([]);
-	const [showModal, setShowModal] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("Todos");
 	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -117,7 +116,6 @@ export const Equipo: React.FC = () => {
 				<p className="text-black font-bold text-4xl mt-1">Equipo</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
-					onClick={() => setShowModal(true)}
 					to={"/nuevoMiembro"}
 				>
 					<svg
