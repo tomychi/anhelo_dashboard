@@ -168,7 +168,7 @@ export const Equipo: React.FC = () => {
 						<p className="font-bold">Nuevo miembro</p>
 					</NavLink>
 					<button
-						className={`text-black font-coolvetica bg-gray-300 font-black  rounded-full flex items-center  justify-center h-10 ${
+						className={`text-black font-coolvetica bg-gray-300 font-black  rounded-full flex items-center pl-3  h-10 ${
 							isPaying ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
 						}`}
 						onClick={handlePayAllSalaries}
@@ -178,7 +178,7 @@ export const Equipo: React.FC = () => {
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-6 mr-2"
+							className="h-6 mr-2.5"
 						>
 							<path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
 							<path
