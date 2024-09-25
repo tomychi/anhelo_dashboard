@@ -102,7 +102,7 @@ export const Sidebar = () => {
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block  text-4xl font-coolvetica font-medium "
+									className="block  text-4xl font-coolvetica font-bold "
 									onClick={toggleMenu}
 								>
 									{item.text}
