@@ -303,8 +303,8 @@ export const Gastos: React.FC = () => {
 											/>
 										</div>
 									</td>
-									<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full">
-										. . .
+									<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
+										<p className="absolute top-[-4px]">. . .</p>
 									</td>
 								</tr>
 							)
