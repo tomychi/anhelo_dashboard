@@ -181,7 +181,7 @@ export const Equipo: React.FC = () => {
 								<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
 							</div>
 						) : (
-							<div className="ml-[-7px] flex flex-row">
+							<div className="ml-[-12px] flex flex-row">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
@@ -196,7 +196,7 @@ export const Equipo: React.FC = () => {
 									/>
 									<path d="M2.25 18a.75.75 0 0 0 0 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 0 0-.75-.75H2.25Z" />
 								</svg>
-								Pagar: ${totalSalaries.toFixed(2)}
+								<p className="font-bold">Pagar ${totalSalaries.toFixed(2)}</p>
 							</div>
 						)}
 					</button>
