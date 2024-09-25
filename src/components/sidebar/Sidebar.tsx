@@ -78,7 +78,7 @@ export const Sidebar = () => {
 
 						<p className=" font-bold font-coolvetica ">Accion rapida</p>
 					</button> */}
-					<div className="relative bg-gray-100 h-9 w-9 ml-2 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer">
+					<div className="relative bg-gray-100 h-9 w-9  rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer">
 						TA
 						<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 					</div>
@@ -105,6 +105,7 @@ export const Sidebar = () => {
 									className="block  text-4xl font-coolvetica font-bold "
 									onClick={toggleMenu}
 								>
+									src="https://www.uber-assets.com/image/upload/q_auto:eco,c_fill,h_48,w_48/v1693943418/assets/b1/3c9264-0416-4e8f-bb02-737a108f36ae/original/dot_grid_outlined.svg"
 									{item.text}
 								</NavLink>
 							</li>
