@@ -105,7 +105,6 @@ export const Sidebar = () => {
 									className="block  text-4xl font-coolvetica font-bold "
 									onClick={toggleMenu}
 								>
-									src="https://www.uber-assets.com/image/upload/q_auto:eco,c_fill,h_48,w_48/v1693943418/assets/b1/3c9264-0416-4e8f-bb02-737a108f36ae/original/dot_grid_outlined.svg"
 									{item.text}
 								</NavLink>
 							</li>
