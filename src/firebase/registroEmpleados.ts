@@ -172,6 +172,10 @@ export const listenToEmpleadosChanges = (
           category: data.category,
           vueltas: data.vueltas || [],
           available: data.available || false,
+          depto: data.depto || "",
+          area: data.area || "",
+          puesto: data.puesto || "",
+          correo: data.correo || "",
         };
       });
       callback(empleadosData);
