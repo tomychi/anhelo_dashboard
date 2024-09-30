@@ -1,5 +1,5 @@
-import { ExpenseProps } from '../firebase/UploadGasto';
-import { PedidoProps, ProductoMaterial } from '../types/types';
+import { ExpenseProps } from "../firebase/UploadGasto";
+import { PedidoProps, ProductoMaterial } from "../types/types";
 
 export interface BurgersPedidas {
   burger: string;
@@ -8,7 +8,7 @@ export interface BurgersPedidas {
 }
 
 export const calcularTotales = (
-  ordersData: (PedidoProps | ExpenseProps)[]
+  ordersData: (PedidoProps | ExpenseProps)[],
 ): {
   facturacionTotal: number;
   totalProductosVendidos: number;
@@ -40,16 +40,20 @@ export const calcularTotales = (
   // Iterar sobre los pedidos y gastos para calcular los totales y las hamburguesas pedidas
   const { facturacionTotal, totalProductosVendidos } = ordersData.reduce(
     (totals, order) => {
-      if ('detallePedido' in order) {
+      if ("detallePedido" in order) {
         // Si es un PedidoProps, suma el total de facturación y la cantidad de productos vendidos en el detalle del pedido
         totals.facturacionTotal += order.total || 0;
         totals.totalProductosVendidos += order.detallePedido.reduce(
           (accumulator, detail) => {
             // Acumula la cantidad de productos vendidos y agrega cada hamburguesa al objeto hamburguesasMap
             sumarCantidades(detail.burger, detail.quantity, order.hora);
-            return accumulator + detail.quantity;
+            // Si es una hamburguesa 2x1, suma una cantidad adicional
+            const additionalQuantity = detail.burger.includes("2x1")
+              ? detail.quantity
+              : 0;
+            return accumulator + detail.quantity + additionalQuantity;
           },
-          0
+          0,
         );
       } else {
         // Si es un ExpenseProps, suma el total de facturación y la cantidad directamente
@@ -58,7 +62,7 @@ export const calcularTotales = (
       }
       return totals;
     },
-    { facturacionTotal: 0, totalProductosVendidos: 0 }
+    { facturacionTotal: 0, totalProductosVendidos: 0 },
   );
 
   // Crear un arreglo con los objetos de hamburguesas y cantidades acumuladas
@@ -67,7 +71,7 @@ export const calcularTotales = (
       burger,
       quantity,
       hora,
-    })
+    }),
   );
 
   return { facturacionTotal, totalProductosVendidos, productosPedidos };
@@ -78,15 +82,15 @@ export const calculateUnitCost = (
   quantity: number,
   unidadPorPrecio: number,
   unit: string,
-  name: string
+  name: string,
 ): number => {
-  if (name === 'tomate') {
+  if (name === "tomate") {
     // Para el caso del tomate, simplemente dividimos el total por la cantidad de fetas
     return Math.ceil((total / (quantity * unidadPorPrecio)) * 2);
   }
 
   // Si la unidad es 'kg', convertimos la cantidad a gramos
-  if (unit === 'kg') {
+  if (unit === "kg") {
     quantity *= 1000; // Convertimos kg a gramos
     // Calculamos la cantidad de hamburguesas que se pueden hacer con la cantidad de ingrediente proporcionada
     const hamburguesasPorCantidad = quantity / unidadPorPrecio;
@@ -103,7 +107,7 @@ export const calculateUnitCost = (
 
 export const calcularCostoHamburguesa = (
   materiales: ProductoMaterial[],
-  ingredientes: Record<string, number>
+  ingredientes: Record<string, number>,
 ): number => {
   if (!ingredientes) {
     console.error("El objeto 'ingredientes' es null o undefined.");
@@ -122,7 +126,7 @@ export const calcularCostoHamburguesa = (
       costoTotal += costoIngrediente;
     } else {
       console.error(
-        `No se encontró el ingrediente ${nombre} en la lista de materiales.`
+        `No se encontró el ingrediente ${nombre} en la lista de materiales.`,
       );
     }
   }
