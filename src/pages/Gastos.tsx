@@ -278,7 +278,7 @@ export const Gastos: React.FC = () => {
 									<td className="pl-4 w-1/7 font-light ">
 										{currencyFormat(total)}
 									</td>
-									<td className="pl-4 w-1/7 font-light">
+									<td className="pl-4 w-1/7 font-bold">
 										<div className="select-wrapper ">
 											<select
 												className="bg-gray-300  py-1 pl-2   rounded-full"

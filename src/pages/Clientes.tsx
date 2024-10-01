@@ -145,7 +145,7 @@ export const Clientes = () => {
 				<p className="text-black font-bold text-4xl mt-1">Clientes</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
-					to="/nuevoCliente"
+					to="/clientesAnalisis"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
