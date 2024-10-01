@@ -258,13 +258,14 @@ export const Clientes = () => {
 											<td className="pl-4 py-2.5 w-1/6 font-light">
 												{getCantidadPedidos(t.telefono)}
 											</td>
-											<td className="pl-4 py-2.5 w-1/6 font-light">
-												<button
-													className="font-bold text-custom-red hover:underline"
+
+											<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
+												<p
 													onClick={() => handlePhoneNumberClick(t.telefono)}
+													className="absolute top-[-4px]"
 												>
-													Ver detalle
-												</button>
+													. . .
+												</p>
 											</td>
 										</tr>
 										{selectedPhoneNumber === t.telefono && (
