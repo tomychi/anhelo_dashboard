@@ -1,24 +1,24 @@
 import {
   updateTiempoElaboradoForOrder,
   updateTiempoEntregaForOrder,
-} from '../../../firebase/UploadOrder';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/configureStore';
-import { SelectCadete } from '../SelectCadete';
+} from "../../../firebase/UploadOrder";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/configureStore";
+import { SelectCadete } from "../SelectCadete";
 
 import {
   CardComandaHeader,
   CardComandaInfo,
   CardComdandaBody,
   CardComandaFooter,
-} from '../Card';
+} from "../Card";
 import {
   obtenerColorTailwind,
   obtenerDiferenciaHorariaWithColor,
-} from '../../../helpers/calculateDiffHours';
-import { useEffect, useState } from 'react';
-import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
-import { PedidoProps } from '../../../types/types';
+} from "../../../helpers/calculateDiffHours";
+import { useEffect, useState } from "react";
+import { obtenerDiferenciaHoraria } from "../../../helpers/dateToday";
+import { PedidoProps } from "../../../types/types";
 
 interface CardComandaProps extends PedidoProps {
   cadetes: string[];
@@ -37,6 +37,7 @@ export const CardComanda = ({
   telefono,
   total,
   efectivoCantidad,
+  mercadopagoCantidad,
   referencias,
   id,
   ubicacion,
@@ -63,6 +64,7 @@ export const CardComanda = ({
     telefono,
     total,
     efectivoCantidad,
+    mercadopagoCantidad,
     referencias,
     id,
     ubicacion,
@@ -80,7 +82,7 @@ export const CardComanda = ({
   const { user } = useSelector((state: RootState) => state.auth);
   // Estado para almacenar la cantidad de minutos de demora
   const [minutosDeDemora, setMinutosDeDemora] = useState(
-    obtenerDiferenciaHoraria(hora)
+    obtenerDiferenciaHoraria(hora),
   );
 
   const [bgColor, setBgColor] = useState(obtenerColorTailwind(minutosDeDemora));
@@ -106,7 +108,7 @@ export const CardComanda = ({
 
   return (
     <div
-      className={`flex justify-center font-coolvetica uppercase flex-col max-w-sm overflow-hidden h-min p-4 
+      className={`flex justify-center font-coolvetica uppercase flex-col max-w-sm overflow-hidden h-min p-4
   ${bgColor}
    `}
     >
@@ -129,6 +131,7 @@ export const CardComanda = ({
         metodoPago={metodoPago}
         total={total}
         efectivoCantidad={efectivoCantidad}
+        mercadopagoCantidad={mercadopagoCantidad}
         user={user}
         id={id}
         fecha={fecha}

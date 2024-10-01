@@ -21,6 +21,7 @@ export interface PedidoProps {
   telefono: string;
   total: number;
   efectivoCantidad: number;
+  mercadopagoCantidad: number;
   referencias: string;
   id: string;
   ubicacion: string;

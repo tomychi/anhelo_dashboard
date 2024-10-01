@@ -17,6 +17,7 @@ interface CardComandaInfoProps {
   tiempoElaborado: string;
   tiempoEntregado: string;
   efectivoCantidad: number;
+  mercadopagoCantidad: number;
   updateTiempoElaboradoForOrder: (
     fechaPedido: string,
     pedidoId: string,
@@ -38,6 +39,7 @@ export const CardComandaInfo = ({
   metodoPago: initialMetodoPago,
   total: initialTotal,
   efectivoCantidad: initialEfectivoCantidad,
+  mercadopagoCantidad: initalMercadopagoCantidad,
   user,
   id,
   fecha,
@@ -59,6 +61,10 @@ export const CardComandaInfo = ({
     initialEfectivoCantidad,
   );
 
+  const [mercadopagoCantidad, setMercadopagoCantidad] = useState(
+    initalMercadopagoCantidad,
+  );
+
   const canEdit = user.email === "tomas.arcostanzo5@gmail.com";
 
   const handleGuardarCambios = async () => {
@@ -71,6 +77,7 @@ export const CardComandaInfo = ({
         metodoPago,
         total,
         efectivoCantidad,
+        mercadopagoCantidad,
       });
       Swal.fire({
         icon: "success",
@@ -187,7 +194,7 @@ export const CardComandaInfo = ({
                   <div className="text-lg font-black">
                     MONTO: {currencyFormat(efectivoCantidad)}
                     <input
-                      type="number"
+                      type="text"
                       value={efectivoCantidad}
                       onChange={(e) =>
                         setEfectivoCantidad(Number(e.target.value))
@@ -203,7 +210,7 @@ export const CardComandaInfo = ({
                   MONTO:{" "}
                   {editando ? (
                     <input
-                      type="number"
+                      type="text"
                       value={total}
                       onChange={(e) => setTotal(Number(e.target.value))}
                       className="text-black p-1"
@@ -217,7 +224,7 @@ export const CardComandaInfo = ({
                         MONTO EFECTIVO:{" "}
                         {editando ? (
                           <input
-                            type="number"
+                            type="text"
                             value={efectivoCantidad}
                             onChange={(e) =>
                               setEfectivoCantidad(Number(e.target.value))
@@ -230,6 +237,24 @@ export const CardComandaInfo = ({
                       </span>
                     ) : null}
                   </p>
+                  {/* Mostrar mercadopagoCantidad si el método de pago es "ambos" o "mercadopago" */}
+                  {(metodoPago === "ambos" || metodoPago === "mercadopago") && (
+                    <p className="text-lg font-black">
+                      MONTO MERCADOPAGO:{" "}
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mercadopagoCantidad}
+                          onChange={(e) =>
+                            setMercadopagoCantidad(Number(e.target.value))
+                          }
+                          className="text-black p-1"
+                        />
+                      ) : (
+                        currencyFormat(mercadopagoCantidad)
+                      )}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
