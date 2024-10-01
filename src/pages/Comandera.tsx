@@ -718,6 +718,7 @@ export const Comandera: React.FC = () => {
         telefono: pedido.telefono || "", // Valor predeterminado
         total: pedido.total || 0, // Valor predeterminado
         efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
+        mercadopagoCantidad: pedido.mercadopagoCantidad || 0, // Valor predeterminado
         referencias: pedido.referencias || "", // Valor predeterminado
         ubicacion: pedido.ubicacion || "", // Valor predeterminado
         dislike: pedido.dislike || false, // Valor predeterminado

@@ -38,6 +38,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           kms,
           minutosDistancia,
           efectivoCantidad,
+          mercadopagoCantidad,
         }) => (
           <div key={`comanda-${hora}-${id}`}>
             <CardComanda
@@ -54,6 +55,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               fecha={fecha}
               cadete={cadete}
               efectivoCantidad={efectivoCantidad}
+              mercadopagoCantidad={mercadopagoCantidad}
               tiempoElaborado={tiempoElaborado}
               tiempoEntregado={tiempoEntregado}
               entregado={entregado}

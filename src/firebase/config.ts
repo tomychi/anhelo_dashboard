@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
