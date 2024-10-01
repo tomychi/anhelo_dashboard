@@ -1,63 +1,103 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
 	cleanPhoneNumber,
-	getCustomers,
 	getOrdersByPhoneNumber,
 } from "../helpers/orderByweeks";
 import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
+import { NavLink } from "react-router-dom";
+import arrow from "../assets/arrowIcon.png";
+import Calendar from "../components/Calendar";
+
+interface LoadingElementProps {
+	className: string;
+	width?: number | string;
+}
+
+const LoadingElement: React.FC<LoadingElementProps> = ({
+	className,
+	width,
+}) => (
+	<div
+		className={`bg-gray-200 rounded overflow-hidden ${className}`}
+		style={{ width }}
+	>
+		<motion.div
+			className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
+			animate={{ x: ["100%", "-100%"] }}
+			transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+		/>
+	</div>
+);
 
 export const Clientes = () => {
-	const { orders, telefonos, expenseData, facturacionTotal, neto } =
-		useSelector((state: RootState) => state.data);
-	const { valueDate } = useSelector((state: RootState) => state.data);
-	const startDate = new Date(valueDate?.startDate || new Date());
+	const { orders, telefonos, valueDate, isLoading } = useSelector(
+		(state: RootState) => state.data
+	);
 
 	const [selectedPhoneNumber, setSelectedPhoneNumber] = useState<string | null>(
 		null
 	);
-
 	const [pedidosByPhone, setPedidosByPhone] = useState<PedidoProps[] | null>(
 		null
 	);
-
 	const [searchTerm, setSearchTerm] = useState<string>("");
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+	const [filteredOrders, setFilteredOrders] = useState(orders);
+	const [filteredTelefonos, setFilteredTelefonos] = useState(telefonos);
 
-	const customers = getCustomers(telefonos, orders, startDate);
+	useEffect(() => {
+		if (valueDate?.startDate && valueDate?.endDate) {
+			const startDate = new Date(valueDate.startDate);
+			const endDate = new Date(valueDate.endDate);
+			endDate.setHours(23, 59, 59, 999); // Set to end of day
 
-	const totalOrders = orders.length;
-	const totalExistingCustomersOrders = customers.existingCustomers.length;
+			console.log("Filtering orders from", startDate, "to", endDate);
 
-	const existingCustomersPercentage =
-		(totalExistingCustomersOrders / totalOrders) * 100;
-	const newCustomersPercentage = 100 - existingCustomersPercentage;
+			const filtered = orders.filter((order) => {
+				const orderDate = new Date(order.fecha.split("/").reverse().join("-"));
+				return orderDate >= startDate && orderDate <= endDate;
+			});
 
-	// Función para manejar el clic en una fila de teléfono
+			console.log("Filtered orders:", filtered);
+
+			setFilteredOrders(filtered);
+
+			// Filter telefonos based on the filtered orders
+			const phonesWithOrders = new Set(
+				filtered.map((order) => cleanPhoneNumber(order.telefono))
+			);
+			const filteredPhones = telefonos.filter((t) =>
+				phonesWithOrders.has(t.telefono)
+			);
+
+			console.log("Filtered telefonos:", filteredPhones);
+
+			setFilteredTelefonos(filteredPhones);
+		} else {
+			console.log("No date range selected, using all orders and telefonos");
+			setFilteredOrders(orders);
+			setFilteredTelefonos(telefonos);
+		}
+	}, [valueDate, orders, telefonos]);
+
 	const handlePhoneNumberClick = (phoneNumber: string) => {
-		// Si el número de teléfono seleccionado es igual al actual, lo deseleccionamos
 		setSelectedPhoneNumber((prevPhoneNumber) =>
 			prevPhoneNumber === phoneNumber ? null : phoneNumber
 		);
-
-		const pedidos = getOrdersByPhoneNumber(phoneNumber, orders);
+		const pedidos = getOrdersByPhoneNumber(phoneNumber, filteredOrders);
 		setPedidosByPhone(pedidos);
+		console.log("Pedidos for phone number", phoneNumber, ":", pedidos);
 	};
 
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-
-	// Filtrar los teléfonos según el término de búsqueda
-	const filteredTelefonos = telefonos.filter((t) =>
-		t.telefono.includes(searchTerm)
-	);
-
-	// Filtrar los teléfonos que tienen pedidos asociados
 	const telefonosConPedidos = filteredTelefonos.filter((t) =>
-		orders.some((o) => cleanPhoneNumber(o.telefono) === t.telefono)
+		t.telefono.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
-	// Función para ordenar los teléfonos según la cantidad de pedidos
 	const sortTelefonos = () => {
 		return telefonosConPedidos.sort((a, b) => {
 			const countA = getCantidadPedidos(a.telefono);
@@ -70,279 +110,179 @@ export const Clientes = () => {
 		});
 	};
 
-	//Base de clientes
-	const cantidadNumerosTelefono = telefonos.length;
-
-	// Función para filtrar los elementos de expenseData cuya propiedad category sea "Ads" y sumar el valor de la propiedad 'total'
-	const calcularTotalAds = () => {
-		// Filtrar los elementos de expenseData cuya propiedad category sea "Ads"
-		const expenseDataAds = expenseData.filter(
-			(item) => item.category === "Ads"
-		);
-
-		// Sumar el valor de la propiedad 'total' de cada elemento en expenseDataAds
-		const totalAds = expenseDataAds.reduce(
-			(total, item) => total + item.total,
-			0
-		);
-
-		return totalAds;
+	const getCantidadPedidos = (phoneNumber: string) => {
+		const count = filteredOrders.filter(
+			(order) => cleanPhoneNumber(order.telefono) === phoneNumber
+		).length;
+		console.log("Cantidad de pedidos para", phoneNumber, ":", count);
+		return count;
 	};
 
-	// Función para filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING" y sumar la propiedad "Total"
-	const calcularTotalInversionMarketing = () => {
-		// Filtrar los objetos cuyo nombre sea "SUELDO FIJO MARKETING" o "SUELDO VARIABLE MARKETING"
-		const inversionMarketing = expenseData.filter(
-			(item) =>
-				item.category === "Sueldos" &&
-				(item.name === "SUELDO FIJO MARKETING" ||
-					item.name === "SUELDO VARIABLE MARKETING")
-		);
-
-		// Sumar la propiedad "Total" de los objetos filtrados
-		const totalInversionMarketing = inversionMarketing.reduce(
-			(total, item) => total + item.total,
-			0
-		);
-
-		return totalInversionMarketing;
-	};
-
-	//CAC
-	const cac = parseFloat(
-		(
-			(calcularTotalAds() + calcularTotalInversionMarketing()) /
-			orders.length
-		).toFixed(2)
+	const LoadingSkeleton = () => (
+		<tr className="border-b border-black border-opacity-20">
+			<td className="pl-4 py-2.5 w-2/5">
+				<LoadingElement className="h-4 w-3/4" />
+			</td>
+			<td className="pl-4 py-2.5 w-1/6">
+				<LoadingElement className="h-4 w-1/2" />
+			</td>
+			<td className="pl-4 py-2.5 w-1/6">
+				<LoadingElement className="h-4 w-3/4" />
+			</td>
+		</tr>
 	);
 
-	const ticketBrutoPromedio = facturacionTotal / orders.length;
-	const ticketNetoPromedio = neto / orders.length;
-
-	//Life time value averague section
-
-	// Función para obtener la cantidad de pedidos por número de teléfono
-	const getCantidadPedidos = (phoneNumber: string) => {
-		const pedidos = orders.filter(
-			(order) => cleanPhoneNumber(order.telefono) === phoneNumber
-		);
-		return pedidos.length;
-	};
-
-	// Calcular el promedio de pedidos por número de teléfono
-	// Función para contar cuántas veces se repite un teléfono en la lista de pedidos
-	const contarRepeticionesTelefono = () => {
-		const telefonoCount: { [telefono: string]: number } = {}; // Objeto para almacenar el recuento de cada número de teléfono
-
-		// Recorrer la lista de pedidos
-		orders.forEach((order) => {
-			const telefono = order.telefono;
-
-			// Verificar si el número de teléfono ya está en el objeto de recuento
-			if (telefonoCount[telefono]) {
-				// Si ya existe, incrementa su contador
-				telefonoCount[telefono]++;
-			} else {
-				// Si no existe, inicializa su contador en 1
-				telefonoCount[telefono] = 1;
-			}
-		});
-
-		return telefonoCount;
-	};
-
-	// Función para calcular el promedio de pedidos por número de teléfono
-	const calcularPromedioPedidosPorTelefono = () => {
-		const repeticionesTelefono = contarRepeticionesTelefono();
-		const numerosTelefonosUnicos = Object.keys(repeticionesTelefono).length;
-		const totalPedidos = orders.length;
-
-		// Calcular el promedio
-		const promedio = totalPedidos / numerosTelefonosUnicos;
-		return promedio;
-	};
-
-	// Llamar a la función para obtener el promedio de pedidos por número de teléfono
-	const promedioPedidosPorTelefono = calcularPromedioPedidosPorTelefono();
-
-	const brutoReportedBeforeDie =
-		ticketBrutoPromedio * promedioPedidosPorTelefono;
-
-	const netoReportedBeforeDie = ticketNetoPromedio * promedioPedidosPorTelefono;
-
-	// Calcular la suma de todos los gastos que no sean de la categoría "ingredientes"
-
-	const totalGastos = expenseData.reduce((total, expense) => {
-		// Excluir los gastos que tengan la categoría "ingredientes"
-		if (
-			expense.category !== "ingredientes" &&
-			expense.category !== "igredientes" &&
-			expense.category !== "bebidas" &&
-			expense.category !== "packaging" &&
-			expense.category !== "Infraestructura" &&
-			expense.name !== "carne"
-		) {
-			return total + expense.total;
-		} else {
-			return total;
-		}
-	}, 0);
-
-	// Calcular el balance mensual (neto - gastos)
-	const balanceMensual = neto - totalGastos;
-	const rentabilidadPromedioFinal =
-		(balanceMensual / orders.length) * promedioPedidosPorTelefono;
-
-	const costoDeOperaciones = ticketNetoPromedio - rentabilidadPromedioFinal;
-
 	return (
-		<div className="p-4 font-coolvetica">
-			<div className="flex flex-row gap-4 mb-4">
-				<p className="bg-custom-red h-min p-4 font-black">
-					BASE DE CLIENTES ALL TIME: {cantidadNumerosTelefono}
-				</p>
-				<p className="bg-custom-red h-min p-4 font-black">
-					PEDIDOS POR CLIENTE: {""}
-					{promedioPedidosPorTelefono.toFixed(2)}
-				</p>
-				<p className="bg-custom-red h-min p-4 font-black">
-					COSTO DE ADQUISICION DE CLIENTES: ${cac}
-				</p>
-				<p className="bg-custom-red h-min p-4 font-black">
-					COSTO DE OPERACIONES: ${costoDeOperaciones.toFixed(2)}
-				</p>
-				<p className="bg-custom-red h-min p-4 font-black">
-					BRUTO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
-					{brutoReportedBeforeDie.toFixed(2)}
-				</p>
-				<p className="bg-custom-red h-min p-4 font-black">
-					NETO REPORTADO EN EL RANGO DE TIEMPO SELECCIONADO: $
-					{netoReportedBeforeDie.toFixed(2)}
-				</p>
-
-				<p className="bg-custom-red h-min p-4 font-black">
-					RENTABILIDAD FINAL POR CLIENTE: $
-					{rentabilidadPromedioFinal.toFixed(2)}
-				</p>
-
-				<p className="bg-custom-red h-min p-4 font-black">
-					{existingCustomersPercentage.toFixed(2)}% de pedidos son de clientes
-					existentes,
-					{newCustomersPercentage.toFixed(2)}% son de nuevos clientes
-				</p>
+		<div className="flex flex-col">
+			<style>
+				{`
+          .arrow-down {
+            transition: transform 0.3s ease;
+            transform: rotate(90deg);
+          }
+          .arrow-down.open {
+            transform: rotate(-90deg);
+          }
+        `}
+			</style>
+			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
+				<p className="text-black font-bold text-4xl mt-1">Clientes</p>
+				<NavLink
+					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+					to="/nuevoCliente"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						className="h-6 mt-1"
+					>
+						<path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+					</svg>
+					<p className="font-bold">Nuevo cliente</p>
+				</NavLink>
 			</div>
-			<div>
-				<div className="relative ">
-					<div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-4 pointer-events-none">
+
+			<div className="px-4 pb-8">
+				<Calendar />
+				<div className="flex flex-row gap-2 mt-2">
+					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
+						<div
+							className="flex flex-row items-center gap-1 cursor-pointer"
+							onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth="1.5"
+								stroke="currentColor"
+								className="h-6 ml-1.5"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+								/>
+							</svg>
+							<p>Todos </p>
+						</div>
+						<img
+							src={arrow}
+							className={`h-2 arrow-down ${showCategoryDropdown ? "open" : ""}`}
+							alt=""
+						/>
+					</div>
+					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
 						<svg
-							className="w-4 h-4 text-red-main"
-							aria-hidden="true"
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
-							viewBox="0 0 20 20"
+							viewBox="0 0 24 24"
+							strokeWidth="1.5"
+							stroke="currentColor"
+							className="h-6 ml-1.5 mb-0.5"
 						>
 							<path
-								stroke="currentColor"
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								strokeWidth="2"
-								d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+								d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
 							/>
 						</svg>
+						<input
+							type="text"
+							placeholder="Buscar cliente"
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className="w-full bg-transparent outline-none"
+						/>
 					</div>
-					<input
-						type="text"
-						id="table-search"
-						className="block p-4 ps-12  border-2 border-red-main w-80 bg-black"
-						placeholder="BUSCAR CLIENTE"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
 				</div>
 			</div>
-			<table className="h-min w-full font-coolvetica text-sm text-left rtl:text-right text-black">
-				<thead className="text-xs  uppercase text-black border border-red-main bg-custom-red">
-					<tr>
-						<th scope="col" className="px-4 text-left py-3">
-							Teléfonos
-						</th>
-						<th
-							scope="col"
-							className="px-4 py-3  text-black text-right whitespace-nowrap"
-						>
-							Cantidad de Pedidos
-							<button
-								className="ml-2 text-xs text-black border-black border-2 hover:text-custom-red hover:bg-black"
-								onClick={() =>
-									setSortDirection((prevDirection) =>
-										prevDirection === "asc" ? "desc" : "asc"
-									)
-								}
-							>
-								{sortDirection === "asc" ? (
-									<svg
-										className="w-4 h-4 inline-block"
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 20 20"
-										fill="currentColor"
-									>
-										<path
-											fillRule="evenodd"
-											d="M5.293 6.707a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-											clipRule="evenodd"
-										/>
-									</svg>
-								) : (
-									<svg
-										className="w-4 h-4 inline-block"
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 20 20"
-										fill="currentColor"
-									>
-										<path
-											fillRule="evenodd"
-											d="M5.293 6.707a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-											clipRule="evenodd"
-										/>
-									</svg>
-								)}
-							</button>
-						</th>
-						<th scope="col" className="px-4  py-3"></th>
-					</tr>
-				</thead>
-				<tbody>
-					{sortTelefonos().map((t, i) => (
-						<React.Fragment key={i}>
-							<tr className="bg-black text-custom-red uppercase font-black border border-red-main">
-								<td className="px-4 py-4 font-black text-left text-custom-red whitespace-nowrap">
-									{t.telefono}
-								</td>
-								<td className="px-4 py-4 font-black text-custom-red text-right whitespace-nowrap">
-									{getCantidadPedidos(t.telefono)}
-								</td>
-								<td className="px-4 py-4 font-black text-custom-red text-right whitespace-nowrap">
-									<button
-										className="font-black border border-red-main text-custom-red hover:underline px-1 uppercase"
-										onClick={() => handlePhoneNumberClick(t.telefono)}
-									>
-										Ver detalle
-									</button>
-								</td>
-							</tr>
-							{selectedPhoneNumber === t.telefono && (
-								<div className=" py-4">
-									<div className="flex flex-row gap-4">
-										{pedidosByPhone?.map((p) => (
-											<CardOrderCliente p={p} />
-										))}
-									</div>
-								</div>
-							)}
-						</React.Fragment>
-					))}
-				</tbody>
-			</table>
+
+			<div className="font-coolvetica">
+				<table className="w-full text-xs text-left text-black">
+					<thead className="text-black border-b">
+						<tr>
+							<th scope="col" className="pl-4 py-2.5 w-2/5">
+								Teléfono
+							</th>
+							<th scope="col" className="pl-4 py-2.5 w-1/6">
+								Pedidos
+								<button
+									className="ml-2 text-xs text-black border-black border-2 hover:text-custom-red hover:bg-black"
+									onClick={() =>
+										setSortDirection((prevDirection) =>
+											prevDirection === "asc" ? "desc" : "asc"
+										)
+									}
+								>
+									{sortDirection === "asc" ? "▲" : "▼"}
+								</button>
+							</th>
+							<th scope="col" className="pl-4 py-2.5 w-1/6"></th>
+						</tr>
+					</thead>
+					<tbody className="divide-y divide-black divide-opacity-20">
+						{isLoading
+							? Array(10)
+									.fill(0)
+									.map((_, index) => <LoadingSkeleton key={index} />)
+							: sortTelefonos().map((t, i) => (
+									<React.Fragment key={i}>
+										<tr>
+											<td className="pl-4 py-2.5 w-2/5 font-light">
+												{t.telefono}
+											</td>
+											<td className="pl-4 py-2.5 w-1/6 font-light">
+												{getCantidadPedidos(t.telefono)}
+											</td>
+											<td className="pl-4 py-2.5 w-1/6 font-light">
+												<button
+													className="font-bold text-custom-red hover:underline"
+													onClick={() => handlePhoneNumberClick(t.telefono)}
+												>
+													Ver detalle
+												</button>
+											</td>
+										</tr>
+										{selectedPhoneNumber === t.telefono && (
+											<tr>
+												<td colSpan={3}>
+													<div className="py-4">
+														<div className="flex flex-row gap-4">
+															{pedidosByPhone?.map((p) => (
+																<CardOrderCliente key={p.id} p={p} />
+															))}
+														</div>
+													</div>
+												</td>
+											</tr>
+										)}
+									</React.Fragment>
+							  ))}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	);
 };
