@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
 	cleanPhoneNumber,
 	getOrdersByPhoneNumber,
+	getCustomers,
 } from "../helpers/orderByweeks";
 import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
@@ -49,12 +50,13 @@ export const Clientes = () => {
 	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 	const [filteredOrders, setFilteredOrders] = useState(orders);
 	const [filteredTelefonos, setFilteredTelefonos] = useState(telefonos);
+	const [newCustomers, setNewCustomers] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (valueDate?.startDate && valueDate?.endDate) {
 			const startDate = new Date(valueDate.startDate);
 			const endDate = new Date(valueDate.endDate);
-			endDate.setHours(23, 59, 59, 999); // Set to end of day
+			endDate.setHours(23, 59, 59, 999);
 
 			const filtered = orders.filter((order) => {
 				const orderDate = new Date(order.fecha.split("/").reverse().join("-"));
@@ -63,7 +65,6 @@ export const Clientes = () => {
 
 			setFilteredOrders(filtered);
 
-			// Filter telefonos based on the filtered orders
 			const phonesWithOrders = new Set(
 				filtered.map((order) => cleanPhoneNumber(order.telefono))
 			);
@@ -72,9 +73,13 @@ export const Clientes = () => {
 			);
 
 			setFilteredTelefonos(filteredPhones);
+
+			const { newCustomers } = getCustomers(telefonos, filtered, startDate);
+			setNewCustomers(newCustomers.map((customer) => customer.telefono));
 		} else {
 			setFilteredOrders(orders);
 			setFilteredTelefonos(telefonos);
+			setNewCustomers([]);
 		}
 	}, [valueDate, orders, telefonos]);
 
@@ -235,7 +240,7 @@ export const Clientes = () => {
 									<img
 										src={arrow}
 										alt="Sort"
-										className={`h-2  inline-block transition-transform duration-300 ${
+										className={`h-2 inline-block transition-transform duration-300 ${
 											sortDirection === "asc" ? "-rotate-90" : "rotate-90"
 										}`}
 									/>
@@ -252,17 +257,21 @@ export const Clientes = () => {
 							: sortTelefonos().map((t, i) => (
 									<React.Fragment key={i}>
 										<tr>
-											<td className="pl-4 py-2.5 w-2/5 font-light">
+											<td className="pl-4 py-2.5 w-2/5 font-light flex items-center">
 												{t.telefono}
+												{newCustomers.includes(t.telefono) && (
+													<span className="ml-2 px-2 py-1 bg-black text-white font-bold text-xs rounded-full">
+														Nuevo
+													</span>
+												)}
 											</td>
 											<td className="pl-4 py-2.5 w-1/6 font-light">
 												{getCantidadPedidos(t.telefono)}
 											</td>
-
 											<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
 												<p
 													onClick={() => handlePhoneNumberClick(t.telefono)}
-													className="absolute top-[-4px]"
+													className="absolute top-[-4px] cursor-pointer"
 												>
 													. . .
 												</p>
