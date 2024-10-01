@@ -230,7 +230,7 @@ export const Clientes = () => {
 							<th scope="col" className="pl-4 py-2.5 w-1/6">
 								Pedidos
 								<button
-									className="ml-2 text-xs text-black"
+									className="ml-2  text-xs text-black"
 									onClick={() =>
 										setSortDirection((prevDirection) =>
 											prevDirection === "asc" ? "desc" : "asc"
