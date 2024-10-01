@@ -225,14 +225,20 @@ export const Clientes = () => {
 							<th scope="col" className="pl-4 py-2.5 w-1/6">
 								Pedidos
 								<button
-									className="ml-2 text-xs text-black border-black border-2 hover:text-custom-red hover:bg-black"
+									className="ml-2 text-xs text-black"
 									onClick={() =>
 										setSortDirection((prevDirection) =>
 											prevDirection === "asc" ? "desc" : "asc"
 										)
 									}
 								>
-									{sortDirection === "asc" ? "▲" : "▼"}
+									<img
+										src={arrow}
+										alt="Sort"
+										className={`h-2  inline-block transition-transform duration-300 ${
+											sortDirection === "asc" ? "-rotate-90" : "rotate-90"
+										}`}
+									/>
 								</button>
 							</th>
 							<th scope="col" className="pl-4 py-2.5 w-1/6"></th>
