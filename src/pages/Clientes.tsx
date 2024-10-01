@@ -256,11 +256,11 @@ export const Clientes = () => {
 									.map((_, index) => <LoadingSkeleton key={index} />)
 							: sortTelefonos().map((t, i) => (
 									<React.Fragment key={i}>
-										<tr>
+										<tr className="text-black border font-light h-10 border-black border-opacity-20">
 											<td className="pl-4 py-2.5 w-2/5 font-light flex items-center">
 												{t.telefono}
 												{newCustomers.includes(t.telefono) && (
-													<span className="ml-2 px-2 py-1 bg-black text-white font-bold text-xs rounded-full">
+													<span className="bg-black text-white font-bold  py-1 px-2  ml-2 rounded-full">
 														Nuevo
 													</span>
 												)}
