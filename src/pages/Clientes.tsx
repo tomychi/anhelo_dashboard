@@ -56,14 +56,10 @@ export const Clientes = () => {
 			const endDate = new Date(valueDate.endDate);
 			endDate.setHours(23, 59, 59, 999); // Set to end of day
 
-			console.log("Filtering orders from", startDate, "to", endDate);
-
 			const filtered = orders.filter((order) => {
 				const orderDate = new Date(order.fecha.split("/").reverse().join("-"));
 				return orderDate >= startDate && orderDate <= endDate;
 			});
-
-			console.log("Filtered orders:", filtered);
 
 			setFilteredOrders(filtered);
 
@@ -75,11 +71,8 @@ export const Clientes = () => {
 				phonesWithOrders.has(t.telefono)
 			);
 
-			console.log("Filtered telefonos:", filteredPhones);
-
 			setFilteredTelefonos(filteredPhones);
 		} else {
-			console.log("No date range selected, using all orders and telefonos");
 			setFilteredOrders(orders);
 			setFilteredTelefonos(telefonos);
 		}
@@ -91,7 +84,6 @@ export const Clientes = () => {
 		);
 		const pedidos = getOrdersByPhoneNumber(phoneNumber, filteredOrders);
 		setPedidosByPhone(pedidos);
-		console.log("Pedidos for phone number", phoneNumber, ":", pedidos);
 	};
 
 	const telefonosConPedidos = filteredTelefonos.filter((t) =>
@@ -114,7 +106,6 @@ export const Clientes = () => {
 		const count = filteredOrders.filter(
 			(order) => cleanPhoneNumber(order.telefono) === phoneNumber
 		).length;
-		console.log("Cantidad de pedidos para", phoneNumber, ":", count);
 		return count;
 	};
 
@@ -157,9 +148,14 @@ export const Clientes = () => {
 						fill="currentColor"
 						className="h-6 mt-1"
 					>
-						<path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
+						<path
+							fill-rule="evenodd"
+							d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.04 16.5.5-1.5h6.42l.5 1.5H8.29Zm7.46-12a.75.75 0 0 0-1.5 0v6a.75.75 0 0 0 1.5 0v-6Zm-3 2.25a.75.75 0 0 0-1.5 0v3.75a.75.75 0 0 0 1.5 0V9Zm-3 2.25a.75.75 0 0 0-1.5 0v1.5a.75.75 0 0 0 1.5 0v-1.5Z"
+							clip-rule="evenodd"
+						/>
 					</svg>
-					<p className="font-bold">Nuevo cliente</p>
+
+					<p className="font-bold">Ver análisis</p>
 				</NavLink>
 			</div>
 
