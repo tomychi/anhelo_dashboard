@@ -222,12 +222,12 @@ export const Clientes = () => {
 
 			<div className="font-coolvetica">
 				<table className="w-full text-xs text-left text-black">
-					<thead className="text-black border-b">
+					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4 py-2.5 w-2/5">
+							<th scope="col" className="pl-4  w-2/5">
 								Teléfono
 							</th>
-							<th scope="col" className="pl-4 py-2.5 w-1/6">
+							<th scope="col" className="pl-4  w-1/6">
 								Pedidos
 								<button
 									className="ml-2  text-xs text-black"
@@ -246,7 +246,7 @@ export const Clientes = () => {
 									/>
 								</button>
 							</th>
-							<th scope="col" className="pl-4 py-2.5 w-1/6"></th>
+							<th scope="col" className="pl-4 w-1/6"></th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-black divide-opacity-20">
@@ -257,7 +257,7 @@ export const Clientes = () => {
 							: sortTelefonos().map((t, i) => (
 									<React.Fragment key={i}>
 										<tr className="text-black border font-light h-10 border-black border-opacity-20">
-											<td className="pl-4 py-2.5 w-2/5 font-light flex items-center">
+											<td scope="row" className="pl-4  w-2/5 font-light">
 												{t.telefono}
 												{newCustomers.includes(t.telefono) && (
 													<span className="bg-black text-white font-bold  py-1 px-2  ml-2 rounded-full">
@@ -265,7 +265,7 @@ export const Clientes = () => {
 													</span>
 												)}
 											</td>
-											<td className="pl-4 py-2.5 w-1/6 font-light">
+											<td className="pl-4  w-1/6 font-light">
 												{getCantidadPedidos(t.telefono)}
 											</td>
 											<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
