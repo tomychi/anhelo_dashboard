@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-	LineChart,
-	Line,
+	BarChart,
+	Bar,
 	XAxis,
 	YAxis,
 	CartesianGrid,
@@ -26,7 +26,7 @@ const KPILineChart = ({ orders }) => {
 	useEffect(() => {
 		if (!orders.length) return;
 
-		// Group orders by date
+		// Agrupar pedidos por fecha
 		const ordersByDate = orders.reduce((acc, order) => {
 			if (!order.fecha) return acc;
 			const dateStr = order.fecha;
@@ -35,7 +35,7 @@ const KPILineChart = ({ orders }) => {
 			return acc;
 		}, {});
 
-		// Calculate daily metrics
+		// Calcular métricas diarias
 		const dailyData = Object.entries(ordersByDate).map(
 			([dateStr, dailyOrders]) => {
 				const facturacionBruta = dailyOrders.reduce(
@@ -76,7 +76,7 @@ const KPILineChart = ({ orders }) => {
 			}
 		);
 
-		// Sort by date
+		// Ordenar por fecha
 		const sortedData = dailyData.sort((a, b) => {
 			const [diaA, mesA, añoA] = a.fecha.split("/");
 			const [diaB, mesB, añoB] = b.fecha.split("/");
@@ -135,7 +135,7 @@ const KPILineChart = ({ orders }) => {
 			</div>
 			<div className="h-[400px] w-full">
 				<ResponsiveContainer>
-					<LineChart data={chartData}>
+					<BarChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
 						<XAxis
 							dataKey="fecha"
@@ -159,18 +159,16 @@ const KPILineChart = ({ orders }) => {
 						{kpiOptions.map(
 							(kpi) =>
 								selectedKPIs.includes(kpi.id) && (
-									<Line
+									<Bar
 										key={kpi.id}
-										type="monotone"
 										dataKey={kpi.id}
 										name={kpi.name}
-										stroke={kpi.color}
-										strokeWidth={2}
-										dot={{ r: 4 }}
+										fill={kpi.color}
+										barSize={40}
 									/>
 								)
 						)}
-					</LineChart>
+					</BarChart>
 				</ResponsiveContainer>
 			</div>
 		</div>
