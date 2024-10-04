@@ -143,8 +143,8 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 							onClick={() => toggleKPI(kpi.id)}
 							className={`px-4 h-10 rounded-lg text-sm font-bold ${
 								selectedKPIs.includes(kpi.id)
-									? "bg-gray-800 text-white"
-									: "bg-gray-200 text-gray-700"
+									? "bg-black text-white"
+									: "bg-gray-200 text-black"
 							}`}
 							style={{
 								borderLeft: selectedKPIs.includes(kpi.id)
