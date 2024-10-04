@@ -78,19 +78,19 @@ const KPILineChart = ({ orders }) => {
 	}, [orders]);
 
 	const kpiOptions = [
-		{ id: "facturacionBruta", name: "Facturación Bruta", color: "#FA0202" },
-		{ id: "facturacionNeta", name: "Facturación Neta", color: "#82ca9d" },
-		{ id: "productosVendidos", name: "Productos Vendidos", color: "#ffc658" },
-		{ id: "ventasDelivery", name: "Ventas Delivery", color: "#ff7300" },
-		{ id: "customerSuccess", name: "Customer Success", color: "#0088FE" },
-		{ id: "tiempoCoccion", name: "Tiempo Cocción Promedio", color: "#00C49F" },
+		{ id: "facturacionBruta", name: "Facturación Bruta", color: "#FA0202" }, // Rojo brillante
+		{ id: "facturacionNeta", name: "Facturación Neta", color: "#4DFF88" }, // Verde vibrante y fresco
+		{ id: "productosVendidos", name: "Productos Vendidos", color: "#FFD700" }, // Amarillo dorado, brillante
+		{ id: "ventasDelivery", name: "Ventas Delivery", color: "#4D4DFF" }, // Azul claro y saturado
+		{ id: "customerSuccess", name: "Customer Success", color: "#FF66FF" }, // Magenta claro
+		{ id: "tiempoCoccion", name: "Tiempo Cocción Promedio", color: "#00E6E6" }, // Cian suave
 		{
 			id: "tiempoEntregaTotal",
 			name: "Tiempo Entrega Total",
-			color: "#FFBB28",
+			color: "#B266FF", // Púrpura medio
 		},
-		{ id: "kmRecorridos", name: "KMs Recorridos", color: "#FF8042" },
-		{ id: "ticketPromedio", name: "Ticket Promedio", color: "#EA4C89" },
+		{ id: "kmRecorridos", name: "KMs Recorridos", color: "#FF9933" }, // Naranja suave
+		{ id: "ticketPromedio", name: "Ticket Promedio", color: "#FF6699" }, // Rosa fuerte
 	];
 
 	const toggleKPI = (kpiId) => {
