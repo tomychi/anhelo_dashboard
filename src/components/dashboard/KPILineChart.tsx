@@ -132,7 +132,7 @@ const KPILineChart = ({ orders }) => {
 					))}
 				</div>
 			</div>
-			<div className=" h-[300px] w-full">
+			<div className=" h-[175px] md:h-[300px] w-full">
 				<ResponsiveContainer>
 					<BarChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
