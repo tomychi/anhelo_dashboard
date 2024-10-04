@@ -131,12 +131,12 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 	}
 
 	return (
-		<div className="px-4 bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-2">
+		<div className=" bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-2">
 			<div className="md:pt-4 ">
-				<p className="md:text-5xl text-2xl font-bold mb-6 mt-4 text-center">
+				<p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20 ">
 					KPIs en el tiempo
 				</p>
-				<div className="flex flex-wrap gap-2 mb-4 md:justify-center">
+				<div className="flex px-4 flex-wrap gap-2 mb-4 mt-4 md:justify-center">
 					{kpiOptions.map((kpi) => (
 						<button
 							key={kpi.id}
@@ -157,7 +157,7 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 					))}
 				</div>
 			</div>
-			<div className="h-[175px] md:h-[300px] w-full">
+			<div className="h-[175px] px-4 md:h-[300px] w-full">
 				<ResponsiveContainer>
 					<BarChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
