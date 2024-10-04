@@ -124,7 +124,7 @@ const KPILineChart = ({ orders }) => {
 	}
 
 	return (
-		<div className="px-4 bg-white  rounded-lg shadow-2xl shadow-black  mb-4">
+		<div className="px-4 bg-white pb-2  rounded-lg shadow-2xl shadow-black  mb-4">
 			<div className="flex flex-wrap gap-2 mb-8 mt-4 pt-8">
 				{kpiOptions.map((kpi) => (
 					<button
