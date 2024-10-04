@@ -82,7 +82,7 @@ const KPILineChart = ({ orders }) => {
 	}, [orders]);
 
 	const kpiOptions = [
-		{ id: "facturacionBruta", name: "Facturación Bruta", color: "#8884d8" },
+		{ id: "facturacionBruta", name: "Facturación Bruta", color: "#FA0202" },
 		{ id: "facturacionNeta", name: "Facturación Neta", color: "#82ca9d" },
 		{ id: "productosVendidos", name: "Productos Vendidos", color: "#ffc658" },
 		{ id: "ventasDelivery", name: "Ventas Delivery", color: "#ff7300" },
