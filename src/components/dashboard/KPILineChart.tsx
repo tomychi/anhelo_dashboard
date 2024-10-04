@@ -93,7 +93,7 @@ const KPILineChart = ({ orders }) => {
 		{ id: "facturacionNeta", name: "Facturación Neta", color: "#82ca9d" },
 		{ id: "productosVendidos", name: "Productos Vendidos", color: "#ffc658" },
 		{ id: "ventasDelivery", name: "Ventas Delivery", color: "#ff7300" },
-		{ id: "customerSuccess", name: "Customer Success %", color: "#0088FE" },
+		{ id: "customerSuccess", name: "Customer Success", color: "#0088FE" },
 		{ id: "tiempoCoccion", name: "Tiempo Cocción Promedio", color: "#00C49F" },
 		{
 			id: "tiempoEntregaTotal",
