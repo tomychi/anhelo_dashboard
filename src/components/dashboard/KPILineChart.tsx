@@ -26,7 +26,6 @@ const KPILineChart = ({ orders }) => {
 	useEffect(() => {
 		if (!orders.length) return;
 
-		// Agrupar pedidos por fecha
 		const ordersByDate = orders.reduce((acc, order) => {
 			if (!order.fecha) return acc;
 			const dateStr = order.fecha;
@@ -35,7 +34,6 @@ const KPILineChart = ({ orders }) => {
 			return acc;
 		}, {});
 
-		// Calcular métricas diarias
 		const dailyData = Object.entries(ordersByDate).map(
 			([dateStr, dailyOrders]) => {
 				const facturacionBruta = dailyOrders.reduce(
@@ -47,17 +45,13 @@ const KPILineChart = ({ orders }) => {
 					0
 				);
 
-				// Customer Success - usando la misma lógica que el Dashboard
 				const pedidosDemorados = contarPedidosDemorados(dailyOrders);
 				const customerSuccess =
 					dailyOrders.length > 0
 						? 100 - (pedidosDemorados * 100) / dailyOrders.length
 						: 0;
 
-				// Tiempo promedio de cocción - usando la función existente
 				const tiempoCoccion = calcularPromedioTiempoElaboracion(dailyOrders);
-
-				// Tiempo total de entrega - usando la función existente
 				const tiempoEntregaTotal = promedioTiempoDeEntregaTotal(dailyOrders);
 
 				return {
@@ -76,7 +70,6 @@ const KPILineChart = ({ orders }) => {
 			}
 		);
 
-		// Ordenar por fecha
 		const sortedData = dailyData.sort((a, b) => {
 			const [diaA, mesA, añoA] = a.fecha.split("/");
 			const [diaB, mesB, añoB] = b.fecha.split("/");
@@ -127,11 +120,12 @@ const KPILineChart = ({ orders }) => {
 						<button
 							key={kpi.id}
 							onClick={() => toggleKPI(kpi.id)}
-							className={`px-4 h-10 rounded-full text-sm font-bold ${
+							className={`px-4 h-10 rounded-lg text-sm font-bold ${
 								selectedKPIs.includes(kpi.id)
 									? "bg-gray-800 text-white"
 									: "bg-gray-200 text-gray-700"
 							}`}
+							style={{ borderLeft: `8px solid ${kpi.color}` }}
 						>
 							{kpi.name}
 						</button>
@@ -160,7 +154,6 @@ const KPILineChart = ({ orders }) => {
 								return value.toFixed(0);
 							}}
 						/>
-						<Legend />
 						{kpiOptions.map(
 							(kpi) =>
 								selectedKPIs.includes(kpi.id) && (
