@@ -113,19 +113,12 @@ const KPILineChart = ({ orders }) => {
 	};
 
 	if (chartData.length === 0) {
-		return (
-			<div className="p-6 bg-white mt-4 rounded-lg shadow-lg">
-				<h2 className="text-4xl font-bold mb-4">Evolución de KPIs</h2>
-				<p className="text-gray-500">
-					Selecciona un rango de fechas para ver los datos
-				</p>
-			</div>
-		);
+		return <div></div>;
 	}
 
 	return (
-		<div className="px-4 bg-white pb-2  rounded-lg shadow-2xl shadow-black  mb-4">
-			<div className="flex flex-wrap gap-2 mb-8 mt-4 pt-8">
+		<div className="px-4 bg-gray-100 pb-2  rounded-lg shadow-2xl shadow-black  mb-4">
+			<div className="flex flex-wrap gap-2 mb-4 mt-4 pt-4">
 				{kpiOptions.map((kpi) => (
 					<button
 						key={kpi.id}
