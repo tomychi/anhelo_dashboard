@@ -6,7 +6,6 @@ import {
 	YAxis,
 	CartesianGrid,
 	Tooltip,
-	Legend,
 	ResponsiveContainer,
 } from "recharts";
 import {
@@ -17,10 +16,7 @@ import {
 import { calculateKMS } from "../../helpers";
 
 const KPILineChart = ({ orders }) => {
-	const [selectedKPIs, setSelectedKPIs] = useState([
-		"facturacionBruta",
-		"facturacionNeta",
-	]);
+	const [selectedKPIs, setSelectedKPIs] = useState(["facturacionBruta"]);
 	const [chartData, setChartData] = useState([]);
 
 	useEffect(() => {
