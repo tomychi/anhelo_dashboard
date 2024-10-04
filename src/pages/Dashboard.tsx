@@ -268,7 +268,7 @@ export const Dashboard = () => {
 					Hola {greetingName}
 				</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[130px] rounded-lg mb-4  ">
+			<div className="absolute left-4 right-4 top-[130px] rounded-lg   ">
 				<div className="flex flex-col shadow-2xl shadow-black  rounded-lg">
 					{cardsToRender.map((card, index) =>
 						React.cloneElement(card, {

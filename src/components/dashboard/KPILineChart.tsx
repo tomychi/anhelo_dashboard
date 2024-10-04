@@ -118,7 +118,7 @@ const KPILineChart = ({ orders }) => {
 
 	return (
 		<div className="px-4 bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-8">
-			<div className="pt-4 pb-10">
+			<div className="md:pt-4 pb-10">
 				<p className="text-5xl font-bold mb-6 md:text-center">
 					Progreso de métricas
 				</p>
