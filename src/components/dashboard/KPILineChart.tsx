@@ -117,23 +117,28 @@ const KPILineChart = ({ orders }) => {
 	}
 
 	return (
-		<div className="px-4 bg-gray-100 pb-2  rounded-lg shadow-2xl shadow-black  mb-4">
-			<div className="flex flex-wrap gap-2 mb-4 mt-4 pt-4">
-				{kpiOptions.map((kpi) => (
-					<button
-						key={kpi.id}
-						onClick={() => toggleKPI(kpi.id)}
-						className={`px-4 h-10 rounded-full text-sm font-bold ${
-							selectedKPIs.includes(kpi.id)
-								? "bg-gray-800 text-white"
-								: "bg-gray-200 text-gray-700"
-						}`}
-					>
-						{kpi.name}
-					</button>
-				))}
+		<div className="px-4 bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-8">
+			<div className="pt-4 pb-10">
+				<p className="text-5xl font-bold mb-6 md:text-center">
+					Progreso de métricas
+				</p>
+				<div className="flex flex-wrap gap-2 mb-4 md:justify-center">
+					{kpiOptions.map((kpi) => (
+						<button
+							key={kpi.id}
+							onClick={() => toggleKPI(kpi.id)}
+							className={`px-4 h-10 rounded-full text-sm font-bold ${
+								selectedKPIs.includes(kpi.id)
+									? "bg-gray-800 text-white"
+									: "bg-gray-200 text-gray-700"
+							}`}
+						>
+							{kpi.name}
+						</button>
+					))}
+				</div>
 			</div>
-			<div className="h-[400px] w-full">
+			<div className=" h-[300px] w-full">
 				<ResponsiveContainer>
 					<BarChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
