@@ -14,23 +14,48 @@ import {
 	contarPedidosDemorados,
 } from "../../helpers/dateToday";
 import { calculateKMS } from "../../helpers";
+import { PedidoProps } from "../../types/types";
 
-const KPILineChart = ({ orders }) => {
-	const [selectedKPIs, setSelectedKPIs] = useState(["facturacionBruta"]);
-	const [chartData, setChartData] = useState([]);
+interface KPIData {
+	fecha: string;
+	facturacionBruta: number;
+	facturacionNeta: number;
+	productosVendidos: number;
+	ventasDelivery: number;
+	customerSuccess: number;
+	tiempoCoccion: number;
+	tiempoEntregaTotal: number;
+	kmRecorridos: number;
+	ticketPromedio: number;
+}
+
+type ValueType = number | string | Array<number | string>;
+
+interface KPILineChartProps {
+	orders: PedidoProps[];
+}
+
+const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
+	const [selectedKPIs, setSelectedKPIs] = useState<string[]>([
+		"facturacionBruta",
+	]);
+	const [chartData, setChartData] = useState<KPIData[]>([]);
 
 	useEffect(() => {
-		if (!orders.length) return;
+		if (orders.length === 0) return;
 
-		const ordersByDate = orders.reduce((acc, order) => {
-			if (!order.fecha) return acc;
-			const dateStr = order.fecha;
-			if (!acc[dateStr]) acc[dateStr] = [];
-			acc[dateStr].push(order);
-			return acc;
-		}, {});
+		const ordersByDate = orders.reduce<Record<string, PedidoProps[]>>(
+			(acc, order) => {
+				if (!order.fecha) return acc;
+				const dateStr = order.fecha;
+				if (!acc[dateStr]) acc[dateStr] = [];
+				acc[dateStr].push(order);
+				return acc;
+			},
+			{}
+		);
 
-		const dailyData = Object.entries(ordersByDate).map(
+		const dailyData: KPIData[] = Object.entries(ordersByDate).map(
 			([dateStr, dailyOrders]) => {
 				const facturacionBruta = dailyOrders.reduce(
 					(sum, order) => sum + (Number(order.total) || 0),
@@ -69,31 +94,31 @@ const KPILineChart = ({ orders }) => {
 		const sortedData = dailyData.sort((a, b) => {
 			const [diaA, mesA, añoA] = a.fecha.split("/");
 			const [diaB, mesB, añoB] = b.fecha.split("/");
-			const fechaA = new Date(añoA, mesA - 1, diaA);
-			const fechaB = new Date(añoB, mesB - 1, diaB);
-			return fechaA - fechaB;
+			const fechaA = new Date(Number(añoA), Number(mesA) - 1, Number(diaA));
+			const fechaB = new Date(Number(añoB), Number(mesB) - 1, Number(diaB));
+			return fechaA.getTime() - fechaB.getTime();
 		});
 
 		setChartData(sortedData);
 	}, [orders]);
 
 	const kpiOptions = [
-		{ id: "facturacionBruta", name: "Facturación Bruta", color: "#FA0202" }, // Rojo brillante
-		{ id: "facturacionNeta", name: "Facturación Neta", color: "#4DFF88" }, // Verde vibrante y fresco
-		{ id: "productosVendidos", name: "Productos Vendidos", color: "#FFD700" }, // Amarillo dorado, brillante
-		{ id: "ventasDelivery", name: "Ventas Delivery", color: "#4D4DFF" }, // Azul claro y saturado
-		{ id: "customerSuccess", name: "Customer Success", color: "#FF66FF" }, // Magenta claro
-		{ id: "tiempoCoccion", name: "Tiempo Cocción Promedio", color: "#00E6E6" }, // Cian suave
+		{ id: "facturacionBruta", name: "Facturación bruta", color: "#FA0202" },
+		{ id: "facturacionNeta", name: "Facturación neta", color: "#4DFF88" },
+		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
+		{ id: "ventasDelivery", name: "Ventas delivery", color: "#4D4DFF" },
+		{ id: "customerSuccess", name: "Customer success", color: "#FF66FF" },
+		{ id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#00E6E6" },
 		{
 			id: "tiempoEntregaTotal",
-			name: "Tiempo Entrega Total",
-			color: "#B266FF", // Púrpura medio
+			name: "Tiempo entrega total",
+			color: "#B266FF",
 		},
-		{ id: "kmRecorridos", name: "KMs Recorridos", color: "#FF9933" }, // Naranja suave
-		{ id: "ticketPromedio", name: "Ticket Promedio", color: "#FF6699" }, // Rosa fuerte
+		{ id: "kmRecorridos", name: "KMs recorridos", color: "#FF9933" },
+		{ id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
 	];
 
-	const toggleKPI = (kpiId) => {
+	const toggleKPI = (kpiId: string) => {
 		setSelectedKPIs((prev) =>
 			prev.includes(kpiId)
 				? prev.filter((id) => id !== kpiId)
@@ -121,11 +146,10 @@ const KPILineChart = ({ orders }) => {
 									? "bg-gray-800 text-white"
 									: "bg-gray-200 text-gray-700"
 							}`}
-							// Solo aplicar el borde de color si el KPI está seleccionado
 							style={{
 								borderLeft: selectedKPIs.includes(kpi.id)
 									? `4px solid ${kpi.color}`
-									: "4px solid transparent", // Borde transparente si no está seleccionado
+									: "4px solid transparent",
 							}}
 						>
 							{kpi.name}
@@ -133,7 +157,7 @@ const KPILineChart = ({ orders }) => {
 					))}
 				</div>
 			</div>
-			<div className=" h-[175px] md:h-[300px] w-full">
+			<div className="h-[175px] md:h-[300px] w-full">
 				<ResponsiveContainer>
 					<BarChart data={chartData}>
 						<CartesianGrid strokeDasharray="3 3" />
@@ -146,15 +170,23 @@ const KPILineChart = ({ orders }) => {
 						/>
 						<YAxis />
 						<Tooltip
-							formatter={(value, name) => {
-								if (name === "customerSuccess") return `${value.toFixed(1)}%`;
-								if (name.includes("Tiempo")) return `${value.toFixed(1)} min`;
-								if (name.includes("KMs")) return `${value.toFixed(1)} km`;
-								if (name.includes("Facturación") || name.includes("Ticket"))
-									return `$${value.toFixed(0)}`;
-								return value.toFixed(0);
+							formatter={(value: ValueType, name: string | number) => {
+								if (typeof value === "number") {
+									if (name === "customerSuccess") return `${value.toFixed(1)}%`;
+									if (typeof name === "string") {
+										if (name.includes("Tiempo"))
+											return `${value.toFixed(1)} min`;
+										if (name.includes("KMs")) return `${value.toFixed(1)} km`;
+										if (name.includes("Facturación") || name.includes("Ticket"))
+											return `$${value.toFixed(0)}`;
+									}
+									return value.toFixed(0);
+								}
+								// Si no es un número, devolvemos el valor tal cual
+								return value;
 							}}
 						/>
+
 						{kpiOptions.map(
 							(kpi) =>
 								selectedKPIs.includes(kpi.id) && (

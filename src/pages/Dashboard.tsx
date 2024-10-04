@@ -113,7 +113,6 @@ export const Dashboard = () => {
 		setTotalDirecciones(nuevaTotalDirecciones);
 	}, [vueltas]);
 
-	console.log(totalDirecciones);
 	const marketingCards = [
 		<CardInfo
 			key="visualizacion"
