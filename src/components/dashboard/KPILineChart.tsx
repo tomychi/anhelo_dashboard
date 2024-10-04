@@ -120,7 +120,7 @@ const KPILineChart = ({ orders }) => {
 						<button
 							key={kpi.id}
 							onClick={() => toggleKPI(kpi.id)}
-							className={`px-4 h-10 rounded-lg text-sm font-bold ${
+							className={`px-4 h-10 rounded-full text-sm font-bold ${
 								selectedKPIs.includes(kpi.id)
 									? "bg-gray-800 text-white"
 									: "bg-gray-200 text-gray-700"
