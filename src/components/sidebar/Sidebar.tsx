@@ -110,9 +110,9 @@ export const Sidebar = () => {
 								</NavLink>
 							</li>
 						))}
-						<p className="font-medium text-sm mt-12 ">
+						{/* <p className="font-medium text-sm mt-4 ">
 							Ⓡ 2024, Absolute Business Solutions.
-						</p>
+						</p> */}
 					</ul>
 				</nav>
 			</div>
