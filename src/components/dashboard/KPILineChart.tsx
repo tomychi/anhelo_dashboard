@@ -125,7 +125,7 @@ const KPILineChart = ({ orders }) => {
 									? "bg-gray-800 text-white"
 									: "bg-gray-200 text-gray-700"
 							}`}
-							style={{ borderLeft: `8px solid ${kpi.color}` }}
+							style={{ borderLeft: `4px solid ${kpi.color}` }}
 						>
 							{kpi.name}
 						</button>
