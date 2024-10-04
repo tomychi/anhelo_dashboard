@@ -125,7 +125,12 @@ const KPILineChart = ({ orders }) => {
 									? "bg-gray-800 text-white"
 									: "bg-gray-200 text-gray-700"
 							}`}
-							style={{ borderLeft: `4px solid ${kpi.color}` }}
+							// Solo aplicar el borde de color si el KPI está seleccionado
+							style={{
+								borderLeft: selectedKPIs.includes(kpi.id)
+									? `4px solid ${kpi.color}`
+									: "4px solid transparent", // Borde transparente si no está seleccionado
+							}}
 						>
 							{kpi.name}
 						</button>
