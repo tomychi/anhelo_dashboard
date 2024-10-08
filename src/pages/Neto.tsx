@@ -140,13 +140,13 @@ export const Neto = () => {
 		},
 	];
 
-	const [gastos, setGastos] = useState<Gasto[]>([]);
+	const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const data = await ReadGastosSinceTwoMonthsAgo();
-				setGastos(data as Gasto[]); // Asegúrate de tipar los datos
+				setGastosHaceDosMeses(data as Gasto[]); // Asegúrate de tipar los datos
 			} catch (error) {
 				console.error("Error fetching gastos:", error);
 			}
@@ -154,6 +154,8 @@ export const Neto = () => {
 
 		fetchData();
 	}, []);
+
+	console.log("acaa:", gastosHaceDosMeses);
 
 	return (
 		<div className="font-coolvetica text-black px-4">
