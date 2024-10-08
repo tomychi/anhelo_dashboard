@@ -77,10 +77,6 @@ export const Neto = () => {
 			salary = totalProductosVendidos * 230;
 		} else if (empleado.puesto === "cadete") {
 			salary = cadetePagas[empleado.name] || 0;
-		} else if (empleado.depto === "ANHELO Burgers") {
-			salary = 205000;
-		} else if (empleado.depto === "ANHELO Studio") {
-			salary = 200000;
 		} else {
 			salary = 0;
 		}
