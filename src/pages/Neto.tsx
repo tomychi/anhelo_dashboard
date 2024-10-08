@@ -1,7 +1,20 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
+import { ReadGastosSinceTwoMonthsAgo } from "../firebase/ReadData";
+
+interface Gasto {
+	id: string;
+	category: string;
+	description: string;
+	estado: string;
+	fecha: string;
+	name: string;
+	quantity: number;
+	total: number;
+	unit: string;
+}
 
 export const Neto = () => {
 	const {
@@ -127,6 +140,21 @@ export const Neto = () => {
 		},
 	];
 
+	const [gastos, setGastos] = useState<Gasto[]>([]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const data = await ReadGastosSinceTwoMonthsAgo();
+				setGastos(data as Gasto[]); // Asegúrate de tipar los datos
+			} catch (error) {
+				console.error("Error fetching gastos:", error);
+			}
+		};
+
+		fetchData();
+	}, []);
+
 	return (
 		<div className="font-coolvetica text-black px-4">
 			<h2 className="text-4xl font-bold my-8">Estructura de Costos</h2>
@@ -159,9 +187,7 @@ export const Neto = () => {
 							<th scope="row" className="pl-4 w-2/5 font-light">
 								{label}
 							</th>
-							<td className="pl-4 w-1/5 font-light">
-								{`$ ${value.toLocaleString()}`}
-							</td>
+							<td className="pl-4 w-1/5 font-light">{`$ ${value.toLocaleString()}`}</td>
 							<td className="pl-4 w-1/5 font-light">{estado}</td>
 							<td className="pl-4 w-1/5 font-light">{percentage}</td>
 						</tr>
