@@ -24,6 +24,7 @@ export const Neto = () => {
 		expenseData,
 		totalProductosVendidos,
 		vueltas,
+		valueDate,
 	} = useSelector((state: RootState) => state.data);
 
 	const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
@@ -41,13 +42,43 @@ export const Neto = () => {
 		fetchData();
 	}, []);
 
-	// Función auxiliar para Alquiler
+	// Función para calcular los días seleccionados en el rango
+	const calcularDiasSeleccionados = () => {
+		if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
+			return 0;
+		}
+		const startDate = new Date(valueDate.startDate);
+		const endDate = new Date(valueDate.endDate);
+		const diferenciaTiempo = endDate.getTime() - startDate.getTime();
+		return Math.ceil(diferenciaTiempo / (1000 * 3600 * 24)) + 1;
+	};
+
+	// Función auxiliar general para calcular el total ajustado por días del mes y rango
+	const getGastoAjustadoPorDias = (total, fecha) => {
+		const fechaGasto = new Date(fecha);
+		const diasDelMes = new Date(
+			fechaGasto.getFullYear(),
+			fechaGasto.getMonth() + 1,
+			0
+		).getDate();
+		const gastoDiario = total / diasDelMes;
+		const diasSeleccionados = calcularDiasSeleccionados();
+		return gastoDiario * diasSeleccionados;
+	};
+
+	// Modificar la función auxiliar para Alquiler
 	const getAlquilerTotal = () => {
 		const alquilerExpense = expenseData.find(
 			(expense) => expense.name === "Alquiler"
 		);
 		if (alquilerExpense) {
-			return { total: alquilerExpense.total, isEstimated: false };
+			return {
+				total: getGastoAjustadoPorDias(
+					alquilerExpense.total,
+					alquilerExpense.fecha
+				),
+				isEstimated: false,
+			};
 		} else {
 			// Buscar en gastosHaceDosMeses
 			const alquilerExpenses = gastosHaceDosMeses.filter(
@@ -58,20 +89,30 @@ export const Neto = () => {
 				alquilerExpenses.sort(
 					(a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
 				);
-				return { total: alquilerExpenses[0].total, isEstimated: true };
+				const totalAjustado = getGastoAjustadoPorDias(
+					alquilerExpenses[0].total,
+					alquilerExpenses[0].fecha
+				);
+				return { total: totalAjustado, isEstimated: true };
 			} else {
 				return { total: 0, isEstimated: true };
 			}
 		}
 	};
 
-	// Función auxiliar para Marketing
+	// Modificar la función auxiliar para Marketing
 	const getMarketingTotal = () => {
 		const marketingExpense = expenseData.find(
 			(expense) => expense.category === "marketing"
 		);
 		if (marketingExpense) {
-			return { total: marketingExpense.total, isEstimated: false };
+			return {
+				total: getGastoAjustadoPorDias(
+					marketingExpense.total,
+					marketingExpense.fecha
+				),
+				isEstimated: false,
+			};
 		} else {
 			// Buscar en gastosHaceDosMeses
 			const marketingExpenses = gastosHaceDosMeses.filter(
@@ -83,20 +124,27 @@ export const Neto = () => {
 					(acc, expense) => acc + expense.total,
 					0
 				);
-				return { total: totalMarketing, isEstimated: true };
+				const totalAjustado = getGastoAjustadoPorDias(
+					totalMarketing,
+					marketingExpenses[0].fecha
+				);
+				return { total: totalAjustado, isEstimated: true };
 			} else {
 				return { total: 0, isEstimated: true };
 			}
 		}
 	};
 
-	// Función auxiliar para Agua
+	// Modificar la función auxiliar para Agua
 	const getAguaTotal = () => {
 		const aguaExpense = expenseData.find(
 			(expense) => expense.name.toLowerCase() === "agua"
 		);
 		if (aguaExpense) {
-			return { total: aguaExpense.total, isEstimated: false };
+			return {
+				total: getGastoAjustadoPorDias(aguaExpense.total, aguaExpense.fecha),
+				isEstimated: false,
+			};
 		} else {
 			// Buscar en gastosHaceDosMeses
 			const aguaExpenses = gastosHaceDosMeses.filter(
@@ -107,7 +155,11 @@ export const Neto = () => {
 				aguaExpenses.sort(
 					(a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
 				);
-				return { total: aguaExpenses[0].total, isEstimated: true };
+				const totalAjustado = getGastoAjustadoPorDias(
+					aguaExpenses[0].total,
+					aguaExpenses[0].fecha
+				);
+				return { total: totalAjustado, isEstimated: true };
 			} else {
 				return { total: 0, isEstimated: true };
 			}
@@ -159,6 +211,10 @@ export const Neto = () => {
 
 	const excedenteValue = facturacionTotal - totalExpenses;
 
+	const calculatePercentage = (value) => {
+		return ((value / facturacionTotal) * 100).toFixed(1) + "%";
+	};
+
 	const data = [
 		{
 			label: "Bruto",
@@ -169,10 +225,7 @@ export const Neto = () => {
 		{
 			label: "Materia prima",
 			value: facturacionTotal - neto,
-			percentage: `${(
-				((facturacionTotal - neto) * 100) /
-				facturacionTotal
-			).toFixed(1)}%`,
+			percentage: calculatePercentage(facturacionTotal - neto),
 			estado: "Exacto",
 		},
 		{
@@ -196,21 +249,21 @@ export const Neto = () => {
 		{
 			label: "Marketing",
 			value: marketingData.total,
-			percentage: "0.0%",
+			percentage: calculatePercentage(marketingData.total),
 			manual: marketingData.isEstimated,
 			estado: marketingData.isEstimated ? "Estimado" : "Exacto",
 		},
 		{
 			label: "Alquiler",
 			value: alquilerData.total,
-			percentage: "0.0%",
+			percentage: calculatePercentage(alquilerData.total),
 			manual: alquilerData.isEstimated,
 			estado: alquilerData.isEstimated ? "Estimado" : "Exacto",
 		},
 		{
 			label: "Agua",
 			value: aguaData.total,
-			percentage: "0%",
+			percentage: calculatePercentage(aguaData.total),
 			manual: aguaData.isEstimated,
 			estado: aguaData.isEstimated ? "Estimado" : "Exacto",
 		},
@@ -223,77 +276,19 @@ export const Neto = () => {
 		{
 			label: "Excedente",
 			value: excedenteValue,
-			percentage: "-",
+			percentage: calculatePercentage(excedenteValue),
 			estado: "Estimado",
 		},
 	];
 
-	// Estilos copiados de Gastos.tsx
-	const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
-	const [openSelects, setOpenSelects] = useState<{ [key: string]: boolean }>(
-		{}
-	);
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node)
-			) {
-				setShowCategoryDropdown(false);
-			}
-
-			// Cerrar todos los selects al hacer clic fuera
-			setOpenSelects({});
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, []);
-
 	return (
 		<div className="flex flex-col">
-			<style>
-				{`
-          .arrow-down {
-            transition: transform 0.3s ease;
-            transform: rotate(90deg); /* Inicialmente apunta hacia abajo */
-          }
-          .arrow-down.open {
-            transform: rotate(-90deg); /* Apunta hacia arriba cuando está abierto */
-          }
-          .select-wrapper {
-            position: relative;
-            display: inline-block;
-          }
-          .select-wrapper select {
-            appearance: none;
-            padding-right: 25px;
-          }
-          .select-wrapper .arrow-down {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%) rotate(90deg);
-            pointer-events: none;
-            transition: transform 0.3s ease;
-          }
-          .select-wrapper .arrow-down.open {
-            transform: translateY(-50%) rotate(-90deg);
-          }
-        `}
-			</style>
 			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Neto</p>
-				{/* Aquí puedes agregar botones o enlaces si es necesario */}
 			</div>
 
 			<div className="px-4 pb-8">
 				<Calendar />
-				{/* Puedes agregar controles adicionales o filtros aquí */}
 			</div>
 
 			<div className="font-coolvetica">
@@ -318,7 +313,7 @@ export const Neto = () => {
 						{data.map(({ label, value, percentage, manual, estado }, index) => (
 							<tr
 								key={index}
-								className={`text-black border font-light h-10 border-black border-opacity-20 `}
+								className={`text-black border font-light h-10 border-black border-opacity-20`}
 							>
 								<th scope="row" className="pl-4 w-2/5 font-light">
 									{label}
@@ -335,7 +330,6 @@ export const Neto = () => {
 										</p>
 									</div>
 								</td>
-
 								<td className="pl-4 w-1/5 font-light">{percentage}</td>
 							</tr>
 						))}
