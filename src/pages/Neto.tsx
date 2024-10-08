@@ -254,10 +254,6 @@ export const Neto = () => {
 		};
 	}, []);
 
-	const handleSelectClick = (id: string) => {
-		setOpenSelects((prev) => ({ ...prev, [id]: !prev[id] }));
-	};
-
 	return (
 		<div className="flex flex-col">
 			<style>
@@ -331,25 +327,11 @@ export const Neto = () => {
 								</th>
 								<td className="pl-4 w-1/5 font-light">{`$ ${value.toLocaleString()}`}</td>
 								<td className="pl-4 w-1/5 font-bold">
-									<div className="select-wrapper">
-										<select
-											className="bg-gray-300 py-1 pl-2 rounded-full"
-											value={estado}
-											onClick={() => handleSelectClick(label)}
-											// Puedes agregar un onChange si es necesario
-										>
-											<option value="Exacto">Exacto</option>
-											<option value="Estimado">Estimado</option>
-										</select>
-										<img
-											src={arrow}
-											className={`h-2 arrow-down ${
-												openSelects[label] ? "open" : ""
-											}`}
-											alt=""
-										/>
+									<div className="bg-gray-300 py-1 px-2 rounded-full">
+										<p className="text-center">{estado}</p>
 									</div>
 								</td>
+
 								<td className="pl-4 w-1/5 font-light">{percentage}</td>
 							</tr>
 						))}
