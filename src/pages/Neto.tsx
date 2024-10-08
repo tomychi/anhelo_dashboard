@@ -198,7 +198,7 @@ export const Neto = () => {
 	const finalPercent = ((finalAmount / facturacionTotal) * 100).toFixed(1);
 
 	const data = [
-		{ item: "BRUTO", value: facturacionTotal, percent: 100 },
+		{ item: "Bruto", value: facturacionTotal, percent: 100 },
 		{
 			item: "Materia prima",
 			value: materiaPrima,
@@ -234,12 +234,8 @@ export const Neto = () => {
 			value: error,
 			percent: ((error / facturacionTotal) * 100).toFixed(1),
 		},
-		{
-			item: "Deuda local 1 (Expansión)",
-			value: deudaLocal,
-			percent: deudaLocalPercent,
-		},
-		{ item: "Final", value: finalAmount, percent: finalPercent },
+
+		{ item: "Excedente", value: finalAmount, percent: finalPercent },
 	];
 
 	return (
