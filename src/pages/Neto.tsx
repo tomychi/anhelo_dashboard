@@ -295,18 +295,19 @@ export const Neto = () => {
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4 w-2/5">
-								Estructura de costos
+							<th scope="col" className="pl-4 h-10 w-2/5">
+								Estructura
 							</th>
-							<th scope="col" className="pl-4 w-1/5">
+							<th scope="col" className="pl-4 h-10 w-1/5">
 								Total
 							</th>
-							<th scope="col" className="pl-4 w-1/5">
+							<th scope="col" className="pl-4 h-10 pr-1 w-1/5">
 								Estado
 							</th>
-							<th scope="col" className="pl-4 w-1/5">
+							<th scope="col" className="pl-4 h-10 pr-8 w-1/5">
 								%
 							</th>
+							<th scope="col" className="pl-4 h-10 w-1/5"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -315,11 +316,11 @@ export const Neto = () => {
 								key={index}
 								className={`text-black border font-light h-10 border-black border-opacity-20`}
 							>
-								<th scope="row" className="pl-4 w-2/5 font-light">
+								<th scope="row" className="pl-4  h-10 w-2/5 font-light">
 									{label}
 								</th>
-								<td className="pl-4 w-1/5 font-light">{`$ ${value.toLocaleString()}`}</td>
-								<td className="pl-4 w-1/5 font-bold">
+								<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toLocaleString()}`}</td>
+								<td className="pl-4 w-1/5  h-10 pr-1 font-bold">
 									<div className="bg-gray-300 py-1 px-2 rounded-full">
 										<p
 											className={`text-center ${
@@ -330,7 +331,23 @@ export const Neto = () => {
 										</p>
 									</div>
 								</td>
-								<td className="pl-4 w-1/5 font-light">{percentage}</td>
+								<td className="pl-4 pr-8 w-1/5 h-10 font-light">
+									{percentage}
+								</td>
+								<td className="pl-4 w-1/5 h-10 font-light relative">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+										className="h-6 absolute  right-3.5 bottom-2.5"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								</td>
 							</tr>
 						))}
 					</tbody>
