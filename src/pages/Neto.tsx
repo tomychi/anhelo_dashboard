@@ -1,286 +1,286 @@
-import { useState } from 'react';
-import currencyFormat from '../helpers/currencyFormat';
+import { useState, useEffect, useMemo } from "react";
+import currencyFormat from "../helpers/currencyFormat";
+import { useSelector } from "react-redux";
+import Calendar from "../components/Calendar";
+import { readEmpleados } from "../firebase/registroEmpleados";
+import { RootState } from "../redux/configureStore";
+import { Cadete } from "../types/types";
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  DocumentReference,
-  DocumentData,
-} from 'firebase/firestore';
-import { ProductoMaterial } from '../types/types';
-import { Ingredients } from '../components/gastos';
-import { RootState } from '../redux/configureStore';
-import { useSelector } from 'react-redux';
-export const UploadMateriales = (
-  materiales: ProductoMaterial[]
-): Promise<DocumentReference[]> => {
-  const firestore = getFirestore();
-  const materialesCollectionRef = collection(firestore, 'materiales');
-
-  // Mapear cada material para subirlo a la base de datos
-  const uploadPromises: Promise<DocumentReference>[] = materiales.map(
-    async (material) => {
-      try {
-        // Agregar el material a la colección 'materiales'
-        const docRef = await addDoc(materialesCollectionRef, material);
-        return docRef;
-      } catch (error) {
-        console.error('Error al subir el material:', error);
-        throw error;
-      }
-    }
-  );
-
-  return Promise.all(uploadPromises);
-};
+interface Empleado {
+	name: string;
+	category: string;
+	correo: string;
+	available: boolean;
+	area: string;
+	puesto: string;
+	depto: string;
+}
 
 export const Neto = () => {
-  const { materiales } = useSelector((state: RootState) => state.materials);
-  const { burgers, drinks, toppings, fries } = useSelector(
-    (state: RootState) => state.product
-  );
+	const { materiales } = useSelector((state: RootState) => state.materials);
+	const { burgers, drinks, toppings, fries } = useSelector(
+		(state: RootState) => state.product
+	);
 
-  const pburgers = burgers.map((b) => b.data);
-  const pdrinks = drinks.map((d) => d.data);
-  const ptoppings = toppings.map((t) => t.data);
-  const pfries = fries.map((f) => f.data);
+	const {
+		facturacionTotal,
+		neto,
+		totalProductosVendidos,
+		vueltas,
+		isLoading,
+		valueDate,
+		expenseData,
+	} = useSelector((state: RootState) => state.data);
 
-  const productos = [...pburgers, ...pdrinks, ...ptoppings, ...pfries];
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [selectedProduct, setSelectedProduct] = useState<DocumentData | null>(
-    null
-  );
+	const [empleados, setEmpleados] = useState<Empleado[]>([]);
 
-  const openModal = (product: DocumentData) => {
-    setSelectedProduct(product);
-    setModalOpen(true);
-  };
+	// Función para parsear fechas en formato "DD/MM/YYYY"
+	const parseDate = (dateString: string) => {
+		const [day, month, year] = dateString.split("/");
+		return new Date(`${year}-${month}-${day}`);
+	};
 
-  //Vendemos a los que buscan percepcion. Vendemos la marca, que es lo mas caro. ¿Como aumentamos la percepcion para poner el precio un poco fuera del contexto del mercado, un poco mas por encima? La gente en este apartado esta dispuesta a pagar un poco mas. Pensa que el ticket promedio es de 1,algo, no es una compra recurrente.
+	useEffect(() => {
+		const fetchEmpleados = async () => {
+			try {
+				const empleadosData = await readEmpleados();
+				const filteredEmpleados = empleadosData.filter(
+					(empleado) =>
+						empleado.name !== "NO ASIGNADO" && empleado.name !== "test"
+				);
+				setEmpleados(filteredEmpleados);
+			} catch (error) {
+				console.error("Error al obtener los empleados:", error);
+			}
+		};
 
-  //2,3 nos deja en precio al que vende la competencia
-  //2,3 + 0,1 para cubrir errores
+		fetchEmpleados();
+	}, []);
 
-  const multiplierMasterpiecesOriginals = 2.3;
-  //Vendemos a los que buscan precio
-  //1,5 + 0,1 para cubrir errores
-  const multiplierSatisfyers = 1.6;
-  //Son latas de gaseosas, no podemos exagerar
-  const multiplierDrinks = 1.5;
-  //1,5 + 0,1 para cubrir errores
-  const multiplierPapas = 1.6;
-  const ordersLastMonth = 1484;
-  const plusAlquiler = Math.ceil(300000 / ordersLastMonth);
+	const cadetePagas = useMemo(() => {
+		const pagas: { [key: string]: number } = {};
+		vueltas.forEach((cadete: Cadete) => {
+			if (cadete.name && cadete.vueltas) {
+				const totalPaga = cadete.vueltas.reduce(
+					(sum, vuelta) => sum + (vuelta.paga || 0),
+					0
+				);
+				pagas[cadete.name] = totalPaga;
+			}
+		});
+		return pagas;
+	}, [vueltas]);
 
-  return (
-    <div className="flex p-4 gap-4  justify-between flex-row w-full">
-      <div className="w-4/5 flex flex-col gap-4">
-        <table className=" h-min w-full font-coolvetica text-sm text-left rtl:text-right text-black">
-          <thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Productos
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Categoria
-              </th>
-              <th scope="col" className="px-6 py-3">
-                costo
-              </th>
-              <th scope="col" className="px-6 py-3">
-                precio venta
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Ganancia
-              </th>
-              <th scope="col" className="px-6 py-3">
-                precio venta sugerido
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Ganancia obtenida
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {productos.map((p: DocumentData, index: number) => {
-              return (
-                <tr
-                  key={index}
-                  className="bg-black text-custom-red uppercase font-black border border-red-main"
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-                  >
-                    {p.name}
-                  </th>
-                  <td className="px-6 py-4">{p.type}</td>
-                  <td
-                    className="px-6 py-4 cursor-pointer hover:bg-custom-red hover:text-black"
-                    onClick={() => openModal(p)}
-                  >
-                    {currencyFormat(p.costo)}
-                  </td>
-                  <td className="px-6 py-4">{currencyFormat(p.price)}</td>
-                  <td className="px-6 py-4">
-                    {currencyFormat(p.price - p.costo)} - ganancia:
-                    {Math.ceil(((p.price - p.costo) * 100) / p.price)}%
-                  </td>
-                  {/*Precio venta sugerido. el costo por el multiplier mas los 250*/}
-                  <td className="px-6 py-4 flex flex-row gap-2">
-                    {currencyFormat(
-                      p.type === 'satisfyer'
-                        ? p.costo * multiplierSatisfyers + plusAlquiler
-                        : p.type === 'masterpieces' || p.type === 'originals'
-                        ? p.costo * multiplierMasterpiecesOriginals +
-                          plusAlquiler
-                        : p.type === 'drink'
-                        ? p.costo * multiplierDrinks + plusAlquiler
-                        : p.type === 'papas'
-                        ? p.costo * multiplierPapas + plusAlquiler
-                        : p.price
-                    )}{' '}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    {(p.type === 'satisfyer'
-                      ? p.costo * multiplierSatisfyers + plusAlquiler - p.price
-                      : p.type === 'masterpieces' || p.type === 'originals'
-                      ? p.costo * multiplierMasterpiecesOriginals +
-                        plusAlquiler -
-                        p.price
-                      : p.type === 'drink'
-                      ? p.costo * multiplierDrinks + plusAlquiler - p.price
-                      : p.type === 'papas'
-                      ? p.costo * multiplierPapas + plusAlquiler - p.price
-                      : p.price) >= 0
-                      ? '+'
-                      : '-'}
-                    {currencyFormat(
-                      Math.abs(
-                        p.type === 'satisfyer'
-                          ? p.costo * multiplierSatisfyers +
-                              plusAlquiler -
-                              p.price
-                          : p.type === 'masterpieces' || p.type === 'originals'
-                          ? p.costo * multiplierMasterpiecesOriginals +
-                            plusAlquiler -
-                            p.price
-                          : p.type === 'drink'
-                          ? p.costo * multiplierDrinks + plusAlquiler - p.price
-                          : p.type === 'papas'
-                          ? p.costo * multiplierPapas + plusAlquiler - p.price
-                          : p.price
-                      )
-                    )}
-                  </td>
+	const salariesByCategory = empleados.reduce((acc, empleado) => {
+		let salary = 0;
+		if (empleado.area === "cocina") {
+			salary = totalProductosVendidos * 230;
+		} else if (empleado.puesto === "cadete") {
+			salary = cadetePagas[empleado.name] || 0;
+		} else if (empleado.depto === "ANHELO Burgers") {
+			salary = 205000;
+		} else if (empleado.depto === "ANHELO Studio") {
+			salary = 200000;
+		} else {
+			salary = 0;
+		}
 
-                  {/* Ganancia obtenida sugerida*/}
-                  <td className="px-6 py-4">
-                    {currencyFormat(
-                      p.type === 'satisfyer'
-                        ? p.costo * multiplierSatisfyers +
-                            plusAlquiler -
-                            p.costo
-                        : p.type === 'masterpieces' || p.type === 'originals'
-                        ? p.costo * multiplierMasterpiecesOriginals +
-                          250 -
-                          p.costo
-                        : p.type === 'drink'
-                        ? p.costo * multiplierDrinks + plusAlquiler - p.costo
-                        : p.type === 'papas'
-                        ? p.costo * multiplierPapas + plusAlquiler - p.costo
-                        : null
-                    )}{' '}
-                    - ganancia:
-                    {100 -
-                      Math.ceil(
-                        p.type === 'satisfyer'
-                          ? // costo por 100 dividido por el precio de venta
-                            (p.costo * 100) /
-                              (p.costo * multiplierSatisfyers + plusAlquiler)
-                          : p.type === 'masterpieces' || p.type === 'originals'
-                          ? // costo por 100 dividido por el precio de venta
-                            (p.costo * 100) /
-                            (p.costo * multiplierMasterpiecesOriginals +
-                              plusAlquiler)
-                          : p.type === 'drink'
-                          ? // costo por 100 dividido por el precio de venta
-                            (p.costo * 100) /
-                            (p.costo * multiplierDrinks + plusAlquiler)
-                          : p.type === 'papas'
-                          ? // costo por 100 dividido por el precio de venta
-                            (p.costo * 100) /
-                            (p.costo * multiplierPapas + plusAlquiler)
-                          : 0 // valor predeterminado en caso de que ninguna de las condiciones anteriores se cumpla
-                      )}
-                    %
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {modalOpen && selectedProduct && (
-          <Ingredients
-            selectedProduct={selectedProduct}
-            setModalOpen={setModalOpen}
-            materiales={materiales}
-          />
-        )}
-        <h1 className="text-custom-red font-coolvetica text-8xl font-black">
-          ENVIOS:
-        </h1>
-        <h2 className="text-custom-red font-coolvetica text-2xl font-black">
-          JUEVES $20.000 <br />
-          VIERNES, SABADO & DOMINGO $30.000
-        </h2>
-      </div>
-      <div className="w-1/5">
-        <table className=" h-min w-full font-coolvetica text-sm text-left rtl:text-right text-black">
-          <thead className="text-xs  uppercase text-black border border-red-main bg-custom-red ">
-            {/* Encabezados de la tabla */}
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                materiales
-              </th>
-              <th scope="col" className="px-6 py-3">
-                precio
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {materiales.map((m: ProductoMaterial, index: number) => (
-              <tr
-                key={index}
-                // className="bg-black text-custom-red uppercase font-black border border-red-main"
-                draggable
-                className={
-                  'bg-black text-custom-red uppercase font-black border border-red-main cursor-pointer'
-                }
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-black text-custom-red whitespace-nowrap"
-                >
-                  {m.nombre}
-                </th>
-                <td className="px-6 py-4">{currencyFormat(m.costo)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+		const category = empleado.depto || empleado.area;
+		if (category && category !== "") {
+			if (acc[category]) {
+				acc[category] += salary;
+			} else {
+				acc[category] = salary;
+			}
+		}
+
+		return acc;
+	}, {} as { [key: string]: number });
+
+	const totalSalaries = Object.values(salariesByCategory).reduce(
+		(sum, value) => sum + value,
+		0
+	);
+
+	const materiaPrima = facturacionTotal - neto;
+	const materiaPrimaPercent = ((materiaPrima / facturacionTotal) * 100).toFixed(
+		1
+	);
+
+	const agua = 5000;
+	const error = 35402;
+
+	// Obtenemos el último gasto de Alquiler
+	const alquilerExpense = useMemo(() => {
+		if (!expenseData) return 0;
+
+		const alquilerExpenses = expenseData.filter(
+			(expense) => expense.name.toLowerCase() === "alquiler"
+		);
+
+		if (alquilerExpenses.length === 0) return 0;
+
+		alquilerExpenses.sort((a, b) => {
+			const dateA = parseDate(a.fecha).getTime();
+			const dateB = parseDate(b.fecha).getTime();
+			return dateB - dateA;
+		});
+
+		const lastAlquiler = alquilerExpenses[0];
+		console.log("Último gasto de Alquiler:", lastAlquiler);
+
+		return lastAlquiler.total;
+	}, [expenseData]);
+
+	// Obtenemos el último gasto de Sueldos de Marketing
+	const marketingExpense = useMemo(() => {
+		if (!expenseData) return 0;
+
+		const marketingExpenses = expenseData.filter(
+			(expense) =>
+				expense.name.toLowerCase() === "sueldos" &&
+				expense.category.toLowerCase() === "marketing"
+		);
+
+		if (marketingExpenses.length === 0) return 0;
+
+		marketingExpenses.sort((a, b) => {
+			const dateA = parseDate(a.fecha).getTime();
+			const dateB = parseDate(b.fecha).getTime();
+			return dateB - dateA;
+		});
+
+		const lastMarketingExpense = marketingExpenses[0];
+		console.log("Último gasto de Marketing:", lastMarketingExpense);
+
+		return lastMarketingExpense.total;
+	}, [expenseData]);
+
+	// Calculamos los días en el mes actual
+	const getDaysInMonth = () => {
+		if (!valueDate || !valueDate.startDate) return 30;
+
+		const date = new Date(valueDate.startDate);
+		return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+	};
+
+	// Calculamos los días en el rango seleccionado
+	const getDaysInRange = () => {
+		if (!valueDate || !valueDate.startDate || !valueDate.endDate) return 1;
+
+		const start = new Date(valueDate.startDate);
+		const end = new Date(valueDate.endDate);
+		const diffTime = Math.abs(end.getTime() - start.getTime());
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+		return diffDays;
+	};
+
+	const daysInMonth = getDaysInMonth();
+	const daysInRange = getDaysInRange();
+
+	// Calculamos la tasa diaria y multiplicamos por los días seleccionados
+	const marketingDaily = (marketingExpense / daysInMonth) * daysInRange;
+	const alquilerDaily = (alquilerExpense / daysInMonth) * daysInRange;
+
+	const totalInfraestructura = alquilerDaily + agua + error;
+
+	const totalCosts =
+		materiaPrima + totalSalaries + totalInfraestructura + marketingDaily;
+
+	const excedente = facturacionTotal - totalCosts;
+	const excedentePercent = ((excedente / facturacionTotal) * 100).toFixed(1);
+
+	const deudaLocal = 350000;
+	const deudaLocalPercent = ((deudaLocal / facturacionTotal) * 100).toFixed(1);
+
+	const finalAmount = excedente - deudaLocal;
+	const finalPercent = ((finalAmount / facturacionTotal) * 100).toFixed(1);
+
+	const data = [
+		{ item: "BRUTO", value: facturacionTotal, percent: 100 },
+		{
+			item: "Materia prima",
+			value: materiaPrima,
+			percent: parseFloat(materiaPrimaPercent),
+		},
+		...Object.entries(salariesByCategory)
+			.filter(
+				([category]) =>
+					category && category !== "Otros" && category !== "marketing"
+			)
+			.map(([category, value]) => ({
+				item: `${category}`,
+				value: value,
+				percent: ((value / facturacionTotal) * 100).toFixed(1),
+			})),
+		{
+			item: "Marketing",
+			value: marketingDaily,
+			percent: ((marketingDaily / facturacionTotal) * 100).toFixed(1),
+		},
+		{
+			item: "Alquiler",
+			value: alquilerDaily,
+			percent: ((alquilerDaily / facturacionTotal) * 100).toFixed(1),
+		},
+		{
+			item: "Agua",
+			value: agua,
+			percent: ((agua / facturacionTotal) * 100).toFixed(1),
+		},
+		{
+			item: "Error",
+			value: error,
+			percent: ((error / facturacionTotal) * 100).toFixed(1),
+		},
+		{
+			item: "Deuda local 1 (Expansión)",
+			value: deudaLocal,
+			percent: deudaLocalPercent,
+		},
+		{ item: "Final", value: finalAmount, percent: finalPercent },
+	];
+
+	return (
+		<div className="flex flex-col">
+			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
+				<p className="text-black font-bold text-4xl mt-1">Neto</p>
+			</div>
+			<div className="px-4 pb-8">
+				<Calendar />
+			</div>
+			<div className="font-coolvetica">
+				<table className="w-full text-xs text-left text-black">
+					<thead className="text-black border-b h-10">
+						<tr>
+							<th scope="col" className="pl-4 w-2/5">
+								ESTRUCTURA DE COSTOS
+							</th>
+							<th scope="col" className="pl-4 w-1/6"></th>
+							<th scope="col" className="pl-4 w-1/6">
+								%
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{data.map((row, index) => (
+							<tr
+								key={index}
+								className="text-black border font-light h-10 border-black border-opacity-20"
+							>
+								<td className="pl-4 w-1/5 font-light">{row.item}</td>
+								<td className="pl-4 w-1/7 font-light">
+									{row.value !== null ? `$ ${currencyFormat(row.value)}` : ""}
+								</td>
+								<td className="pl-4 w-1/7 font-light">
+									{row.percent !== null ? `${row.percent}%` : ""}
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	);
 };
