@@ -1,23 +1,49 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
 
 export const Neto = () => {
-	const { facturacionTotal, neto, expenseData } = useSelector(
-		(state: RootState) => state.data
-	);
+	const {
+		facturacionTotal,
+		neto,
+		expenseData,
+		totalProductosVendidos,
+		vueltas,
+	} = useSelector((state: RootState) => state.data);
 
 	useEffect(() => {
 		console.log("Gastos según el calendario:", expenseData);
 	}, [expenseData]);
 
+	const cadetePagas = useMemo(() => {
+		const pagas: { [key: string]: number } = {};
+		vueltas.forEach((cadete) => {
+			if (cadete.name && cadete.vueltas) {
+				const totalPaga = cadete.vueltas.reduce(
+					(sum, vuelta) => sum + (vuelta.paga || 0),
+					0
+				);
+				pagas[cadete.name] = totalPaga;
+			}
+		});
+		return pagas;
+	}, [vueltas]);
+
+	const cadeteTotal =
+		expenseData.find((expense) => expense.category === "cadetes")?.total ||
+		Object.values(cadetePagas).reduce((acc, val) => acc + val, 0);
+
+	const cocinaTotal =
+		expenseData.find((expense) => expense.category === "cocina")?.total ||
+		totalProductosVendidos * 230 * 2 + 100000;
+
 	const errorValue = facturacionTotal * 0.05;
 
 	const totalExpenses = [
 		neto,
-		expenseData.find((expense) => expense.category === "cadetes")?.total || 0,
-		expenseData.find((expense) => expense.category === "cocina")?.total || 0,
+		cadeteTotal,
+		cocinaTotal,
 		expenseData.find((expense) => expense.category === "marketing")?.total || 0,
 		expenseData.find((expense) => expense.name === "Alquiler")?.total || 0,
 		expenseData.find((expense) => expense.name === "agua")?.total || 0,
@@ -27,7 +53,12 @@ export const Neto = () => {
 	const excedenteValue = facturacionTotal - totalExpenses;
 
 	const data = [
-		{ label: "Bruto", value: facturacionTotal, percentage: "100%" },
+		{
+			label: "Bruto",
+			value: facturacionTotal,
+			percentage: "100%",
+			estado: "Exacto",
+		},
 		{
 			label: "Materia prima",
 			value: facturacionTotal - neto,
@@ -35,20 +66,25 @@ export const Neto = () => {
 				((facturacionTotal - neto) * 100) /
 				facturacionTotal
 			).toFixed(1)}%`,
+			estado: "Exacto",
 		},
 		{
 			label: "Cadete",
-			value:
-				expenseData.find((expense) => expense.category === "cadetes")?.total ||
-				0,
+			value: cadeteTotal,
 			percentage: "9.0%",
+			manual: !expenseData.find((expense) => expense.category === "cadetes"),
+			estado: expenseData.find((expense) => expense.category === "cadetes")
+				? "Exacto"
+				: "Estimado",
 		},
 		{
 			label: "Cocina y produccion",
-			value:
-				expenseData.find((expense) => expense.category === "cocina")?.total ||
-				0,
+			value: cocinaTotal,
 			percentage: "10.7%",
+			manual: !expenseData.find((expense) => expense.category === "cocina"),
+			estado: expenseData.find((expense) => expense.category === "cocina")
+				? "Exacto"
+				: "Estimado",
 		},
 		{
 			label: "Marketing",
@@ -56,20 +92,39 @@ export const Neto = () => {
 				expenseData.find((expense) => expense.category === "marketing")
 					?.total || 0,
 			percentage: "0.0%",
+			estado: expenseData.find((expense) => expense.category === "marketing")
+				? "Exacto"
+				: "Estimado",
 		},
 		{
 			label: "Alquiler",
 			value:
 				expenseData.find((expense) => expense.name === "Alquiler")?.total || 0,
 			percentage: "0.0%",
+			estado: expenseData.find((expense) => expense.name === "Alquiler")
+				? "Exacto"
+				: "Estimado",
 		},
 		{
 			label: "Agua",
 			value: expenseData.find((expense) => expense.name === "agua")?.total || 0,
 			percentage: "0%",
+			estado: expenseData.find((expense) => expense.name === "agua")
+				? "Exacto"
+				: "Estimado",
 		},
-		{ label: "Error", value: errorValue, percentage: "5.0%" },
-		{ label: "Excedente", value: excedenteValue, percentage: "-" },
+		{
+			label: "Error",
+			value: errorValue,
+			percentage: "5.0%",
+			estado: "Estimado",
+		},
+		{
+			label: "Excedente",
+			value: excedenteValue,
+			percentage: "-",
+			estado: "Estimado",
+		},
 	];
 
 	return (
@@ -86,15 +141,20 @@ export const Neto = () => {
 							Total
 						</th>
 						<th scope="col" className="pl-4 w-1/5">
+							Estado
+						</th>
+						<th scope="col" className="pl-4 w-1/5">
 							%
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					{data.map(({ label, value, percentage }, index) => (
+					{data.map(({ label, value, percentage, manual, estado }, index) => (
 						<tr
 							key={index}
-							className="text-black border font-light h-10 border-black border-opacity-20"
+							className={`text-black border font-light h-10 border-black border-opacity-20 ${
+								manual ? "bg-gray-300" : ""
+							}`}
 						>
 							<th scope="row" className="pl-4 w-2/5 font-light">
 								{label}
@@ -102,6 +162,7 @@ export const Neto = () => {
 							<td className="pl-4 w-1/5 font-light">
 								{`$ ${value.toLocaleString()}`}
 							</td>
+							<td className="pl-4 w-1/5 font-light">{estado}</td>
 							<td className="pl-4 w-1/5 font-light">{percentage}</td>
 						</tr>
 					))}
