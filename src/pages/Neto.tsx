@@ -318,9 +318,7 @@ export const Neto = () => {
 						{data.map(({ label, value, percentage, manual, estado }, index) => (
 							<tr
 								key={index}
-								className={`text-black border font-light h-10 border-black border-opacity-20 ${
-									manual ? "bg-gray-300" : ""
-								}`}
+								className={`text-black border font-light h-10 border-black border-opacity-20 `}
 							>
 								<th scope="row" className="pl-4 w-2/5 font-light">
 									{label}
@@ -328,7 +326,13 @@ export const Neto = () => {
 								<td className="pl-4 w-1/5 font-light">{`$ ${value.toLocaleString()}`}</td>
 								<td className="pl-4 w-1/5 font-bold">
 									<div className="bg-gray-300 py-1 px-2 rounded-full">
-										<p className="text-center">{estado}</p>
+										<p
+											className={`text-center ${
+												manual ? "text-red-500" : "text-black"
+											}`}
+										>
+											{estado}
+										</p>
 									</div>
 								</td>
 
