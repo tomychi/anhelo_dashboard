@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
@@ -346,7 +346,9 @@ export const Neto = () => {
 								<th scope="row" className="pl-4 h-10 w-2/5 font-light">
 									{label}
 								</th>
-								<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toLocaleString()}`}</td>
+								<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(
+									0
+								)}`}</td>
 								<td className="pl-4 w-1/5 h-10 pr-1 font-bold">
 									<div className="bg-gray-300 py-1 px-2 rounded-full">
 										<p
