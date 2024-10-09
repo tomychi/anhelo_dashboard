@@ -470,7 +470,6 @@ export const ReadGastosSinceTwoMonthsAgo = async () => {
 			tempDate.setMonth(tempDate.getMonth() + 1);
 		}
 
-		console.log("Gastos acumulados:", gastosData);
 		return gastosData;
 	} catch (error) {
 		console.error("Error al leer la colección de gastos:", error);
