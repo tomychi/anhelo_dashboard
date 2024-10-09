@@ -3,19 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
 import { ReadGastosSinceTwoMonthsAgo } from "../firebase/ReadData";
-import arrow from "../assets/arrowIcon.png";
-
-interface Gasto {
-	id: string;
-	category: string;
-	description: string;
-	estado: string;
-	fecha: string;
-	name: string;
-	quantity: number;
-	total: number;
-	unit: string;
-}
+import { Gasto, Cadete, Vuelta, PedidoProps } from "../types/types"; // Importamos las interfaces desde types.ts
 
 export const Neto = () => {
 	const {
@@ -43,7 +31,7 @@ export const Neto = () => {
 	}, []);
 
 	// Función para calcular los días seleccionados en el rango
-	const calcularDiasSeleccionados = () => {
+	const calcularDiasSeleccionados = (): number => {
 		if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
 			return 0;
 		}
@@ -54,13 +42,13 @@ export const Neto = () => {
 	};
 
 	// Función para convertir la fecha de dd/mm/yyyy a yyyy-mm-dd
-	const convertirFecha = (fecha) => {
+	const convertirFecha = (fecha: string): string => {
 		const [dia, mes, año] = fecha.split("/");
 		return `${año}-${mes}-${dia}`;
 	};
 
 	// Función auxiliar general para calcular el total ajustado por días del mes y rango
-	const getGastoAjustadoPorDias = (total, fecha) => {
+	const getGastoAjustadoPorDias = (total: number, fecha: string): number => {
 		const fechaFormateada = convertirFecha(fecha);
 		const fechaGasto = new Date(fechaFormateada);
 		const diasDelMes = new Date(
@@ -74,9 +62,9 @@ export const Neto = () => {
 	};
 
 	// Modificar la función auxiliar para Alquiler
-	const getAlquilerTotal = () => {
+	const getAlquilerTotal = (): { total: number; isEstimated: boolean } => {
 		const alquilerExpense = expenseData.find(
-			(expense) => expense.name === "Alquiler"
+			(expense: Gasto) => expense.name === "Alquiler"
 		);
 		if (alquilerExpense) {
 			return {
@@ -110,9 +98,9 @@ export const Neto = () => {
 	};
 
 	// Modificar la función auxiliar para Marketing
-	const getMarketingTotal = () => {
+	const getMarketingTotal = (): { total: number; isEstimated: boolean } => {
 		const marketingExpense = expenseData.find(
-			(expense) => expense.category === "marketing"
+			(expense: Gasto) => expense.category === "marketing"
 		);
 		if (marketingExpense) {
 			return {
@@ -147,9 +135,9 @@ export const Neto = () => {
 	};
 
 	// Modificar la función auxiliar para Agua
-	const getAguaTotal = () => {
+	const getAguaTotal = (): { total: number; isEstimated: boolean } => {
 		const aguaExpense = expenseData.find(
-			(expense) => expense.name.toLowerCase() === "agua"
+			(expense: Gasto) => expense.name.toLowerCase() === "agua"
 		);
 		if (aguaExpense) {
 			return {
@@ -179,12 +167,15 @@ export const Neto = () => {
 		}
 	};
 
+	// Utilizamos la interfaz Cadete de types.ts y ajustamos el código
 	const cadetePagas = useMemo(() => {
 		const pagas: { [key: string]: number } = {};
-		vueltas.forEach((cadete) => {
+		(vueltas as Cadete[]).forEach((cadete: Cadete) => {
 			if (cadete.name && cadete.vueltas) {
 				const totalPaga = cadete.vueltas.reduce(
-					(sum, vuelta) => sum + (vuelta.paga || 0),
+					(sum: number, vuelta: Vuelta) => {
+						return sum + (vuelta.paga || 0);
+					},
 					0
 				);
 				pagas[cadete.name] = totalPaga;
@@ -193,12 +184,12 @@ export const Neto = () => {
 		return pagas;
 	}, [vueltas]);
 
-	const cadeteTotal =
-		expenseData.find((expense) => expense.category === "cadetes")?.total ||
-		Object.values(cadetePagas).reduce((acc, val) => acc + val, 0);
+	const cadeteTotal: number =
+		expenseData.find((expense: Gasto) => expense.category === "cadetes")
+			?.total || Object.values(cadetePagas).reduce((acc, val) => acc + val, 0);
 
 	// Función para calcular la cantidad de días del mes basado en la fecha seleccionada
-	const calcularDiasDelMes = () => {
+	const calcularDiasDelMes = (): number => {
 		if (!valueDate || !valueDate.startDate) {
 			return 0;
 		}
@@ -210,15 +201,16 @@ export const Neto = () => {
 		).getDate();
 	};
 
-	const cocinaTotal =
-		expenseData.find((expense) => expense.category === "cocina")?.total ||
+	const cocinaTotal: number =
+		expenseData.find((expense: Gasto) => expense.category === "cocina")
+			?.total ||
 		totalProductosVendidos * 230 * 2 +
 			(400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
 
-	const errorValue = facturacionTotal * 0.05;
+	const errorValue: number = facturacionTotal * 0.05;
 
 	// Calcular Materia prima
-	const materiaPrima = facturacionTotal - neto;
+	const materiaPrima: number = facturacionTotal - neto;
 
 	// Obtener datos de Alquiler
 	const alquilerData = getAlquilerTotal();
@@ -230,7 +222,7 @@ export const Neto = () => {
 	const aguaData = getAguaTotal();
 
 	// Calcular gastos totales
-	const totalExpenses = [
+	const totalExpenses: number = [
 		materiaPrima,
 		cadeteTotal,
 		cocinaTotal,
@@ -241,9 +233,9 @@ export const Neto = () => {
 	].reduce((acc, curr) => acc + curr, 0);
 
 	// Calcular excedente
-	const excedenteValue = facturacionTotal - totalExpenses;
+	const excedenteValue: number = facturacionTotal - totalExpenses;
 
-	const calculatePercentage = (value) => {
+	const calculatePercentage = (value: number): string => {
 		return ((value / facturacionTotal) * 100).toFixed(1) + "%";
 	};
 
@@ -264,8 +256,12 @@ export const Neto = () => {
 			label: "Cadete",
 			value: cadeteTotal,
 			percentage: calculatePercentage(cadeteTotal),
-			manual: !expenseData.find((expense) => expense.category === "cadetes"),
-			estado: expenseData.find((expense) => expense.category === "cadetes")
+			manual: !expenseData.find(
+				(expense: Gasto) => expense.category === "cadetes"
+			),
+			estado: expenseData.find(
+				(expense: Gasto) => expense.category === "cadetes"
+			)
 				? "Exacto"
 				: "Estimado",
 		},
@@ -273,8 +269,12 @@ export const Neto = () => {
 			label: "Cocina y producción",
 			value: cocinaTotal,
 			percentage: calculatePercentage(cocinaTotal),
-			manual: !expenseData.find((expense) => expense.category === "cocina"),
-			estado: expenseData.find((expense) => expense.category === "cocina")
+			manual: !expenseData.find(
+				(expense: Gasto) => expense.category === "cocina"
+			),
+			estado: expenseData.find(
+				(expense: Gasto) => expense.category === "cocina"
+			)
 				? "Exacto"
 				: "Estimado",
 		},
@@ -343,47 +343,52 @@ export const Neto = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{data.map(({ label, value, percentage, manual, estado }, index) => (
-							<tr
-								key={index}
-								className={`text-black border font-light h-10 border-black border-opacity-20`}
-							>
-								<th scope="row" className="pl-4 h-10 w-2/5 font-light">
-									{label}
-								</th>
-								<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(
-									0
-								)}`}</td>
-								<td className="pl-4 w-1/5 h-10 pr-1 font-bold">
-									<div className="bg-gray-300 py-1 px-2 rounded-full">
-										<p
-											className={`text-center ${
-												manual ? "text-red-500" : "text-black"
-											}`}
+						{data.map(
+							(
+								{ label, value, percentage, manual = false, estado },
+								index: number
+							) => (
+								<tr
+									key={index}
+									className={`text-black border font-light h-10 border-black border-opacity-20`}
+								>
+									<th scope="row" className="pl-4 h-10 w-2/5 font-light">
+										{label}
+									</th>
+									<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(
+										0
+									)}`}</td>
+									<td className="pl-4 w-1/5 h-10 pr-1 font-bold">
+										<div className="bg-gray-300 py-1 px-2 rounded-full">
+											<p
+												className={`text-center ${
+													manual ? "text-red-500" : "text-black"
+												}`}
+											>
+												{estado}
+											</p>
+										</div>
+									</td>
+									<td className="pl-4 pr-8 w-1/5 h-10 font-light">
+										{percentage}
+									</td>
+									<td className="pl-4 w-1/5 h-10 font-light relative">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 20 20"
+											fill="currentColor"
+											className="h-5 absolute right-3.5 bottom-2.5"
 										>
-											{estado}
-										</p>
-									</div>
-								</td>
-								<td className="pl-4 pr-8 w-1/5 h-10 font-light">
-									{percentage}
-								</td>
-								<td className="pl-4 w-1/5 h-10 font-light relative">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 20 20"
-										fill="currentColor"
-										className="h-5 absolute right-3.5 bottom-2.5"
-									>
-										<path
-											fillRule="evenodd"
-											d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-											clipRule="evenodd"
-										/>
-									</svg>
-								</td>
-							</tr>
-						))}
+											<path
+												fillRule="evenodd"
+												d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+												clipRule="evenodd"
+											/>
+										</svg>
+									</td>
+								</tr>
+							)
+						)}
 					</tbody>
 				</table>
 			</div>
