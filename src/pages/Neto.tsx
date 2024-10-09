@@ -217,6 +217,9 @@ export const Neto = () => {
 
 	const errorValue = facturacionTotal * 0.05;
 
+	// Calcular Materia prima
+	const materiaPrima = facturacionTotal - neto;
+
 	// Obtener datos de Alquiler
 	const alquilerData = getAlquilerTotal();
 
@@ -226,8 +229,9 @@ export const Neto = () => {
 	// Obtener datos de Agua
 	const aguaData = getAguaTotal();
 
+	// Calcular gastos totales
 	const totalExpenses = [
-		neto,
+		materiaPrima,
 		cadeteTotal,
 		cocinaTotal,
 		marketingData.total,
@@ -236,6 +240,7 @@ export const Neto = () => {
 		errorValue,
 	].reduce((acc, curr) => acc + curr, 0);
 
+	// Calcular excedente
 	const excedenteValue = facturacionTotal - totalExpenses;
 
 	const calculatePercentage = (value) => {
@@ -251,8 +256,8 @@ export const Neto = () => {
 		},
 		{
 			label: "Materia prima",
-			value: facturacionTotal - neto,
-			percentage: calculatePercentage(facturacionTotal - neto),
+			value: materiaPrima,
+			percentage: calculatePercentage(materiaPrima),
 			estado: "Exacto",
 		},
 		{
