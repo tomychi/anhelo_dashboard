@@ -130,3 +130,15 @@ export interface CadeteData {
   precioPorKM: number;
   precioPuntoEntrega: number;
 }
+
+export interface Gasto {
+  id: string;
+  category: string;
+  description: string;
+  estado: string;
+  fecha: string;
+  name: string;
+  quantity: number;
+  total: number;
+  unit: string;
+}
