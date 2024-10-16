@@ -89,7 +89,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
     const preferenceData = {
       items: items,
       back_urls: {
-        success: "http://localhost:5173/feedback?status=success",
+        success: "http://localhost:5173/success?status=success",
         failure: "http://localhost:5173/feedback?status=failure",
         pending: "http://localhost:5173/feedback?status=pending",
       },
@@ -173,6 +173,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
         cadete: "NO ASIGNADO",
         referencias: values.references,
         map: coordinates || [0, 0],
+        ubicacion: mapUrl,
         elaborado: false,
       };
 

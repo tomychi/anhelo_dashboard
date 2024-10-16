@@ -6,7 +6,6 @@ export const UploadOrder = async (
   orderDetail: OrderDetailProps,
   id: string,
 ) => {
-  const pedidoId = id;
   const fechaFormateada = obtenerFechaActual();
   const [dia, mes, anio] = fechaFormateada.split("/");
 
@@ -24,7 +23,7 @@ export const UploadOrder = async (
       const pedidosDelDia = existingData?.pedidos || [];
       pedidosDelDia.push({
         ...orderDetail,
-        id: pedidoId,
+        id,
         cerca: false,
         status: false,
       });
@@ -33,7 +32,7 @@ export const UploadOrder = async (
         pedidos: pedidosDelDia,
       });
     });
-    return pedidoId;
+    return id;
   } catch (error) {
     console.error("Error al subir el pedido:", error);
     throw error;
