@@ -11,7 +11,7 @@ export const UploadOrder = async (
 
   // Usa firestore.collection() y firestore.doc()
   const pedidosCollectionRef = firestore
-    .collection("AA")
+    .collection("pedidos")
     .doc(anio)
     .collection(mes);
   const pedidoDocRef = pedidosCollectionRef.doc(dia);
@@ -43,7 +43,7 @@ export const updateOrderStatus = async (orderId: string, status: boolean) => {
   const fechaFormateada = obtenerFechaActual(); // Usa tu función de fecha actual
   const [dia, mes, anio] = fechaFormateada.split("/");
   const pedidosCollectionRef = firestore
-    .collection("AA")
+    .collection("pedidos")
     .doc(anio)
     .collection(mes); // Cambiado para usar firestore.collection()
   const pedidoDocRef = pedidosCollectionRef.doc(dia); // Obtener referencia al documento del día

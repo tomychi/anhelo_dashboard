@@ -27,14 +27,10 @@ exports.createPreference = functions.https.onCall(async (request) => {
   try {
     const { data } = request;
 
-    const {
-      discountedTotal, // Total con descuentos
-      envio, // Costo de envío
-      values,
-      cart,
-      mapUrl,
-      couponCodes,
-    } = data;
+    const { values, cart, mapUrl, couponCodes } = data;
+
+    const envio = Number(data.envio) || 0;
+    const discountedTotal = Number(data.discountedTotal) || 0;
 
     console.log(couponCodes);
 
@@ -42,56 +38,35 @@ exports.createPreference = functions.https.onCall(async (request) => {
     const totalAmount = Number(discountedTotal) + Number(envio);
 
     // Configuración de los ítems
-    const items = [];
-
-    cart.forEach((item: ItemProps) => {
-      const quantity = item.quantity || 1; // Asegúrate de que la cantidad sea al menos 1
-      const priceBurger = item.price || 0; // Precio de la hamburguesa
-
-      // Agregamos el ítem de la hamburguesa
-      items.push({
-        id: `burger-${item.name}`, // Agregar un ID único
-        title: item.name, // Nombre de la hamburguesa
-        unit_price: priceBurger, // Precio unitario de la hamburguesa
-        quantity: quantity,
-        description: `Hamburguesa: ${item.name}`, // Descripción de la hamburguesa
-        category_id: "hamburguesa", // Categoría
-        currency_id: "ARS",
-      });
-
-      // Agregar cada topping como un ítem separado
-      if (item.toppings) {
-        item.toppings.forEach((topping) => {
-          items.push({
-            id: topping.id || `topping-${topping.name}`, // Agregar un ID único para el topping
-            title: topping.name, // Nombre del topping
-            unit_price: topping.price || 0, // Precio unitario del topping
-            quantity: quantity, // Cantidad del topping
-            description: `Topping: ${topping.name}`, // Descripción del topping
-            category_id: "topping", // Categoría
-            currency_id: "ARS",
-          });
-        });
-      }
-    });
+    const items = [
+      {
+        id: "total-amount", // ID único para el total
+        title: "Total del Pedido", // Título descriptivo del total
+        unit_price: totalAmount, // TotalAmount como el precio unitario
+        quantity: 1, // Cantidad siempre 1 ya que es el total del pedido
+        currency_id: "ARS", // Moneda
+        description: "Total a pagar por el pedido", // Descripción
+        category_id: "pedido", // Categoría
+      },
+    ];
 
     // Agregar el costo de envío como un ítem separado
-    items.push({
-      id: "shipping-cost", // Agregar un ID único para el costo de envío
-      title: "Costo de Envío",
-      unit_price: envio,
-      quantity: 1,
-      currency_id: "ARS",
-      description: "Costo de envío para el pedido",
-      category_id: "envio",
-    });
+    // items.push({
+    //   id: "shipping-cost", // Agregar un ID único para el costo de envío
+    //   title: "Costo de Envío",
+    //   unit_price: envio,
+    //   quantity: 1,
+    //   currency_id: "ARS",
+    //   description: "Costo de envío para el pedido",
+    //   category_id: "envio",
+    // });
 
     const preferenceData = {
       items: items,
       back_urls: {
-        success: "http://localhost:5173/success?status=success",
-        failure: "http://localhost:5173/feedback?status=failure",
-        pending: "http://localhost:5173/feedback?status=pending",
+        success: "https://onlyanhelo.com/feedback?status=success",
+        failure: "https://onlyanhelo.com/feedback?status=failure",
+        pending: "https://onlyanhelo.com/feedback?status=pending",
       },
       auto_return: "approved",
       statement_descriptor: "ANHELO", // Nombre personalizado en el estado de cuenta
@@ -197,8 +172,9 @@ exports.createPreference = functions.https.onCall(async (request) => {
 });
 
 // Endpoint para verificar el estado de pago
-exports.verifyPayment = functions.https.onRequest(async (req, res) => {
-  const { paymentId, orderId } = req.params;
+exports.verifyPayment = functions.https.onCall(async (request) => {
+  const { data } = request;
+  const { paymentId, orderId } = data;
 
   try {
     // Verifica el estado del pago en MercadoPago
@@ -211,18 +187,21 @@ exports.verifyPayment = functions.https.onRequest(async (req, res) => {
     if (paymentStatus === "approved") {
       // Actualiza el estado del pedido en Firestore
       await updateOrderStatus(orderId, true); // Asegúrate de tener esta función implementada
-      res.status(200).json({
+      return {
         status: "success",
         message: "Pago aprobado y pedido actualizado correctamente.",
-      });
+      };
     } else {
-      res.status(200).json({
+      return {
         status: paymentStatus,
         message: "El pago no ha sido aprobado.",
-      });
+      };
     }
   } catch (error) {
     console.error("Error al verificar el pago:", error);
-    res.status(500).json({ error: "Error al verificar el pago." });
+    throw new functions.https.HttpsError(
+      "internal",
+      "Error al verificar el pago.",
+    );
   }
 });

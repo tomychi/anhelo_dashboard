@@ -1,18 +1,19 @@
 export const obtenerHoraActual = () => {
-  // Obtener la hora actual
   const ahora = new Date();
 
-  // Sumar 5 minutos
-  ahora.setMinutes(ahora.getMinutes());
+  const opciones: Intl.DateTimeFormatOptions = {
+    hour: "2-digit", // Formato de dos dígitos para la hora
+    minute: "2-digit", // Formato de dos dígitos para los minutos
+    timeZone: "America/Argentina/Buenos_Aires", // Zona horaria de Buenos Aires
+    hour12: false, // Formato 24 horas
+  };
 
-  // Obtener las horas y los minutos
-  const horas = ahora.getHours().toString().padStart(2, "0");
-  const minutos = ahora.getMinutes().toString().padStart(2, "0");
+  // Formatea la hora como "HH:mm"
+  const horaFormateada = new Intl.DateTimeFormat("es-AR", opciones).format(
+    ahora,
+  );
 
-  // Formatear la hora como 'HH:mm'
-  const horaFormateada = horas + ":" + minutos;
-
-  return horaFormateada;
+  return horaFormateada; // Retorna la hora en el formato deseado
 };
 
 export const extractCoordinates = (url: string) => {
@@ -28,12 +29,18 @@ export const extractCoordinates = (url: string) => {
 
 export const obtenerFechaActual = () => {
   const fechaActual = new Date();
-  const dia = String(fechaActual.getDate()).padStart(2, "0");
-  const mes = String(fechaActual.getMonth() + 1).padStart(2, "0");
-  const anio = fechaActual.getFullYear();
+
+  const opciones: Intl.DateTimeFormatOptions = {
+    day: "2-digit", // Formato de dos dígitos para el día
+    month: "2-digit", // Formato de dos dígitos para el mes
+    year: "numeric", // Año completo en formato numérico
+    timeZone: "America/Argentina/Buenos_Aires", // Zona horaria de Buenos Aires
+  };
 
   // Formatea la fecha como "DD/MM/AAAA"
-  const fechaFormateada = `${dia}/${mes}/${anio}`;
+  const fechaFormateada = new Intl.DateTimeFormat("es-AR", opciones).format(
+    fechaActual,
+  );
 
-  return fechaFormateada;
+  return fechaFormateada; // Retorna la fecha en el formato deseado
 };
