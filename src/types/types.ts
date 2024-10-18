@@ -19,7 +19,7 @@ export interface PedidoProps {
   metodoPago: string;
   subTotal: number;
   telefono: string;
-  status: boolean;
+  paid: boolean;
   total: number;
   efectivoCantidad: number;
   mercadopagoCantidad: number;

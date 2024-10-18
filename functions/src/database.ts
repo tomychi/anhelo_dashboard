@@ -25,7 +25,7 @@ export const UploadOrder = async (
         ...orderDetail,
         id,
         cerca: false,
-        status: false,
+        paid: false,
       });
       transaction.set(pedidoDocRef, {
         ...existingData,
@@ -39,7 +39,7 @@ export const UploadOrder = async (
   }
 };
 
-export const updateOrderStatus = async (orderId: string, status: boolean) => {
+export const updateOrderStatus = async (orderId: string, paid: boolean) => {
   const fechaFormateada = obtenerFechaActual(); // Usa tu función de fecha actual
   const [dia, mes, anio] = fechaFormateada.split("/");
   const pedidosCollectionRef = firestore
@@ -62,7 +62,7 @@ export const updateOrderStatus = async (orderId: string, status: boolean) => {
       // Busca el pedido por orderId y actualiza su estado
       const updatedPedidos = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.id === orderId) {
-          return { ...pedido, status: status }; // Actualiza el campo 'status'
+          return { ...pedido, paid: paid }; // Actualiza el campo 'paid'
         }
         return pedido;
       });

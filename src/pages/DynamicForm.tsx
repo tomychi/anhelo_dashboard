@@ -374,7 +374,7 @@ export const DynamicForm: React.FC = () => {
       total: subTotal + envio,
       fecha: obtenerFechaActual(),
       elaborado: false,
-      status: true,
+      paid: true,
     };
 
     UploadOrder(info)
