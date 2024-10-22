@@ -1,5 +1,7 @@
 import * as functions from 'firebase-functions/v2';
 import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   calcularCostoHamburguesa,
   ReadData,
@@ -15,6 +17,20 @@ import {
   cleanPhoneNumber,
 } from './helpers';
 import { ItemProps, ToppingsProps } from './types';
+
+const adjustHora = (hora: string) => {
+  const [hours, minutes] = hora.split(':').map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  date.setMinutes(date.getMinutes() - 30);
+
+  // Formatear la nueva hora en "HH:mm"
+  const adjustedHours = date.getHours().toString().padStart(2, '0');
+  const adjustedMinutes = date.getMinutes().toString().padStart(2, '0');
+  const adjustedTime = `${adjustedHours}:${adjustedMinutes}`;
+  console.log(`Hora ajustada: ${adjustedTime} (original: ${hora})`);
+  return adjustedTime;
+};
 
 // Inicializa el cliente con el token de acceso
 const client = new MercadoPagoConfig({
@@ -32,7 +48,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
 
     const envio = Number(data.envio) || 0;
     const discountedTotal = Number(data.discountedTotal) || 0;
-
+    const orderId = uuidv4();
     console.log(couponCodes);
 
     // Calculamos el total que incluye el discountedTotal y el envio
@@ -51,26 +67,18 @@ exports.createPreference = functions.https.onCall(async (request) => {
       },
     ];
 
-    // Agregar el costo de envío como un ítem separado
-    // items.push({
-    //   id: "shipping-cost", // Agregar un ID único para el costo de envío
-    //   title: "Costo de Envío",
-    //   unit_price: envio,
-    //   quantity: 1,
-    //   currency_id: "ARS",
-    //   description: "Costo de envío para el pedido",
-    //   category_id: "envio",
-    // });
-
     const preferenceData = {
       items: items,
       back_urls: {
-        success: 'https://onlyanhelo.com/feedback?status=success',
+        success: `https://onlyanhelo.com/success/${orderId}?status=success`,
         failure: 'https://onlyanhelo.com/feedback?status=failure',
         pending: 'https://onlyanhelo.com/feedback?status=pending',
       },
       auto_return: 'approved',
+      notification_url:
+        'https://us-central1-anhelo-4789d.cloudfunctions.net/receiveWebhook', // URL de tu función webhook
       statement_descriptor: 'ANHELO', // Nombre personalizado en el estado de cuenta
+      external_reference: orderId, // Vincula el pedido con el payment
     };
 
     // Crear la preferencia con MercadoPago
@@ -95,6 +103,12 @@ exports.createPreference = functions.https.onCall(async (request) => {
       }));
 
       const phone = String(values.phone) || '';
+      const isReserva = values.hora.trim() !== '';
+
+      let adjustedHora = values.hora;
+      if (isReserva) {
+        adjustedHora = adjustHora(values.hora);
+      }
 
       const orderDetail = {
         envio,
@@ -146,7 +160,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
         metodoPago: values.paymentMethod,
         direccion: values.address,
         telefono: cleanPhoneNumber(phone), // Convierte a string
-        hora: values.hora || obtenerHoraActual(),
+        hora: adjustedHora || obtenerHoraActual(),
         cerca: false, // Puedes ajustar esto según tus necesidades
         cadete: 'NO ASIGNADO',
         referencias: values.references,
@@ -155,7 +169,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
         elaborado: false,
       };
 
-      await UploadOrder(orderDetail, response.id);
+      await UploadOrder(orderDetail, orderId);
 
       return { id: response.id }; // Respuesta exitosa
     } else {
@@ -174,37 +188,39 @@ exports.createPreference = functions.https.onCall(async (request) => {
   }
 });
 
-// Endpoint para verificar el estado de pago
-exports.verifyPayment = functions.https.onCall(async (request) => {
-  const { data } = request;
-  const { paymentId, orderId } = data;
-
+exports.receiveWebhook = functions.https.onRequest(async (req, res) => {
   try {
-    // Verifica el estado del pago en MercadoPago
-    const payment = new Payment(client);
-    const response = await payment.get({ id: paymentId });
+    const paymentData = req.body;
 
-    const paymentStatus = response.status;
+    console.log('paymentDataaaa', paymentData);
+    if (paymentData.type === 'payment') {
+      const paymentId = paymentData.data.id;
 
-    // Si el pago ha sido aprobado
-    if (paymentStatus === 'approved') {
-      // Actualiza el estado del pedido en Firestore
-      await updateOrderStatus(orderId, true); // Asegúrate de tener esta función implementada
-      return {
-        status: 'success',
-        message: 'Pago aprobado y pedido actualizado correctamente.',
-      };
-    } else {
-      return {
-        status: paymentStatus,
-        message: 'El pago no ha sido aprobado.',
-      };
+      const payment = new Payment(client);
+
+      console.log('paymentId', paymentId);
+
+      console.log('payment', payment);
+
+      const paymentInfo = await payment.get({ id: paymentId });
+
+      console.log('informacionnn', paymentInfo);
+
+      const { external_reference, status } = paymentInfo; // Obtén el orderId del external_reference
+
+      if (status === 'approved') {
+        // Usa el external_reference para encontrar el pedido y actualizar su estado
+        if (external_reference) {
+          await updateOrderStatus(external_reference, true);
+        } else {
+          console.error('Error: external_reference es undefined o inválido.');
+        }
+      }
     }
+
+    res.sendStatus(200);
   } catch (error) {
-    console.error('Error al verificar el pago:', error);
-    throw new functions.https.HttpsError(
-      'internal',
-      'Error al verificar el pago.'
-    );
+    console.error('Error processing webhook:', error);
+    res.status(500).json({ message: 'Error processing webhook' });
   }
 });
