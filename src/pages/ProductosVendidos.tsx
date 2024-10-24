@@ -445,20 +445,12 @@ export const ProductosVendidos = () => {
 							key={key}
 						>
 							{/* Pedidos de {key} hamburguesas */}
-							<div className="mb-2 font-semibold">
+							<p className="mb-2 font-semibold">
 								Pedidos de {labelBurgers} hamburguesa
-								{plural ? "s" : ""}: {total}
-							</div>
-							{/* Pedidos de {key} hamburguesas + sides */}
-							<div>
-								Pedidos de {labelBurgers} hamburguesa
-								{plural ? "s" : ""} + sides: {counts[key]?.withSides || 0} (
-								{percentage}%)
-							</div>
-							{/* Porcentaje General de la Categoría */}
-							<div className="mt-2 text-sm">
-								Porcentaje de todos los pedidos: {overallPercentage}%
-							</div>
+								{plural ? "s" : ""}: {total} ({overallPercentage}%)
+							</p>
+
+							<p>Agregan extras: {percentage}%</p>
 						</div>
 					);
 				})}
