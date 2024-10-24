@@ -14,7 +14,7 @@ import {
   listenToEmpleadosChanges,
 } from "../firebase/registroEmpleados";
 import { ReadOrdersForToday } from "../firebase/ReadData";
-import { Cadete, PedidoProps, Vuelta } from "../types/types";
+import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import arrowIcon from "../assets/arrowIcon.png";
@@ -717,6 +717,7 @@ export const Comandera: React.FC = () => {
         subTotal: pedido.subTotal || 0, // Valor predeterminado
         telefono: pedido.telefono || "", // Valor predeterminado
         total: pedido.total || 0, // Valor predeterminado
+        paid: pedido.paid || true,
         efectivoCantidad: pedido.efectivoCantidad || 0, // Valor predeterminado
         mercadopagoCantidad: pedido.mercadopagoCantidad || 0, // Valor predeterminado
         referencias: pedido.referencias || "", // Valor predeterminado

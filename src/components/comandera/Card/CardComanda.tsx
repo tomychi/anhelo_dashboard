@@ -34,6 +34,7 @@ export const CardComanda = ({
   hora,
   metodoPago,
   subTotal,
+  paid,
   telefono,
   total,
   efectivoCantidad,
@@ -61,6 +62,7 @@ export const CardComanda = ({
     hora,
     metodoPago,
     subTotal,
+    paid,
     telefono,
     total,
     efectivoCantidad,
@@ -135,6 +137,7 @@ export const CardComanda = ({
         user={user}
         id={id}
         fecha={fecha}
+        paid={paid}
         tiempoElaborado={tiempoElaborado}
         tiempoEntregado={tiempoEntregado}
         updateTiempoElaboradoForOrder={updateTiempoElaboradoForOrder}

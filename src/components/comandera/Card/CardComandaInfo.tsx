@@ -14,6 +14,7 @@ interface CardComandaInfoProps {
   user: { email: string };
   id: string;
   fecha: string;
+  paid: boolean;
   tiempoElaborado: string;
   tiempoEntregado: string;
   efectivoCantidad: number;
@@ -41,6 +42,7 @@ export const CardComandaInfo = ({
   efectivoCantidad: initialEfectivoCantidad,
   mercadopagoCantidad: initalMercadopagoCantidad,
   user,
+  paid,
   id,
   fecha,
   tiempoElaborado,

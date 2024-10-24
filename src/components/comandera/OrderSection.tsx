@@ -28,6 +28,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           referencias,
           id,
           ubicacion,
+          paid,
           cadete,
           dislike,
           delay,
@@ -47,6 +48,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               hora={hora}
               metodoPago={metodoPago}
               total={total}
+              paid={paid}
               telefono={telefono}
               detallePedido={detallePedido}
               elaborado={elaborado}
