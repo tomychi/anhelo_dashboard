@@ -84,6 +84,7 @@ export const ProductosVendidos = () => {
 	const {
 		counts,
 		percentages,
+		overallPercentages,
 		totalQuantityOriginals,
 		totalQuantityToppings,
 		totalQuantityToppingsPagos,
@@ -93,15 +94,15 @@ export const ProductosVendidos = () => {
 		totalBaconNecesario,
 		totalBaconToppings,
 		cantBolsitas,
+		totalOrders,
 	} = React.useMemo(() => {
-		// Inicializar contadores para cada tipo de pedido (1 a 6 hamburguesas)
-		const counts: { [key: number]: { noSides: number; withSides: number } } = {
-			1: { noSides: 0, withSides: 0 },
-			2: { noSides: 0, withSides: 0 },
-			3: { noSides: 0, withSides: 0 },
-			4: { noSides: 0, withSides: 0 },
-			5: { noSides: 0, withSides: 0 },
-			6: { noSides: 0, withSides: 0 },
+		// Inicializar contadores para cada tipo de pedido (1 a 4 hamburguesas y 5+)
+		const counts: { [key: string]: { noSides: number; withSides: number } } = {
+			"1": { noSides: 0, withSides: 0 },
+			"2": { noSides: 0, withSides: 0 },
+			"3": { noSides: 0, withSides: 0 },
+			"4": { noSides: 0, withSides: 0 },
+			"5+": { noSides: 0, withSides: 0 },
 		};
 
 		console.log("Inicializando contadores de pedidos:", counts);
@@ -131,43 +132,55 @@ export const ProductosVendidos = () => {
 			console.log(`  - Total hamburguesas en orden: ${totalBurgers}`);
 			console.log(`  - Tiene sides: ${hasSides}`);
 
-			// Limitar el conteo a 6 hamburguesas
-			if (totalBurgers >= 1 && totalBurgers <= 6) {
-				if (hasSides) {
-					counts[totalBurgers].withSides += 1;
-					console.log(
-						`  - Incrementando pedidos de ${totalBurgers} hamburguesa(s) + sides: ${counts[totalBurgers].withSides}`
-					);
-				} else {
-					counts[totalBurgers].noSides += 1;
-					console.log(
-						`  - Incrementando pedidos de ${totalBurgers} hamburguesa(s) sin sides: ${counts[totalBurgers].noSides}`
-					);
-				}
+			// Determinar la categoría basada en el número de hamburguesas
+			let category = "";
+			if (totalBurgers >= 1 && totalBurgers <= 4) {
+				category = totalBurgers.toString();
+			} else if (totalBurgers >= 5) {
+				category = "5+";
 			} else {
+				// Si no cumple con ninguna categoría, omitir
 				console.log(
-					`  - Orden con ${totalBurgers} hamburguesas no contabilizada (fuera del rango 1-6)`
+					`  - Orden con ${totalBurgers} hamburguesas no contabilizada (fuera del rango 1-4 y 5+)`
+				);
+				return;
+			}
+
+			// Incrementar los contadores según la presencia de sides
+			if (hasSides) {
+				counts[category].withSides += 1;
+				console.log(
+					`  - Incrementando pedidos de ${category} hamburguesa(s) + sides: ${counts[category].withSides}`
+				);
+			} else {
+				counts[category].noSides += 1;
+				console.log(
+					`  - Incrementando pedidos de ${category} hamburguesa(s) sin sides: ${counts[category].noSides}`
 				);
 			}
 		});
 
 		// Cálculos adicionales
 
-		// 1. Total Quantity Originals
+		// 1. Total Orders
+		const totalOrders = orders.length;
+		console.log("Total Orders:", totalOrders);
+
+		// 2. Total Quantity Originals
 		const totalQuantityOriginals = productosPedidos.reduce(
 			(total, producto) => total + producto.quantity,
 			0
 		);
 		console.log("Total Quantity Originals:", totalQuantityOriginals);
 
-		// 2. Total Quantity Toppings
+		// 3. Total Quantity Toppings
 		const totalQuantityToppings = toppingsData.reduce(
 			(total, topping) => total + topping.quantity,
 			0
 		);
 		console.log("Total Quantity Toppings:", totalQuantityToppings);
 
-		// 3. Total Quantity Toppings Pagos
+		// 4. Total Quantity Toppings Pagos
 		const toppingsPagos = [
 			"bacon",
 			"lechuga",
@@ -184,7 +197,7 @@ export const ProductosVendidos = () => {
 		);
 		console.log("Total Quantity Toppings Pagos:", totalQuantityToppingsPagos);
 
-		// 4. Suma Costo Total
+		// 5. Suma Costo Total
 		const toppingsTodos = [
 			"mayonesa",
 			"bacon",
@@ -205,7 +218,7 @@ export const ProductosVendidos = () => {
 		console.log("Materiales filtrados para costo total:", materialesFiltrados);
 		console.log("Suma Costo Total:", sumaCostoTotal);
 
-		// 5. Hamburguesas Pedidas
+		// 6. Hamburguesas Pedidas
 		const hamburguesasPedidas = productosPedidos.reduce((total, producto) => {
 			const hamburguesa = burgers.find(
 				(burger) => burger.data.name === producto.burger
@@ -218,7 +231,7 @@ export const ProductosVendidos = () => {
 		}, 0);
 		console.log("Hamburguesas Pedidas:", hamburguesasPedidas);
 
-		// 6. Total Medallones Necesarios
+		// 7. Total Medallones Necesarios
 		const totalMedallonesNecesarios = productosPedidos.reduce(
 			(total, producto) => {
 				const hamburguesa = burgers.find(
@@ -236,7 +249,7 @@ export const ProductosVendidos = () => {
 		);
 		console.log("Total Medallones Necesarios:", totalMedallonesNecesarios);
 
-		// 7. Total Bacon Toppings
+		// 8. Total Bacon Toppings
 		const totalBaconToppings = toppingsData.reduce((total, topping) => {
 			if (topping.name.toLowerCase() === "bacon") {
 				return total + topping.quantity;
@@ -246,7 +259,7 @@ export const ProductosVendidos = () => {
 		}, 0);
 		console.log("Total Bacon Toppings:", totalBaconToppings);
 
-		// 8. Total Bacon Necesario
+		// 9. Total Bacon Necesario
 		const totalBaconNecesario = productosPedidos.reduce((total, producto) => {
 			const hamburguesa = burgers.find(
 				(burger) => burger.data.name === producto.burger
@@ -261,7 +274,7 @@ export const ProductosVendidos = () => {
 		}, 0);
 		console.log("Total Bacon Necesario:", totalBaconNecesario);
 
-		// 9. Cantidad de Bolsitas
+		// 10. Cantidad de Bolsitas
 		const cantBolsitas = productosPedidos.reduce((total, producto) => {
 			if (producto.burger.includes("Papas con Cheddar ®")) {
 				return total + producto.quantity * 2;
@@ -275,23 +288,39 @@ export const ProductosVendidos = () => {
 		}, 0);
 		console.log("Cantidad de Bolsitas:", cantBolsitas);
 
-		// 10. Cálculo de Porcentajes por cada clasificación de pedidos
-		const percentages: { [key: number]: number } = {};
+		// 11. Cálculo de Porcentajes por cada clasificación de pedidos (withSides)
+		const percentages: { [key: string]: number } = {};
 		Object.keys(counts).forEach((key) => {
-			const num = parseInt(key);
-			const noSides = counts[num].noSides;
-			const withSides = counts[num].withSides;
+			const noSides = counts[key].noSides;
+			const withSides = counts[key].withSides;
 			const total = noSides + withSides;
 			const percentage = total > 0 ? (withSides / total) * 100 : 0;
-			percentages[num] = parseFloat(percentage.toFixed(2)); // Limitar a 2 decimales
+			percentages[key] = parseFloat(percentage.toFixed(2)); // Limitar a 2 decimales
 			console.log(
-				`Porcentaje de pedidos de ${num} hamburguesa(s) con sides: ${percentages[num]}%`
+				`Porcentaje de pedidos de ${
+					key === "5+" ? "5 o más" : key
+				} hamburguesa(s) con sides: ${percentages[key]}%`
+			);
+		});
+
+		// 12. Cálculo de Porcentajes Generales por Categoría
+		const overallPercentages: { [key: string]: number } = {};
+		Object.keys(counts).forEach((key) => {
+			const totalPerCategory = counts[key].noSides + counts[key].withSides;
+			const percentage =
+				totalOrders > 0 ? (totalPerCategory / totalOrders) * 100 : 0;
+			overallPercentages[key] = parseFloat(percentage.toFixed(2)); // Limitar a 2 decimales
+			console.log(
+				`Porcentaje general de pedidos de ${
+					key === "5+" ? "5 o más" : key
+				} hamburguesa(s): ${overallPercentages[key]}%`
 			);
 		});
 
 		return {
 			counts,
 			percentages,
+			overallPercentages,
 			totalQuantityOriginals,
 			totalQuantityToppings,
 			totalQuantityToppingsPagos,
@@ -301,6 +330,7 @@ export const ProductosVendidos = () => {
 			totalBaconNecesario,
 			totalBaconToppings,
 			cantBolsitas,
+			totalOrders,
 		};
 	}, [orders, burgers, productosPedidos, toppingsData, materiales]);
 
@@ -399,26 +429,35 @@ export const ProductosVendidos = () => {
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
 			{/* Contadores de Pedidos */}
 			<div className="flex flex-row gap-4 flex-wrap">
-				{/* Iterar sobre los tipos de pedidos de 1 a 6 hamburguesas */}
-				{[1, 2, 3, 4, 5, 6].map((num) => {
+				{/* Iterar sobre los tipos de pedidos de 1 a 4 hamburguesas y 5+ */}
+				{["1", "2", "3", "4", "5+"].map((key) => {
 					const total =
-						(counts[num]?.noSides || 0) + (counts[num]?.withSides || 0);
-					const percentage = percentages[num] || 0;
+						(counts[key]?.noSides || 0) + (counts[key]?.withSides || 0);
+					const percentage = percentages[key] || 0;
+					const overallPercentage = overallPercentages[key] || 0;
+					const labelBurgers =
+						key === "1" ? "una" : key === "5+" ? "5 o más" : key;
+					const plural = key !== "1" && key !== "5+";
+
 					return (
 						<div
 							className="flex flex-col bg-gray-300 rounded-lg p-4 w-48"
-							key={num}
+							key={key}
 						>
-							{/* Pedidos de {num} hamburguesas */}
+							{/* Pedidos de {key} hamburguesas */}
 							<div className="mb-2 font-semibold">
-								Pedidos de {num === 1 ? "una" : num} hamburguesa
-								{num > 1 ? "s" : ""}: {total}
+								Pedidos de {labelBurgers} hamburguesa
+								{plural ? "s" : ""}: {total}
 							</div>
-							{/* Pedidos de {num} hamburguesas + sides */}
+							{/* Pedidos de {key} hamburguesas + sides */}
 							<div>
-								Pedidos de {num === 1 ? "una" : num} hamburguesa
-								{num > 1 ? "s" : ""} + sides: {counts[num]?.withSides || 0} (
+								Pedidos de {labelBurgers} hamburguesa
+								{plural ? "s" : ""} + sides: {counts[key]?.withSides || 0} (
 								{percentage}%)
+							</div>
+							{/* Porcentaje General de la Categoría */}
+							<div className="mt-2 text-sm">
+								Porcentaje de todos los pedidos: {overallPercentage}%
 							</div>
 						</div>
 					);
