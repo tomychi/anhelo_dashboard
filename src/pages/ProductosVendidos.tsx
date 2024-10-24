@@ -85,6 +85,7 @@ export const ProductosVendidos = () => {
 		counts,
 		percentages,
 		overallPercentages,
+		uniqueCustomers,
 		totalQuantityOriginals,
 		totalQuantityToppings,
 		totalQuantityToppingsPagos,
@@ -105,11 +106,21 @@ export const ProductosVendidos = () => {
 			"5+": { noSides: 0, withSides: 0 },
 		};
 
-		console.log("Inicializando contadores de pedidos:", counts);
+		// Inicializar conjuntos para almacenar teléfonos únicos por categoría
+		const uniqueCustomers: { [key: string]: Set<string> } = {
+			"1": new Set(),
+			"2": new Set(),
+			"3": new Set(),
+			"4": new Set(),
+			"5+": new Set(),
+		};
 
-		// Procesar cada orden para contar los tipos de pedidos
+		console.log("Inicializando contadores de pedidos:", counts);
+		console.log("Inicializando conjuntos de clientes únicos:", uniqueCustomers);
+
+		// Procesar cada orden para contar los tipos de pedidos y clientes únicos
 		orders.forEach((order, index) => {
-			const { detallePedido } = order;
+			const { detallePedido, telefono } = order;
 			console.log(`Procesando orden ${index + 1}:`, order);
 
 			// Contar el total de hamburguesas en la orden y verificar si tiene sides
@@ -158,6 +169,12 @@ export const ProductosVendidos = () => {
 					`  - Incrementando pedidos de ${category} hamburguesa(s) sin sides: ${counts[category].noSides}`
 				);
 			}
+
+			// Añadir el teléfono al conjunto correspondiente para contar clientes únicos
+			uniqueCustomers[category].add(telefono);
+			console.log(
+				`  - Añadido teléfono ${telefono} a la categoría ${category}`
+			);
 		});
 
 		// Cálculos adicionales
@@ -317,10 +334,16 @@ export const ProductosVendidos = () => {
 			);
 		});
 
+		// 13. Cálculo de Clientes Únicos por Categoría
+		// Ya se ha llenado durante el procesamiento de órdenes
+
+		console.log("Conjuntos de clientes únicos por categoría:", uniqueCustomers);
+
 		return {
 			counts,
 			percentages,
 			overallPercentages,
+			uniqueCustomers,
 			totalQuantityOriginals,
 			totalQuantityToppings,
 			totalQuantityToppingsPagos,
@@ -425,6 +448,11 @@ export const ProductosVendidos = () => {
 		return lineData;
 	}, [orders, burgers]);
 
+	// Función para contar clientes únicos por categoría
+	const getUniqueCustomerCount = (key: string): number => {
+		return uniqueCustomers[key] ? uniqueCustomers[key].size : 0;
+	};
+
 	return (
 		<div className="flex p-4 gap-4 justify-between flex-col w-full">
 			{/* Contadores de Pedidos */}
@@ -435,6 +463,7 @@ export const ProductosVendidos = () => {
 						(counts[key]?.noSides || 0) + (counts[key]?.withSides || 0);
 					const percentage = percentages[key] || 0;
 					const overallPercentage = overallPercentages[key] || 0;
+					const uniqueCustomerCount = getUniqueCustomerCount(key);
 					const labelBurgers =
 						key === "1" ? "una" : key === "5+" ? "5 o más" : key;
 					const plural = key !== "1" && key !== "5+";
@@ -445,12 +474,27 @@ export const ProductosVendidos = () => {
 							key={key}
 						>
 							{/* Pedidos de {key} hamburguesas */}
-							<p className="mb-2 font-semibold">
+							<div className="mb-2 font-semibold">
 								Pedidos de {labelBurgers} hamburguesa
-								{plural ? "s" : ""}: {total} ({overallPercentage}%)
-							</p>
-
-							<p>Agregan extras: {percentage}%</p>
+								{plural ? "s" : ""}: {total}
+							</div>
+							{/* Pedidos de {key} hamburguesas + sides */}
+							<div>
+								Pedidos de {labelBurgers} hamburguesa
+								{plural ? "s" : ""} + sides: {counts[key]?.withSides || 0} (
+								{percentage}%)
+							</div>
+							{/* Porcentaje General de la Categoría */}
+							<div className="mt-2 text-sm">
+								Porcentaje de todos los pedidos: {overallPercentage}%
+							</div>
+							{/* Clientes Únicos en la Categoría */}
+							<div className="mt-2 text-sm">
+								Clientes únicos: {uniqueCustomerCount}
+							</div>
+							<div className="mt-2 text-sm">
+								Recompra: {(total / uniqueCustomerCount).toFixed(2)}
+							</div>
 						</div>
 					);
 				})}
