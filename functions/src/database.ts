@@ -1,17 +1,17 @@
-import { firestore } from "./firebaseAdmin";
-import { obtenerFechaActual } from "./helpers";
-import { OrderDetailProps, PedidoProps, ProductoMaterial } from "./types";
+import { firestore } from './firebaseAdmin';
+import { obtenerFechaActual } from './helpers';
+import { OrderDetailProps, PedidoProps, ProductoMaterial } from './types';
 
 export const UploadOrder = async (
   orderDetail: OrderDetailProps,
-  id: string,
+  id: string
 ) => {
   const fechaFormateada = obtenerFechaActual();
-  const [dia, mes, anio] = fechaFormateada.split("/");
+  const [dia, mes, anio] = fechaFormateada.split('/');
 
   // Usa firestore.collection() y firestore.doc()
   const pedidosCollectionRef = firestore
-    .collection("pedidos")
+    .collection('pedidos')
     .doc(anio)
     .collection(mes);
   const pedidoDocRef = pedidosCollectionRef.doc(dia);
@@ -34,16 +34,16 @@ export const UploadOrder = async (
     });
     return id;
   } catch (error) {
-    console.error("Error al subir el pedido:", error);
+    console.error('Error al subir el pedido:', error);
     throw error;
   }
 };
 
 export const updateOrderStatus = async (orderId: string, paid: boolean) => {
   const fechaFormateada = obtenerFechaActual(); // Usa tu función de fecha actual
-  const [dia, mes, anio] = fechaFormateada.split("/");
+  const [dia, mes, anio] = fechaFormateada.split('/');
   const pedidosCollectionRef = firestore
-    .collection("pedidos")
+    .collection('pedidos')
     .doc(anio)
     .collection(mes); // Cambiado para usar firestore.collection()
   const pedidoDocRef = pedidosCollectionRef.doc(dia); // Obtener referencia al documento del día
@@ -53,7 +53,7 @@ export const updateOrderStatus = async (orderId: string, paid: boolean) => {
       // Cambiado para usar firestore.runTransaction()
       const docSnapshot = await transaction.get(pedidoDocRef);
       if (!docSnapshot.exists) {
-        throw new Error("El documento del pedido no existe.");
+        throw new Error('El documento del pedido no existe.');
       }
 
       const existingData = docSnapshot.data();
@@ -76,13 +76,13 @@ export const updateOrderStatus = async (orderId: string, paid: boolean) => {
 
     console.log(`Pedido con ID ${orderId} actualizado correctamente.`);
   } catch (error) {
-    console.error("Error al actualizar el estado del pedido:", error);
+    console.error('Error al actualizar el estado del pedido:', error);
     throw error;
   }
 };
 
 export const ReadMateriales = async () => {
-  const collections = ["materiales"];
+  const collections = ['materiales'];
 
   const fetchedData = await Promise.all(
     collections.map(async (collectionName) => {
@@ -103,7 +103,7 @@ export const ReadMateriales = async () => {
         };
         return productoMaterial;
       });
-    }),
+    })
   );
 
   // Hacer un flatten de fetchedData y devolver los datos como un arreglo de ProductoMaterial[]
@@ -111,7 +111,7 @@ export const ReadMateriales = async () => {
 };
 
 export const ReadData = async () => {
-  const collections = ["burgers", "drinks", "fries", "toppings"];
+  const collections = ['burgers', 'drinks', 'fries', 'toppings'];
 
   const fetchedData = await Promise.all(
     collections.map(async (collectionName) => {
@@ -119,7 +119,7 @@ export const ReadData = async () => {
       const snapshot = await collectionRef.get(); // Obtener todos los documentos de la colección
 
       return snapshot.docs.map((doc) => doc.data()); // Solo devolvemos el campo 'data'
-    }),
+    })
   );
 
   // Aplanamos el array para obtener un solo array con los datos
@@ -128,7 +128,7 @@ export const ReadData = async () => {
 
 export const calcularCostoHamburguesa = (
   materiales: ProductoMaterial[],
-  ingredientes: Record<string, number>,
+  ingredientes: Record<string, number>
 ) => {
   if (!ingredientes) {
     console.error("El objeto 'ingredientes' es null o undefined.");
@@ -147,10 +147,63 @@ export const calcularCostoHamburguesa = (
       costoTotal += costoIngrediente;
     } else {
       console.error(
-        `No se encontró el ingrediente ${nombre} en la lista de materiales.`,
+        `No se encontró el ingrediente ${nombre} en la lista de materiales.`
       );
     }
   }
 
   return costoTotal;
+};
+
+export const canjearVoucher = async (codigo: string): Promise<boolean> => {
+  const vouchersCollectionRef = firestore.collection('vouchers'); // Referencia a la colección de vouchers
+
+  try {
+    // Inicia la transacción
+    await firestore.runTransaction(async (transaction) => {
+      const querySnapshot = await vouchersCollectionRef.get(); // Obtener todos los documentos de la colección de vouchers
+      let voucherEncontrado = false; // Bandera para verificar si el voucher fue encontrado
+
+      // Recorre todos los documentos de la colección de vouchers
+      for (const docSnapshot of querySnapshot.docs) {
+        const data = docSnapshot.data(); // Obtén los datos del documento
+        const codigos = data.codigos || []; // Lista de códigos en el documento
+
+        // Encuentra el código en el arreglo de códigos
+        const codigoIndex = codigos.findIndex(
+          (c: { codigo: string }) => c.codigo === codigo
+        );
+
+        if (codigoIndex !== -1) {
+          // Si el código ya fue canjeado, retorna false
+          if (codigos[codigoIndex].estado === 'usado') {
+            console.error('El voucher ya ha sido canjeado');
+            return false;
+          }
+
+          // Si el código es válido, se marca como "usado"
+          codigos[codigoIndex].estado = 'usado';
+
+          // Actualiza el documento en Firestore con el código marcado como usado
+          const voucherDocRef = vouchersCollectionRef.doc(docSnapshot.id); // Referencia al documento actual
+          transaction.update(voucherDocRef, { codigos }); // Actualiza el documento en la transacción
+
+          voucherEncontrado = true; // Se encontró y actualizó el voucher
+          break; // Salir del bucle una vez encontrado el voucher
+        }
+      }
+
+      if (!voucherEncontrado) {
+        console.error('No se encontró el voucher con el código proporcionado');
+        return false;
+      }
+
+      return true; // Si todo fue exitoso, retorna true
+    });
+
+    return true; // Si la transacción completa fue exitosa, retorna true
+  } catch (error) {
+    console.error('Error al canjear el voucher:', error);
+    throw error; // Lanza un error si algo falla
+  }
 };

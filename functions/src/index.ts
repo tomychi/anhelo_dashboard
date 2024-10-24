@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   calcularCostoHamburguesa,
+  canjearVoucher,
   ReadData,
   ReadMateriales,
   updateOrderStatus,
@@ -45,11 +46,20 @@ exports.createPreference = functions.https.onCall(async (request) => {
     const { data } = request;
 
     const { values, cart, mapUrl, couponCodes } = data;
+    const phone = String(values.phone) || '';
 
     const envio = Number(data.envio) || 0;
     const discountedTotal = Number(data.discountedTotal) || 0;
     const orderId = uuidv4();
     console.log(couponCodes);
+
+    const validacionCupones = await Promise.all(
+      couponCodes.map(async (cupon: string) => {
+        return await canjearVoucher(cupon); // canjearVoucher devuelve true o false
+      })
+    );
+
+    console.log(validacionCupones);
 
     // Calculamos el total que incluye el discountedTotal y el envio
     const totalAmount = Number(discountedTotal) + Number(envio);
@@ -79,6 +89,11 @@ exports.createPreference = functions.https.onCall(async (request) => {
         'https://us-central1-anhelo-4789d.cloudfunctions.net/receiveWebhook', // URL de tu función webhook
       statement_descriptor: 'ANHELO', // Nombre personalizado en el estado de cuenta
       external_reference: orderId, // Vincula el pedido con el payment
+      payer: {
+        phone: {
+          number: cleanPhoneNumber(phone), // Número de teléfono del cliente
+        },
+      },
     };
 
     // Crear la preferencia con MercadoPago
@@ -102,7 +117,6 @@ exports.createPreference = functions.https.onCall(async (request) => {
         costo: calcularCostoHamburguesa(materialesData, item.ingredients),
       }));
 
-      const phone = String(values.phone) || '';
       const isReserva = values.hora.trim() !== '';
 
       let adjustedHora = values.hora;
@@ -198,16 +212,12 @@ exports.receiveWebhook = functions.https.onRequest(async (req, res) => {
 
       const payment = new Payment(client);
 
-      console.log('paymentId', paymentId);
-
-      console.log('payment', payment);
-
       const paymentInfo = await payment.get({ id: paymentId });
 
       console.log('informacionnn', paymentInfo);
 
-      const { external_reference, status } = paymentInfo; // Obtén el orderId del external_reference
-
+      const { external_reference, status, payer } = paymentInfo; // Obtén el orderId del external_reference
+      console.log('cliente info', payer);
       if (status === 'approved') {
         // Usa el external_reference para encontrar el pedido y actualizar su estado
         if (external_reference) {
