@@ -113,6 +113,89 @@ export const Dashboard = () => {
 		setTotalDirecciones(nuevaTotalDirecciones);
 	}, [vueltas]);
 
+	const calculateAverageRatings = (orders) => {
+		const ordersWithRatings = orders.filter((order) =>
+			order.hasOwnProperty("rating")
+		);
+
+		if (ordersWithRatings.length === 0) return null;
+
+		const generalRatings = [
+			"presentacion",
+			"tiempo",
+			"temperatura",
+			"pagina",
+			"comentario",
+		];
+
+		const totals = ordersWithRatings.reduce((acc, order) => {
+			// Separamos en dos categorías: generales y productos
+			Object.entries(order.rating).forEach(([key, value]) => {
+				if (typeof value === "number") {
+					if (!generalRatings.includes(key.toLowerCase())) {
+						// Es un rating de producto
+						if (!acc.productos) {
+							acc.productos = { sum: 0, count: 0 };
+						}
+						acc.productos.sum += value;
+						acc.productos.count += 1;
+					} else {
+						// Es un rating general
+						if (!acc[key]) {
+							acc[key] = { sum: 0, count: 0 };
+						}
+						acc[key].sum += value;
+						acc[key].count += 1;
+					}
+				}
+			});
+			return acc;
+		}, {});
+
+		// Convertir los totales en promedios
+		return Object.entries(totals).reduce((acc, [key, value]) => {
+			acc[key] = (value.sum / value.count).toFixed(1);
+			return acc;
+		}, {});
+	};
+
+	const averageRatings = calculateAverageRatings(orders);
+
+	const ratingCards = averageRatings
+		? [
+				<CardInfo
+					key="temperatura"
+					info={averageRatings.temperatura || "0"}
+					title={"Temperatura promedio"}
+					isLoading={isLoading}
+				/>,
+				<CardInfo
+					key="presentacion"
+					info={averageRatings.presentacion || "0"}
+					title={"Presentación promedio"}
+					isLoading={isLoading}
+				/>,
+				<CardInfo
+					key="pagina"
+					info={averageRatings.pagina || "0"}
+					title={"Página promedio"}
+					isLoading={isLoading}
+				/>,
+				<CardInfo
+					key="tiempo"
+					info={averageRatings.tiempo || "0"}
+					title={"Tiempo promedio"}
+					isLoading={isLoading}
+				/>,
+				<CardInfo
+					key="productos"
+					info={averageRatings.productos || "0"}
+					title={"Productos promedio"}
+					isLoading={isLoading}
+				/>,
+		  ]
+		: [];
+
 	const marketingCards = [
 		<CardInfo
 			key="visualizacion"
@@ -239,8 +322,15 @@ export const Dashboard = () => {
 	];
 
 	const cardsToRender = isMarketingUser
-		? marketingCards
-		: [...allCards, ...marketingCards];
+		? [
+				// ...marketingCards,
+				...ratingCards,
+		  ]
+		: [
+				...allCards,
+				// ...marketingCards,
+				...ratingCards,
+		  ];
 
 	const greetingName = isMarketingUser ? "Lucho" : "Tobias";
 
@@ -258,6 +348,15 @@ export const Dashboard = () => {
 			return total;
 		}, 0);
 	};
+
+	console.log(orders.filter((order) => order.hasOwnProperty("rating"))); // Orders con rating
+	console.log(
+		`Porcentaje de orders con rating: ${(
+			(orders.filter((order) => order.hasOwnProperty("rating")).length /
+				orders.length) *
+			100
+		).toFixed(2)}%`
+	);
 
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative ">
