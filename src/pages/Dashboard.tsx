@@ -369,15 +369,6 @@ export const Dashboard = () => {
 		}, 0);
 	};
 
-	console.log(orders.filter((order) => order.hasOwnProperty("rating"))); // Orders con rating
-	console.log(
-		`Porcentaje de orders con rating: ${(
-			(orders.filter((order) => order.hasOwnProperty("rating")).length /
-				orders.length) *
-			100
-		).toFixed(2)}%`
-	);
-
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
 			<div className="bg-black px-4 pb-4">
