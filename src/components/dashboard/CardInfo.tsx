@@ -10,6 +10,7 @@ interface CardInfoProps {
 	cuadrito?: number | string;
 	className?: string;
 	isLoading?: boolean;
+	showAsRatings?: boolean; // Nuevo prop para diferenciar si es rating o porcentaje
 }
 
 interface LoadingElementProps {
@@ -40,6 +41,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 	cuadrito,
 	className = "",
 	isLoading = false,
+	showAsRatings = false, // Por defecto muestra como porcentaje
 }) => {
 	const displayPercentage = !isNaN(cuadrito as number) && cuadrito;
 	const titleRef = useRef<HTMLParagraphElement>(null);
@@ -70,7 +72,18 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 					) : (
 						<p ref={titleRef} className="text-sm font-medium">
 							{title}
-							{displayPercentage && <> ({cuadrito} ratings)</>}
+							{displayPercentage && (
+								<>
+									{" "}
+									{showAsRatings
+										? `(${cuadrito} ratings)`
+										: `(${Math.ceil(
+												typeof cuadrito === "number"
+													? cuadrito
+													: parseFloat(cuadrito as string)
+										  )}%)`}
+								</>
+							)}
 						</p>
 					)}
 					{isLoading ? (

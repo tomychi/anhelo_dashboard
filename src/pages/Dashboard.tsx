@@ -134,16 +134,22 @@ export const Dashboard = () => {
 			return acc;
 		}, {});
 
-		const generalTotal = Object.entries(totals).reduce(
-			(acc, [key, value]) => {
-				if (key !== "productos") {
-					acc.sum += value.sum;
-					acc.count += value.count;
-				}
-				return acc;
-			},
-			{ sum: 0, count: 0 }
-		);
+		// Calculamos los promedios individuales primero
+		const averages = Object.entries(totals).reduce((acc, [key, value]) => {
+			if (key !== "productos") {
+				acc[key] = value.sum / value.count;
+			}
+			return acc;
+		}, {});
+
+		// El general es el promedio de los promedios
+		const generalAverage =
+			Object.values(averages).reduce((sum, value) => sum + value, 0) /
+			Object.keys(averages).length;
+
+		console.log("Promedios individuales:", averages);
+		console.log("Promedio general:", generalAverage);
+		console.log("Cantidad total de ratings:", ordersWithRatings.length);
 
 		return Object.entries(totals).reduce(
 			(acc, [key, value]) => {
@@ -155,8 +161,8 @@ export const Dashboard = () => {
 			},
 			{
 				general: {
-					average: (generalTotal.sum / generalTotal.count).toFixed(1),
-					count: generalTotal.count,
+					average: generalAverage.toFixed(1),
+					count: ordersWithRatings.length,
 				},
 			}
 		);
@@ -171,6 +177,7 @@ export const Dashboard = () => {
 					info={averageRatings.general.average || "0"}
 					title={"Rating general"}
 					cuadrito={averageRatings.general.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
@@ -178,6 +185,7 @@ export const Dashboard = () => {
 					info={averageRatings.temperatura.average || "0"}
 					title={"Temperatura"}
 					cuadrito={averageRatings.temperatura.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
@@ -185,6 +193,7 @@ export const Dashboard = () => {
 					info={averageRatings.presentacion.average || "0"}
 					title={"Presentación"}
 					cuadrito={averageRatings.presentacion.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
@@ -192,6 +201,7 @@ export const Dashboard = () => {
 					info={averageRatings.pagina.average || "0"}
 					title={"Página"}
 					cuadrito={averageRatings.pagina.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
@@ -199,6 +209,7 @@ export const Dashboard = () => {
 					info={averageRatings.tiempo.average || "0"}
 					title={"Tiempo"}
 					cuadrito={averageRatings.tiempo.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
@@ -206,6 +217,7 @@ export const Dashboard = () => {
 					info={averageRatings.productos.average || "0"}
 					title={"Productos"}
 					cuadrito={averageRatings.productos.count}
+					showAsRatings={true}
 					isLoading={isLoading}
 				/>,
 		  ]
