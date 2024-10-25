@@ -65,14 +65,6 @@ export const Dashboard = () => {
 				}));
 
 				dispatch(readProductsAll(formattedData));
-
-				/*
-      Swal.fire({
-        icon: "success",
-        title: "Datos Actualizados",
-        text: "Se actualizaron productos y materiales",
-      });
-      */
 			} catch (error) {
 				Swal.fire({
 					icon: "error",
@@ -108,7 +100,6 @@ export const Dashboard = () => {
 		const nuevoTotalPaga = calcularTotalPaga();
 		setTotalPaga(nuevoTotalPaga);
 
-		// Calculate totalDirecciones
 		const nuevaTotalDirecciones = calculateTotalDirecciones(vueltas);
 		setTotalDirecciones(nuevaTotalDirecciones);
 	}, [vueltas]);
@@ -120,27 +111,18 @@ export const Dashboard = () => {
 
 		if (ordersWithRatings.length === 0) return null;
 
-		const generalRatings = [
-			"presentacion",
-			"tiempo",
-			"temperatura",
-			"pagina",
-			"comentario",
-		];
+		const generalRatings = ["presentacion", "tiempo", "temperatura", "pagina"];
 
 		const totals = ordersWithRatings.reduce((acc, order) => {
-			// Separamos en dos categorías: generales y productos
 			Object.entries(order.rating).forEach(([key, value]) => {
 				if (typeof value === "number") {
 					if (!generalRatings.includes(key.toLowerCase())) {
-						// Es un rating de producto
 						if (!acc.productos) {
 							acc.productos = { sum: 0, count: 0 };
 						}
 						acc.productos.sum += value;
 						acc.productos.count += 1;
 					} else {
-						// Es un rating general
 						if (!acc[key]) {
 							acc[key] = { sum: 0, count: 0 };
 						}
@@ -152,11 +134,32 @@ export const Dashboard = () => {
 			return acc;
 		}, {});
 
-		// Convertir los totales en promedios
-		return Object.entries(totals).reduce((acc, [key, value]) => {
-			acc[key] = (value.sum / value.count).toFixed(1);
-			return acc;
-		}, {});
+		const generalTotal = Object.entries(totals).reduce(
+			(acc, [key, value]) => {
+				if (key !== "productos") {
+					acc.sum += value.sum;
+					acc.count += value.count;
+				}
+				return acc;
+			},
+			{ sum: 0, count: 0 }
+		);
+
+		return Object.entries(totals).reduce(
+			(acc, [key, value]) => {
+				acc[key] = {
+					average: (value.sum / value.count).toFixed(1),
+					count: value.count,
+				};
+				return acc;
+			},
+			{
+				general: {
+					average: (generalTotal.sum / generalTotal.count).toFixed(1),
+					count: generalTotal.count,
+				},
+			}
+		);
 	};
 
 	const averageRatings = calculateAverageRatings(orders);
@@ -164,33 +167,45 @@ export const Dashboard = () => {
 	const ratingCards = averageRatings
 		? [
 				<CardInfo
+					key="general"
+					info={averageRatings.general.average || "0"}
+					title={"Rating general"}
+					cuadrito={averageRatings.general.count}
+					isLoading={isLoading}
+				/>,
+				<CardInfo
 					key="temperatura"
-					info={averageRatings.temperatura || "0"}
-					title={"Temperatura promedio"}
+					info={averageRatings.temperatura.average || "0"}
+					title={"Temperatura"}
+					cuadrito={averageRatings.temperatura.count}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
 					key="presentacion"
-					info={averageRatings.presentacion || "0"}
-					title={"Presentación promedio"}
+					info={averageRatings.presentacion.average || "0"}
+					title={"Presentación"}
+					cuadrito={averageRatings.presentacion.count}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
 					key="pagina"
-					info={averageRatings.pagina || "0"}
-					title={"Página promedio"}
+					info={averageRatings.pagina.average || "0"}
+					title={"Página"}
+					cuadrito={averageRatings.pagina.count}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
 					key="tiempo"
-					info={averageRatings.tiempo || "0"}
-					title={"Tiempo promedio"}
+					info={averageRatings.tiempo.average || "0"}
+					title={"Tiempo"}
+					cuadrito={averageRatings.tiempo.count}
 					isLoading={isLoading}
 				/>,
 				<CardInfo
 					key="productos"
-					info={averageRatings.productos || "0"}
-					title={"Productos promedio"}
+					info={averageRatings.productos.average || "0"}
+					title={"Productos"}
+					cuadrito={averageRatings.productos.count}
 					isLoading={isLoading}
 				/>,
 		  ]
@@ -322,15 +337,8 @@ export const Dashboard = () => {
 	];
 
 	const cardsToRender = isMarketingUser
-		? [
-				// ...marketingCards,
-				...ratingCards,
-		  ]
-		: [
-				...allCards,
-				// ...marketingCards,
-				...ratingCards,
-		  ];
+		? [...ratingCards]
+		: [...allCards, ...ratingCards];
 
 	const greetingName = isMarketingUser ? "Lucho" : "Tobias";
 
@@ -359,15 +367,15 @@ export const Dashboard = () => {
 	);
 
 	return (
-		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative ">
+		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
 			<div className="bg-black px-4 pb-4">
 				<Calendar />
 				<p className="text-white text-5xl mt-8 font-bold mb-4">
 					Hola {greetingName}
 				</p>
 			</div>
-			<div className="absolute left-4 right-4 top-[130px] rounded-lg   ">
-				<div className="flex flex-col shadow-2xl shadow-black  rounded-lg">
+			<div className="absolute left-4 right-4 top-[130px] rounded-lg">
+				<div className="flex flex-col shadow-2xl shadow-black rounded-lg">
 					{cardsToRender.map((card, index) =>
 						React.cloneElement(card, {
 							key: index,

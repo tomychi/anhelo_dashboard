@@ -70,18 +70,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 					) : (
 						<p ref={titleRef} className="text-sm font-medium">
 							{title}
-							{displayPercentage && (
-								<>
-									{" "}
-									(
-									{`${Math.ceil(
-										typeof cuadrito === "number"
-											? cuadrito
-											: parseFloat(cuadrito as string)
-									)}%`}
-									)
-								</>
-							)}
+							{displayPercentage && <> ({cuadrito} ratings)</>}
 						</p>
 					)}
 					{isLoading ? (
