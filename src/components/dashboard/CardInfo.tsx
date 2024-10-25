@@ -10,7 +10,7 @@ interface CardInfoProps {
 	cuadrito?: number | string;
 	className?: string;
 	isLoading?: boolean;
-	showAsRatings?: boolean; // Nuevo prop para diferenciar si es rating o porcentaje
+	showAsRatings?: boolean;
 }
 
 interface LoadingElementProps {
@@ -41,9 +41,8 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 	cuadrito,
 	className = "",
 	isLoading = false,
-	showAsRatings = false, // Por defecto muestra como porcentaje
+	showAsRatings = false,
 }) => {
-	const displayPercentage = !isNaN(cuadrito as number) && cuadrito;
 	const titleRef = useRef<HTMLParagraphElement>(null);
 	const infoRef = useRef<HTMLParagraphElement>(null);
 	const [titleWidth, setTitleWidth] = useState<number | undefined>(undefined);
@@ -57,6 +56,27 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 			setInfoWidth(infoRef.current.offsetWidth);
 		}
 	}, [info, title, cuadrito]);
+
+	const shouldShowAdditionalInfo = (): boolean => {
+		if (cuadrito === undefined) return false;
+		if (typeof cuadrito === "number") return cuadrito > 0;
+		if (typeof cuadrito === "string") {
+			const numValue = parseFloat(cuadrito);
+			return !isNaN(numValue) && numValue > 0;
+		}
+		return false;
+	};
+
+	const formatAdditionalInfo = () => {
+		if (!shouldShowAdditionalInfo()) return "";
+
+		const value =
+			typeof cuadrito === "number"
+				? Math.ceil(cuadrito)
+				: Math.ceil(parseFloat(cuadrito as string));
+
+		return showAsRatings ? `(${value} ratings)` : `(${value}%)`;
+	};
 
 	return (
 		<NavLink
@@ -72,18 +92,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 					) : (
 						<p ref={titleRef} className="text-sm font-medium">
 							{title}
-							{displayPercentage && (
-								<>
-									{" "}
-									{showAsRatings
-										? `(${cuadrito} ratings)`
-										: `(${Math.ceil(
-												typeof cuadrito === "number"
-													? cuadrito
-													: parseFloat(cuadrito as string)
-										  )}%)`}
-								</>
-							)}
+							{shouldShowAdditionalInfo() && ` ${formatAdditionalInfo()}`}
 						</p>
 					)}
 					{isLoading ? (
