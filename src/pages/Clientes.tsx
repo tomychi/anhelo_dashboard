@@ -53,15 +53,21 @@ export const Clientes = () => {
 	const [newCustomers, setNewCustomers] = useState<string[]>([]);
 
 	useEffect(() => {
+		console.log("useEffect activado");
 		if (valueDate?.startDate && valueDate?.endDate) {
 			const startDate = new Date(valueDate.startDate);
 			const endDate = new Date(valueDate.endDate);
 			endDate.setHours(23, 59, 59, 999);
 
+			console.log("Fecha de inicio:", startDate);
+			console.log("Fecha de fin:", endDate);
+
 			const filtered = orders.filter((order) => {
 				const orderDate = new Date(order.fecha.split("/").reverse().join("-"));
 				return orderDate >= startDate && orderDate <= endDate;
 			});
+
+			console.log("Pedidos filtrados:", filtered);
 
 			setFilteredOrders(filtered);
 
@@ -72,30 +78,63 @@ export const Clientes = () => {
 				phonesWithOrders.has(t.telefono)
 			);
 
+			console.log("Teléfonos filtrados:", filteredPhones);
+
 			setFilteredTelefonos(filteredPhones);
 
 			const { newCustomers } = getCustomers(telefonos, filtered, startDate);
 			setNewCustomers(newCustomers.map((customer) => customer.telefono));
+
+			console.log("Nuevos clientes:", newCustomers);
 		} else {
 			setFilteredOrders(orders);
 			setFilteredTelefonos(telefonos);
 			setNewCustomers([]);
+			console.log(
+				"Sin filtro de fechas, utilizando todos los pedidos y teléfonos"
+			);
 		}
+
+		// Agregamos los console.log para mostrar los valores utilizados en el cálculo
+		console.log(
+			"Número total de pedidos (filteredOrders.length):",
+			filteredOrders.length
+		);
+		console.log(
+			"Número total de teléfonos únicos (filteredTelefonos.length):",
+			filteredTelefonos.length
+		);
 	}, [valueDate, orders, telefonos]);
 
+	// Calcula el promedio de pedidos por número de teléfono
+	const averageOrdersPerPhoneNumber =
+		filteredTelefonos.length > 0
+			? (filteredOrders.length / filteredTelefonos.length).toFixed(2)
+			: "N/A";
+
+	console.log(
+		"Cantidad promedio de pedidos por número de teléfono:",
+		averageOrdersPerPhoneNumber
+	);
+
 	const handlePhoneNumberClick = (phoneNumber: string) => {
+		console.log("Número de teléfono clickeado:", phoneNumber);
 		setSelectedPhoneNumber((prevPhoneNumber) =>
 			prevPhoneNumber === phoneNumber ? null : phoneNumber
 		);
 		const pedidos = getOrdersByPhoneNumber(phoneNumber, filteredOrders);
 		setPedidosByPhone(pedidos);
+		console.log("Pedidos para el número:", pedidos);
 	};
 
 	const telefonosConPedidos = filteredTelefonos.filter((t) =>
 		t.telefono.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
+	console.log("Teléfonos después del filtro de búsqueda:", telefonosConPedidos);
+
 	const sortTelefonos = () => {
+		console.log("Ordenando teléfonos en orden", sortDirection);
 		return telefonosConPedidos.sort((a, b) => {
 			const countA = getCantidadPedidos(a.telefono);
 			const countB = getCantidadPedidos(b.telefono);
@@ -111,6 +150,7 @@ export const Clientes = () => {
 		const count = filteredOrders.filter(
 			(order) => cleanPhoneNumber(order.telefono) === phoneNumber
 		).length;
+		console.log("Cantidad de pedidos para", phoneNumber, "es", count);
 		return count;
 	};
 
@@ -154,9 +194,9 @@ export const Clientes = () => {
 						className="h-6 mt-1"
 					>
 						<path
-							fill-rule="evenodd"
+							fillRule="evenodd"
 							d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z"
-							clip-rule="evenodd"
+							clipRule="evenodd"
 						/>
 					</svg>
 
@@ -166,6 +206,19 @@ export const Clientes = () => {
 
 			<div className="px-4 pb-8">
 				<Calendar />
+
+				{/* Recuadro para mostrar el promedio de pedidos */}
+				<div className="bg-gray-100 p-4 rounded-md mb-4">
+					<p className="text-black font-bold">
+						Pedidos: {filteredOrders.length}, Teléfonos:{" "}
+						{filteredTelefonos.length}
+					</p>
+					<p className="text-black font-bold">
+						Cantidad promedio de pedidos por número de teléfono:{" "}
+						{averageOrdersPerPhoneNumber}
+					</p>
+				</div>
+
 				<div className="flex flex-row gap-2 mt-2">
 					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
 						<div
