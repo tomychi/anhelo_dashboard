@@ -330,7 +330,7 @@ export const Clientes = () => {
 										).toFixed(0)}
 									</span>
 									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {laterOrdersStats.totalItems} items de{" "}
+										(Basado en
 										{laterOrdersStats.count} pedidos)
 									</span>
 								</div>
