@@ -51,23 +51,19 @@ export const Clientes = () => {
 	const [filteredOrders, setFilteredOrders] = useState(orders);
 	const [filteredTelefonos, setFilteredTelefonos] = useState(telefonos);
 	const [newCustomers, setNewCustomers] = useState<string[]>([]);
+	const [ticketEvolution, setTicketEvolution] = useState<any[]>([]);
+	const [laterOrdersStats, setLaterOrdersStats] = useState<any>(null);
 
 	useEffect(() => {
-		console.log("useEffect activado");
 		if (valueDate?.startDate && valueDate?.endDate) {
 			const startDate = new Date(valueDate.startDate);
 			const endDate = new Date(valueDate.endDate);
 			endDate.setHours(23, 59, 59, 999);
 
-			console.log("Fecha de inicio:", startDate);
-			console.log("Fecha de fin:", endDate);
-
 			const filtered = orders.filter((order) => {
 				const orderDate = new Date(order.fecha.split("/").reverse().join("-"));
 				return orderDate >= startDate && orderDate <= endDate;
 			});
-
-			console.log("Pedidos filtrados:", filtered);
 
 			setFilteredOrders(filtered);
 
@@ -78,63 +74,127 @@ export const Clientes = () => {
 				phonesWithOrders.has(t.telefono)
 			);
 
-			console.log("Teléfonos filtrados:", filteredPhones);
-
 			setFilteredTelefonos(filteredPhones);
 
 			const { newCustomers } = getCustomers(telefonos, filtered, startDate);
 			setNewCustomers(newCustomers.map((customer) => customer.telefono));
 
-			console.log("Nuevos clientes:", newCustomers);
+			const ordersByPhone = filtered.reduce((acc, order) => {
+				const phone = order.telefono;
+				if (!acc[phone]) acc[phone] = [];
+				acc[phone].push({
+					total: order.total,
+					items: order.detallePedido.reduce(
+						(sum, item) => sum + item.quantity,
+						0
+					),
+					fecha: order.fecha, // Añadimos la fecha
+				});
+				return acc;
+			}, {});
+
+			// Inicializar array para almacenar estadísticas
+			let evolutionStats = [];
+			let previousAverage = null;
+			let previousDate = null;
+
+			// Calcular estadísticas para los primeros 9 pedidos
+			for (let i = 0; i < 9; i++) {
+				let totalAmount = 0;
+				let totalItems = 0;
+				let count = 0;
+				let totalDays = 0;
+				let daysCount = 0;
+
+				Object.values(ordersByPhone).forEach((customerOrders) => {
+					if (customerOrders[i]) {
+						totalAmount += customerOrders[i].total;
+						totalItems += customerOrders[i].items;
+						count++;
+
+						// Calcular días de diferencia si hay pedido anterior
+						if (i > 0 && customerOrders[i - 1]) {
+							const currentDate = new Date(
+								customerOrders[i].fecha.split("/").reverse().join("-")
+							);
+							const prevDate = new Date(
+								customerOrders[i - 1].fecha.split("/").reverse().join("-")
+							);
+							const diffDays = Math.round(
+								(currentDate - prevDate) / (1000 * 60 * 60 * 24)
+							);
+							totalDays += diffDays;
+							daysCount++;
+						}
+					}
+				});
+
+				if (count > 0) {
+					const averageAmount = totalAmount / count;
+					const percentageChange = previousAverage
+						? (averageAmount / previousAverage - 1) * 100
+						: 0;
+					const averageDays =
+						daysCount > 0 ? Math.round(totalDays / daysCount) : null;
+
+					evolutionStats.push({
+						position: i + 1,
+						averageAmount,
+						totalItems,
+						count,
+						percentageChange,
+						averageDays,
+					});
+
+					previousAverage = averageAmount;
+				}
+			}
+
+			setTicketEvolution(evolutionStats);
+
+			// Calcular estadísticas para pedidos 10+
+			const laterOrders = {
+				totalAmount: 0,
+				totalItems: 0,
+				count: 0,
+			};
+
+			Object.values(ordersByPhone).forEach((customerOrders) => {
+				customerOrders.slice(9).forEach((order) => {
+					laterOrders.totalAmount += order.total;
+					laterOrders.totalItems += order.items;
+					laterOrders.count++;
+				});
+			});
+
+			setLaterOrdersStats(laterOrders.count > 0 ? laterOrders : null);
 		} else {
 			setFilteredOrders(orders);
 			setFilteredTelefonos(telefonos);
 			setNewCustomers([]);
-			console.log(
-				"Sin filtro de fechas, utilizando todos los pedidos y teléfonos"
-			);
+			setTicketEvolution([]);
+			setLaterOrdersStats(null);
 		}
-
-		// Agregamos los console.log para mostrar los valores utilizados en el cálculo
-		console.log(
-			"Número total de pedidos (filteredOrders.length):",
-			filteredOrders.length
-		);
-		console.log(
-			"Número total de teléfonos únicos (filteredTelefonos.length):",
-			filteredTelefonos.length
-		);
 	}, [valueDate, orders, telefonos]);
 
-	// Calcula el promedio de pedidos por número de teléfono
 	const averageOrdersPerPhoneNumber =
 		filteredTelefonos.length > 0
 			? (filteredOrders.length / filteredTelefonos.length).toFixed(2)
 			: "N/A";
 
-	console.log(
-		"Cantidad promedio de pedidos por número de teléfono:",
-		averageOrdersPerPhoneNumber
-	);
-
 	const handlePhoneNumberClick = (phoneNumber: string) => {
-		console.log("Número de teléfono clickeado:", phoneNumber);
 		setSelectedPhoneNumber((prevPhoneNumber) =>
 			prevPhoneNumber === phoneNumber ? null : phoneNumber
 		);
 		const pedidos = getOrdersByPhoneNumber(phoneNumber, filteredOrders);
 		setPedidosByPhone(pedidos);
-		console.log("Pedidos para el número:", pedidos);
 	};
 
 	const telefonosConPedidos = filteredTelefonos.filter((t) =>
 		t.telefono.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
-	console.log("Teléfonos después del filtro de búsqueda:", telefonosConPedidos);
-
 	const sortTelefonos = () => {
-		console.log("Ordenando teléfonos en orden", sortDirection);
 		return telefonosConPedidos.sort((a, b) => {
 			const countA = getCantidadPedidos(a.telefono);
 			const countB = getCantidadPedidos(b.telefono);
@@ -147,11 +207,9 @@ export const Clientes = () => {
 	};
 
 	const getCantidadPedidos = (phoneNumber: string) => {
-		const count = filteredOrders.filter(
+		return filteredOrders.filter(
 			(order) => cleanPhoneNumber(order.telefono) === phoneNumber
 		).length;
-		console.log("Cantidad de pedidos para", phoneNumber, "es", count);
-		return count;
 	};
 
 	const LoadingSkeleton = () => (
@@ -207,7 +265,7 @@ export const Clientes = () => {
 			<div className="px-4 pb-8">
 				<Calendar />
 
-				{/* Recuadro para mostrar el promedio de pedidos */}
+				{/* Estadísticas generales */}
 				<div className="bg-gray-100 p-4 rounded-md mb-4">
 					<p className="text-black font-bold">
 						Pedidos: {filteredOrders.length}, Teléfonos:{" "}
@@ -217,6 +275,68 @@ export const Clientes = () => {
 						Cantidad promedio de pedidos por número de teléfono:{" "}
 						{averageOrdersPerPhoneNumber}
 					</p>
+				</div>
+
+				{/* Evolución del ticket promedio */}
+				<div className="bg-white p-4 rounded-md mb-4 shadow-sm">
+					<h3 className="text-lg font-bold mb-4">
+						Evolución del Ticket Promedio
+					</h3>
+					<div className="space-y-2">
+						{ticketEvolution.map((stat, index) => (
+							<div
+								key={index}
+								className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
+							>
+								<div className="flex-1">
+									<span className="font-medium">Pedido {stat.position}: </span>
+									<span className="text-green-600">
+										${stat.averageAmount.toFixed(0)}
+									</span>
+									{stat.position > 1 && (
+										<>
+											<span
+												className={`ml-2 text-sm ${
+													stat.percentageChange > 0
+														? "text-green-600"
+														: "text-red-600"
+												}`}
+											>
+												({stat.percentageChange > 0 ? "+" : ""}
+												{stat.percentageChange.toFixed(1)}%)
+											</span>
+											{stat.averageDays && (
+												<span className="text-gray-500 text-sm ml-2">
+													({stat.averageDays} días después)
+												</span>
+											)}
+										</>
+									)}
+									<span className="text-gray-500 text-sm ml-2">
+										(Basado en {stat.count} pedidos)
+									</span>
+								</div>
+							</div>
+						))}
+
+						{laterOrdersStats && (
+							<div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded bg-gray-100">
+								<div className="flex-1">
+									<span className="font-medium">Pedidos 10+: </span>
+									<span className="text-green-600">
+										$
+										{(
+											laterOrdersStats.totalAmount / laterOrdersStats.count
+										).toFixed(0)}
+									</span>
+									<span className="text-gray-500 text-sm ml-2">
+										(Basado en {laterOrdersStats.totalItems} items de{" "}
+										{laterOrdersStats.count} pedidos)
+									</span>
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
 
 				<div className="flex flex-row gap-2 mt-2">
