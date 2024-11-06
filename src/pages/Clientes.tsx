@@ -114,6 +114,21 @@ export const Clientes = () => {
 				return acc;
 			}, {});
 
+			// **Añadir console.log para un cliente de ejemplo con al menos 4 pedidos**
+			const clienteEjemploTelefono = Object.keys(ordersByPhone).find(
+				(phone) => ordersByPhone[phone].length >= 4
+			);
+
+			if (clienteEjemploTelefono) {
+				console.log(
+					"Cliente en el grupo Pedido 4:",
+					clienteEjemploTelefono,
+					ordersByPhone[clienteEjemploTelefono]
+				);
+			} else {
+				console.log("No se encontró ningún cliente con al menos 4 pedidos.");
+			}
+
 			let evolutionStats = [];
 			let previousAverage = null;
 
@@ -310,6 +325,9 @@ export const Clientes = () => {
 		);
 		const pedidos = getOrdersByPhoneNumber(phoneNumber, filteredOrders);
 		setPedidosByPhone(pedidos);
+
+		// **Añadir console.log para el cliente seleccionado**
+		console.log("Detalles del cliente seleccionado:", phoneNumber, pedidos);
 	};
 
 	const telefonosConPedidos = filteredTelefonos.filter((t) =>
@@ -352,14 +370,14 @@ export const Clientes = () => {
 		<div className="flex flex-col">
 			<style>
 				{`
-          .arrow-down {
-            transition: transform 0.3s ease;
-            transform: rotate(90deg);
-          }
-          .arrow-down.open {
-            transform: rotate(-90deg);
-          }
-        `}
+                  .arrow-down {
+                    transition: transform 0.3s ease;
+                    transform: rotate(90deg);
+                  }
+                  .arrow-down.open {
+                    transform: rotate(-90deg);
+                  }
+                `}
 			</style>
 			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Clientes</p>
