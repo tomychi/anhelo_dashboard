@@ -3,9 +3,9 @@ import { RootState } from "../redux/configureStore";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  cleanPhoneNumber,
-  getOrdersByPhoneNumber,
-  getCustomers,
+	cleanPhoneNumber,
+	getOrdersByPhoneNumber,
+	getCustomers,
 } from "../helpers/orderByweeks";
 import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
@@ -14,24 +14,24 @@ import arrow from "../assets/arrowIcon.png";
 import Calendar from "../components/Calendar";
 
 interface LoadingElementProps {
-  className: string;
-  width?: number | string;
+	className: string;
+	width?: number | string;
 }
 
 const LoadingElement: React.FC<LoadingElementProps> = ({
-  className,
-  width,
+	className,
+	width,
 }) => (
-  <div
-    className={`bg-gray-200 rounded overflow-hidden ${className}`}
-    style={{ width }}
-  >
-    <motion.div
-      className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
-      animate={{ x: ["100%", "-100%"] }}
-      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-    />
-  </div>
+	<div
+		className={`bg-gray-200 rounded overflow-hidden ${className}`}
+		style={{ width }}
+	>
+		<motion.div
+			className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
+			animate={{ x: ["100%", "-100%"] }}
+			transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+		/>
+	</div>
 );
 
 export const Clientes = () => {
@@ -111,10 +111,13 @@ export const Clientes = () => {
 						totalItems += customerOrders[i].items;
 						count++;
 
-						// Contar cupones
+						// Contar cupones solo si hay al menos un cupón válido
 						if (
 							customerOrders[i].couponCodes &&
-							customerOrders[i].couponCodes.length > 0
+							customerOrders[i].couponCodes.length > 0 &&
+							customerOrders[i].couponCodes.some(
+								(code) => code && code.trim() !== ""
+							)
 						) {
 							couponsCount++;
 						}
@@ -197,7 +200,13 @@ export const Clientes = () => {
 					laterOrders.totalAmount += order.total;
 					laterOrders.totalItems += order.items;
 					laterOrders.count++;
-					if (order.couponCodes && order.couponCodes.length > 0) {
+
+					// Contar cupones solo si hay al menos un cupón válido
+					if (
+						order.couponCodes &&
+						order.couponCodes.length > 0 &&
+						order.couponCodes.some((code) => code && code.trim() !== "")
+					) {
 						couponsCount++;
 					}
 				});
