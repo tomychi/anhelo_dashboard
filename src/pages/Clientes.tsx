@@ -54,6 +54,19 @@ export const Clientes = () => {
 	const [ticketEvolution, setTicketEvolution] = useState<any[]>([]);
 	const [laterOrdersStats, setLaterOrdersStats] = useState<any>(null);
 
+	// Función auxiliar para cálculos seguros de cambio porcentual
+	const calculatePercentageChange = (
+		current: number,
+		previous: number | undefined
+	): number | string => {
+		if (previous === undefined || previous === 0) {
+			if (current === 0) return 0; // Sin cambio
+			return "N/A"; // Cambio no aplicable
+		}
+		const change = (current / previous - 1) * 100;
+		return isFinite(change) ? change : "N/A";
+	};
+
 	useEffect(() => {
 		if (valueDate?.startDate && valueDate?.endDate) {
 			const startDate = new Date(valueDate.startDate);
@@ -141,25 +154,27 @@ export const Clientes = () => {
 				if (count > 0) {
 					const averageAmount = totalAmount / count;
 					const averageItems = totalItems / count;
-					const percentageChange = previousAverage
-						? (averageAmount / previousAverage - 1) * 100
-						: 0;
+					const percentageChange = calculatePercentageChange(
+						averageAmount,
+						previousAverage
+					);
 					const averageDays =
 						daysCount > 0 ? Math.round(totalDays / daysCount) : null;
 
 					const previousStat = evolutionStats[i - 1];
-					const itemsPercentageChange = previousStat
-						? (averageItems / previousStat.averageItems - 1) * 100
-						: 0;
-
-					const ordersCountChange = previousStat
-						? (count / previousStat.count - 1) * 100
-						: 0;
-
+					const itemsPercentageChange = calculatePercentageChange(
+						averageItems,
+						previousStat?.averageItems
+					);
+					const ordersCountChange = calculatePercentageChange(
+						count,
+						previousStat?.count
+					);
 					const couponPercentage = (couponsCount / count) * 100;
-					const couponPercentageChange = previousStat
-						? (couponPercentage / previousStat.couponPercentage - 1) * 100
-						: 0;
+					const couponPercentageChange = calculatePercentageChange(
+						couponPercentage,
+						previousStat?.couponPercentage
+					);
 
 					evolutionStats.push({
 						position: i + 1,
@@ -179,21 +194,23 @@ export const Clientes = () => {
 				}
 			}
 
-			setTicketEvolution(evolutionStats); // Calcular estadísticas para pedidos 10+
+			setTicketEvolution(evolutionStats);
+
+			// Calcular estadísticas para pedidos 10+
 			const laterOrders = {
 				totalAmount: 0,
 				totalItems: 0,
 				count: 0,
 				averageItems: 0,
 				averageAmount: 0,
-				percentageChange: 0,
-				itemsPercentageChange: 0,
-				ordersCountChange: 0,
+				percentageChange: "N/A",
+				itemsPercentageChange: "N/A",
+				ordersCountChange: "N/A",
 				couponPercentage: 0,
-				couponPercentageChange: 0,
+				couponPercentageChange: "N/A",
 			};
 
-			let couponsCount = 0;
+			let couponsCountLater = 0;
 			Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 				const laterOrdersForCustomer = customerOrders.slice(9);
 				laterOrdersForCustomer.forEach((order) => {
@@ -207,7 +224,7 @@ export const Clientes = () => {
 						order.couponCodes.length > 0 &&
 						order.couponCodes.some((code) => code && code.trim() !== "")
 					) {
-						couponsCount++;
+						couponsCountLater++;
 					}
 				});
 			});
@@ -215,19 +232,27 @@ export const Clientes = () => {
 			if (laterOrders.count > 0) {
 				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
 				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
-				laterOrders.couponPercentage = (couponsCount / laterOrders.count) * 100;
+				laterOrders.couponPercentage =
+					(couponsCountLater / laterOrders.count) * 100;
 
 				if (evolutionStats.length > 0) {
 					const lastStat = evolutionStats[evolutionStats.length - 1];
-					laterOrders.percentageChange =
-						(laterOrders.averageAmount / lastStat.averageAmount - 1) * 100;
-					laterOrders.itemsPercentageChange =
-						(laterOrders.averageItems / lastStat.averageItems - 1) * 100;
-					laterOrders.ordersCountChange =
-						(laterOrders.count / lastStat.count - 1) * 100;
-					laterOrders.couponPercentageChange =
-						(laterOrders.couponPercentage / lastStat.couponPercentage - 1) *
-						100;
+					laterOrders.percentageChange = calculatePercentageChange(
+						laterOrders.averageAmount,
+						lastStat.averageAmount
+					);
+					laterOrders.itemsPercentageChange = calculatePercentageChange(
+						laterOrders.averageItems,
+						lastStat.averageItems
+					);
+					laterOrders.ordersCountChange = calculatePercentageChange(
+						laterOrders.count,
+						lastStat.count
+					);
+					laterOrders.couponPercentageChange = calculatePercentageChange(
+						laterOrders.couponPercentage,
+						lastStat.couponPercentage
+					);
 				}
 
 				setLaterOrdersStats(laterOrders);
@@ -360,11 +385,18 @@ export const Clientes = () => {
 												className={`ml-2 text-sm ${
 													stat.percentageChange > 0
 														? "text-green-600"
-														: "text-red-600"
+														: stat.percentageChange < 0
+														? "text-red-600"
+														: "text-gray-500"
 												}`}
 											>
-												({stat.percentageChange > 0 ? "+" : ""}
-												{stat.percentageChange.toFixed(1)}%)
+												(
+												{typeof stat.percentageChange === "number"
+													? `${
+															stat.percentageChange > 0 ? "+" : ""
+													  }${stat.percentageChange.toFixed(1)}%`
+													: stat.percentageChange}
+												)
 											</span>
 											{stat.averageDays && (
 												<span className="text-gray-500 text-sm">
@@ -378,14 +410,23 @@ export const Clientes = () => {
 										{stat.position > 1 && (
 											<span
 												className={`${
-													stat.ordersCountChange > 0
-														? "text-green-600"
-														: "text-red-600"
+													typeof stat.ordersCountChange === "number"
+														? stat.ordersCountChange > 0
+															? "text-green-600"
+															: stat.ordersCountChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
 												}`}
 											>
 												{" "}
-												({stat.ordersCountChange > 0 ? "+" : ""}
-												{stat.ordersCountChange.toFixed(1)}%)
+												(
+												{typeof stat.ordersCountChange === "number"
+													? `${
+															stat.ordersCountChange > 0 ? "+" : ""
+													  }${stat.ordersCountChange.toFixed(1)}%`
+													: stat.ordersCountChange}
+												)
 											</span>
 										)}
 										)
@@ -395,37 +436,54 @@ export const Clientes = () => {
 										{stat.position > 1 && (
 											<span
 												className={`${
-													stat.itemsPercentageChange > 0
-														? "text-green-600"
-														: "text-red-600"
+													typeof stat.itemsPercentageChange === "number"
+														? stat.itemsPercentageChange > 0
+															? "text-green-600"
+															: stat.itemsPercentageChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
 												}`}
 											>
 												{" "}
-												({stat.itemsPercentageChange > 0 ? "+" : ""}
-												{stat.itemsPercentageChange.toFixed(1)}%)
+												(
+												{typeof stat.itemsPercentageChange === "number"
+													? `${
+															stat.itemsPercentageChange > 0 ? "+" : ""
+													  }${stat.itemsPercentageChange.toFixed(1)}%`
+													: stat.itemsPercentageChange}
+												)
 											</span>
 										)}
 										)
 									</span>
-									{stat.couponPercentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con cupones {stat.couponPercentage.toFixed(1)}%
-											{stat.position > 1 && (
-												<span
-													className={`${
-														stat.couponPercentageChange > 0
+									{/* Mostrar estadísticas de cupones incluso si es 0% */}
+									<span className="text-gray-600 text-sm ml-2">
+										(con cupones {stat.couponPercentage.toFixed(1)}%
+										{stat.position > 1 && (
+											<span
+												className={`${
+													typeof stat.couponPercentageChange === "number"
+														? stat.couponPercentageChange > 0
 															? "text-green-600"
-															: "text-red-600"
-													}`}
-												>
-													{" "}
-													({stat.couponPercentageChange > 0 ? "+" : ""}
-													{stat.couponPercentageChange.toFixed(1)}%)
-												</span>
-											)}
-											)
-										</span>
-									)}
+															: stat.couponPercentageChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
+												}`}
+											>
+												{" "}
+												(
+												{typeof stat.couponPercentageChange === "number"
+													? `${
+															stat.couponPercentageChange > 0 ? "+" : ""
+													  }${stat.couponPercentageChange.toFixed(1)}%`
+													: stat.couponPercentageChange}
+												)
+											</span>
+										)}
+										)
+									</span>
 								</div>
 							</div>
 						))}
@@ -440,13 +498,22 @@ export const Clientes = () => {
 									{ticketEvolution.length > 0 && (
 										<span
 											className={`ml-2 text-sm ${
-												laterOrdersStats.percentageChange > 0
-													? "text-green-600"
-													: "text-red-600"
+												typeof laterOrdersStats.percentageChange === "number"
+													? laterOrdersStats.percentageChange > 0
+														? "text-green-600"
+														: laterOrdersStats.percentageChange < 0
+														? "text-red-600"
+														: "text-gray-500"
+													: "text-gray-500"
 											}`}
 										>
-											({laterOrdersStats.percentageChange > 0 ? "+" : ""}
-											{laterOrdersStats.percentageChange.toFixed(1)}%)
+											(
+											{typeof laterOrdersStats.percentageChange === "number"
+												? `${
+														laterOrdersStats.percentageChange > 0 ? "+" : ""
+												  }${laterOrdersStats.percentageChange.toFixed(1)}%`
+												: laterOrdersStats.percentageChange}
+											)
 										</span>
 									)}
 									<span className="text-gray-500 text-sm ml-2">
@@ -454,14 +521,23 @@ export const Clientes = () => {
 										{ticketEvolution.length > 0 && (
 											<span
 												className={`${
-													laterOrdersStats.ordersCountChange > 0
-														? "text-green-600"
-														: "text-red-600"
+													typeof laterOrdersStats.ordersCountChange === "number"
+														? laterOrdersStats.ordersCountChange > 0
+															? "text-green-600"
+															: laterOrdersStats.ordersCountChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
 												}`}
 											>
 												{" "}
-												({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
-												{laterOrdersStats.ordersCountChange.toFixed(1)}%)
+												(
+												{typeof laterOrdersStats.ordersCountChange === "number"
+													? `${
+															laterOrdersStats.ordersCountChange > 0 ? "+" : ""
+													  }${laterOrdersStats.ordersCountChange.toFixed(1)}%`
+													: laterOrdersStats.ordersCountChange}
+												)
 											</span>
 										)}
 										)
@@ -471,41 +547,66 @@ export const Clientes = () => {
 										{ticketEvolution.length > 0 && (
 											<span
 												className={`${
-													laterOrdersStats.itemsPercentageChange > 0
-														? "text-green-600"
-														: "text-red-600"
+													typeof laterOrdersStats.itemsPercentageChange ===
+													"number"
+														? laterOrdersStats.itemsPercentageChange > 0
+															? "text-green-600"
+															: laterOrdersStats.itemsPercentageChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
 												}`}
 											>
 												{" "}
-												({laterOrdersStats.itemsPercentageChange > 0 ? "+" : ""}
-												{laterOrdersStats.itemsPercentageChange.toFixed(1)}%)
+												(
+												{typeof laterOrdersStats.itemsPercentageChange ===
+												"number"
+													? `${
+															laterOrdersStats.itemsPercentageChange > 0
+																? "+"
+																: ""
+													  }${laterOrdersStats.itemsPercentageChange.toFixed(
+															1
+													  )}%`
+													: laterOrdersStats.itemsPercentageChange}
+												)
 											</span>
 										)}
 										)
 									</span>
-									{laterOrdersStats.couponPercentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con cupones{" "}
-											{laterOrdersStats.couponPercentage.toFixed(1)}%
-											{ticketEvolution.length > 0 && (
-												<span
-													className={`${
-														laterOrdersStats.couponPercentageChange > 0
+									{/* Mostrar estadísticas de cupones incluso si es 0% */}
+									<span className="text-gray-600 text-sm ml-2">
+										(con cupones {laterOrdersStats.couponPercentage.toFixed(1)}%
+										{ticketEvolution.length > 0 && (
+											<span
+												className={`${
+													typeof laterOrdersStats.couponPercentageChange ===
+													"number"
+														? laterOrdersStats.couponPercentageChange > 0
 															? "text-green-600"
-															: "text-red-600"
-													}`}
-												>
-													{" "}
-													(
-													{laterOrdersStats.couponPercentageChange > 0
-														? "+"
-														: ""}
-													{laterOrdersStats.couponPercentageChange.toFixed(1)}%)
-												</span>
-											)}
-											)
-										</span>
-									)}
+															: laterOrdersStats.couponPercentageChange < 0
+															? "text-red-600"
+															: "text-gray-500"
+														: "text-gray-500"
+												}`}
+											>
+												{" "}
+												(
+												{typeof laterOrdersStats.couponPercentageChange ===
+												"number"
+													? `${
+															laterOrdersStats.couponPercentageChange > 0
+																? "+"
+																: ""
+													  }${laterOrdersStats.couponPercentageChange.toFixed(
+															1
+													  )}%`
+													: laterOrdersStats.couponPercentageChange}
+												)
+											</span>
+										)}
+										)
+									</span>
 								</div>
 							</div>
 						)}
