@@ -95,6 +95,12 @@ export const Clientes = () => {
 			const ordersByPhone = filtered.reduce((acc, order) => {
 				const phone = order.telefono;
 				if (!acc[phone]) acc[phone] = [];
+
+				// Verificar si hay algún producto 2x1 en el pedido
+				const has2x1Promo = order.detallePedido.some((item) =>
+					item.burger.toLowerCase().startsWith("2x1")
+				);
+
 				acc[phone].push({
 					total: order.total,
 					items: order.detallePedido.reduce(
@@ -103,6 +109,7 @@ export const Clientes = () => {
 					),
 					fecha: order.fecha,
 					couponCodes: order.couponCodes || [],
+					has2x1Promo,
 				});
 				return acc;
 			}, {});
@@ -117,6 +124,7 @@ export const Clientes = () => {
 				let totalDays = 0;
 				let daysCount = 0;
 				let couponsCount = 0;
+				let promos2x1Count = 0;
 
 				Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 					if (customerOrders[i]) {
@@ -124,7 +132,6 @@ export const Clientes = () => {
 						totalItems += customerOrders[i].items;
 						count++;
 
-						// Contar cupones solo si hay al menos un cupón válido
 						if (
 							customerOrders[i].couponCodes &&
 							customerOrders[i].couponCodes.length > 0 &&
@@ -133,6 +140,10 @@ export const Clientes = () => {
 							)
 						) {
 							couponsCount++;
+						}
+
+						if (customerOrders[i].has2x1Promo) {
+							promos2x1Count++;
 						}
 
 						if (i > 0 && customerOrders[i - 1]) {
@@ -170,10 +181,17 @@ export const Clientes = () => {
 						count,
 						previousStat?.count
 					);
+
 					const couponPercentage = (couponsCount / count) * 100;
 					const couponPercentageChange = calculatePercentageChange(
 						couponPercentage,
 						previousStat?.couponPercentage
+					);
+
+					const promo2x1Percentage = (promos2x1Count / count) * 100;
+					const promo2x1PercentageChange = calculatePercentageChange(
+						promo2x1Percentage,
+						previousStat?.promo2x1Percentage
 					);
 
 					evolutionStats.push({
@@ -188,6 +206,8 @@ export const Clientes = () => {
 						ordersCountChange,
 						couponPercentage,
 						couponPercentageChange,
+						promo2x1Percentage,
+						promo2x1PercentageChange,
 					});
 
 					previousAverage = averageAmount;
@@ -208,9 +228,12 @@ export const Clientes = () => {
 				ordersCountChange: "N/A",
 				couponPercentage: 0,
 				couponPercentageChange: "N/A",
+				promo2x1Percentage: 0,
+				promo2x1PercentageChange: "N/A",
 			};
 
-			let couponsCountLater = 0;
+			let couponsCount = 0;
+			let promos2x1Count = 0;
 			Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 				const laterOrdersForCustomer = customerOrders.slice(9);
 				laterOrdersForCustomer.forEach((order) => {
@@ -218,13 +241,16 @@ export const Clientes = () => {
 					laterOrders.totalItems += order.items;
 					laterOrders.count++;
 
-					// Contar cupones solo si hay al menos un cupón válido
 					if (
 						order.couponCodes &&
 						order.couponCodes.length > 0 &&
 						order.couponCodes.some((code) => code && code.trim() !== "")
 					) {
-						couponsCountLater++;
+						couponsCount++;
+					}
+
+					if (order.has2x1Promo) {
+						promos2x1Count++;
 					}
 				});
 			});
@@ -232,8 +258,9 @@ export const Clientes = () => {
 			if (laterOrders.count > 0) {
 				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
 				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
-				laterOrders.couponPercentage =
-					(couponsCountLater / laterOrders.count) * 100;
+				laterOrders.couponPercentage = (couponsCount / laterOrders.count) * 100;
+				laterOrders.promo2x1Percentage =
+					(promos2x1Count / laterOrders.count) * 100;
 
 				if (evolutionStats.length > 0) {
 					const lastStat = evolutionStats[evolutionStats.length - 1];
@@ -252,6 +279,10 @@ export const Clientes = () => {
 					laterOrders.couponPercentageChange = calculatePercentageChange(
 						laterOrders.couponPercentage,
 						lastStat.couponPercentage
+					);
+					laterOrders.promo2x1PercentageChange = calculatePercentageChange(
+						laterOrders.promo2x1Percentage,
+						lastStat.promo2x1Percentage
 					);
 				}
 
@@ -316,6 +347,7 @@ export const Clientes = () => {
 			</td>
 		</tr>
 	);
+
 	return (
 		<div className="flex flex-col">
 			<style>
@@ -383,10 +415,12 @@ export const Clientes = () => {
 										<>
 											<span
 												className={`ml-2 text-sm ${
-													stat.percentageChange > 0
-														? "text-green-600"
-														: stat.percentageChange < 0
-														? "text-red-600"
+													typeof stat.percentageChange === "number"
+														? stat.percentageChange > 0
+															? "text-green-600"
+															: stat.percentageChange < 0
+															? "text-red-600"
+															: "text-gray-500"
 														: "text-gray-500"
 												}`}
 											>
@@ -457,33 +491,63 @@ export const Clientes = () => {
 										)}
 										)
 									</span>
-									{/* Mostrar estadísticas de cupones incluso si es 0% */}
-									<span className="text-gray-600 text-sm ml-2">
-										(con cupones {stat.couponPercentage.toFixed(1)}%
-										{stat.position > 1 && (
-											<span
-												className={`${
-													typeof stat.couponPercentageChange === "number"
-														? stat.couponPercentageChange > 0
-															? "text-green-600"
-															: stat.couponPercentageChange < 0
-															? "text-red-600"
+									{stat.couponPercentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con cupones {stat.couponPercentage.toFixed(1)}%
+											{stat.position > 1 && (
+												<span
+													className={`${
+														typeof stat.couponPercentageChange === "number"
+															? stat.couponPercentageChange > 0
+																? "text-green-600"
+																: stat.couponPercentageChange < 0
+																? "text-red-600"
+																: "text-gray-500"
 															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof stat.couponPercentageChange === "number"
-													? `${
-															stat.couponPercentageChange > 0 ? "+" : ""
-													  }${stat.couponPercentageChange.toFixed(1)}%`
-													: stat.couponPercentageChange}
-												)
-											</span>
-										)}
-										)
-									</span>
+													}`}
+												>
+													{" "}
+													(
+													{typeof stat.couponPercentageChange === "number"
+														? `${
+																stat.couponPercentageChange > 0 ? "+" : ""
+														  }${stat.couponPercentageChange.toFixed(1)}%`
+														: stat.couponPercentageChange}
+													)
+												</span>
+											)}
+											)
+										</span>
+									)}
+									{/* Mostrar estadísticas de promos 2x1 */}
+									{stat.promo2x1Percentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con Promo 2x1 {stat.promo2x1Percentage.toFixed(1)}%
+											{stat.position > 1 && (
+												<span
+													className={`${
+														typeof stat.promo2x1PercentageChange === "number"
+															? stat.promo2x1PercentageChange > 0
+																? "text-green-600"
+																: stat.promo2x1PercentageChange < 0
+																? "text-red-600"
+																: "text-gray-500"
+															: "text-gray-500"
+													}`}
+												>
+													{" "}
+													(
+													{typeof stat.promo2x1PercentageChange === "number"
+														? `${
+																stat.promo2x1PercentageChange > 0 ? "+" : ""
+														  }${stat.promo2x1PercentageChange.toFixed(1)}%`
+														: stat.promo2x1PercentageChange}
+													)
+												</span>
+											)}
+											)
+										</span>
+									)}
 								</div>
 							</div>
 						))}
@@ -574,45 +638,82 @@ export const Clientes = () => {
 										)}
 										)
 									</span>
-									{/* Mostrar estadísticas de cupones incluso si es 0% */}
-									<span className="text-gray-600 text-sm ml-2">
-										(con cupones {laterOrdersStats.couponPercentage.toFixed(1)}%
-										{ticketEvolution.length > 0 && (
-											<span
-												className={`${
-													typeof laterOrdersStats.couponPercentageChange ===
-													"number"
-														? laterOrdersStats.couponPercentageChange > 0
-															? "text-green-600"
-															: laterOrdersStats.couponPercentageChange < 0
-															? "text-red-600"
+									{laterOrdersStats.couponPercentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con cupones{" "}
+											{laterOrdersStats.couponPercentage.toFixed(1)}%
+											{ticketEvolution.length > 0 && (
+												<span
+													className={`${
+														typeof laterOrdersStats.couponPercentageChange ===
+														"number"
+															? laterOrdersStats.couponPercentageChange > 0
+																? "text-green-600"
+																: laterOrdersStats.couponPercentageChange < 0
+																? "text-red-600"
+																: "text-gray-500"
 															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof laterOrdersStats.couponPercentageChange ===
-												"number"
-													? `${
-															laterOrdersStats.couponPercentageChange > 0
-																? "+"
-																: ""
-													  }${laterOrdersStats.couponPercentageChange.toFixed(
-															1
-													  )}%`
-													: laterOrdersStats.couponPercentageChange}
-												)
-											</span>
-										)}
-										)
-									</span>
+													}`}
+												>
+													{" "}
+													(
+													{typeof laterOrdersStats.couponPercentageChange ===
+													"number"
+														? `${
+																laterOrdersStats.couponPercentageChange > 0
+																	? "+"
+																	: ""
+														  }${laterOrdersStats.couponPercentageChange.toFixed(
+																1
+														  )}%`
+														: laterOrdersStats.couponPercentageChange}
+													)
+												</span>
+											)}
+											)
+										</span>
+									)}
+									{/* Mostrar estadísticas de promos 2x1 para laterOrdersStats */}
+									{laterOrdersStats.promo2x1Percentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con Promo 2x1{" "}
+											{laterOrdersStats.promo2x1Percentage.toFixed(1)}%
+											{ticketEvolution.length > 0 && (
+												<span
+													className={`${
+														typeof laterOrdersStats.promo2x1PercentageChange ===
+														"number"
+															? laterOrdersStats.promo2x1PercentageChange > 0
+																? "text-green-600"
+																: laterOrdersStats.promo2x1PercentageChange < 0
+																? "text-red-600"
+																: "text-gray-500"
+															: "text-gray-500"
+													}`}
+												>
+													{" "}
+													(
+													{typeof laterOrdersStats.promo2x1PercentageChange ===
+													"number"
+														? `${
+																laterOrdersStats.promo2x1PercentageChange > 0
+																	? "+"
+																	: ""
+														  }${laterOrdersStats.promo2x1PercentageChange.toFixed(
+																1
+														  )}%`
+														: laterOrdersStats.promo2x1PercentageChange}
+													)
+												</span>
+											)}
+											)
+										</span>
+									)}
 								</div>
 							</div>
 						)}
 					</div>
 				</div>
-
 				<div className="flex flex-row gap-2 mt-2">
 					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
 						<div
