@@ -142,6 +142,11 @@ export const Clientes = () => {
 						? (averageItems / previousStat.averageItems - 1) * 100
 						: 0;
 
+					// Agregar el cálculo del cambio porcentual en la cantidad de pedidos
+					const ordersCountChange = previousStat
+						? (count / previousStat.count - 1) * 100
+						: 0;
+
 					evolutionStats.push({
 						position: i + 1,
 						averageAmount,
@@ -151,6 +156,7 @@ export const Clientes = () => {
 						percentageChange,
 						itemsPercentageChange,
 						averageDays,
+						ordersCountChange, // Agregar el nuevo campo
 					});
 
 					previousAverage = averageAmount;
@@ -166,6 +172,9 @@ export const Clientes = () => {
 				count: 0,
 				averageItems: 0,
 				averageAmount: 0,
+				percentageChange: 0,
+				itemsPercentageChange: 0,
+				ordersCountChange: 0,
 			};
 
 			Object.values(ordersByPhone).forEach((customerOrders) => {
@@ -181,17 +190,20 @@ export const Clientes = () => {
 				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
 				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
 
-				// Calcular el porcentaje de cambio respecto al último pedido del grupo anterior
 				if (evolutionStats.length > 0) {
 					const lastStat = evolutionStats[evolutionStats.length - 1];
 					laterOrders.percentageChange =
 						(laterOrders.averageAmount / lastStat.averageAmount - 1) * 100;
 					laterOrders.itemsPercentageChange =
 						(laterOrders.averageItems / lastStat.averageItems - 1) * 100;
+					laterOrders.ordersCountChange =
+						(laterOrders.count / lastStat.count - 1) * 100;
 				}
-			}
 
-			setLaterOrdersStats(laterOrders.count > 0 ? laterOrders : null);
+				setLaterOrdersStats(laterOrders);
+			} else {
+				setLaterOrdersStats(null);
+			}
 		} else {
 			setFilteredOrders(orders);
 			setFilteredTelefonos(telefonos);
@@ -335,7 +347,21 @@ export const Clientes = () => {
 										</>
 									)}
 									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {stat.count} pedidos)
+										(Basado en {stat.count} pedidos
+										{stat.position > 1 && (
+											<span
+												className={`${
+													stat.ordersCountChange > 0
+														? "text-green-600"
+														: "text-red-600"
+												}`}
+											>
+												{" "}
+												({stat.ordersCountChange > 0 ? "+" : ""}
+												{stat.ordersCountChange.toFixed(1)}%)
+											</span>
+										)}
+										)
 									</span>
 									<span className="text-gray-600 text-sm ml-2">
 										({stat.averageItems.toFixed(1)} productos
@@ -363,40 +389,64 @@ export const Clientes = () => {
 								<div className="flex-1">
 									<span className="font-medium">Pedidos 10+: </span>
 									<span className="text-green-600">
-										${laterOrdersStats.averageAmount.toFixed(0)}
+										${laterOrdersStats.averageAmount?.toFixed(0) || 0}
 									</span>
-									{ticketEvolution.length > 0 && (
-										<span
-											className={`ml-2 text-sm ${
-												laterOrdersStats.percentageChange > 0
-													? "text-green-600"
-													: "text-red-600"
-											}`}
-										>
-											({laterOrdersStats.percentageChange > 0 ? "+" : ""}
-											{laterOrdersStats.percentageChange.toFixed(1)}%)
-										</span>
-									)}
-									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {laterOrdersStats.count} pedidos)
-									</span>
-									<span className="text-gray-600 text-sm ml-2">
-										({laterOrdersStats.averageItems.toFixed(1)} productos
-										{ticketEvolution.length > 0 && (
+									{ticketEvolution.length > 0 &&
+										laterOrdersStats.percentageChange !== undefined && (
 											<span
-												className={`${
-													laterOrdersStats.itemsPercentageChange > 0
+												className={`ml-2 text-sm ${
+													laterOrdersStats.percentageChange > 0
 														? "text-green-600"
 														: "text-red-600"
 												}`}
 											>
-												{" "}
-												({laterOrdersStats.itemsPercentageChange > 0 ? "+" : ""}
-												{laterOrdersStats.itemsPercentageChange.toFixed(1)}%)
+												({laterOrdersStats.percentageChange > 0 ? "+" : ""}
+												{laterOrdersStats.percentageChange.toFixed(1)}%)
 											</span>
 										)}
+									<span className="text-gray-500 text-sm ml-2">
+										(Basado en {laterOrdersStats.count} pedidos
+										{ticketEvolution.length > 0 &&
+											laterOrdersStats.ordersCountChange !== undefined && (
+												<span
+													className={`${
+														laterOrdersStats.ordersCountChange > 0
+															? "text-green-600"
+															: "text-red-600"
+													}`}
+												>
+													{" "}
+													({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
+													{laterOrdersStats.ordersCountChange.toFixed(1)}%)
+												</span>
+											)}
 										)
 									</span>
+									{laterOrdersStats.averageItems !== undefined && (
+										<span className="text-gray-600 text-sm ml-2">
+											({laterOrdersStats.averageItems.toFixed(1)} productos
+											{ticketEvolution.length > 0 &&
+												laterOrdersStats.itemsPercentageChange !==
+													undefined && (
+													<span
+														className={`${
+															laterOrdersStats.itemsPercentageChange > 0
+																? "text-green-600"
+																: "text-red-600"
+														}`}
+													>
+														{" "}
+														(
+														{laterOrdersStats.itemsPercentageChange > 0
+															? "+"
+															: ""}
+														{laterOrdersStats.itemsPercentageChange.toFixed(1)}
+														%)
+													</span>
+												)}
+											)
+										</span>
+									)}
 								</div>
 							</div>
 						)}
