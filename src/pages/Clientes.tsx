@@ -112,7 +112,6 @@ export const Clientes = () => {
 						totalItems += customerOrders[i].items;
 						count++;
 
-						// Calcular días de diferencia si hay pedido anterior
 						if (i > 0 && customerOrders[i - 1]) {
 							const currentDate = new Date(
 								customerOrders[i].fecha.split("/").reverse().join("-")
@@ -131,18 +130,26 @@ export const Clientes = () => {
 
 				if (count > 0) {
 					const averageAmount = totalAmount / count;
+					const averageItems = totalItems / count;
 					const percentageChange = previousAverage
 						? (averageAmount / previousAverage - 1) * 100
 						: 0;
 					const averageDays =
 						daysCount > 0 ? Math.round(totalDays / daysCount) : null;
 
+					const previousStat = evolutionStats[i - 1];
+					const itemsPercentageChange = previousStat
+						? (averageItems / previousStat.averageItems - 1) * 100
+						: 0;
+
 					evolutionStats.push({
 						position: i + 1,
 						averageAmount,
+						averageItems,
 						totalItems,
 						count,
 						percentageChange,
+						itemsPercentageChange,
 						averageDays,
 					});
 
@@ -157,15 +164,32 @@ export const Clientes = () => {
 				totalAmount: 0,
 				totalItems: 0,
 				count: 0,
+				averageItems: 0,
+				averageAmount: 0,
 			};
 
 			Object.values(ordersByPhone).forEach((customerOrders) => {
-				customerOrders.slice(9).forEach((order) => {
+				const laterOrdersForCustomer = customerOrders.slice(9);
+				laterOrdersForCustomer.forEach((order) => {
 					laterOrders.totalAmount += order.total;
 					laterOrders.totalItems += order.items;
 					laterOrders.count++;
 				});
 			});
+
+			if (laterOrders.count > 0) {
+				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
+				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
+
+				// Calcular el porcentaje de cambio respecto al último pedido del grupo anterior
+				if (evolutionStats.length > 0) {
+					const lastStat = evolutionStats[evolutionStats.length - 1];
+					laterOrders.percentageChange =
+						(laterOrders.averageAmount / lastStat.averageAmount - 1) * 100;
+					laterOrders.itemsPercentageChange =
+						(laterOrders.averageItems / lastStat.averageItems - 1) * 100;
+				}
+			}
 
 			setLaterOrdersStats(laterOrders.count > 0 ? laterOrders : null);
 		} else {
@@ -279,9 +303,7 @@ export const Clientes = () => {
 
 				{/* Evolución del ticket promedio */}
 				<div className="bg-white p-4 rounded-md mb-4 shadow-sm">
-					<h3 className="text-lg font-bold mb-4">
-						Evolución del Ticket Promedio
-					</h3>
+					<h3 className="text-lg font-bold mb-4">Customer Journey Map</h3>
 					<div className="space-y-2">
 						{ticketEvolution.map((stat, index) => (
 							<div
@@ -306,7 +328,7 @@ export const Clientes = () => {
 												{stat.percentageChange.toFixed(1)}%)
 											</span>
 											{stat.averageDays && (
-												<span className="text-gray-500 text-sm ml-2">
+												<span className="text-gray-500 text-sm">
 													({stat.averageDays} días después)
 												</span>
 											)}
@@ -314,6 +336,23 @@ export const Clientes = () => {
 									)}
 									<span className="text-gray-500 text-sm ml-2">
 										(Basado en {stat.count} pedidos)
+									</span>
+									<span className="text-gray-600 text-sm ml-2">
+										({stat.averageItems.toFixed(1)} productos
+										{stat.position > 1 && (
+											<span
+												className={`${
+													stat.itemsPercentageChange > 0
+														? "text-green-600"
+														: "text-red-600"
+												}`}
+											>
+												{" "}
+												({stat.itemsPercentageChange > 0 ? "+" : ""}
+												{stat.itemsPercentageChange.toFixed(1)}%)
+											</span>
+										)}
+										)
 									</span>
 								</div>
 							</div>
@@ -324,13 +363,39 @@ export const Clientes = () => {
 								<div className="flex-1">
 									<span className="font-medium">Pedidos 10+: </span>
 									<span className="text-green-600">
-										$
-										{(
-											laterOrdersStats.totalAmount / laterOrdersStats.count
-										).toFixed(0)}
+										${laterOrdersStats.averageAmount.toFixed(0)}
 									</span>
+									{ticketEvolution.length > 0 && (
+										<span
+											className={`ml-2 text-sm ${
+												laterOrdersStats.percentageChange > 0
+													? "text-green-600"
+													: "text-red-600"
+											}`}
+										>
+											({laterOrdersStats.percentageChange > 0 ? "+" : ""}
+											{laterOrdersStats.percentageChange.toFixed(1)}%)
+										</span>
+									)}
 									<span className="text-gray-500 text-sm ml-2">
 										(Basado en {laterOrdersStats.count} pedidos)
+									</span>
+									<span className="text-gray-600 text-sm ml-2">
+										({laterOrdersStats.averageItems.toFixed(1)} productos
+										{ticketEvolution.length > 0 && (
+											<span
+												className={`${
+													laterOrdersStats.itemsPercentageChange > 0
+														? "text-green-600"
+														: "text-red-600"
+												}`}
+											>
+												{" "}
+												({laterOrdersStats.itemsPercentageChange > 0 ? "+" : ""}
+												{laterOrdersStats.itemsPercentageChange.toFixed(1)}%)
+											</span>
+										)}
+										)
 									</span>
 								</div>
 							</div>
