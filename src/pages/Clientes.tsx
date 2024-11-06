@@ -3,9 +3,9 @@ import { RootState } from "../redux/configureStore";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-	cleanPhoneNumber,
-	getOrdersByPhoneNumber,
-	getCustomers,
+  cleanPhoneNumber,
+  getOrdersByPhoneNumber,
+  getCustomers,
 } from "../helpers/orderByweeks";
 import { PedidoProps } from "../types/types";
 import { CardOrderCliente } from "../components/Card";
@@ -14,24 +14,24 @@ import arrow from "../assets/arrowIcon.png";
 import Calendar from "../components/Calendar";
 
 interface LoadingElementProps {
-	className: string;
-	width?: number | string;
+  className: string;
+  width?: number | string;
 }
 
 const LoadingElement: React.FC<LoadingElementProps> = ({
-	className,
-	width,
+  className,
+  width,
 }) => (
-	<div
-		className={`bg-gray-200 rounded overflow-hidden ${className}`}
-		style={{ width }}
-	>
-		<motion.div
-			className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
-			animate={{ x: ["100%", "-100%"] }}
-			transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-		/>
-	</div>
+  <div
+    className={`bg-gray-200 rounded overflow-hidden ${className}`}
+    style={{ width }}
+  >
+    <motion.div
+      className="h-full w-full bg-gradient-to-r from-gray-200 via-white to-gray-200"
+      animate={{ x: ["100%", "-100%"] }}
+      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+    />
+  </div>
 );
 
 export const Clientes = () => {
@@ -88,29 +88,36 @@ export const Clientes = () => {
 						(sum, item) => sum + item.quantity,
 						0
 					),
-					fecha: order.fecha, // Añadimos la fecha
+					fecha: order.fecha,
+					couponCodes: order.couponCodes || [],
 				});
 				return acc;
 			}, {});
 
-			// Inicializar array para almacenar estadísticas
 			let evolutionStats = [];
 			let previousAverage = null;
-			let previousDate = null;
 
-			// Calcular estadísticas para los primeros 9 pedidos
 			for (let i = 0; i < 9; i++) {
 				let totalAmount = 0;
 				let totalItems = 0;
 				let count = 0;
 				let totalDays = 0;
 				let daysCount = 0;
+				let couponsCount = 0;
 
-				Object.values(ordersByPhone).forEach((customerOrders) => {
+				Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 					if (customerOrders[i]) {
 						totalAmount += customerOrders[i].total;
 						totalItems += customerOrders[i].items;
 						count++;
+
+						// Contar cupones
+						if (
+							customerOrders[i].couponCodes &&
+							customerOrders[i].couponCodes.length > 0
+						) {
+							couponsCount++;
+						}
 
 						if (i > 0 && customerOrders[i - 1]) {
 							const currentDate = new Date(
@@ -142,9 +149,13 @@ export const Clientes = () => {
 						? (averageItems / previousStat.averageItems - 1) * 100
 						: 0;
 
-					// Agregar el cálculo del cambio porcentual en la cantidad de pedidos
 					const ordersCountChange = previousStat
 						? (count / previousStat.count - 1) * 100
+						: 0;
+
+					const couponPercentage = (couponsCount / count) * 100;
+					const couponPercentageChange = previousStat
+						? (couponPercentage / previousStat.couponPercentage - 1) * 100
 						: 0;
 
 					evolutionStats.push({
@@ -156,16 +167,16 @@ export const Clientes = () => {
 						percentageChange,
 						itemsPercentageChange,
 						averageDays,
-						ordersCountChange, // Agregar el nuevo campo
+						ordersCountChange,
+						couponPercentage,
+						couponPercentageChange,
 					});
 
 					previousAverage = averageAmount;
 				}
 			}
 
-			setTicketEvolution(evolutionStats);
-
-			// Calcular estadísticas para pedidos 10+
+			setTicketEvolution(evolutionStats); // Calcular estadísticas para pedidos 10+
 			const laterOrders = {
 				totalAmount: 0,
 				totalItems: 0,
@@ -175,20 +186,27 @@ export const Clientes = () => {
 				percentageChange: 0,
 				itemsPercentageChange: 0,
 				ordersCountChange: 0,
+				couponPercentage: 0,
+				couponPercentageChange: 0,
 			};
 
-			Object.values(ordersByPhone).forEach((customerOrders) => {
+			let couponsCount = 0;
+			Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 				const laterOrdersForCustomer = customerOrders.slice(9);
 				laterOrdersForCustomer.forEach((order) => {
 					laterOrders.totalAmount += order.total;
 					laterOrders.totalItems += order.items;
 					laterOrders.count++;
+					if (order.couponCodes && order.couponCodes.length > 0) {
+						couponsCount++;
+					}
 				});
 			});
 
 			if (laterOrders.count > 0) {
 				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
 				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
+				laterOrders.couponPercentage = (couponsCount / laterOrders.count) * 100;
 
 				if (evolutionStats.length > 0) {
 					const lastStat = evolutionStats[evolutionStats.length - 1];
@@ -198,6 +216,9 @@ export const Clientes = () => {
 						(laterOrders.averageItems / lastStat.averageItems - 1) * 100;
 					laterOrders.ordersCountChange =
 						(laterOrders.count / lastStat.count - 1) * 100;
+					laterOrders.couponPercentageChange =
+						(laterOrders.couponPercentage / lastStat.couponPercentage - 1) *
+						100;
 				}
 
 				setLaterOrdersStats(laterOrders);
@@ -261,7 +282,6 @@ export const Clientes = () => {
 			</td>
 		</tr>
 	);
-
 	return (
 		<div className="flex flex-col">
 			<style>
@@ -301,7 +321,6 @@ export const Clientes = () => {
 			<div className="px-4 pb-8">
 				<Calendar />
 
-				{/* Estadísticas generales */}
 				<div className="bg-gray-100 p-4 rounded-md mb-4">
 					<p className="text-black font-bold">
 						Pedidos: {filteredOrders.length}, Teléfonos:{" "}
@@ -313,7 +332,6 @@ export const Clientes = () => {
 					</p>
 				</div>
 
-				{/* Evolución del ticket promedio */}
 				<div className="bg-white p-4 rounded-md mb-4 shadow-sm">
 					<h3 className="text-lg font-bold mb-4">Customer Journey Map</h3>
 					<div className="space-y-2">
@@ -380,6 +398,25 @@ export const Clientes = () => {
 										)}
 										)
 									</span>
+									{stat.couponPercentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con cupones {stat.couponPercentage.toFixed(1)}%
+											{stat.position > 1 && (
+												<span
+													className={`${
+														stat.couponPercentageChange > 0
+															? "text-green-600"
+															: "text-red-600"
+													}`}
+												>
+													{" "}
+													({stat.couponPercentageChange > 0 ? "+" : ""}
+													{stat.couponPercentageChange.toFixed(1)}%)
+												</span>
+											)}
+											)
+										</span>
+									)}
 								</div>
 							</div>
 						))}
@@ -389,61 +426,74 @@ export const Clientes = () => {
 								<div className="flex-1">
 									<span className="font-medium">Pedidos 10+: </span>
 									<span className="text-green-600">
-										${laterOrdersStats.averageAmount?.toFixed(0) || 0}
+										${laterOrdersStats.averageAmount.toFixed(0)}
 									</span>
-									{ticketEvolution.length > 0 &&
-										laterOrdersStats.percentageChange !== undefined && (
+									{ticketEvolution.length > 0 && (
+										<span
+											className={`ml-2 text-sm ${
+												laterOrdersStats.percentageChange > 0
+													? "text-green-600"
+													: "text-red-600"
+											}`}
+										>
+											({laterOrdersStats.percentageChange > 0 ? "+" : ""}
+											{laterOrdersStats.percentageChange.toFixed(1)}%)
+										</span>
+									)}
+									<span className="text-gray-500 text-sm ml-2">
+										(Basado en {laterOrdersStats.count} pedidos
+										{ticketEvolution.length > 0 && (
 											<span
-												className={`ml-2 text-sm ${
-													laterOrdersStats.percentageChange > 0
+												className={`${
+													laterOrdersStats.ordersCountChange > 0
 														? "text-green-600"
 														: "text-red-600"
 												}`}
 											>
-												({laterOrdersStats.percentageChange > 0 ? "+" : ""}
-												{laterOrdersStats.percentageChange.toFixed(1)}%)
+												{" "}
+												({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
+												{laterOrdersStats.ordersCountChange.toFixed(1)}%)
 											</span>
 										)}
-									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {laterOrdersStats.count} pedidos
-										{ticketEvolution.length > 0 &&
-											laterOrdersStats.ordersCountChange !== undefined && (
+										)
+									</span>
+									<span className="text-gray-600 text-sm ml-2">
+										({laterOrdersStats.averageItems.toFixed(1)} productos
+										{ticketEvolution.length > 0 && (
+											<span
+												className={`${
+													laterOrdersStats.itemsPercentageChange > 0
+														? "text-green-600"
+														: "text-red-600"
+												}`}
+											>
+												{" "}
+												({laterOrdersStats.itemsPercentageChange > 0 ? "+" : ""}
+												{laterOrdersStats.itemsPercentageChange.toFixed(1)}%)
+											</span>
+										)}
+										)
+									</span>
+									{laterOrdersStats.couponPercentage > 0 && (
+										<span className="text-gray-600 text-sm ml-2">
+											(con cupones{" "}
+											{laterOrdersStats.couponPercentage.toFixed(1)}%
+											{ticketEvolution.length > 0 && (
 												<span
 													className={`${
-														laterOrdersStats.ordersCountChange > 0
+														laterOrdersStats.couponPercentageChange > 0
 															? "text-green-600"
 															: "text-red-600"
 													}`}
 												>
 													{" "}
-													({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
-													{laterOrdersStats.ordersCountChange.toFixed(1)}%)
+													(
+													{laterOrdersStats.couponPercentageChange > 0
+														? "+"
+														: ""}
+													{laterOrdersStats.couponPercentageChange.toFixed(1)}%)
 												</span>
 											)}
-										)
-									</span>
-									{laterOrdersStats.averageItems !== undefined && (
-										<span className="text-gray-600 text-sm ml-2">
-											({laterOrdersStats.averageItems.toFixed(1)} productos
-											{ticketEvolution.length > 0 &&
-												laterOrdersStats.itemsPercentageChange !==
-													undefined && (
-													<span
-														className={`${
-															laterOrdersStats.itemsPercentageChange > 0
-																? "text-green-600"
-																: "text-red-600"
-														}`}
-													>
-														{" "}
-														(
-														{laterOrdersStats.itemsPercentageChange > 0
-															? "+"
-															: ""}
-														{laterOrdersStats.itemsPercentageChange.toFixed(1)}
-														%)
-													</span>
-												)}
 											)
 										</span>
 									)}
