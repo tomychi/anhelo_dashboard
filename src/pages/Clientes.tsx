@@ -663,9 +663,12 @@ export const Clientes = () => {
 
 											{stat.averageDays && (
 												<div className="flex flex-col items-center pt-2 border-t border-gray-100">
-													<span className="text-gray-600">Días despues</span>
-													<span className="font-medium">
-														{stat.averageDays}
+													<span className="text-gray-600">
+														Despues de{" "}
+														<span className="text-black font-medium">
+															{stat.averageDays}
+														</span>{" "}
+														dias.
 													</span>
 												</div>
 											)}
