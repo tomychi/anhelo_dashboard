@@ -3,6 +3,7 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
+  addTelefonoFirebase,
   calcularCostoHamburguesa,
   canjearVoucher,
   ReadData,
@@ -163,6 +164,8 @@ exports.createPreference = functions.https.onCall(async (request) => {
       };
 
       await UploadOrder(orderDetail, orderId);
+
+      await addTelefonoFirebase(phone, obtenerFechaActual());
 
       return { id: response.id }; // Respuesta exitosa
     } else {

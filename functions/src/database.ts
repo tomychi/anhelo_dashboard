@@ -1,5 +1,5 @@
 import { firestore } from './firebaseAdmin';
-import { obtenerFechaActual } from './helpers';
+import { cleanPhoneNumber, obtenerFechaActual } from './helpers';
 import { OrderDetailProps, PedidoProps, ProductoMaterial } from './types';
 
 export const UploadOrder = async (
@@ -205,5 +205,47 @@ export const canjearVoucher = async (codigo: string): Promise<boolean> => {
   } catch (error) {
     console.error('Error al canjear el voucher:', error);
     throw error; // Lanza un error si algo falla
+  }
+};
+
+export const addTelefonoFirebase = async (
+  phoneNumber: string,
+  fecha: string
+) => {
+  const cleanPhone = cleanPhoneNumber(phoneNumber);
+  const telefonosCollectionRef = firestore.collection('telefonos');
+  const querySnapshot = await telefonosCollectionRef
+    .where('telefono', '==', cleanPhone)
+    .get();
+
+  if (querySnapshot.empty) {
+    // El número de teléfono no existe en la base de datos, entonces lo agregamos
+    try {
+      const docRef = await telefonosCollectionRef.add({
+        telefono: cleanPhone,
+        fecha: fecha,
+        lastOrder: fecha, // Nueva fecha como último pedido al agregar
+      });
+      console.log(
+        `Se agregó el número de teléfono ${cleanPhone} a Firebase con el ID: ${docRef.id}. Fecha: ${fecha}`
+      );
+    } catch (e) {
+      console.error('Error al agregar el número de teléfono a Firebase:', e);
+    }
+  } else {
+    // El número de teléfono ya existe en la base de datos, actualizamos el campo lastOrder
+    querySnapshot.forEach(async (documento) => {
+      try {
+        const docRef = telefonosCollectionRef.doc(documento.id);
+        await docRef.update({
+          lastOrder: fecha, // Actualiza con la nueva fecha del último pedido
+        });
+        console.log(
+          `El número de teléfono ${cleanPhone} ya existe en la base de datos. Actualizado lastOrder a: ${fecha}`
+        );
+      } catch (e) {
+        console.error('Error al actualizar el campo lastOrder en Firebase:', e);
+      }
+    });
   }
 };
