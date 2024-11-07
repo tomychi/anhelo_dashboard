@@ -6,7 +6,7 @@ import {
   VoucherTituloConFecha,
 } from '../../firebase/voucher';
 import { jsPDF } from 'jspdf';
-import voucherImg from '../../assets/Voucher.jpg';
+import voucherImg from '../../assets/Voucher-2x1-jirafa.jpg';
 
 export const VoucherList: React.FC = () => {
   const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(

@@ -19,20 +19,6 @@ import {
 } from './helpers';
 import { ItemProps, ToppingsProps } from './types';
 
-const adjustHora = (hora: string) => {
-  const [hours, minutes] = hora.split(':').map(Number);
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  date.setMinutes(date.getMinutes() - 30);
-
-  // Formatear la nueva hora en "HH:mm"
-  const adjustedHours = date.getHours().toString().padStart(2, '0');
-  const adjustedMinutes = date.getMinutes().toString().padStart(2, '0');
-  const adjustedTime = `${adjustedHours}:${adjustedMinutes}`;
-  console.log(`Hora ajustada: ${adjustedTime} (original: ${hora})`);
-  return adjustedTime;
-};
-
 // Inicializa el cliente con el token de acceso
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '', // Accede al token desde variables de entorno
@@ -45,13 +31,13 @@ exports.createPreference = functions.https.onCall(async (request) => {
   try {
     const { data } = request;
 
-    const { values, cart, mapUrl, couponCodes } = data;
+    const { updatedValues: values, cart, mapUrl, couponCodes } = data;
+
     const phone = String(values.phone) || '';
 
     const envio = Number(data.envio) || 0;
     const discountedTotal = Number(data.discountedTotal) || 0;
     const orderId = uuidv4();
-    console.log(couponCodes);
 
     const validacionCupones = await Promise.all(
       couponCodes.map(async (cupon: string) => {
@@ -117,13 +103,6 @@ exports.createPreference = functions.https.onCall(async (request) => {
         costo: calcularCostoHamburguesa(materialesData, item.ingredients),
       }));
 
-      const isReserva = values.hora.trim() !== '';
-
-      let adjustedHora = values.hora;
-      if (isReserva) {
-        adjustedHora = adjustHora(values.hora);
-      }
-
       const orderDetail = {
         envio,
         detallePedido: cart.map((item: ItemProps) => {
@@ -174,7 +153,7 @@ exports.createPreference = functions.https.onCall(async (request) => {
         metodoPago: values.paymentMethod,
         direccion: values.address,
         telefono: cleanPhoneNumber(phone), // Convierte a string
-        hora: adjustedHora || obtenerHoraActual(),
+        hora: values.hora || obtenerHoraActual(),
         cerca: false, // Puedes ajustar esto según tus necesidades
         cadete: 'NO ASIGNADO',
         referencias: values.references,

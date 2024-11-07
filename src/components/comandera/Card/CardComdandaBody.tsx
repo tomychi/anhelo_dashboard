@@ -1,4 +1,4 @@
-import { DetallePedidoItem } from "../../../types/types";
+import { DetallePedidoItem } from '../../../types/types';
 
 interface CardComdandaBodyProps {
   aclaraciones: string;
@@ -23,7 +23,7 @@ export const CardComdandaBody = ({
             toppings,
             quantity,
           }: { burger: string; toppings: string[]; quantity: number },
-          i: number,
+          i: number
         ) => (
           <div key={i} className="flex mt-4 items-center flex-col">
             <p className="text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1">
@@ -35,10 +35,10 @@ export const CardComdandaBody = ({
                   <span
                     key={`${topping}-${toppingIndex}`}
                     className={`text-2xl flex  text-black font-black ${
-                      topping.toLowerCase() === "huevo" ||
-                      topping.toLowerCase() === "carne"
-                        ? "bg-black mt-4  text-2xl text-center text-green-500"
-                        : ""
+                      topping.toLowerCase() === 'huevo' ||
+                      topping.toLowerCase() === 'carne'
+                        ? 'bg-black mt-4  text-2xl text-center text-green-500'
+                        : ''
                     }`}
                   >
                     {topping}
@@ -47,7 +47,7 @@ export const CardComdandaBody = ({
               </div>
             </div>
           </div>
-        ),
+        )
       )}
     </div>
   );

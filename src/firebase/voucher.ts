@@ -12,17 +12,58 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
+export interface Codigo {
+  codigo: string;
+  estado: string;
+  num: number;
+}
+
+// Genera los códigos y los devuelve como un array
+export const generarCodigos = async (cantidad: number): Promise<Codigo[]> => {
+  const codigosGenerados: Codigo[] = [];
+
+  try {
+    for (let i = 0; i < cantidad; i++) {
+      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 caracteres
+      const nuevoCodigo: Codigo = {
+        codigo,
+        estado: 'disponible',
+        num: i + 1,
+      };
+
+      // Almacena el código en Firestore y añade al array de códigos generados
+      codigosGenerados.push(nuevoCodigo);
+    }
+
+    console.log(
+      `Se han generado y almacenado ${cantidad} códigos correctamente.`
+    );
+    return codigosGenerados;
+  } catch (error) {
+    console.error('Error al generar y almacenar los códigos:', error);
+    throw error;
+  }
+};
+
+// Crea el voucher y guarda el array de códigos
 export const crearVoucher = async (
   titulo: string,
-  fecha: string
+  fecha: string,
+  cant: number
 ): Promise<void> => {
   const firestore = getFirestore();
   const voucherDocRef = doc(firestore, 'vouchers', titulo);
 
   try {
+    // Genera los códigos y los incluye en el documento de voucher
+    const codigos = await generarCodigos(cant);
+
     await setDoc(voucherDocRef, {
       titulo,
       fecha,
+      codigos, // Incluye el array de códigos dentro del documento
+      creados: cant,
+      usados: 0,
     });
 
     console.log(`Documento creado exitosamente con el título: ${titulo}`);
@@ -208,38 +249,6 @@ export const subirCodigosExistentes = async (
     console.log(`Códigos subidos correctamente bajo el título: ${titulo}`);
   } catch (error) {
     console.error('Error al subir los códigos:', error);
-    throw error;
-  }
-};
-
-export interface Codigo {
-  codigo: string;
-  estado: string;
-  num: number;
-}
-
-export const generarCodigos = async (cantidad: number): Promise<void> => {
-  const firestore = getFirestore();
-  const codigosCollectionRef = collection(firestore, 'codigos');
-
-  try {
-    for (let i = 0; i < cantidad; i++) {
-      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 caracteres
-      const nuevoCodigo: Codigo = {
-        codigo,
-        estado: 'disponible',
-        num: i + 1,
-      };
-
-      // Almacena el código en Firestore
-      await addDoc(codigosCollectionRef, nuevoCodigo);
-    }
-
-    console.log(
-      `Se han generado y almacenado ${cantidad} códigos correctamente.`
-    );
-  } catch (error) {
-    console.error('Error al generar y almacenar los códigos:', error);
     throw error;
   }
 };
