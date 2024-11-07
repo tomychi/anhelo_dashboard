@@ -504,9 +504,9 @@ export const Clientes = () => {
 										{/* Point */}
 										<div
 											className="absolute left-1/2 -translate-x-1/2"
-											style={{ top: "36px" }}
+											style={{ top: "34px" }}
 										>
-											<div className="w-3 h-3 bg-black " />
+											<div className="w-4 h-4 bg-black " />
 										</div>
 
 										{/* Content Card */}
@@ -632,9 +632,9 @@ export const Clientes = () => {
 								>
 									<div
 										className="absolute left-1/2 -translate-x-1/2"
-										style={{ top: "36px" }}
+										style={{ top: "34px" }}
 									>
-										<div className="w-3 h-3 bg-black rounded-full" />
+										<div className="w-4 h-4 bg-black " />
 									</div>
 
 									<div className="mt-16 bg-gray-50 rounded-lg p-4 mx-2 border border-gray-100 text-center">
