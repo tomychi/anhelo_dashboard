@@ -478,8 +478,8 @@ export const Clientes = () => {
 				</div>
 
 				{/* Customer Journey Map */}
-				<div className="bg-gray-300 p-8 rounded-3xl mb-6">
-					<h3 className="text-xl font-bold mb-8 text-gray-900 text-center">
+				<div className="bg-gray-300 pt-6 pb-4 px-4 rounded-xl mb-6">
+					<h3 className="text-4xl font-bold mb-6 text-gray-900 text-center">
 						Comportamiento del Cliente
 					</h3>
 
@@ -491,7 +491,7 @@ export const Clientes = () => {
 						/>
 
 						{/* Journey Points and Cards */}
-						<div className="flex justify-between relative mb-4">
+						<div className="flex justify-between relative ">
 							{ticketEvolution.map((stat, index) => {
 								const totalPoints =
 									ticketEvolution.length + (laterOrdersStats ? 1 : 0);
