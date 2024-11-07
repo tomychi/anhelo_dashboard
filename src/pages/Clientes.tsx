@@ -466,22 +466,21 @@ export const Clientes = () => {
 			<div className="px-4 pb-8">
 				<Calendar />
 
-				<div className="bg-gray-100 p-4 rounded-md mb-4">
-					<p className="text-black font-bold">
-						Pedidos: {filteredOrders.length}, Teléfonos:{" "}
-						{filteredTelefonos.length}
-					</p>
-					<p className="text-black font-bold">
-						Cantidad promedio de pedidos por número de teléfono:{" "}
-						{averageOrdersPerPhoneNumber}
-					</p>
-				</div>
-
 				{/* Customer Journey Map */}
 				<div className="bg-gray-300 pt-6 pb-4 px-4 rounded-xl mb-6">
-					<h3 className="text-4xl font-bold mb-6 text-gray-900 text-center">
-						Mapa de comportamiento
+					<h3 className="text-4xl font-bold mb-6 text-gray-900 text-left">
+						Analisis de comportamiento
 					</h3>
+
+					<div className="">
+						<p className="text-black font-bold">
+							{filteredOrders.length} pedidos de {filteredTelefonos.length}{" "}
+							clientes
+						</p>
+						<p className="text-black font-bold">
+							Pedidos promedio por cliente: {averageOrdersPerPhoneNumber}
+						</p>
+					</div>
 
 					<div className="relative">
 						{/* Timeline base */}
