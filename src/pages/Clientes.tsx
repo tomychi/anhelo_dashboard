@@ -480,7 +480,7 @@ export const Clientes = () => {
 				{/* Customer Journey Map */}
 				<div className="bg-gray-300 pt-6 pb-4 px-4 rounded-xl mb-6">
 					<h3 className="text-4xl font-bold mb-6 text-gray-900 text-center">
-						Comportamiento del Cliente
+						Mapa de comportamiento
 					</h3>
 
 					<div className="relative">
