@@ -478,7 +478,7 @@ export const Clientes = () => {
 				</div>
 
 				{/* Customer Journey Map */}
-				<div className="bg-white p-8 rounded-xl mb-6">
+				<div className="bg-gray-300 p-8 rounded-3xl mb-6">
 					<h3 className="text-xl font-bold mb-8 text-gray-900 text-center">
 						Comportamiento del Cliente
 					</h3>
@@ -486,7 +486,7 @@ export const Clientes = () => {
 					<div className="relative">
 						{/* Timeline base */}
 						<div
-							className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400"
+							className="absolute left-0 right-0 h-0.5 bg-black"
 							style={{ top: "40px" }}
 						/>
 
@@ -506,12 +506,12 @@ export const Clientes = () => {
 											className="absolute left-1/2 -translate-x-1/2"
 											style={{ top: "36px" }}
 										>
-											<div className="w-3 h-3 bg-black rounded-full" />
+											<div className="w-3 h-3 bg-black " />
 										</div>
 
 										{/* Content Card */}
-										<div className="mt-16 bg-gray-50 rounded-lg p-4 mx-2 border border-gray-100 text-center">
-											<div className="mb-3 pb-2 border-b border-gray-200">
+										<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
+											<div className="mb-3 pb-2 w-full border-b border-gray-200">
 												<span className="text-sm font-semibold text-gray-900">
 													Pedido {stat.position}
 												</span>
