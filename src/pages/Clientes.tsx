@@ -571,7 +571,7 @@ export const Clientes = () => {
 
 										<div className="space-y-2.5 text-sm">
 											<div className="flex flex-col items-center">
-												<span className="text-gray-600">Monto</span>
+												<span className="text-gray-600">Ticket promedio</span>
 												<div>
 													<span className="font-medium">
 														${stat.averageAmount.toFixed(2)}{" "}
@@ -700,7 +700,7 @@ export const Clientes = () => {
 
 									<div className="space-y-2.5 text-sm">
 										<div className="flex flex-col items-center">
-											<span className="text-gray-600">Monto</span>
+											<span className="text-gray-600">Ticket promedio</span>
 											<div>
 												<span className="font-medium">
 													${laterOrdersStats.averageAmount.toFixed(2)}{" "}
