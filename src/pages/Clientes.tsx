@@ -637,7 +637,7 @@ export const Clientes = () => {
 										<div className="w-4 h-4 bg-black " />
 									</div>
 
-									<div className="mt-16 bg-gray-50 rounded-lg py-4 mx-2 border border-gray-100 text-center">
+									<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
 										<div className="mb-3 pb-2 border-b w-full border-gray-200">
 											<span className="text-sm font-semibold text-gray-900">
 												Pedidos 10+
