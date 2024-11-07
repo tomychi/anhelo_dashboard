@@ -466,304 +466,6 @@ export const Clientes = () => {
 			<div className="px-4 pb-8">
 				<Calendar />
 
-				{/* Customer Journey Map */}
-				<div className="bg-gray-300 pt-6 pb-4 px-4 rounded-xl mb-6">
-					<h3 className="text-4xl font-bold mb-6 text-gray-900 text-left">
-						Analisis de comportamiento
-					</h3>
-
-					<div className="">
-						<p className="text-black font-bold">
-							{filteredOrders.length} pedidos de {filteredTelefonos.length}{" "}
-							clientes
-						</p>
-						<p className="text-black font-bold">
-							Pedidos promedio por cliente: {averageOrdersPerPhoneNumber}
-						</p>
-					</div>
-
-					<div className="relative">
-						{/* Timeline base */}
-						<div
-							className="absolute left-0 right-0 h-1 bg-black"
-							style={{ top: "40px" }}
-						/>
-
-						{/* Journey Points and Cards */}
-						<div className="flex justify-between relative ">
-							{ticketEvolution.map((stat, index) => {
-								const totalPoints =
-									ticketEvolution.length + (laterOrdersStats ? 1 : 0);
-								return (
-									<div
-										key={index}
-										className="relative"
-										style={{ width: `${95 / totalPoints}%` }}
-									>
-										{/* Point */}
-										<div
-											className="absolute left-1/2 -translate-x-1/2"
-											style={{ top: "34px" }}
-										>
-											<div className="w-4 h-4 bg-black " />
-										</div>
-
-										{/* Content Card */}
-										<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
-											<div className="mb-3 pb-2 w-full border-b border-gray-200">
-												<span className="text-sm font-semibold text-gray-900">
-													Pedido {stat.position}
-												</span>
-											</div>
-
-											<div className="space-y-2.5 text-sm">
-												<div className="flex flex-col items-center">
-													<span className="text-gray-600">Monto</span>
-													<div>
-														<span className="font-medium">
-															${stat.averageAmount.toFixed(2)}{" "}
-														</span>
-														{typeof stat.percentageChange === "number" && (
-															<span
-																className={`text-xs ${
-																	stat.percentageChange > 0
-																		? "text-emerald-600"
-																		: stat.percentageChange < 0
-																		? "text-red-500"
-																		: "text-gray-400"
-																}`}
-															>
-																({stat.percentageChange > 0 ? "+" : ""}
-																{stat.percentageChange.toFixed(1)}%)
-															</span>
-														)}
-													</div>
-												</div>
-
-												<div className="flex flex-col items-center">
-													<span className="text-gray-600">Pedidos</span>
-													<div>
-														<span className="font-medium">{stat.count} </span>
-														{typeof stat.ordersCountChange === "number" && (
-															<span
-																className={`text-xs ${
-																	stat.ordersCountChange > 0
-																		? "text-emerald-600"
-																		: stat.ordersCountChange < 0
-																		? "text-red-500"
-																		: "text-gray-400"
-																}`}
-															>
-																({stat.ordersCountChange > 0 ? "+" : ""}
-																{stat.ordersCountChange.toFixed(1)}%)
-															</span>
-														)}
-													</div>
-												</div>
-
-												<div className="flex flex-col items-center">
-													<span className="text-gray-600">Cupones</span>
-													<div>
-														<span className="font-medium">
-															{stat.couponPercentage.toFixed(1)}%{" "}
-														</span>
-														{typeof stat.couponPercentageChange ===
-															"number" && (
-															<span
-																className={`text-xs ${
-																	stat.couponPercentageChange > 0
-																		? "text-emerald-600"
-																		: stat.couponPercentageChange < 0
-																		? "text-red-500"
-																		: "text-gray-400"
-																}`}
-															>
-																({stat.couponPercentageChange > 0 ? "+" : ""}
-																{stat.couponPercentageChange.toFixed(1)}%)
-															</span>
-														)}
-													</div>
-												</div>
-
-												<div className="flex flex-col items-center">
-													<span className="text-gray-600">2x1</span>
-													<div>
-														<span className="font-medium">
-															{stat.promo2x1Percentage.toFixed(1)}%{" "}
-														</span>
-														{typeof stat.promo2x1PercentageChange ===
-															"number" && (
-															<span
-																className={`text-xs ${
-																	stat.promo2x1PercentageChange > 0
-																		? "text-emerald-600"
-																		: stat.promo2x1PercentageChange < 0
-																		? "text-red-500"
-																		: "text-gray-400"
-																}`}
-															>
-																({stat.promo2x1PercentageChange > 0 ? "+" : ""}
-																{stat.promo2x1PercentageChange.toFixed(1)}%)
-															</span>
-														)}
-													</div>
-												</div>
-
-												{stat.averageDays && (
-													<div className="flex flex-col items-center pt-2 border-t border-gray-100">
-														<span className="text-gray-600">Días</span>
-														<span className="font-medium">
-															{stat.averageDays}
-														</span>
-													</div>
-												)}
-											</div>
-										</div>
-									</div>
-								);
-							})}
-
-							{/* 10+ Orders Point */}
-							{laterOrdersStats && (
-								<div
-									className="relative"
-									style={{ width: `${95 / (ticketEvolution.length + 1)}%` }}
-								>
-									<div
-										className="absolute left-1/2 -translate-x-1/2"
-										style={{ top: "34px" }}
-									>
-										<div className="w-4 h-4 bg-black " />
-									</div>
-
-									<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
-										<div className="mb-3 pb-2 border-b w-full border-gray-200">
-											<span className="text-sm font-semibold text-gray-900">
-												Pedidos 10+
-											</span>
-										</div>
-
-										<div className="space-y-2.5 text-sm">
-											<div className="flex flex-col items-center">
-												<span className="text-gray-600">Monto</span>
-												<div>
-													<span className="font-medium">
-														${laterOrdersStats.averageAmount.toFixed(2)}{" "}
-													</span>
-													{typeof laterOrdersStats.percentageChange ===
-														"number" && (
-														<span
-															className={`text-xs ${
-																laterOrdersStats.percentageChange > 0
-																	? "text-emerald-600"
-																	: laterOrdersStats.percentageChange < 0
-																	? "text-red-500"
-																	: "text-gray-400"
-															}`}
-														>
-															(
-															{laterOrdersStats.percentageChange > 0 ? "+" : ""}
-															{laterOrdersStats.percentageChange.toFixed(1)}%)
-														</span>
-													)}
-												</div>
-											</div>
-
-											<div className="flex flex-col items-center">
-												<span className="text-gray-600">Pedidos</span>
-												<div>
-													<span className="font-medium">
-														{laterOrdersStats.count}{" "}
-													</span>
-													{typeof laterOrdersStats.ordersCountChange ===
-														"number" && (
-														<span
-															className={`text-xs ${
-																laterOrdersStats.ordersCountChange > 0
-																	? "text-emerald-600"
-																	: laterOrdersStats.ordersCountChange < 0
-																	? "text-red-500"
-																	: "text-gray-400"
-															}`}
-														>
-															(
-															{laterOrdersStats.ordersCountChange > 0
-																? "+"
-																: ""}
-															{laterOrdersStats.ordersCountChange.toFixed(1)}%)
-														</span>
-													)}
-												</div>
-											</div>
-
-											<div className="flex flex-col items-center">
-												<span className="text-gray-600">Cupones</span>
-												<div>
-													<span className="font-medium">
-														{laterOrdersStats.couponPercentage.toFixed(1)}%{" "}
-													</span>
-													{typeof laterOrdersStats.couponPercentageChange ===
-														"number" && (
-														<span
-															className={`text-xs ${
-																laterOrdersStats.couponPercentageChange > 0
-																	? "text-emerald-600"
-																	: laterOrdersStats.couponPercentageChange < 0
-																	? "text-red-500"
-																	: "text-gray-400"
-															}`}
-														>
-															(
-															{laterOrdersStats.couponPercentageChange > 0
-																? "+"
-																: ""}
-															{laterOrdersStats.couponPercentageChange.toFixed(
-																1
-															)}
-															%)
-														</span>
-													)}
-												</div>
-											</div>
-
-											<div className="flex flex-col items-center">
-												<span className="text-gray-600">2x1</span>
-												<div>
-													<span className="font-medium">
-														{laterOrdersStats.promo2x1Percentage.toFixed(1)}%{" "}
-													</span>
-													{typeof laterOrdersStats.promo2x1PercentageChange ===
-														"number" && (
-														<span
-															className={`text-xs ${
-																laterOrdersStats.promo2x1PercentageChange > 0
-																	? "text-emerald-600"
-																	: laterOrdersStats.promo2x1PercentageChange <
-																	  0
-																	? "text-red-500"
-																	: "text-gray-400"
-															}`}
-														>
-															(
-															{laterOrdersStats.promo2x1PercentageChange > 0
-																? "+"
-																: ""}
-															{laterOrdersStats.promo2x1PercentageChange.toFixed(
-																1
-															)}
-															%)
-														</span>
-													)}
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							)}
-						</div>
-					</div>
-				</div>
-
 				<div className="flex flex-row gap-2 mt-2">
 					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
 						<div
@@ -814,6 +516,295 @@ export const Clientes = () => {
 							onChange={(e) => setSearchTerm(e.target.value)}
 							className="w-full bg-transparent outline-none"
 						/>
+					</div>
+				</div>
+			</div>
+			{/* Customer Journey Map */}
+			<div className="bg-gray-300 pt-6 pb-4 mx-4 px-4 rounded-xl mb-6">
+				<h3 className="text-4xl font-bold mb-6 text-gray-900 text-left">
+					Analisis de comportamiento
+				</h3>
+
+				<div className="">
+					<p className="text-black font-bold">
+						{filteredOrders.length} pedidos de {filteredTelefonos.length}{" "}
+						clientes
+					</p>
+					<p className="text-black font-bold">
+						Pedidos promedio por cliente: {averageOrdersPerPhoneNumber}
+					</p>
+				</div>
+
+				<div className="relative">
+					{/* Timeline base */}
+					<div
+						className="absolute left-0 right-0 h-1 bg-black"
+						style={{ top: "40px" }}
+					/>
+
+					{/* Journey Points and Cards */}
+					<div className="flex justify-between relative ">
+						{ticketEvolution.map((stat, index) => {
+							const totalPoints =
+								ticketEvolution.length + (laterOrdersStats ? 1 : 0);
+							return (
+								<div
+									key={index}
+									className="relative"
+									style={{ width: `${95 / totalPoints}%` }}
+								>
+									{/* Point */}
+									<div
+										className="absolute left-1/2 -translate-x-1/2"
+										style={{ top: "34px" }}
+									>
+										<div className="w-4 h-4 bg-black " />
+									</div>
+
+									{/* Content Card */}
+									<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
+										<div className="mb-3 pb-2 w-full border-b border-gray-200">
+											<span className="text-sm font-semibold text-gray-900">
+												Pedido {stat.position}
+											</span>
+										</div>
+
+										<div className="space-y-2.5 text-sm">
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Monto</span>
+												<div>
+													<span className="font-medium">
+														${stat.averageAmount.toFixed(2)}{" "}
+													</span>
+													{typeof stat.percentageChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.percentageChange > 0
+																	? "text-emerald-600"
+																	: stat.percentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.percentageChange > 0 ? "+" : ""}
+															{stat.percentageChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Pedidos</span>
+												<div>
+													<span className="font-medium">{stat.count} </span>
+													{typeof stat.ordersCountChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.ordersCountChange > 0
+																	? "text-emerald-600"
+																	: stat.ordersCountChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.ordersCountChange > 0 ? "+" : ""}
+															{stat.ordersCountChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Cupones</span>
+												<div>
+													<span className="font-medium">
+														{stat.couponPercentage.toFixed(1)}%{" "}
+													</span>
+													{typeof stat.couponPercentageChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.couponPercentageChange > 0
+																	? "text-emerald-600"
+																	: stat.couponPercentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.couponPercentageChange > 0 ? "+" : ""}
+															{stat.couponPercentageChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">2x1</span>
+												<div>
+													<span className="font-medium">
+														{stat.promo2x1Percentage.toFixed(1)}%{" "}
+													</span>
+													{typeof stat.promo2x1PercentageChange ===
+														"number" && (
+														<span
+															className={`text-xs ${
+																stat.promo2x1PercentageChange > 0
+																	? "text-emerald-600"
+																	: stat.promo2x1PercentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.promo2x1PercentageChange > 0 ? "+" : ""}
+															{stat.promo2x1PercentageChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											{stat.averageDays && (
+												<div className="flex flex-col items-center pt-2 border-t border-gray-100">
+													<span className="text-gray-600">Días</span>
+													<span className="font-medium">
+														{stat.averageDays}
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							);
+						})}
+
+						{/* 10+ Orders Point */}
+						{laterOrdersStats && (
+							<div
+								className="relative"
+								style={{ width: `${95 / (ticketEvolution.length + 1)}%` }}
+							>
+								<div
+									className="absolute left-1/2 -translate-x-1/2"
+									style={{ top: "34px" }}
+								>
+									<div className="w-4 h-4 bg-black " />
+								</div>
+
+								<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
+									<div className="mb-3 pb-2 border-b w-full border-gray-200">
+										<span className="text-sm font-semibold text-gray-900">
+											Pedidos 10+
+										</span>
+									</div>
+
+									<div className="space-y-2.5 text-sm">
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Monto</span>
+											<div>
+												<span className="font-medium">
+													${laterOrdersStats.averageAmount.toFixed(2)}{" "}
+												</span>
+												{typeof laterOrdersStats.percentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.percentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.percentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														({laterOrdersStats.percentageChange > 0 ? "+" : ""}
+														{laterOrdersStats.percentageChange.toFixed(1)}%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Pedidos</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.count}{" "}
+												</span>
+												{typeof laterOrdersStats.ordersCountChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.ordersCountChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.ordersCountChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
+														{laterOrdersStats.ordersCountChange.toFixed(1)}%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Cupones</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.couponPercentage.toFixed(1)}%{" "}
+												</span>
+												{typeof laterOrdersStats.couponPercentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.couponPercentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.couponPercentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														(
+														{laterOrdersStats.couponPercentageChange > 0
+															? "+"
+															: ""}
+														{laterOrdersStats.couponPercentageChange.toFixed(1)}
+														%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">2x1</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.promo2x1Percentage.toFixed(1)}%{" "}
+												</span>
+												{typeof laterOrdersStats.promo2x1PercentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.promo2x1PercentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.promo2x1PercentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														(
+														{laterOrdersStats.promo2x1PercentageChange > 0
+															? "+"
+															: ""}
+														{laterOrdersStats.promo2x1PercentageChange.toFixed(
+															1
+														)}
+														%)
+													</span>
+												)}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
