@@ -486,7 +486,7 @@ export const Clientes = () => {
 					<div className="relative">
 						{/* Timeline base */}
 						<div
-							className="absolute left-0 right-0 h-0.5 bg-black"
+							className="absolute left-0 right-0 h-1 bg-black"
 							style={{ top: "40px" }}
 						/>
 
