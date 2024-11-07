@@ -369,7 +369,7 @@ export const Clientes = () => {
 	);
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col font-coolvetica">
 			<style>
 				{`
                     .arrow-down {
@@ -440,7 +440,7 @@ export const Clientes = () => {
                     }
                 `}
 			</style>
-			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
+			<div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Clientes</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
@@ -467,7 +467,7 @@ export const Clientes = () => {
 				<Calendar />
 
 				<div className="flex flex-row gap-2 mt-2">
-					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
+					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 justify-between text-xs font-light">
 						<div
 							className="flex flex-row items-center gap-1 cursor-pointer"
 							onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
@@ -494,7 +494,7 @@ export const Clientes = () => {
 							alt=""
 						/>
 					</div>
-					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
+					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 text-xs font-light">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -514,7 +514,7 @@ export const Clientes = () => {
 							placeholder="Buscar cliente"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="w-full bg-transparent outline-none"
+							className="w-full bg-transparent outline-none text-xs"
 						/>
 					</div>
 				</div>
@@ -562,7 +562,7 @@ export const Clientes = () => {
 									</div>
 
 									{/* Content Card */}
-									<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
+									<div className="mt-16 bg-gray-100 rounded-lg py-4 text-center">
 										<div className="mb-3 pb-2 w-full border-b border-gray-200">
 											<span className="text-sm font-semibold text-gray-900">
 												Pedido {stat.position}
@@ -655,7 +655,8 @@ export const Clientes = () => {
 															}`}
 														>
 															({stat.promo2x1PercentageChange > 0 ? "+" : ""}
-															{stat.promo2x1PercentageChange.toFixed(1)}%)
+															{stat.promo2x1PercentageChange.toFixed(1)}
+															%)
 														</span>
 													)}
 												</div>
@@ -691,7 +692,7 @@ export const Clientes = () => {
 									<div className="w-4 h-4 bg-black " />
 								</div>
 
-								<div className="mt-16 bg-gray-100 rounded-lg py-4  text-center">
+								<div className="mt-16 bg-gray-100 rounded-lg py-4 text-center">
 									<div className="mb-3 pb-2 border-b w-full border-gray-200">
 										<span className="text-sm font-semibold text-gray-900">
 											Pedidos 10+
@@ -812,17 +813,17 @@ export const Clientes = () => {
 				</div>
 			</div>
 
-			<div className="font-coolvetica">
+			<div>
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4  w-2/5">
+							<th scope="col" className="pl-4 w-2/5">
 								Teléfono
 							</th>
-							<th scope="col" className="pl-4  w-1/6">
+							<th scope="col" className="pl-4 w-1/6">
 								Pedidos
 								<button
-									className="ml-2  text-xs text-black"
+									className="ml-2 text-xs text-black"
 									onClick={() =>
 										setSortDirection((prevDirection) =>
 											prevDirection === "asc" ? "desc" : "asc"
@@ -849,15 +850,15 @@ export const Clientes = () => {
 							: sortTelefonos().map((t, i) => (
 									<React.Fragment key={i}>
 										<tr className="text-black border font-light h-10 border-black border-opacity-20">
-											<td scope="row" className="pl-4  w-2/5 font-light">
+											<td scope="row" className="pl-4 w-2/5 font-light">
 												{t.telefono}
 												{newCustomers.includes(t.telefono) && (
-													<span className="bg-black text-white font-bold  py-1 px-2  ml-2 rounded-full">
+													<span className="bg-black text-white font-bold py-1 px-2 ml-2 rounded-full">
 														Nuevo
 													</span>
 												)}
 											</td>
-											<td className="pl-4  w-1/6 font-light">
+											<td className="pl-4 w-1/6 font-light">
 												{getCantidadPedidos(t.telefono)}
 											</td>
 											<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
