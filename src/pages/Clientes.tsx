@@ -169,7 +169,8 @@ export const Clientes = () => {
 								customerOrders[i - 1].fecha.split("/").reverse().join("-")
 							);
 							const diffDays = Math.round(
-								(currentDate - prevDate) / (1000 * 60 * 60 * 24)
+								(currentDate.getTime() - prevDate.getTime()) /
+									(1000 * 60 * 60 * 24)
 							);
 							totalDays += diffDays;
 							daysCount++;
@@ -247,8 +248,8 @@ export const Clientes = () => {
 				promo2x1PercentageChange: "N/A",
 			};
 
-			let couponsCount = 0;
-			let promos2x1Count = 0;
+			let couponsCountLater = 0;
+			let promos2x1CountLater = 0;
 			Object.values(ordersByPhone).forEach((customerOrders: any[]) => {
 				const laterOrdersForCustomer = customerOrders.slice(9);
 				laterOrdersForCustomer.forEach((order) => {
@@ -261,11 +262,11 @@ export const Clientes = () => {
 						order.couponCodes.length > 0 &&
 						order.couponCodes.some((code) => code && code.trim() !== "")
 					) {
-						couponsCount++;
+						couponsCountLater++;
 					}
 
 					if (order.has2x1Promo) {
-						promos2x1Count++;
+						promos2x1CountLater++;
 					}
 				});
 			});
@@ -273,9 +274,10 @@ export const Clientes = () => {
 			if (laterOrders.count > 0) {
 				laterOrders.averageAmount = laterOrders.totalAmount / laterOrders.count;
 				laterOrders.averageItems = laterOrders.totalItems / laterOrders.count;
-				laterOrders.couponPercentage = (couponsCount / laterOrders.count) * 100;
+				laterOrders.couponPercentage =
+					(couponsCountLater / laterOrders.count) * 100;
 				laterOrders.promo2x1Percentage =
-					(promos2x1Count / laterOrders.count) * 100;
+					(promos2x1CountLater / laterOrders.count) * 100;
 
 				if (evolutionStats.length > 0) {
 					const lastStat = evolutionStats[evolutionStats.length - 1];
@@ -335,7 +337,7 @@ export const Clientes = () => {
 	);
 
 	const sortTelefonos = () => {
-		return telefonosConPedidos.sort((a, b) => {
+		return [...telefonosConPedidos].sort((a, b) => {
 			const countA = getCantidadPedidos(a.telefono);
 			const countB = getCantidadPedidos(b.telefono);
 			if (sortDirection === "desc") {
@@ -367,19 +369,78 @@ export const Clientes = () => {
 	);
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col font-coolvetica">
 			<style>
 				{`
-                  .arrow-down {
-                    transition: transform 0.3s ease;
-                    transform: rotate(90deg);
-                  }
-                  .arrow-down.open {
-                    transform: rotate(-90deg);
-                  }
+                    .arrow-down {
+                        transition: transform 0.3s ease;
+                        transform: rotate(90deg);
+                    }
+                    .arrow-down.open {
+                        transform: rotate(-90deg);
+                    }
+                    .journey-map {
+                        position: relative;
+                        margin: 40px 0;
+                        height: 200px; /* Incrementado para acomodar etiquetas */
+                    }
+                    .journey-line {
+                        position: absolute;
+                        top: 50%;
+                        left: 5%;
+                        right: 5%;
+                        height: 2px;
+                        background-color: black;
+                        z-index: 1;
+                    }
+                    .journey-point {
+                        position: absolute;
+                        top: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 12px;
+                        height: 12px;
+                        background-color: black;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        z-index: 2;
+                    }
+                    .journey-label {
+                        position: absolute;
+                        top: 60%;
+                        transform: translateX(-50%);
+                        background-color: white;
+                        padding: 8px 12px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        font-size: 12px;
+                        text-align: left;
+                        margin-top: 8px;
+                        width: max-content;
+                        max-width: 200px;
+                        word-wrap: break-word;
+                    }
+                    .variation-positive {
+                        color: green;
+                    }
+                    .variation-negative {
+                        color: red;
+                    }
+                    .variation-neutral {
+                        color: gray;
+                    }
+                    @media (max-width: 768px) {
+                        .journey-map {
+                            height: 240px;
+                        }
+                        .journey-label {
+                            font-size: 10px;
+                            max-width: 150px;
+                        }
+                    }
                 `}
 			</style>
-			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
+			<div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
 				<p className="text-black font-bold text-4xl mt-1">Clientes</p>
 				<NavLink
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
@@ -405,335 +466,8 @@ export const Clientes = () => {
 			<div className="px-4 pb-8">
 				<Calendar />
 
-				<div className="bg-gray-100 p-4 rounded-md mb-4">
-					<p className="text-black font-bold">
-						Pedidos: {filteredOrders.length}, Teléfonos:{" "}
-						{filteredTelefonos.length}
-					</p>
-					<p className="text-black font-bold">
-						Cantidad promedio de pedidos por número de teléfono:{" "}
-						{averageOrdersPerPhoneNumber}
-					</p>
-				</div>
-
-				<div className="bg-white p-4 rounded-md mb-4 shadow-sm">
-					<h3 className="text-lg font-bold mb-4">Customer Journey Map</h3>
-					<div className="space-y-2">
-						{ticketEvolution.map((stat, index) => (
-							<div
-								key={index}
-								className="flex items-center justify-between p-2 hover:bg-gray-50 rounded"
-							>
-								<div className="flex-1">
-									<span className="font-medium">Pedido {stat.position}: </span>
-									<span className="text-green-600">
-										${stat.averageAmount.toFixed(0)}
-									</span>
-									{stat.position > 1 && (
-										<>
-											<span
-												className={`ml-2 text-sm ${
-													typeof stat.percentageChange === "number"
-														? stat.percentageChange > 0
-															? "text-green-600"
-															: stat.percentageChange < 0
-															? "text-red-600"
-															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												(
-												{typeof stat.percentageChange === "number"
-													? `${
-															stat.percentageChange > 0 ? "+" : ""
-													  }${stat.percentageChange.toFixed(1)}%`
-													: stat.percentageChange}
-												)
-											</span>
-											{stat.averageDays && (
-												<span className="text-gray-500 text-sm">
-													({stat.averageDays} días después)
-												</span>
-											)}
-										</>
-									)}
-									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {stat.count} pedidos
-										{stat.position > 1 && (
-											<span
-												className={`${
-													typeof stat.ordersCountChange === "number"
-														? stat.ordersCountChange > 0
-															? "text-green-600"
-															: stat.ordersCountChange < 0
-															? "text-red-600"
-															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof stat.ordersCountChange === "number"
-													? `${
-															stat.ordersCountChange > 0 ? "+" : ""
-													  }${stat.ordersCountChange.toFixed(1)}%`
-													: stat.ordersCountChange}
-												)
-											</span>
-										)}
-										)
-									</span>
-									<span className="text-gray-600 text-sm ml-2">
-										({stat.averageItems.toFixed(1)} productos
-										{stat.position > 1 && (
-											<span
-												className={`${
-													typeof stat.itemsPercentageChange === "number"
-														? stat.itemsPercentageChange > 0
-															? "text-green-600"
-															: stat.itemsPercentageChange < 0
-															? "text-red-600"
-															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof stat.itemsPercentageChange === "number"
-													? `${
-															stat.itemsPercentageChange > 0 ? "+" : ""
-													  }${stat.itemsPercentageChange.toFixed(1)}%`
-													: stat.itemsPercentageChange}
-												)
-											</span>
-										)}
-										)
-									</span>
-									{stat.couponPercentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con cupones {stat.couponPercentage.toFixed(1)}%
-											{stat.position > 1 && (
-												<span
-													className={`${
-														typeof stat.couponPercentageChange === "number"
-															? stat.couponPercentageChange > 0
-																? "text-green-600"
-																: stat.couponPercentageChange < 0
-																? "text-red-600"
-																: "text-gray-500"
-															: "text-gray-500"
-													}`}
-												>
-													{" "}
-													(
-													{typeof stat.couponPercentageChange === "number"
-														? `${
-																stat.couponPercentageChange > 0 ? "+" : ""
-														  }${stat.couponPercentageChange.toFixed(1)}%`
-														: stat.couponPercentageChange}
-													)
-												</span>
-											)}
-											)
-										</span>
-									)}
-									{/* Mostrar estadísticas de promos 2x1 */}
-									{stat.promo2x1Percentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con Promo 2x1 {stat.promo2x1Percentage.toFixed(1)}%
-											{stat.position > 1 && (
-												<span
-													className={`${
-														typeof stat.promo2x1PercentageChange === "number"
-															? stat.promo2x1PercentageChange > 0
-																? "text-green-600"
-																: stat.promo2x1PercentageChange < 0
-																? "text-red-600"
-																: "text-gray-500"
-															: "text-gray-500"
-													}`}
-												>
-													{" "}
-													(
-													{typeof stat.promo2x1PercentageChange === "number"
-														? `${
-																stat.promo2x1PercentageChange > 0 ? "+" : ""
-														  }${stat.promo2x1PercentageChange.toFixed(1)}%`
-														: stat.promo2x1PercentageChange}
-													)
-												</span>
-											)}
-											)
-										</span>
-									)}
-								</div>
-							</div>
-						))}
-
-						{laterOrdersStats && (
-							<div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded bg-gray-100">
-								<div className="flex-1">
-									<span className="font-medium">Pedidos 10+: </span>
-									<span className="text-green-600">
-										${laterOrdersStats.averageAmount.toFixed(0)}
-									</span>
-									{ticketEvolution.length > 0 && (
-										<span
-											className={`ml-2 text-sm ${
-												typeof laterOrdersStats.percentageChange === "number"
-													? laterOrdersStats.percentageChange > 0
-														? "text-green-600"
-														: laterOrdersStats.percentageChange < 0
-														? "text-red-600"
-														: "text-gray-500"
-													: "text-gray-500"
-											}`}
-										>
-											(
-											{typeof laterOrdersStats.percentageChange === "number"
-												? `${
-														laterOrdersStats.percentageChange > 0 ? "+" : ""
-												  }${laterOrdersStats.percentageChange.toFixed(1)}%`
-												: laterOrdersStats.percentageChange}
-											)
-										</span>
-									)}
-									<span className="text-gray-500 text-sm ml-2">
-										(Basado en {laterOrdersStats.count} pedidos
-										{ticketEvolution.length > 0 && (
-											<span
-												className={`${
-													typeof laterOrdersStats.ordersCountChange === "number"
-														? laterOrdersStats.ordersCountChange > 0
-															? "text-green-600"
-															: laterOrdersStats.ordersCountChange < 0
-															? "text-red-600"
-															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof laterOrdersStats.ordersCountChange === "number"
-													? `${
-															laterOrdersStats.ordersCountChange > 0 ? "+" : ""
-													  }${laterOrdersStats.ordersCountChange.toFixed(1)}%`
-													: laterOrdersStats.ordersCountChange}
-												)
-											</span>
-										)}
-										)
-									</span>
-									<span className="text-gray-600 text-sm ml-2">
-										({laterOrdersStats.averageItems.toFixed(1)} productos
-										{ticketEvolution.length > 0 && (
-											<span
-												className={`${
-													typeof laterOrdersStats.itemsPercentageChange ===
-													"number"
-														? laterOrdersStats.itemsPercentageChange > 0
-															? "text-green-600"
-															: laterOrdersStats.itemsPercentageChange < 0
-															? "text-red-600"
-															: "text-gray-500"
-														: "text-gray-500"
-												}`}
-											>
-												{" "}
-												(
-												{typeof laterOrdersStats.itemsPercentageChange ===
-												"number"
-													? `${
-															laterOrdersStats.itemsPercentageChange > 0
-																? "+"
-																: ""
-													  }${laterOrdersStats.itemsPercentageChange.toFixed(
-															1
-													  )}%`
-													: laterOrdersStats.itemsPercentageChange}
-												)
-											</span>
-										)}
-										)
-									</span>
-									{laterOrdersStats.couponPercentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con cupones{" "}
-											{laterOrdersStats.couponPercentage.toFixed(1)}%
-											{ticketEvolution.length > 0 && (
-												<span
-													className={`${
-														typeof laterOrdersStats.couponPercentageChange ===
-														"number"
-															? laterOrdersStats.couponPercentageChange > 0
-																? "text-green-600"
-																: laterOrdersStats.couponPercentageChange < 0
-																? "text-red-600"
-																: "text-gray-500"
-															: "text-gray-500"
-													}`}
-												>
-													{" "}
-													(
-													{typeof laterOrdersStats.couponPercentageChange ===
-													"number"
-														? `${
-																laterOrdersStats.couponPercentageChange > 0
-																	? "+"
-																	: ""
-														  }${laterOrdersStats.couponPercentageChange.toFixed(
-																1
-														  )}%`
-														: laterOrdersStats.couponPercentageChange}
-													)
-												</span>
-											)}
-											)
-										</span>
-									)}
-									{/* Mostrar estadísticas de promos 2x1 para laterOrdersStats */}
-									{laterOrdersStats.promo2x1Percentage > 0 && (
-										<span className="text-gray-600 text-sm ml-2">
-											(con Promo 2x1{" "}
-											{laterOrdersStats.promo2x1Percentage.toFixed(1)}%
-											{ticketEvolution.length > 0 && (
-												<span
-													className={`${
-														typeof laterOrdersStats.promo2x1PercentageChange ===
-														"number"
-															? laterOrdersStats.promo2x1PercentageChange > 0
-																? "text-green-600"
-																: laterOrdersStats.promo2x1PercentageChange < 0
-																? "text-red-600"
-																: "text-gray-500"
-															: "text-gray-500"
-													}`}
-												>
-													{" "}
-													(
-													{typeof laterOrdersStats.promo2x1PercentageChange ===
-													"number"
-														? `${
-																laterOrdersStats.promo2x1PercentageChange > 0
-																	? "+"
-																	: ""
-														  }${laterOrdersStats.promo2x1PercentageChange.toFixed(
-																1
-														  )}%`
-														: laterOrdersStats.promo2x1PercentageChange}
-													)
-												</span>
-											)}
-											)
-										</span>
-									)}
-								</div>
-							</div>
-						)}
-					</div>
-				</div>
 				<div className="flex flex-row gap-2 mt-2">
-					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
+					<div className="relative flex items-center pr-2 w-1/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 justify-between text-xs font-light">
 						<div
 							className="flex flex-row items-center gap-1 cursor-pointer"
 							onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
@@ -760,7 +494,7 @@ export const Clientes = () => {
 							alt=""
 						/>
 					</div>
-					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
+					<div className="flex items-center w-2/3 h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 text-xs font-light">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							fill="none"
@@ -780,23 +514,316 @@ export const Clientes = () => {
 							placeholder="Buscar cliente"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="w-full bg-transparent outline-none"
+							className="w-full bg-transparent outline-none text-xs"
 						/>
 					</div>
 				</div>
 			</div>
+			{/* Customer Journey Map */}
+			<div className="bg-gray-300 pt-6 pb-4 mx-4 px-4 rounded-xl mb-6">
+				<h3 className="text-4xl font-bold mb-6 text-gray-900 text-left">
+					Analisis de comportamiento
+				</h3>
 
-			<div className="font-coolvetica">
+				<div className="">
+					<p className="text-black font-bold">
+						{filteredOrders.length} pedidos de {filteredTelefonos.length}{" "}
+						clientes
+					</p>
+					<p className="text-black font-bold">
+						Pedidos promedio por cliente: {averageOrdersPerPhoneNumber}
+					</p>
+				</div>
+
+				<div className="relative">
+					{/* Timeline base */}
+					<div
+						className="absolute left-0 right-0 h-1 bg-black"
+						style={{ top: "40px" }}
+					/>
+
+					{/* Journey Points and Cards */}
+					<div className="flex justify-between relative ">
+						{ticketEvolution.map((stat, index) => {
+							const totalPoints =
+								ticketEvolution.length + (laterOrdersStats ? 1 : 0);
+							return (
+								<div
+									key={index}
+									className="relative"
+									style={{ width: `${95 / totalPoints}%` }}
+								>
+									{/* Point */}
+									<div
+										className="absolute left-1/2 -translate-x-1/2"
+										style={{ top: "34px" }}
+									>
+										<div className="w-4 h-4 bg-black " />
+									</div>
+
+									{/* Content Card */}
+									<div className="mt-16 bg-gray-100 rounded-lg py-4 text-center">
+										<div className="mb-3 pb-2 w-full border-b border-gray-200">
+											<span className="text-sm font-semibold text-gray-900">
+												Pedido {stat.position}
+											</span>
+										</div>
+
+										<div className="space-y-2.5 text-sm">
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Ticket promedio</span>
+												<div>
+													<span className="font-medium">
+														${stat.averageAmount.toFixed(2)}{" "}
+													</span>
+													{typeof stat.percentageChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.percentageChange > 0
+																	? "text-emerald-600"
+																	: stat.percentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.percentageChange > 0 ? "+" : ""}
+															{stat.percentageChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Pedidos</span>
+												<div>
+													<span className="font-medium">{stat.count} </span>
+													{typeof stat.ordersCountChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.ordersCountChange > 0
+																	? "text-emerald-600"
+																	: stat.ordersCountChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.ordersCountChange > 0 ? "+" : ""}
+															{stat.ordersCountChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">Cupones</span>
+												<div>
+													<span className="font-medium">
+														{stat.couponPercentage.toFixed(1)}%{" "}
+													</span>
+													{typeof stat.couponPercentageChange === "number" && (
+														<span
+															className={`text-xs ${
+																stat.couponPercentageChange > 0
+																	? "text-emerald-600"
+																	: stat.couponPercentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.couponPercentageChange > 0 ? "+" : ""}
+															{stat.couponPercentageChange.toFixed(1)}%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											<div className="flex flex-col items-center">
+												<span className="text-gray-600">2x1</span>
+												<div>
+													<span className="font-medium">
+														{stat.promo2x1Percentage.toFixed(1)}%{" "}
+													</span>
+													{typeof stat.promo2x1PercentageChange ===
+														"number" && (
+														<span
+															className={`text-xs ${
+																stat.promo2x1PercentageChange > 0
+																	? "text-emerald-600"
+																	: stat.promo2x1PercentageChange < 0
+																	? "text-red-500"
+																	: "text-gray-400"
+															}`}
+														>
+															({stat.promo2x1PercentageChange > 0 ? "+" : ""}
+															{stat.promo2x1PercentageChange.toFixed(1)}
+															%)
+														</span>
+													)}
+												</div>
+											</div>
+
+											{stat.averageDays && (
+												<div className="flex flex-col items-center pt-2 border-t border-gray-100">
+													<span className="text-gray-600">
+														Despues de{" "}
+														<span className="text-black font-medium">
+															{stat.averageDays}
+														</span>{" "}
+														dias.
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							);
+						})}
+
+						{/* 10+ Orders Point */}
+						{laterOrdersStats && (
+							<div
+								className="relative"
+								style={{ width: `${95 / (ticketEvolution.length + 1)}%` }}
+							>
+								<div
+									className="absolute left-1/2 -translate-x-1/2"
+									style={{ top: "34px" }}
+								>
+									<div className="w-4 h-4 bg-black " />
+								</div>
+
+								<div className="mt-16 bg-gray-100 rounded-lg py-4 text-center">
+									<div className="mb-3 pb-2 border-b w-full border-gray-200">
+										<span className="text-sm font-semibold text-gray-900">
+											Pedidos 10+
+										</span>
+									</div>
+
+									<div className="space-y-2.5 text-sm">
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Ticket promedio</span>
+											<div>
+												<span className="font-medium">
+													${laterOrdersStats.averageAmount.toFixed(2)}{" "}
+												</span>
+												{typeof laterOrdersStats.percentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.percentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.percentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														({laterOrdersStats.percentageChange > 0 ? "+" : ""}
+														{laterOrdersStats.percentageChange.toFixed(1)}%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Pedidos</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.count}{" "}
+												</span>
+												{typeof laterOrdersStats.ordersCountChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.ordersCountChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.ordersCountChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														({laterOrdersStats.ordersCountChange > 0 ? "+" : ""}
+														{laterOrdersStats.ordersCountChange.toFixed(1)}%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">Cupones</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.couponPercentage.toFixed(1)}%{" "}
+												</span>
+												{typeof laterOrdersStats.couponPercentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.couponPercentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.couponPercentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														(
+														{laterOrdersStats.couponPercentageChange > 0
+															? "+"
+															: ""}
+														{laterOrdersStats.couponPercentageChange.toFixed(1)}
+														%)
+													</span>
+												)}
+											</div>
+										</div>
+
+										<div className="flex flex-col items-center">
+											<span className="text-gray-600">2x1</span>
+											<div>
+												<span className="font-medium">
+													{laterOrdersStats.promo2x1Percentage.toFixed(1)}%{" "}
+												</span>
+												{typeof laterOrdersStats.promo2x1PercentageChange ===
+													"number" && (
+													<span
+														className={`text-xs ${
+															laterOrdersStats.promo2x1PercentageChange > 0
+																? "text-emerald-600"
+																: laterOrdersStats.promo2x1PercentageChange < 0
+																? "text-red-500"
+																: "text-gray-400"
+														}`}
+													>
+														(
+														{laterOrdersStats.promo2x1PercentageChange > 0
+															? "+"
+															: ""}
+														{laterOrdersStats.promo2x1PercentageChange.toFixed(
+															1
+														)}
+														%)
+													</span>
+												)}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<div>
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4  w-2/5">
+							<th scope="col" className="pl-4 w-2/5">
 								Teléfono
 							</th>
-							<th scope="col" className="pl-4  w-1/6">
+							<th scope="col" className="pl-4 w-1/6">
 								Pedidos
 								<button
-									className="ml-2  text-xs text-black"
+									className="ml-2 text-xs text-black"
 									onClick={() =>
 										setSortDirection((prevDirection) =>
 											prevDirection === "asc" ? "desc" : "asc"
@@ -823,15 +850,15 @@ export const Clientes = () => {
 							: sortTelefonos().map((t, i) => (
 									<React.Fragment key={i}>
 										<tr className="text-black border font-light h-10 border-black border-opacity-20">
-											<td scope="row" className="pl-4  w-2/5 font-light">
+											<td scope="row" className="pl-4 w-2/5 font-light">
 												{t.telefono}
 												{newCustomers.includes(t.telefono) && (
-													<span className="bg-black text-white font-bold  py-1 px-2  ml-2 rounded-full">
+													<span className="bg-black text-white font-bold py-1 px-2 ml-2 rounded-full">
 														Nuevo
 													</span>
 												)}
 											</td>
-											<td className="pl-4  w-1/6 font-light">
+											<td className="pl-4 w-1/6 font-light">
 												{getCantidadPedidos(t.telefono)}
 											</td>
 											<td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
