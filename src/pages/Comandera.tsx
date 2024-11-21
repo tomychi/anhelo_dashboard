@@ -72,7 +72,7 @@ export const Comandera: React.FC = () => {
 	const [cadetes, setCadetes] = useState<string[]>([]);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 	const [altaDemanda, setAltaDemanda] = useState<AltaDemandaProps | null>(null);
-
+	const [onlyElaborated, setOnlyElaborated] = useState(false);
 	const { orders } = useSelector((state: RootState) => state.data);
 	const [pedidosPrioritarios, setPedidosPrioritarios] = useState<PedidoProps[]>(
 		[]
@@ -309,8 +309,12 @@ export const Comandera: React.FC = () => {
 	}
 
 	const pedidosConDistancias = useMemo(() => {
-		return agregarDistanciasAPedidos(pedidosDisponibles);
-	}, [pedidosDisponibles]);
+		let filteredPedidos = pedidosDisponibles;
+		if (onlyElaborated) {
+			filteredPedidos = pedidosDisponibles.filter((pedido) => pedido.elaborado);
+		}
+		return agregarDistanciasAPedidos(filteredPedidos);
+	}, [pedidosDisponibles, onlyElaborated]);
 
 	const VELOCIDAD_PROMEDIO_MOTO = 27.3425;
 	// const VELOCIDAD_PROMEDIO_MOTO = 35;
@@ -1339,6 +1343,8 @@ export const Comandera: React.FC = () => {
 					handleCadeteVelocidadChange={handleCadeteVelocidadChange}
 					cadetesDisponibles={cadetesDisponibles}
 					calcularVelocidadPromedio={calcularVelocidadPromedio}
+					onlyElaborated={onlyElaborated} // Add this line
+					setOnlyElaborated={setOnlyElaborated} // Add this line
 				/>
 
 				<div>

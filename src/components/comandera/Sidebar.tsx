@@ -18,6 +18,8 @@ interface SidebarProps {
 	) => void;
 	cadetesDisponibles: any[];
 	calcularVelocidadPromedio: (cadete: any) => number;
+	onlyElaborated: boolean; // New prop
+	setOnlyElaborated: (value: boolean) => void; // New prop
 }
 
 const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
@@ -53,6 +55,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 	handleCadeteVelocidadChange,
 	cadetesDisponibles,
 	calcularVelocidadPromedio,
+	onlyElaborated,
+	setOnlyElaborated,
 }) => {
 	const [isRendered, setIsRendered] = useState(false);
 
@@ -80,10 +84,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-2xl text-center  font-bold mb-6 mt-2">
+				<h2 className="text-2xl text-center font-bold mb-6 mt-2">
 					Configuración
 				</h2>
-
 				<div className="mb-4">
 					<p className="font-bold mb-2 text-sm">Modo de Agrupación</p>
 					<div className="flex flex-col gap-2">
@@ -266,13 +269,27 @@ const Sidebar: React.FC<SidebarProps> = ({
 					</div>
 				</div>
 
-				<div className="mb-4 mt-10 flex flex-row items-center justify-between  gap-2">
-					<p className="font-bold text-sm">Mostrar Comandas</p>
-					<div className="flex items-center justify-between">
-						<Toggle
-							isOn={showComandas}
-							onToggle={() => setShowComandas(!showComandas)}
-						/>
+				<div className="mb-4 mt-10 space-y-2">
+					{/* New toggle for elaborated orders */}
+					<div className="flex flex-row items-center justify-between gap-2">
+						<p className="font-bold text-sm">Solo pedidos cocinados</p>
+						<div className="flex items-center justify-between">
+							<Toggle
+								isOn={onlyElaborated}
+								onToggle={() => setOnlyElaborated(!onlyElaborated)}
+							/>
+						</div>
+					</div>
+
+					{/* Existing toggle for showing orders */}
+					<div className="flex flex-row items-center justify-between gap-2">
+						<p className="font-bold text-sm">Mostrar Comandas</p>
+						<div className="flex items-center justify-between">
+							<Toggle
+								isOn={showComandas}
+								onToggle={() => setShowComandas(!showComandas)}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
