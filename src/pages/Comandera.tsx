@@ -2059,7 +2059,7 @@ export const Comandera: React.FC = () => {
 															{grupo.pedidos.every(
 																(pedido) => pedido.elaborado
 															) ? (
-																<img src={listoIcon} className="h-6" alt="" />
+																<img src={listoIcon} className="h-3" alt="" />
 															) : grupo.pedidos.every(
 																	(pedido) =>
 																		!pedido.elaborado && pedido.cookNow
