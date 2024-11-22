@@ -2009,7 +2009,13 @@ export const Comandera: React.FC = () => {
 											) && (
 												<div
 													onClick={() => handleSendToCook(index, grupo)}
-													className="bg-gray-400 bg-opacity-50 w-full h-10 mb-2 text-red-main gap-2 rounded-full flex justify-center items-center font-coolvetica cursor-pointer hover:bg-gray-500"
+													className={`bg-gray-400 bg-opacity-50 w-full h-10 mb-2 gap-2 rounded-full flex justify-center items-center font-coolvetica cursor-pointer hover:bg-gray-500 ${
+														grupo.pedidos.every(
+															(pedido) => !pedido.elaborado && pedido.cookNow
+														)
+															? "text-black"
+															: "text-red-main"
+													}`}
 												>
 													{loadingCook[index] ? (
 														<div className="flex flex-row gap-1">
@@ -2032,7 +2038,14 @@ export const Comandera: React.FC = () => {
 																	clipRule="evenodd"
 																/>
 															</svg>
-															<p>Enviar a cocinar YA</p>
+															<p>
+																{grupo.pedidos.every(
+																	(pedido) =>
+																		!pedido.elaborado && pedido.cookNow
+																)
+																	? "Grupo priorizado para cocinar"
+																	: "Enviar a cocinar YA"}
+															</p>
 														</>
 													)}
 												</div>
