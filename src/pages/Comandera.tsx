@@ -92,6 +92,8 @@ export const Comandera: React.FC = () => {
 	);
 	const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
 	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
+	const [tiempoElaboracionPromedioHOY, setTiempoElaboracionPromedioHOY] =
+		useState<number>(0);
 	const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
 	const [grupoManual, setGrupoManual] = useState<PedidoProps[]>([]);
 	const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
@@ -761,7 +763,7 @@ export const Comandera: React.FC = () => {
 
 	const onDragEnd = (result: DropResult) => {
 		const { source, destination } = result;
-		console.log(result);
+		// console.log(result);
 		if (!destination) {
 			return;
 		}
@@ -794,7 +796,7 @@ export const Comandera: React.FC = () => {
 			const newGrupoManual = grupoManual.filter(
 				(_, index) => index !== source.index
 			);
-			console.log(newGrupoManual);
+			// console.log(newGrupoManual);
 			setGrupoManual(newGrupoManual);
 			setGruposListos(newGruposListos);
 		} else {
@@ -981,17 +983,17 @@ export const Comandera: React.FC = () => {
 
 	// Luego agregar este useEffect independiente
 	useEffect(() => {
-		console.log("🚀 Iniciando useEffect de Alta Demanda");
+		// console.log("🚀 Iniciando useEffect de Alta Demanda");
 		let unsubscribeAltaDemanda: Unsubscribe | null = null;
 
 		const iniciarEscuchaAltaDemanda = async () => {
-			console.log("📊 Intentando conectar con Alta Demanda...");
+			// console.log("📊 Intentando conectar con Alta Demanda...");
 			try {
 				unsubscribeAltaDemanda = listenToAltaDemanda((altaDemandaData) => {
-					console.log("✨ Nuevos datos de Alta Demanda:", altaDemandaData);
+					// console.log("✨ Nuevos datos de Alta Demanda:", altaDemandaData);
 					setAltaDemanda(altaDemandaData);
 				});
-				console.log("✅ Conexión establecida con Alta Demanda");
+				// console.log("✅ Conexión establecida con Alta Demanda");
 			} catch (error) {
 				console.error("❌ Error al conectar con Alta Demanda:", error);
 			}
@@ -1001,7 +1003,7 @@ export const Comandera: React.FC = () => {
 
 		return () => {
 			if (unsubscribeAltaDemanda) {
-				console.log("👋 Desuscribiendo de Alta Demanda");
+				// console.log("👋 Desuscribiendo de Alta Demanda");
 				unsubscribeAltaDemanda();
 			}
 		};
@@ -1009,7 +1011,7 @@ export const Comandera: React.FC = () => {
 
 	// Agregamos otro useEffect para ver los cambios
 	useEffect(() => {
-		console.log("🔄 Alta Demanda actualizada:", altaDemanda);
+		// console.log("🔄 Alta Demanda actualizada:", altaDemanda);
 	}, [altaDemanda]);
 
 	// Agregar esta función para manejar la activación de alta demanda
@@ -1079,7 +1081,7 @@ export const Comandera: React.FC = () => {
 		}
 	};
 
-	console.log(pedidosPorHacer);
+	// console.log(pedidosPorHacer);
 
 	useEffect(() => {
 		if (orders.length > 0 && gruposListos.length > 0) {
@@ -1191,6 +1193,36 @@ export const Comandera: React.FC = () => {
 		}
 	};
 
+	useEffect(() => {
+		const pedidosElaborados = orders.filter((pedido) => pedido.elaborado);
+
+		let totalProductos = 0;
+		let totalMinutos = 0;
+
+		pedidosElaborados.forEach((pedido) => {
+			const cantidadPedido = pedido.detallePedido.reduce(
+				(sum, item) => sum + item.quantity,
+				0
+			);
+			totalProductos += cantidadPedido;
+
+			const [horas, minutos] = pedido.tiempoElaborado.split(":").map(Number);
+			const minutosElaboracion = horas * 60 + minutos;
+			totalMinutos += minutosElaboracion;
+		});
+
+		const promedio = totalProductos > 0 ? totalMinutos / totalProductos : 0;
+		setTiempoElaboracionPromedioHOY(promedio);
+	}, [orders]);
+
+	// Función para calcular tiempo estimado de elaboración
+	const calcularTiempoEstimadoElaboracion = (pedido) => {
+		const cantidadProductos = pedido.detallePedido.reduce(
+			(sum, item) => sum + item.quantity,
+			0
+		);
+		return Math.round(cantidadProductos * tiempoElaboracionPromedioHOY);
+	};
 	return (
 		<>
 			<style>
@@ -2247,10 +2279,14 @@ export const Comandera: React.FC = () => {
 																				Ya cocinado
 																			</p>
 																		) : (
-																			<p className="text-xs text-red-600 font-medium">
+																			<p className="text-xs font-medium text-red-600">
 																				{pedido.cookNow
-																					? "Priorizado para cocinar"
-																					: "No cocinado"}
+																					? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
+																							pedido
+																					  )} minutos`
+																					: `No cocinado: ${calcularTiempoEstimadoElaboracion(
+																							pedido
+																					  )} minutos`}
 																			</p>
 																		))}
 																</div>
@@ -2561,10 +2597,14 @@ export const Comandera: React.FC = () => {
 																		Ya cocinado
 																	</p>
 																) : (
-																	<p className="text-xs text-red-600 font-medium">
+																	<p className="text-xs font-medium text-red-600">
 																		{pedido.cookNow
-																			? "Priorizado para cocinar"
-																			: "No cocinado"}
+																			? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
+																					pedido
+																			  )} minutos`
+																			: `No cocinado: ${calcularTiempoEstimadoElaboracion(
+																					pedido
+																			  )} minutos`}
 																	</p>
 																))}
 														</div>

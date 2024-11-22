@@ -58,7 +58,7 @@ export const listenToAltaDemanda = (
 		(docSnap) => {
 			if (docSnap.exists()) {
 				const data = docSnap.data();
-				console.log("Cambios detectados en Alta Demanda:", data);
+				// console.log("Cambios detectados en Alta Demanda:", data);
 
 				// Si no hay alta demanda activa o falta highDemandStartTime
 				if (!data.isHighDemand || !data.highDemandStartTime) {
