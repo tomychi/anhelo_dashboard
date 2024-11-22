@@ -20,6 +20,8 @@ interface SidebarProps {
 	calcularVelocidadPromedio: (cadete: any) => number;
 	onlyElaborated: boolean; // New prop
 	setOnlyElaborated: (value: boolean) => void; // New prop
+	hideAssignedGroups: boolean;
+	setHideAssignedGroups: (value: boolean) => void;
 }
 
 const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
@@ -56,6 +58,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 	cadetesDisponibles,
 	calcularVelocidadPromedio,
 	onlyElaborated,
+	hideAssignedGroups, // Agregamos esta prop
+	setHideAssignedGroups, // Agregamos esta prop
 	setOnlyElaborated,
 }) => {
 	const [isRendered, setIsRendered] = useState(false);
@@ -277,6 +281,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 							<Toggle
 								isOn={onlyElaborated}
 								onToggle={() => setOnlyElaborated(!onlyElaborated)}
+							/>
+						</div>
+					</div>
+
+					{/* Nuevo toggle para ocultar grupos asignados */}
+					<div className="flex flex-row items-center justify-between gap-2">
+						<p className="font-bold text-sm">Ocultar grupos asignados</p>
+						<div className="flex items-center justify-between">
+							<Toggle
+								isOn={hideAssignedGroups}
+								onToggle={() => setHideAssignedGroups(!hideAssignedGroups)}
 							/>
 						</div>
 					</div>
