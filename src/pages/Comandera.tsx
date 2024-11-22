@@ -1341,96 +1341,105 @@ export const Comandera: React.FC = () => {
     `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-				<div className="flex items-center gap-2 mt-4">
-					<div className="relative w-1/2 inline-block">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
-							style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
-						>
-							<path
-								fillRule="evenodd"
-								d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
-								clipRule="evenodd"
-							/>
-						</svg>
-						<select
-							value={selectedDelay}
-							onChange={(e) => setSelectedDelay(Number(e.target.value))}
-							className={`h-10  appearance-none  pl-9 pb-0.5 font-medium rounded-full ${
-								selectedDelay === 0
-									? "bg-gray-300 text-black"
-									: "bg-black text-gray-100"
-							}`}
-							style={{
-								WebkitAppearance: "none",
-								MozAppearance: "none",
-								width: "auto",
-							}}
-						>
-							<option value={0}>Minutos de demora</option>
-
-							<option value={15}>15 minutos</option>
-							<option value={30}>30 minutos</option>
-							<option value={45}>45 minutos</option>
-							<option value={60}>60 minutos</option>
-						</select>
-						<img
-							src={arrowIcon}
-							alt="Arrow Icon"
-							className="absolute right-6 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
-							style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
-						/>
-					</div>
-
-					{!altaDemanda?.isHighDemand && (
-						<button
-							onClick={handleActivateHighDemand}
-							disabled={selectedDelay === 0}
-							className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
-								selectedDelay === 0
-									? "bg-gray-300 text-gray-500 cursor-not-allowed"
-									: "bg-black text-white hover:bg-gray-800"
-							}`}
-						>
+				<div className="flex items-center flex-col w-full gap-2 mt-4">
+					{/* Delay y activar alta demanda */}
+					<div className="flex flex-row gap-2 w-full">
+						<div className="relative w-1/2 inline-block">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="currentColor"
-								className="h-4 text-red-main"
+								className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
+								style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
 							>
 								<path
-									fill-rule="evenodd"
-									d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
-									clip-rule="evenodd"
+									fillRule="evenodd"
+									d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
+									clipRule="evenodd"
 								/>
 							</svg>
+							<select
+								value={selectedDelay}
+								onChange={(e) => setSelectedDelay(Number(e.target.value))}
+								className={`h-10  appearance-none  pl-9 pb-0.5 font-medium rounded-full ${
+									selectedDelay === 0
+										? "bg-gray-300 text-black"
+										: "bg-black text-gray-100"
+								}`}
+								style={{
+									WebkitAppearance: "none",
+									MozAppearance: "none",
+									width: "auto",
+								}}
+							>
+								<option value={0}>Minutos de demora</option>
 
-							<p>Alta Demanda</p>
-						</button>
-					)}
+								<option value={15}>15 minutos</option>
+								<option value={30}>30 minutos</option>
+								<option value={45}>45 minutos</option>
+								<option value={60}>60 minutos</option>
+							</select>
+							<img
+								src={arrowIcon}
+								alt="Arrow Icon"
+								className="absolute right-6 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+								style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
+							/>
+						</div>
 
-					{altaDemanda?.isHighDemand &&
-						remainingMinutes &&
-						remainingMinutes > 0 && (
-							<div className="flex items-center gap-2">
-								<div className="flex items-center gap-2 bg-red-100 px-4 py-2 rounded-full">
-									<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-									<span className="text-red-500 font-medium">
-										Alta demanda activa: {remainingMinutes}{" "}
-										{remainingMinutes === 1 ? "minuto" : "minutos"} restantes
-									</span>
-								</div>
-								<button
-									onClick={handleDeactivateHighDemand}
-									className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-medium"
+						{/* Boton que activa la alta demanda */}
+						{!altaDemanda?.isHighDemand && (
+							<button
+								onClick={handleActivateHighDemand}
+								disabled={selectedDelay === 0}
+								className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
+									selectedDelay === 0
+										? "bg-gray-300 text-gray-500 cursor-not-allowed"
+										: "bg-black text-white hover:bg-gray-800"
+								}`}
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									className="h-6"
 								>
-									Desactivar
-								</button>
-							</div>
+									<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+								</svg>
+
+								<p>Alta Demanda</p>
+							</button>
 						)}
+						{/* Boton que desactiva la alta demanda */}
+						{altaDemanda?.isHighDemand &&
+							remainingMinutes &&
+							remainingMinutes > 0 && (
+								<div className="flex  w-full ">
+									<button
+										onClick={handleDeactivateHighDemand}
+										className="bg-red-main gap-2 text-gray-100 flex items-center w-full pl-4 h-10 rounded-full font-medium"
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24"
+											fill="currentColor"
+											className="h-6"
+										>
+											<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+										</svg>
+										Desactivar
+									</button>
+								</div>
+							)}
+					</div>
+
+					<div className="flex items-center gap-2 w-full bg-red-100 px-4 py-2 rounded-full">
+						<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+						<span className="text-red-500 font-medium">
+							{remainingMinutes} {remainingMinutes === 1 ? "minuto" : "minutos"}{" "}
+							restantes
+						</span>
+					</div>
 				</div>
 
 				<div className="md:hidden flex items-center gap-2.5  mt-6 mb-6">
