@@ -1123,12 +1123,12 @@ export const Comandera: React.FC = () => {
 			</style>
 			<div className="p-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<div className="flex items-center gap-2 mt-4">
-					<div className="relative inline-block">
+					<div className="relative w-1/2 inline-block">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-6 absolute left-3 top-1/2 -translate-y-1/2"
+							className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
 							style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
 						>
 							<path
@@ -1140,7 +1140,7 @@ export const Comandera: React.FC = () => {
 						<select
 							value={selectedDelay}
 							onChange={(e) => setSelectedDelay(Number(e.target.value))}
-							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full ${
+							className={`h-10  appearance-none  pl-9 pb-0.5 font-medium rounded-full ${
 								selectedDelay === 0
 									? "bg-gray-300 text-black"
 									: "bg-black text-gray-100"
@@ -1161,7 +1161,7 @@ export const Comandera: React.FC = () => {
 						<img
 							src={arrowIcon}
 							alt="Arrow Icon"
-							className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+							className="absolute right-6 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
 							style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
 						/>
 					</div>
@@ -1170,13 +1170,13 @@ export const Comandera: React.FC = () => {
 						<button
 							onClick={handleActivateHighDemand}
 							disabled={selectedDelay === 0}
-							className={`px-4 py-2 rounded-full font-medium ${
+							className={`px-4 w-full h-10 rounded-full font-medium ${
 								selectedDelay === 0
 									? "bg-gray-300 text-gray-500 cursor-not-allowed"
 									: "bg-black text-white hover:bg-gray-800"
 							}`}
 						>
-							Activar Alta Demanda
+							Activar A. Demanda
 						</button>
 					)}
 
