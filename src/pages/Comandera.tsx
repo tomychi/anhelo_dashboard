@@ -2284,9 +2284,9 @@ export const Comandera: React.FC = () => {
 																					? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
 																							pedido
 																					  )} minutos`
-																					: `No cocinado: ${calcularTiempoEstimadoElaboracion(
+																					: `No cocinado (${calcularTiempoEstimadoElaboracion(
 																							pedido
-																					  )} minutos`}
+																					  )} min. necesarios)`}
 																			</p>
 																		))}
 																</div>
@@ -2602,9 +2602,9 @@ export const Comandera: React.FC = () => {
 																			? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
 																					pedido
 																			  )} minutos`
-																			: `No cocinado: ${calcularTiempoEstimadoElaboracion(
+																			: `No cocinado (${calcularTiempoEstimadoElaboracion(
 																					pedido
-																			  )} minutos`}
+																			  )} min. necesarios)`}
 																	</p>
 																))}
 														</div>
