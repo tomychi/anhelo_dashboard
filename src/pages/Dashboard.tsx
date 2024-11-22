@@ -1,6 +1,6 @@
 // ../components/Dashboard.tsx
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import currencyFormat from '../helpers/currencyFormat';
@@ -23,10 +23,7 @@ import { ProductStateProps } from '../redux/products/productReducer';
 import Swal from 'sweetalert2';
 import { Cadete, PedidoProps } from '../types/types'; // Importa PedidoProps
 import KPILineChart from '../components/dashboard/KPILineChart';
-import {
-  ejecutarObtenerUltimaFechaPedido,
-  obtenerClientesInactivos,
-} from '../firebase/UploadOrder';
+import { obtenerPedidoPorTelefono } from '../firebase/UploadOrder';
 
 // Define una interfaz para los ratings
 interface RatingInfo {
@@ -44,16 +41,10 @@ interface AverageRatings {
 }
 
 export const Dashboard: React.FC = () => {
-  ejecutarObtenerUltimaFechaPedido();
-  const dispatch = useDispatch();
+  obtenerPedidoPorTelefono('3584127742');
 
-  //   (async () => {
-  //     const clientesInactivos = await obtenerClientesInactivos();
-  //     console.log(
-  //       'Clientes inactivos (sin pedidos en el último mes):',
-  //       clientesInactivos
-  //     );
-  //   })();
+  // console.log(pedido);
+  const dispatch = useDispatch();
 
   const [totalPaga, setTotalPaga] = useState(0);
   const [totalDirecciones, setTotalDirecciones] = useState(0);

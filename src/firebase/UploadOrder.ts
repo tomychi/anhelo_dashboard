@@ -4,6 +4,8 @@ import {
   doc,
   runTransaction,
   getDocs,
+  where,
+  query,
 } from 'firebase/firestore';
 import { DetallePedidoProps } from '../pages/DynamicForm';
 import { obtenerFechaActual } from '../helpers/dateToday';
@@ -432,15 +434,16 @@ interface Pedido {
   fecha: string;
 }
 
-export const obtenerUltimaFechaPedido = async (): Promise<
-  Record<string, string>
-> => {
+export const obtenerPedidoPorTelefono = async (
+  numeroTelefono: string
+): Promise<Pedido | null> => {
   const firestore = getFirestore();
-  const ultimaFechaPorTelefono: Record<string, string> = {};
-
+  const telefonoLimpiado = cleanPhoneNumber(numeroTelefono);
   const fechaActual = new Date();
   const anioActual = fechaActual.getFullYear();
   const mesActual = fechaActual.getMonth() + 1; // Los meses en JS son 0-indexed
+
+  let pedidoMasReciente: Pedido | null = null;
 
   // Itera desde febrero 2024 hasta el mes actual
   for (let anio = 2024; anio <= anioActual; anio++) {
@@ -463,49 +466,62 @@ export const obtenerUltimaFechaPedido = async (): Promise<
       for (const diaDoc of diasSnapshot.docs) {
         const pedidosDelDia: Pedido[] = diaDoc.data().pedidos || [];
 
-        // Verifica la última fecha de pedido para cada número de teléfono
+        // Busca el pedido más reciente con el número de teléfono especificado
         pedidosDelDia.forEach((pedido) => {
-          let { telefono } = pedido;
-          const { fecha } = pedido;
-          telefono = cleanPhoneNumber(telefono);
-          if (
-            !ultimaFechaPorTelefono[telefono] ||
-            new Date(fecha) > new Date(ultimaFechaPorTelefono[telefono])
-          ) {
-            ultimaFechaPorTelefono[telefono] = fecha;
+          const telefonoPedido = cleanPhoneNumber(pedido.telefono);
+          if (telefonoPedido === telefonoLimpiado) {
+            // Convertir fecha de pedido a objeto Date
+            const [dia, mes, anio] = pedido.fecha.split('/').map(Number);
+            const fechaPedido = new Date(anio, mes - 1, dia); // Mes ajustado a 0-index
+
+            // Actualizar el pedido más reciente si corresponde
+            if (
+              !pedidoMasReciente ||
+              fechaPedido >
+                new Date(pedidoMasReciente.fecha.split('/').reverse().join('-'))
+            ) {
+              pedidoMasReciente = pedido;
+            }
           }
         });
       }
     }
   }
 
-  return ultimaFechaPorTelefono;
+  return pedidoMasReciente;
 };
 
-export async function ejecutarObtenerUltimaFechaPedido() {
-  try {
-    const ultimasFechas = await obtenerUltimaFechaPedido();
-    console.log('Última fecha de pedido por teléfono:', ultimasFechas);
-    // Aquí puedes hacer algo adicional con las fechas obtenidas, como filtrar clientes
-    // que no han hecho pedidos en más de un mes
-  } catch (error) {
-    console.error('Error al obtener la última fecha de pedido:', error);
-  }
-}
+export const obtenerUltimaFechaPorTelefono = async (
+  numeroTelefono: string
+): Promise<{ fecha: string; telefono: string } | null> => {
+  const firestore = getFirestore();
+  const telefonoLimpiado = cleanPhoneNumber(numeroTelefono);
 
-export async function obtenerClientesInactivos() {
-  const ultimasFechas = await obtenerUltimaFechaPedido();
-  const clientesInactivos: string[] = [];
-  const haceUnMes = new Date();
-  haceUnMes.setMonth(haceUnMes.getMonth() - 1);
+  // Referencia a la colección 'telefonos'
+  const telefonosCollectionRef = collection(firestore, 'telefonos');
 
-  for (const [telefono, fecha] of Object.entries(ultimasFechas)) {
-    if (new Date(fecha) < haceUnMes) {
-      clientesInactivos.push(telefono);
+  // Crear una consulta para buscar el número de teléfono
+  const q = query(
+    telefonosCollectionRef,
+    where('telefono', '==', telefonoLimpiado)
+  );
+  const querySnapshot = await getDocs(q);
+
+  let ultimoRegistro: { fecha: string; telefono: string } | null = null;
+
+  // Iterar sobre los resultados de la consulta
+  querySnapshot.forEach((doc) => {
+    const data = doc.data() as { fecha: string; telefono: string };
+
+    // Verificar si es el registro más reciente
+    if (
+      !ultimoRegistro ||
+      new Date(data.fecha.split('/').reverse().join('-')) >
+        new Date(ultimoRegistro.fecha.split('/').reverse().join('-'))
+    ) {
+      ultimoRegistro = data;
     }
-  }
+  });
 
-  return clientesInactivos;
-}
-
-// Uso después de obtener las últimas fechas de pedido
+  return ultimoRegistro;
+};
