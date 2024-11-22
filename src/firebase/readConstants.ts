@@ -49,7 +49,7 @@ export const readAltaDemanda = async (): Promise<AltaDemandaProps | null> => {
 export const listenToAltaDemanda = (
 	callback: (altaDemanda: AltaDemandaProps) => void
 ): Unsubscribe => {
-	console.log("Iniciando escucha de cambios en Alta Demanda...");
+	// console.log("Iniciando escucha de cambios en Alta Demanda...");
 	const firestore = getFirestore();
 	const docRef = doc(firestore, "constantes", "altaDemanda");
 
