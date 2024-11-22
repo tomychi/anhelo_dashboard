@@ -1088,17 +1088,19 @@ export const Comandera: React.FC = () => {
 						return {
 							...pedido,
 							elaborado: ordenActualizada.elaborado,
+							cookNow: ordenActualizada.cookNow, // Agregar esta línea
 						};
 					}
 					return pedido;
 				}),
 			}));
 
-			// Solo actualizar si hay cambios en el estado de elaboración
+			// Solo actualizar si hay cambios en el estado de elaboración o cookNow
 			const hayCambios = gruposActualizados.some((grupo, i) =>
 				grupo.pedidos.some(
 					(pedido, j) =>
-						pedido.elaborado !== gruposListos[i].pedidos[j].elaborado
+						pedido.elaborado !== gruposListos[i].pedidos[j].elaborado ||
+						pedido.cookNow !== gruposListos[i].pedidos[j].cookNow // Agregar esta condición
 				)
 			);
 
@@ -1122,7 +1124,7 @@ export const Comandera: React.FC = () => {
 				)
 			);
 
-			// Actualizar estado local
+			// Actualizar estado local de los pedidos
 			const nuevosOrders = orders.map((order) => {
 				if (pedidosSinCocinar.some((pedido) => pedido.id === order.id)) {
 					return {
@@ -1132,8 +1134,28 @@ export const Comandera: React.FC = () => {
 				}
 				return order;
 			});
-
 			dispatch(readOrdersData(nuevosOrders));
+
+			// Actualizar estado local de los grupos listos
+			setGruposListos((prevGrupos) => {
+				return prevGrupos.map((g, i) => {
+					if (i === index) {
+						return {
+							...g,
+							pedidos: g.pedidos.map((pedido) => {
+								if (!pedido.elaborado) {
+									return {
+										...pedido,
+										cookNow: true,
+									};
+								}
+								return pedido;
+							}),
+						};
+					}
+					return g;
+				});
+			});
 
 			Swal.fire({
 				icon: "success",
@@ -2150,7 +2172,9 @@ export const Comandera: React.FC = () => {
 																			</p>
 																		) : (
 																			<p className="text-xs text-red-600 font-medium">
-																				No cocinado
+																				{pedido.cookNow
+																					? "Priorizado para cocinar"
+																					: "No cocinado"}
 																			</p>
 																		))}
 																</div>
@@ -2462,7 +2486,9 @@ export const Comandera: React.FC = () => {
 																	</p>
 																) : (
 																	<p className="text-xs text-red-600 font-medium">
-																		No cocinado
+																		{pedido.cookNow
+																			? "Priorizado para cocinar"
+																			: "No cocinado"}
 																	</p>
 																))}
 														</div>

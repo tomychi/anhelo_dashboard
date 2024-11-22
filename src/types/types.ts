@@ -20,6 +20,7 @@ export interface PedidoProps {
 	subTotal: number;
 	telefono: string;
 	paid: boolean;
+	cookNow: boolean;
 	total: number;
 	efectivoCantidad: number;
 	mercadopagoCantidad: number;
