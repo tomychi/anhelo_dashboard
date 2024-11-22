@@ -1426,6 +1426,8 @@ export const Comandera: React.FC = () => {
 													}}
 												>
 													<option value="">¿Minutos maximos?</option>
+													<option value={20}>20 minutos</option>
+
 													<option value={30}>30 minutos</option>
 													<option value={40}>40 minutos</option>
 													<option value={50}>50 minutos</option>
@@ -1561,6 +1563,8 @@ export const Comandera: React.FC = () => {
 													}}
 												>
 													<option value="">¿Minutos maximos?</option>
+													<option value={20}>20 minutos</option>
+
 													<option value={30}>30 minutos</option>
 													<option value={40}>40 minutos</option>
 													<option value={50}>50 minutos</option>
