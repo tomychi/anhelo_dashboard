@@ -1120,28 +1120,26 @@ export const Comandera: React.FC = () => {
 		setLoadingCook((prev) => ({ ...prev, [index]: true }));
 		try {
 			// Verificar si todos los pedidos no cocinados ya están marcados como cookNow
-			const todosConPrioridad = grupo.pedidos.every(
-				(pedido) => !pedido.elaborado && pedido.cookNow
+			const pedidosNoElaborados = grupo.pedidos.filter(
+				(pedido) => !pedido.elaborado
+			);
+			const todosConPrioridad = pedidosNoElaborados.every(
+				(pedido) => pedido.cookNow
 			);
 
 			// Si todos tienen prioridad, vamos a quitarla. Si no, vamos a agregarla
 			const nuevoEstadoCookNow = !todosConPrioridad;
 
-			// Obtener los pedidos que necesitan actualización
-			const pedidosParaActualizar = grupo.pedidos.filter(
-				(pedido) => !pedido.elaborado
-			);
-
 			// Actualizar en Firebase
 			await Promise.all(
-				pedidosParaActualizar.map((pedido) =>
+				pedidosNoElaborados.map((pedido) =>
 					updateOrderCookNow(pedido.fecha, pedido.id, nuevoEstadoCookNow)
 				)
 			);
 
 			// Actualizar estado local de los pedidos
 			const nuevosOrders = orders.map((order) => {
-				if (pedidosParaActualizar.some((pedido) => pedido.id === order.id)) {
+				if (pedidosNoElaborados.some((pedido) => pedido.id === order.id)) {
 					return {
 						...order,
 						cookNow: nuevoEstadoCookNow,
@@ -1152,8 +1150,8 @@ export const Comandera: React.FC = () => {
 			dispatch(readOrdersData(nuevosOrders));
 
 			// Actualizar estado local de los grupos listos
-			setGruposListos((prevGrupos) => {
-				return prevGrupos.map((g, i) => {
+			setGruposListos((prevGrupos) =>
+				prevGrupos.map((g, i) => {
 					if (i === index) {
 						return {
 							...g,
@@ -1169,8 +1167,8 @@ export const Comandera: React.FC = () => {
 						};
 					}
 					return g;
-				});
-			});
+				})
+			);
 
 			Swal.fire({
 				icon: "success",
@@ -1223,6 +1221,75 @@ export const Comandera: React.FC = () => {
 		);
 		return Math.round(cantidadProductos * tiempoElaboracionPromedioHOY);
 	};
+
+	// Funciones auxiliares fuera del return
+	const getCookButtonText = (grupo) => {
+		if (grupo.pedidos.every((pedido) => pedido.elaborado)) {
+			return "Todos los pedidos cocinados";
+		}
+
+		const pedidosNoElaborados = grupo.pedidos.filter(
+			(pedido) => !pedido.elaborado
+		);
+		const todosPriorizados = pedidosNoElaborados.every(
+			(pedido) => pedido.cookNow
+		);
+
+		if (todosPriorizados) {
+			return "Quitar prioridad de cocina";
+		}
+
+		return "Enviar a cocinar YA";
+	};
+
+	const getCookButtonIcon = (grupo) => {
+		if (grupo.pedidos.every((pedido) => pedido.elaborado)) {
+			return <img src={listoIcon} className="h-3" alt="" />;
+		}
+
+		const pedidosNoElaborados = grupo.pedidos.filter(
+			(pedido) => !pedido.elaborado
+		);
+		const todosPriorizados = pedidosNoElaborados.every(
+			(pedido) => pedido.cookNow
+		);
+
+		if (todosPriorizados) {
+			return (
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth="1.5"
+					stroke="currentColor"
+					className="h-6"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 3.536-1.003A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6.53 6.53m10.245 10.245L6.53 6.53M3 3l3.53 3.53"
+					/>
+				</svg>
+			);
+		}
+
+		return (
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				className="h-6"
+			>
+				<path d="M5.85 3.5a.75.75 0 0 0-1.117-1 9.719 9.719 0 0 0-2.348 4.876.75.75 0 0 0 1.479.248A8.219 8.219 0 0 1 5.85 3.5ZM19.267 2.5a.75.75 0 1 0-1.118 1 8.22 8.22 0 0 1 1.987 4.124.75.75 0 0 0 1.48-.248A9.72 9.72 0 0 0 19.266 2.5Z" />
+				<path
+					fillRule="evenodd"
+					d="M12 2.25A6.75 6.75 0 0 0 5.25 9v.75a8.217 8.217 0 0 1-2.119 5.52.75.75 0 0 0 .298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 1 0 7.48 0 24.583 24.583 0 0 0 4.83-1.244.75.75 0 0 0 .298-1.205 8.217 8.217 0 0 1-2.118-5.52V9A6.75 6.75 0 0 0 12 2.25ZM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 0 0 4.496 0l.002.1a2.25 2.25 0 1 1-4.5 0Z"
+					clipRule="evenodd"
+				/>
+			</svg>
+		);
+	};
+
 	return (
 		<>
 			<style>
@@ -2058,7 +2125,6 @@ export const Comandera: React.FC = () => {
 											) && (
 												<div
 													onClick={() => {
-														// Solo ejecutar handleSendToCook si hay algún pedido sin cocinar
 														if (
 															!grupo.pedidos.every((pedido) => pedido.elaborado)
 														) {
@@ -2072,10 +2138,9 @@ export const Comandera: React.FC = () => {
 													} ${
 														grupo.pedidos.every((pedido) => pedido.elaborado)
 															? "text-black"
-															: grupo.pedidos.every(
-																	(pedido) =>
-																		!pedido.elaborado && pedido.cookNow
-															  )
+															: grupo.pedidos
+																	.filter((pedido) => !pedido.elaborado)
+																	.every((pedido) => pedido.cookNow)
 															? "text-black"
 															: "text-red-main"
 													}`}
@@ -2088,55 +2153,8 @@ export const Comandera: React.FC = () => {
 														</div>
 													) : (
 														<>
-															{grupo.pedidos.every(
-																(pedido) => pedido.elaborado
-															) ? (
-																<img src={listoIcon} className="h-3" alt="" />
-															) : grupo.pedidos.every(
-																	(pedido) =>
-																		!pedido.elaborado && pedido.cookNow
-															  ) ? (
-																<svg
-																	xmlns="http://www.w3.org/2000/svg"
-																	fill="none"
-																	viewBox="0 0 24 24"
-																	strokeWidth="1.5"
-																	stroke="currentColor"
-																	className="h-6"
-																>
-																	<path
-																		strokeLinecap="round"
-																		strokeLinejoin="round"
-																		d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.97m1.965-2.277L21 21m-4.225-4.225a23.81 23.81 0 0 0 3.536-1.003A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6.53 6.53m10.245 10.245L6.53 6.53M3 3l3.53 3.53"
-																	/>
-																</svg>
-															) : (
-																<svg
-																	xmlns="http://www.w3.org/2000/svg"
-																	viewBox="0 0 24 24"
-																	fill="currentColor"
-																	className="h-6"
-																>
-																	<path d="M5.85 3.5a.75.75 0 0 0-1.117-1 9.719 9.719 0 0 0-2.348 4.876.75.75 0 0 0 1.479.248A8.219 8.219 0 0 1 5.85 3.5ZM19.267 2.5a.75.75 0 1 0-1.118 1 8.22 8.22 0 0 1 1.987 4.124.75.75 0 0 0 1.48-.248A9.72 9.72 0 0 0 19.266 2.5Z" />
-																	<path
-																		fillRule="evenodd"
-																		d="M12 2.25A6.75 6.75 0 0 0 5.25 9v.75a8.217 8.217 0 0 1-2.119 5.52.75.75 0 0 0 .298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 1 0 7.48 0 24.583 24.583 0 0 0 4.83-1.244.75.75 0 0 0 .298-1.205 8.217 8.217 0 0 1-2.118-5.52V9A6.75 6.75 0 0 0 12 2.25ZM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 0 0 4.496 0l.002.1a2.25 2.25 0 1 1-4.5 0Z"
-																		clipRule="evenodd"
-																	/>
-																</svg>
-															)}
-															<p>
-																{grupo.pedidos.every(
-																	(pedido) => pedido.elaborado
-																)
-																	? "Todos los pedidos cocinados"
-																	: grupo.pedidos.every(
-																			(pedido) =>
-																				!pedido.elaborado && pedido.cookNow
-																	  )
-																	? "Quitar prioridad de cocina"
-																	: "Enviar a cocinar YA"}
-															</p>
+															{getCookButtonIcon(grupo)}
+															<p>{getCookButtonText(grupo)}</p>
 														</>
 													)}
 												</div>

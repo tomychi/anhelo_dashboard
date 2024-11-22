@@ -190,7 +190,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 							}}
 						>
 							<option value="">¿Minutos máximos?</option>
-							{[30, 40, 50, 60, 70, 80, 90].map((tiempo) => (
+							{[10, 20, 30, 40, 50, 60, 70, 80, 90].map((tiempo) => (
 								<option key={tiempo} value={tiempo}>
 									{tiempo} minutos
 								</option>
