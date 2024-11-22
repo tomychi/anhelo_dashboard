@@ -1170,13 +1170,26 @@ export const Comandera: React.FC = () => {
 						<button
 							onClick={handleActivateHighDemand}
 							disabled={selectedDelay === 0}
-							className={`px-4 w-full h-10 rounded-full font-medium ${
+							className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
 								selectedDelay === 0
 									? "bg-gray-300 text-gray-500 cursor-not-allowed"
 									: "bg-black text-white hover:bg-gray-800"
 							}`}
 						>
-							Activar A. Demanda
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-4 text-red-main"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+
+							<p>Alta Demanda</p>
 						</button>
 					)}
 
