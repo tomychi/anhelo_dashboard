@@ -23,9 +23,7 @@ import { ProductStateProps } from '../redux/products/productReducer';
 import Swal from 'sweetalert2';
 import { Cadete, PedidoProps } from '../types/types'; // Importa PedidoProps
 import KPILineChart from '../components/dashboard/KPILineChart';
-import { obtenerPedidoPorTelefono } from '../firebase/UploadOrder';
 
-// Define una interfaz para los ratings
 interface RatingInfo {
   average: string;
   count: number;
@@ -41,16 +39,13 @@ interface AverageRatings {
 }
 
 export const Dashboard: React.FC = () => {
-  obtenerPedidoPorTelefono('3584127742');
-
-  // console.log(pedido);
   const dispatch = useDispatch();
 
   const [totalPaga, setTotalPaga] = useState(0);
   const [totalDirecciones, setTotalDirecciones] = useState(0);
   const {
     valueDate,
-    orders, // Asegúrate de que orders es de tipo PedidoProps[]
+    orders,
     facturacionTotal,
     totalProductosVendidos,
     neto,
@@ -90,7 +85,6 @@ export const Dashboard: React.FC = () => {
 
         dispatch(readProductsAll(formattedData));
       } catch (error: any) {
-        // Tipar el error
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -101,6 +95,77 @@ export const Dashboard: React.FC = () => {
 
     fetchData();
   }, [dispatch]);
+
+  // Efecto para actualizar ratings y mostrar log
+  useEffect(() => {
+    const logBurgersRatings = async () => {
+      try {
+        // Primero actualizamos los ratings
+        await updateBurgersRatings(orders);
+
+        // Luego obtenemos los datos actualizados
+        const allProducts = await ReadData();
+        const burgers = allProducts.filter(
+          (product) => product.collectionName === 'burgers'
+        );
+
+        // Obtener calificaciones de los pedidos
+        const productRatings: { [key: string]: number[] } = {};
+
+        orders.forEach((order) => {
+          if (order.rating) {
+            order.detallePedido.forEach((item) => {
+              const productName = item.burger;
+              const rating = order.rating?.[productName];
+
+              if (typeof rating === 'number') {
+                if (!productRatings[productName]) {
+                  productRatings[productName] = [];
+                }
+                productRatings[productName].push(rating);
+              }
+            });
+          }
+        });
+
+        // Mostrar información para cada burger
+        burgers.forEach((burger) => {
+          const burgerName = burger.data.name;
+          const ratings = productRatings[burgerName] || [];
+          const averageRating =
+            ratings.length > 0
+              ? ratings.reduce((sum, rating) => sum + rating, 0) /
+                ratings.length
+              : 0;
+
+          console.log(`Burger: ${burgerName}`);
+          console.log(`├── ID: ${burger.id}`);
+          console.log(`├── Precio: $${burger.data.price}`);
+          console.log(`├── Tipo: ${burger.data.type}`);
+          console.log(`├── Rating en Firebase: ${burger.data.rating || 0}`);
+          console.log(`├── Calificaciones de clientes: ${ratings.length}`);
+          console.log(
+            `├── Promedio de calificaciones: ${averageRating.toFixed(1)}`
+          );
+          console.log(
+            `├── Todas las calificaciones: ${
+              ratings.length > 0 ? ratings.join(', ') : 'Sin calificaciones'
+            }`
+          );
+          console.log(
+            `└── Ingredientes: ${Object.keys(
+              burger.data.ingredients || {}
+            ).join(', ')}`
+          );
+          console.log('-----------------------------------');
+        });
+      } catch (error) {
+        console.error('Error al obtener las burgers:', error);
+      }
+    };
+
+    logBurgersRatings();
+  }, [orders]);
 
   const startDate = valueDate?.startDate
     ? new Date(valueDate.startDate)
@@ -129,7 +194,6 @@ export const Dashboard: React.FC = () => {
     setTotalDirecciones(nuevaTotalDirecciones);
   }, [vueltas]);
 
-  // Actualiza la función para tipar los pedidos
   const calculateAverageRatings = (orders: PedidoProps[]): AverageRatings => {
     const ordersWithRatings = orders.filter(
       (order) =>
@@ -168,7 +232,6 @@ export const Dashboard: React.FC = () => {
       return acc;
     }, initialTotals);
 
-    // Calcula los promedios individuales
     const averages: { [key: string]: number } = {
       temperatura:
         totals.temperatura.count > 0
@@ -188,7 +251,6 @@ export const Dashboard: React.FC = () => {
           : 0,
     };
 
-    // Calcula el promedio general como el promedio de los promedios individuales
     const generalAverage =
       Object.values(averages).reduce((sum, value) => sum + value, 0) /
       Object.keys(averages).length;
@@ -223,7 +285,6 @@ export const Dashboard: React.FC = () => {
 
   const averageRatings: AverageRatings = calculateAverageRatings(orders);
 
-  // Definimos los ratingCards siempre con valores por defecto "0"
   const ratingCards = [
     <CardInfo
       key="general"

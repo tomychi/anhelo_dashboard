@@ -49,7 +49,7 @@ export const readAltaDemanda = async (): Promise<AltaDemandaProps | null> => {
 export const listenToAltaDemanda = (
 	callback: (altaDemanda: AltaDemandaProps) => void
 ): Unsubscribe => {
-	console.log("Iniciando escucha de cambios en Alta Demanda...");
+	// console.log("Iniciando escucha de cambios en Alta Demanda...");
 	const firestore = getFirestore();
 	const docRef = doc(firestore, "constantes", "altaDemanda");
 
@@ -58,7 +58,7 @@ export const listenToAltaDemanda = (
 		(docSnap) => {
 			if (docSnap.exists()) {
 				const data = docSnap.data();
-				console.log("Cambios detectados en Alta Demanda:", data);
+				// console.log("Cambios detectados en Alta Demanda:", data);
 
 				// Si no hay alta demanda activa o falta highDemandStartTime
 				if (!data.isHighDemand || !data.highDemandStartTime) {
