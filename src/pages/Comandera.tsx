@@ -2021,17 +2021,29 @@ export const Comandera: React.FC = () => {
 													</div>
 												)}
 											</div>
-											{grupo.pedidos.some(
-												(pedido) =>
-													pedido.hasOwnProperty("elaborado") &&
-													!pedido.elaborado
+											{grupo.pedidos.some((pedido) =>
+												pedido.hasOwnProperty("elaborado")
 											) && (
 												<div
-													onClick={() => handleSendToCook(index, grupo)}
-													className={`bg-gray-400 bg-opacity-50 w-full h-10 mb-2 gap-2 rounded-full flex justify-center items-center font-coolvetica cursor-pointer hover:bg-gray-500 ${
-														grupo.pedidos.every(
-															(pedido) => !pedido.elaborado && pedido.cookNow
-														)
+													onClick={() => {
+														// Solo ejecutar handleSendToCook si hay algún pedido sin cocinar
+														if (
+															!grupo.pedidos.every((pedido) => pedido.elaborado)
+														) {
+															handleSendToCook(index, grupo);
+														}
+													}}
+													className={`bg-gray-400 bg-opacity-50 w-full h-10 mb-2 gap-2 rounded-full flex justify-center items-center font-coolvetica ${
+														!grupo.pedidos.every((pedido) => pedido.elaborado)
+															? "cursor-pointer hover:bg-gray-500"
+															: "cursor-default"
+													} ${
+														grupo.pedidos.every((pedido) => pedido.elaborado)
+															? "text-black"
+															: grupo.pedidos.every(
+																	(pedido) =>
+																		!pedido.elaborado && pedido.cookNow
+															  )
 															? "text-black"
 															: "text-red-main"
 													}`}
@@ -2045,8 +2057,13 @@ export const Comandera: React.FC = () => {
 													) : (
 														<>
 															{grupo.pedidos.every(
-																(pedido) => !pedido.elaborado && pedido.cookNow
+																(pedido) => pedido.elaborado
 															) ? (
+																<img src={listoIcon} className="h-6" alt="" />
+															) : grupo.pedidos.every(
+																	(pedido) =>
+																		!pedido.elaborado && pedido.cookNow
+															  ) ? (
 																<svg
 																	xmlns="http://www.w3.org/2000/svg"
 																	fill="none"
@@ -2078,9 +2095,13 @@ export const Comandera: React.FC = () => {
 															)}
 															<p>
 																{grupo.pedidos.every(
-																	(pedido) =>
-																		!pedido.elaborado && pedido.cookNow
+																	(pedido) => pedido.elaborado
 																)
+																	? "Todos los pedidos cocinados"
+																	: grupo.pedidos.every(
+																			(pedido) =>
+																				!pedido.elaborado && pedido.cookNow
+																	  )
 																	? "Quitar prioridad de cocina"
 																	: "Enviar a cocinar YA"}
 															</p>
