@@ -2104,9 +2104,9 @@ export const Comandera: React.FC = () => {
 																handleSendToCook(index, grupo);
 															}
 														}}
-														className={`bg-gray-400 bg-opacity-50 w-full h-10 mb-2 gap-2 rounded-full flex justify-center items-center font-coolvetica ${
+														className={`bg-gray-100  w-full h-10 mb-2 gap-1 rounded-full flex pl-3 items-center font-coolvetica ${
 															!grupo.pedidos.every((pedido) => pedido.elaborado)
-																? "cursor-pointer hover:bg-gray-500"
+																? "cursor-pointer "
 																: "cursor-default"
 														} ${
 															grupo.pedidos.every((pedido) => pedido.elaborado)
@@ -2119,15 +2119,36 @@ export const Comandera: React.FC = () => {
 														}`}
 													>
 														{loadingCook[index] ? (
-															<div className="flex flex-row gap-1">
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+															<div className="flex justify-center w-full items-center">
+																<div className="flex flex-row gap-1 ">
+																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+																</div>
 															</div>
 														) : (
 															<>
-																{getCookButtonIcon(grupo)}
-																<p>{getCookButtonText(grupo)}</p>
+																{React.isValidElement(
+																	getCookButtonIcon(grupo)
+																) && getCookButtonIcon(grupo).type === "img"
+																	? React.cloneElement(
+																			getCookButtonIcon(grupo),
+																			{
+																				className: "ml-1 h-4",
+																			}
+																	  )
+																	: getCookButtonIcon(grupo)}
+
+																<p
+																	className={
+																		getCookButtonText(grupo) ===
+																		"Todos los pedidos cocinados"
+																			? "ml-1.5"
+																			: ""
+																	}
+																>
+																	{getCookButtonText(grupo)}
+																</p>
 															</>
 														)}
 													</div>
