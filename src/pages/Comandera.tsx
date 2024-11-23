@@ -1991,7 +1991,7 @@ export const Comandera: React.FC = () => {
 											>
 												<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 													<div className="flex flex-row items-center justify-center gap-2">
-														<img src={listoIcon} className="h-4 mb-1" alt="" />
+														<img src={listoIcon} className="h-4 mb-2" alt="" />
 														<h3 className="font-bold text-2xl md:text-3xl mb-2">
 															Grupo {index + 1}
 														</h3>
