@@ -1991,8 +1991,8 @@ export const Comandera: React.FC = () => {
 											>
 												<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 													<div className="flex flex-row items-center justify-center gap-2">
-														<img src={listoIcon} className="h-3 mb-1" alt="" />
-														<h3 className="font-medium text-2xl md:text-3xl mb-2">
+														<img src={listoIcon} className="h-4 mb-1" alt="" />
+														<h3 className="font-bold text-2xl md:text-3xl mb-2">
 															Grupo {index + 1}
 														</h3>
 													</div>
@@ -2025,7 +2025,7 @@ export const Comandera: React.FC = () => {
 													</p>
 												</div>
 												<button
-													className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
+													className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main font-bold rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
 													onClick={() => handleDeshacerGrupo(index)}
 												>
 													{loadingStates[index] ? (
@@ -2440,7 +2440,7 @@ export const Comandera: React.FC = () => {
 										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
-											<h3 className="font-medium text-2xl md:text-3xl mb-2 items-center gap-2.5 flex flex-row">
+											<h3 className="font-bold text-2xl md:text-3xl mb-2 items-center gap-2.5 flex flex-row">
 												<svg
 													className="w-3 h-3 text-gray-100 animate-spin dark:fill-black"
 													viewBox="0 0 100 101"
@@ -2485,7 +2485,7 @@ export const Comandera: React.FC = () => {
 											</p>
 										</div>
 										<button
-											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
+											className="bg-black w-full h-[64px] mb-8 text-gray-100 rounded-lg flex justify-center font-bold items-center text-2xl md:text-3xl font-coolvetica"
 											onClick={() => handleGrupoListo(grupo)}
 										>
 											Listo
