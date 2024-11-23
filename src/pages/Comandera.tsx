@@ -420,8 +420,7 @@ export const Comandera: React.FC = () => {
 
 	function armarGruposOptimos(
 		pedidos: PedidoProps[],
-		tiempoMaximo: number | null,
-		modoAgrupacion: string,
+		tiempoMaximoRecorrido: number | null,
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo[] {
 		const pedidosDisponibles = pedidos.filter(
@@ -449,15 +448,13 @@ export const Comandera: React.FC = () => {
 		while (pedidosRestantes.length > 0) {
 			const grupo = formarGrupo(
 				pedidosRestantes,
-				tiempoMaximo,
-				modoAgrupacion,
+				tiempoMaximoRecorrido,
 				pedidosPrioritarios
 			);
 			gruposOptimos.push(grupo);
 			pedidosRestantes = pedidosRestantes.filter(
 				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
 			);
-			// Actualizar pedidosPrioritarios eliminando los que ya se han incluido en un grupo
 			pedidosPrioritarios = pedidosPrioritarios.filter(
 				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
 			);
@@ -468,8 +465,7 @@ export const Comandera: React.FC = () => {
 
 	function formarGrupo(
 		pedidosDisponibles: PedidoProps[],
-		tiempoMaximo: number | null,
-		modoAgrupacion: string,
+		tiempoMaximoRecorrido: number | null,
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo {
 		const grupoActual: PedidosGrupos[] = [];
@@ -480,7 +476,6 @@ export const Comandera: React.FC = () => {
 		let latitudActual = LATITUD_INICIO;
 		let longitudActual = LONGITUD_INICIO;
 
-		// Comenzar con un pedido prioritario si existe
 		let pedidoInicial =
 			pedidosPrioritarios.length > 0 ? pedidosPrioritarios[0] : null;
 
@@ -548,13 +543,11 @@ export const Comandera: React.FC = () => {
 			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 			const tiempoPercibido = tiempoEspera + tiempoTotal;
 
-			const excedeTiempoMaximo =
-				tiempoMaximo !== null &&
-				(modoAgrupacion === "entrega"
-					? tiempoPercibido > tiempoMaximo
-					: tiempoTotalConRegreso > tiempoMaximo);
-
-			if (excedeTiempoMaximo && grupoActual.length > 0) {
+			if (
+				tiempoMaximoRecorrido !== null &&
+				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
+				grupoActual.length > 0
+			) {
 				break;
 			}
 
@@ -612,22 +605,17 @@ export const Comandera: React.FC = () => {
 	}
 
 	const gruposOptimosMemo = useMemo(() => {
-		const tiempoMaximoActual =
-			modoAgrupacion === "entrega" ? tiempoMaximo : tiempoMaximoRecorrido;
 		return armarGruposOptimos(
 			pedidosConDistancias,
-			tiempoMaximoActual,
-			modoAgrupacion,
+			tiempoMaximoRecorrido,
 			pedidosPrioritarios
 		);
 	}, [
 		pedidosConDistancias,
-		tiempoMaximo,
 		tiempoMaximoRecorrido,
-		modoAgrupacion,
 		gruposListos,
 		pedidosPrioritarios,
-		velocidadPromedio, // Agregamos velocidadPromedio como dependencia
+		velocidadPromedio,
 	]);
 
 	useEffect(() => {
@@ -1456,12 +1444,6 @@ export const Comandera: React.FC = () => {
 				<Sidebar
 					isOpen={sidebarOpen}
 					onClose={() => setSidebarOpen(false)}
-					modoAgrupacion={modoAgrupacion}
-					setModoAgrupacion={setModoAgrupacion}
-					tiempoMaximo={tiempoMaximo}
-					showComandas={showComandas}
-					setShowComandas={setShowComandas}
-					setTiempoMaximo={setTiempoMaximo}
 					tiempoMaximoRecorrido={tiempoMaximoRecorrido}
 					setTiempoMaximoRecorrido={setTiempoMaximoRecorrido}
 					velocidadPromedio={velocidadPromedio}
@@ -1470,8 +1452,10 @@ export const Comandera: React.FC = () => {
 					calcularVelocidadPromedio={calcularVelocidadPromedio}
 					onlyElaborated={onlyElaborated}
 					setOnlyElaborated={setOnlyElaborated}
-					hideAssignedGroups={hideAssignedGroups} // Nueva prop
-					setHideAssignedGroups={setHideAssignedGroups} // Nueva prop
+					hideAssignedGroups={hideAssignedGroups}
+					setHideAssignedGroups={setHideAssignedGroups}
+					showComandas={showComandas} // Añadir esta prop
+					setShowComandas={setShowComandas} // Añadir esta prop
 				/>
 
 				<div>
@@ -1479,37 +1463,6 @@ export const Comandera: React.FC = () => {
 						<p className="text-6xl  font-bold ">Grupos</p>
 
 						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-4 mr-4 "></div>
-
-						{/* Aca las opciones de agrupacion */}
-						<div className="">
-							<p className="mb-2 font-bold text-center md:text-left">
-								Opciones de agrupación
-							</p>
-							<div className="flex w-full flex-col md:flex-row gap-2">
-								<div
-									className={`py-2 w-full text-center md:w-auto px-4 rounded-full font-medium cursor-pointer ${
-										modoAgrupacion === "entrega"
-											? "bg-black text-gray-100"
-											: "text-black bg-gray-300"
-									}`}
-									onClick={() => setModoAgrupacion("entrega")}
-								>
-									Usar tiempo maximo de entrega
-								</div>
-								<div
-									className={`py-2 px-4 mr-2 w-full text-center md:w-auto rounded-full font-medium cursor-pointer ${
-										modoAgrupacion === "recorrido"
-											? "bg-black text-gray-100"
-											: "text-black bg-gray-300"
-									}`}
-									onClick={() => setModoAgrupacion("recorrido")}
-								>
-									Usar tiempo maximo de recorrido
-								</div>
-							</div>
-						</div>
-
-						<div className="md:w-[1px] md:h-16 h-[0px] mt-2 opacity-20 bg-black ml-2 mr-4 "></div>
 
 						{/* Aca los parametros */}
 						<div className="flex flex-col md:flex-row items-center md:items-start">
