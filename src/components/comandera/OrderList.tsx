@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { PedidoProps } from "../../types/types";
 import { OrderSection } from "./OrderSection";
 
@@ -18,30 +19,27 @@ export const OrderList: React.FC<OrderListProps> = ({
 	pedidosEntregados,
 	cadetes,
 }) => {
-	// Función para reordenar los pedidos por hacer
-	const reorderPedidosPorHacer = (pedidos: PedidoProps[]): PedidoProps[] => {
-		if (pedidos.length <= 1) return pedidos;
+	// Estado para almacenar los pedidos reordenados
+	const [pedidosOrdenados, setPedidosOrdenados] = useState<PedidoProps[]>([]);
 
-		const [primerPedido, ...restosPedidos] = pedidos;
-
-		// Ordenar el resto de pedidos poniendo primero los que tienen cookNow: true
-		const pedidosOrdenados = restosPedidos.sort((a, b) => {
+	// Función para reordenar los pedidos
+	const reorderPedidos = (pedidos: PedidoProps[]): PedidoProps[] => {
+		return pedidos.sort((a, b) => {
 			if (a.cookNow && !b.cookNow) return -1;
 			if (!a.cookNow && b.cookNow) return 1;
 			return 0;
 		});
-
-		// Retornar el array con el primer pedido en su posición original
-		return [primerPedido, ...pedidosOrdenados];
 	};
+
+	// Observa cambios en la longitud del array de pedidos
+	useEffect(() => {
+		setPedidosOrdenados(reorderPedidos(pedidosPorHacer));
+	}, [pedidosPorHacer.length]); // Dependencia: solo la longitud del array
 
 	return (
 		<div>
 			{seccionActiva === "porHacer" ? (
-				<OrderSection
-					orders={reorderPedidosPorHacer(pedidosPorHacer)}
-					cadetes={cadetes}
-				/>
+				<OrderSection orders={pedidosOrdenados} cadetes={cadetes} />
 			) : seccionActiva === "hechos" ? (
 				<OrderSection orders={pedidosHechos} cadetes={cadetes} />
 			) : seccionActiva === "cerca" ? (
