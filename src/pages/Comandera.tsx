@@ -1794,7 +1794,7 @@ export const Comandera: React.FC = () => {
 																			className="bg-gray-100 rounded-lg flex justify-between flex-row mb-2"
 																		>
 																			<div className="flex flex-row items-center">
-																				<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+																				<div className="bg-black z-10 text-center ml-4 justify-center text-xs flex items-center font-bold text-gray-100 h-6 w-6">
 																					{index + 1}
 																				</div>
 																				<div className="pl-4 pb-3.5 pt-2">
@@ -1877,7 +1877,7 @@ export const Comandera: React.FC = () => {
 															className="bg-gray-100 h-[95px] rounded-lg flex items-center justify-between flex-row"
 														>
 															<div className="flex flex-row items-center">
-																<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+																<div className="bg-black text-xs flex items-center z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
 																	{index + 1}
 																</div>
 																<div className="pl-4 pb-3.5 pt-2">
@@ -2175,236 +2175,239 @@ export const Comandera: React.FC = () => {
 																}`}
 																onClick={() => handlePedidoClick(pedido)}
 															>
-																<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+																<div className="bg-black absolute z-10 text-center ml-4 justify-center font-bold  flex items-center text-gray-100 h-10 w-10 rounded-full">
 																	{pedidoIndex + 1}
 																</div>
-																{grupo.pedidos.length > 1 && (
+																<div className="ml-14 mr-4">
+																	{grupo.pedidos.length > 1 && (
+																		<div
+																			className={`w-1.5 bg-black absolute left-[33px]  ${
+																				pedidoIndex === 0
+																					? "h-1/2 bottom-0"
+																					: pedidoIndex ===
+																					  grupo.pedidos.length - 1
+																					? "h-1/2 top-0"
+																					: "h-full"
+																			}`}
+																		></div>
+																	)}
 																	<div
-																		className={`w-1.5 bg-black absolute left-[23.5px]  ${
-																			pedidoIndex === 0
-																				? "h-1/2 bottom-0"
-																				: pedidoIndex ===
-																				  grupo.pedidos.length - 1
-																				? "h-1/2 top-0"
-																				: "h-full"
-																		}`}
-																	></div>
-																)}
-																<div
-																	className={`flex flex-row justify-between ${
-																		pedidoIndex !== grupo.pedidos.length - 1
-																			? "border-b border-black border-opacity-20"
-																			: ""
-																	} w-full ml-4 pb-3.5 pt-2`}
-																>
-																	<div>
-																		<p className="font-bold text-lg leading-none mb-2 mt-1">
-																			{getFormattedAddress(pedido)}{" "}
-																			<span className="text-xs font-normal">
-																				(
-																				{isPedidoValid(pedido)
-																					? `${pedido.distancia} km`
-																					: "Desconocido"}
-																				)
-																			</span>
-																		</p>
-
-																		<div className="flex flex-row items-center gap-1.5">
-																			{calcularTiempoEspera(pedido.hora) >
-																				20 && (
-																				<svg
-																					xmlns="http://www.w3.org/2000/svg"
-																					viewBox="0 0 200 500"
-																					className="h-3"
-																				>
-																					<rect
-																						x="75"
-																						y="400"
-																						width="100"
-																						height="75"
-																						rx="20"
-																						ry="20"
-																						fill={
-																							calcularTiempoEspera(
-																								pedido.hora
-																							) > 30
-																								? "#FF0000"
-																								: "#F59E0B"
-																						}
-																					/>
-																					<rect
-																						x="75"
-																						y="50"
-																						width="100"
-																						height="300"
-																						rx="20"
-																						ry="20"
-																						fill={
-																							calcularTiempoEspera(
-																								pedido.hora
-																							) > 30
-																								? "#FF0000"
-																								: "#F59E0B"
-																						}
-																					/>
-																				</svg>
-																			)}
-
-																			<p className="text-xs">
-																				Pidió hace:{" "}
-																				{calcularTiempoEspera(pedido.hora)}{" "}
-																				minutos
+																		className={`flex flex-row justify-between ${
+																			pedidoIndex !== grupo.pedidos.length - 1
+																				? "border-b border-black border-opacity-20"
+																				: ""
+																		} w-full ml-4 pb-3.5 pt-2`}
+																	>
+																		<div>
+																			<p className="font-bold text-lg leading-none mb-2 mt-1">
+																				{getFormattedAddress(pedido)}{" "}
+																				<span className="text-xs font-normal">
+																					(
+																					{isPedidoValid(pedido)
+																						? `${pedido.distancia} km`
+																						: "Desconocido"}
+																					)
+																				</span>
 																			</p>
-																		</div>
-																		<div className="flex flex-row gap-1.5 items-center">
-																			{isPedidoValid(pedido) ? (
-																				<>
-																					<div
-																						className={`text-xs h-1.5 w-1.5 rounded-full ${
-																							(pedido.tiempoPercibido ?? 0) < 30
-																								? "bg-black"
-																								: (pedido.tiempoPercibido ??
-																										0) < 50
-																								? "bg-yellow-500"
-																								: "bg-red-main"
-																						}`}
-																					></div>
-																					<p className="text-xs">
-																						Percibe entrega de:{" "}
-																						{pedido.tiempoPercibido ?? 0}{" "}
-																						minutos
-																					</p>
-																				</>
-																			) : (
+
+																			<div className="flex flex-row items-center gap-1.5">
+																				{calcularTiempoEspera(pedido.hora) >
+																					20 && (
+																					<svg
+																						xmlns="http://www.w3.org/2000/svg"
+																						viewBox="0 0 200 500"
+																						className="h-3"
+																					>
+																						<rect
+																							x="75"
+																							y="400"
+																							width="100"
+																							height="75"
+																							rx="20"
+																							ry="20"
+																							fill={
+																								calcularTiempoEspera(
+																									pedido.hora
+																								) > 30
+																									? "#FF0000"
+																									: "#F59E0B"
+																							}
+																						/>
+																						<rect
+																							x="75"
+																							y="50"
+																							width="100"
+																							height="300"
+																							rx="20"
+																							ry="20"
+																							fill={
+																								calcularTiempoEspera(
+																									pedido.hora
+																								) > 30
+																									? "#FF0000"
+																									: "#F59E0B"
+																							}
+																						/>
+																					</svg>
+																				)}
+
 																				<p className="text-xs">
-																					Percibe entrega de: Desconocido
+																					Pidió hace:{" "}
+																					{calcularTiempoEspera(pedido.hora)}{" "}
+																					minutos
 																				</p>
-																			)}
+																			</div>
+																			<div className="flex flex-row gap-1.5 items-center">
+																				{isPedidoValid(pedido) ? (
+																					<>
+																						<div
+																							className={`text-xs h-1.5 w-1.5 rounded-full ${
+																								(pedido.tiempoPercibido ?? 0) <
+																								30
+																									? "bg-black"
+																									: (pedido.tiempoPercibido ??
+																											0) < 50
+																									? "bg-yellow-500"
+																									: "bg-red-main"
+																							}`}
+																						></div>
+																						<p className="text-xs">
+																							Percibe entrega de:{" "}
+																							{pedido.tiempoPercibido ?? 0}{" "}
+																							minutos
+																						</p>
+																					</>
+																				) : (
+																					<p className="text-xs">
+																						Percibe entrega de: Desconocido
+																					</p>
+																				)}
+																			</div>
+																			{pedido.hasOwnProperty("elaborado") &&
+																				(pedido.elaborado ? (
+																					<p className="text-xs text-green-600 font-medium">
+																						Ya cocinado
+																					</p>
+																				) : (
+																					<p className="text-xs font-medium text-red-600">
+																						{pedido.cookNow
+																							? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
+																									pedido
+																							  )} minutos`
+																							: `No cocinado (${calcularTiempoEstimadoElaboracion(
+																									pedido
+																							  )} min. necesarios)`}
+																					</p>
+																				))}
 																		</div>
-																		{pedido.hasOwnProperty("elaborado") &&
-																			(pedido.elaborado ? (
-																				<p className="text-xs text-green-600 font-medium">
-																					Ya cocinado
-																				</p>
-																			) : (
-																				<p className="text-xs font-medium text-red-600">
-																					{pedido.cookNow
-																						? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
-																								pedido
-																						  )} minutos`
-																						: `No cocinado (${calcularTiempoEstimadoElaboracion(
-																								pedido
-																						  )} min. necesarios)`}
-																				</p>
-																			))}
-																	</div>
-																	<div className="flex items-center relative">
-																		<button
-																			className="ml-2 p-1 rounded-full relative"
-																			onMouseEnter={() =>
-																				setStarTooltipVisibility((prev) => ({
-																					...prev,
-																					[pedido.id]: true,
-																				}))
-																			}
-																			onMouseLeave={() =>
-																				setStarTooltipVisibility((prev) => ({
-																					...prev,
-																					[pedido.id]: false,
-																				}))
-																			}
-																		>
-																			{pedidosPrioritarios.some(
-																				(p) => p.id === pedido.id
-																			) ? (
-																				<svg
-																					xmlns="http://www.w3.org/2000/svg"
-																					viewBox="0 0 24 24"
-																					fill="currentColor"
-																					className="w-4 text-red-main"
-																				>
-																					<path
-																						fillRule="evenodd"
-																						clipRule="evenodd"
-																						d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-																					/>
-																				</svg>
-																			) : (
-																				<svg
-																					xmlns="http://www.w3.org/2000/svg"
-																					fill="none"
-																					viewBox="0 0 24 24"
-																					strokeWidth="1.5"
-																					stroke="currentColor"
-																					className="w-4 text-black opacity-50"
-																				>
-																					<path
-																						strokeLinecap="round"
-																						strokeLinejoin="round"
-																						d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-																					/>
-																				</svg>
-																			)}
-																			{starTooltipVisibility[pedido.id] && (
-																				<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																		<div className="flex items-center relative">
+																			<button
+																				className="ml-2 p-1 rounded-full relative"
+																				onMouseEnter={() =>
+																					setStarTooltipVisibility((prev) => ({
+																						...prev,
+																						[pedido.id]: true,
+																					}))
+																				}
+																				onMouseLeave={() =>
+																					setStarTooltipVisibility((prev) => ({
+																						...prev,
+																						[pedido.id]: false,
+																					}))
+																				}
+																			>
+																				{pedidosPrioritarios.some(
+																					(p) => p.id === pedido.id
+																				) ? (
+																					<svg
+																						xmlns="http://www.w3.org/2000/svg"
+																						viewBox="0 0 24 24"
+																						fill="currentColor"
+																						className="w-4 text-red-main"
+																					>
+																						<path
+																							fillRule="evenodd"
+																							clipRule="evenodd"
+																							d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+																						/>
+																					</svg>
+																				) : (
 																					<svg
 																						xmlns="http://www.w3.org/2000/svg"
 																						fill="none"
 																						viewBox="0 0 24 24"
 																						strokeWidth="1.5"
 																						stroke="currentColor"
-																						className="w-3 h-3"
+																						className="w-4 text-black opacity-50"
 																					>
 																						<path
 																							strokeLinecap="round"
 																							strokeLinejoin="round"
-																							d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+																							d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
 																						/>
 																					</svg>
+																				)}
+																				{starTooltipVisibility[pedido.id] && (
+																					<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																						<svg
+																							xmlns="http://www.w3.org/2000/svg"
+																							fill="none"
+																							viewBox="0 0 24 24"
+																							strokeWidth="1.5"
+																							stroke="currentColor"
+																							className="w-3 h-3"
+																						>
+																							<path
+																								strokeLinecap="round"
+																								strokeLinejoin="round"
+																								d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+																							/>
+																						</svg>
+																						<p className="mb-[1.5px] text-xs">
+																							Para priorizar un pedido debes
+																							deshacer el grupo
+																						</p>
+																					</div>
+																				)}
+																			</button>
+																			<svg
+																				xmlns="http://www.w3.org/2000/svg"
+																				fill="none"
+																				viewBox="0 0 24 24"
+																				strokeWidth="1.5"
+																				stroke="currentColor"
+																				className="w-6 mr-4 cursor-pointer opacity-50"
+																				onMouseEnter={() =>
+																					setTooltipVisibility((prev) => ({
+																						...prev,
+																						[`listo-${index}-${pedidoIndex}`]:
+																							true,
+																					}))
+																				}
+																				onMouseLeave={() =>
+																					setTooltipVisibility((prev) => ({
+																						...prev,
+																						[`listo-${index}-${pedidoIndex}`]:
+																							false,
+																					}))
+																				}
+																			>
+																				<path
+																					strokeLinecap="round"
+																					strokeLinejoin="round"
+																					d="M3.75 9h16.5m-16.5 6.75h16.5"
+																				/>
+																			</svg>
+																			{tooltipVisibility[
+																				`listo-${index}-${pedidoIndex}`
+																			] && (
+																				<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
 																					<p className="mb-[1.5px] text-xs">
-																						Para priorizar un pedido debes
-																						deshacer el grupo
+																						Presiona para arrastrar este pedido
 																					</p>
 																				</div>
 																			)}
-																		</button>
-																		<svg
-																			xmlns="http://www.w3.org/2000/svg"
-																			fill="none"
-																			viewBox="0 0 24 24"
-																			strokeWidth="1.5"
-																			stroke="currentColor"
-																			className="w-6 mr-4 cursor-pointer opacity-50"
-																			onMouseEnter={() =>
-																				setTooltipVisibility((prev) => ({
-																					...prev,
-																					[`listo-${index}-${pedidoIndex}`]:
-																						true,
-																				}))
-																			}
-																			onMouseLeave={() =>
-																				setTooltipVisibility((prev) => ({
-																					...prev,
-																					[`listo-${index}-${pedidoIndex}`]:
-																						false,
-																				}))
-																			}
-																		>
-																			<path
-																				strokeLinecap="round"
-																				strokeLinejoin="round"
-																				d="M3.75 9h16.5m-16.5 6.75h16.5"
-																			/>
-																		</svg>
-																		{tooltipVisibility[
-																			`listo-${index}-${pedidoIndex}`
-																		] && (
-																			<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full mb-[-12px] left-1/2 transform -translate-x-1/2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-																				<p className="mb-[1.5px] text-xs">
-																					Presiona para arrastrar este pedido
-																				</p>
-																			</div>
-																		)}
+																		</div>
 																	</div>
 																</div>
 															</div>
@@ -2499,229 +2502,236 @@ export const Comandera: React.FC = () => {
 													}`}
 													onClick={() => handlePedidoClick(pedido)}
 												>
-													<div className="bg-black z-10 text-center ml-4 justify-center font-bold text-gray-100 h-6 w-6">
+													<div className="bg-black absolute z-10 text-center ml-4 justify-center font-bold  flex items-center text-gray-100 h-10 w-10 rounded-full">
 														{pedidoIndex + 1}
 													</div>
-													{grupo.pedidos.length > 1 && (
-														<div
-															className={`w-1.5 bg-black absolute left-[23.5px] ${
-																pedidoIndex === 0
-																	? "h-1/2 bottom-0"
-																	: pedidoIndex === grupo.pedidos.length - 1
-																	? "h-1/2 top-0"
-																	: "h-full"
-															}`}
-														></div>
-													)}
-													<div
-														className={`flex flex-row justify-between items-center ${
-															pedidoIndex !== grupo.pedidos.length - 1
-																? "border-b border-black border-opacity-20"
-																: ""
-														} w-full ml-4 pb-3.5 pt-2`}
-													>
-														<div className="flex flex-col">
-															<p className="font-bold text-lg leading-none mb-2 mt-1">
-																{getFormattedAddress(pedido)}{" "}
-																<span className="text-xs font-normal">
-																	(
-																	{isPedidoValid(pedido)
-																		? `${pedido.distancia} km`
-																		: "Desconocido"}
-																	)
-																</span>
-															</p>
-															<div className="flex flex-row items-center gap-1.5">
-																{calcularTiempoEspera(pedido.hora) > 20 && (
-																	<svg
-																		xmlns="http://www.w3.org/2000/svg"
-																		viewBox="0 0 200 500"
-																		className="h-3"
-																	>
-																		<rect
-																			x="75"
-																			y="400"
-																			width="100"
-																			height="75"
-																			rx="20"
-																			ry="20"
-																			fill={
-																				calcularTiempoEspera(pedido.hora) > 30
-																					? "#FF0000"
-																					: "#F59E0B"
-																			}
-																		/>
-																		<rect
-																			x="75"
-																			y="50"
-																			width="100"
-																			height="300"
-																			rx="20"
-																			ry="20"
-																			fill={
-																				calcularTiempoEspera(pedido.hora) > 30
-																					? "#FF0000"
-																					: "#F59E0B"
-																			}
-																		/>
-																	</svg>
-																)}
 
-																<p className="text-xs">
-																	Pidió hace:{" "}
-																	{calcularTiempoEspera(pedido.hora)} minutos (
-																	{pedido.hora} hs)
+													<div className="ml-14 mr-4">
+														{grupo.pedidos.length > 1 && (
+															<div
+																className={`w-1.5 bg-black absolute left-[33px] ${
+																	pedidoIndex === 0
+																		? "h-1/2 bottom-0"
+																		: pedidoIndex === grupo.pedidos.length - 1
+																		? "h-1/2 top-0"
+																		: "h-full"
+																}`}
+															></div>
+														)}
+														<div
+															className={`flex flex-row justify-between items-center ${
+																pedidoIndex !== grupo.pedidos.length - 1
+																	? "border-b border-black border-opacity-20"
+																	: ""
+															} w-full ml-4 pb-3.5 pt-2`}
+														>
+															<div className="flex flex-col">
+																<p className="font-bold text-lg leading-none mb-2 mt-1">
+																	{getFormattedAddress(pedido)}{" "}
+																	<span className="text-xs font-normal">
+																		(
+																		{isPedidoValid(pedido)
+																			? `${pedido.distancia} km`
+																			: "Desconocido"}
+																		)
+																	</span>
 																</p>
-															</div>
-															<div className="flex flex-row gap-1.5 items-center">
-																{pedido.tiempoPercibido != null &&
-																	pedido.tiempoPercibido >= 30 && (
-																		<div
-																			className={`text-xs h-1.5 w-1.5 rounded-full ${
-																				pedido.tiempoPercibido < 50
-																					? "bg-yellow-500"
-																					: "bg-red-main"
-																			}`}
-																		></div>
+																<div className="flex flex-row items-center gap-1.5">
+																	{calcularTiempoEspera(pedido.hora) > 20 && (
+																		<svg
+																			xmlns="http://www.w3.org/2000/svg"
+																			viewBox="0 0 200 500"
+																			className="h-3"
+																		>
+																			<rect
+																				x="75"
+																				y="400"
+																				width="100"
+																				height="75"
+																				rx="20"
+																				ry="20"
+																				fill={
+																					calcularTiempoEspera(pedido.hora) > 30
+																						? "#FF0000"
+																						: "#F59E0B"
+																				}
+																			/>
+																			<rect
+																				x="75"
+																				y="50"
+																				width="100"
+																				height="300"
+																				rx="20"
+																				ry="20"
+																				fill={
+																					calcularTiempoEspera(pedido.hora) > 30
+																						? "#FF0000"
+																						: "#F59E0B"
+																				}
+																			/>
+																		</svg>
 																	)}
-																<p className="text-xs">
-																	Percibe entrega de:{" "}
-																	{pedido.tiempoPercibido ?? 0} minutos (
-																	{new Date(
-																		Date.now() -
-																			calcularTiempoEspera(pedido.hora) *
-																				60000 +
-																			(pedido.tiempoPercibido ?? 0) * 60000
-																	).toLocaleTimeString([], {
-																		hour: "2-digit",
-																		minute: "2-digit",
-																	})}{" "}
-																	hs)
-																</p>
+
+																	<p className="text-xs">
+																		Pidió hace:{" "}
+																		{calcularTiempoEspera(pedido.hora)} minutos
+																		({pedido.hora} hs)
+																	</p>
+																</div>
+																<div className="flex flex-row gap-1.5 items-center">
+																	{pedido.tiempoPercibido != null &&
+																		pedido.tiempoPercibido >= 30 && (
+																			<div
+																				className={`text-xs h-1.5 w-1.5 rounded-full ${
+																					pedido.tiempoPercibido < 50
+																						? "bg-yellow-500"
+																						: "bg-red-main"
+																				}`}
+																			></div>
+																		)}
+																	<p className="text-xs">
+																		Percibe entrega de:{" "}
+																		{pedido.tiempoPercibido ?? 0} minutos (
+																		{new Date(
+																			Date.now() -
+																				calcularTiempoEspera(pedido.hora) *
+																					60000 +
+																				(pedido.tiempoPercibido ?? 0) * 60000
+																		).toLocaleTimeString([], {
+																			hour: "2-digit",
+																			minute: "2-digit",
+																		})}{" "}
+																		hs)
+																	</p>
+																</div>
+																{pedido.hasOwnProperty("elaborado") &&
+																	(pedido.elaborado ? (
+																		<p className="text-xs text-green-600 font-medium">
+																			Ya cocinado
+																		</p>
+																	) : (
+																		<p className="text-xs font-medium text-red-600">
+																			{pedido.cookNow
+																				? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
+																						pedido
+																				  )} minutos`
+																				: `No cocinado (${calcularTiempoEstimadoElaboracion(
+																						pedido
+																				  )} min. necesarios)`}
+																		</p>
+																	))}
 															</div>
-															{pedido.hasOwnProperty("elaborado") &&
-																(pedido.elaborado ? (
-																	<p className="text-xs text-green-600 font-medium">
-																		Ya cocinado
-																	</p>
-																) : (
-																	<p className="text-xs font-medium text-red-600">
-																		{pedido.cookNow
-																			? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
-																					pedido
-																			  )} minutos`
-																			: `No cocinado (${calcularTiempoEstimadoElaboracion(
-																					pedido
-																			  )} min. necesarios)`}
-																	</p>
-																))}
-														</div>
-														<div className="flex items-center relative">
-															<button
-																onClick={() => togglePedidoPrioritario(pedido)}
-																className="ml-2 p-1 rounded-full relative"
-																onMouseEnter={() =>
-																	setStarTooltipVisibility((prev) => ({
-																		...prev,
-																		[`process-${pedido.id}`]: true,
-																	}))
-																}
-																onMouseLeave={() =>
-																	setStarTooltipVisibility((prev) => ({
-																		...prev,
-																		[`process-${pedido.id}`]: false,
-																	}))
-																}
-															>
-																{pedidosPrioritarios.some(
-																	(p) => p.id === pedido.id
-																) ? (
-																	<svg
-																		xmlns="http://www.w3.org/2000/svg"
-																		viewBox="0 0 24 24"
-																		fill="currentColor"
-																		className="w-4 text-red-main"
-																	>
-																		<path
-																			fillRule="evenodd"
-																			clipRule="evenodd"
-																			d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-																		/>
-																	</svg>
-																) : (
-																	<svg
-																		xmlns="http://www.w3.org/2000/svg"
-																		fill="none"
-																		viewBox="0 0 24 24"
-																		strokeWidth="1.5"
-																		stroke="currentColor"
-																		className="w-4 text-black opacity-50"
-																	>
-																		<path
-																			strokeLinecap="round"
-																			strokeLinejoin="round"
-																			d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-																		/>
-																	</svg>
-																)}
-																{starTooltipVisibility[
-																	`process-${pedido.id}`
+															<div className="flex items-center relative">
+																<button
+																	onClick={() =>
+																		togglePedidoPrioritario(pedido)
+																	}
+																	className="ml-2 p-1 rounded-full relative"
+																	onMouseEnter={() =>
+																		setStarTooltipVisibility((prev) => ({
+																			...prev,
+																			[`process-${pedido.id}`]: true,
+																		}))
+																	}
+																	onMouseLeave={() =>
+																		setStarTooltipVisibility((prev) => ({
+																			...prev,
+																			[`process-${pedido.id}`]: false,
+																		}))
+																	}
+																>
+																	{pedidosPrioritarios.some(
+																		(p) => p.id === pedido.id
+																	) ? (
+																		<svg
+																			xmlns="http://www.w3.org/2000/svg"
+																			viewBox="0 0 24 24"
+																			fill="currentColor"
+																			className="w-4 text-red-main"
+																		>
+																			<path
+																				fillRule="evenodd"
+																				clipRule="evenodd"
+																				d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+																			/>
+																		</svg>
+																	) : (
+																		<svg
+																			xmlns="http://www.w3.org/2000/svg"
+																			fill="none"
+																			viewBox="0 0 24 24"
+																			strokeWidth="1.5"
+																			stroke="currentColor"
+																			className="w-4 text-black opacity-50"
+																		>
+																			<path
+																				strokeLinecap="round"
+																				strokeLinejoin="round"
+																				d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+																			/>
+																		</svg>
+																	)}
+																	{starTooltipVisibility[
+																		`process-${pedido.id}`
+																	] && (
+																		<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																			<p className="mb-[1.5px] text-xs">
+																				Presiona para priorizar este pedido
+																			</p>
+																		</div>
+																	)}
+																</button>
+																<svg
+																	xmlns="http://www.w3.org/2000/svg"
+																	fill="none"
+																	viewBox="0 0 24 24"
+																	strokeWidth="1.5"
+																	stroke="currentColor"
+																	className="w-6 mr-4 cursor-pointer opacity-50"
+																	onMouseEnter={() =>
+																		setTooltipVisibility((prev) => ({
+																			...prev,
+																			[`${index}-${pedidoIndex}`]: true,
+																		}))
+																	}
+																	onMouseLeave={() =>
+																		setTooltipVisibility((prev) => ({
+																			...prev,
+																			[`${index}-${pedidoIndex}`]: false,
+																		}))
+																	}
+																>
+																	<path
+																		strokeLinecap="round"
+																		strokeLinejoin="round"
+																		d="M3.75 9h16.5m-16.5 6.75h16.5"
+																	/>
+																</svg>
+																{tooltipVisibility[
+																	`${index}-${pedidoIndex}`
 																] && (
-																	<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																	<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																		<svg
+																			xmlns="http://www.w3.org/2000/svg"
+																			fill="none"
+																			viewBox="0 0 24 24"
+																			strokeWidth="1.5"
+																			stroke="currentColor"
+																			className="w-3 h-3"
+																		>
+																			<path
+																				strokeLinecap="round"
+																				strokeLinejoin="round"
+																				d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+																			/>
+																		</svg>
 																		<p className="mb-[1.5px] text-xs">
-																			Presiona para priorizar este pedido
+																			Para arrastrar pedidos tenes que marcar
+																			como listo el grupo
 																		</p>
 																	</div>
 																)}
-															</button>
-															<svg
-																xmlns="http://www.w3.org/2000/svg"
-																fill="none"
-																viewBox="0 0 24 24"
-																strokeWidth="1.5"
-																stroke="currentColor"
-																className="w-6 mr-4 cursor-pointer opacity-50"
-																onMouseEnter={() =>
-																	setTooltipVisibility((prev) => ({
-																		...prev,
-																		[`${index}-${pedidoIndex}`]: true,
-																	}))
-																}
-																onMouseLeave={() =>
-																	setTooltipVisibility((prev) => ({
-																		...prev,
-																		[`${index}-${pedidoIndex}`]: false,
-																	}))
-																}
-															>
-																<path
-																	strokeLinecap="round"
-																	strokeLinejoin="round"
-																	d="M3.75 9h16.5m-16.5 6.75h16.5"
-																/>
-															</svg>
-															{tooltipVisibility[`${index}-${pedidoIndex}`] && (
-																<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-																	<svg
-																		xmlns="http://www.w3.org/2000/svg"
-																		fill="none"
-																		viewBox="0 0 24 24"
-																		strokeWidth="1.5"
-																		stroke="currentColor"
-																		className="w-3 h-3"
-																	>
-																		<path
-																			strokeLinecap="round"
-																			strokeLinejoin="round"
-																			d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-																		/>
-																	</svg>
-																	<p className="mb-[1.5px] text-xs">
-																		Para arrastrar pedidos tenes que marcar como
-																		listo el grupo
-																	</p>
-																</div>
-															)}
+															</div>
 														</div>
 													</div>
 												</div>
