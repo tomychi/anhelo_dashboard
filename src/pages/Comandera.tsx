@@ -2050,7 +2050,7 @@ export const Comandera: React.FC = () => {
 													</svg>
 
 													<select
-														className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full capitalize"
+														className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full font-bold"
 														style={{
 															WebkitAppearance: "none",
 															MozAppearance: "none",
@@ -2065,7 +2065,7 @@ export const Comandera: React.FC = () => {
 															<option
 																key={`${cadete.id}-${cadete.name}`}
 																value={cadete.id}
-																className="capitalize"
+																className=""
 															>
 																{cadete.name}
 															</option>
@@ -2139,13 +2139,13 @@ export const Comandera: React.FC = () => {
 																	className={
 																		getCookButtonText(grupo) ===
 																		"Todos los pedidos cocinados"
-																			? "ml-1"
+																			? "ml-1 font-bold"
 																			: getCookButtonText(grupo) ===
 																			  "Quitar prioridad de cocina"
-																			? "text-red-main"
+																			? "text-red-main font-bold"
 																			: getCookButtonText(grupo) ===
 																			  "Enviar a cocinar YA"
-																			? "text-red-main"
+																			? "text-red-main font-bold"
 																			: ""
 																	}
 																>
