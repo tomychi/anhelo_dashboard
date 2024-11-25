@@ -2144,7 +2144,7 @@ export const Comandera: React.FC = () => {
 																			? "ml-1 font-bold"
 																			: getCookButtonText(grupo) ===
 																			  "Quitar prioridad de cocina"
-																			? "text-red-main font-bold"
+																			? "text-red-main font-bold "
 																			: getCookButtonText(grupo) ===
 																			  "Enviar a cocinar YA"
 																			? "text-red-main ml-1 font-bold"
