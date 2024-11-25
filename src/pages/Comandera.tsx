@@ -2015,7 +2015,7 @@ export const Comandera: React.FC = () => {
 														xmlns="http://www.w3.org/2000/svg"
 														viewBox="0 0 24 24"
 														fill="currentColor"
-														className="h-6 absolute left-3"
+														className="h-6 absolute left-[77px]"
 													>
 														<path
 															fillRule="evenodd"
@@ -2025,7 +2025,7 @@ export const Comandera: React.FC = () => {
 													</svg>
 
 													<select
-														className="bg-gray-100 appearance-none w-full pl-10 py-2 rounded-full font-bold"
+														className="bg-gray-100 appearance-none w-full h-10 text-center rounded-full font-bold"
 														style={{
 															WebkitAppearance: "none",
 															MozAppearance: "none",
@@ -2049,7 +2049,7 @@ export const Comandera: React.FC = () => {
 													<img
 														src={arrowIcon}
 														alt="Arrow Icon"
-														className="absolute right-3 top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
+														className="absolute right-[90px] top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
 													/>
 													{loadingStates[`asignar-${index}`] && (
 														<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
@@ -2075,7 +2075,7 @@ export const Comandera: React.FC = () => {
 																handleSendToCook(index, grupo);
 															}
 														}}
-														className={`bg-gray-100  w-full h-10 mb-2 gap-1 rounded-full flex pl-3 items-center font-coolvetica ${
+														className={`bg-gray-100  w-full h-10 mb-2 gap-1 rounded-full flex items-center justify-center font-coolvetica ${
 															!grupo.pedidos.every((pedido) => pedido.elaborado)
 																? "cursor-pointer "
 																: "cursor-default"
@@ -2120,7 +2120,7 @@ export const Comandera: React.FC = () => {
 																			? "text-red-main font-bold"
 																			: getCookButtonText(grupo) ===
 																			  "Enviar a cocinar YA"
-																			? "text-red-main font-bold"
+																			? "text-red-main ml-1 font-bold"
 																			: ""
 																	}
 																>
