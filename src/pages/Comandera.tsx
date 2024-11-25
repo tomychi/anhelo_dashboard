@@ -901,21 +901,6 @@ export const Comandera: React.FC = () => {
 	) {
 		return (
 			<div>
-				<CadeteSelect
-					cadetes={cadetes}
-					handleCadeteChange={handleCadeteChange}
-					selectedCadete={selectedCadete}
-					orders={pedidosHechos}
-				/>
-
-				<GeneralStats
-					customerSuccess={customerSuccess}
-					orders={orders}
-					cadeteSeleccionado={selectedCadete}
-					sumaTotalPedidos={sumaTotalPedidos}
-					sumaTotalEfectivo={sumaTotalEfectivo}
-					empleados={empleados}
-				/>
 				<NavButtons
 					seccionActiva={seccionActiva}
 					setSeccionActiva={setSeccionActiva}
@@ -928,17 +913,6 @@ export const Comandera: React.FC = () => {
 					pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
 					cadetes={cadetes}
 				/>
-				<div className="mt-2">
-					{seccionActiva === "mapa" &&
-						(location.pathname === "/comandas" ? (
-							<DeliveryMap orders={[...pedidosHechos, ...pedidosPorHacer]} />
-						) : (
-							<DeliveryMap orders={orders} />
-						))}
-				</div>
-				<div className="mt-2">
-					{seccionActiva === "registro" && <RegistroEmpleado />}
-				</div>
 			</div>
 		);
 	}
@@ -2757,25 +2731,9 @@ export const Comandera: React.FC = () => {
 				{showComandas && (
 					<>
 						<div className="flex flex-row mt-8">
-							<GeneralStats
-								customerSuccess={customerSuccess}
-								orders={orders}
-								cadeteSeleccionado={selectedCadete}
-								sumaTotalPedidos={sumaTotalPedidos}
-								sumaTotalEfectivo={sumaTotalEfectivo}
-								empleados={empleados}
-							/>
 							<NavButtons
 								seccionActiva={seccionActiva}
 								setSeccionActiva={setSeccionActiva}
-							/>
-							<div className="h-10 bg-black w-[1px] ml-4 mr-3"></div>
-
-							<CadeteSelect
-								cadetes={cadetes}
-								handleCadeteChange={handleCadeteChange}
-								selectedCadete={selectedCadete}
-								orders={pedidosHechos}
 							/>
 						</div>
 						<OrderList
