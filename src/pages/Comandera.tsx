@@ -25,6 +25,7 @@ import { readOrdersData } from "../redux/data/dataAction";
 import { DeliveryMap } from "../components/maps/DeliveryMap";
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
+import wspIcon from "../assets/wsp.png";
 import Swal from "sweetalert2";
 import {
 	updateCadeteForOrder,
@@ -1966,6 +1967,32 @@ export const Comandera: React.FC = () => {
 														<h3 className="font-bold text-4xl md:text-3xl mb-2">
 															Grupo {index + 1}
 														</h3>
+														<img
+															src={wspIcon}
+															className="h-4 mb-2 cursor-pointer"
+															alt=""
+															onClick={(e) => {
+																e.stopPropagation();
+																const direcciones = grupo.pedidos
+																	.map(
+																		(pedido, index) =>
+																			`${index + 1}. ${
+																				pedido.direccion.split(",")[0]
+																			}`
+																	)
+																	.join("\n");
+																navigator.clipboard.writeText(
+																	`Direcciones del grupo:\n${direcciones}`
+																);
+																window.open(
+																	"https://chat.whatsapp.com/LNq70ajNUWWFbVRnGyBACZ",
+																	"_blank"
+																);
+																alert(
+																	"Direcciones copiadas al portapapeles y grupo de WhatsApp abierto"
+																);
+															}}
+														/>
 													</div>
 													<p className="text-xs">
 														Peor entrega: {grupo.peorTiempoPercibido} minutos (
