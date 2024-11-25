@@ -1197,7 +1197,7 @@ export const Comandera: React.FC = () => {
 
 	const getCookButtonText = (grupo: Grupo): string => {
 		if (grupo.pedidos.every((pedido) => pedido.elaborado)) {
-			return "Todos los pedidos cocinados";
+			return "Ya cocinado";
 		}
 
 		const pedidosNoElaborados = grupo.pedidos.filter(
@@ -1208,10 +1208,10 @@ export const Comandera: React.FC = () => {
 		);
 
 		if (todosPriorizados) {
-			return "Quitar prioridad de cocina";
+			return "No priorizar";
 		}
 
-		return "Enviar a cocinar YA";
+		return "Cocinar YA";
 	};
 
 	const getCookButtonIcon = (grupo: Grupo): JSX.Element => {
@@ -2037,126 +2037,130 @@ export const Comandera: React.FC = () => {
 													)}
 												</button>
 
-												<div className="relative mt-8 mb-2 flex items-center">
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														viewBox="0 0 24 24"
-														fill="currentColor"
-														className="h-6 absolute left-[77px]"
-													>
-														<path
-															fillRule="evenodd"
-															clipRule="evenodd"
-															d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-														/>
-													</svg>
+												<div className="flex flex-row items-center justify-between w-full mt-2 mb-2 gap-2">
+													{/* No asignado */}
+													<div className="relative  flex  items-center">
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															viewBox="0 0 24 24"
+															fill="currentColor"
+															className="h-6 absolute left-[10px]"
+														>
+															<path
+																fillRule="evenodd"
+																clipRule="evenodd"
+																d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+															/>
+														</svg>
 
-													<select
-														className="bg-gray-100 appearance-none w-full h-10 text-center rounded-full font-bold"
-														style={{
-															WebkitAppearance: "none",
-															MozAppearance: "none",
-														}}
-														onChange={(e) =>
-															handleAsignarCadete(index, e.target.value, true)
-														}
-														value={grupo.pedidos[0]?.cadete || ""}
-														disabled={loadingStates[`asignar-${index}`]}
-													>
-														{cadetesDisponibles.map((cadete) => (
-															<option
-																key={`${cadete.id}-${cadete.name}`}
-																value={cadete.id}
-																className=""
-															>
-																{cadete.name}
-															</option>
-														))}
-													</select>
-													<img
-														src={arrowIcon}
-														alt="Arrow Icon"
-														className="absolute right-[90px] top-1/2 h-2 rotate-90 -translate-y-1/2 pointer-events-none"
-													/>
-													{loadingStates[`asignar-${index}`] && (
-														<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
-															<div className="flex flex-row gap-1">
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-																<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
-															</div>
-														</div>
-													)}
-												</div>
-
-												{grupo.pedidos.some((pedido) =>
-													pedido.hasOwnProperty("elaborado")
-												) && (
-													<div
-														onClick={() => {
-															if (
-																!grupo.pedidos.every(
-																	(pedido) => pedido.elaborado
-																)
-															) {
-																handleSendToCook(index, grupo);
+														<select
+															className="bg-gray-100 appearance-none w-full h-10 text-center rounded-full font-bold"
+															style={{
+																WebkitAppearance: "none",
+																MozAppearance: "none",
+																width: "170px",
+															}}
+															onChange={(e) =>
+																handleAsignarCadete(index, e.target.value, true)
 															}
-														}}
-														className={`bg-gray-100  w-full h-10 mb-2 gap-1 rounded-full flex items-center justify-center font-coolvetica ${
-															!grupo.pedidos.every((pedido) => pedido.elaborado)
-																? "cursor-pointer "
-																: "cursor-default"
-														} ${
-															grupo.pedidos.every((pedido) => pedido.elaborado)
-																? "text-black"
-																: grupo.pedidos
-																		.filter((pedido) => !pedido.elaborado)
-																		.every((pedido) => pedido.cookNow)
-																? "text-black"
-																: "text-red-main"
-														}`}
-													>
-														{loadingCook[index] ? (
-															<div className="flex justify-center w-full items-center">
-																<div className="flex flex-row gap-1 ">
+															value={grupo.pedidos[0]?.cadete || ""}
+															disabled={loadingStates[`asignar-${index}`]}
+														>
+															{cadetesDisponibles.map((cadete) => (
+																<option
+																	key={`${cadete.id}-${cadete.name}`}
+																	value={cadete.id}
+																	className=""
+																>
+																	{cadete.name}
+																</option>
+															))}
+														</select>
+
+														{loadingStates[`asignar-${index}`] && (
+															<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
+																<div className="flex flex-row gap-1">
 																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
 																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
 																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
 																</div>
 															</div>
-														) : (
-															<>
-																{React.isValidElement(
-																	getCookButtonIcon(grupo)
-																) && getCookButtonIcon(grupo).type === "img"
-																	? React.cloneElement(
-																			getCookButtonIcon(grupo),
-																			{
-																				className: "ml-1 h-4",
-																			}
-																	  )
-																	: getCookButtonIcon(grupo)}
-
-																<p
-																	className={
-																		getCookButtonText(grupo) ===
-																		"Todos los pedidos cocinados"
-																			? "ml-1 font-bold"
-																			: getCookButtonText(grupo) ===
-																			  "Quitar prioridad de cocina"
-																			? "text-red-main font-bold "
-																			: getCookButtonText(grupo) ===
-																			  "Enviar a cocinar YA"
-																			? "text-red-main ml-1 font-bold"
-																			: ""
-																	}
-																>
-																	{getCookButtonText(grupo)}
-																</p>
-															</>
 														)}
 													</div>
-												)}
+
+													{grupo.pedidos.some((pedido) =>
+														pedido.hasOwnProperty("elaborado")
+													) && (
+														<div
+															onClick={() => {
+																if (
+																	!grupo.pedidos.every(
+																		(pedido) => pedido.elaborado
+																	)
+																) {
+																	handleSendToCook(index, grupo);
+																}
+															}}
+															className={`bg-gray-100  w-full  h-10 gap-1 rounded-full flex items-center justify-center font-coolvetica ${
+																!grupo.pedidos.every(
+																	(pedido) => pedido.elaborado
+																)
+																	? "cursor-pointer "
+																	: "cursor-default"
+															} ${
+																grupo.pedidos.every(
+																	(pedido) => pedido.elaborado
+																)
+																	? "text-black"
+																	: grupo.pedidos
+																			.filter((pedido) => !pedido.elaborado)
+																			.every((pedido) => pedido.cookNow)
+																	? "text-black"
+																	: "text-red-main"
+															}`}
+														>
+															{loadingCook[index] ? (
+																<div className="flex justify-center w-full items-center">
+																	<div className="flex flex-row gap-1 ">
+																		<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+																		<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+																		<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+																	</div>
+																</div>
+															) : (
+																<>
+																	{React.isValidElement(
+																		getCookButtonIcon(grupo)
+																	) && getCookButtonIcon(grupo).type === "img"
+																		? React.cloneElement(
+																				getCookButtonIcon(grupo),
+																				{
+																					className: "ml-1 h-4",
+																				}
+																		  )
+																		: getCookButtonIcon(grupo)}
+
+																	<p
+																		className={
+																			getCookButtonText(grupo) === "Ya cocinado"
+																				? "ml-1 font-bold"
+																				: getCookButtonText(grupo) ===
+																				  "No priorizar"
+																				? "text-red-main font-bold "
+																				: getCookButtonText(grupo) ===
+																				  "Cocinar YA"
+																				? "text-red-main ml-1 font-bold"
+																				: ""
+																		}
+																	>
+																		{getCookButtonText(grupo)}
+																	</p>
+																</>
+															)}
+														</div>
+													)}
+												</div>
+
 												{grupo.pedidos.map((pedido, pedidoIndex) => (
 													<Draggable
 														key={`manual-${pedido.id}-xd`}
