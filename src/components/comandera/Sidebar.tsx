@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 				}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="text-2xl text-center font-bold mb-6 mt-2">
+				<h2 className="text-4xl text-center font-bold mb-6 mt-2">
 					Configuración
 				</h2>
 
