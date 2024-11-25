@@ -2576,7 +2576,6 @@ export const Comandera: React.FC = () => {
 																	<p className="text-xs">
 																		Pidió hace:{" "}
 																		{calcularTiempoEspera(pedido.hora)} minutos
-																		({pedido.hora} hs)
 																	</p>
 																</div>
 																<div className="flex flex-row gap-1.5 items-center">
@@ -2592,17 +2591,7 @@ export const Comandera: React.FC = () => {
 																		)}
 																	<p className="text-xs">
 																		Percibe entrega de:{" "}
-																		{pedido.tiempoPercibido ?? 0} minutos (
-																		{new Date(
-																			Date.now() -
-																				calcularTiempoEspera(pedido.hora) *
-																					60000 +
-																				(pedido.tiempoPercibido ?? 0) * 60000
-																		).toLocaleTimeString([], {
-																			hour: "2-digit",
-																			minute: "2-digit",
-																		})}{" "}
-																		hs)
+																		{pedido.tiempoPercibido ?? 0} minutos
 																	</p>
 																</div>
 																{pedido.hasOwnProperty("elaborado") &&
