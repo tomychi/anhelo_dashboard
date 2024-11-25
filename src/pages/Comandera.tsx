@@ -1981,9 +1981,9 @@ export const Comandera: React.FC = () => {
 												className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 											>
 												<div className="flex flex-col mt-4 mb-8 text-center justify-center">
-													<div className="flex flex-row items-center justify-center gap-2">
+													<div className="flex flex-row items-center justify-center gap-4">
 														<img src={listoIcon} className="h-4 mb-2" alt="" />
-														<h3 className="font-bold text-2xl md:text-3xl mb-2">
+														<h3 className="font-bold text-4xl md:text-3xl mb-2">
 															Grupo {index + 1}
 														</h3>
 													</div>
@@ -2434,7 +2434,7 @@ export const Comandera: React.FC = () => {
 										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
-											<h3 className="font-bold text-2xl md:text-3xl mb-2 items-center gap-2.5 flex flex-row">
+											<h3 className="font-bold text-4xl md:text-3xl mb-2 items-center gap-4 flex flex-row">
 												<svg
 													className="w-3 h-3 text-gray-100 animate-spin dark:fill-black"
 													viewBox="0 0 100 101"
@@ -2448,7 +2448,7 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												Grupo {index + 1} en proceso
+												Formando grupo
 											</h3>
 											<p className="text-xs">
 												Peor entrega: {grupo.peorTiempoPercibido} minutos (
