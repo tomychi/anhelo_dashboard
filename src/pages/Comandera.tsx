@@ -1340,109 +1340,115 @@ export const Comandera: React.FC = () => {
       `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-				<div className="flex items-center flex-row  justify-between w-full mt-4 mb-12">
-					<AnimatedSvgButton
-						onToggleSidebar={toggleSidebar}
-						isSidebarOpen={sidebarOpen}
-					/>
-					<div className="flex flex-row w-fit ">
-						{/* Delay */}
-						<div className="relative  w-full">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
-								style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
-							>
-								<path
-									fillRule="evenodd"
-									clipRule="evenodd"
-									d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
-								/>
-							</svg>
-							<select
-								value={selectedDelay}
-								onChange={(e) => setSelectedDelay(Number(e.target.value))}
-								className={`h-10   pl-9  pb-0.5 font-bold rounded-full ${
-									selectedDelay === 0
-										? "bg-gray-300 text-black"
-										: "bg-black text-gray-100 "
-								}`}
-								style={{
-									WebkitAppearance: "none",
-									MozAppearance: "none",
-									width: "130px",
-								}}
-							>
-								<option value={0}>Minutos de demora</option>
-								<option value={15}>15 minutos</option>
-								<option value={30}>30 minutos</option>
-								<option value={45}>45 minutos</option>
-								<option value={60}>60 minutos</option>
-							</select>
-						</div>
-
-						{/* Botón que activa la alta demanda */}
-						{!altaDemanda?.isHighDemand && (
-							<button
-								onClick={handleActivateHighDemand}
-								disabled={selectedDelay === 0}
-								className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
-									selectedDelay === 0
-										? "bg-gray-300 text-gray-500 cursor-not-allowed"
-										: "bg-black text-white hover:bg-gray-800"
-								}`}
-								style={{
-									width: "105px",
-								}}
-							>
+				<div className="flex  flex-col  w-full mt-4 mb-12 gap-y-2">
+					<div className="flex items-center flex-row w-full justify-between ">
+						<AnimatedSvgButton
+							onToggleSidebar={toggleSidebar}
+							isSidebarOpen={sidebarOpen}
+						/>
+						<div className="flex flex-row w-fit ">
+							{/* Delay */}
+							<div className="relative  w-full">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="h-6"
+									className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
+									style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
 								>
-									<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+									<path
+										fillRule="evenodd"
+										clipRule="evenodd"
+										d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
+									/>
 								</svg>
-								<p className="font-bold">Pausa</p>
-							</button>
-						)}
+								<select
+									value={selectedDelay}
+									onChange={(e) => setSelectedDelay(Number(e.target.value))}
+									className={`h-10   pl-9  pb-0.5 font-bold rounded-full ${
+										selectedDelay === 0
+											? "bg-gray-300 text-black"
+											: "bg-black text-gray-100 "
+									}`}
+									style={{
+										WebkitAppearance: "none",
+										MozAppearance: "none",
+										width: "130px",
+									}}
+								>
+									<option value={0}>Minutos de demora</option>
+									<option value={15}>15 minutos</option>
+									<option value={30}>30 minutos</option>
+									<option value={45}>45 minutos</option>
+									<option value={60}>60 minutos</option>
+								</select>
+							</div>
 
-						{/* Botón que desactiva la alta demanda */}
-						{altaDemanda?.isHighDemand &&
-							remainingMinutes &&
-							remainingMinutes > 0 && (
-								<div className="flex w-full">
-									<button
-										onClick={handleDeactivateHighDemand}
-										className="bg-red-main gap-2 text-gray-100 flex items-center w-full pl-4 h-10 rounded-full font-medium"
+							{/* Botón que activa la alta demanda */}
+							{!altaDemanda?.isHighDemand && (
+								<button
+									onClick={handleActivateHighDemand}
+									disabled={selectedDelay === 0}
+									className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
+										selectedDelay === 0
+											? "bg-gray-300 text-gray-500 cursor-not-allowed"
+											: "bg-black text-white hover:bg-gray-800"
+									}`}
+									style={{
+										width: "105px",
+									}}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										className="h-6"
 									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											fill="currentColor"
-											className="h-6"
-										>
-											<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
-										</svg>
-										Desactivar
-									</button>
-								</div>
+										<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+									</svg>
+									<p className="font-bold">Pausa</p>
+								</button>
 							)}
 
-						{altaDemanda?.isHighDemand &&
-							remainingMinutes &&
-							remainingMinutes > 0 && (
-								<div className="flex items-center gap-2 w-full bg-red-100 px-4 h-10 rounded-full">
-									<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-									<span className="text-red-500 font-medium">
-										{remainingMinutes}{" "}
-										{remainingMinutes === 1 ? "minuto" : "minutos"} restantes
-									</span>
-								</div>
-							)}
+							{/* Botón que desactiva la alta demanda */}
+							{altaDemanda?.isHighDemand &&
+								remainingMinutes &&
+								remainingMinutes > 0 && (
+									<div className="flex w-full">
+										<button
+											onClick={handleDeactivateHighDemand}
+											className="bg-red-main gap-2 text-gray-100 flex items-center w-full pl-4 h-10 ml-2 font-bold rounded-full "
+											style={{
+												WebkitAppearance: "none",
+												MozAppearance: "none",
+												width: "125px",
+											}}
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												viewBox="0 0 24 24"
+												fill="currentColor"
+												className="h-6"
+											>
+												<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+											</svg>
+											Retomar
+										</button>
+									</div>
+								)}
+						</div>
 					</div>
+					{altaDemanda?.isHighDemand &&
+						remainingMinutes &&
+						remainingMinutes > 0 && (
+							<div className="flex items-center gap-2 w-full bg-red-100 px-4 h-10 rounded-full">
+								<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+								<span className="text-red-500 font-medium">
+									{remainingMinutes}{" "}
+									{remainingMinutes === 1 ? "minuto" : "minutos"} restantes
+								</span>
+							</div>
+						)}
 				</div>
 
 				<Sidebar
