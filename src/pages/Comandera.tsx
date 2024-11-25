@@ -2730,7 +2730,7 @@ export const Comandera: React.FC = () => {
 
 				{showComandas && (
 					<>
-						<div className="flex flex-row mt-8">
+						<div className="flex flex-row mt-12">
 							<NavButtons
 								seccionActiva={seccionActiva}
 								setSeccionActiva={setSeccionActiva}
