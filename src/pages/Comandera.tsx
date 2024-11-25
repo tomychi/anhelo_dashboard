@@ -2428,7 +2428,7 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												Formando grupo
+												Pensando
 											</h3>
 											<p className="text-xs">
 												Peor entrega: {grupo.peorTiempoPercibido} minutos (
