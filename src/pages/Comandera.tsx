@@ -2078,7 +2078,7 @@ export const Comandera: React.FC = () => {
 														</select>
 
 														{loadingStates[`asignar-${index}`] && (
-															<div className="absolute inset-0 bg-gray-100 rounded-full flex items-center justify-center">
+															<div className="absolute inset-0 bg-gray-400 bg-opacity-50  rounded-full flex items-center justify-center">
 																<div className="flex flex-row gap-1">
 																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
 																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
