@@ -2023,7 +2023,7 @@ export const Comandera: React.FC = () => {
 													</p>
 												</div>
 												<button
-													className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main font-bold  rounded-lg flex justify-center items-center text-2xl md:text-3xl font-coolvetica"
+													className="bg-gray-400 bg-opacity-50 w-full h-[64px] mb-2 text-red-main font-bold  rounded-lg flex justify-center items-center text-3xl md:text-3xl font-coolvetica"
 													onClick={() => handleDeshacerGrupo(index)}
 												>
 													{loadingStates[index] ? (
@@ -2492,7 +2492,7 @@ export const Comandera: React.FC = () => {
 											</p>
 										</div>
 										<button
-											className="bg-black w-full h-[64px] mb-2 text-gray-100 rounded-lg flex justify-center font-bold items-center text-2xl md:text-3xl font-coolvetica"
+											className="bg-black w-full h-[64px] mb-2 text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica"
 											onClick={() => handleGrupoListo(grupo)}
 										>
 											Listo
