@@ -1743,7 +1743,7 @@ export const Comandera: React.FC = () => {
 							{(grupoManual.length > 0 || pedidosReserva.length > 0) && (
 								<div className="flex flex-col">
 									{grupoManual.length > 0 && (
-										<div className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg">
+										<div className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg  p-4 mb-4 rounded-lg">
 											<h3 className="font-medium text-black mt-4 mb-8 text-center">
 												Asignar manualmente
 											</h3>
@@ -1841,7 +1841,7 @@ export const Comandera: React.FC = () => {
 									)}
 									<div className="flex flex-col gap-2">
 										{pedidosReserva.length > 0 && (
-											<div className="bg-gray-300 shadow-black rounded-lg p-4 mb-4 h-min font-coolvetica w-full shadow-lg">
+											<div className="bg-gray-300 shadow-gray-400 rounded-lg p-4 mb-4 h-min font-coolvetica w-full shadow-lg">
 												<h3 className="font-medium text-black mt-4 mb-8 text-center">
 													Reservas
 												</h3>
@@ -1958,7 +1958,7 @@ export const Comandera: React.FC = () => {
 											<div
 												{...provided.droppableProps}
 												ref={provided.innerRef}
-												className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
+												className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 											>
 												<div className="flex flex-col mt-4 mb-8 text-center justify-center">
 													<div className="flex flex-row items-center justify-center gap-4">
@@ -2411,7 +2411,7 @@ export const Comandera: React.FC = () => {
 								return (
 									<div
 										key={uniqueKey}
-										className="bg-gray-300 shadow-black h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
+										className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
 										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
 											<h3 className="font-bold text-4xl md:text-3xl mb-2 items-center gap-4 flex flex-row">
