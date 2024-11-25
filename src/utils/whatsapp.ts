@@ -12,7 +12,7 @@ export async function sendTemplateMessage() {
     },
     data: JSON.stringify({
       messaging_product: 'whatsapp',
-      to: import.meta.env.VITE_TO_PHONE_NUMBER,
+      to: '543582416252',
       type: 'template',
       template: {
         name: 'inactivos',
