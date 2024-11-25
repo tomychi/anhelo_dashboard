@@ -1265,6 +1265,86 @@ export const Comandera: React.FC = () => {
 			</svg>
 		);
 	};
+
+	const DynamicWidthSelect = ({ cadetes, value, onChange, loading, index }) => {
+		const [selectWidth, setSelectWidth] = useState(190);
+		const hiddenTextRef = useRef(null);
+
+		useEffect(() => {
+			// Function to calculate width based on selected option
+			const calculateWidth = () => {
+				if (hiddenTextRef.current) {
+					const selectedCadete = cadetes.find(
+						(cadete) => cadete.name === value
+					);
+					const cadeteText = selectedCadete
+						? selectedCadete.name
+						: "NO ASIGNADO";
+					hiddenTextRef.current.textContent = cadeteText;
+					// Add padding for the icon and some buffer space
+					const newWidth = hiddenTextRef.current.offsetWidth + 80;
+					setSelectWidth(Math.max(newWidth, 140)); // Minimum width of 140px
+				}
+			};
+
+			calculateWidth();
+		}, [value, cadetes]);
+
+		return (
+			<div className="relative flex items-center">
+				{/* Hidden text element for width calculation */}
+				<span
+					ref={hiddenTextRef}
+					className="absolute opacity-0 font-bold whitespace-nowrap"
+					aria-hidden="true"
+				/>
+
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					strokeWidth="2"
+					stroke="currentColor"
+					className="h-6 absolute left-4 text-red-main"
+				>
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+					/>
+				</svg>
+
+				<select
+					className="bg-gray-400 text-red-main bg-opacity-50 appearance-none h-10 text-center rounded-full font-bold pl-12 pr-4"
+					style={{
+						width: `${selectWidth}px`,
+						WebkitAppearance: "none",
+						MozAppearance: "none",
+					}}
+					onChange={onChange}
+					value={value || ""}
+					disabled={loading}
+				>
+					{cadetes.map((cadete) => (
+						<option key={`${cadete.id}-${cadete.name}`} value={cadete.name}>
+							{cadete.name}
+						</option>
+					))}
+				</select>
+
+				{loading && (
+					<div className="absolute inset-0 bg-gray-400 bg-opacity-50 rounded-full flex items-center justify-center">
+						<div className="flex flex-row gap-1">
+							<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
+							<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
+							<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
+						</div>
+					</div>
+				)}
+			</div>
+		);
+	};
+
 	return (
 		<>
 			<style>
@@ -2039,56 +2119,15 @@ export const Comandera: React.FC = () => {
 
 												<div className="flex flex-row items-center justify-between w-full mt-2 mb-2 gap-2">
 													{/* No asignado */}
-													<div className="relative  flex  items-center">
-														<svg
-															xmlns="http://www.w3.org/2000/svg"
-															fill="none"
-															viewBox="0 0 24 24"
-															stroke-width="2"
-															stroke="currentColor"
-															className="h-6 absolute left-4 text-red-main"
-														>
-															<path
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
-															/>
-														</svg>
-
-														<select
-															className=" bg-gray-400 text-red-main  bg-opacity-50  appearance-none w-full h-10 text-center rounded-full font-bold"
-															style={{
-																WebkitAppearance: "none",
-																MozAppearance: "none",
-																width: "190px",
-															}}
-															onChange={(e) =>
-																handleAsignarCadete(index, e.target.value, true)
-															}
-															value={grupo.pedidos[0]?.cadete || ""}
-															disabled={loadingStates[`asignar-${index}`]}
-														>
-															{cadetesDisponibles.map((cadete) => (
-																<option
-																	key={`${cadete.id}-${cadete.name}`}
-																	value={cadete.id}
-																	className=""
-																>
-																	{cadete.name}
-																</option>
-															))}
-														</select>
-
-														{loadingStates[`asignar-${index}`] && (
-															<div className="absolute inset-0 bg-gray-400 bg-opacity-50  rounded-full flex items-center justify-center">
-																<div className="flex flex-row gap-1">
-																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse"></div>
-																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-75"></div>
-																	<div className="w-2 h-2 bg-gray-900 rounded-full animate-pulse delay-150"></div>
-																</div>
-															</div>
-														)}
-													</div>
+													<DynamicWidthSelect
+														cadetes={cadetesDisponibles}
+														value={grupo.pedidos[0]?.cadete || ""}
+														onChange={(e) =>
+															handleAsignarCadete(index, e.target.value, true)
+														}
+														loading={loadingStates[`asignar-${index}`]}
+														index={index}
+													/>
 
 													{grupo.pedidos.some((pedido) =>
 														pedido.hasOwnProperty("elaborado")
