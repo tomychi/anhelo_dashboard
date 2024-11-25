@@ -1340,7 +1340,7 @@ export const Comandera: React.FC = () => {
       `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-				<div className="flex items-center flex-row  justify-between w-full mt-4 mb-4">
+				<div className="flex items-center flex-row  justify-between w-full mt-4 mb-12">
 					<AnimatedSvgButton
 						onToggleSidebar={toggleSidebar}
 						isSidebarOpen={sidebarOpen}
