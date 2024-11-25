@@ -1417,7 +1417,7 @@ export const Comandera: React.FC = () => {
 						remainingMinutes > 0 && (
 							<div className="flex items-center gap-2 w-full bg-red-100 px-4 h-10 rounded-full">
 								<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-								<span className="text-red-500 font-medium">
+								<span className="text-red-500 font-bold">
 									{remainingMinutes}{" "}
 									{remainingMinutes === 1 ? "minuto" : "minutos"} restantes
 								</span>
