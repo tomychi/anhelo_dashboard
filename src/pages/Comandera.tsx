@@ -1315,7 +1315,7 @@ export const Comandera: React.FC = () => {
 				</svg>
 
 				<select
-					className="bg-gray-400 text-red-main bg-opacity-50 appearance-none h-10 text-center rounded-full font-bold pl-12 pr-4"
+					className="bg-gray-400 text-red-main bg-opacity-50 appearance-none h-10 text-center rounded-full font-bold pl-8 pr-4"
 					style={{
 						width: `${selectWidth}px`,
 						WebkitAppearance: "none",
