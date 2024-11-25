@@ -2444,7 +2444,7 @@ export const Comandera: React.FC = () => {
 										key={uniqueKey}
 										className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
 									>
-										<div className="flex flex-col mt-4 mb-8 text-center items-center justify-center">
+										<div className="flex flex-col mt-4 mb-10 text-center items-center justify-center">
 											<h3 className="font-bold text-4xl md:text-3xl mb-2 items-center gap-4 flex flex-row">
 												<svg
 													className="w-3 h-3 text-gray-100 animate-spin dark:fill-black"
