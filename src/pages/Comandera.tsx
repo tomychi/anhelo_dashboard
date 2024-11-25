@@ -2054,7 +2054,7 @@ export const Comandera: React.FC = () => {
 														</svg>
 
 														<select
-															className="bg-gray-100 appearance-none w-full h-10 text-center rounded-full font-bold"
+															className=" bg-gray-400 bg-opacity-50  appearance-none w-full h-10 text-center rounded-full font-bold"
 															style={{
 																WebkitAppearance: "none",
 																MozAppearance: "none",
@@ -2101,7 +2101,7 @@ export const Comandera: React.FC = () => {
 																	handleSendToCook(index, grupo);
 																}
 															}}
-															className={`bg-gray-100  w-full  h-10 gap-1 rounded-full flex items-center justify-center font-coolvetica ${
+															className={`bg-gray-400 bg-opacity-50 w-full  h-10 gap-1 rounded-full flex items-center justify-center font-coolvetica ${
 																!grupo.pedidos.every(
 																	(pedido) => pedido.elaborado
 																)
