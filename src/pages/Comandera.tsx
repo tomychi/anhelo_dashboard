@@ -2044,7 +2044,7 @@ export const Comandera: React.FC = () => {
 															xmlns="http://www.w3.org/2000/svg"
 															viewBox="0 0 24 24"
 															fill="currentColor"
-															className="h-6 absolute left-[10px]"
+															className="h-6 absolute left-[10px] text-red-main"
 														>
 															<path
 																fillRule="evenodd"
@@ -2054,7 +2054,7 @@ export const Comandera: React.FC = () => {
 														</svg>
 
 														<select
-															className=" bg-gray-400 bg-opacity-50  appearance-none w-full h-10 text-center rounded-full font-bold"
+															className=" bg-gray-400 text-red-main  bg-opacity-50  appearance-none w-full h-10 text-center rounded-full font-bold"
 															style={{
 																WebkitAppearance: "none",
 																MozAppearance: "none",
