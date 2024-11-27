@@ -17,6 +17,7 @@ export const WhatsappFeatures = () => {
 	const [selectedWeeks, setSelectedWeeks] = useState<number>(2);
 	const [filteredClients, setFilteredClients] = useState<ClientData[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [showWeeksDropdown, setShowWeeksDropdown] = useState(false);
 	const [stats, setStats] = useState({
 		totalOrders: 0,
 		totalRevenue: 0,
@@ -213,98 +214,117 @@ export const WhatsappFeatures = () => {
 	};
 
 	return (
-		<div className="p-4 max-w-7xl mx-auto">
-			<button
-				onClick={enviarMensajes}
-				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg mb-4 gap-2 flex items-center justify-center"
-			>
-				<img src={wsp} className="h-4 mt-1" alt="" />
-				<p>Enviar 2x1</p>
-			</button>
+		<div className="flex flex-col">
+			<style>
+				{`
+          .arrow-down {
+            transition: transform 0.3s ease;
+            transform: rotate(90deg);
+          }
+          .arrow-down.open {
+            transform: rotate(-90deg);
+          }
+        `}
+			</style>
 
-			<div className="bg-gray-300 rounded-lg">
-				<div className="pt-8 pb-4 px-4">
-					<div className="flex mb-8 flex-row items-center justify-center gap-2">
-						<h2 className="text-2xl font-bold">Filtrar por inactividad</h2>
-					</div>
-					<div className="flex relative items-center gap-4">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							className="h-6 absolute text-gray-100 left-4"
-						>
-							<path
-								fillRule="evenodd"
-								d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
-								clipRule="evenodd"
-							/>
-						</svg>
+			{/* Header Section */}
+			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
+				<p className="text-black font-bold text-4xl mt-1">Inactivos</p>
+				<button
+					onClick={enviarMensajes}
+					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+				>
+					<img src={wsp} alt="WhatsApp" className="h-4 brightness-0" />
+					<p className="font-bold">Enviar 2x1</p>
+				</button>
+			</div>
 
+			{/* Filter Section */}
+			<div className="px-4 pb-8">
+				<div className="flex flex-row gap-2 mt-2">
+					<div className="relative flex items-center pr-2 w-full h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
+						<div className="flex flex-row items-center gap-1">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth="1.5"
+								stroke="currentColor"
+								className="h-6 ml-1.5"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+								/>
+							</svg>
+							<select
+								className="w-full bg-transparent outline-none appearance-none"
+								value={selectedWeeks}
+								onChange={(e) => setSelectedWeeks(Number(e.target.value))}
+							>
+								{Array.from({ length: 12 }, (_, i) => i + 2).map((weeks) => (
+									<option key={weeks} value={weeks}>
+										{weeks} semanas o más
+									</option>
+								))}
+							</select>
+						</div>
 						<img
 							src={arrow}
-							className="h-2 absolute rotate-90 filter invert right-4"
+							className={`h-2 arrow-down ${showWeeksDropdown ? "open" : ""}`}
 							alt=""
 						/>
-						<select
-							className="w-full h-10 pl-12 appearance-none rounded-full text-gray-100"
-							value={selectedWeeks}
-							onChange={(e) => setSelectedWeeks(Number(e.target.value))}
-						>
-							{Array.from({ length: 12 }, (_, i) => i + 2).map((weeks) => (
-								<option key={weeks} value={weeks}>
-									{weeks} semanas o más
-								</option>
-							))}
-						</select>
 					</div>
 				</div>
+			</div>
 
-				{filteredClients.length > 0 || isLoading ? (
-					<>
-						<div className="overflow-auto">
-							<table className="min-w-full table-fixed">
-								<thead className="bg-gray-300 border-b border-black  border-opacity-20 sticky top-0">
-									<tr>
-										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
-											Teléfono ({isLoading ? "..." : filteredClients.length})
-										</th>
-										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
-											Última vez
-										</th>
-										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
-											Cantidad de Semanas
-										</th>
-									</tr>
-								</thead>
-								<tbody className="bg-gray-300">
-									{isLoading
-										? Array.from({ length: 20 }).map((_, index) => (
-												<TableLoadingRow key={index} />
-										  ))
-										: filteredClients.map((client) => (
-												<tr key={client.telefono}>
-													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
-														{client.telefono}
-													</td>
-													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
-														{client.ultimoPedido.toLocaleDateString()}
-													</td>
-													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
-														{client.semanasSinPedir}
-													</td>
-												</tr>
-										  ))}
-								</tbody>
-							</table>
-						</div>
-					</>
-				) : (
-					<div className="text-center text-xs h-10 flex items-center justify-center bg-gray-300 rounded-md">
-						No hay clientes inactivos por {selectedWeeks} semanas o más.
-					</div>
-				)}
+			{/* Table Section */}
+			<div className="font-coolvetica">
+				<table className="w-full text-xs text-left text-black">
+					<thead className="text-black border-b h-10">
+						<tr>
+							<th scope="col" className="pl-4 w-1/3">
+								Teléfono ({isLoading ? "..." : filteredClients.length})
+							</th>
+							<th scope="col" className="pl-4 w-1/3">
+								Última vez
+							</th>
+							<th scope="col" className="pl-4 w-1/3">
+								Semanas sin pedir
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{isLoading ? (
+							Array.from({ length: 20 }).map((_, index) => (
+								<TableLoadingRow key={index} />
+							))
+						) : filteredClients.length > 0 ? (
+							filteredClients.map((client) => (
+								<tr
+									key={client.telefono}
+									className="text-black border font-light h-10 border-black border-opacity-20"
+								>
+									<td className="pl-4 font-light">{client.telefono}</td>
+									<td className="pl-4 font-light">
+										{client.ultimoPedido.toLocaleDateString()}
+									</td>
+									<td className="pl-4 font-light">{client.semanasSinPedir}</td>
+								</tr>
+							))
+						) : (
+							<tr className="text-black border font-light h-10">
+								<td colSpan={3} className="text-center">
+									No hay clientes inactivos por {selectedWeeks} semanas o más.
+								</td>
+							</tr>
+						)}
+					</tbody>
+				</table>
 			</div>
 		</div>
 	);
 };
+
+export default WhatsappFeatures;
