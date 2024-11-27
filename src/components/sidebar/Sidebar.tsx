@@ -27,10 +27,10 @@ export const Sidebar = () => {
 				{ to: "/pedidos", text: "Tomar pedidos" },
 				{ to: "/comandas", text: "Comandas y Grupos" },
 				{ to: "/gastos", text: "Gastos" },
-				{ to: "/equipo", text: "Equipo" },
-				{ to: "/clientes", text: "Comportamiento de clientes" },
 				{ to: "/whatsappFeatures", text: "Reactivar clientes" },
 				{ to: "/vouchers", text: "Campañas de vouchers" },
+				{ to: "/equipo", text: "Equipo" },
+				{ to: "/clientes", text: "Comportamiento de clientes" },
 				{ to: "/settings", text: "Configuración" },
 		  ];
 
