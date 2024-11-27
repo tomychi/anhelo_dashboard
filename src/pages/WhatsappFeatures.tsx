@@ -2,7 +2,6 @@ import { sendTemplateMessage } from "../utils/whatsapp";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { ReadLastThreeMonthsOrders } from "../firebase/ReadData";
-import wsp from "../assets/wsp.png";
 
 interface ClientData {
 	telefono: string;
@@ -158,17 +157,84 @@ export const WhatsappFeatures = () => {
 		setFilteredClients(filtered);
 	}, [selectedWeeks, clients]);
 
+	const telefonos = [
+		{
+			fecha: "22/11/2024",
+			telefono: "3585168971",
+		},
+		{
+			fecha: "22/10/2024",
+			telefono: "3584127742",
+		},
+		{
+			fecha: "22/08/2024",
+			telefono: "3584906278",
+		},
+	];
+
+	const enviarMensajes = async () => {
+		Swal.fire({
+			title: "Enviando mensajes...",
+			text: "Esto puede tardar unos momentos.",
+			icon: "info",
+			showConfirmButton: false,
+			allowOutsideClick: false,
+			didOpen: () => {
+				Swal.showLoading();
+			},
+		});
+
+		try {
+			for (const item of telefonos) {
+				// Agregar el prefijo '54' directamente al enviar el mensaje
+				const telefonoConPrefijo = `54${item.telefono}`;
+				await sendTemplateMessage(telefonoConPrefijo, 5, "4NH3L0");
+			}
+
+			Swal.fire({
+				title: "Mensajes enviados",
+				text: "Se enviaron todos los mensajes correctamente.",
+				icon: "success",
+				confirmButtonText: "Aceptar",
+			});
+		} catch (error) {
+			console.error("Error al enviar mensajes:", error);
+			Swal.fire({
+				title: "Error",
+				text: "Hubo un problema al enviar los mensajes.",
+				icon: "error",
+				confirmButtonText: "Aceptar",
+			});
+		}
+	};
+
 	return (
 		<div className="p-4 max-w-7xl mx-auto">
 			{/* Estadísticas Generales */}
 			<div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-				<button
-					onClick={() => sendTemplateMessage()}
-					className="w-full  font-bold flex items-center justify-center gap-2  text-white  h-20 rounded-lg bg-black shadow-gray-300 shadow-lg transition-all duration-300"
-				>
-					<img className="h-4 mt-1" src={wsp} alt="" />
-					<p>Enviar cupón 2x1</p>
-				</button>
+				<div className="bg-white p-4 rounded-lg shadow">
+					<h3 className="text-lg font-semibold mb-2">Total de Pedidos</h3>
+					<p className="text-2xl font-bold">{stats.totalOrders}</p>
+				</div>
+				<div className="bg-white p-4 rounded-lg shadow">
+					<h3 className="text-lg font-semibold mb-2">Ingresos Totales</h3>
+					<p className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
+				</div>
+				<div className="bg-white p-4 rounded-lg shadow">
+					<h3 className="text-lg font-semibold mb-2">Valor Promedio</h3>
+					<p className="text-2xl font-bold">
+						${stats.averageOrderValue.toFixed(2)}
+					</p>
+				</div>
+				<div className="bg-white p-4 rounded-lg shadow">
+					<h3 className="text-lg font-semibold mb-2">Enviar Mensaje</h3>
+					<button
+						onClick={enviarMensajes}
+						className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow-lg transition-all duration-300"
+					>
+						Enviar WhatsApp
+					</button>
+				</div>
 			</div>
 
 			{/* Filtro de Clientes Inactivos */}
