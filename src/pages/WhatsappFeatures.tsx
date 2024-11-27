@@ -223,8 +223,8 @@ export const WhatsappFeatures = () => {
 			{/* Filtro de Clientes Inactivos */}
 			<div className="bg-gray-300  rounded-lg shadow-lg">
 				<div className=" pt-4 px-4 border pb-4 border-b-black border-opacity-20">
-					<h2 className="text-3xl font-bold mb-4 text-center w-full">
-						Filtro de Inactividad
+					<h2 className="text-2xl font-bold mb-4 text-center w-full">
+						Filtrar por inactividad
 					</h2>
 					<div className="flex items-center gap-4">
 						<select
