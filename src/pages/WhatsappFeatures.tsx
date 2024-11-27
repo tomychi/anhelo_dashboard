@@ -222,13 +222,25 @@ export const WhatsappFeatures = () => {
 
 			{/* Filtro de Clientes Inactivos */}
 			<div className="bg-gray-300  rounded-lg shadow-lg">
-				<div className=" pt-4 px-4 border pb-4 border-b-black border-opacity-20">
-					<h2 className="text-2xl font-bold mb-4 text-center w-full">
-						Filtrar por inactividad
-					</h2>
-					<div className="flex items-center gap-4">
+				<div className=" pt-8 pb-8 px-4 border border-b-black border-opacity-20">
+					<div className="flex mb-4 flex-row items-center justify-center gap-2">
+						<h2 className="text-2xl font-bold">Filtrar por inactividad</h2>
+					</div>
+					<div className="flex relative items-center gap-4">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 absolute filter invert left-2"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
+								clip-rule="evenodd"
+							/>
+						</svg>
 						<select
-							className="w-full h-10 px-4 rounded-lg text-gray-100"
+							className="w-full h-10 pl-10 appearance-none rounded-full text-gray-100"
 							value={selectedWeeks}
 							onChange={(e) => setSelectedWeeks(Number(e.target.value))}
 						>
