@@ -216,13 +216,13 @@ export const WhatsappFeatures = () => {
 		<div className="p-4 max-w-7xl mx-auto">
 			<button
 				onClick={enviarMensajes}
-				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400  mb-4 gap-2 flex items-center justify-center"
+				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg   mb-4 gap-2 flex items-center justify-center"
 			>
 				<img src={wsp} className="h-4 mt-1" alt="" />
 				<p>Enviar 2x1</p>
 			</button>
 
-			<div className="bg-gray-300 rounded-lg shadow-lg">
+			<div className="bg-gray-300 rounded-lg">
 				<div className="pt-8 pb-4 px-4">
 					<div className="flex mb-8 flex-row items-center justify-center gap-2">
 						<h2 className="text-2xl font-bold">Filtrar por inactividad</h2>
