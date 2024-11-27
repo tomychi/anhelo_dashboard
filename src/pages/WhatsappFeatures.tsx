@@ -2,6 +2,7 @@ import { sendTemplateMessage } from "../utils/whatsapp";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { ReadLastThreeMonthsOrders } from "../firebase/ReadData";
+import wsp from "../assets/wsp.png";
 
 interface ClientData {
 	telefono: string;
@@ -211,34 +212,16 @@ export const WhatsappFeatures = () => {
 	return (
 		<div className="p-4 max-w-7xl mx-auto">
 			{/* Estadísticas Generales */}
-			<div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-				<div className="bg-white p-4 rounded-lg shadow">
-					<h3 className="text-lg font-semibold mb-2">Total de Pedidos</h3>
-					<p className="text-2xl font-bold">{stats.totalOrders}</p>
-				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
-					<h3 className="text-lg font-semibold mb-2">Ingresos Totales</h3>
-					<p className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
-				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
-					<h3 className="text-lg font-semibold mb-2">Valor Promedio</h3>
-					<p className="text-2xl font-bold">
-						${stats.averageOrderValue.toFixed(2)}
-					</p>
-				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
-					<h3 className="text-lg font-semibold mb-2">Enviar Mensaje</h3>
-					<button
-						onClick={enviarMensajes}
-						className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded shadow-lg transition-all duration-300"
-					>
-						Enviar WhatsApp
-					</button>
-				</div>
-			</div>
+			<button
+				onClick={enviarMensajes}
+				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400 shadow-lg mb-8 gap-2 flex items-center justify-center"
+			>
+				<img src={wsp} className="h-4 mt-1" alt="" />
+				<p>Enviar WhatsApp</p>
+			</button>
 
 			{/* Filtro de Clientes Inactivos */}
-			<div className="bg-white p-6 rounded-lg shadow-lg">
+			<div className="bg-gray-300 p-6 rounded-lg shadow-lg">
 				<div className="mb-6">
 					<h2 className="text-xl font-bold mb-4">
 						Filtro de Clientes Inactivos
