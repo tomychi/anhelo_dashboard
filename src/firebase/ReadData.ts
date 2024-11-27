@@ -535,3 +535,76 @@ export const updateBurgersRatings = async (orders: PedidoProps[]) => {
 		throw error;
 	}
 };
+
+export const ReadLastThreeMonthsOrders = async (): Promise<PedidoProps[]> => {
+	const firestore = getFirestore();
+
+	// Fecha actual
+	const currentDate = new Date();
+
+	// Fecha de tres meses atrás
+	const threeMonthsAgoDate = new Date();
+	threeMonthsAgoDate.setMonth(currentDate.getMonth() - 3);
+
+	try {
+		const pedidosData: PedidoProps[] = []; // Acumulará todos los pedidos
+
+		// Función auxiliar para formatear las fechas en el formato correcto
+		const formatDate = (date: Date) => {
+			const year = date.getFullYear().toString();
+			const month = (date.getMonth() + 1).toString().padStart(2, "0");
+			return { year, month };
+		};
+
+		// Recorrer desde el mes de hace tres meses hasta el mes actual
+		let tempDate = new Date(threeMonthsAgoDate);
+		while (tempDate <= currentDate) {
+			const { year, month } = formatDate(tempDate);
+
+			// Referencia al documento del año/mes
+			const monthCollectionRef = collection(firestore, "pedidos", year, month);
+
+			// Consultar los días dentro del mes
+			const daysSnapshot = await getDocs(monthCollectionRef);
+
+			if (!daysSnapshot.empty) {
+				// Iterar sobre los días del mes
+				for (const dayDoc of daysSnapshot.docs) {
+					const dayDocRef = doc(firestore, "pedidos", year, month, dayDoc.id);
+					const daySnapshot = await getDoc(dayDocRef);
+
+					if (daySnapshot.exists()) {
+						const dayData = daySnapshot.data();
+						const pedidosArray = dayData.pedidos || [];
+
+						// Filtrar solo los pedidos que tengan la propiedad paid en true
+						const pedidosPagados = pedidosArray.filter(
+							(pedido: PedidoProps) => pedido.paid === true
+						);
+
+						pedidosData.push(...pedidosPagados);
+					}
+				}
+			}
+
+			// Avanzar al siguiente mes
+			tempDate.setMonth(tempDate.getMonth() + 1);
+		}
+
+		// Ordenar los pedidos por fecha y hora de más reciente a más antiguo
+		const pedidosOrdenados = pedidosData.sort((a, b) => {
+			const dateA = new Date(
+				a.fecha.split("/").reverse().join("-") + "T" + a.hora
+			);
+			const dateB = new Date(
+				b.fecha.split("/").reverse().join("-") + "T" + b.hora
+			);
+			return dateB.getTime() - dateA.getTime();
+		});
+
+		return pedidosOrdenados;
+	} catch (error) {
+		console.error("Error al leer los pedidos:", error);
+		throw error;
+	}
+};
