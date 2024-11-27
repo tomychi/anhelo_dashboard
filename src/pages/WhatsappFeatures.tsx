@@ -144,7 +144,8 @@ export const WhatsappFeatures = () => {
 		const filtered = clients.filter(
 			(client) => client.semanasSinPedir >= selectedWeeks
 		);
-		filtered.sort((a, b) => b.semanasSinPedir - a.semanasSinPedir);
+		// Cambiado el orden de clasificación de menor a mayor
+		filtered.sort((a, b) => a.semanasSinPedir - b.semanasSinPedir);
 
 		console.log("Clientes filtrados:", {
 			totalClientes: clients.length,
@@ -285,7 +286,7 @@ export const WhatsappFeatures = () => {
 					<thead className="text-black border-b h-10">
 						<tr>
 							<th scope="col" className="pl-4 w-1/3">
-								Teléfono ({isLoading ? "..." : filteredClients.length})
+								Teléfonos ({isLoading ? "..." : filteredClients.length})
 							</th>
 							<th scope="col" className="pl-4 w-1/3">
 								Última vez
