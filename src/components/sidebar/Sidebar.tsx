@@ -28,9 +28,9 @@ export const Sidebar = () => {
 				{ to: "/comandas", text: "Comandas y Grupos" },
 				{ to: "/gastos", text: "Gastos" },
 				{ to: "/equipo", text: "Equipo" },
-				{ to: "/clientes", text: "Clientes" },
-				{ to: "/vouchers", text: "Vouchers manager" },
-				{ to: "/whatsappFeatures", text: "Whatsapp Features" },
+				{ to: "/clientes", text: "Comportamiento de clientes" },
+				{ to: "/whatsappFeatures", text: "Reactivar clientes" },
+				{ to: "/vouchers", text: "Campañas de vouchers" },
 				{ to: "/settings", text: "Configuración" },
 		  ];
 
