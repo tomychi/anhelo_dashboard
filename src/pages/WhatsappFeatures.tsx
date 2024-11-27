@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ReadLastThreeMonthsOrders } from "../firebase/ReadData";
 import wsp from "../assets/wsp.png";
 import arrow from "../assets/arrowIcon.png";
+import TableLoadingRow from "../components/TableLoadingRow";
 
 interface ClientData {
 	telefono: string;
@@ -15,6 +16,7 @@ export const WhatsappFeatures = () => {
 	const [clients, setClients] = useState<ClientData[]>([]);
 	const [selectedWeeks, setSelectedWeeks] = useState<number>(2);
 	const [filteredClients, setFilteredClients] = useState<ClientData[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 	const [stats, setStats] = useState({
 		totalOrders: 0,
 		totalRevenue: 0,
@@ -69,6 +71,7 @@ export const WhatsappFeatures = () => {
 	useEffect(() => {
 		const fetchOrders = async () => {
 			try {
+				setIsLoading(true);
 				console.log("Iniciando fetchOrders...");
 				const orders = await ReadLastThreeMonthsOrders();
 
@@ -94,7 +97,6 @@ export const WhatsappFeatures = () => {
 						const orderDate = convertToValidDate(order.fecha);
 						const currentDate = clientMap.get(order.telefono);
 
-						// Actualizamos solo si es la fecha más antigua
 						if (!currentDate || orderDate < currentDate) {
 							clientMap.set(order.telefono, orderDate);
 						}
@@ -103,7 +105,6 @@ export const WhatsappFeatures = () => {
 					}
 				});
 
-				// Convertimos a array y calculamos semanas sin pedir
 				const clientData: ClientData[] = Array.from(clientMap).map(
 					([telefono, fecha]) => ({
 						telefono,
@@ -130,6 +131,8 @@ export const WhatsappFeatures = () => {
 				setClients(clientData);
 			} catch (error) {
 				console.error("Error en fetchOrders:", error);
+			} finally {
+				setIsLoading(false);
 			}
 		};
 
@@ -188,7 +191,6 @@ export const WhatsappFeatures = () => {
 
 		try {
 			for (const item of telefonos) {
-				// Agregar el prefijo '54' directamente al enviar el mensaje
 				const telefonoConPrefijo = `54${item.telefono}`;
 				await sendTemplateMessage(telefonoConPrefijo, 5, "4NH3L0");
 			}
@@ -212,19 +214,17 @@ export const WhatsappFeatures = () => {
 
 	return (
 		<div className="p-4 max-w-7xl mx-auto">
-			{/* Estadísticas Generales */}
 			<button
 				onClick={enviarMensajes}
-				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400 shadow-lg mb-4 gap-2 flex items-center justify-center"
+				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400  mb-4 gap-2 flex items-center justify-center"
 			>
 				<img src={wsp} className="h-4 mt-1" alt="" />
 				<p>Enviar 2x1</p>
 			</button>
 
-			{/* Filtro de Clientes Inactivos */}
-			<div className="bg-gray-300  rounded-lg shadow-lg">
-				<div className=" pt-8 pb-8 px-4 border border-b-black border-opacity-20">
-					<div className="flex mb-4 flex-row items-center justify-center gap-2">
+			<div className="bg-gray-300 rounded-lg shadow-lg">
+				<div className="pt-8 pb-4 px-4">
+					<div className="flex mb-8 flex-row items-center justify-center gap-2">
 						<h2 className="text-2xl font-bold">Filtrar por inactividad</h2>
 					</div>
 					<div className="flex relative items-center gap-4">
@@ -235,15 +235,16 @@ export const WhatsappFeatures = () => {
 							className="h-6 absolute text-gray-100 left-4"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z"
-								clip-rule="evenodd"
+								clipRule="evenodd"
 							/>
 						</svg>
 
 						<img
 							src={arrow}
 							className="h-2 absolute rotate-90 filter invert right-4"
+							alt=""
 						/>
 						<select
 							className="w-full h-10 pl-12 appearance-none rounded-full text-gray-100"
@@ -259,41 +260,41 @@ export const WhatsappFeatures = () => {
 					</div>
 				</div>
 
-				{filteredClients.length > 0 ? (
+				{filteredClients.length > 0 || isLoading ? (
 					<>
-						<p className="text-black text-center h-10 flex items-center justify-center border-b-black border border-opacity-20 font-bold">
-							Total: {filteredClients.length}
-						</p>
-
-						<div className="overflow-auto ">
-							<table className="min-w-full ">
-								<thead className="bg-gray-300 sticky top-0">
+						<div className="overflow-auto">
+							<table className="min-w-full">
+								<thead className="bg-gray-300 border-y-black border border-opacity-20 sticky top-0">
 									<tr>
-										<th className="px-4 h-10 text-left text-xs font-medium text-black  ">
-											Teléfono
+										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+											Teléfono ({isLoading ? "..." : filteredClients.length})
 										</th>
-										<th className="px-4 h-10 text-left text-xs font-medium text-black  ">
-											Último Pedido
+										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+											Última vez
 										</th>
-										<th className="px-4 py-3 text-left text-xs font-medium text-black  ">
-											Semanas desde ultimo pedido
+										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+											Cantidad de Semanas
 										</th>
 									</tr>
 								</thead>
-								<tbody className="bg-gray-300 ">
-									{filteredClients.map((client) => (
-										<tr key={client.telefono}>
-											<td className="px-4 h-10 text-xs whitespace-nowrap">
-												{client.telefono}
-											</td>
-											<td className="px-4 h-10 text-xs whitespace-nowrap">
-												{client.ultimoPedido.toLocaleDateString()}
-											</td>
-											<td className="px-4 h-10 text-xs whitespace-nowrap">
-												{client.semanasSinPedir}
-											</td>
-										</tr>
-									))}
+								<tbody className="bg-gray-300">
+									{isLoading
+										? Array.from({ length: 20 }).map((_, index) => (
+												<TableLoadingRow key={index} />
+										  ))
+										: filteredClients.map((client) => (
+												<tr key={client.telefono}>
+													<td className="px-4 h-10 text-xs whitespace-nowrap">
+														{client.telefono}
+													</td>
+													<td className="px-4 h-10 text-xs whitespace-nowrap">
+														{client.ultimoPedido.toLocaleDateString()}
+													</td>
+													<td className="px-4 h-10 text-xs whitespace-nowrap">
+														{client.semanasSinPedir}
+													</td>
+												</tr>
+										  ))}
 								</tbody>
 							</table>
 						</div>
