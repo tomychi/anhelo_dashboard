@@ -222,10 +222,10 @@ export const WhatsappFeatures = () => {
 
 			{/* Filtro de Clientes Inactivos */}
 			<div className="bg-gray-300  rounded-lg shadow-lg">
-				<div className="mb-6 pt-4 px-4 border pb-4 border-b-black border-opacity-20">
-					<h2 className="text-xl font-bold mb-4 text-center w-full">Filtro</h2>
+				<div className=" pt-4 px-4 border pb-4 border-b-black border-opacity-20">
+					<h2 className="text-3xl font-bold mb-4 text-center w-full">Filtro</h2>
 					<div className="flex items-center gap-4">
-						<label className="text-sm font-medium text-gray-700">
+						<label className="text-xs text-gray-700">
 							Clientes que pidieron por ultima vez hace:
 						</label>
 						<select
@@ -244,30 +244,19 @@ export const WhatsappFeatures = () => {
 
 				{filteredClients.length > 0 ? (
 					<>
-						<div className="mb-4 p-4 bg-blue-50 rounded-md">
-							<p className="text-blue-800">
-								Total de clientes inactivos por {selectedWeeks} semanas o más:{" "}
-								{filteredClients.length}
-							</p>
-						</div>
+						<p className="text-black text-center h-10 flex items-center justify-center border-b-black border border-opacity-20 font-bold">
+							Total: {filteredClients.length}
+						</p>
 
-						<div className="overflow-auto max-h-[400px]">
-							<table className="min-w-full divide-y divide-gray-200">
-								<thead className="bg-gray-50 sticky top-0">
-									<tr>
-										<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Teléfono
-										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Último Pedido
-										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Semanas sin Pedir
-										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Acciones
-										</th>
-									</tr>
+						<div className="overflow-auto ">
+							<table className="min-w-full ">
+								<thead className="bg-gray-300 border-b-black border border-opacity-20 w-full sticky top-0">
+									<th className="px-6 w-full h-10 text-left text-xs font-medium text-black  ">
+										Teléfono
+									</th>
+									<th className="px-6 w-full h-10 text-left text-xs font-medium text-black  ">
+										Último Pedido
+									</th>
 								</thead>
 								<tbody className="bg-white divide-y divide-gray-200">
 									{filteredClients.map((client) => (
