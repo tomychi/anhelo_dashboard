@@ -263,7 +263,7 @@ export const WhatsappFeatures = () => {
 								value={selectedWeeks}
 								onChange={(e) => setSelectedWeeks(Number(e.target.value))}
 							>
-								{Array.from({ length: 12 }, (_, i) => i + 2).map((weeks) => (
+								{Array.from({ length: 11 }, (_, i) => i + 2).map((weeks) => (
 									<option key={weeks} value={weeks}>
 										{weeks} semanas o más
 									</option>
@@ -280,7 +280,7 @@ export const WhatsappFeatures = () => {
 			</div>
 
 			{/* Table Section */}
-			<div className="font-coolvetica">
+			<div className="font-coolvetica ">
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
