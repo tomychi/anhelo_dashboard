@@ -225,7 +225,7 @@ export const WhatsappFeatures = () => {
 				<div className=" pt-4 px-4 border pb-4 border-b-black border-opacity-20">
 					<h2 className="text-3xl font-bold mb-4 text-center w-full">Filtro</h2>
 					<div className="flex items-center gap-4">
-						<label className="text-xs font-medium text-gray-700">
+						<label className="text-xs  text-gray-700">
 							Clientes que pidieron por ultima vez hace:
 						</label>
 						<select
