@@ -216,7 +216,7 @@ export const WhatsappFeatures = () => {
 		<div className="p-4 max-w-7xl mx-auto">
 			<button
 				onClick={enviarMensajes}
-				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg   mb-4 gap-2 flex items-center justify-center"
+				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg mb-4 gap-2 flex items-center justify-center"
 			>
 				<img src={wsp} className="h-4 mt-1" alt="" />
 				<p>Enviar 2x1</p>
@@ -263,16 +263,16 @@ export const WhatsappFeatures = () => {
 				{filteredClients.length > 0 || isLoading ? (
 					<>
 						<div className="overflow-auto">
-							<table className="min-w-full">
-								<thead className="bg-gray-300 border-y-black border border-opacity-20 sticky top-0">
+							<table className="min-w-full table-fixed">
+								<thead className="bg-gray-300 border-b border-black  border-opacity-20 sticky top-0">
 									<tr>
-										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
 											Teléfono ({isLoading ? "..." : filteredClients.length})
 										</th>
-										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
 											Última vez
 										</th>
-										<th className="px-4 h-10 text-left text-xs font-medium text-black">
+										<th className="w-1/3 px-4 h-10 text-left text-xs font-medium text-black">
 											Cantidad de Semanas
 										</th>
 									</tr>
@@ -284,13 +284,13 @@ export const WhatsappFeatures = () => {
 										  ))
 										: filteredClients.map((client) => (
 												<tr key={client.telefono}>
-													<td className="px-4 h-10 text-xs whitespace-nowrap">
+													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
 														{client.telefono}
 													</td>
-													<td className="px-4 h-10 text-xs whitespace-nowrap">
+													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
 														{client.ultimoPedido.toLocaleDateString()}
 													</td>
-													<td className="px-4 h-10 text-xs whitespace-nowrap">
+													<td className="w-1/3 px-4 h-10 text-xs whitespace-nowrap">
 														{client.semanasSinPedir}
 													</td>
 												</tr>

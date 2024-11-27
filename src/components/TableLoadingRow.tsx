@@ -7,10 +7,10 @@ const TableLoadingRow = () => {
 				<div className="h-4 bg-gray-400 rounded animate-pulse w-20"></div>
 			</td>
 			<td className="px-4 h-10">
-				<div className="h-4 bg-gray-400 rounded animate-pulse  w-24"></div>
+				<div className="h-4 bg-gray-400 rounded animate-pulse  w-20"></div>
 			</td>
 			<td className="px-4 h-10">
-				<div className="h-4 bg-gray-400 rounded animate-pulse w-10"></div>
+				<div className="h-4 bg-gray-400 rounded animate-pulse w-20"></div>
 			</td>
 		</tr>
 	);
