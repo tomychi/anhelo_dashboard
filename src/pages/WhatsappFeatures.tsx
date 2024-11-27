@@ -232,7 +232,7 @@ export const WhatsappFeatures = () => {
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-6 absolute filter invert left-4"
+							className="h-6 absolute text-gray-100 left-4"
 						>
 							<path
 								fill-rule="evenodd"
