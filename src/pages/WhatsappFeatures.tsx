@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
 import { ReadLastThreeMonthsOrders } from "../firebase/ReadData";
 import wsp from "../assets/wsp.png";
+import arrow from "../assets/arrowIcon.png";
 
 interface ClientData {
 	telefono: string;
@@ -231,7 +232,7 @@ export const WhatsappFeatures = () => {
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-6 absolute filter invert left-2"
+							className="h-6 absolute filter invert left-4"
 						>
 							<path
 								fill-rule="evenodd"
@@ -239,8 +240,13 @@ export const WhatsappFeatures = () => {
 								clip-rule="evenodd"
 							/>
 						</svg>
+
+						<img
+							src={arrow}
+							className="h-2 absolute rotate-90 filter invert right-4"
+						/>
 						<select
-							className="w-full h-10 pl-10 appearance-none rounded-full text-gray-100"
+							className="w-full h-10 pl-12 appearance-none rounded-full text-gray-100"
 							value={selectedWeeks}
 							onChange={(e) => setSelectedWeeks(Number(e.target.value))}
 						>
