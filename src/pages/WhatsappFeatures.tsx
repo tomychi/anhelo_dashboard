@@ -282,7 +282,7 @@ export const WhatsappFeatures = () => {
 						</div>
 					</>
 				) : (
-					<div className="text-center p-4 bg-gray-50 rounded-md">
+					<div className="text-center text-xs h-10 flex items-center justify-center bg-gray-300 rounded-md">
 						No hay clientes inactivos por {selectedWeeks} semanas o más
 					</div>
 				)}
