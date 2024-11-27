@@ -276,7 +276,7 @@ export const WhatsappFeatures = () => {
 											Último Pedido
 										</th>
 										<th className="px-4 py-3 text-left text-xs font-medium text-black  ">
-											Semanas sin Pedir
+											Semanas desde ultimo pedido
 										</th>
 									</tr>
 								</thead>
