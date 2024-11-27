@@ -243,7 +243,7 @@ export const WhatsappFeatures = () => {
 			<div className="px-4 pb-8">
 				<div className="flex flex-row gap-2 mt-2">
 					<div className="relative flex items-center pr-2 w-full h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 font-coolvetica justify-between text-black text-xs font-light">
-						<div className="flex flex-row items-center gap-1">
+						<div className="flex flex-row w-full items-center gap-1">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
