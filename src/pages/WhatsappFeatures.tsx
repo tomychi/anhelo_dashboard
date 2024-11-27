@@ -253,7 +253,7 @@ export const WhatsappFeatures = () => {
 						>
 							{Array.from({ length: 12 }, (_, i) => i + 2).map((weeks) => (
 								<option key={weeks} value={weeks}>
-									{weeks} semanas
+									{weeks} semanas o más
 								</option>
 							))}
 						</select>
