@@ -1488,14 +1488,11 @@ export const Comandera: React.FC = () => {
 								<button
 									onClick={handleActivateHighDemand}
 									disabled={selectedDelay === 0}
-									className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
+									className={`px-4 w-full ml-2 flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
 										selectedDelay === 0
 											? "bg-gray-300 text-gray-500 cursor-not-allowed"
 											: "bg-black text-white hover:bg-gray-800"
 									}`}
-									style={{
-										width: "110px",
-									}}
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
