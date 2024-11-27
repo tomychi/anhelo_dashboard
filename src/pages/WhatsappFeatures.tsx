@@ -215,7 +215,7 @@ export const WhatsappFeatures = () => {
 			{/* Estadísticas Generales */}
 			<button
 				onClick={enviarMensajes}
-				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400 shadow-lg mb-8 gap-2 flex items-center justify-center"
+				className="w-full bg-black text-gray-100 font-bold h-20 rounded-lg shadow-gray-400 shadow-lg mb-4 gap-2 flex items-center justify-center"
 			>
 				<img src={wsp} className="h-4 mt-1" alt="" />
 				<p>Enviar 2x1</p>
