@@ -221,14 +221,12 @@ export const WhatsappFeatures = () => {
 			</button>
 
 			{/* Filtro de Clientes Inactivos */}
-			<div className="bg-gray-300 p-6 rounded-lg shadow-lg">
-				<div className="mb-6">
-					<h2 className="text-xl font-bold mb-4">
-						Filtro de Clientes Inactivos
-					</h2>
+			<div className="bg-gray-300  rounded-lg shadow-lg">
+				<div className="mb-6 pt-4 px-4 border pb-4 border-b-black border-opacity-20">
+					<h2 className="text-xl font-bold mb-4 text-center w-full">Filtro</h2>
 					<div className="flex items-center gap-4">
 						<label className="text-sm font-medium text-gray-700">
-							Filtrar clientes sin pedidos por más de:
+							Clientes que pidieron por ultima vez hace:
 						</label>
 						<select
 							className="w-48 p-2 border rounded-md shadow-sm"
