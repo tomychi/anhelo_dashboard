@@ -258,7 +258,7 @@ export const WhatsappFeatures = () => {
 										<th className="px-4 h-10 text-left text-xs font-medium text-black  ">
 											Último Pedido
 										</th>
-										<th className="px-4 py-3 text-left text-xs font-medium text-gray-500  ">
+										<th className="px-4 py-3 text-left text-xs font-medium text-black  ">
 											Semanas sin Pedir
 										</th>
 									</tr>
