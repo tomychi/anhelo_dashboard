@@ -225,7 +225,7 @@ export const WhatsappFeatures = () => {
 				<div className=" pt-4 px-4 border pb-4 border-b-black border-opacity-20">
 					<h2 className="text-3xl font-bold mb-4 text-center w-full">Filtro</h2>
 					<div className="flex items-center gap-4">
-						<label className="text-xs text-gray-700">
+						<label className="text-xs font-medium text-gray-700">
 							Clientes que pidieron por ultima vez hace:
 						</label>
 						<select
@@ -250,33 +250,30 @@ export const WhatsappFeatures = () => {
 
 						<div className="overflow-auto ">
 							<table className="min-w-full ">
-								<thead className="bg-gray-300 border-b-black border border-opacity-20 w-full sticky top-0">
-									<th className="px-6 w-full h-10 text-left text-xs font-medium text-black  ">
-										Teléfono
-									</th>
-									<th className="px-6 w-full h-10 text-left text-xs font-medium text-black  ">
-										Último Pedido
-									</th>
+								<thead className="bg-gray-300 sticky top-0">
+									<tr>
+										<th className="px-4 h-10 text-left text-xs font-medium text-black  ">
+											Teléfono
+										</th>
+										<th className="px-4 h-10 text-left text-xs font-medium text-black  ">
+											Último Pedido
+										</th>
+										<th className="px-4 py-3 text-left text-xs font-medium text-gray-500  ">
+											Semanas sin Pedir
+										</th>
+									</tr>
 								</thead>
-								<tbody className="bg-white divide-y divide-gray-200">
+								<tbody className="bg-gray-300 ">
 									{filteredClients.map((client) => (
 										<tr key={client.telefono}>
-											<td className="px-6 py-4 whitespace-nowrap">
+											<td className="px-4 h-10 text-xs whitespace-nowrap">
 												{client.telefono}
 											</td>
-											<td className="px-6 py-4 whitespace-nowrap">
+											<td className="px-4 h-10 text-xs whitespace-nowrap">
 												{client.ultimoPedido.toLocaleDateString()}
 											</td>
-											<td className="px-6 py-4 whitespace-nowrap">
+											<td className="px-4 h-10 text-xs whitespace-nowrap">
 												{client.semanasSinPedir}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap">
-												<button
-													onClick={() => sendTemplateMessage(client.telefono)}
-													className="text-green-600 hover:text-green-900"
-												>
-													Enviar WhatsApp
-												</button>
 											</td>
 										</tr>
 									))}
