@@ -87,22 +87,22 @@ export const Sidebar = () => {
 					visibility: isMenuOpen ? "visible" : "hidden",
 				}}
 			>
-				<nav className=" pt-6 h-full px-4 overflow-y-auto">
-					<ul className="flex flex-col gap-6 ">
+				<nav className=" pt-4 h-full px-4 overflow-y-auto">
+					<ul className="flex flex-col gap-4 ">
 						{menuItems.map((item, index) => (
 							<li key={index}>
 								<NavLink
 									to={item.to}
-									className="block  text-3xl font-coolvetica font-bold "
+									className="block  text-2xl font-coolvetica font-bold "
 									onClick={toggleMenu}
 								>
 									{item.text}
 								</NavLink>
 							</li>
 						))}
-						{/* <p className="font-medium text-sm mt-4 ">
+						<p className="font-medium text-sm mt-4 ">
 							Ⓡ 2024, Absolute Business Solutions.
-						</p> */}
+						</p>
 					</ul>
 				</nav>
 			</div>
