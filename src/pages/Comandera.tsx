@@ -104,6 +104,7 @@ export const Comandera: React.FC = () => {
 	const [altaDemanda, setAltaDemanda] = useState<AltaDemandaProps | null>(null);
 	const [onlyElaborated, setOnlyElaborated] = useState(false);
 	const { orders } = useSelector((state: RootState) => state.data);
+	const [automatico, setAutomatico] = useState<boolean>(false);
 	const [pedidosPrioritarios, setPedidosPrioritarios] = useState<PedidoProps[]>(
 		[]
 	);
@@ -1165,47 +1166,47 @@ export const Comandera: React.FC = () => {
 
 	useEffect(() => {
 		const pedidosElaborados = orders.filter((pedido) => pedido.elaborado);
-		console.log("1. Pedidos elaborados:", pedidosElaborados.length);
-		console.log(
-			"1.1 Drinks registrados:",
-			drinks.map((d) => d.data.name)
-		); // Agregar este log
+		// console.log("1. Pedidos elaborados:", pedidosElaborados.length);
+		// console.log(
+		// 	"1.1 Drinks registrados:",
+		// 	drinks.map((d) => d.data.name)
+		// ); // Agregar este log
 
 		let totalProductos = 0;
 		let totalMinutos = 0;
 
 		pedidosElaborados.forEach((pedido) => {
 			// Log cada pedido elaborado y sus productos
-			console.log("2. Analizando pedido:", pedido.id);
-			console.log("3. Detalle del pedido:", pedido.detallePedido);
+			// console.log("2. Analizando pedido:", pedido.id);
+			// console.log("3. Detalle del pedido:", pedido.detallePedido);
 
 			const cantidadPedido = pedido.detallePedido.reduce((sum, item) => {
 				// Verificar si es bebida
 				const esBebida = drinks.some(
 					(drink) => drink.data.name === item.burger
 				);
-				console.log("4. Producto:", item.burger, "Es bebida:", esBebida);
+				// console.log("4. Producto:", item.burger, "Es bebida:", esBebida);
 				return sum + (esBebida ? 0 : item.quantity || 0);
 			}, 0);
-			console.log(
-				"5. Cantidad total de productos (sin bebidas):",
-				cantidadPedido
-			);
+			// console.log(
+			// 	"5. Cantidad total de productos (sin bebidas):",
+			// 	cantidadPedido
+			// );
 			totalProductos += cantidadPedido;
 
 			if (pedido.tiempoElaborado) {
 				const [horas, minutos] = pedido.tiempoElaborado.split(":").map(Number);
 				const minutosElaboracion = horas * 60 + minutos;
 				totalMinutos += minutosElaboracion;
-				console.log("6. Tiempo de elaboración:", minutosElaboracion, "minutos");
+				// console.log("6. Tiempo de elaboración:", minutosElaboracion, "minutos");
 			}
 		});
 
 		const promedio = totalProductos > 0 ? totalMinutos / totalProductos : 0;
-		console.log("7. Resumen:");
-		console.log("   - Total productos (sin bebidas):", totalProductos);
-		console.log("   - Total minutos:", totalMinutos);
-		console.log("   - Promedio minutos por producto:", promedio);
+		// console.log("7. Resumen:");
+		// console.log("   - Total productos (sin bebidas):", totalProductos);
+		// console.log("   - Total minutos:", totalMinutos);
+		// console.log("   - Promedio minutos por producto:", promedio);
 
 		setTiempoElaboracionPromedioHOY(promedio);
 	}, [orders]);
@@ -1213,14 +1214,14 @@ export const Comandera: React.FC = () => {
 	const calcularTiempoEstimadoElaboracion = (pedido: PedidoProps): number => {
 		if (!pedido?.detallePedido) return 0;
 
-		console.log("8. Calculando tiempo para pedido:", pedido.id);
+		// console.log("8. Calculando tiempo para pedido:", pedido.id);
 		// Solo contar productos que NO son bebidas
 		const cantidadProductos = pedido.detallePedido.reduce((sum, item) => {
 			// Verificar si el producto es una bebida
 			const esBebida = drinks.some((drink) => drink.data.name === item.burger);
-			console.log("9. Producto:", item.burger);
-			console.log("   - Es bebida:", esBebida);
-			console.log("   - Cantidad:", item.quantity || 0);
+			// console.log("9. Producto:", item.burger);
+			// console.log("   - Es bebida:", esBebida);
+			// console.log("   - Cantidad:", item.quantity || 0);
 
 			return sum + (esBebida ? 0 : item.quantity || 0);
 		}, 0);
@@ -1228,13 +1229,13 @@ export const Comandera: React.FC = () => {
 		const tiempoEstimado = Math.round(
 			cantidadProductos * tiempoElaboracionPromedioHOY
 		);
-		console.log("10. Resumen del cálculo:");
-		console.log("    - Cantidad productos (sin bebidas):", cantidadProductos);
-		console.log(
-			"    - Tiempo promedio por producto:",
-			tiempoElaboracionPromedioHOY
-		);
-		console.log("    - Tiempo estimado total:", tiempoEstimado);
+		// console.log("10. Resumen del cálculo:");
+		// console.log("    - Cantidad productos (sin bebidas):", cantidadProductos);
+		// console.log(
+		// 	"    - Tiempo promedio por producto:",
+		// 	tiempoElaboracionPromedioHOY
+		// );
+		// console.log("    - Tiempo estimado total:", tiempoEstimado);
 
 		return tiempoEstimado;
 	};
@@ -1388,6 +1389,10 @@ export const Comandera: React.FC = () => {
 			</div>
 		);
 	};
+
+	useEffect(() => {
+		console.log("Estado automático:", automatico);
+	}, [automatico]);
 
 	return (
 		<>
@@ -1553,6 +1558,8 @@ export const Comandera: React.FC = () => {
 					tiempoMaximoRecorrido={tiempoMaximoRecorrido}
 					setTiempoMaximoRecorrido={setTiempoMaximoRecorrido}
 					velocidadPromedio={velocidadPromedio}
+					automatico={automatico}
+					setAutomatico={setAutomatico}
 					handleCadeteVelocidadChange={handleCadeteVelocidadChange}
 					cadetesDisponibles={cadetesDisponibles}
 					calcularVelocidadPromedio={calcularVelocidadPromedio}

@@ -7,6 +7,8 @@ interface SidebarProps {
 	tiempoMaximoRecorrido: number | null;
 	setTiempoMaximoRecorrido: (tiempo: number | null) => void;
 	showComandas: boolean;
+	automatico: boolean;
+	setAutomatico: (value: boolean) => void;
 	setShowComandas: (show: boolean) => void;
 	velocidadPromedio: number | null;
 	handleCadeteVelocidadChange: (
@@ -42,6 +44,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 	isOpen,
 	onClose,
 	tiempoMaximoRecorrido,
+	automatico,
+	setAutomatico,
 	setTiempoMaximoRecorrido,
 	showComandas,
 	setShowComandas,
@@ -219,6 +223,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 							<Toggle
 								isOn={showComandas}
 								onToggle={() => setShowComandas(!showComandas)}
+							/>
+						</div>
+					</div>
+					<div className="flex flex-row items-center justify-between gap-2">
+						<p className="font-bold text-sm">Automático (beta)</p>
+						<div className="flex items-center justify-between">
+							<Toggle
+								isOn={automatico}
+								onToggle={() => setAutomatico(!automatico)}
 							/>
 						</div>
 					</div>
