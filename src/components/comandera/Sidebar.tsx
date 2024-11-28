@@ -227,7 +227,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 						</div>
 					</div>
 					<div className="flex flex-row items-center justify-between gap-2">
-						<p className="font-bold text-sm">Automático (beta)</p>
+						<p className="font-bold text-sm">Automático 0.0.1</p>
 						<div className="flex items-center justify-between">
 							<Toggle
 								isOn={automatico}
