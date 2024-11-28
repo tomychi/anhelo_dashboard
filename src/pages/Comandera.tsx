@@ -97,6 +97,10 @@ export const Comandera: React.FC = () => {
 	const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
 	const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
 	const [hideAssignedGroups, setHideAssignedGroups] = useState(false);
+	// Agregar nuevo estado para pedidos prioritarios automáticos
+	const [pedidosPrioritariosAutomaticos, setPedidosPrioritariosAutomaticos] =
+		useState<PedidoProps[]>([]);
+
 	const [selectedCadete, setSelectedCadete] = useState<string | null>(null);
 	const { drinks } = useSelector((state: RootState) => state.product);
 	const [cadetes, setCadetes] = useState<string[]>([]);
@@ -1583,18 +1587,29 @@ export const Comandera: React.FC = () => {
 		return mejorPedido;
 	}
 
-	// Add this useMemo hook
+	const togglePedidoPrioritarioAutomatico = (pedido: PedidoProps) => {
+		setPedidosPrioritariosAutomaticos((prevPrioritarios) => {
+			const isPrioritario = prevPrioritarios.some((p) => p.id === pedido.id);
+			if (isPrioritario) {
+				return prevPrioritarios.filter((p) => p.id !== pedido.id);
+			} else {
+				return [...prevPrioritarios, pedido];
+			}
+		});
+	};
+
+	// Modificar el useMemo de gruposAutomaticosOptimosMemo para usar los nuevos pedidos prioritarios
 	const gruposAutomaticosOptimosMemo = useMemo(() => {
 		return armarGruposAutomaticos(
 			pedidosConDistancias,
 			tiempoMaximoAutomatico,
-			pedidosPrioritarios
+			pedidosPrioritariosAutomaticos // Cambiar aquí para usar los prioritarios automáticos
 		);
 	}, [
 		pedidosConDistancias,
 		tiempoMaximoAutomatico,
 		gruposAutomaticos,
-		pedidosPrioritarios,
+		pedidosPrioritariosAutomaticos, // Actualizar la dependencia
 		velocidadPromedio,
 	]);
 
@@ -3234,20 +3249,11 @@ export const Comandera: React.FC = () => {
 														<div className="flex items-center relative">
 															<button
 																className="ml-2 p-1 rounded-full relative"
-																onMouseEnter={() =>
-																	setStarTooltipVisibility((prev) => ({
-																		...prev,
-																		[`auto-${pedido.id}`]: true,
-																	}))
-																}
-																onMouseLeave={() =>
-																	setStarTooltipVisibility((prev) => ({
-																		...prev,
-																		[`auto-${pedido.id}`]: false,
-																	}))
+																onClick={() =>
+																	togglePedidoPrioritarioAutomatico(pedido)
 																}
 															>
-																{pedidosPrioritarios.some(
+																{pedidosPrioritariosAutomaticos.some(
 																	(p) => p.id === pedido.id
 																) ? (
 																	<svg
