@@ -120,6 +120,13 @@ export const Comandera: React.FC = () => {
 	);
 	const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
 	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
+	const [gruposAutomaticos, setGruposAutomaticos] = useState<Grupo[]>([]);
+	const [gruposAutomaticosOptimos, setGruposAutomaticosOptimos] = useState<
+		Grupo[]
+	>([]);
+	const [tiempoMaximoAutomatico, setTiempoMaximoAutomatico] = useState<
+		number | null
+	>(null);
 	const [tiempoElaboracionPromedioHOY, setTiempoElaboracionPromedioHOY] =
 		useState<number>(0);
 	const [gruposOptimos, setGruposOptimos] = useState<Grupo[]>([]);
@@ -1388,6 +1395,213 @@ export const Comandera: React.FC = () => {
 			</div>
 		);
 	};
+
+	// Add these new states after the existing states
+
+	// Duplicate and rename the group creation functions
+	function armarGruposAutomaticos(
+		pedidos: PedidoProps[],
+		tiempoMaximoAutomatico: number | null,
+		pedidosPrioritarios: PedidoProps[]
+	): Grupo[] {
+		const pedidosDisponiblesAuto = pedidos.filter(
+			(pedido) =>
+				!gruposAutomaticos.some((grupo) =>
+					grupo.pedidos.some((p) => p.id === pedido.id)
+				) && isPedidoValid(pedido)
+		);
+
+		const pedidosManualesAuto = pedidos.filter(
+			(pedido) =>
+				(!isPedidoValid(pedido) ||
+					(pedido.map[0] === 0 && pedido.map[1] === 0)) &&
+				!gruposAutomaticos.some((grupo) =>
+					grupo.pedidos.some((p) => p.id === pedido.id)
+				)
+		);
+
+		if (pedidosDisponiblesAuto.length === 0) return [];
+
+		const gruposAutomaticosTemp: Grupo[] = [];
+		let pedidosRestantes = [...pedidosDisponiblesAuto];
+
+		while (pedidosRestantes.length > 0) {
+			const grupo = formarGrupoAutomatico(
+				pedidosRestantes,
+				tiempoMaximoAutomatico,
+				pedidosPrioritarios
+			);
+			gruposAutomaticosTemp.push(grupo);
+			pedidosRestantes = pedidosRestantes.filter(
+				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+			);
+		}
+
+		return gruposAutomaticosTemp;
+	}
+
+	function formarGrupoAutomatico(
+		pedidosDisponibles: PedidoProps[],
+		tiempoMaximoAutomatico: number | null,
+		pedidosPrioritarios: PedidoProps[]
+	): Grupo {
+		const grupoActual: PedidosGrupos[] = [];
+		let tiempoTotalGrupo = 0;
+		let distanciaTotalGrupo = 0;
+		let peorTiempoPercibido = 0;
+		let pedidoPeorTiempo: PedidoProps | null = null;
+		let latitudActual = LATITUD_INICIO;
+		let longitudActual = LONGITUD_INICIO;
+
+		let pedidoInicial =
+			pedidosPrioritarios.length > 0 ? pedidosPrioritarios[0] : null;
+
+		if (!pedidoInicial) {
+			pedidoInicial = encontrarMejorPedidoAutomatico(
+				pedidosDisponibles,
+				latitudActual,
+				longitudActual
+			);
+		}
+
+		if (pedidoInicial && isPedidoValid(pedidoInicial)) {
+			const tiempoEspera = calcularTiempoEspera(pedidoInicial.hora);
+			const distancia = calcularDistancia(
+				latitudActual,
+				longitudActual,
+				pedidoInicial.map[0],
+				pedidoInicial.map[1]
+			);
+			const tiempoViaje = (distancia / getVelocidadActual()) * 60;
+			const tiempoPercibido = tiempoEspera + tiempoViaje;
+
+			grupoActual.push({
+				...pedidoInicial,
+				tiempoPercibido: Math.round(tiempoPercibido),
+			});
+
+			tiempoTotalGrupo = tiempoViaje;
+			distanciaTotalGrupo = distancia;
+			peorTiempoPercibido = tiempoPercibido;
+			pedidoPeorTiempo = pedidoInicial;
+
+			latitudActual = pedidoInicial.map[0];
+			longitudActual = pedidoInicial.map[1];
+			pedidosDisponibles = pedidosDisponibles.filter(
+				(p) => p.id !== pedidoInicial!.id
+			);
+		}
+
+		while (pedidosDisponibles.length > 0) {
+			let mejorPedido = encontrarMejorPedidoAutomatico(
+				pedidosDisponibles,
+				latitudActual,
+				longitudActual
+			);
+			if (!mejorPedido || !isPedidoValid(mejorPedido)) break;
+
+			const nuevaRuta = [...grupoActual, mejorPedido];
+			const { tiempoTotal, distanciaTotal } = calcularTiempoYDistanciaRecorrido(
+				nuevaRuta,
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+
+			const distanciaRegreso = calcularDistancia(
+				mejorPedido.map[0],
+				mejorPedido.map[1],
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
+			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
+			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
+
+			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+			const tiempoPercibido = tiempoEspera + tiempoTotal;
+
+			if (
+				tiempoMaximoAutomatico !== null &&
+				tiempoTotalConRegreso > tiempoMaximoAutomatico &&
+				grupoActual.length > 0
+			) {
+				break;
+			}
+
+			grupoActual.push({
+				...mejorPedido,
+				tiempoPercibido: Math.round(tiempoPercibido),
+			});
+			tiempoTotalGrupo = tiempoTotalConRegreso;
+			distanciaTotalGrupo = distanciaTotalConRegreso;
+
+			if (tiempoPercibido > peorTiempoPercibido) {
+				peorTiempoPercibido = tiempoPercibido;
+				pedidoPeorTiempo = mejorPedido;
+			}
+
+			latitudActual = mejorPedido.map[0];
+			longitudActual = mejorPedido.map[1];
+			pedidosDisponibles = pedidosDisponibles.filter(
+				(p) => p.id !== mejorPedido!.id
+			);
+		}
+
+		return {
+			pedidos: grupoActual,
+			tiempoTotal: Math.round(tiempoTotalGrupo),
+			distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
+			peorTiempoPercibido: Math.round(peorTiempoPercibido),
+			pedidoPeorTiempo,
+		};
+	}
+
+	function encontrarMejorPedidoAutomatico(
+		pedidosDisponibles: PedidoProps[],
+		latitudActual: number,
+		longitudActual: number
+	): PedidoProps | null {
+		let mejorPedido: PedidoProps | null = null;
+		let mejorDistancia = Infinity;
+
+		for (const pedido of pedidosDisponibles) {
+			if (!isPedidoValid(pedido)) continue;
+
+			const distancia = calcularDistancia(
+				latitudActual,
+				longitudActual,
+				pedido.map[0],
+				pedido.map[1]
+			);
+
+			if (distancia < mejorDistancia) {
+				mejorDistancia = distancia;
+				mejorPedido = pedido;
+			}
+		}
+
+		return mejorPedido;
+	}
+
+	// Add this useMemo hook
+	const gruposAutomaticosOptimosMemo = useMemo(() => {
+		return armarGruposAutomaticos(
+			pedidosConDistancias,
+			tiempoMaximoAutomatico,
+			pedidosPrioritarios
+		);
+	}, [
+		pedidosConDistancias,
+		tiempoMaximoAutomatico,
+		gruposAutomaticos,
+		pedidosPrioritarios,
+		velocidadPromedio,
+	]);
+
+	// Add this useEffect
+	useEffect(() => {
+		setGruposAutomaticosOptimos(gruposAutomaticosOptimosMemo);
+	}, [gruposAutomaticosOptimosMemo]);
 
 	return (
 		<>
@@ -2821,6 +3035,318 @@ export const Comandera: React.FC = () => {
 							<></>
 						)}
 					</div>
+				</div>
+
+				{/* Después del div de grupos óptimos, añade este código para los grupos automáticos */}
+				<div className="flex-col md:grid md:grid-cols-4 gap-4">
+					{gruposAutomaticosOptimos.length > 0 ? (
+						gruposAutomaticosOptimos.map((grupo, index) => {
+							const horaActual = new Date();
+							const horaRegreso = new Date(
+								horaActual.getTime() + grupo.tiempoTotal * 60000
+							);
+							const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
+								"es-ES",
+								{
+									hour: "2-digit",
+									minute: "2-digit",
+								}
+							);
+							const uniqueKey = `auto-${grupo.tiempoTotal}-${grupo.distanciaTotal}-${index}`;
+
+							return (
+								<div
+									key={uniqueKey}
+									className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
+								>
+									<div className="flex flex-col mt-4 mb-10 text-center items-center justify-center">
+										<h3 className="font-bold text-4xl md:text-3xl mb-2 items-center gap-4 flex flex-row">
+											<svg
+												className="w-3 h-3 text-gray-100 animate-spin dark:fill-black"
+												viewBox="0 0 100 101"
+											>
+												<path
+													d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+													fill="currentColor"
+												/>
+												<path
+													d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+													fill="currentFill"
+												/>
+											</svg>
+											Grupo Automático {index + 1}
+										</h3>
+										<p className="text-xs">
+											Peor entrega: {grupo.peorTiempoPercibido} minutos (
+											{grupo.pedidoPeorTiempo?.direccion
+												? getFirstPartOfAddress(
+														grupo.pedidoPeorTiempo.direccion
+												  )
+												: "N/A"}
+											)
+										</p>
+										<p className="text-xs">
+											Duración: {grupo.tiempoTotal} minutos
+										</p>
+										<p className="text-xs">
+											Distancia: {grupo.distanciaTotal} km
+										</p>
+										<p className="text-xs">
+											El cadete regresa a ANHELO a las {horaRegresoFormateada}{" "}
+											hs
+										</p>
+										<p className="text-xs">
+											Costo por entrega aproximado: $
+											{Math.round(
+												(grupo.distanciaTotal * 200 +
+													grupo.pedidos.length * 1200) /
+													grupo.pedidos.length
+											)}
+										</p>
+									</div>
+									<button
+										className="bg-black w-full h-[64px] mb-2 text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica"
+										onClick={() => handleGrupoListo(grupo)}
+									>
+										Confirmar Grupo Automático
+									</button>
+									{grupo.pedidos.map((pedido, pedidoIndex) => (
+										<div
+											className="flex flex-row"
+											key={`auto-pedido-${pedido.id}`}
+										>
+											<div
+												className={`bg-gray-100 relative w-full flex flex-row items-center ${
+													pedidoIndex === 0
+														? "rounded-t-lg"
+														: pedidoIndex === grupo.pedidos.length - 1
+														? "rounded-b-lg"
+														: ""
+												}`}
+												onClick={() => handlePedidoClick(pedido)}
+											>
+												<div className="bg-black absolute z-10 text-center ml-4 justify-center font-bold flex items-center text-gray-100 h-10 w-10 rounded-full">
+													{pedidoIndex + 1}
+												</div>
+												<div className="ml-14 mr-4">
+													{grupo.pedidos.length > 1 && (
+														<div
+															className={`w-1.5 bg-black absolute left-[33px] ${
+																pedidoIndex === 0
+																	? "h-1/2 bottom-0"
+																	: pedidoIndex === grupo.pedidos.length - 1
+																	? "h-1/2 top-0"
+																	: "h-full"
+															}`}
+														></div>
+													)}
+													<div
+														className={`flex flex-row justify-between items-center ${
+															pedidoIndex !== grupo.pedidos.length - 1
+																? "border-b border-black border-opacity-20"
+																: ""
+														} w-full ml-4 pb-3.5 pt-2`}
+													>
+														<div className="flex flex-col">
+															<p className="font-bold text-lg leading-none mb-2 mt-1">
+																{getFormattedAddress(pedido)}{" "}
+																<span className="text-xs font-normal">
+																	(
+																	{isPedidoValid(pedido)
+																		? `${pedido.distancia} km`
+																		: "Desconocido"}
+																	)
+																</span>
+															</p>
+															<div className="flex flex-row items-center gap-1.5">
+																{calcularTiempoEspera(pedido.hora) > 20 && (
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		viewBox="0 0 200 500"
+																		className="h-3"
+																	>
+																		<rect
+																			x="75"
+																			y="400"
+																			width="100"
+																			height="75"
+																			rx="20"
+																			ry="20"
+																			fill={
+																				calcularTiempoEspera(pedido.hora) > 30
+																					? "#FF0000"
+																					: "#F59E0B"
+																			}
+																		/>
+																		<rect
+																			x="75"
+																			y="50"
+																			width="100"
+																			height="300"
+																			rx="20"
+																			ry="20"
+																			fill={
+																				calcularTiempoEspera(pedido.hora) > 30
+																					? "#FF0000"
+																					: "#F59E0B"
+																			}
+																		/>
+																	</svg>
+																)}
+																<p className="text-xs">
+																	Pidió hace:{" "}
+																	{calcularTiempoEspera(pedido.hora)} minutos
+																</p>
+															</div>
+															<div className="flex flex-row gap-1.5 items-center">
+																{pedido.tiempoPercibido != null &&
+																	pedido.tiempoPercibido >= 30 && (
+																		<div
+																			className={`text-xs h-1.5 w-1.5 rounded-full ${
+																				pedido.tiempoPercibido < 50
+																					? "bg-yellow-500"
+																					: "bg-red-main"
+																			}`}
+																		></div>
+																	)}
+																<p className="text-xs">
+																	Percibe entrega de:{" "}
+																	{pedido.tiempoPercibido ?? 0} minutos
+																</p>
+															</div>
+															{pedido.hasOwnProperty("elaborado") &&
+																(pedido.elaborado ? (
+																	<p className="text-xs text-green-600 font-medium">
+																		Ya cocinado
+																	</p>
+																) : (
+																	<p className="text-xs font-medium text-red-600">
+																		{pedido.cookNow
+																			? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
+																					pedido
+																			  )} minutos`
+																			: `No cocinado (${calcularTiempoEstimadoElaboracion(
+																					pedido
+																			  )} min. necesarios)`}
+																	</p>
+																))}
+														</div>
+														<div className="flex items-center relative">
+															<button
+																className="ml-2 p-1 rounded-full relative"
+																onMouseEnter={() =>
+																	setStarTooltipVisibility((prev) => ({
+																		...prev,
+																		[`auto-${pedido.id}`]: true,
+																	}))
+																}
+																onMouseLeave={() =>
+																	setStarTooltipVisibility((prev) => ({
+																		...prev,
+																		[`auto-${pedido.id}`]: false,
+																	}))
+																}
+															>
+																{pedidosPrioritarios.some(
+																	(p) => p.id === pedido.id
+																) ? (
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		viewBox="0 0 24 24"
+																		fill="currentColor"
+																		className="w-4 text-red-main"
+																	>
+																		<path
+																			fillRule="evenodd"
+																			clipRule="evenodd"
+																			d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+																		/>
+																	</svg>
+																) : (
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		fill="none"
+																		viewBox="0 0 24 24"
+																		strokeWidth="1.5"
+																		stroke="currentColor"
+																		className="w-4 text-black opacity-50"
+																	>
+																		<path
+																			strokeLinecap="round"
+																			strokeLinejoin="round"
+																			d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+																		/>
+																	</svg>
+																)}
+																{starTooltipVisibility[`auto-${pedido.id}`] && (
+																	<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																		<p className="mb-[1.5px] text-xs">
+																			Este pedido está en proceso automático
+																		</p>
+																	</div>
+																)}
+															</button>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																fill="none"
+																viewBox="0 0 24 24"
+																strokeWidth="1.5"
+																stroke="currentColor"
+																className="w-6 mr-4 cursor-pointer opacity-50"
+																onMouseEnter={() =>
+																	setTooltipVisibility((prev) => ({
+																		...prev,
+																		[`auto-${index}-${pedidoIndex}`]: true,
+																	}))
+																}
+																onMouseLeave={() =>
+																	setTooltipVisibility((prev) => ({
+																		...prev,
+																		[`auto-${index}-${pedidoIndex}`]: false,
+																	}))
+																}
+															>
+																<path
+																	strokeLinecap="round"
+																	strokeLinejoin="round"
+																	d="M3.75 9h16.5m-16.5 6.75h16.5"
+																/>
+															</svg>
+															{tooltipVisibility[
+																`auto-${index}-${pedidoIndex}`
+															] && (
+																<div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
+																	<svg
+																		xmlns="http://www.w3.org/2000/svg"
+																		fill="none"
+																		viewBox="0 0 24 24"
+																		strokeWidth="1.5"
+																		stroke="currentColor"
+																		className="w-3 h-3"
+																	>
+																		<path
+																			strokeLinecap="round"
+																			strokeLinejoin="round"
+																			d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+																		/>
+																	</svg>
+																	<p className="mb-[1.5px] text-xs">
+																		Pedido en proceso automático
+																	</p>
+																</div>
+															)}
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									))}
+								</div>
+							);
+						})
+					) : (
+						<></>
+					)}
 				</div>
 
 				{modalIsOpen && selectedPedido && (
