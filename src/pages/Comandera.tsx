@@ -1478,7 +1478,7 @@ export const Comandera: React.FC = () => {
 
 	function formarGrupoAutomatico(
 		pedidosDisponibles: PedidoProps[],
-		tiempoMaximoRecorrido: number | null, // Changed parameter name
+		tiempoMaximoRecorrido: number | null,
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo {
 		const grupoActual: PedidosGrupos[] = [];
@@ -1489,25 +1489,24 @@ export const Comandera: React.FC = () => {
 		let latitudActual = LATITUD_INICIO;
 		let longitudActual = LONGITUD_INICIO;
 
-		// Start with priority order if available
-		let pedidoInicial =
-			pedidosPrioritarios.length > 0 ? pedidosPrioritarios[0] : null;
+		// Encontrar el pedido con mayor tiempo de espera
+		const pedidoMasAntiguo = pedidosDisponibles.reduce((prev, current) => {
+			const tiempoEsperaPrev = calcularTiempoEspera(prev.hora);
+			const tiempoEsperaCurrent = calcularTiempoEspera(current.hora);
+			return tiempoEsperaCurrent > tiempoEsperaPrev ? current : prev;
+		}, pedidosDisponibles[0]);
 
-		if (!pedidoInicial) {
-			// If no priority order, look for orders waiting more than 20 minutes
-			pedidoInicial = pedidosDisponibles.find((pedido) => {
-				const tiempoEspera = calcularTiempoEspera(pedido.hora);
-				return tiempoEspera > 20;
-			});
-
-			// If still no order found, find the closest one
-			if (!pedidoInicial) {
-				pedidoInicial = encontrarMejorPedidoAutomatico(
-					pedidosDisponibles,
-					latitudActual,
-					longitudActual
-				);
-			}
+		// Si el pedido más antiguo tiene más de 20 minutos, comenzar con él
+		let pedidoInicial = null;
+		if (calcularTiempoEspera(pedidoMasAntiguo.hora) > 20) {
+			pedidoInicial = pedidoMasAntiguo;
+		} else {
+			// Si no hay pedidos urgentes, buscar el más cercano
+			pedidoInicial = encontrarMejorPedidoAutomatico(
+				pedidosDisponibles,
+				latitudActual,
+				longitudActual
+			);
 		}
 
 		if (pedidoInicial && isPedidoValid(pedidoInicial)) {
@@ -1524,6 +1523,7 @@ export const Comandera: React.FC = () => {
 			grupoActual.push({
 				...pedidoInicial,
 				tiempoPercibido: Math.round(tiempoPercibido),
+				priorizado: tiempoEspera > 20, // Solo marcar como priorizado si tiene más de 20 minutos
 			});
 
 			tiempoTotalGrupo = tiempoViaje;
@@ -1538,19 +1538,13 @@ export const Comandera: React.FC = () => {
 			);
 		}
 
+		// Para el resto de los pedidos, no consideramos la priorización
 		while (pedidosDisponibles.length > 0) {
-			let mejorPedido = pedidosDisponibles.find((pedido) => {
-				const tiempoEspera = calcularTiempoEspera(pedido.hora);
-				return tiempoEspera > 20;
-			});
-
-			if (!mejorPedido) {
-				mejorPedido = encontrarMejorPedidoAutomatico(
-					pedidosDisponibles,
-					latitudActual,
-					longitudActual
-				);
-			}
+			let mejorPedido = encontrarMejorPedidoAutomatico(
+				pedidosDisponibles,
+				latitudActual,
+				longitudActual
+			);
 
 			if (!mejorPedido || !isPedidoValid(mejorPedido)) break;
 
@@ -1571,7 +1565,6 @@ export const Comandera: React.FC = () => {
 			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
 			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
 
-			// Check if adding this order would exceed the maximum time
 			if (
 				tiempoMaximoRecorrido !== null &&
 				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
@@ -1586,7 +1579,9 @@ export const Comandera: React.FC = () => {
 			grupoActual.push({
 				...mejorPedido,
 				tiempoPercibido: Math.round(tiempoPercibido),
+				priorizado: false, // Los pedidos adicionales nunca se marcan como priorizados
 			});
+
 			tiempoTotalGrupo = tiempoTotalConRegreso;
 			distanciaTotalGrupo = distanciaTotalConRegreso;
 
@@ -3298,15 +3293,8 @@ export const Comandera: React.FC = () => {
 																))}
 														</div>
 														<div className="flex items-center relative">
-															<button
-																className="ml-2 p-1 rounded-full relative"
-																onClick={() =>
-																	togglePedidoPrioritarioAutomatico(pedido)
-																}
-															>
-																{pedidosPrioritariosAutomaticos.some(
-																	(p) => p.id === pedido.id
-																) ? (
+															<button className="ml-2 p-1 rounded-full relative">
+																{pedido.priorizado ? (
 																	<svg
 																		xmlns="http://www.w3.org/2000/svg"
 																		viewBox="0 0 24 24"
@@ -3338,7 +3326,9 @@ export const Comandera: React.FC = () => {
 																{starTooltipVisibility[`auto-${pedido.id}`] && (
 																	<div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
 																		<p className="mb-[1.5px] text-xs">
-																			Este pedido está en proceso automático
+																			{pedido.priorizado
+																				? "Este pedido está priorizado automáticamente por tiempo de espera"
+																				: "Este pedido no está priorizado"}
 																		</p>
 																	</div>
 																)}
