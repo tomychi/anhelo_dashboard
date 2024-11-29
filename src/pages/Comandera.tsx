@@ -1402,12 +1402,35 @@ export const Comandera: React.FC = () => {
 
 	// Add these new states after the existing states
 
-	// Duplicate and rename the group creation functions
 	function armarGruposAutomaticos(
 		pedidos: PedidoProps[],
 		tiempoMaximoAutomatico: number | null,
-		pedidosPrioritarios: PedidoProps[]
+		pedidosPrioritariosAutomaticos: PedidoProps[],
+		setPedidosPrioritariosAutomaticos: React.Dispatch<
+			React.SetStateAction<PedidoProps[]>
+		>
 	): Grupo[] {
+		// First, automatically identify orders that need to be prioritized
+		let pedidosPrioritariosActualizados = [...pedidosPrioritariosAutomaticos];
+
+		// Add orders older than 20 minutes to priority list and update UI state
+		pedidos.forEach((pedido) => {
+			const tiempoEspera = calcularTiempoEspera(pedido.hora);
+			if (
+				tiempoEspera > 20 &&
+				!pedidosPrioritariosActualizados.some((p) => p.id === pedido.id)
+			) {
+				pedidosPrioritariosActualizados.push(pedido);
+				// Update the state to show the star in the UI
+				setPedidosPrioritariosAutomaticos((prev) => {
+					if (!prev.some((p) => p.id === pedido.id)) {
+						return [...prev, pedido];
+					}
+					return prev;
+				});
+			}
+		});
+
 		const pedidosDisponiblesAuto = pedidos.filter(
 			(pedido) =>
 				!gruposAutomaticos.some((grupo) =>
@@ -1415,25 +1438,36 @@ export const Comandera: React.FC = () => {
 				) && isPedidoValid(pedido)
 		);
 
-		const pedidosManualesAuto = pedidos.filter(
-			(pedido) =>
-				(!isPedidoValid(pedido) ||
-					(pedido.map[0] === 0 && pedido.map[1] === 0)) &&
-				!gruposAutomaticos.some((grupo) =>
-					grupo.pedidos.some((p) => p.id === pedido.id)
-				)
-		);
-
 		if (pedidosDisponiblesAuto.length === 0) return [];
 
 		const gruposAutomaticosTemp: Grupo[] = [];
 		let pedidosRestantes = [...pedidosDisponiblesAuto];
 
+		// Process prioritized orders first (both manual and auto-detected)
+		while (pedidosPrioritariosActualizados.length > 0) {
+			const pedidoPrioritario = pedidosPrioritariosActualizados[0];
+			const grupo = formarGrupoAutomatico(
+				pedidosRestantes,
+				tiempoMaximoAutomatico,
+				[pedidoPrioritario]
+			);
+			gruposAutomaticosTemp.push(grupo);
+
+			// Remove processed orders from both lists
+			pedidosRestantes = pedidosRestantes.filter(
+				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+			);
+			pedidosPrioritariosActualizados = pedidosPrioritariosActualizados.filter(
+				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+			);
+		}
+
+		// Process remaining non-priority orders
 		while (pedidosRestantes.length > 0) {
 			const grupo = formarGrupoAutomatico(
 				pedidosRestantes,
 				tiempoMaximoAutomatico,
-				pedidosPrioritarios
+				[]
 			);
 			gruposAutomaticosTemp.push(grupo);
 			pedidosRestantes = pedidosRestantes.filter(
@@ -1457,15 +1491,25 @@ export const Comandera: React.FC = () => {
 		let latitudActual = LATITUD_INICIO;
 		let longitudActual = LONGITUD_INICIO;
 
+		// Start with priority order if available
 		let pedidoInicial =
 			pedidosPrioritarios.length > 0 ? pedidosPrioritarios[0] : null;
 
 		if (!pedidoInicial) {
-			pedidoInicial = encontrarMejorPedidoAutomatico(
-				pedidosDisponibles,
-				latitudActual,
-				longitudActual
-			);
+			// If no priority order, look for orders waiting more than 20 minutes
+			pedidoInicial = pedidosDisponibles.find((pedido) => {
+				const tiempoEspera = calcularTiempoEspera(pedido.hora);
+				return tiempoEspera > 20;
+			});
+
+			// If still no order found, find the closest one
+			if (!pedidoInicial) {
+				pedidoInicial = encontrarMejorPedidoAutomatico(
+					pedidosDisponibles,
+					latitudActual,
+					longitudActual
+				);
+			}
 		}
 
 		if (pedidoInicial && isPedidoValid(pedidoInicial)) {
@@ -1496,12 +1540,23 @@ export const Comandera: React.FC = () => {
 			);
 		}
 
+		// Continue forming group with remaining orders
 		while (pedidosDisponibles.length > 0) {
-			let mejorPedido = encontrarMejorPedidoAutomatico(
-				pedidosDisponibles,
-				latitudActual,
-				longitudActual
-			);
+			// Look for orders waiting more than 20 minutes first
+			let mejorPedido = pedidosDisponibles.find((pedido) => {
+				const tiempoEspera = calcularTiempoEspera(pedido.hora);
+				return tiempoEspera > 20;
+			});
+
+			// If no urgent orders found, find the closest one
+			if (!mejorPedido) {
+				mejorPedido = encontrarMejorPedidoAutomatico(
+					pedidosDisponibles,
+					latitudActual,
+					longitudActual
+				);
+			}
+
 			if (!mejorPedido || !isPedidoValid(mejorPedido)) break;
 
 			const nuevaRuta = [...grupoActual, mejorPedido];
@@ -1598,18 +1653,18 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	// Modificar el useMemo de gruposAutomaticosOptimosMemo para usar los nuevos pedidos prioritarios
 	const gruposAutomaticosOptimosMemo = useMemo(() => {
 		return armarGruposAutomaticos(
 			pedidosConDistancias,
 			tiempoMaximoAutomatico,
-			pedidosPrioritariosAutomaticos // Cambiar aquí para usar los prioritarios automáticos
+			pedidosPrioritariosAutomaticos,
+			setPedidosPrioritariosAutomaticos
 		);
 	}, [
 		pedidosConDistancias,
 		tiempoMaximoAutomatico,
 		gruposAutomaticos,
-		pedidosPrioritariosAutomaticos, // Actualizar la dependencia
+		pedidosPrioritariosAutomaticos,
 		velocidadPromedio,
 	]);
 
