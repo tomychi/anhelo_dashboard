@@ -505,13 +505,12 @@ export const Comandera: React.FC = () => {
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo {
 		const grupoActual: PedidosGrupos[] = [];
-		let tiempoTotalGrupo = 0;
-		let distanciaTotalGrupo = 0;
 		let peorTiempoPercibido = 0;
 		let pedidoPeorTiempo: PedidoProps | null = null;
 		let latitudActual = LATITUD_INICIO;
 		let longitudActual = LONGITUD_INICIO;
 
+		// Empezar con pedido prioritario si existe
 		let pedidoInicial =
 			pedidosPrioritarios.length > 0 ? pedidosPrioritarios[0] : null;
 
@@ -539,10 +538,10 @@ export const Comandera: React.FC = () => {
 				tiempoPercibido: Math.round(tiempoPercibido),
 			});
 
-			tiempoTotalGrupo = tiempoViaje;
-			distanciaTotalGrupo = distancia;
-			peorTiempoPercibido = tiempoPercibido;
-			pedidoPeorTiempo = pedidoInicial;
+			if (tiempoPercibido > peorTiempoPercibido) {
+				peorTiempoPercibido = tiempoPercibido;
+				pedidoPeorTiempo = pedidoInicial;
+			}
 
 			latitudActual = pedidoInicial.map[0];
 			longitudActual = pedidoInicial.map[1];
@@ -551,6 +550,7 @@ export const Comandera: React.FC = () => {
 			);
 		}
 
+		// Agregar pedidos restantes
 		while (pedidosDisponibles.length > 0) {
 			let mejorPedido = encontrarMejorPedido(
 				pedidosDisponibles,
@@ -566,6 +566,7 @@ export const Comandera: React.FC = () => {
 				LONGITUD_INICIO
 			);
 
+			// Calcular tiempo de regreso
 			const distanciaRegreso = calcularDistancia(
 				mejorPedido.map[0],
 				mejorPedido.map[1],
@@ -574,11 +575,8 @@ export const Comandera: React.FC = () => {
 			);
 			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
 			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
-			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
 
-			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
-			const tiempoPercibido = tiempoEspera + tiempoTotal;
-
+			// Verificar tiempo máximo de recorrido
 			if (
 				tiempoMaximoRecorrido !== null &&
 				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
@@ -587,12 +585,13 @@ export const Comandera: React.FC = () => {
 				break;
 			}
 
+			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+			const tiempoPercibido = tiempoEspera + tiempoTotal;
+
 			grupoActual.push({
 				...mejorPedido,
 				tiempoPercibido: Math.round(tiempoPercibido),
 			});
-			tiempoTotalGrupo = tiempoTotalConRegreso;
-			distanciaTotalGrupo = distanciaTotalConRegreso;
 
 			if (tiempoPercibido > peorTiempoPercibido) {
 				peorTiempoPercibido = tiempoPercibido;
@@ -606,14 +605,44 @@ export const Comandera: React.FC = () => {
 			);
 		}
 
+		// Calcular tiempo y distancia total final incluyendo el regreso a ANHELO
+		const rutaCompleta = calcularTiempoYDistanciaRecorrido(
+			grupoActual,
+			LATITUD_INICIO,
+			LONGITUD_INICIO
+		);
+
+		// Agregar el tiempo y distancia de regreso
+		if (grupoActual.length > 0) {
+			const ultimoPedido = grupoActual[grupoActual.length - 1];
+			const distanciaRegreso = calcularDistancia(
+				ultimoPedido.map[0],
+				ultimoPedido.map[1],
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
+
+			return {
+				pedidos: grupoActual,
+				tiempoTotal: Math.round(rutaCompleta.tiempoTotal + tiempoRegreso),
+				distanciaTotal: Number(
+					(rutaCompleta.distanciaTotal + distanciaRegreso).toFixed(2)
+				),
+				peorTiempoPercibido: Math.round(peorTiempoPercibido),
+				pedidoPeorTiempo,
+			};
+		}
+
 		return {
 			pedidos: grupoActual,
-			tiempoTotal: Math.round(tiempoTotalGrupo),
-			distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
+			tiempoTotal: Math.round(rutaCompleta.tiempoTotal),
+			distanciaTotal: Number(rutaCompleta.distanciaTotal.toFixed(2)),
 			peorTiempoPercibido: Math.round(peorTiempoPercibido),
 			pedidoPeorTiempo,
 		};
 	}
+
 	function encontrarMejorPedido(
 		pedidosDisponibles: PedidoProps[],
 		latitudActual: number,
