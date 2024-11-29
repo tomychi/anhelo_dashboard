@@ -1394,6 +1394,375 @@ export const Comandera: React.FC = () => {
 		console.log("Estado automático:", automatico);
 	}, [automatico]);
 
+	useEffect(() => {
+		// Filter orders that have been waiting for more than 20 minutes
+		const pedidosPriorizables = pedidosDisponibles.filter((pedido) => {
+			const tiempoEspera = calcularTiempoEspera(pedido.hora);
+			return tiempoEspera > 20;
+		});
+
+		// Log the prioritizable orders
+		console.log(
+			"Pedidos priorizables:",
+			pedidosPriorizables.map((pedido) => ({
+				id: pedido.id,
+				direccion: pedido.direccion,
+				tiempoEspera: calcularTiempoEspera(pedido.hora),
+			}))
+		);
+	}, [pedidosDisponibles, tiempoActual]);
+
+	const gruposAutomaticos = () => {
+		// Funciones auxiliares
+		const calcularDistanciaRecorrido = (
+			grupo,
+			latitudInicio,
+			longitudInicio
+		) => {
+			let tiempoTotal = 0;
+			let distanciaTotal = 0;
+			let latitudActual = latitudInicio;
+			let longitudActual = longitudInicio;
+			const velocidadActual = VELOCIDAD_PROMEDIO_MOTO;
+
+			grupo.forEach((pedido, index) => {
+				if (!isPedidoValid(pedido)) return;
+
+				const distancia = calcularDistancia(
+					latitudActual,
+					longitudActual,
+					pedido.map[0],
+					pedido.map[1]
+				);
+				distanciaTotal += distancia;
+				const tiempoViaje = (distancia / velocidadActual) * 60;
+				tiempoTotal += tiempoViaje;
+				if (index < grupo.length - 1) {
+					tiempoTotal += TIEMPO_POR_ENTREGA;
+				}
+				latitudActual = pedido.map[0];
+				longitudActual = pedido.map[1];
+			});
+
+			return {
+				tiempoTotal: Math.round(tiempoTotal),
+				distanciaTotal: Number(distanciaTotal.toFixed(2)),
+			};
+		};
+
+		const evaluarReordenamiento = (grupo, pedidoPriorizable) => {
+			// Si el pedido ya está al frente, no necesitamos evaluarlo
+			if (grupo.pedidos[0].id === pedidoPriorizable.id) {
+				return false;
+			}
+
+			// Crear una copia del grupo con el pedido al frente
+			const grupoReordenado = {
+				...grupo,
+				pedidos: [
+					pedidoPriorizable,
+					...grupo.pedidos.filter((p) => p.id !== pedidoPriorizable.id),
+				],
+			};
+
+			// Recalcular tiempos para el grupo reordenado
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
+			let tiempoAcumulado = 0;
+
+			// Evaluar cada pedido en el nuevo orden
+			const pedidosConTiempos = grupoReordenado.pedidos.map((pedido) => {
+				const distancia = calcularDistancia(
+					latitudActual,
+					longitudActual,
+					pedido.map[0],
+					pedido.map[1]
+				);
+				const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+				tiempoAcumulado += tiempoViaje;
+
+				const tiempoEspera = calcularTiempoEspera(pedido.hora);
+				const tiempoPercibido = tiempoEspera + tiempoAcumulado;
+
+				latitudActual = pedido.map[0];
+				longitudActual = pedido.map[1];
+
+				return {
+					...pedido,
+					tiempoPercibido,
+				};
+			});
+
+			// Encontrar el peor tiempo percibido
+			const peorTiempoPercibido = Math.max(
+				...pedidosConTiempos.map((p) => p.tiempoPercibido)
+			);
+
+			// Log de la evaluación
+			console.log("\n=== EVALUANDO REORDENAMIENTO ===");
+			console.log("Pedido evaluado:", getFormattedAddress(pedidoPriorizable));
+			console.log(
+				"Peor tiempo percibido si se reordena:",
+				peorTiempoPercibido,
+				"minutos"
+			);
+			console.log(
+				"Conviene reordenar:",
+				peorTiempoPercibido <= 50 ? "SÍ" : "NO"
+			);
+
+			return peorTiempoPercibido <= 50;
+		};
+
+		const formarGrupoAutomatico = (
+			pedidosDisponibles,
+			pedidoPrioritario = null
+		) => {
+			const grupoActual = [];
+			let tiempoTotalGrupo = 0;
+			let distanciaTotalGrupo = 0;
+			let peorTiempoPercibido = 0;
+			let pedidoPeorTiempo = null;
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
+
+			// Si hay un pedido prioritario, comenzamos con él
+			const pedidoInicial = pedidoPrioritario || pedidosDisponibles[0];
+
+			if (pedidoInicial && isPedidoValid(pedidoInicial)) {
+				const tiempoEspera = calcularTiempoEspera(pedidoInicial.hora);
+				const distancia = calcularDistancia(
+					latitudActual,
+					longitudActual,
+					pedidoInicial.map[0],
+					pedidoInicial.map[1]
+				);
+				const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+				const tiempoPercibido = tiempoEspera + tiempoViaje;
+
+				grupoActual.push({
+					...pedidoInicial,
+					tiempoPercibido: Math.round(tiempoPercibido),
+					distancia: Number(distancia.toFixed(2)),
+				});
+
+				tiempoTotalGrupo = tiempoViaje;
+				distanciaTotalGrupo = distancia;
+				peorTiempoPercibido = tiempoPercibido;
+				pedidoPeorTiempo = pedidoInicial;
+
+				latitudActual = pedidoInicial.map[0];
+				longitudActual = pedidoInicial.map[1];
+				pedidosDisponibles = pedidosDisponibles.filter(
+					(p) => p.id !== pedidoInicial.id
+				);
+			}
+
+			while (pedidosDisponibles.length > 0) {
+				let mejorPedido = null;
+				let menorDistancia = Infinity;
+
+				for (const pedido of pedidosDisponibles) {
+					if (!isPedidoValid(pedido)) continue;
+
+					const distancia = calcularDistancia(
+						latitudActual,
+						longitudActual,
+						pedido.map[0],
+						pedido.map[1]
+					);
+
+					if (distancia < menorDistancia) {
+						menorDistancia = distancia;
+						mejorPedido = pedido;
+					}
+				}
+
+				if (!mejorPedido) break;
+
+				const nuevaRuta = [...grupoActual, mejorPedido];
+				const { tiempoTotal } = calcularDistanciaRecorrido(
+					nuevaRuta,
+					LATITUD_INICIO,
+					LONGITUD_INICIO
+				);
+
+				if (tiempoTotal > 40 && grupoActual.length > 0) {
+					break;
+				}
+
+				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+				const tiempoPercibido = tiempoEspera + tiempoTotal;
+
+				grupoActual.push({
+					...mejorPedido,
+					tiempoPercibido: Math.round(tiempoPercibido),
+					distancia: Number(menorDistancia.toFixed(2)),
+				});
+
+				if (tiempoPercibido > peorTiempoPercibido) {
+					peorTiempoPercibido = tiempoPercibido;
+					pedidoPeorTiempo = mejorPedido;
+				}
+
+				latitudActual = mejorPedido.map[0];
+				longitudActual = mejorPedido.map[1];
+				pedidosDisponibles = pedidosDisponibles.filter(
+					(p) => p.id !== mejorPedido.id
+				);
+			}
+
+			const { tiempoTotal, distanciaTotal } = calcularDistanciaRecorrido(
+				grupoActual,
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+
+			return {
+				pedidos: grupoActual,
+				tiempoTotal,
+				distanciaTotal,
+				peorTiempoPercibido: Math.round(peorTiempoPercibido),
+				pedidoPeorTiempo,
+			};
+		};
+
+		// Identificamos los pedidos priorizables pero trabajamos con todos los pedidos disponibles
+		const pedidosPriorizables = pedidosDisponibles.filter((pedido) => {
+			const tiempoEspera = calcularTiempoEspera(pedido.hora);
+			return tiempoEspera > 20;
+		});
+
+		console.log(
+			"Pedidos priorizables encontrados:",
+			pedidosPriorizables.length
+		);
+		console.log("Total de pedidos disponibles:", pedidosDisponibles.length);
+
+		// Comenzamos con todos los pedidos disponibles
+		if (pedidosDisponibles.length > 0) {
+			const gruposFormados = [];
+			let pedidosRestantes = [...pedidosDisponibles];
+
+			while (pedidosRestantes.length > 0) {
+				// Primero buscamos si hay algún pedido priorizable entre los restantes
+				const pedidoPrioritarioRestante = pedidosRestantes.find(
+					(pedido) => calcularTiempoEspera(pedido.hora) > 20
+				);
+
+				const grupo = formarGrupoAutomatico(
+					pedidosRestantes,
+					pedidoPrioritarioRestante
+				);
+
+				// Si hay pedidos priorizables en el grupo, evaluamos reordenamiento
+				const pedidosPriorizablesEnGrupo = grupo.pedidos.filter(
+					(pedido) => calcularTiempoEspera(pedido.hora) > 20
+				);
+
+				if (pedidosPriorizablesEnGrupo.length > 0) {
+					pedidosPriorizablesEnGrupo.forEach((pedido) => {
+						const debeReordenar = evaluarReordenamiento(grupo, pedido);
+						if (debeReordenar) {
+							grupo.pedidos = [
+								pedido,
+								...grupo.pedidos.filter((p) => p.id !== pedido.id),
+							];
+
+							// Recalcular métricas del grupo
+							const { tiempoTotal, distanciaTotal } =
+								calcularDistanciaRecorrido(
+									grupo.pedidos,
+									LATITUD_INICIO,
+									LONGITUD_INICIO
+								);
+							grupo.tiempoTotal = tiempoTotal;
+							grupo.distanciaTotal = distanciaTotal;
+
+							// Recalcular tiempos percibidos
+							let tiempoAcumulado = 0;
+							grupo.pedidos = grupo.pedidos.map((p) => {
+								const distancia = calcularDistancia(
+									LATITUD_INICIO,
+									LONGITUD_INICIO,
+									p.map[0],
+									p.map[1]
+								);
+								const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
+								tiempoAcumulado += tiempoViaje;
+								return {
+									...p,
+									tiempoPercibido:
+										calcularTiempoEspera(p.hora) + tiempoAcumulado,
+								};
+							});
+
+							// Actualizar peor tiempo percibido
+							grupo.peorTiempoPercibido = Math.max(
+								...grupo.pedidos.map((p) => p.tiempoPercibido)
+							);
+							grupo.pedidoPeorTiempo = grupo.pedidos.find(
+								(p) => p.tiempoPercibido === grupo.peorTiempoPercibido
+							);
+						}
+					});
+				}
+
+				gruposFormados.push(grupo);
+				pedidosRestantes = pedidosRestantes.filter(
+					(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+				);
+			}
+
+			// Logeamos los grupos formados
+			console.log("\n=== GRUPOS AUTOMÁTICOS FORMADOS ===");
+			gruposFormados.forEach((grupo, index) => {
+				console.log(`\nGrupo ${index + 1}:`);
+				console.log(
+					"Tiempo total del recorrido:",
+					grupo.tiempoTotal,
+					"minutos"
+				);
+				console.log("Distancia total:", grupo.distanciaTotal, "km");
+				console.log(
+					"Peor tiempo percibido:",
+					grupo.peorTiempoPercibido,
+					"minutos"
+				);
+				console.log(
+					"Pedido con peor tiempo:",
+					getFormattedAddress(grupo.pedidoPeorTiempo)
+				);
+				console.log("\nPedidos en el grupo:");
+				grupo.pedidos.forEach((pedido, i) => {
+					console.log(`${i + 1}. ${getFormattedAddress(pedido)}`);
+					console.log(
+						`   - Tiempo de espera: ${calcularTiempoEspera(
+							pedido.hora
+						)} minutos`
+					);
+					console.log(
+						`   - Tiempo percibido: ${pedido.tiempoPercibido} minutos`
+					);
+					console.log(`   - Distancia: ${pedido.distancia || "N/A"} km`);
+				});
+			});
+
+			return gruposFormados;
+		} else {
+			console.log("No hay pedidos disponibles en este momento");
+			return [];
+		}
+	};
+
+	// Agregamos un useEffect para ejecutar la función automáticamente cuando haya cambios
+	useEffect(() => {
+		if (automatico) {
+			console.log("\n=== INICIANDO AGRUPACIÓN AUTOMÁTICA ===");
+			gruposAutomaticos();
+		}
+	}, [pedidosDisponibles, tiempoActual, automatico]);
+
 	return (
 		<>
 			<style>
