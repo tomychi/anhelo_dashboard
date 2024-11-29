@@ -2984,7 +2984,7 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												Automatico v0.0.1
+												Grupo Automatico
 											</h3>
 											<p className="text-xs">
 												Peor entrega: {grupo.peorTiempoPercibido} minutos (
@@ -3297,7 +3297,7 @@ export const Comandera: React.FC = () => {
 														fill="currentFill"
 													/>
 												</svg>
-												Manual
+												Grupo Optimo
 											</h3>
 											<p className="text-xs">
 												Peor entrega: {grupo.peorTiempoPercibido} minutos (
