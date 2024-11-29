@@ -1772,10 +1772,53 @@ export const Comandera: React.FC = () => {
 		}
 	};
 
+	const evaluarGrupoListo = (grupo: Grupo): boolean => {
+		// Calcular el costo por entrega
+		const costoPorEntrega = Math.round(
+			(grupo.distanciaTotal * 200 + grupo.pedidos.length * 1200) /
+				grupo.pedidos.length
+		);
+
+		// Si el costo por entrega es menor a $2000
+		if (costoPorEntrega < 2000) {
+			// Solo nos preocupamos por el límite de 30 minutos
+			return grupo.peorTiempoPercibido > 30;
+		} else {
+			// Si el costo es alto, extendemos el límite a 45 minutos
+			return grupo.peorTiempoPercibido > 45;
+		}
+	};
+
+	// Modificación en el useEffect que maneja los grupos automáticos
 	useEffect(() => {
 		if (automatico) {
 			console.log("\n=== INICIANDO AGRUPACIÓN AUTOMÁTICA ===");
-			gruposAutomaticos();
+			const gruposFormados = gruposAutomaticos();
+
+			// Evaluar cada grupo y si está listo, añadirlo a gruposListos
+			gruposFormados.forEach((grupo) => {
+				if (evaluarGrupoListo(grupo)) {
+					const horaActual = new Date();
+					const horaRegreso = new Date(
+						horaActual.getTime() + grupo.tiempoTotal * 60000
+					);
+					const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
+						"es-ES",
+						{
+							hour: "2-digit",
+							minute: "2-digit",
+						}
+					);
+
+					setGruposListos((prevGrupos) => [
+						...prevGrupos,
+						{
+							...grupo,
+							horaRegreso: horaRegresoFormateada,
+						},
+					]);
+				}
+			});
 		}
 	}, [
 		pedidosDisponibles,
@@ -1783,7 +1826,6 @@ export const Comandera: React.FC = () => {
 		automatico,
 		tiempoMaximoRecorrido,
 		velocidadPromedio,
-		// Otras configuraciones que afecten al cálculo
 	]);
 
 	return (
