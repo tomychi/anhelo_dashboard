@@ -1533,14 +1533,9 @@ export const Comandera: React.FC = () => {
 	): Grupo {
 		console.log("\n🚀 Iniciando formación de grupo automático");
 		console.log(`📦 Pedidos disponibles: ${pedidosDisponibles.length}`);
-		if (tiempoMaximoRecorrido) {
-			console.log(
-				`⏱️ Tiempo máximo de recorrido: ${tiempoMaximoRecorrido} minutos`
-			);
-		}
 
 		// Inicialización de variables base
-		let grupoActual: PedidosGrupos[] = []; // Cambiado de const a let
+		let grupoActual: PedidosGrupos[] = [];
 		let tiempoTotalGrupo = 0;
 		let distanciaTotalGrupo = 0;
 		let peorTiempoPercibido = 0;
@@ -1550,7 +1545,6 @@ export const Comandera: React.FC = () => {
 
 		// Formar grupo inicial basado en proximidad
 		let pedidosRestantes = [...pedidosDisponibles];
-		console.log("\n🔄 Formando grupo inicial basado en proximidad");
 
 		while (pedidosRestantes.length > 0) {
 			const mejorPedido = encontrarMejorPedidoAutomatico(
@@ -1568,25 +1562,30 @@ export const Comandera: React.FC = () => {
 				LONGITUD_INICIO
 			);
 
+			// Calcular tiempo de regreso
+			const distanciaRegreso = calcularDistancia(
+				mejorPedido.map[0],
+				mejorPedido.map[1],
+				LATITUD_INICIO,
+				LONGITUD_INICIO
+			);
+			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
+			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
+			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
+
 			if (
 				tiempoMaximoRecorrido !== null &&
-				tiempoTotal > tiempoMaximoRecorrido &&
+				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
 				grupoActual.length > 0
 			) {
 				console.log(
-					`⚠️ Tiempo máximo excedido (${tiempoTotal}/${tiempoMaximoRecorrido}). Deteniendo formación.`
+					`⚠️ Tiempo máximo excedido (${tiempoTotalConRegreso}/${tiempoMaximoRecorrido}). Deteniendo formación.`
 				);
 				break;
 			}
 
 			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 			const tiempoPercibido = tiempoEspera + tiempoTotal;
-
-			console.log(`➕ Agregando pedido a grupo:`, {
-				direccion: getFormattedAddress(mejorPedido),
-				tiempoEspera,
-				tiempoPercibido: Math.round(tiempoPercibido),
-			});
 
 			grupoActual.push({
 				...mejorPedido,
@@ -1598,6 +1597,9 @@ export const Comandera: React.FC = () => {
 				peorTiempoPercibido = tiempoPercibido;
 				pedidoPeorTiempo = mejorPedido;
 			}
+
+			tiempoTotalGrupo = tiempoTotalConRegreso;
+			distanciaTotalGrupo = distanciaTotalConRegreso;
 
 			latitudActual = mejorPedido.map[0];
 			longitudActual = mejorPedido.map[1];
@@ -1611,9 +1613,6 @@ export const Comandera: React.FC = () => {
 		const pedidosDemorados = grupoActual.filter(
 			(pedido) => calcularTiempoEspera(pedido.hora) > 20
 		);
-		console.log(
-			`📍 Pedidos con +20 minutos de espera: ${pedidosDemorados.length}/${grupoActual.length}`
-		);
 
 		// Caso 1: Si todos tienen +20 minutos, no priorizamos ninguno
 		if (
@@ -1623,29 +1622,11 @@ export const Comandera: React.FC = () => {
 			console.log(
 				"⚠️ Todos los pedidos tienen +20 minutos. No se prioriza ninguno."
 			);
-			return {
-				pedidos: grupoActual,
-				tiempoTotal: Math.round(tiempoTotalGrupo),
-				distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
-				peorTiempoPercibido: Math.round(peorTiempoPercibido),
-				pedidoPeorTiempo,
-			};
 		}
-
 		// Caso 2: Si hay múltiples pedidos con +20 minutos pero no todos
-		if (pedidosDemorados.length > 1) {
+		else if (pedidosDemorados.length > 1) {
 			console.log("\n🔄 Evaluando múltiples pedidos demorados");
-			const tiempoPeorEntregaOriginal = calcularTiempoPeorEntrega(
-				grupoActual,
-				LATITUD_INICIO,
-				LONGITUD_INICIO
-			);
-			console.log(
-				`📊 Tiempo peor entrega original: ${Math.round(
-					tiempoPeorEntregaOriginal
-				)} minutos`
-			);
-
+			const tiempoPeorEntregaOriginal = peorTiempoPercibido;
 			let mejorConfiguracion = {
 				pedidos: grupoActual,
 				peorTiempo: tiempoPeorEntregaOriginal,
@@ -1653,10 +1634,6 @@ export const Comandera: React.FC = () => {
 
 			// Probar priorizando cada pedido demorado
 			for (const pedidoDemorado of pedidosDemorados) {
-				console.log(
-					`\n🔄 Probando priorizar: ${getFormattedAddress(pedidoDemorado)}`
-				);
-
 				const pedidosReordenados = [
 					{ ...pedidoDemorado, priorizado: true },
 					...grupoActual
@@ -1664,35 +1641,28 @@ export const Comandera: React.FC = () => {
 						.map((p) => ({ ...p, priorizado: false })),
 				];
 
-				const tiempoPeorEntregaNuevo = calcularTiempoPeorEntrega(
+				const { tiempoTotal } = calcularTiempoYDistanciaRecorrido(
 					pedidosReordenados,
 					LATITUD_INICIO,
 					LONGITUD_INICIO
 				);
-				console.log(
-					`📊 Tiempo peor entrega con priorización: ${Math.round(
-						tiempoPeorEntregaNuevo
-					)} minutos`
+
+				const nuevoPeorTiempo = Math.max(
+					...pedidosReordenados.map(
+						(p) => calcularTiempoEspera(p.hora) + tiempoTotal
+					)
 				);
 
-				if (tiempoPeorEntregaNuevo < mejorConfiguracion.peorTiempo) {
-					console.log("✅ Encontrada mejor configuración");
+				if (nuevoPeorTiempo < mejorConfiguracion.peorTiempo) {
 					mejorConfiguracion = {
 						pedidos: pedidosReordenados,
-						peorTiempo: tiempoPeorEntregaNuevo,
+						peorTiempo: nuevoPeorTiempo,
 					};
 				}
 			}
 
 			grupoActual = mejorConfiguracion.pedidos;
 			peorTiempoPercibido = mejorConfiguracion.peorTiempo;
-			console.log(
-				"\n📍 Configuración final elegida:",
-				grupoActual.map((p) => ({
-					direccion: getFormattedAddress(p),
-					priorizado: p.priorizado,
-				}))
-			);
 		}
 		// Si solo hay un pedido con +20 minutos, lo priorizamos
 		else if (pedidosDemorados.length === 1) {
@@ -1705,24 +1675,10 @@ export const Comandera: React.FC = () => {
 			];
 		}
 
-		// Actualizar tiempos y distancias finales
-		const { tiempoTotal, distanciaTotal } = calcularTiempoYDistanciaRecorrido(
-			grupoActual,
-			LATITUD_INICIO,
-			LONGITUD_INICIO
-		);
-
-		console.log("\n🏁 Grupo formado:", {
-			cantidadPedidos: grupoActual.length,
-			tiempoTotal: Math.round(tiempoTotal),
-			distanciaTotal: Number(distanciaTotal.toFixed(2)),
-			peorTiempoPercibido: Math.round(peorTiempoPercibido),
-		});
-
 		return {
 			pedidos: grupoActual,
-			tiempoTotal: Math.round(tiempoTotal),
-			distanciaTotal: Number(distanciaTotal.toFixed(2)),
+			tiempoTotal: Math.round(tiempoTotalGrupo),
+			distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
 			peorTiempoPercibido: Math.round(peorTiempoPercibido),
 			pedidoPeorTiempo,
 		};
