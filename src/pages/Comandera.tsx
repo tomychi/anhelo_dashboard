@@ -1404,7 +1404,7 @@ export const Comandera: React.FC = () => {
 
 	function armarGruposAutomaticos(
 		pedidos: PedidoProps[],
-		tiempoMaximoAutomatico: number | null,
+		tiempoMaximoRecorrido: number | null, // Changed from tiempoMaximoAutomatico
 		pedidosPrioritariosAutomaticos: PedidoProps[],
 		setPedidosPrioritariosAutomaticos: React.Dispatch<
 			React.SetStateAction<PedidoProps[]>
@@ -1421,7 +1421,6 @@ export const Comandera: React.FC = () => {
 				!pedidosPrioritariosActualizados.some((p) => p.id === pedido.id)
 			) {
 				pedidosPrioritariosActualizados.push(pedido);
-				// Update the state to show the star in the UI
 				setPedidosPrioritariosAutomaticos((prev) => {
 					if (!prev.some((p) => p.id === pedido.id)) {
 						return [...prev, pedido];
@@ -1443,17 +1442,16 @@ export const Comandera: React.FC = () => {
 		const gruposAutomaticosTemp: Grupo[] = [];
 		let pedidosRestantes = [...pedidosDisponiblesAuto];
 
-		// Process prioritized orders first (both manual and auto-detected)
+		// Process prioritized orders first
 		while (pedidosPrioritariosActualizados.length > 0) {
 			const pedidoPrioritario = pedidosPrioritariosActualizados[0];
 			const grupo = formarGrupoAutomatico(
 				pedidosRestantes,
-				tiempoMaximoAutomatico,
+				tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
 				[pedidoPrioritario]
 			);
 			gruposAutomaticosTemp.push(grupo);
 
-			// Remove processed orders from both lists
 			pedidosRestantes = pedidosRestantes.filter(
 				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
 			);
@@ -1466,7 +1464,7 @@ export const Comandera: React.FC = () => {
 		while (pedidosRestantes.length > 0) {
 			const grupo = formarGrupoAutomatico(
 				pedidosRestantes,
-				tiempoMaximoAutomatico,
+				tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
 				[]
 			);
 			gruposAutomaticosTemp.push(grupo);
@@ -1480,7 +1478,7 @@ export const Comandera: React.FC = () => {
 
 	function formarGrupoAutomatico(
 		pedidosDisponibles: PedidoProps[],
-		tiempoMaximoAutomatico: number | null,
+		tiempoMaximoRecorrido: number | null, // Changed parameter name
 		pedidosPrioritarios: PedidoProps[]
 	): Grupo {
 		const grupoActual: PedidosGrupos[] = [];
@@ -1540,15 +1538,12 @@ export const Comandera: React.FC = () => {
 			);
 		}
 
-		// Continue forming group with remaining orders
 		while (pedidosDisponibles.length > 0) {
-			// Look for orders waiting more than 20 minutes first
 			let mejorPedido = pedidosDisponibles.find((pedido) => {
 				const tiempoEspera = calcularTiempoEspera(pedido.hora);
 				return tiempoEspera > 20;
 			});
 
-			// If no urgent orders found, find the closest one
 			if (!mejorPedido) {
 				mejorPedido = encontrarMejorPedidoAutomatico(
 					pedidosDisponibles,
@@ -1576,16 +1571,17 @@ export const Comandera: React.FC = () => {
 			const tiempoTotalConRegreso = tiempoTotal + tiempoRegreso;
 			const distanciaTotalConRegreso = distanciaTotal + distanciaRegreso;
 
-			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
-			const tiempoPercibido = tiempoEspera + tiempoTotal;
-
+			// Check if adding this order would exceed the maximum time
 			if (
-				tiempoMaximoAutomatico !== null &&
-				tiempoTotalConRegreso > tiempoMaximoAutomatico &&
+				tiempoMaximoRecorrido !== null &&
+				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
 				grupoActual.length > 0
 			) {
 				break;
 			}
+
+			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+			const tiempoPercibido = tiempoEspera + tiempoTotal;
 
 			grupoActual.push({
 				...mejorPedido,
@@ -1656,13 +1652,13 @@ export const Comandera: React.FC = () => {
 	const gruposAutomaticosOptimosMemo = useMemo(() => {
 		return armarGruposAutomaticos(
 			pedidosConDistancias,
-			tiempoMaximoAutomatico,
+			tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido instead of tiempoMaximoAutomatico
 			pedidosPrioritariosAutomaticos,
 			setPedidosPrioritariosAutomaticos
 		);
 	}, [
 		pedidosConDistancias,
-		tiempoMaximoAutomatico,
+		tiempoMaximoRecorrido, // Changed dependency
 		gruposAutomaticos,
 		pedidosPrioritariosAutomaticos,
 		velocidadPromedio,
