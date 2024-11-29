@@ -1540,6 +1540,22 @@ export const Comandera: React.FC = () => {
 				const tiempoViaje = (distancia / VELOCIDAD_PROMEDIO_MOTO) * 60;
 				const tiempoPercibido = tiempoEspera + tiempoViaje;
 
+				if (tiempoMaximoRecorrido && tiempoViaje > tiempoMaximoRecorrido) {
+					return {
+						pedidos: [
+							{
+								...pedidoInicial,
+								tiempoPercibido: Math.round(tiempoPercibido),
+								distancia: Number(distancia.toFixed(2)),
+							},
+						],
+						tiempoTotal: Math.round(tiempoViaje),
+						distanciaTotal: Number(distancia.toFixed(2)),
+						peorTiempoPercibido: Math.round(tiempoPercibido),
+						pedidoPeorTiempo: pedidoInicial,
+					};
+				}
+
 				grupoActual.push({
 					...pedidoInicial,
 					tiempoPercibido: Math.round(tiempoPercibido),
@@ -1561,9 +1577,23 @@ export const Comandera: React.FC = () => {
 			while (pedidosDisponibles.length > 0) {
 				let mejorPedido = null;
 				let menorDistancia = Infinity;
+				let mejorTiempoTotal = Infinity;
 
+				// Encontrar el mejor próximo pedido
 				for (const pedido of pedidosDisponibles) {
 					if (!isPedidoValid(pedido)) continue;
+
+					const nuevaRuta = [...grupoActual, pedido];
+					const { tiempoTotal, distanciaTotal } = calcularDistanciaRecorrido(
+						nuevaRuta,
+						LATITUD_INICIO,
+						LONGITUD_INICIO
+					);
+
+					// Verificar si agregar este pedido excedería el tiempo máximo
+					if (tiempoMaximoRecorrido && tiempoTotal > tiempoMaximoRecorrido) {
+						continue;
+					}
 
 					const distancia = calcularDistancia(
 						latitudActual,
@@ -1575,24 +1605,15 @@ export const Comandera: React.FC = () => {
 					if (distancia < menorDistancia) {
 						menorDistancia = distancia;
 						mejorPedido = pedido;
+						mejorTiempoTotal = tiempoTotal;
 					}
 				}
 
+				// Si no encontramos un pedido válido que no exceda el tiempo máximo, terminamos el grupo
 				if (!mejorPedido) break;
 
-				const nuevaRuta = [...grupoActual, mejorPedido];
-				const { tiempoTotal } = calcularDistanciaRecorrido(
-					nuevaRuta,
-					LATITUD_INICIO,
-					LONGITUD_INICIO
-				);
-
-				if (tiempoTotal > 40 && grupoActual.length > 0) {
-					break;
-				}
-
 				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
-				const tiempoPercibido = tiempoEspera + tiempoTotal;
+				const tiempoPercibido = tiempoEspera + mejorTiempoTotal;
 
 				grupoActual.push({
 					...mejorPedido,
@@ -1605,6 +1626,8 @@ export const Comandera: React.FC = () => {
 					pedidoPeorTiempo = mejorPedido;
 				}
 
+				tiempoTotalGrupo = mejorTiempoTotal;
+				distanciaTotalGrupo += menorDistancia;
 				latitudActual = mejorPedido.map[0];
 				longitudActual = mejorPedido.map[1];
 				pedidosDisponibles = pedidosDisponibles.filter(
@@ -1612,16 +1635,10 @@ export const Comandera: React.FC = () => {
 				);
 			}
 
-			const { tiempoTotal, distanciaTotal } = calcularDistanciaRecorrido(
-				grupoActual,
-				LATITUD_INICIO,
-				LONGITUD_INICIO
-			);
-
 			return {
 				pedidos: grupoActual,
-				tiempoTotal,
-				distanciaTotal,
+				tiempoTotal: Math.round(tiempoTotalGrupo),
+				distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
 				peorTiempoPercibido: Math.round(peorTiempoPercibido),
 				pedidoPeorTiempo,
 			};
@@ -1755,13 +1772,19 @@ export const Comandera: React.FC = () => {
 		}
 	};
 
-	// Agregamos un useEffect para ejecutar la función automáticamente cuando haya cambios
 	useEffect(() => {
 		if (automatico) {
 			console.log("\n=== INICIANDO AGRUPACIÓN AUTOMÁTICA ===");
 			gruposAutomaticos();
 		}
-	}, [pedidosDisponibles, tiempoActual, automatico]);
+	}, [
+		pedidosDisponibles,
+		tiempoActual,
+		automatico,
+		tiempoMaximoRecorrido,
+		velocidadPromedio,
+		// Otras configuraciones que afecten al cálculo
+	]);
 
 	return (
 		<>
