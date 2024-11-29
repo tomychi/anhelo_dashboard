@@ -1563,133 +1563,173 @@ export const Comandera: React.FC = () => {
 		console.log("\n🚀 Iniciando formación de grupo automático");
 		console.log(`📦 Pedidos disponibles: ${pedidosDisponibles.length}`);
 
-		let grupoActual: PedidosGrupos[] = [];
-		let tiempoTotalGrupo = 0;
-		let distanciaTotalGrupo = 0;
-		let peorTiempoPercibido = 0;
-		let pedidoPeorTiempo: PedidoProps | null = null;
-		let latitudActual = LATITUD_INICIO;
-		let longitudActual = LONGITUD_INICIO;
+		// Función auxiliar para calcular KPIs de un grupo
+		const calcularKPIs = (grupo: PedidosGrupos[]) => {
+			const tiemposEntrega = grupo.map((pedido) => pedido.tiempoPercibido || 0);
+			const pedidosFueraTiempo = tiemposEntrega.filter(
+				(tiempo) => tiempo > 50
+			).length;
+			const customerSuccess =
+				((grupo.length - pedidosFueraTiempo) / grupo.length) * 100;
+			const tiempoPromedio =
+				tiemposEntrega.reduce((a, b) => a + b, 0) / grupo.length;
 
-		// Si hay pedidos prioritarios, empezar con ellos
-		if (pedidosPrioritarios.length > 0) {
-			const pedidoPrioritario = pedidosPrioritarios[0];
-			const tiempoEspera = calcularTiempoEspera(pedidoPrioritario.hora);
-			const distancia = calcularDistancia(
+			return {
+				customerSuccess,
+				tiempoPromedio,
+			};
+		};
+
+		// Función para formar un grupo con un pedido inicial específico
+		const formarGrupoConInicio = (pedidoInicial: PedidoProps) => {
+			let grupoSimulado: PedidosGrupos[] = [];
+			let latitudActual = LATITUD_INICIO;
+			let longitudActual = LONGITUD_INICIO;
+			let tiempoTotalGrupo = 0;
+			let pedidosRestantes = pedidosDisponibles.filter(
+				(p) => p.id !== pedidoInicial.id
+			);
+
+			// Agregar pedido inicial
+			const distanciaInicial = calcularDistancia(
 				latitudActual,
 				longitudActual,
-				pedidoPrioritario.map[0],
-				pedidoPrioritario.map[1]
+				pedidoInicial.map[0],
+				pedidoInicial.map[1]
 			);
-			const tiempoViaje = (distancia / getVelocidadActual()) * 60;
-			const tiempoPercibido = tiempoEspera + tiempoViaje;
+			const tiempoViajeInicial = (distanciaInicial / getVelocidadActual()) * 60;
+			const tiempoEsperaInicial = calcularTiempoEspera(pedidoInicial.hora);
+			const tiempoPercibidoInicial = tiempoEsperaInicial + tiempoViajeInicial;
 
-			grupoActual.push({
-				...pedidoPrioritario,
-				tiempoPercibido: Math.round(tiempoPercibido),
-				priorizado: true,
+			grupoSimulado.push({
+				...pedidoInicial,
+				tiempoPercibido: Math.round(tiempoPercibidoInicial),
 			});
 
-			peorTiempoPercibido = tiempoPercibido;
-			pedidoPeorTiempo = pedidoPrioritario;
-			latitudActual = pedidoPrioritario.map[0];
-			longitudActual = pedidoPrioritario.map[1];
-			tiempoTotalGrupo = tiempoViaje;
-			distanciaTotalGrupo = distancia;
+			tiempoTotalGrupo += tiempoViajeInicial;
+			latitudActual = pedidoInicial.map[0];
+			longitudActual = pedidoInicial.map[1];
 
-			pedidosDisponibles = pedidosDisponibles.filter(
-				(p) => p.id !== pedidoPrioritario.id
-			);
-		}
+			// Agregar resto de pedidos optimizando por distancia
+			while (pedidosRestantes.length > 0) {
+				let mejorPedido = null;
+				let mejorDistancia = Infinity;
 
-		// Procesar pedidos restantes
-		while (pedidosDisponibles.length > 0) {
-			// Encontrar el mejor pedido considerando tiempo de espera y distancia
-			let mejorPedido: PedidoProps | null = null;
-			let mejorScore = Infinity;
-			let mejorTiempoPercibido = Infinity;
+				for (const pedido of pedidosRestantes) {
+					if (!isPedidoValid(pedido)) continue;
 
-			for (const pedido of pedidosDisponibles) {
-				if (!isPedidoValid(pedido)) continue;
+					const distancia = calcularDistancia(
+						latitudActual,
+						longitudActual,
+						pedido.map[0],
+						pedido.map[1]
+					);
 
-				const tiempoEspera = calcularTiempoEspera(pedido.hora);
-				const distancia = calcularDistancia(
-					latitudActual,
-					longitudActual,
-					pedido.map[0],
-					pedido.map[1]
-				);
-				const tiempoViaje = (distancia / getVelocidadActual()) * 60;
+					if (distancia < mejorDistancia) {
+						mejorDistancia = distancia;
+						mejorPedido = pedido;
+					}
+				}
+
+				if (!mejorPedido) break;
+
+				const tiempoViaje = (mejorDistancia / getVelocidadActual()) * 60;
+				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
 				const tiempoPercibido = tiempoEspera + tiempoTotalGrupo + tiempoViaje;
 
-				// Calcular score combinando tiempo de espera y distancia
-				// Dar más peso a pedidos que ya han esperado mucho
-				const score =
-					tiempoEspera > 20
-						? tiempoPercibido // Priorizar pedidos con más de 20 minutos de espera
-						: tiempoPercibido + distancia * 2; // Balance entre tiempo y distancia para otros
+				grupoSimulado.push({
+					...mejorPedido,
+					tiempoPercibido: Math.round(tiempoPercibido),
+				});
 
-				if (score < mejorScore) {
-					mejorScore = score;
-					mejorPedido = pedido;
-					mejorTiempoPercibido = tiempoPercibido;
+				tiempoTotalGrupo += tiempoViaje;
+				latitudActual = mejorPedido.map[0];
+				longitudActual = mejorPedido.map[1];
+				pedidosRestantes = pedidosRestantes.filter(
+					(p) => p.id !== mejorPedido!.id
+				);
+			}
+
+			return grupoSimulado;
+		};
+
+		// Primero formar grupo base optimizando solo por distancia
+		let mejorGrupo = formarGrupoConInicio(pedidosDisponibles[0]);
+		let mejoresKPIs = calcularKPIs(mejorGrupo);
+
+		console.log("\n📊 Grupo base formado:");
+		console.log(
+			`Ruta: ${mejorGrupo.map((p) => getFormattedAddress(p)).join(" -> ")}`
+		);
+		console.log(`Customer Success: ${mejoresKPIs.customerSuccess.toFixed(1)}%`);
+		console.log(
+			`Tiempo promedio: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min`
+		);
+
+		// Evaluar si priorizar pedidos demorados mejora los KPIs
+		const pedidosDemorados = pedidosDisponibles.filter(
+			(pedido) => calcularTiempoEspera(pedido.hora) > 20
+		);
+
+		if (pedidosDemorados.length > 0) {
+			console.log("\n🔍 Evaluando priorización de pedidos demorados:");
+
+			for (const pedidoDemorado of pedidosDemorados) {
+				console.log(
+					`\n⭐ Probando priorizar: ${getFormattedAddress(pedidoDemorado)}`
+				);
+				console.log(
+					`Tiempo de espera actual: ${calcularTiempoEspera(
+						pedidoDemorado.hora
+					)} min`
+				);
+
+				const grupoSimulado = formarGrupoConInicio(pedidoDemorado);
+				const kpisSimulados = calcularKPIs(grupoSimulado);
+
+				console.log(`Resultados con priorización:`);
+				console.log(
+					`- Customer Success: ${kpisSimulados.customerSuccess.toFixed(
+						1
+					)}% (actual: ${mejoresKPIs.customerSuccess.toFixed(1)}%)`
+				);
+				console.log(
+					`- Tiempo promedio: ${kpisSimulados.tiempoPromedio.toFixed(
+						1
+					)} min (actual: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min)`
+				);
+
+				// Decisión de priorización basada en mejora de KPIs
+				const mejoraCustomerSuccess =
+					kpisSimulados.customerSuccess - mejoresKPIs.customerSuccess;
+				const mejoraTiempo =
+					mejoresKPIs.tiempoPromedio - kpisSimulados.tiempoPromedio;
+
+				if (
+					mejoraCustomerSuccess > 5 ||
+					(mejoraCustomerSuccess >= 0 && mejoraTiempo > 2)
+				) {
+					console.log(`✅ Priorizando pedido - Mejora significativa detectada`);
+					mejorGrupo = grupoSimulado;
+					mejoresKPIs = kpisSimulados;
+				} else {
+					console.log(
+						`❌ Manteniendo orden original - No hay mejora significativa`
+					);
 				}
 			}
-
-			if (!mejorPedido) break;
-
-			// Verificar límite de tiempo para el recorrido
-			const distanciaNueva = calcularDistancia(
-				latitudActual,
-				longitudActual,
-				mejorPedido.map[0],
-				mejorPedido.map[1]
-			);
-			const tiempoViajeNuevo = (distanciaNueva / getVelocidadActual()) * 60;
-
-			// Calcular tiempo de regreso
-			const distanciaRegreso = calcularDistancia(
-				mejorPedido.map[0],
-				mejorPedido.map[1],
-				LATITUD_INICIO,
-				LONGITUD_INICIO
-			);
-			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
-			const tiempoTotalConRegreso =
-				tiempoTotalGrupo + tiempoViajeNuevo + tiempoRegreso;
-
-			if (
-				tiempoMaximoRecorrido !== null &&
-				tiempoTotalConRegreso > tiempoMaximoRecorrido &&
-				grupoActual.length > 0
-			) {
-				break;
-			}
-
-			// Agregar el pedido al grupo
-			grupoActual.push({
-				...mejorPedido,
-				tiempoPercibido: Math.round(mejorTiempoPercibido),
-				priorizado: false,
-			});
-
-			if (mejorTiempoPercibido > peorTiempoPercibido) {
-				peorTiempoPercibido = mejorTiempoPercibido;
-				pedidoPeorTiempo = mejorPedido;
-			}
-
-			tiempoTotalGrupo += tiempoViajeNuevo;
-			distanciaTotalGrupo += distanciaNueva;
-			latitudActual = mejorPedido.map[0];
-			longitudActual = mejorPedido.map[1];
-			pedidosDisponibles = pedidosDisponibles.filter(
-				(p) => p.id !== mejorPedido.id
-			);
 		}
 
-		// Agregar la distancia de regreso al total
-		if (grupoActual.length > 0) {
-			const ultimoPedido = grupoActual[grupoActual.length - 1];
+		// Calcular métricas finales usando la misma función que los grupos normales
+		const rutaCompleta = calcularTiempoYDistanciaRecorrido(
+			mejorGrupo,
+			LATITUD_INICIO,
+			LONGITUD_INICIO
+		);
+
+		// Agregar el tiempo y distancia de regreso exactamente igual que en grupos normales
+		if (mejorGrupo.length > 0) {
+			const ultimoPedido = mejorGrupo[mejorGrupo.length - 1];
 			const distanciaRegreso = calcularDistancia(
 				ultimoPedido.map[0],
 				ultimoPedido.map[1],
@@ -1699,22 +1739,38 @@ export const Comandera: React.FC = () => {
 			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
 
 			return {
-				pedidos: grupoActual,
-				tiempoTotal: Math.round(tiempoTotalGrupo + tiempoRegreso),
+				pedidos: mejorGrupo,
+				tiempoTotal: Math.round(rutaCompleta.tiempoTotal + tiempoRegreso),
 				distanciaTotal: Number(
-					(distanciaTotalGrupo + distanciaRegreso).toFixed(2)
+					(rutaCompleta.distanciaTotal + distanciaRegreso).toFixed(2)
 				),
-				peorTiempoPercibido: Math.round(peorTiempoPercibido),
-				pedidoPeorTiempo,
+				peorTiempoPercibido: Math.max(
+					...mejorGrupo.map((p) => p.tiempoPercibido || 0)
+				),
+				pedidoPeorTiempo: mejorGrupo.reduce(
+					(peor, actual) =>
+						(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
+							? actual
+							: peor,
+					mejorGrupo[0]
+				),
 			};
 		}
 
 		return {
-			pedidos: grupoActual,
-			tiempoTotal: Math.round(tiempoTotalGrupo),
-			distanciaTotal: Number(distanciaTotalGrupo.toFixed(2)),
-			peorTiempoPercibido: Math.round(peorTiempoPercibido),
-			pedidoPeorTiempo,
+			pedidos: mejorGrupo,
+			tiempoTotal: Math.round(rutaCompleta.tiempoTotal),
+			distanciaTotal: Number(rutaCompleta.distanciaTotal.toFixed(2)),
+			peorTiempoPercibido: Math.max(
+				...mejorGrupo.map((p) => p.tiempoPercibido || 0)
+			),
+			pedidoPeorTiempo: mejorGrupo.reduce(
+				(peor, actual) =>
+					(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
+						? actual
+						: peor,
+				mejorGrupo[0]
+			),
 		};
 	}
 
