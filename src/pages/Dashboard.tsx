@@ -338,33 +338,40 @@ export const Dashboard: React.FC = () => {
 
 	const marketingCards = [
 		<CardInfo
-			key="visualizacion"
-			info="0"
-			title={"Visualización local"}
+			key="productos"
+			info={totalProductosVendidos.toString() * 2}
+			link={"productosVendidos"}
+			title={"Productos vendidos"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-			key="seguidores"
-			info="0"
-			title={"Nuevos seguidores"}
+			key="delivery"
+			info={orders.length.toString() * 2}
+			link={"ventas"}
+			title={"Ventas delivery"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-			key="likes"
-			info="0"
-			title={"Promedio de likes"}
+			key="clientes"
+			info={customers.newCustomers.length.toString() * 1.5}
+			link={"clientes"}
+			title={"Nuevos clientes"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-			key="comentarios"
-			info="0"
-			title={"Promedio de comentarios"}
+			key="presentacion"
+			info={averageRatings.presentacion.average}
+			title={"Presentación"}
+			cuadrito={averageRatings.presentacion.count}
+			showAsRatings={true}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-			key="compartidos"
-			info="0"
-			title={"Promedio de compartidos"}
+			key="pagina"
+			info={averageRatings.pagina.average}
+			title={"Página"}
+			cuadrito={averageRatings.pagina.count}
+			showAsRatings={true}
 			isLoading={isLoading}
 		/>,
 	];
@@ -464,7 +471,7 @@ export const Dashboard: React.FC = () => {
 	];
 
 	const cardsToRender = isMarketingUser
-		? [...ratingCards]
+		? marketingCards
 		: [...allCards, ...ratingCards];
 
 	const greetingName = isMarketingUser ? "Luciano" : "Tobias";
