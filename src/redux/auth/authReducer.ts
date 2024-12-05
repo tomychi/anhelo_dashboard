@@ -1,39 +1,49 @@
 export interface User {
-  uid: string;
-  email: string;
+	uid: string;
+	email: string;
 }
 
 export interface UserState {
-  user: User;
-  isAuth: boolean;
+	user: User;
+	isAuth: boolean;
 }
+
 interface AuthAction {
-  type: string;
-  payload?: UserState;
-  // Otros campos específicos de tu acción, si los hay
+	type: string;
+	payload?: UserState;
 }
 
 const initialState = {
-  user: {
-    uid: '',
-    email: '',
-  },
-  isAuth: false,
-  // Otros campos relacionados con la autenticación
+	user: {
+		uid: "",
+		email: "",
+	},
+	isAuth: false,
 };
 
 const authReducer = (state = initialState, action: AuthAction) => {
-  switch (action.type) {
-    case 'LOGIN_SUCCESS':
-      return {
-        ...state,
-        isAuth: true,
-        user: action.payload,
-      };
-    // Otros casos para manejar acciones adicionales, como cierre de sesión, etc.
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case "LOGIN_SUCCESS":
+			console.log("🔵 Login Success - Estado anterior:", state);
+			console.log("🔵 Login Success - Payload recibido:", action.payload);
+			const loginState = {
+				...state,
+				isAuth: true,
+				user: action.payload,
+			};
+			console.log("🔵 Login Success - Nuevo estado:", loginState);
+			return loginState;
+
+		case "LOGOUT_SUCCESS":
+			console.log("🔴 Logout Success - Estado anterior:", state);
+			console.log("🔴 Logout Success - Volviendo a estado inicial");
+			return {
+				...initialState,
+			};
+
+		default:
+			return state;
+	}
 };
 
 export default authReducer;

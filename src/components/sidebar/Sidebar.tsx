@@ -1,16 +1,53 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import { logoutSuccess } from "../../redux/auth/authAction";
 import Absolute from "../../assets/absoluteIsologo.avif";
 
 export const Sidebar = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const currentUserEmail = useSelector(
 		(state: RootState) => state.auth?.user?.email
 	);
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+
+	const handleLogout = () => {
+		try {
+			console.log("🚀 Iniciando proceso de logout...");
+
+			// Verificar estado actual antes del logout
+			console.log("📊 Estado actual del usuario:", currentUserEmail);
+
+			// Dispatch the logout action
+			console.log("📡 Despachando acción LOGOUT_SUCCESS...");
+			dispatch(logoutSuccess());
+
+			// Clear localStorage
+			console.log("🗑️ Limpiando localStorage...");
+			localStorage.removeItem("token");
+			localStorage.removeItem("user");
+			console.log("💾 Estado del localStorage después de limpiar:", {
+				token: localStorage.getItem("token"),
+				user: localStorage.getItem("user"),
+			});
+
+			// Close the profile menu
+			console.log("📕 Cerrando menú de perfil...");
+			setIsProfileOpen(false);
+
+			// Redirect
+			console.log("🔄 Redirigiendo a /authentication...");
+			navigate("/authentication");
+
+			console.log("✅ Proceso de logout completado exitosamente");
+		} catch (error) {
+			console.error("❌ Error durante el cierre de sesión:", error);
+		}
+	};
 
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
@@ -234,10 +271,8 @@ export const Sidebar = () => {
 								{/* Cerrar sesion  */}
 								<div className="mr-8">
 									<button
-										onClick={() => {
-											/* handle logout */
-										}}
-										className="w-full  text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
+										onClick={handleLogout}
+										className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
 									>
 										Cerrar sesión
 									</button>
