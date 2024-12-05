@@ -15,7 +15,7 @@ export const Login = () => {
 	const location = useLocation();
 	const dispatch = useDispatch();
 
-	const from = location.state?.from?.pathname || "/dashboard";
+	const from = location.state?.from?.pathname || "/";
 
 	const { error, login } = userLogin();
 
