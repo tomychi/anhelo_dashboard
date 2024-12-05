@@ -173,7 +173,8 @@ export const Sidebar = () => {
 							onClick={toggleProfile}
 							className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer"
 						>
-							TA
+							{isMarketingUser ? "LC" : "TA"}
+
 							<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 						</button>
 
@@ -183,9 +184,13 @@ export const Sidebar = () => {
 								{/* Profile Div */}
 								<div className="border-b border-gray-200">
 									<div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
-										<div className="text-2xl font-bold">Luciano Castillo</div>
+										<div className="text-2xl font-bold">
+											{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
+										</div>
 										<div className="text-xs text-gray-500">
-											Jefe en contenido y ventas
+											{isMarketingUser
+												? "Jefe en contenido y ventas"
+												: "Fundador y CEO"}
 										</div>
 									</div>
 									{/* Principales acciones */}
