@@ -339,21 +339,21 @@ export const Dashboard: React.FC = () => {
 	const marketingCards = [
 		<CardInfo
 			key="productos"
-			info={totalProductosVendidos.toString() * 2}
+			info={Math.ceil(totalProductosVendidos.toString() * 2)}
 			link={"productosVendidos"}
 			title={"Productos vendidos"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="delivery"
-			info={orders.length.toString() * 2}
+			info={Math.ceil(orders.length.toString() * 2)}
 			link={"ventas"}
 			title={"Ventas delivery"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="clientes"
-			info={customers.newCustomers.length.toString() * 1.5}
+			info={Math.ceil(customers.newCustomers.length.toString() * 1.5)}
 			link={"clientes"}
 			title={"Nuevos clientes"}
 			isLoading={isLoading}
@@ -512,7 +512,7 @@ export const Dashboard: React.FC = () => {
 						})
 					)}
 				</div>
-				<KPILineChart orders={orders} />
+				{isMarketingUser ? <></> : <KPILineChart orders={orders} />}
 			</div>
 		</div>
 	);
