@@ -245,7 +245,7 @@ export const VoucherList: React.FC = () => {
 										onClick={() => handleVoucherSelect(t.titulo)}
 										className="px-2 py-1 rounded-full  text-center text-gray-100 bg-black w-full"
 									>
-										PDF
+										Imprimir
 									</button>
 								</td>
 							</tr>
@@ -261,24 +261,26 @@ export const VoucherList: React.FC = () => {
 			</table>
 
 			{showImage && (
-				<>
-					<h2 className="text-center my-4">
-						Haz clic en la imagen para elegir la ubicación del código
-					</h2>
-					<canvas
-						ref={canvasRef}
-						width={400}
-						height={300}
-						style={{ border: "1px solid black" }}
-						onClick={handleCanvasClick}
-					/>
+				<div className="w-full flex flex-col px-4 pt-8">
+					<div className="flex flex-row gap-2 items-center ">
+						<canvas
+							ref={canvasRef}
+							width={400}
+							height={300}
+							className="w-2/5 rounded-lg"
+							onClick={handleCanvasClick}
+						/>
+						<h2 className="text-left text-xs">
+							Haz clic en la imagen para elegir la ubicación del código
+						</h2>
+					</div>
 					<button
 						onClick={handleGeneratePDF}
-						className="p-1 rounded-md text-center text-gray-100 bg-green-500 w-full"
+						className="font-bold rounded-lg text-center h-20 mt-4 text-3xl text-gray-100 bg-black w-full"
 					>
-						Generar Voucher
+						Descargar PDF
 					</button>
-				</>
+				</div>
 			)}
 		</div>
 	);
