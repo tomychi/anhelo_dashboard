@@ -4,6 +4,7 @@ import { Comandera, Dashboard } from "../pages";
 import { Marketing } from "../components/marketing/Marketing";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
+import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
 
 export const PrivateRoutesLayout = () => {
 	const location = useLocation();
@@ -36,6 +37,7 @@ export const PrivateRoutesLayout = () => {
 						{/* Agrega un comodín '*' a la ruta principal */}
 						<Route index element={<Dashboard />} />
 						<Route path="nuevaCompra" element={<NuevaCompra />} />
+						<Route path="vouchers" element={<GenerateVouchersForm />} />
 					</Routes>
 				</div>
 			</div>
