@@ -170,7 +170,7 @@ export const VoucherList: React.FC = () => {
 							Canjeados
 						</th>
 						<th scope="col" className="pl-4 w-1/12 ">
-							Entregados / creados
+							Entregados / Creados
 						</th>
 						<th scope="col" className="w-2/12 "></th>
 					</tr>
@@ -218,15 +218,15 @@ export const VoucherList: React.FC = () => {
 								>
 									{t.usados} / {t.creados}
 								</td>
-								<td className="w-2/12 font-medium pr-4">
+								<td className="w-2/12 font-bold pl-4  pr-4">
 									<button
 										onClick={() => {
 											setSelectedVoucher(t.titulo);
 											generateVoucherPDF();
 										}}
-										className="p-1 rounded-md text-center text-gray-100 bg-black w-full"
+										className="px-2 py-1 rounded-full  text-center text-gray-100 bg-black w-full"
 									>
-										Crear PDF
+										PDF
 									</button>
 								</td>
 							</tr>
