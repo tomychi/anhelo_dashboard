@@ -327,19 +327,20 @@ export const FormGasto = () => {
 						<option value="pagado">Pagado</option>
 					</select>
 				</div>
-				<div className="section w-full relative z-0">
-					<input
-						type="text"
-						id="category"
-						name="category"
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.category}
-						placeholder="Categoría"
-						readOnly={isMarketingUser} // Hacer el campo solo lectura si es usuario de marketing
-						onChange={isMarketingUser ? undefined : handleChange} // Deshabilitar el cambio si es usuario de marketing
-						required
-					/>
-				</div>
+				{!isMarketingUser && (
+					<div className="section w-full relative z-0">
+						<input
+							type="text"
+							id="category"
+							name="category"
+							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							value={formData.category}
+							placeholder="Categoría"
+							onChange={handleChange}
+							required
+						/>
+					</div>
+				)}
 				<div className="section w-full relative z-0">
 					<input
 						type="string"
