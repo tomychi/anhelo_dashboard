@@ -150,29 +150,29 @@ export const VoucherList: React.FC = () => {
 
 	const getUsageColor = (usados: number, total: number): string => {
 		const ratio = usados / total;
-		if (ratio < 0.25) return "bg-red-main";
-		if (ratio < 0.5) return "bg-yellow-500";
+		if (ratio < 0.25) return "text-red-main";
+		if (ratio < 0.5) return "text-yellow-500";
 		return "text-green-500";
 	};
 
 	return (
-		<div>
-			<table className="w-full text-xs text-left font-coolvetica text-black">
-				<thead className="text-black">
+		<div className="font-coolvetica">
+			<table className="w-full text-xs text-left text-black">
+				<thead className="text-black border-b h-10">
 					<tr>
-						<th scope="col" className="pl-4 w-3/12 py-3">
+						<th scope="col" className="pl-4 w-3/12 ">
 							Campaña
 						</th>
-						<th scope="col" className="pl-4 w-1/12 py-3">
+						<th scope="col" className="pl-4 w-1/12 ">
 							Fecha
 						</th>
-						<th scope="col" className="pl-4 w-1/12 py-3">
+						<th scope="col" className="pl-4 w-1/12 ">
 							Canjeados
 						</th>
-						<th scope="col" className="pl-4 w-1/12 py-3">
+						<th scope="col" className="pl-4 w-1/12 ">
 							Entregados / creados
 						</th>
-						<th scope="col" className="w-2/12 py-3"></th>
+						<th scope="col" className="w-2/12 "></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -186,10 +186,10 @@ export const VoucherList: React.FC = () => {
 						voucherTitles.map((t, index) => (
 							<tr
 								key={index}
-								className="text-black border font-light border-black border-opacity-20"
+								className="text-black border font-light h-10 border-black border-opacity-20"
 							>
-								<td className="w-3/12 font-light py-3 pl-4">{t.titulo}</td>
-								<td className="w-1/12 pl-4 font-light py-3">{t.fecha}</td>
+								<td className="w-3/12 font-light pl-4">{t.titulo}</td>
+								<td className="w-1/12 pl-4 font-light">{t.fecha}</td>
 								<td className="w-1/12 pl-4 font-light">
 									<p
 										className={`p-1 rounded-md text-center ${getUsageColor(
@@ -197,15 +197,13 @@ export const VoucherList: React.FC = () => {
 											t.creados
 										)}`}
 									>
-										<br />
 										{t.codigos
 											? t.codigos.filter((c) => c.estado === "usado").length
 											: 0}{" "}
-										códigos usados
 									</p>
 								</td>
 								<td
-									className="w-1/12 pl-4 font-light py-3 cursor-pointer"
+									className="w-1/12 pl-4 font-light  cursor-pointer"
 									onClick={() => {
 										const nuevaCantidadUsados = prompt(
 											"Ingrese la nueva cantidad de vouchers usados:"
