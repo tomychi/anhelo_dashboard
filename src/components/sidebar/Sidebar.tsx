@@ -61,7 +61,7 @@ export const Sidebar = () => {
 
 	const menuItems = isMarketingUser
 		? [
-				{ to: "/gastos", text: "Gastos" },
+				{ to: "/nuevaCompra", text: "Gastos" },
 				{ to: "/vouchers", text: "2x1 Manager" },
 		  ]
 		: [

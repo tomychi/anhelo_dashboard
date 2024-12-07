@@ -239,6 +239,8 @@ export const FormGasto = () => {
 		setFile(null);
 	};
 
+	console.log(isMarketingUser);
+
 	return (
 		<form
 			onSubmit={handleSubmit}
