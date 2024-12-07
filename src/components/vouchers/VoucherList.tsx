@@ -267,7 +267,7 @@ export const VoucherList: React.FC = () => {
 							ref={canvasRef}
 							width={400}
 							height={300}
-							className="w-2/5 rounded-lg"
+							className="w-2/5 rounded-lg shadow-lg shadow-gray-300"
 							onClick={handleCanvasClick}
 						/>
 						<h2 className="text-left text-xs">
