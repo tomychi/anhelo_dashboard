@@ -29,9 +29,9 @@ export const GenerateVouchersForm = () => {
 			<div
 				className={`flex ${
 					showForm ? "flex-col gap-2" : "flex-row"
-				} justify-between font-coolvetica items-center mt-8 mx-4 mb-4`}
+				} justify-between font-coolvetica items-center mt-8 mx-4 pb-8`}
 			>
-				<p className="text-black font-bold text-4xl mt-1">V. Manager</p>
+				<p className="text-black font-bold text-4xl mt-1">Vouchers</p>
 				{!showForm ? (
 					<button
 						onClick={() => setShowForm(true)}
@@ -62,14 +62,14 @@ export const GenerateVouchersForm = () => {
 							placeholder="Título del voucher"
 							value={titulo}
 							onChange={(e) => setTitulo(e.target.value)}
-							className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
 						/>
 						<input
 							type="date"
 							placeholder="Fecha del voucher"
 							value={fecha}
 							onChange={(e) => setFecha(e.target.value)}
-							className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
 						/>
 
 						<input
@@ -80,16 +80,16 @@ export const GenerateVouchersForm = () => {
 								const value = e.target.value;
 								setCantidad(value === "" ? 0 : parseInt(value, 10));
 							}}
-							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
 						/>
 
 						<div className="flex justify-between w-full items-center ">
 							<button
 								onClick={handleCreateVoucher}
 								disabled={loading}
-								className="text-gray-100 w-full h-20 px-4 bg-black font-bold rounded-md outline-none"
+								className="text-gray-100 w-full text-3xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
 							>
-								{loading ? "Creando..." : "Crear campaña"}
+								{loading ? "Creando..." : "Crear"}
 							</button>
 						</div>
 					</div>
