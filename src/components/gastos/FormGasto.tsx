@@ -257,15 +257,17 @@ export const FormGasto = () => {
 						value={formData.name}
 						onChange={handleNameChange}
 						placeholder="Nombre del item"
-						list="itemNames"
+						list={isMarketingUser ? undefined : "itemNames"}
 						required
 						autoComplete="off"
 					/>
-					<datalist id="itemNames">
-						{materiales.map((material, index) => (
-							<option key={index} value={material.nombre} />
-						))}
-					</datalist>
+					{!isMarketingUser && (
+						<datalist id="itemNames">
+							{materiales.map((material, index) => (
+								<option key={index} value={material.nombre} />
+							))}
+						</datalist>
+					)}
 				</div>
 				<div className="section relative z-0">
 					<input
