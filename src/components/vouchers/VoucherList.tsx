@@ -18,6 +18,8 @@ export const VoucherList: React.FC = () => {
 		x: number;
 		y: number;
 	} | null>(null);
+	const [showImage, setShowImage] = useState(false);
+	const [updateTrigger, setUpdateTrigger] = useState(0);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -65,19 +67,38 @@ export const VoucherList: React.FC = () => {
 		return () => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		};
-	}, []);
+	}, [updateTrigger]);
 
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		const rect = canvasRef.current?.getBoundingClientRect();
 		if (rect) {
 			const x = event.clientX - rect.left;
 			const y = event.clientY - rect.top;
+			console.log("Posición de clic en el canvas:", x, y);
 			setClickPosition({ x, y });
+		}
+	};
+
+	const handleVoucherSelect = (titulo: string) => {
+		setSelectedVoucher(titulo);
+		setShowImage(true);
+		// Forzar una actualización después de un breve retraso
+		setTimeout(() => {
+			setUpdateTrigger((prev) => prev + 1);
+		}, 100);
+	};
+
+	const handleGeneratePDF = () => {
+		if (selectedVoucher) {
+			generateVoucherPDF();
+		} else {
+			alert("No se ha seleccionado un voucher para imprimir.");
 		}
 	};
 
 	const generateVoucherPDF = async () => {
 		if (selectedVoucher) {
+			console.log("Generando PDF para el voucher:", selectedVoucher);
 			setLoading(true);
 			try {
 				const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
@@ -144,6 +165,7 @@ export const VoucherList: React.FC = () => {
 				setLoading(false);
 			}
 		} else {
+			console.log("No se ha seleccionado un voucher para imprimir.");
 			alert("No se ha seleccionado un voucher para imprimir.");
 		}
 	};
@@ -220,10 +242,7 @@ export const VoucherList: React.FC = () => {
 								</td>
 								<td className="w-2/12 font-bold pl-4  pr-4">
 									<button
-										onClick={() => {
-											setSelectedVoucher(t.titulo);
-											generateVoucherPDF();
-										}}
+										onClick={() => handleVoucherSelect(t.titulo)}
 										className="px-2 py-1 rounded-full  text-center text-gray-100 bg-black w-full"
 									>
 										PDF
@@ -241,7 +260,7 @@ export const VoucherList: React.FC = () => {
 				</tbody>
 			</table>
 
-			{selectedVoucher && (
+			{showImage && (
 				<>
 					<h2 className="text-center my-4">
 						Haz clic en la imagen para elegir la ubicación del código
@@ -254,7 +273,7 @@ export const VoucherList: React.FC = () => {
 						onClick={handleCanvasClick}
 					/>
 					<button
-						onClick={generateVoucherPDF}
+						onClick={handleGeneratePDF}
 						className="p-1 rounded-md text-center text-gray-100 bg-green-500 w-full"
 					>
 						Generar Voucher
