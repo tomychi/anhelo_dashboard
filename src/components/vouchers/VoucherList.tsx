@@ -60,6 +60,40 @@ export const VoucherList: React.FC = () => {
 			canvas.width = canvas.offsetWidth;
 			canvas.height = canvas.offsetWidth / aspectRatio;
 			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+			// Si hay una posición seleccionada, dibuja el rectángulo y el texto
+			if (clickPosition) {
+				// Guardar el estado actual del contexto
+				ctx.save();
+
+				// Definir dimensiones del rectángulo
+				const rectWidth = 60;
+				const rectHeight = 20;
+
+				// Calcular el centro exacto
+				const centerX = clickPosition.x;
+				const centerY = clickPosition.y;
+
+				// Calcular la esquina superior izquierda del rectángulo
+				const rectX = centerX - rectWidth / 2;
+				const rectY = centerY - rectHeight / 2;
+
+				// Dibujar el rectángulo negro semitransparente
+				ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+				ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+				// Configurar el estilo del texto
+				ctx.fillStyle = "white";
+				ctx.font = "12px Arial";
+				ctx.textAlign = "center";
+				ctx.textBaseline = "middle";
+
+				// Dibujar el texto "CODIGO" exactamente en el centro
+				ctx.fillText("Preview", centerX, centerY);
+
+				// Restaurar el estado del contexto
+				ctx.restore();
+			}
 		};
 
 		image.onerror = () => {
@@ -69,7 +103,7 @@ export const VoucherList: React.FC = () => {
 		return () => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		};
-	}, [updateTrigger]);
+	}, [updateTrigger, clickPosition]);
 
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		const canvas = canvasRef.current;
@@ -85,6 +119,7 @@ export const VoucherList: React.FC = () => {
 
 		console.log("Posición de clic en el canvas (escalada):", x, y);
 		setClickPosition({ x, y });
+		setUpdateTrigger((prev) => prev + 1);
 	};
 
 	const handleVoucherSelect = (titulo: string) => {
@@ -131,9 +166,13 @@ export const VoucherList: React.FC = () => {
 				const pdfToCanvasScaleX = voucherWidth / canvas.width;
 				const pdfToCanvasScaleY = voucherHeight / canvas.height;
 
-				// Convertir las coordenadas del clic a coordenadas PDF
+				// Convertir las coordenadas del clic a coordenadas PDF manteniendo el centrado
 				const pdfX = clickPosition.x * pdfToCanvasScaleX;
 				const pdfY = clickPosition.y * pdfToCanvasScaleY;
+
+				// Asegurarnos de que las coordenadas están relativas al voucher actual
+				const finalPdfX = pdfX;
+				const finalPdfY = pdfY;
 
 				codigosCampana.forEach((codigoData) => {
 					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
@@ -158,7 +197,11 @@ export const VoucherList: React.FC = () => {
 					// Agregar el código del voucher en la posición seleccionada
 					doc.setFontSize(8);
 					doc.setTextColor(0, 0, 0);
-					doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY);
+					// En jsPDF, el centrado se hace como una opción en el método text
+					doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY, {
+						align: "center",
+						baseline: "middle",
+					});
 
 					voucherIndex++;
 				});
