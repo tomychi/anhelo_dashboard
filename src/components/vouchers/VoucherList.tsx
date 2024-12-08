@@ -67,8 +67,9 @@ export const VoucherList: React.FC = () => {
 				ctx.save();
 
 				// Definir dimensiones del rectángulo
-				const rectWidth = 60;
-				const rectHeight = 20;
+				const rectWidth = 70;
+				const rectHeight = 24;
+				const borderRadius = 6; // Radio para las esquinas redondeadas
 
 				// Calcular el centro exacto
 				const centerX = clickPosition.x;
@@ -78,17 +79,44 @@ export const VoucherList: React.FC = () => {
 				const rectX = centerX - rectWidth / 2;
 				const rectY = centerY - rectHeight / 2;
 
-				// Dibujar el rectángulo negro semitransparente
+				// Dibujar el rectángulo redondeado negro semitransparente
+				ctx.beginPath();
+				ctx.moveTo(rectX + borderRadius, rectY);
+				ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
+				ctx.quadraticCurveTo(
+					rectX + rectWidth,
+					rectY,
+					rectX + rectWidth,
+					rectY + borderRadius
+				);
+				ctx.lineTo(rectX + rectWidth, rectY + rectHeight - borderRadius);
+				ctx.quadraticCurveTo(
+					rectX + rectWidth,
+					rectY + rectHeight,
+					rectX + rectWidth - borderRadius,
+					rectY + rectHeight
+				);
+				ctx.lineTo(rectX + borderRadius, rectY + rectHeight);
+				ctx.quadraticCurveTo(
+					rectX,
+					rectY + rectHeight,
+					rectX,
+					rectY + rectHeight - borderRadius
+				);
+				ctx.lineTo(rectX, rectY + borderRadius);
+				ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
+				ctx.closePath();
+
 				ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-				ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+				ctx.fill();
 
 				// Configurar el estilo del texto
 				ctx.fillStyle = "white";
-				ctx.font = "12px Arial";
+				ctx.font = "medium 10px Coolvetica"; // Usando Coolvetica y bold
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle";
 
-				// Dibujar el texto "CODIGO" exactamente en el centro
+				// Dibujar el texto "Preview" exactamente en el centro
 				ctx.fillText("Preview", centerX, centerY);
 
 				// Restaurar el estado del contexto
