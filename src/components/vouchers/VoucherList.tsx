@@ -55,9 +55,11 @@ export const VoucherList: React.FC = () => {
 
 		image.onload = () => {
 			console.log("Imagen cargada exitosamente.");
-			canvas.width = image.width;
-			canvas.height = image.height;
-			ctx.drawImage(image, 0, 0);
+			// Mantener la proporción original de la imagen
+			const aspectRatio = image.width / image.height;
+			canvas.width = canvas.offsetWidth;
+			canvas.height = canvas.offsetWidth / aspectRatio;
+			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 		};
 
 		image.onerror = () => {
@@ -70,34 +72,32 @@ export const VoucherList: React.FC = () => {
 	}, [updateTrigger]);
 
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-		const rect = canvasRef.current?.getBoundingClientRect();
-		if (rect) {
-			const x = event.clientX - rect.left;
-			const y = event.clientY - rect.top;
-			console.log("Posición de clic en el canvas:", x, y);
-			setClickPosition({ x, y });
-		}
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+
+		const rect = canvas.getBoundingClientRect();
+		// Calcular las coordenadas relativas al canvas considerando el escalado
+		const scaleX = canvas.width / rect.width;
+		const scaleY = canvas.height / rect.height;
+
+		const x = (event.clientX - rect.left) * scaleX;
+		const y = (event.clientY - rect.top) * scaleY;
+
+		console.log("Posición de clic en el canvas (escalada):", x, y);
+		setClickPosition({ x, y });
 	};
 
 	const handleVoucherSelect = (titulo: string) => {
 		setSelectedVoucher(titulo);
 		setShowImage(true);
-		// Forzar una actualización después de un breve retraso
+		setClickPosition(null); // Resetear la posición al seleccionar un nuevo voucher
 		setTimeout(() => {
 			setUpdateTrigger((prev) => prev + 1);
 		}, 100);
 	};
 
-	const handleGeneratePDF = () => {
-		if (selectedVoucher) {
-			generateVoucherPDF();
-		} else {
-			alert("No se ha seleccionado un voucher para imprimir.");
-		}
-	};
-
 	const generateVoucherPDF = async () => {
-		if (selectedVoucher) {
+		if (selectedVoucher && clickPosition) {
 			console.log("Generando PDF para el voucher:", selectedVoucher);
 			setLoading(true);
 			try {
@@ -123,6 +123,18 @@ export const VoucherList: React.FC = () => {
 
 				let voucherIndex = 0;
 
+				// Obtener las dimensiones reales del canvas
+				const canvas = canvasRef.current;
+				if (!canvas) return;
+
+				// Calcular la relación de escala entre el canvas y el PDF
+				const pdfToCanvasScaleX = voucherWidth / canvas.width;
+				const pdfToCanvasScaleY = voucherHeight / canvas.height;
+
+				// Convertir las coordenadas del clic a coordenadas PDF
+				const pdfX = clickPosition.x * pdfToCanvasScaleX;
+				const pdfY = clickPosition.y * pdfToCanvasScaleY;
+
 				codigosCampana.forEach((codigoData) => {
 					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
 						doc.addPage();
@@ -135,12 +147,6 @@ export const VoucherList: React.FC = () => {
 
 					doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
 
-					const scaleX = voucherWidth / (canvasRef.current?.width || 400);
-					const scaleY = voucherHeight / (canvasRef.current?.height || 300);
-
-					const scaledX = clickPosition ? clickPosition.x * scaleX : 0;
-					const scaledY = clickPosition ? clickPosition.y * scaleY : 0;
-
 					// Agregar el número del voucher en la esquina superior derecha
 					doc.setFont("helvetica", "bold");
 					doc.setFontSize(6);
@@ -152,7 +158,7 @@ export const VoucherList: React.FC = () => {
 					// Agregar el código del voucher en la posición seleccionada
 					doc.setFontSize(8);
 					doc.setTextColor(0, 0, 0);
-					doc.text(`${codigoData.codigo}`, x + scaledX, y + scaledY);
+					doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY);
 
 					voucherIndex++;
 				});
@@ -165,8 +171,9 @@ export const VoucherList: React.FC = () => {
 				setLoading(false);
 			}
 		} else {
-			console.log("No se ha seleccionado un voucher para imprimir.");
-			alert("No se ha seleccionado un voucher para imprimir.");
+			alert(
+				"Por favor, seleccione un voucher y la posición del código antes de generar el PDF."
+			);
 		}
 	};
 
@@ -182,19 +189,19 @@ export const VoucherList: React.FC = () => {
 			<table className="w-full text-xs text-left text-black">
 				<thead className="text-black border-b h-10">
 					<tr>
-						<th scope="col" className="pl-4 w-3/12 ">
+						<th scope="col" className="pl-4 w-3/12">
 							Campaña
 						</th>
-						<th scope="col" className="pl-4 w-1/12 ">
+						<th scope="col" className="pl-4 w-1/12">
 							Fecha
 						</th>
-						<th scope="col" className="pl-4 w-1/12 ">
+						<th scope="col" className="pl-4 w-1/12">
 							Canjeados
 						</th>
-						<th scope="col" className="pl-4 w-1/12 ">
+						<th scope="col" className="pl-4 w-1/12">
 							Entregados / Creados
 						</th>
-						<th scope="col" className="w-2/12 "></th>
+						<th scope="col" className="w-2/12"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -221,11 +228,11 @@ export const VoucherList: React.FC = () => {
 									>
 										{t.codigos
 											? t.codigos.filter((c) => c.estado === "usado").length
-											: 0}{" "}
+											: 0}
 									</p>
 								</td>
 								<td
-									className="w-1/12 pl-4 font-light  cursor-pointer"
+									className="w-1/12 pl-4 font-light cursor-pointer"
 									onClick={() => {
 										const nuevaCantidadUsados = prompt(
 											"Ingrese la nueva cantidad de vouchers usados:"
@@ -240,10 +247,10 @@ export const VoucherList: React.FC = () => {
 								>
 									{t.usados} / {t.creados}
 								</td>
-								<td className="w-2/12 font-bold pl-4  pr-4">
+								<td className="w-2/12 font-bold pl-4 pr-4">
 									<button
 										onClick={() => handleVoucherSelect(t.titulo)}
-										className="px-2 py-1 rounded-full  text-center text-gray-100 bg-black w-full"
+										className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
 									>
 										Imprimir
 									</button>
@@ -262,23 +269,28 @@ export const VoucherList: React.FC = () => {
 
 			{showImage && (
 				<div className="w-full flex flex-col px-4 pt-8">
-					<div className="flex flex-row gap-2 items-center ">
+					<div className="flex flex-row gap-2 items-center">
 						<canvas
 							ref={canvasRef}
-							width={400}
-							height={300}
 							className="w-2/5 rounded-lg shadow-lg shadow-gray-300"
 							onClick={handleCanvasClick}
 						/>
 						<h2 className="text-left text-xs">
-							Haz clic en la imagen para elegir la ubicación del código
+							{clickPosition
+								? "Posición seleccionada. Haz clic de nuevo para cambiarla."
+								: "Haz clic en la imagen para elegir la ubicación del código"}
 						</h2>
 					</div>
 					<button
-						onClick={handleGeneratePDF}
-						className="font-bold rounded-lg text-center h-20 mt-4 text-3xl text-gray-100 bg-black w-full"
+						onClick={generateVoucherPDF}
+						disabled={!clickPosition}
+						className={`font-bold rounded-lg text-center h-20 mt-4 text-3xl text-gray-100 ${
+							clickPosition ? "bg-black" : "bg-gray-400"
+						} w-full`}
 					>
-						Descargar PDF
+						{clickPosition
+							? "Descargar PDF"
+							: "Selecciona la posición del código"}
 					</button>
 				</div>
 			)}
