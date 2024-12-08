@@ -8,6 +8,72 @@ import {
 import { jsPDF } from "jspdf";
 import voucherImg from "../../assets/Voucher.jpg";
 
+// Modal Component
+const VoucherModal: React.FC<{
+	isOpen: boolean;
+	onClose: () => void;
+	canvasRef: React.RefObject<HTMLCanvasElement>;
+	handleCanvasClick: (event: React.MouseEvent<HTMLCanvasElement>) => void;
+	clickPosition: { x: number; y: number } | null;
+	generateVoucherPDF: () => Promise<void>;
+}> = ({
+	isOpen,
+	onClose,
+	canvasRef,
+	handleCanvasClick,
+	clickPosition,
+	generateVoucherPDF,
+}) => {
+	if (!isOpen) return null;
+
+	return (
+		<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+			<div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4">
+				<div className="flex justify-between items-center mb-4">
+					<h2 className="text-xl font-medium">Configurar Voucher</h2>
+					<button
+						onClick={onClose}
+						className="text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+					>
+						×
+					</button>
+				</div>
+
+				<div className="flex flex-col gap-4">
+					<div className="flex flex-row gap-4 items-center">
+						<div className="w-3/5">
+							<canvas
+								ref={canvasRef}
+								className="w-full rounded-lg shadow-lg shadow-gray-300"
+								onClick={handleCanvasClick}
+							/>
+						</div>
+						<div className="w-2/5">
+							<h2 className="text-sm">
+								{clickPosition
+									? "Posición seleccionada. Haz clic de nuevo para cambiarla."
+									: "Haz clic en la imagen para elegir la ubicación del código"}
+							</h2>
+						</div>
+					</div>
+
+					<button
+						onClick={generateVoucherPDF}
+						disabled={!clickPosition}
+						className={`font-bold rounded-lg text-center py-4 mt-2 text-xl text-gray-100 ${
+							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
+						} w-full transition-colors`}
+					>
+						{clickPosition
+							? "Descargar PDF"
+							: "Selecciona la posición del código"}
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+};
+
 export const VoucherList: React.FC = () => {
 	const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
 		[]
@@ -18,7 +84,7 @@ export const VoucherList: React.FC = () => {
 		x: number;
 		y: number;
 	} | null>(null);
-	const [showImage, setShowImage] = useState(false);
+	const [showModal, setShowModal] = useState(false);
 	const [updateTrigger, setUpdateTrigger] = useState(0);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -55,31 +121,24 @@ export const VoucherList: React.FC = () => {
 
 		image.onload = () => {
 			console.log("Imagen cargada exitosamente.");
-			// Mantener la proporción original de la imagen
 			const aspectRatio = image.width / image.height;
 			canvas.width = canvas.offsetWidth;
 			canvas.height = canvas.offsetWidth / aspectRatio;
 			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-			// Si hay una posición seleccionada, dibuja el rectángulo y el texto
 			if (clickPosition) {
-				// Guardar el estado actual del contexto
 				ctx.save();
 
-				// Definir dimensiones del rectángulo
 				const rectWidth = 70;
 				const rectHeight = 24;
-				const borderRadius = 6; // Radio para las esquinas redondeadas
+				const borderRadius = 6;
 
-				// Calcular el centro exacto
 				const centerX = clickPosition.x;
 				const centerY = clickPosition.y;
 
-				// Calcular la esquina superior izquierda del rectángulo
 				const rectX = centerX - rectWidth / 2;
 				const rectY = centerY - rectHeight / 2;
 
-				// Dibujar el rectángulo redondeado negro semitransparente
 				ctx.beginPath();
 				ctx.moveTo(rectX + borderRadius, rectY);
 				ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
@@ -110,16 +169,13 @@ export const VoucherList: React.FC = () => {
 				ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
 				ctx.fill();
 
-				// Configurar el estilo del texto
 				ctx.fillStyle = "white";
-				ctx.font = "medium 10px Coolvetica"; // Usando Coolvetica y bold
+				ctx.font = "medium 10px Coolvetica";
 				ctx.textAlign = "center";
 				ctx.textBaseline = "middle";
 
-				// Dibujar el texto "Preview" exactamente en el centro
 				ctx.fillText("Preview", centerX, centerY);
 
-				// Restaurar el estado del contexto
 				ctx.restore();
 			}
 		};
@@ -138,22 +194,20 @@ export const VoucherList: React.FC = () => {
 		if (!canvas) return;
 
 		const rect = canvas.getBoundingClientRect();
-		// Calcular las coordenadas relativas al canvas considerando el escalado
 		const scaleX = canvas.width / rect.width;
 		const scaleY = canvas.height / rect.height;
 
 		const x = (event.clientX - rect.left) * scaleX;
 		const y = (event.clientY - rect.top) * scaleY;
 
-		console.log("Posición de clic en el canvas (escalada):", x, y);
 		setClickPosition({ x, y });
 		setUpdateTrigger((prev) => prev + 1);
 	};
 
 	const handleVoucherSelect = (titulo: string) => {
 		setSelectedVoucher(titulo);
-		setShowImage(true);
-		setClickPosition(null); // Resetear la posición al seleccionar un nuevo voucher
+		setShowModal(true);
+		setClickPosition(null);
 		setTimeout(() => {
 			setUpdateTrigger((prev) => prev + 1);
 		}, 100);
@@ -186,19 +240,15 @@ export const VoucherList: React.FC = () => {
 
 				let voucherIndex = 0;
 
-				// Obtener las dimensiones reales del canvas
 				const canvas = canvasRef.current;
 				if (!canvas) return;
 
-				// Calcular la relación de escala entre el canvas y el PDF
 				const pdfToCanvasScaleX = voucherWidth / canvas.width;
 				const pdfToCanvasScaleY = voucherHeight / canvas.height;
 
-				// Convertir las coordenadas del clic a coordenadas PDF manteniendo el centrado
 				const pdfX = clickPosition.x * pdfToCanvasScaleX;
 				const pdfY = clickPosition.y * pdfToCanvasScaleY;
 
-				// Asegurarnos de que las coordenadas están relativas al voucher actual
 				const finalPdfX = pdfX;
 				const finalPdfY = pdfY;
 
@@ -214,7 +264,6 @@ export const VoucherList: React.FC = () => {
 
 					doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
 
-					// Agregar el número del voucher en la esquina superior derecha
 					doc.setFont("helvetica", "bold");
 					doc.setFontSize(6);
 					doc.setTextColor(255, 255, 255);
@@ -222,10 +271,8 @@ export const VoucherList: React.FC = () => {
 						align: "right",
 					});
 
-					// Agregar el código del voucher en la posición seleccionada
 					doc.setFontSize(8);
 					doc.setTextColor(0, 0, 0);
-					// En jsPDF, el centrado se hace como una opción en el método text
 					doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY, {
 						align: "center",
 						baseline: "middle",
@@ -338,33 +385,14 @@ export const VoucherList: React.FC = () => {
 				</tbody>
 			</table>
 
-			{showImage && (
-				<div className="w-full flex flex-col px-4 pt-8">
-					<div className="flex flex-row gap-2 items-center">
-						<canvas
-							ref={canvasRef}
-							className="w-2/5 rounded-lg shadow-lg shadow-gray-300"
-							onClick={handleCanvasClick}
-						/>
-						<h2 className="text-left text-xs">
-							{clickPosition
-								? "Posición seleccionada. Haz clic de nuevo para cambiarla."
-								: "Haz clic en la imagen para elegir la ubicación del código"}
-						</h2>
-					</div>
-					<button
-						onClick={generateVoucherPDF}
-						disabled={!clickPosition}
-						className={`font-bold rounded-lg text-center h-20 mt-4 text-3xl text-gray-100 ${
-							clickPosition ? "bg-black" : "bg-gray-400"
-						} w-full`}
-					>
-						{clickPosition
-							? "Descargar PDF"
-							: "Selecciona la posición del código"}
-					</button>
-				</div>
-			)}
+			<VoucherModal
+				isOpen={showModal}
+				onClose={() => setShowModal(false)}
+				canvasRef={canvasRef}
+				handleCanvasClick={handleCanvasClick}
+				clickPosition={clickPosition}
+				generateVoucherPDF={generateVoucherPDF}
+			/>
 		</div>
 	);
 };
