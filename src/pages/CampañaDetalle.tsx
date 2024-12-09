@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { actualizarCostosCampana } from "../firebase/voucher";
 
 interface CampañaDetalleProps {
 	titulo: string;
@@ -11,12 +12,17 @@ interface CampañaDetalleProps {
 		estado: string;
 		num: number;
 	}>;
+	costos?: number;
 }
 
 export const CampañaDetalle: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const campaignData = location.state?.campaignData as CampañaDetalleProps;
+	const [costos, setCostos] = useState<string>(
+		campaignData?.costos?.toString() || ""
+	);
+	const [isUpdating, setIsUpdating] = useState(false);
 
 	if (!campaignData) {
 		return (
@@ -31,6 +37,28 @@ export const CampañaDetalle: React.FC = () => {
 			</div>
 		);
 	}
+
+	const handleCostosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCostos(e.target.value);
+	};
+
+	const handleSubmitCostos = async () => {
+		const value = parseFloat(costos);
+		if (!isNaN(value) && campaignData.titulo) {
+			try {
+				setIsUpdating(true);
+				await actualizarCostosCampana(campaignData.titulo, value);
+				alert("Costos actualizados correctamente");
+			} catch (error) {
+				console.error("Error al actualizar los costos:", error);
+				alert("Error al actualizar los costos");
+			} finally {
+				setIsUpdating(false);
+			}
+		} else {
+			alert("Por favor ingrese un valor numérico válido");
+		}
+	};
 
 	const formatearFecha = (fecha: string): string => {
 		try {
@@ -123,6 +151,22 @@ export const CampañaDetalle: React.FC = () => {
 								{getUsagePercentage()}
 							</span>
 						</div>
+					</div>
+					<div className="flex items-center gap-2">
+						<input
+							type="number"
+							className="w-24 bg-gray-100 rounded-md px-2 py-1 border border-gray-300"
+							value={costos}
+							onChange={handleCostosChange}
+							placeholder="0"
+						/>
+						<button
+							onClick={handleSubmitCostos}
+							disabled={isUpdating}
+							className="bg-black text-white px-3 py-1 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
+						>
+							{isUpdating ? "..." : "Guardar"}
+						</button>
 					</div>
 				</div>
 			</div>
