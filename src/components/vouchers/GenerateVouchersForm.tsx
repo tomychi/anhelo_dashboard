@@ -49,7 +49,7 @@ export const GenerateVouchersForm = () => {
 								clip-rule="evenodd"
 							/>
 						</svg>
-						Nueva campaña
+						<p className="font-bold ">Nueva campaña</p>
 					</button>
 				) : (
 					<></>
