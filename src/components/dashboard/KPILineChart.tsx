@@ -204,14 +204,6 @@ const KPILineChart = ({ orders }) => {
 		);
 	};
 
-	if (chartData.length === 0) {
-		return (
-			<div className="w-full h-96 flex items-center justify-center">
-				<p className="text-gray-500">Cargando datos...</p>
-			</div>
-		);
-	}
-
 	return (
 		<div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2">
 			<div className="md:pt-4">

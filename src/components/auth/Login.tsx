@@ -47,9 +47,9 @@ export const Login = () => {
 	};
 
 	const inputClass = `
-		block px-4 h-12 w-full border-0 rounded-md border-b-2 border-black 
+		 px-4 h-10 w-full  rounded-lg  
 		appearance-none focus:outline-none focus:ring-0 peer
-		placeholder-gray-400 placeholder-opacity-100
+		
 		bg-gray-100 text-black font-light 
 		autofill:bg-gray-100 autofill:text-black
 		focus:bg-gray-100 focus:text-black
@@ -82,7 +82,7 @@ export const Login = () => {
 				</div>
 			</div>
 			{/* Input del correo */}
-			<div className="mb-4 w-full mt-8">
+			<div className="mb-2 w-full  mt-12">
 				<input
 					className={inputClass}
 					style={inputStyle}
@@ -94,7 +94,7 @@ export const Login = () => {
 				/>
 			</div>
 			{/* Input de la contraseña */}
-			<div className="mb-10 w-full">
+			<div className=" w-full">
 				<input
 					className={inputClass}
 					style={inputStyle}
@@ -109,9 +109,9 @@ export const Login = () => {
 			{/* Ingresar */}
 			<button
 				type="submit"
-				className="text-black w-full p-4  h-12 rounded-md bg-gray-100 font-bold   outline-none"
+				className="text-black w-full  mt-4 h-20 rounded-lg bg-gray-100 font-bold   outline-none"
 			>
-				<p className="mt-[-4px]">Ingresar</p>
+				<p className=" text-3xl">Ingresar</p>
 			</button>
 		</form>
 	);
