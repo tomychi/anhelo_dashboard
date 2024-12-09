@@ -131,7 +131,7 @@ export const GenerateVouchersForm = () => {
 
 					<div
 						ref={modalRef}
-						className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
+						className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
 							isAnimating ? "translate-y-0" : "translate-y-full"
 						}`}
 						style={{
