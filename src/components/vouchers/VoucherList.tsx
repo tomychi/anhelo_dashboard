@@ -16,6 +16,7 @@ const VoucherModal: React.FC<{
 	handleCanvasClick: (event: React.MouseEvent<HTMLCanvasElement>) => void;
 	clickPosition: { x: number; y: number } | null;
 	generateVoucherPDF: () => Promise<void>;
+	loading: boolean;
 }> = ({
 	isOpen,
 	onClose,
@@ -23,6 +24,7 @@ const VoucherModal: React.FC<{
 	handleCanvasClick,
 	clickPosition,
 	generateVoucherPDF,
+	loading,
 }) => {
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [dragStart, setDragStart] = useState<number | null>(null);
@@ -154,12 +156,20 @@ const VoucherModal: React.FC<{
 
 					<button
 						onClick={generateVoucherPDF}
-						disabled={!clickPosition}
+						disabled={!clickPosition || loading}
 						className={`font-bold rounded-lg text-center h-20 mt-2 text-xl text-gray-100 ${
 							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
 						} w-full transition-colors`}
 					>
-						{clickPosition ? (
+						{loading ? (
+							<div className="flex justify-center w-full items-center">
+								<div className="flex flex-row gap-1">
+									<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+									<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+									<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+								</div>
+							</div>
+						) : clickPosition ? (
 							"Descargar PDF"
 						) : (
 							<div className="flex flex-row justify-center items-center gap-2">
@@ -170,13 +180,12 @@ const VoucherModal: React.FC<{
 									className="h-5"
 								>
 									<path
-										fill-rule="evenodd"
+										fillRule="evenodd"
 										d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
-										clip-rule="evenodd"
+										clipRule="evenodd"
 									/>
 								</svg>
-
-								<p className="text-2xl ">Descargar PDF</p>
+								<p className="text-2xl">Descargar PDF</p>
 							</div>
 						)}
 					</button>
@@ -504,6 +513,7 @@ export const VoucherList: React.FC = () => {
 				handleCanvasClick={handleCanvasClick}
 				clickPosition={clickPosition}
 				generateVoucherPDF={generateVoucherPDF}
+				loading={loading}
 			/>
 		</div>
 	);
