@@ -179,9 +179,62 @@ export const Sidebar = () => {
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
 					</div>
 				</div>
-				{/* Profile Actions */}
+
+				{/* Principales acciones */}
 				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4">
-					{/* ... action buttons ... */}
+					<NavLink to="/ayuda" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path
+									fillRule="evenodd"
+									d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							<span className="text-xs mt-1">Ayuda</span>
+						</div>
+					</NavLink>
+					<NavLink to="/billetera" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
+								<path
+									fillRule="evenodd"
+									d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							<span className="text-xs mt-1">Billetera</span>
+						</div>
+					</NavLink>
+					<NavLink to="/actividad" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path
+									fillRule="evenodd"
+									d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+									clipRule="evenodd"
+								/>
+								<path d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
+							</svg>
+							<span className="text-xs mt-1">Actividad</span>
+						</div>
+					</NavLink>
 				</div>
 			</div>
 			{/* Profile Menu Items */}
@@ -243,22 +296,74 @@ export const Sidebar = () => {
 				</div>
 
 				{/* Profile Content */}
-				<div className="px-4 pb-8 flex justify-center flex-col items-center">
+				<div className="px-4 pb-4 flex justify-center flex-col items-center">
 					<div className="text-2xl font-bold">
 						{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
 					</div>
-					<div className="text-xs text-gray-500 mb-6">
+					<div className="text-xs text-gray-500 ">
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
 					</div>
 				</div>
 
-				{/* Quick Actions Grid */}
-				<div className="grid grid-cols-3 gap-4 mb-6">
-					{/* Quick action buttons */}
+				{/* Principales acciones */}
+				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-8 border-b border-black border-opacity-20">
+					<NavLink to="/ayuda" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path
+									fillRule="evenodd"
+									d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							<span className="text-xs mt-1">Ayuda</span>
+						</div>
+					</NavLink>
+					<NavLink to="/billetera" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
+								<path
+									fillRule="evenodd"
+									d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							<span className="text-xs mt-1">Billetera</span>
+						</div>
+					</NavLink>
+					<NavLink to="/actividad" className="flex flex-col items-center">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-8"
+							>
+								<path
+									fillRule="evenodd"
+									d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+									clipRule="evenodd"
+								/>
+								<path d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
+							</svg>
+							<span className="text-xs mt-1">Actividad</span>
+						</div>
+					</NavLink>
 				</div>
 
 				{/* Menu Items */}
-				<div className="flex flex-col ">
+				<div className="flex flex-col border-b border-black border-opacity-20">
 					{profileMenuItems.map((item, index) => (
 						<NavLink
 							key={index}
