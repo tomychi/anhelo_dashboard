@@ -234,7 +234,7 @@ export const Sidebar = () => {
 				{/* Principales acciones */}
 				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -251,7 +251,7 @@ export const Sidebar = () => {
 						</div>
 					</NavLink>
 					<NavLink to="/billetera" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -269,7 +269,7 @@ export const Sidebar = () => {
 						</div>
 					</NavLink>
 					<NavLink to="/actividad" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -294,7 +294,7 @@ export const Sidebar = () => {
 					<NavLink
 						key={index}
 						to={item.to}
-						className="px-4 h-10 flex items-center text-xs hover:bg-gray-200"
+						className="px-4 h-10 flex items-center text-xs hover:bg-gray-300"
 					>
 						<span className="mr-2">{item.icon}</span>
 						{item.text}
@@ -305,7 +305,7 @@ export const Sidebar = () => {
 			<div className="mr-8">
 				<button
 					onClick={handleLogout}
-					className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
+					className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-300"
 				>
 					Cerrar sesión
 				</button>
@@ -359,7 +359,7 @@ export const Sidebar = () => {
 				{/* Principales acciones */}
 				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 border-b border-black border-opacity-10">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -376,7 +376,7 @@ export const Sidebar = () => {
 						</div>
 					</NavLink>
 					<NavLink to="/billetera" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -394,7 +394,7 @@ export const Sidebar = () => {
 						</div>
 					</NavLink>
 					<NavLink to="/actividad" className="flex flex-col items-center">
-						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
+						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
@@ -432,7 +432,7 @@ export const Sidebar = () => {
 				<div className="mx-4">
 					<button
 						onClick={handleLogout}
-						className="w-full text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-200"
+						className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-300"
 					>
 						Cerrar sesión
 					</button>
@@ -443,7 +443,7 @@ export const Sidebar = () => {
 
 	return (
 		<>
-			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 ">
+			<div className="flex font-coolvetica flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 ">
 				<NavLink to={"/"} className="ml-[-3px] items-center">
 					<img
 						src={Absolute}
