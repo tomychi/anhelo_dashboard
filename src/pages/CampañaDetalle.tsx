@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { actualizarCostosCampana } from "../firebase/voucher";
 
+interface CostItem {
+	title: string;
+	value: number;
+}
+
 interface CampañaDetalleProps {
 	titulo: string;
 	fecha: string;
@@ -12,16 +17,15 @@ interface CampañaDetalleProps {
 		estado: string;
 		num: number;
 	}>;
-	costos?: number;
+	costos?: CostItem[];
 }
 
 export const CampañaDetalle: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const campaignData = location.state?.campaignData as CampañaDetalleProps;
-	const [costos, setCostos] = useState<string>(
-		campaignData?.costos?.toString() || ""
-	);
+	const [newCostTitle, setNewCostTitle] = useState<string>("");
+	const [newCostValue, setNewCostValue] = useState<string>("");
 	const [isUpdating, setIsUpdating] = useState(false);
 
 	if (!campaignData) {
@@ -38,25 +42,32 @@ export const CampañaDetalle: React.FC = () => {
 		);
 	}
 
-	const handleCostosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCostos(e.target.value);
-	};
+	const handleAddCost = async () => {
+		if (!newCostTitle.trim() || isNaN(parseFloat(newCostValue))) {
+			alert("Por favor ingrese un título y un valor numérico válido");
+			return;
+		}
 
-	const handleSubmitCostos = async () => {
-		const value = parseFloat(costos);
-		if (!isNaN(value) && campaignData.titulo) {
-			try {
-				setIsUpdating(true);
-				await actualizarCostosCampana(campaignData.titulo, value);
-				alert("Costos actualizados correctamente");
-			} catch (error) {
-				console.error("Error al actualizar los costos:", error);
-				alert("Error al actualizar los costos");
-			} finally {
-				setIsUpdating(false);
-			}
-		} else {
-			alert("Por favor ingrese un valor numérico válido");
+		try {
+			setIsUpdating(true);
+
+			// Crear el nuevo objeto de costo a agregar al array
+			const costToAdd = {
+				title: newCostTitle.trim(),
+				value: parseFloat(newCostValue),
+			};
+
+			// Actualizar en Firebase agregando al array existente
+			await actualizarCostosCampana(campaignData.titulo, costToAdd, true); // true indica que es una adición al array
+
+			alert("Costo agregado correctamente");
+			setNewCostTitle("");
+			setNewCostValue("");
+		} catch (error) {
+			console.error("Error al actualizar los costos:", error);
+			alert("Error al actualizar los costos");
+		} finally {
+			setIsUpdating(false);
 		}
 	};
 
@@ -97,6 +108,13 @@ export const CampañaDetalle: React.FC = () => {
 		if (percentage < 5) return "bg-red-500";
 		if (percentage < 10) return "bg-yellow-500";
 		return "bg-green-500";
+	};
+
+	const getTotalCosts = (): number => {
+		return (campaignData.costos || []).reduce(
+			(sum, cost) => sum + cost.value,
+			0
+		);
 	};
 
 	return (
@@ -152,21 +170,52 @@ export const CampañaDetalle: React.FC = () => {
 							</span>
 						</div>
 					</div>
-					<div className="flex items-center gap-2">
+				</div>
+			</div>
+
+			<div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+				<div className="mb-4">
+					<h2 className="text-xl font-bold mb-4">Costos de la Campaña</h2>
+					<div className="flex gap-4 mb-4">
+						<input
+							type="text"
+							className="flex-1 bg-gray-100 rounded-md px-3 py-2 border border-gray-300"
+							value={newCostTitle}
+							onChange={(e) => setNewCostTitle(e.target.value)}
+							placeholder="Título del costo"
+						/>
 						<input
 							type="number"
-							className="w-24 bg-gray-100 rounded-md px-2 py-1 border border-gray-300"
-							value={costos}
-							onChange={handleCostosChange}
-							placeholder="0"
+							className="w-32 bg-gray-100 rounded-md px-3 py-2 border border-gray-300"
+							value={newCostValue}
+							onChange={(e) => setNewCostValue(e.target.value)}
+							placeholder="Valor"
 						/>
 						<button
-							onClick={handleSubmitCostos}
+							onClick={handleAddCost}
 							disabled={isUpdating}
-							className="bg-black text-white px-3 py-1 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
+							className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 disabled:bg-gray-400"
 						>
-							{isUpdating ? "..." : "Guardar"}
+							{isUpdating ? "..." : "Agregar"}
 						</button>
+					</div>
+
+					<div className="space-y-2">
+						{(campaignData.costos || []).map((cost, index) => (
+							<div
+								key={index}
+								className="flex justify-between items-center p-3 bg-gray-50 rounded-md"
+							>
+								<span className="font-medium">{cost.title}</span>
+								<span className="text-gray-600">
+									${cost.value.toLocaleString()}
+								</span>
+							</div>
+						))}
+						<div className="flex justify-between items-center p-3 bg-black text-white rounded-md mt-4">
+							<span className="font-bold">Total</span>
+							<span>${getTotalCosts().toLocaleString()}</span>
+						</div>
 					</div>
 				</div>
 			</div>

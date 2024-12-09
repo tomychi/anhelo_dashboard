@@ -18,21 +18,33 @@ export interface Codigo {
 	num: number;
 }
 
+interface CostItem {
+	title: string;
+	value: number;
+}
+
 export const actualizarCostosCampana = async (
 	titulo: string,
-	costos: number
-): Promise<void> => {
-	const firestore = getFirestore();
-	const voucherDocRef = doc(firestore, "vouchers", titulo);
-
+	costo: CostItem,
+	isAdd: boolean = false
+) => {
 	try {
-		await updateDoc(voucherDocRef, {
-			costos: costos,
-		});
+		const firestore = getFirestore();
+		const voucherRef = doc(firestore, "vouchers", titulo);
 
-		console.log(`Costos actualizados a ${costos} para la campaña: ${titulo}`);
+		if (isAdd) {
+			// Agregar al array existente usando arrayUnion
+			await updateDoc(voucherRef, {
+				costos: arrayUnion(costo),
+			});
+		} else {
+			// Comportamiento anterior si es necesario
+			await updateDoc(voucherRef, {
+				costos: costo,
+			});
+		}
 	} catch (error) {
-		console.error("Error al actualizar los costos:", error);
+		console.error("Error actualizando costos:", error);
 		throw error;
 	}
 };
