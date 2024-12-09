@@ -456,24 +456,18 @@ export const Sidebar = () => {
 						onClick={toggleMenu}
 						className="flex items-center mr-2 h-10 w-10 justify-center"
 					>
-						{isMenuOpen ? (
-							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 rounded-full focus:outline-none transition duration-300 ease-in-out">
-								<p className="font-bold font-coolvetica mt-1.5">x</p>
-							</div>
-						) : (
-							<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 flex items-center justify-center rounded-full focus:outline-none transition duration-300 ease-in-out">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									fill="none"
-									viewBox="0 0 24 24"
-									strokeWidth="3"
-									stroke="currentColor"
-									className="w-6 text-gray-100"
-								>
-									<path d="M3.75 9h16.5m-16.5 6.75h16.5" />
-								</svg>
-							</div>
-						)}
+						<div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 flex items-center justify-center rounded-full focus:outline-none transition duration-300 ease-in-out">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth="3"
+								stroke="currentColor"
+								className="w-6 text-gray-100"
+							>
+								<path d="M3.75 9h16.5m-16.5 6.75h16.5" />
+							</svg>
+						</div>
 					</button>
 
 					<div className="relative">
@@ -540,7 +534,7 @@ export const Sidebar = () => {
 										</NavLink>
 									</li>
 								))}
-								<p className="font-medium text-xs text-center mt-4">
+								<p className="font-medium text-xs opacity-30 text-center mt-4">
 									Ⓡ 2024, Absolute Business Solutions.
 								</p>
 							</ul>
