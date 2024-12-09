@@ -474,7 +474,7 @@ export const Dashboard: React.FC = () => {
 		? marketingCards
 		: [...allCards, ...ratingCards];
 
-	const greetingName = isMarketingUser ? "Luciano" : "Tobias";
+	const greetingName = isMarketingUser ? "Lucho" : "Tobias";
 
 	const calculateTotalDirecciones = (vueltas: Cadete[] | undefined): number => {
 		if (!vueltas) return 0;

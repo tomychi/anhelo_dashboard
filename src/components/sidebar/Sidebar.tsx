@@ -224,7 +224,7 @@ export const Sidebar = () => {
 			<div className="border-b border-gray-200">
 				<div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
 					<div className="text-2xl font-bold">
-						{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
+						{isMarketingUser ? "Lucho Castillo" : "Tobías Azcurra"}
 					</div>
 					<div className="text-xs text-gray-500">
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
@@ -349,7 +349,7 @@ export const Sidebar = () => {
 				{/* Profile Content */}
 				<div className="px-4 pb-4 flex justify-center flex-col items-center">
 					<div className="text-2xl font-bold">
-						{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
+						{isMarketingUser ? "Lucho Castillo" : "Tobías Azcurra"}
 					</div>
 					<div className="text-xs text-gray-500 ">
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
