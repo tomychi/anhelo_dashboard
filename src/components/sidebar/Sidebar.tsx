@@ -11,9 +11,12 @@ export const Sidebar = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
 	const [currentTranslate, setCurrentTranslate] = useState(0);
+	const [menuTranslate, setMenuTranslate] = useState(0);
 	const [dragStart, setDragStart] = useState<number | null>(null);
+	const [menuDragStart, setMenuDragStart] = useState<number | null>(null);
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 	const modalRef = useRef<HTMLDivElement>(null);
+	const menuModalRef = useRef<HTMLDivElement>(null);
 
 	const currentUserEmail = useSelector(
 		(state: RootState) => state.auth?.user?.email
@@ -72,21 +75,58 @@ export const Sidebar = () => {
 		setDragStart(null);
 	};
 
+	// Menu drag handlers
+	const handleMenuTouchStart = (e: React.TouchEvent) => {
+		setMenuDragStart(e.touches[0].clientY);
+	};
+
+	const handleMenuMouseDown = (e: React.MouseEvent) => {
+		setMenuDragStart(e.clientY);
+	};
+
+	const handleMenuTouchMove = (e: React.TouchEvent) => {
+		if (menuDragStart === null) return;
+		const currentPosition = e.touches[0].clientY;
+		const difference = currentPosition - menuDragStart;
+		if (difference > 0) return;
+		setMenuTranslate(Math.abs(difference));
+	};
+
+	const handleMenuMouseMove = (e: React.MouseEvent) => {
+		if (menuDragStart === null) return;
+		const difference = e.clientY - menuDragStart;
+		if (difference > 0) return;
+		setMenuTranslate(Math.abs(difference));
+	};
+
+	const handleMenuDragEnd = () => {
+		if (menuTranslate > 200) {
+			setIsMenuOpen(false);
+		}
+		setMenuTranslate(0);
+		setMenuDragStart(null);
+	};
+
 	useEffect(() => {
 		const handleMouseUp = () => {
 			if (dragStart !== null) {
 				handleDragEnd();
 			}
+			if (menuDragStart !== null) {
+				handleMenuDragEnd();
+			}
 		};
 
 		window.addEventListener("mouseup", handleMouseUp);
 		window.addEventListener("touchend", handleDragEnd);
+		window.addEventListener("touchend", handleMenuDragEnd);
 
 		return () => {
 			window.removeEventListener("mouseup", handleMouseUp);
 			window.removeEventListener("touchend", handleDragEnd);
+			window.removeEventListener("touchend", handleMenuDragEnd);
 		};
-	}, [dragStart, currentTranslate]);
+	}, [dragStart, currentTranslate, menuDragStart, menuTranslate]);
 
 	const toggleMenu = () => {
 		if (isProfileOpen) {
@@ -392,7 +432,7 @@ export const Sidebar = () => {
 				<div className="mx-4">
 					<button
 						onClick={handleLogout}
-						className="w-full   text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-200"
+						className="w-full text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-200"
 					>
 						Cerrar sesión
 					</button>
@@ -452,36 +492,62 @@ export const Sidebar = () => {
 				</div>
 			</div>
 
-			<div
-				className={`fixed left-0 w-full bg-white transition-all duration-300 ease-in-out ${
-					isMenuOpen ? "z-[10000]" : "z-[-1]"
-				}`}
-				style={{
-					top: navbarHeight,
-					height: `calc(100vh - ${navbarHeight})`,
-					transform: isMenuOpen ? "translateY(0)" : "translateY(-100%)",
-					visibility: isMenuOpen ? "visible" : "hidden",
-				}}
-			>
-				<nav className="pt-4 h-full px-4 overflow-y-auto">
-					<ul className="flex flex-col gap-4">
-						{menuItems.map((item, index) => (
-							<li key={index}>
-								<NavLink
-									to={item.to}
-									className="block text-2xl font-coolvetica font-bold"
-									onClick={toggleMenu}
-								>
-									{item.text}
-								</NavLink>
-							</li>
-						))}
-						<p className="font-medium text-sm mt-4">
-							Ⓡ 2024, Absolute Business Solutions.
-						</p>
-					</ul>
-				</nav>
-			</div>
+			{/* Menu Modal */}
+			{isMenuOpen && (
+				<div className="fixed inset-0 z-50 flex items-start justify-center">
+					<div
+						className="absolute inset-0 bg-black transition-opacity duration-300"
+						style={{
+							opacity: Math.max(0, 1 - menuTranslate / 400),
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+						}}
+						onClick={() => setIsMenuOpen(false)}
+					/>
+
+					<div
+						ref={menuModalRef}
+						className="relative bg-gray-100 rounded-b-lg w-full pb-12 transition-transform duration-300 touch-none pt-8"
+						style={{
+							transform: `translateY(${-menuTranslate}px)`,
+							overflowY: "auto",
+						}}
+					>
+						{/* Drag handle for menu */}
+						{isMobile && (
+							<div
+								className="absolute bottom-0 left-0 right-0 h-6 cursor-grab active:cursor-grabbing"
+								onTouchStart={handleMenuTouchStart}
+								onTouchMove={handleMenuTouchMove}
+								onMouseDown={handleMenuMouseDown}
+								onMouseMove={handleMenuMouseMove}
+							>
+								<div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+									<div className="w-12 h-1 bg-gray-300 rounded-full" />
+								</div>
+							</div>
+						)}
+
+						<nav className="px-4 h-full overflow-y-auto">
+							<ul className="flex flex-col gap-4">
+								{menuItems.map((item, index) => (
+									<li key={index}>
+										<NavLink
+											to={item.to}
+											className="block text-2xl font-coolvetica font-bold"
+											onClick={() => setIsMenuOpen(false)}
+										>
+											{item.text}
+										</NavLink>
+									</li>
+								))}
+								<p className="font-medium text-xs text-center mt-4">
+									Ⓡ 2024, Absolute Business Solutions.
+								</p>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			)}
 		</>
 	);
 };
