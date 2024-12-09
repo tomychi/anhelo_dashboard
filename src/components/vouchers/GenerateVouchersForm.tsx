@@ -25,7 +25,7 @@ export const GenerateVouchersForm = () => {
 	};
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col ">
 			<div
 				className={`flex ${
 					showForm ? "flex-col gap-2" : "flex-row"
@@ -89,7 +89,17 @@ export const GenerateVouchersForm = () => {
 								disabled={loading}
 								className="text-gray-100 w-full text-3xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
 							>
-								{loading ? "Creando..." : "Crear"}
+								{loading ? (
+									<div className="flex justify-center w-full items-center">
+										<div className="flex flex-row gap-1">
+											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+										</div>
+									</div>
+								) : (
+									"Crear"
+								)}
 							</button>
 						</div>
 					</div>
