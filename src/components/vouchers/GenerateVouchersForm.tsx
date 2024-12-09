@@ -17,6 +17,8 @@ export const GenerateVouchersForm = () => {
 			alert("Voucher creado exitosamente");
 			setTitulo("");
 			setFecha("");
+			setCantidad(0);
+			setShowForm(false); // Close the form after successful creation
 		} catch (error) {
 			alert("Error al crear el voucher");
 		} finally {
