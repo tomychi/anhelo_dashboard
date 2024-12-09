@@ -24,20 +24,115 @@ const VoucherModal: React.FC<{
 	clickPosition,
 	generateVoucherPDF,
 }) => {
+	const [isAnimating, setIsAnimating] = useState(false);
+	const [dragStart, setDragStart] = useState<number | null>(null);
+	const [currentTranslate, setCurrentTranslate] = useState(0);
+	const modalRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (isOpen) {
+			setIsAnimating(true);
+			setCurrentTranslate(0);
+		}
+	}, [isOpen]);
+
+	const handleTouchStart = (e: React.TouchEvent) => {
+		setDragStart(e.touches[0].clientY);
+	};
+
+	const handleMouseDown = (e: React.MouseEvent) => {
+		setDragStart(e.clientY);
+	};
+
+	const handleTouchMove = (e: React.TouchEvent) => {
+		if (dragStart === null) return;
+
+		const currentPosition = e.touches[0].clientY;
+		const difference = currentPosition - dragStart;
+
+		// Solo permitir arrastrar hacia abajo
+		if (difference < 0) return;
+
+		setCurrentTranslate(difference);
+	};
+
+	const handleMouseMove = (e: React.MouseEvent) => {
+		if (dragStart === null) return;
+
+		const difference = e.clientY - dragStart;
+
+		// Solo permitir arrastrar hacia abajo
+		if (difference < 0) return;
+
+		setCurrentTranslate(difference);
+	};
+
+	const handleDragEnd = () => {
+		if (currentTranslate > 200) {
+			// Umbral para cerrar el modal
+			onClose();
+		} else {
+			setCurrentTranslate(0); // Volver a la posición original
+		}
+		setDragStart(null);
+	};
+
+	useEffect(() => {
+		const handleMouseUp = () => {
+			if (dragStart !== null) {
+				handleDragEnd();
+			}
+		};
+
+		window.addEventListener("mouseup", handleMouseUp);
+		window.addEventListener("touchend", handleDragEnd);
+
+		return () => {
+			window.removeEventListener("mouseup", handleMouseUp);
+			window.removeEventListener("touchend", handleDragEnd);
+		};
+	}, [dragStart, currentTranslate]);
+
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-			<div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4">
-				<div className="flex justify-between items-center mb-4">
-					<h2 className="text-xl font-medium">Configurar Voucher</h2>
-					<button
-						onClick={onClose}
-						className="text-gray-500 hover:text-gray-700 text-2xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
-					>
-						×
-					</button>
+		<div className="fixed inset-0 z-50 flex items-end justify-center">
+			{/* Overlay con fade */}
+			<div
+				className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+					isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+				}`}
+				style={{
+					opacity: Math.max(0, 1 - currentTranslate / 400),
+				}}
+				onClick={onClose}
+			/>
+
+			{/* Modal con slide up */}
+			<div
+				ref={modalRef}
+				className={`relative bg-white w-full max-w-4xl rounded-t-lg p-6 transition-transform duration-300 touch-none ${
+					isAnimating ? "translate-y-0" : "translate-y-full"
+				}`}
+				style={{
+					transform: `translateY(${currentTranslate}px)`,
+				}}
+			>
+				{/* Area de arrastre */}
+				<div
+					className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
+					onMouseDown={handleMouseDown}
+					onMouseMove={handleMouseMove}
+				>
+					{/* Indicador de arrastre */}
+					<div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+						<div className="w-12 h-1 bg-gray-300 rounded-full" />
+					</div>
 				</div>
+
+				<div className="flex justify-between items-center mb-4"></div>
 
 				<div className="flex flex-col gap-4">
 					<div className="flex flex-row gap-4 items-center">
@@ -60,13 +155,30 @@ const VoucherModal: React.FC<{
 					<button
 						onClick={generateVoucherPDF}
 						disabled={!clickPosition}
-						className={`font-bold rounded-lg text-center py-4 mt-2 text-xl text-gray-100 ${
+						className={`font-bold rounded-lg text-center h-20 mt-2 text-xl text-gray-100 ${
 							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
 						} w-full transition-colors`}
 					>
-						{clickPosition
-							? "Descargar PDF"
-							: "Selecciona la posición del código"}
+						{clickPosition ? (
+							"Descargar PDF"
+						) : (
+							<div className="flex flex-row justify-center items-center gap-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									className="h-6"
+								>
+									<path
+										fill-rule="evenodd"
+										d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
+										clip-rule="evenodd"
+									/>
+								</svg>
+
+								<p className="text-base ">Descargar PDF</p>
+							</div>
+						)}
 					</button>
 				</div>
 			</div>
