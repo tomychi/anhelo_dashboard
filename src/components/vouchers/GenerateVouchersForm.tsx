@@ -118,7 +118,7 @@ export const GenerateVouchersForm = () => {
 
 			{/* Modal */}
 			{showForm && (
-				<div className="fixed inset-0 z-50 flex items-end justify-center">
+				<div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
 					<div
 						className={`absolute inset-0 bg-black transition-opacity duration-300 ${
 							isAnimating ? "bg-opacity-50" : "bg-opacity-0"
