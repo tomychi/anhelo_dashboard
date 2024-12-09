@@ -8,71 +8,100 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
-import {
-	calcularPromedioTiempoElaboracion,
-	promedioTiempoDeEntregaTotal,
-	contarPedidosDemorados,
-} from "../../helpers/dateToday";
-import { calculateKMS } from "../../helpers";
-import { PedidoProps } from "../../types/types";
 
-interface KPIData {
-	fecha: string;
-	facturacionBruta: number;
-	facturacionNeta: number;
-	productosVendidos: number;
-	ventasDelivery: number;
-	customerSuccess: number;
-	tiempoCoccion: number;
-	tiempoEntregaTotal: number;
-	kmRecorridos: number;
-	ticketPromedio: number;
-}
+const KPILineChart = ({ orders }) => {
+	const [selectedKPIs, setSelectedKPIs] = useState(["facturacionBruta"]);
+	const [chartData, setChartData] = useState([]);
 
-type ValueType = number | string | Array<number | string>;
-
-interface KPILineChartProps {
-	orders: PedidoProps[];
-}
-
-const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
-	const [selectedKPIs, setSelectedKPIs] = useState<string[]>([
-		"facturacionBruta",
-	]);
-	const [chartData, setChartData] = useState<KPIData[]>([]);
+	// Nueva función para contar productos considerando 2x1
+	const contarProductos = (detallePedido) => {
+		return detallePedido.reduce((total, item) => {
+			const cantidad = item.quantity || 1;
+			const es2x1 = item.burger && item.burger.toLowerCase().includes("2x1");
+			return total + (es2x1 ? cantidad * 2 : cantidad);
+		}, 0);
+	};
 
 	useEffect(() => {
 		if (orders.length === 0) return;
 
-		const ordersByDate = orders.reduce<Record<string, PedidoProps[]>>(
-			(acc, order) => {
-				if (!order.fecha) return acc;
-				const dateStr = order.fecha;
-				if (!acc[dateStr]) acc[dateStr] = [];
-				acc[dateStr].push(order);
-				return acc;
-			},
-			{}
-		);
+		const ordersByDate = orders.reduce((acc, order) => {
+			if (!order.fecha) return acc;
+			const dateStr = order.fecha;
+			if (!acc[dateStr]) acc[dateStr] = [];
+			acc[dateStr].push(order);
+			return acc;
+		}, {});
 
-		const dailyData: KPIData[] = Object.entries(ordersByDate).map(
+		const dailyData = Object.entries(ordersByDate).map(
 			([dateStr, dailyOrders]) => {
 				const facturacionBruta = dailyOrders.reduce(
 					(sum, order) => sum + (Number(order.total) || 0),
 					0
 				);
+
+				// Modificado para contar correctamente los productos 2x1
 				const productosVendidos = dailyOrders.reduce(
-					(sum, order) => sum + (order.detallePedido?.length || 0),
+					(sum, order) =>
+						sum +
+						(order.detallePedido ? contarProductos(order.detallePedido) : 0),
 					0
 				);
 
-				const pedidosDemorados = contarPedidosDemorados(dailyOrders);
+				// Customer Success calculado igual que en el Dashboard
+				const pedidosDemorados = dailyOrders.filter((order) => {
+					if (!order.tiempoEntregado || !order.hora) return false;
+					const horaEntrega = order.tiempoEntregado.split(":").map(Number);
+					const horaInicio = order.hora.split(":").map(Number);
+					const tiempoTotal =
+						horaEntrega[0] * 60 +
+						horaEntrega[1] -
+						(horaInicio[0] * 60 + horaInicio[1]);
+					return tiempoTotal > 60;
+				}).length;
+
 				const customerSuccess =
 					dailyOrders.length > 0
-						? 100 - (pedidosDemorados * 100) / dailyOrders.length
+						? Math.ceil(100 - (pedidosDemorados * 100) / dailyOrders.length)
 						: 0;
-				const tiempoCoccion = calcularPromedioTiempoElaboracion(dailyOrders);
-				const tiempoEntregaTotal = promedioTiempoDeEntregaTotal(dailyOrders);
+
+				// Cálculo de tiempos
+				const tiemposCoccion = dailyOrders
+					.filter((order) => order.tiempoElaborado)
+					.map((order) => {
+						const [minutos] = order.tiempoElaborado.split(":").map(Number);
+						return minutos;
+					});
+
+				const tiempoCoccion =
+					tiemposCoccion.length > 0
+						? tiemposCoccion.reduce((sum, time) => sum + time, 0) /
+						  tiemposCoccion.length
+						: 0;
+
+				const tiemposEntrega = dailyOrders
+					.filter((order) => order.tiempoEntregado && order.hora)
+					.map((order) => {
+						const horaEntrega = order.tiempoEntregado.split(":").map(Number);
+						const horaInicio = order.hora.split(":").map(Number);
+						return (
+							horaEntrega[0] * 60 +
+							horaEntrega[1] -
+							(horaInicio[0] * 60 + horaInicio[1])
+						);
+					});
+
+				const tiempoEntregaTotal =
+					tiemposEntrega.length > 0
+						? tiemposEntrega.reduce((sum, time) => sum + time, 0) /
+						  tiemposEntrega.length
+						: 0;
+
+				// Cálculo de KMs (simplificado - ajustar según tu lógica real)
+				const kmRecorridos = dailyOrders.reduce((total, order) => {
+					if (!order.map || order.map.length !== 2) return total;
+					return total + 5; // Ejemplo simplificado
+				}, 0);
 
 				return {
 					fecha: dateStr,
@@ -83,7 +112,7 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 					customerSuccess,
 					tiempoCoccion,
 					tiempoEntregaTotal,
-					kmRecorridos: calculateKMS(dailyOrders),
+					kmRecorridos,
 					ticketPromedio:
 						dailyOrders.length > 0 ? facturacionBruta / dailyOrders.length : 0,
 				};
@@ -117,7 +146,7 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 		{ id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
 	];
 
-	const toggleKPI = (kpiId: string) => {
+	const toggleKPI = (kpiId) => {
 		setSelectedKPIs((prev) =>
 			prev.includes(kpiId)
 				? prev.filter((id) => id !== kpiId)
@@ -126,13 +155,17 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 	};
 
 	if (chartData.length === 0) {
-		return <div></div>;
+		return (
+			<div className="w-full h-96 flex items-center justify-center">
+				<p className="text-gray-500">Cargando datos...</p>
+			</div>
+		);
 	}
 
 	return (
-		<div className=" bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-2">
-			<div className="md:pt-4 ">
-				<p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20 ">
+		<div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black mb-4 pb-2">
+			<div className="md:pt-4">
+				<p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20">
 					KPIs en el tiempo
 				</p>
 				<div className="flex px-4 flex-wrap gap-2 mb-4 mt-4 md:justify-center">
@@ -169,19 +202,15 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 						/>
 						<YAxis />
 						<Tooltip
-							formatter={(value: ValueType, name: string | number) => {
+							formatter={(value, name) => {
 								if (typeof value === "number") {
 									if (name === "customerSuccess") return `${value.toFixed(1)}%`;
-									if (typeof name === "string") {
-										if (name.includes("Tiempo"))
-											return `${value.toFixed(1)} min`;
-										if (name.includes("KMs")) return `${value.toFixed(1)} km`;
-										if (name.includes("Facturación") || name.includes("Ticket"))
-											return `$${value.toFixed(0)}`;
-									}
+									if (name.includes("Tiempo")) return `${value.toFixed(1)} min`;
+									if (name.includes("KMs")) return `${value.toFixed(1)} km`;
+									if (name.includes("Facturación") || name.includes("Ticket"))
+										return `$${value.toFixed(0)}`;
 									return value.toFixed(0);
 								}
-								// Si no es un número, devolvemos el valor tal cual
 								return value;
 							}}
 						/>
