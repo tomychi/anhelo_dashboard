@@ -427,14 +427,14 @@ export const VoucherList: React.FC = () => {
 	};
 
 	const getUsageColor = (usados: number, total: number): string => {
-		if (total === 0) return "text-red-main";
+		if (total === 0) return "bg-red-main";
 
 		const percentage = (usados / total) * 100;
 		console.log(`Calculando porcentaje para el color: ${percentage}%`);
 
-		if (percentage < 5) return "text-red-main";
-		if (percentage < 10) return "text-yellow-500";
-		return "text-green-500";
+		if (percentage < 5) return "bg-red-main";
+		if (percentage < 10) return "bg-yellow-500";
+		return "bg-green-500";
 	};
 
 	const calculatePercentage = (used: number, total: number): string => {
@@ -507,14 +507,16 @@ export const VoucherList: React.FC = () => {
 										{formatearFecha(t.fecha)}
 									</td>
 									<td className="w-1/12 pl-4 font-light ">
-										<div
-											className={` flex flex-row rounded-full py-1  px-2 bg-black font-bold gap-1 ${getUsageColor(
-												usedCount,
-												t.usados
-											)}`}
-										>
-											<p>{usedCount}</p>
-											<p>({percentage})</p>
+										<div className="flex flex-row  items-center font-bold gap-2">
+											<p className="">{usedCount}</p>
+											<p
+												className={` flex flex-row rounded-full py-1  px-2  font-bold ${getUsageColor(
+													usedCount,
+													t.usados
+												)}`}
+											>
+												({percentage})
+											</p>
 										</div>
 									</td>
 									<td
