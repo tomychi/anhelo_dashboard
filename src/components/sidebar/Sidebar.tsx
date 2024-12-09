@@ -306,7 +306,7 @@ export const Sidebar = () => {
 				</div>
 
 				{/* Principales acciones */}
-				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-8 border-b border-black border-opacity-20">
+				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-8 border-b border-black border-opacity-10">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
 						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
 							<svg
@@ -363,7 +363,7 @@ export const Sidebar = () => {
 				</div>
 
 				{/* Menu Items */}
-				<div className="flex flex-col border-b border-black border-opacity-20">
+				<div className="flex flex-col border-b border-black border-opacity-10">
 					{profileMenuItems.map((item, index) => (
 						<NavLink
 							key={index}
@@ -381,7 +381,7 @@ export const Sidebar = () => {
 				<div className="mx-4">
 					<button
 						onClick={handleLogout}
-						className="w-full   text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-300"
+						className="w-full   text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-200"
 					>
 						Cerrar sesión
 					</button>
