@@ -88,8 +88,19 @@ export const Sidebar = () => {
 		};
 	}, [dragStart, currentTranslate]);
 
-	const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-	const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
+	const toggleMenu = () => {
+		if (isProfileOpen) {
+			setIsProfileOpen(false);
+		}
+		setIsMenuOpen(!isMenuOpen);
+	};
+
+	const toggleProfile = () => {
+		if (isMenuOpen) {
+			setIsMenuOpen(false);
+		}
+		setIsProfileOpen(!isProfileOpen);
+	};
 
 	const navbarHeight = "72px";
 
