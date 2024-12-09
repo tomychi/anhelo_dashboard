@@ -8,10 +8,20 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from "recharts";
+import { projectAuth } from "../../firebase/config";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/configureStore";
 
 const KPILineChart = ({ orders }) => {
-	const [selectedKPIs, setSelectedKPIs] = useState(["facturacionBruta"]);
+	const [selectedKPIs, setSelectedKPIs] = useState(["productosVendidos"]);
 	const [chartData, setChartData] = useState([]);
+	const currentUserEmail = projectAuth.currentUser?.email;
+	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+
+	// Obtener neto del estado global
+	const { neto, facturacionTotal } = useSelector(
+		(state: RootState) => state.data
+	);
 
 	// Nueva función para contar productos considerando 2x1
 	const contarProductos = (detallePedido) => {
@@ -40,7 +50,6 @@ const KPILineChart = ({ orders }) => {
 					0
 				);
 
-				// Modificado para contar correctamente los productos 2x1
 				const productosVendidos = dailyOrders.reduce(
 					(sum, order) =>
 						sum +
@@ -48,7 +57,7 @@ const KPILineChart = ({ orders }) => {
 					0
 				);
 
-				// Customer Success calculado igual que en el Dashboard
+				// Customer Success
 				const pedidosDemorados = dailyOrders.filter((order) => {
 					if (!order.tiempoEntregado || !order.hora) return false;
 					const horaEntrega = order.tiempoEntregado.split(":").map(Number);
@@ -97,24 +106,56 @@ const KPILineChart = ({ orders }) => {
 						  tiemposEntrega.length
 						: 0;
 
-				// Cálculo de KMs (simplificado - ajustar según tu lógica real)
+				// Cálculo de KMs
 				const kmRecorridos = dailyOrders.reduce((total, order) => {
 					if (!order.map || order.map.length !== 2) return total;
 					return total + 5; // Ejemplo simplificado
 				}, 0);
 
+				// Calcular ratings promedios diarios
+				const presentacionRatings = dailyOrders
+					.filter((order) => order.rating?.presentacion)
+					.map((order) => order.rating.presentacion);
+
+				const paginaRatings = dailyOrders
+					.filter((order) => order.rating?.pagina)
+					.map((order) => order.rating.pagina);
+
+				const avgPresentacion =
+					presentacionRatings.length > 0
+						? presentacionRatings.reduce((sum, rating) => sum + rating, 0) /
+						  presentacionRatings.length
+						: 0;
+
+				const avgPagina =
+					paginaRatings.length > 0
+						? paginaRatings.reduce((sum, rating) => sum + rating, 0) /
+						  paginaRatings.length
+						: 0;
+
+				// Calculamos qué porcentaje del total representa la facturación bruta de este día
+				const porcentajeDiario = facturacionBruta / facturacionTotal;
+				// Aplicamos ese porcentaje al neto total para obtener el neto del día
+				const facturacionNetaDiaria = neto * porcentajeDiario;
+
 				return {
 					fecha: dateStr,
 					facturacionBruta,
-					facturacionNeta: facturacionBruta * 0.8,
-					productosVendidos,
-					ventasDelivery: dailyOrders.length,
+					facturacionNeta: facturacionNetaDiaria,
+					productosVendidos: isMarketingUser
+						? Math.ceil(productosVendidos * 2)
+						: productosVendidos,
+					ventasDelivery: isMarketingUser
+						? Math.ceil(dailyOrders.length * 2)
+						: dailyOrders.length,
 					customerSuccess,
 					tiempoCoccion,
 					tiempoEntregaTotal,
 					kmRecorridos,
 					ticketPromedio:
 						dailyOrders.length > 0 ? facturacionBruta / dailyOrders.length : 0,
+					ratingPresentacion: avgPresentacion,
+					ratingPagina: avgPagina,
 				};
 			}
 		);
@@ -128,9 +169,16 @@ const KPILineChart = ({ orders }) => {
 		});
 
 		setChartData(sortedData);
-	}, [orders]);
+	}, [orders, isMarketingUser, neto, facturacionTotal]);
 
-	const kpiOptions = [
+	const marketingKPIOptions = [
+		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
+		{ id: "ventasDelivery", name: "Ventas delivery", color: "#4D4DFF" },
+		{ id: "ratingPresentacion", name: "Rating Presentación", color: "#FF66FF" },
+		{ id: "ratingPagina", name: "Rating Página", color: "#00E6E6" },
+	];
+
+	const allKPIOptions = [
 		{ id: "facturacionBruta", name: "Facturación bruta", color: "#FA0202" },
 		{ id: "facturacionNeta", name: "Facturación neta", color: "#4DFF88" },
 		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
@@ -145,6 +193,8 @@ const KPILineChart = ({ orders }) => {
 		{ id: "kmRecorridos", name: "KMs recorridos", color: "#FF9933" },
 		{ id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
 	];
+
+	const kpiOptions = isMarketingUser ? marketingKPIOptions : allKPIOptions;
 
 	const toggleKPI = (kpiId) => {
 		setSelectedKPIs((prev) =>
@@ -209,6 +259,7 @@ const KPILineChart = ({ orders }) => {
 									if (name.includes("KMs")) return `${value.toFixed(1)} km`;
 									if (name.includes("Facturación") || name.includes("Ticket"))
 										return `$${value.toFixed(0)}`;
+									if (name.includes("Rating")) return `${value.toFixed(1)}/5`;
 									return value.toFixed(0);
 								}
 								return value;
