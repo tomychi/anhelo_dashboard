@@ -479,7 +479,7 @@ export const VoucherList: React.FC = () => {
 								<td className="w-1/12 pl-4 font-light">{t.fecha}</td>
 								<td className="w-1/12 pl-4 font-light">
 									<p
-										className={`p-1 rounded-md text-center ${getUsageColor(
+										className={`p-1 rounded-md  ${getUsageColor(
 											t.usados,
 											t.creados
 										)}`}
