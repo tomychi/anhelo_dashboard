@@ -16,6 +16,7 @@ import {
 	AnheloRidersStats,
 	Equipo,
 	WhatsappFeatures,
+	ComanderaAutomatizada,
 } from "../pages";
 import { MonthData } from "./MonthData";
 import { Stock } from "./Stock";
@@ -34,6 +35,10 @@ export const DashboardMainPage = () => {
 						<Route index element={<Dashboard />} />
 						<Route path="pedidos" element={<DynamicForm />} />
 						<Route path="comandas" element={<Comandera />} />
+						<Route
+							path="comanderaAutomatizada"
+							element={<ComanderaAutomatizada />}
+						/>
 						<Route path="delivery" element={<Delivery />} />
 						<Route path="settings" element={<Settings />} />
 						<Route path="gastos" element={<Gastos />} />

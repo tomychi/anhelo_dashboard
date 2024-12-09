@@ -1,24 +1,25 @@
-export { WhatsappFeatures } from './WhatsappFeatures';
+export { WhatsappFeatures } from "./WhatsappFeatures";
 
-export { Clientes } from './Clientes';
+export { Clientes } from "./Clientes";
 
-export { Gastos } from './Gastos';
-export { Neto } from './Neto';
-export { Bruto } from './Bruto';
-export { Seguidores } from './Seguidores';
-export { ProductosVendidos } from './ProductosVendidos';
+export { Gastos } from "./Gastos";
+export { Neto } from "./Neto";
+export { Bruto } from "./Bruto";
+export { Seguidores } from "./Seguidores";
+export { ProductosVendidos } from "./ProductosVendidos";
 
-export { Error } from './Error';
+export { Error } from "./Error";
 
-export { Authentication } from './Authentication';
-export { Settings } from './Settings';
+export { Authentication } from "./Authentication";
+export { Settings } from "./Settings";
 
-export { Dashboard } from './Dashboard';
+export { Dashboard } from "./Dashboard";
 
-export { Comandera } from './Comandera';
-export { Delivery } from './Delivery';
-export { DynamicForm } from './DynamicForm';
-export { Equipo } from './Equipo';
+export { Comandera } from "./Comandera";
+export { ComanderaAutomatizada } from "./ComanderaAutomatizada";
+export { Delivery } from "./Delivery";
+export { DynamicForm } from "./DynamicForm";
+export { Equipo } from "./Equipo";
 
-export { AnheloRiders } from './AnheloRiders';
-export { AnheloRidersStats } from './AnheloRidersStats';
+export { AnheloRiders } from "./AnheloRiders";
+export { AnheloRidersStats } from "./AnheloRidersStats";

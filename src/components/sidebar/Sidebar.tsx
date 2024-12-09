@@ -142,8 +142,6 @@ export const Sidebar = () => {
 		setIsProfileOpen(!isProfileOpen);
 	};
 
-	const navbarHeight = "72px";
-
 	const menuItems = isMarketingUser
 		? [
 				{ to: "/", text: "Dashboard" },
@@ -154,6 +152,7 @@ export const Sidebar = () => {
 				{ to: "/", text: "Dashboard" },
 				{ to: "/pedidos", text: "Tomar pedidos" },
 				{ to: "/comandas", text: "Comandas y Grupos" },
+				{ to: "/comanderaAutomatizada", text: "comanderaAutomatizada" },
 				{ to: "/gastos", text: "Gastos" },
 				{ to: "/whatsappFeatures", text: "Reactivar clientes" },
 				{ to: "/vouchers", text: "Campañas de vouchers" },
