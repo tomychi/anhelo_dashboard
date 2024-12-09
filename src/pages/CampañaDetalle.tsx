@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { actualizarCostosCampana } from "../firebase/voucher";
+import {
+	actualizarCostosCampana,
+	obtenerCostosCampana,
+} from "../firebase/voucher";
 
 interface CostItem {
 	title: string;
@@ -27,6 +30,22 @@ export const CampañaDetalle: React.FC = () => {
 	const [newCostTitle, setNewCostTitle] = useState<string>("");
 	const [newCostValue, setNewCostValue] = useState<string>("");
 	const [isUpdating, setIsUpdating] = useState(false);
+	const [costs, setCosts] = useState<CostItem[]>([]);
+
+	useEffect(() => {
+		const loadCampaignCosts = async () => {
+			if (!campaignData?.titulo) return;
+
+			try {
+				const loadedCosts = await obtenerCostosCampana(campaignData.titulo);
+				setCosts(loadedCosts);
+			} catch (error) {
+				console.error("Error al cargar los costos:", error);
+			}
+		};
+
+		loadCampaignCosts();
+	}, [campaignData?.titulo]);
 
 	if (!campaignData) {
 		return (
@@ -51,14 +70,13 @@ export const CampañaDetalle: React.FC = () => {
 		try {
 			setIsUpdating(true);
 
-			// Crear el nuevo objeto de costo a agregar al array
 			const costToAdd = {
 				title: newCostTitle.trim(),
 				value: parseFloat(newCostValue),
 			};
 
-			// Actualizar en Firebase agregando al array existente
-			await actualizarCostosCampana(campaignData.titulo, costToAdd, true); // true indica que es una adición al array
+			await actualizarCostosCampana(campaignData.titulo, costToAdd, true);
+			setCosts((prevCosts) => [...prevCosts, costToAdd]);
 
 			alert("Costo agregado correctamente");
 			setNewCostTitle("");
@@ -111,10 +129,7 @@ export const CampañaDetalle: React.FC = () => {
 	};
 
 	const getTotalCosts = (): number => {
-		return (campaignData.costos || []).reduce(
-			(sum, cost) => sum + cost.value,
-			0
-		);
+		return costs.reduce((sum, cost) => sum + cost.value, 0);
 	};
 
 	return (
@@ -201,7 +216,7 @@ export const CampañaDetalle: React.FC = () => {
 					</div>
 
 					<div className="space-y-2">
-						{(campaignData.costos || []).map((cost, index) => (
+						{costs.map((cost, index) => (
 							<div
 								key={index}
 								className="flex justify-between items-center p-3 bg-gray-50 rounded-md"

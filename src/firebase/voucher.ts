@@ -33,12 +33,10 @@ export const actualizarCostosCampana = async (
 		const voucherRef = doc(firestore, "vouchers", titulo);
 
 		if (isAdd) {
-			// Agregar al array existente usando arrayUnion
 			await updateDoc(voucherRef, {
 				costos: arrayUnion(costo),
 			});
 		} else {
-			// Comportamiento anterior si es necesario
 			await updateDoc(voucherRef, {
 				costos: costo,
 			});
@@ -49,20 +47,36 @@ export const actualizarCostosCampana = async (
 	}
 };
 
-// Genera los códigos y los devuelve como un array
+export const obtenerCostosCampana = async (
+	titulo: string
+): Promise<CostItem[]> => {
+	try {
+		const firestore = getFirestore();
+		const voucherRef = doc(firestore, "vouchers", titulo);
+		const voucherDoc = await getDoc(voucherRef);
+
+		if (voucherDoc.exists()) {
+			const data = voucherDoc.data();
+			return data.costos || [];
+		}
+		return [];
+	} catch (error) {
+		console.error("Error al cargar los costos:", error);
+		throw error;
+	}
+};
+
 export const generarCodigos = async (cantidad: number): Promise<Codigo[]> => {
 	const codigosGenerados: Codigo[] = [];
 
 	try {
 		for (let i = 0; i < cantidad; i++) {
-			const codigo = Math.random().toString(36).substring(2, 7).toUpperCase(); // Genera un código de 5 caracteres
+			const codigo = Math.random().toString(36).substring(2, 7).toUpperCase();
 			const nuevoCodigo: Codigo = {
 				codigo,
 				estado: "disponible",
 				num: i + 1,
 			};
-
-			// Almacena el código en Firestore y añade al array de códigos generados
 			codigosGenerados.push(nuevoCodigo);
 		}
 
@@ -76,7 +90,6 @@ export const generarCodigos = async (cantidad: number): Promise<Codigo[]> => {
 	}
 };
 
-// Crea el voucher y guarda el array de códigos
 export const crearVoucher = async (
 	titulo: string,
 	fecha: string,
@@ -86,13 +99,12 @@ export const crearVoucher = async (
 	const voucherDocRef = doc(firestore, "vouchers", titulo);
 
 	try {
-		// Genera los códigos y los incluye en el documento de voucher
 		const codigos = await generarCodigos(cant);
 
 		await setDoc(voucherDocRef, {
 			titulo,
 			fecha,
-			codigos, // Incluye el array de códigos dentro del documento
+			codigos,
 			creados: cant,
 			usados: 0,
 		});
@@ -130,8 +142,8 @@ export const obtenerTitulosVouchers = async (): Promise<
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
 			titulosConFecha.push({
-				titulo: doc.id, // Agrega el ID de cada documento como un título
-				fecha: data.fecha || "Fecha no disponible", // Agrega la fecha, si existe
+				titulo: doc.id,
+				fecha: data.fecha || "Fecha no disponible",
 				canjeados: data.canjeados,
 				usados: data.usados,
 				creados: data.creados,
@@ -159,22 +171,18 @@ export const canjearVoucher = async (codigo: string): Promise<boolean> => {
 				const data = docSnapshot.data();
 				const codigos = data.codigos || [];
 
-				// Encuentra el código en el arreglo de codigos
 				const codigoIndex = codigos.findIndex(
 					(c: Codigo) => c.codigo === codigo
 				);
 
 				if (codigoIndex !== -1) {
-					// Si el código ya está marcado como "usado"
 					if (codigos[codigoIndex].estado === "usado") {
 						console.error("El voucher ya ha sido canjeado");
 						return false;
 					}
 
-					// Marca el código como "usado"
 					codigos[codigoIndex].estado = "usado";
 
-					// Actualiza el documento en Firestore
 					const voucherDocRef = doc(firestore, "vouchers", docSnapshot.id);
 					transaction.update(voucherDocRef, { codigos });
 
@@ -206,7 +214,6 @@ export const actualizarVouchersUsados = async (
 	const voucherDocRef = doc(firestore, "vouchers", titulo);
 
 	try {
-		// Actualiza solo el campo 'usados' en el documento correspondiente
 		await updateDoc(voucherDocRef, {
 			usados: cantidadUsados,
 		});
@@ -245,23 +252,20 @@ export const subirCodigosExistentes = async (
 	codigos: string[]
 ): Promise<void> => {
 	const firestore = getFirestore();
-	const titulo = "baco"; // El título del documento
+	const titulo = "baco";
 	const voucherDocRef = doc(firestore, "vouchers", titulo);
 
 	const usados = ["EA2E9", "HO77E", "69198", "19XUO"];
 
 	try {
-		// Preparar los códigos para el documento
 		const batch = codigos.map((codigo, index) => ({
 			codigo,
 			estado: usados.includes(codigo) ? "usado" : "disponible",
 			num: index + 1,
 		}));
 
-		// Verificar si el documento ya existe
 		const voucherDoc = await getDoc(voucherDocRef);
 		if (!voucherDoc.exists()) {
-			// Si no existe, crear el nuevo documento con los códigos
 			await setDoc(voucherDocRef, {
 				codigos: batch,
 				fecha: "24/08/2024",
@@ -270,7 +274,6 @@ export const subirCodigosExistentes = async (
 				creados: codigos.length,
 			});
 		} else {
-			// Si existe, actualizar el documento con los nuevos códigos
 			await updateDoc(voucherDocRef, {
 				codigos: arrayUnion(...batch),
 				creados: (voucherDoc.data().creados || 0) + codigos.length,
@@ -286,7 +289,7 @@ export const subirCodigosExistentes = async (
 
 export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
 	const firestore = getFirestore();
-	const codigosCollectionRef = collection(firestore, "codigos"); // Referencia a la colección 'codigos'
+	const codigosCollectionRef = collection(firestore, "codigos");
 
 	try {
 		const querySnapshot = await getDocs(codigosCollectionRef);
@@ -295,7 +298,6 @@ export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
 		querySnapshot.forEach((doc) => {
 			const data = doc.data();
 			if (data.codigo && data.num) {
-				// Asegúrate de que `data.codigo` y `data.num` existan
 				codigos.push({
 					codigo: data.codigo,
 					num: data.num,
@@ -304,7 +306,6 @@ export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
 			}
 		});
 
-		// Ordenar los códigos por su propiedad 'num'
 		codigos.sort((a, b) => a.num - b.num);
 
 		return codigos;
@@ -321,28 +322,20 @@ export const moverCodigosARango = async (
 	const db = getFirestore();
 
 	try {
-		// Referencia al documento del voucher
 		const voucherRef = doc(db, "vouchers", titulo);
-
-		// Iniciar una transacción para manejar múltiples operaciones
 		const batch = writeBatch(db);
-
-		// Obtener el documento del voucher para agregar los códigos
 		const voucherDocSnapshot = await getDoc(voucherRef);
 		let existingCodigos: Codigo[] = [];
 
 		if (voucherDocSnapshot.exists()) {
-			// Si el documento ya existe, obtener los códigos existentes
 			const data = voucherDocSnapshot.data();
 			existingCodigos = data?.codigos || [];
 		}
 
-		// Añadir los códigos seleccionados al documento del voucher
 		batch.update(voucherRef, {
 			codigos: [...existingCodigos, ...codigosSeleccionados],
 		});
 
-		// Eliminar los códigos de la colección de códigos
 		for (const codigo of codigosSeleccionados) {
 			const codigosSnapshot = await getDocs(collection(db, "codigos"));
 			codigosSnapshot.forEach((doc) => {
@@ -353,7 +346,6 @@ export const moverCodigosARango = async (
 			});
 		}
 
-		// Ejecutar la transacción
 		await batch.commit();
 
 		console.log("Códigos movidos y eliminados correctamente");
