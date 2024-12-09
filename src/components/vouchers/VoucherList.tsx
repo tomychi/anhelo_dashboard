@@ -9,6 +9,28 @@ import { jsPDF } from "jspdf";
 import voucherImg from "../../assets/Voucher.jpg";
 import arrow from "../../assets/arrowIcon.png";
 
+const TableLoadingRow = () => {
+	return (
+		<tr className="text-black border font-light h-10 border-black border-opacity-20">
+			<td className="w-3/12 pl-4">
+				<div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+			</td>
+			<td className="w-1/12 pl-4">
+				<div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+			</td>
+			<td className="w-1/12 pl-4">
+				<div className="h-4 bg-gray-200 rounded animate-pulse w-8"></div>
+			</td>
+			<td className="w-1/12 pl-4">
+				<div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+			</td>
+			<td className="w-2/12 pl-4 pr-4">
+				<div className="h-6 bg-gray-200 rounded-full animate-pulse w-full"></div>
+			</td>
+		</tr>
+	);
+};
+
 // Modal Component
 const VoucherModal: React.FC<{
 	isOpen: boolean;
@@ -446,11 +468,9 @@ export const VoucherList: React.FC = () => {
 				</thead>
 				<tbody>
 					{loading ? (
-						<tr>
-							<td colSpan={5} className="text-center py-4">
-								Cargando campañas...
-							</td>
-						</tr>
+						Array.from({ length: 8 }).map((_, index) => (
+							<TableLoadingRow key={index} />
+						))
 					) : voucherTitles.length > 0 ? (
 						voucherTitles.map((t, index) => (
 							<tr
@@ -498,11 +518,7 @@ export const VoucherList: React.FC = () => {
 							</tr>
 						))
 					) : (
-						<tr>
-							<td colSpan={5} className="text-center py-4">
-								No hay campañas disponibles.
-							</td>
-						</tr>
+						<></>
 					)}
 				</tbody>
 			</table>
@@ -526,3 +542,5 @@ export const VoucherList: React.FC = () => {
 		</div>
 	);
 };
+
+export default VoucherList;
