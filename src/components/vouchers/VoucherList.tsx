@@ -136,7 +136,7 @@ const VoucherModal: React.FC<{
 			{/* Modal con slide up */}
 			<div
 				ref={modalRef}
-				className={`relative bg-white w-full max-w-4xl rounded-t-lg p-6 transition-transform duration-300 touch-none ${
+				className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
 					isAnimating ? "translate-y-0" : "translate-y-full"
 				}`}
 				style={{
@@ -157,9 +157,7 @@ const VoucherModal: React.FC<{
 					</div>
 				</div>
 
-				<div className="flex justify-between items-center mb-4"></div>
-
-				<div className="flex flex-col gap-4">
+				<div className="flex flex-col ">
 					<div className="flex flex-row gap-4 items-center">
 						<div className="w-3/5">
 							<canvas
@@ -180,7 +178,7 @@ const VoucherModal: React.FC<{
 					<button
 						onClick={generateVoucherPDF}
 						disabled={!clickPosition || loading}
-						className={`font-bold rounded-lg text-center h-20 mt-2 text-xl text-gray-100 ${
+						className={`font-bold rounded-lg text-center h-20 mt-4  text-xl text-gray-100 ${
 							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
 						} w-full transition-colors`}
 					>
