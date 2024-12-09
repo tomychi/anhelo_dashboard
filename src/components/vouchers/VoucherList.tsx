@@ -507,7 +507,7 @@ export const VoucherList: React.FC = () => {
 										{formatearFecha(t.fecha)}
 									</td>
 									<td className="w-1/12 pl-4 font-light ">
-										<div className="flex flex-row  items-center font-bold gap-2">
+										<div className="flex flex-row  items-center  gap-2">
 											<p className="">{usedCount}</p>
 											<p
 												className={` flex flex-row rounded-full py-1  px-2  font-bold ${getUsageColor(
