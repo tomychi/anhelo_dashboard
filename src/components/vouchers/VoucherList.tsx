@@ -31,7 +31,6 @@ const TableLoadingRow = () => {
 	);
 };
 
-// Modal Component
 const VoucherModal: React.FC<{
 	isOpen: boolean;
 	onClose: () => void;
@@ -75,7 +74,6 @@ const VoucherModal: React.FC<{
 		const currentPosition = e.touches[0].clientY;
 		const difference = currentPosition - dragStart;
 
-		// Solo permitir arrastrar hacia abajo
 		if (difference < 0) return;
 
 		setCurrentTranslate(difference);
@@ -86,7 +84,6 @@ const VoucherModal: React.FC<{
 
 		const difference = e.clientY - dragStart;
 
-		// Solo permitir arrastrar hacia abajo
 		if (difference < 0) return;
 
 		setCurrentTranslate(difference);
@@ -94,10 +91,9 @@ const VoucherModal: React.FC<{
 
 	const handleDragEnd = () => {
 		if (currentTranslate > 200) {
-			// Umbral para cerrar el modal
 			onClose();
 		} else {
-			setCurrentTranslate(0); // Volver a la posición original
+			setCurrentTranslate(0);
 		}
 		setDragStart(null);
 	};
@@ -122,7 +118,6 @@ const VoucherModal: React.FC<{
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-end justify-center">
-			{/* Overlay con fade */}
 			<div
 				className={`absolute inset-0 bg-black transition-opacity duration-300 ${
 					isAnimating ? "bg-opacity-50" : "bg-opacity-0"
@@ -133,7 +128,6 @@ const VoucherModal: React.FC<{
 				onClick={onClose}
 			/>
 
-			{/* Modal con slide up */}
 			<div
 				ref={modalRef}
 				className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
@@ -143,7 +137,6 @@ const VoucherModal: React.FC<{
 					transform: `translateY(${currentTranslate}px)`,
 				}}
 			>
-				{/* Area de arrastre */}
 				<div
 					className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
 					onTouchStart={handleTouchStart}
@@ -151,7 +144,6 @@ const VoucherModal: React.FC<{
 					onMouseDown={handleMouseDown}
 					onMouseMove={handleMouseMove}
 				>
-					{/* Indicador de arrastre */}
 					<div className="absolute top-2 left-1/2 transform -translate-x-1/2">
 						<div className="w-12 h-1 bg-gray-300 rounded-full" />
 					</div>
@@ -370,7 +362,7 @@ export const VoucherList: React.FC = () => {
 				const doc = new jsPDF({
 					orientation: "landscape",
 					unit: "mm",
-					format: [320, 450], // Tamaño SA3
+					format: [320, 450],
 				});
 
 				const numVouchersPerPage = 36;
@@ -390,9 +382,6 @@ export const VoucherList: React.FC = () => {
 
 				const pdfX = clickPosition.x * pdfToCanvasScaleX;
 				const pdfY = clickPosition.y * pdfToCanvasScaleY;
-
-				const finalPdfX = pdfX;
-				const finalPdfY = pdfY;
 
 				codigosCampana.forEach((codigoData) => {
 					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
@@ -438,9 +427,13 @@ export const VoucherList: React.FC = () => {
 	};
 
 	const getUsageColor = (usados: number, total: number): string => {
-		const ratio = usados / total;
-		if (ratio < 0.25) return "text-red-main";
-		if (ratio < 0.5) return "text-yellow-500";
+		if (total === 0) return "text-red-main";
+
+		const percentage = (usados / total) * 100;
+		console.log(`Calculando porcentaje para el color: ${percentage}%`);
+
+		if (percentage < 5) return "text-red-main";
+		if (percentage < 10) return "text-yellow-500";
 		return "text-green-500";
 	};
 
@@ -449,28 +442,23 @@ export const VoucherList: React.FC = () => {
 		return `${((used / total) * 100).toFixed(1)}%`;
 	};
 
-	// Función de utilidad para formatear fechas
 	const formatearFecha = (fecha: string): string => {
 		try {
-			// Si la fecha está en formato YYYY-MM-DD
 			if (fecha.includes("-")) {
 				const [year, month, day] = fecha.split("-");
 				return `${day}/${month}/${year}`;
 			}
 
-			// Si la fecha ya está en formato DD/MM/YYYY, la devolvemos tal cual
 			if (fecha.includes("/")) {
-				// Verificamos si necesita ajustar el año
 				const parts = fecha.split("/");
 				if (parts[2].length === 4) {
-					return fecha; // Ya está en el formato deseado
+					return fecha;
 				} else {
-					// Si el año está en formato corto, lo convertimos a 4 dígitos
 					return `${parts[0]}/${parts[1]}/20${parts[2]}`;
 				}
 			}
 
-			return fecha; // Si no coincide con ningún formato conocido, devolvemos la original
+			return fecha;
 		} catch (error) {
 			console.error("Error al formatear la fecha:", error);
 			return fecha;
@@ -519,11 +507,14 @@ export const VoucherList: React.FC = () => {
 										{formatearFecha(t.fecha)}
 									</td>
 									<td className="w-1/12 pl-4 font-light ">
-										<div className="flex flex-row  gap-1">
-											<p className={` ${getUsageColor(usedCount, t.creados)}`}>
-												{usedCount}
-											</p>
-											<p className=" ">({percentage})</p>
+										<div
+											className={` flex flex-row rounded-full py-1  px-2 bg-black font-bold gap-1 ${getUsageColor(
+												usedCount,
+												t.usados
+											)}`}
+										>
+											<p>{usedCount}</p>
+											<p>({percentage})</p>
 										</div>
 									</td>
 									<td
@@ -542,7 +533,7 @@ export const VoucherList: React.FC = () => {
 									>
 										{t.usados} / {t.creados}
 									</td>
-									<td className="w-2/12 font-bold pl-4 pr-4">
+									<td className="w-1/12 font-bold pl-4 pr-4">
 										<button
 											onClick={() => handleVoucherSelect(t.titulo)}
 											className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
@@ -559,7 +550,6 @@ export const VoucherList: React.FC = () => {
 				</tbody>
 			</table>
 
-			{/* De momento no hace falta codear la funcionalidad de este paginator */}
 			<div className="flex justify-center items-center gap-8 pt-8">
 				<img src={arrow} className="h-2 rotate-180" alt="" />
 				<p className="font-bold font-coolvetica text-xs">1</p>
