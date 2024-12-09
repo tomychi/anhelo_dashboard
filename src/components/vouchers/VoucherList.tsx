@@ -508,7 +508,7 @@ export const VoucherList: React.FC = () => {
 			</table>
 
 			{/* De momento no hace falta codear la funcionalidad de este paginator */}
-			<div className="flex justify-center items-center gap-4 pt-8">
+			<div className="flex justify-center items-center gap-8 pt-8">
 				<img src={arrow} className="h-2 rotate-180" alt="" />
 				<p className="font-bold font-coolvetica text-xs">1</p>
 				<img src={arrow} className="h-2" alt="" />
