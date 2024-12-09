@@ -510,7 +510,7 @@ export const VoucherList: React.FC = () => {
 										<div className="flex flex-row  items-center  gap-2">
 											<p className="">{usedCount}</p>
 											<p
-												className={` flex flex-row rounded-full px-2 py-1 font-bold ${getUsageColor(
+												className={` flex flex-row rounded-full px-2 py-1 text-gray-100 font-bold ${getUsageColor(
 													usedCount,
 													t.usados
 												)}`}
