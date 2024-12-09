@@ -566,7 +566,8 @@ export const VoucherList: React.FC = () => {
 										</td>
 									) : (
 										<NavLink
-											to="/ayuda"
+											to={`/campañaDetalle/${t.titulo}`}
+											state={{ campaignData: t }}
 											className="w-1/12 pl-4 pr-4 h-6 flex items-center"
 										>
 											<p className="text-5xl h-6 mb-10 ">...</p>

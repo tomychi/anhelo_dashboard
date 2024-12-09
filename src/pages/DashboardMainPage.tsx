@@ -23,6 +23,7 @@ import { Stock } from "./Stock";
 import RegistroEmpleado from "./Empleados";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
 import { NuevaCompra } from "./NuevaCompra";
+import CampañaDetalle from "./CampañaDetalle";
 
 export const DashboardMainPage = () => {
 	return (
@@ -49,6 +50,7 @@ export const DashboardMainPage = () => {
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
 						<Route path="seguidores" element={<Seguidores />} />
+						<Route path="campañaDetalle/:titulo" element={<CampañaDetalle />} />
 						<Route path="clientes" element={<Clientes />} />
 						<Route path="productosVendidos" element={<ProductosVendidos />} />
 						<Route path="ventas" element={<Comandera />} />
