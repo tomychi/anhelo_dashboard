@@ -500,7 +500,7 @@ export const Dashboard: React.FC = () => {
 				</p>
 			</div>
 			<div className="absolute left-4 right-4 top-[130px] rounded-lg">
-				<div className="flex flex-col shadow-2xl shadow-black rounded-lg">
+				<div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
 					{cardsToRender.map((card, index) =>
 						React.cloneElement(card, {
 							key: index,

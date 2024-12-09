@@ -246,7 +246,7 @@ export const FormGasto = () => {
 			onSubmit={handleSubmit}
 			className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
 		>
-			<div className="item-section w-full flex flex-col gap-4">
+			<div className="item-section w-full flex flex-col gap-2">
 				<FileUpload onFileSelect={handleFileSelect} />
 				<div className="section relative z-0">
 					<input
@@ -357,7 +357,7 @@ export const FormGasto = () => {
 				</div>
 				<button
 					type="submit"
-					className="text-gray-100 w-full py-4 rounded-lg bg-black text-4xl font-bold"
+					className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
 				>
 					Guardar
 				</button>
