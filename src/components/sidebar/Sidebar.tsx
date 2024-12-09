@@ -275,7 +275,7 @@ export const Sidebar = () => {
 
 			<div
 				ref={modalRef}
-				className="relative bg-gray-100 w-full rounded-b-lg  pt-8 transition-transform duration-300 touch-none"
+				className="relative bg-gray-100 w-full rounded-b-lg  pt-10 transition-transform duration-300 touch-none"
 				style={{
 					transform: `translateY(${-currentTranslate}px)`,
 					maxHeight: "90vh",
