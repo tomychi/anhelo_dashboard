@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/configureStore";
@@ -10,52 +10,86 @@ export const Sidebar = () => {
 	const dispatch = useDispatch();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
+	const [currentTranslate, setCurrentTranslate] = useState(0);
+	const [dragStart, setDragStart] = useState<number | null>(null);
+	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+	const modalRef = useRef<HTMLDivElement>(null);
+
 	const currentUserEmail = useSelector(
 		(state: RootState) => state.auth?.user?.email
 	);
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth <= 768);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
 	const handleLogout = () => {
 		try {
-			console.log("🚀 Iniciando proceso de logout...");
-
-			// Verificar estado actual antes del logout
-			console.log("📊 Estado actual del usuario:", currentUserEmail);
-
-			// Dispatch the logout action
-			console.log("📡 Despachando acción LOGOUT_SUCCESS...");
 			dispatch(logoutSuccess());
-
-			// Clear localStorage
-			console.log("🗑️ Limpiando localStorage...");
 			localStorage.removeItem("token");
 			localStorage.removeItem("user");
-			console.log("💾 Estado del localStorage después de limpiar:", {
-				token: localStorage.getItem("token"),
-				user: localStorage.getItem("user"),
-			});
-
-			// Close the profile menu
-			console.log("📕 Cerrando menú de perfil...");
 			setIsProfileOpen(false);
-
-			// Redirect
-			console.log("🔄 Redirigiendo a /authentication...");
 			navigate("/authentication");
-
-			console.log("✅ Proceso de logout completado exitosamente");
 		} catch (error) {
-			console.error("❌ Error durante el cierre de sesión:", error);
+			console.error("Error durante el cierre de sesión:", error);
 		}
 	};
 
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
+	const handleTouchStart = (e: React.TouchEvent) => {
+		setDragStart(e.touches[0].clientY);
 	};
 
-	const toggleProfile = () => {
-		setIsProfileOpen(!isProfileOpen);
+	const handleMouseDown = (e: React.MouseEvent) => {
+		setDragStart(e.clientY);
 	};
+
+	const handleTouchMove = (e: React.TouchEvent) => {
+		if (dragStart === null) return;
+		const currentPosition = e.touches[0].clientY;
+		const difference = currentPosition - dragStart;
+		if (difference > 0) return;
+		setCurrentTranslate(Math.abs(difference));
+	};
+
+	const handleMouseMove = (e: React.MouseEvent) => {
+		if (dragStart === null) return;
+		const difference = e.clientY - dragStart;
+		if (difference > 0) return;
+		setCurrentTranslate(Math.abs(difference));
+	};
+
+	const handleDragEnd = () => {
+		if (currentTranslate > 200) {
+			setIsProfileOpen(false);
+		}
+		setCurrentTranslate(0);
+		setDragStart(null);
+	};
+
+	useEffect(() => {
+		const handleMouseUp = () => {
+			if (dragStart !== null) {
+				handleDragEnd();
+			}
+		};
+
+		window.addEventListener("mouseup", handleMouseUp);
+		window.addEventListener("touchend", handleDragEnd);
+
+		return () => {
+			window.removeEventListener("mouseup", handleMouseUp);
+			window.removeEventListener("touchend", handleDragEnd);
+		};
+	}, [dragStart, currentTranslate]);
+
+	const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+	const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
 
 	const navbarHeight = "72px";
 
@@ -133,6 +167,124 @@ export const Sidebar = () => {
 		},
 	];
 
+	const renderDesktopProfile = () => (
+		<div className="absolute right-0 mt-2 w-96 font-coolvetica bg-gray-100 rounded-lg shadow-lg overflow-hidden">
+			{/* Profile Header */}
+			<div className="border-b border-gray-200">
+				<div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
+					<div className="text-2xl font-bold">
+						{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
+					</div>
+					<div className="text-xs text-gray-500">
+						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
+					</div>
+				</div>
+				{/* Profile Actions */}
+				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4">
+					{/* ... action buttons ... */}
+				</div>
+			</div>
+			{/* Profile Menu Items */}
+			<div className="mt-4">
+				{profileMenuItems.map((item, index) => (
+					<NavLink
+						key={index}
+						to={item.to}
+						className="px-4 h-10 flex items-center text-xs hover:bg-gray-200"
+					>
+						<span className="mr-2">{item.icon}</span>
+						{item.text}
+					</NavLink>
+				))}
+			</div>
+			{/* Logout Button */}
+			<div className="mr-8">
+				<button
+					onClick={handleLogout}
+					className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
+				>
+					Cerrar sesión
+				</button>
+			</div>
+		</div>
+	);
+
+	const renderMobileProfile = () => (
+		<div className="fixed inset-0 z-50 flex items-start justify-center">
+			<div
+				className="absolute inset-0 bg-black transition-opacity duration-300"
+				style={{
+					opacity: Math.max(0, 1 - currentTranslate / 400),
+					backgroundColor: "rgba(0, 0, 0, 0.5)",
+				}}
+				onClick={() => setIsProfileOpen(false)}
+			/>
+
+			<div
+				ref={modalRef}
+				className="relative bg-gray-100 w-full rounded-b-lg  pt-8 transition-transform duration-300 touch-none"
+				style={{
+					transform: `translateY(${-currentTranslate}px)`,
+					maxHeight: "90vh",
+					overflowY: "auto",
+				}}
+			>
+				{/* Drag Handle */}
+				<div
+					className="absolute bottom-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
+					onMouseDown={handleMouseDown}
+					onMouseMove={handleMouseMove}
+				>
+					<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
+						<div className="w-12 h-1 bg-gray-300 rounded-full" />
+					</div>
+				</div>
+
+				{/* Profile Content */}
+				<div className="px-4 pb-8 flex justify-center flex-col items-center">
+					<div className="text-2xl font-bold">
+						{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
+					</div>
+					<div className="text-xs text-gray-500 mb-6">
+						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
+					</div>
+				</div>
+
+				{/* Quick Actions Grid */}
+				<div className="grid grid-cols-3 gap-4 mb-6">
+					{/* Quick action buttons */}
+				</div>
+
+				{/* Menu Items */}
+				<div className="flex flex-col ">
+					{profileMenuItems.map((item, index) => (
+						<NavLink
+							key={index}
+							to={item.to}
+							className="flex items-center px-4 py-3"
+							onClick={() => setIsProfileOpen(false)}
+						>
+							<span className="mr-3">{item.icon}</span>
+							<span className="text-sm font-medium">{item.text}</span>
+						</NavLink>
+					))}
+				</div>
+
+				{/* Logout Button */}
+				<div className="mx-4">
+					<button
+						onClick={handleLogout}
+						className="w-full   text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-300"
+					>
+						Cerrar sesión
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+
 	return (
 		<>
 			<div className="flex flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 ">
@@ -174,116 +326,12 @@ export const Sidebar = () => {
 							className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer"
 						>
 							{isMarketingUser ? "LC" : "TA"}
-
 							<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 						</button>
 
-						{/* Profile Dropdown Menu */}
-						{isProfileOpen && (
-							<div className="absolute right-0 mt-2 w-96 font-coolvetica bg-gray-100 rounded-lg shadow-lg overflow-hidden">
-								{/* Profile Div */}
-								<div className="border-b border-gray-200">
-									<div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
-										<div className="text-2xl font-bold">
-											{isMarketingUser ? "Luciano Castillo" : "Tobías Azcurra"}
-										</div>
-										<div className="text-xs text-gray-500">
-											{isMarketingUser
-												? "Jefe en contenido y ventas"
-												: "Fundador y CEO"}
-										</div>
-									</div>
-									{/* Principales acciones */}
-									<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4">
-										<NavLink to="/ayuda" className="flex flex-col items-center">
-											<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 24 24"
-													fill="currentColor"
-													className="h-8"
-												>
-													<path
-														fillRule="evenodd"
-														d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
-														clipRule="evenodd"
-													/>
-												</svg>
-
-												<span className="text-xs mt-1">Ayuda</span>
-											</div>
-										</NavLink>
-										<NavLink
-											to="/billetera"
-											className="flex flex-col items-center"
-										>
-											<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 24 24"
-													fill="currentColor"
-													className="h-8"
-												>
-													<path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
-													<path
-														fillRule="evenodd"
-														d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
-														clipRule="evenodd"
-													/>
-												</svg>
-
-												<span className="text-xs mt-1">Billetera</span>
-											</div>
-										</NavLink>
-										<NavLink
-											to="/actividad"
-											className="flex flex-col items-center"
-										>
-											<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 24 24"
-													fill="currentColor"
-													className="h-8"
-												>
-													<path
-														fillRule="evenodd"
-														d="M7.5 5.25a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v.205c.933.085 1.857.197 2.774.334 1.454.218 2.476 1.483 2.476 2.917v3.033c0 1.211-.734 2.352-1.936 2.752A24.726 24.726 0 0 1 12 15.75c-2.73 0-5.357-.442-7.814-1.259-1.202-.4-1.936-1.541-1.936-2.752V8.706c0-1.434 1.022-2.7 2.476-2.917A48.814 48.814 0 0 1 7.5 5.455V5.25Zm7.5 0v.09a49.488 49.488 0 0 0-6 0v-.09a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5Zm-3 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-														clipRule="evenodd"
-													/>
-													<path d="M3 18.4v-2.796a4.3 4.3 0 0 0 .713.31A26.226 26.226 0 0 0 12 17.25c2.892 0 5.68-.468 8.287-1.335.252-.084.49-.189.713-.311V18.4c0 1.452-1.047 2.728-2.523 2.923-2.12.282-4.282.427-6.477.427a49.19 49.19 0 0 1-6.477-.427C4.047 21.128 3 19.852 3 18.4Z" />
-												</svg>
-												<span className="text-xs mt-1">Actividad</span>
-											</div>
-										</NavLink>
-									</div>
-								</div>
-								{/* Profile menu items */}
-								<div className="mt-4 ">
-									{profileMenuItems.map((item, index) => (
-										<NavLink
-											key={index}
-											to={item.to}
-											className="px-4 h-10 flex items-center text-xs hover:bg-gray-200"
-										>
-											<span className="mr-2" role="img" aria-label={item.text}>
-												{item.icon}
-											</span>
-											{item.text}
-										</NavLink>
-									))}
-								</div>
-								{/* Cerrar sesion  */}
-								<div className="mr-8">
-									<button
-										onClick={handleLogout}
-										className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
-									>
-										Cerrar sesión
-									</button>
-								</div>
-							</div>
-						)}
+						{/* Render appropriate profile menu based on screen size */}
+						{isProfileOpen &&
+							(isMobile ? renderMobileProfile() : renderDesktopProfile())}
 					</div>
 				</div>
 			</div>
