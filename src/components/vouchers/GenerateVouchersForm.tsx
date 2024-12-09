@@ -175,25 +175,24 @@ export const GenerateVouchersForm = () => {
 								}}
 								className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
 							/>
-
-							<button
-								onClick={handleCreateVoucher}
-								disabled={loading}
-								className="text-gray-100 w-full text-3xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
-							>
-								{loading ? (
-									<div className="flex justify-center w-full items-center">
-										<div className="flex flex-row gap-1">
-											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-											<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-										</div>
-									</div>
-								) : (
-									"Crear"
-								)}
-							</button>
 						</div>
+						<button
+							onClick={handleCreateVoucher}
+							disabled={loading}
+							className="text-gray-100 w-full mt-4 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+						>
+							{loading ? (
+								<div className="flex justify-center w-full items-center">
+									<div className="flex flex-row gap-1">
+										<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+										<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+										<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+									</div>
+								</div>
+							) : (
+								"Crear"
+							)}
+						</button>
 					</div>
 				</div>
 			)}
