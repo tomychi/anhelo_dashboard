@@ -7,6 +7,7 @@ import {
 } from "../../firebase/voucher";
 import { jsPDF } from "jspdf";
 import voucherImg from "../../assets/Voucher.jpg";
+import arrow from "../../assets/arrowIcon.png";
 
 // Modal Component
 const VoucherModal: React.FC<{
@@ -505,6 +506,13 @@ export const VoucherList: React.FC = () => {
 					)}
 				</tbody>
 			</table>
+
+			{/* De momento no hace falta codear la funcionalidad de este paginator */}
+			<div className="flex justify-center items-center gap-4 pt-8">
+				<img src={arrow} className="h-2 rotate-180" alt="" />
+				<p className="font-bold font-coolvetica text-xs">1</p>
+				<img src={arrow} className="h-2" alt="" />
+			</div>
 
 			<VoucherModal
 				isOpen={showModal}
