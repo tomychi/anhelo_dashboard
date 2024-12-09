@@ -15,6 +15,7 @@ import {
 } from "../../helpers/dateToday";
 import { calculateKMS } from "../../helpers";
 import { PedidoProps } from "../../types/types";
+import { projectAuth } from "../../firebase/config";
 
 interface KPIData {
 	fecha: string;
@@ -27,6 +28,8 @@ interface KPIData {
 	tiempoEntregaTotal: number;
 	kmRecorridos: number;
 	ticketPromedio: number;
+	ratingPresentacion: number;
+	ratingPagina: number;
 }
 
 type ValueType = number | string | Array<number | string>;
@@ -37,9 +40,11 @@ interface KPILineChartProps {
 
 const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 	const [selectedKPIs, setSelectedKPIs] = useState<string[]>([
-		"facturacionBruta",
+		"productosVendidos",
 	]);
 	const [chartData, setChartData] = useState<KPIData[]>([]);
+	const currentUserEmail = projectAuth.currentUser?.email;
+	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
 	useEffect(() => {
 		if (orders.length === 0) return;
@@ -66,27 +71,36 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 					0
 				);
 
-				const pedidosDemorados = contarPedidosDemorados(dailyOrders);
-				const customerSuccess =
-					dailyOrders.length > 0
-						? 100 - (pedidosDemorados * 100) / dailyOrders.length
-						: 0;
+				// Calculate ratings for the day
+				const presentacionRatings = dailyOrders
+					.filter((order) => order.rating?.presentacion)
+					.map((order) => order.rating?.presentacion || 0);
+				const paginaRatings = dailyOrders
+					.filter((order) => order.rating?.pagina)
+					.map((order) => order.rating?.pagina || 0);
 
-				const tiempoCoccion = calcularPromedioTiempoElaboracion(dailyOrders);
-				const tiempoEntregaTotal = promedioTiempoDeEntregaTotal(dailyOrders);
+				const avgPresentacion = presentacionRatings.length
+					? presentacionRatings.reduce((a, b) => a + b, 0) /
+					  presentacionRatings.length
+					: 0;
+				const avgPagina = paginaRatings.length
+					? paginaRatings.reduce((a, b) => a + b, 0) / paginaRatings.length
+					: 0;
 
 				return {
 					fecha: dateStr,
 					facturacionBruta,
 					facturacionNeta: facturacionBruta * 0.8,
-					productosVendidos,
-					ventasDelivery: dailyOrders.length,
-					customerSuccess,
-					tiempoCoccion,
-					tiempoEntregaTotal,
+					productosVendidos: Math.ceil(productosVendidos * 2), // Marketing multiplier
+					ventasDelivery: Math.ceil(dailyOrders.length * 2), // Marketing multiplier
+					customerSuccess: contarPedidosDemorados(dailyOrders),
+					tiempoCoccion: calcularPromedioTiempoElaboracion(dailyOrders),
+					tiempoEntregaTotal: promedioTiempoDeEntregaTotal(dailyOrders),
 					kmRecorridos: calculateKMS(dailyOrders),
 					ticketPromedio:
 						dailyOrders.length > 0 ? facturacionBruta / dailyOrders.length : 0,
+					ratingPresentacion: avgPresentacion,
+					ratingPagina: avgPagina,
 				};
 			}
 		);
@@ -102,7 +116,14 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 		setChartData(sortedData);
 	}, [orders]);
 
-	const kpiOptions = [
+	const marketingKPIOptions = [
+		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
+		{ id: "ventasDelivery", name: "Ventas delivery", color: "#4D4DFF" },
+		{ id: "ratingPresentacion", name: "Presentación", color: "#FF66FF" },
+		{ id: "ratingPagina", name: "Página", color: "#00E6E6" },
+	];
+
+	const allKPIOptions = [
 		{ id: "facturacionBruta", name: "Facturación bruta", color: "#FA0202" },
 		{ id: "facturacionNeta", name: "Facturación neta", color: "#4DFF88" },
 		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
@@ -118,6 +139,8 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 		{ id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
 	];
 
+	const kpiOptions = isMarketingUser ? marketingKPIOptions : allKPIOptions;
+
 	const toggleKPI = (kpiId: string) => {
 		setSelectedKPIs((prev) =>
 			prev.includes(kpiId)
@@ -131,9 +154,9 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 	}
 
 	return (
-		<div className=" bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black  mb-4 pb-2">
-			<div className="md:pt-4 ">
-				<p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20 ">
+		<div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-black mb-4 pb-2">
+			<div className="md:pt-4">
+				<p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20">
 					KPIs en el tiempo
 				</p>
 				<div className="flex px-4 flex-wrap gap-2 mb-4 mt-4 md:justify-center">
@@ -172,7 +195,8 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 						<Tooltip
 							formatter={(value: ValueType, name: string | number) => {
 								if (typeof value === "number") {
-									if (name === "customerSuccess") return `${value.toFixed(1)}%`;
+									if (name.toString().includes("rating"))
+										return value.toFixed(1);
 									if (typeof name === "string") {
 										if (name.includes("Tiempo"))
 											return `${value.toFixed(1)} min`;
@@ -182,11 +206,9 @@ const KPILineChart: React.FC<KPILineChartProps> = ({ orders }) => {
 									}
 									return value.toFixed(0);
 								}
-								// Si no es un número, devolvemos el valor tal cual
 								return value;
 							}}
 						/>
-
 						{kpiOptions.map(
 							(kpi) =>
 								selectedKPIs.includes(kpi.id) && (

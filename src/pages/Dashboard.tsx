@@ -512,7 +512,7 @@ export const Dashboard: React.FC = () => {
 						})
 					)}
 				</div>
-				{isMarketingUser ? <></> : <KPILineChart orders={orders} />}
+				<KPILineChart orders={orders} />
 			</div>
 		</div>
 	);
