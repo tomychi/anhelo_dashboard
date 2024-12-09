@@ -132,6 +132,15 @@ export const CampañaDetalle: React.FC = () => {
 		return costs.reduce((sum, cost) => sum + cost.value, 0);
 	};
 
+	useEffect(() => {
+		if (campaignData?.codigos) {
+			const codigosUsados = campaignData.codigos.filter(
+				(codigo) => codigo.estado === "usado"
+			);
+			console.log("Códigos usados:", codigosUsados);
+		}
+	}, [campaignData?.codigos]);
+
 	return (
 		<div className="container mx-auto px-4 py-8 font-coolvetica">
 			<div className="flex items-center mb-6">
