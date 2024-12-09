@@ -444,6 +444,11 @@ export const VoucherList: React.FC = () => {
 		return "text-green-500";
 	};
 
+	const calculatePercentage = (used: number, total: number): string => {
+		if (total === 0) return "0%";
+		return `${((used / total) * 100).toFixed(1)}%`;
+	};
+
 	return (
 		<div className="font-coolvetica">
 			<table className="w-full text-xs text-left text-black">
@@ -470,51 +475,54 @@ export const VoucherList: React.FC = () => {
 							<TableLoadingRow key={index} />
 						))
 					) : voucherTitles.length > 0 ? (
-						voucherTitles.map((t, index) => (
-							<tr
-								key={index}
-								className="text-black border font-light h-10 border-black border-opacity-20"
-							>
-								<td className="w-3/12 font-light pl-4">{t.titulo}</td>
-								<td className="w-1/12 pl-4 font-light">{t.fecha}</td>
-								<td className="w-1/12 pl-4 font-light">
-									<p
-										className={`p-1 rounded-md  ${getUsageColor(
-											t.usados,
-											t.creados
-										)}`}
-									>
-										{t.codigos
-											? t.codigos.filter((c) => c.estado === "usado").length
-											: 0}
-									</p>
-								</td>
-								<td
-									className="w-1/12 pl-4 font-light cursor-pointer"
-									onClick={() => {
-										const nuevaCantidadUsados = prompt(
-											"Ingrese la nueva cantidad de vouchers usados:"
-										);
-										if (nuevaCantidadUsados !== null) {
-											actualizarVouchersUsados(
-												t.titulo,
-												parseInt(nuevaCantidadUsados, 10)
-											);
-										}
-									}}
+						voucherTitles.map((t, index) => {
+							const usedCount = t.codigos
+								? t.codigos.filter((c) => c.estado === "usado").length
+								: 0;
+							const percentage = calculatePercentage(usedCount, t.usados);
+
+							return (
+								<tr
+									key={index}
+									className="text-black border font-light h-10 border-black border-opacity-20"
 								>
-									{t.usados} / {t.creados}
-								</td>
-								<td className="w-2/12 font-bold pl-4 pr-4">
-									<button
-										onClick={() => handleVoucherSelect(t.titulo)}
-										className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
+									<td className="w-3/12 font-light pl-4">{t.titulo}</td>
+									<td className="w-1/12 pl-4 font-light">{t.fecha}</td>
+									<td className="w-1/12 pl-4 font-light ">
+										<div className="flex flex-row  gap-1">
+											<p className={` ${getUsageColor(usedCount, t.creados)}`}>
+												{usedCount}
+											</p>
+											<p className=" ">({percentage})</p>
+										</div>
+									</td>
+									<td
+										className="w-1/12 pl-4 font-light cursor-pointer"
+										onClick={() => {
+											const nuevaCantidadUsados = prompt(
+												"Ingrese la nueva cantidad de vouchers usados:"
+											);
+											if (nuevaCantidadUsados !== null) {
+												actualizarVouchersUsados(
+													t.titulo,
+													parseInt(nuevaCantidadUsados, 10)
+												);
+											}
+										}}
 									>
-										Imprimir
-									</button>
-								</td>
-							</tr>
-						))
+										{t.usados} / {t.creados}
+									</td>
+									<td className="w-2/12 font-bold pl-4 pr-4">
+										<button
+											onClick={() => handleVoucherSelect(t.titulo)}
+											className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
+										>
+											Imprimir
+										</button>
+									</td>
+								</tr>
+							);
+						})
 					) : (
 						<></>
 					)}
