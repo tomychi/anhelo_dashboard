@@ -306,7 +306,7 @@ export const Sidebar = () => {
 				</div>
 
 				{/* Principales acciones */}
-				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-8 border-b border-black border-opacity-10">
+				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 border-b border-black border-opacity-10">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
 						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
 							<svg
@@ -363,12 +363,12 @@ export const Sidebar = () => {
 				</div>
 
 				{/* Menu Items */}
-				<div className="flex flex-col border-b border-black border-opacity-10">
+				<div className="flex flex-col pt-4">
 					{profileMenuItems.map((item, index) => (
 						<NavLink
 							key={index}
 							to={item.to}
-							className="flex items-center px-4 py-3"
+							className="flex items-center px-4 h-10"
 							onClick={() => setIsProfileOpen(false)}
 						>
 							<span className="mr-3">{item.icon}</span>
