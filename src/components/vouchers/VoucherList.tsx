@@ -449,6 +449,34 @@ export const VoucherList: React.FC = () => {
 		return `${((used / total) * 100).toFixed(1)}%`;
 	};
 
+	// Función de utilidad para formatear fechas
+	const formatearFecha = (fecha: string): string => {
+		try {
+			// Si la fecha está en formato YYYY-MM-DD
+			if (fecha.includes("-")) {
+				const [year, month, day] = fecha.split("-");
+				return `${day}/${month}/${year}`;
+			}
+
+			// Si la fecha ya está en formato DD/MM/YYYY, la devolvemos tal cual
+			if (fecha.includes("/")) {
+				// Verificamos si necesita ajustar el año
+				const parts = fecha.split("/");
+				if (parts[2].length === 4) {
+					return fecha; // Ya está en el formato deseado
+				} else {
+					// Si el año está en formato corto, lo convertimos a 4 dígitos
+					return `${parts[0]}/${parts[1]}/20${parts[2]}`;
+				}
+			}
+
+			return fecha; // Si no coincide con ningún formato conocido, devolvemos la original
+		} catch (error) {
+			console.error("Error al formatear la fecha:", error);
+			return fecha;
+		}
+	};
+
 	return (
 		<div className="font-coolvetica">
 			<table className="w-full text-xs text-left text-black">
@@ -487,7 +515,9 @@ export const VoucherList: React.FC = () => {
 									className="text-black border font-light h-10 border-black border-opacity-20"
 								>
 									<td className="w-3/12 font-light pl-4">{t.titulo}</td>
-									<td className="w-1/12 pl-4 font-light">{t.fecha}</td>
+									<td className="w-1/12 pl-4 font-light">
+										{formatearFecha(t.fecha)}
+									</td>
 									<td className="w-1/12 pl-4 font-light ">
 										<div className="flex flex-row  gap-1">
 											<p className={` ${getUsageColor(usedCount, t.creados)}`}>
@@ -517,7 +547,7 @@ export const VoucherList: React.FC = () => {
 											onClick={() => handleVoucherSelect(t.titulo)}
 											className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
 										>
-											Imprimir
+											PDF
 										</button>
 									</td>
 								</tr>
