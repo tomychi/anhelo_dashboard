@@ -167,7 +167,7 @@ const VoucherModal: React.FC<{
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="currentColor"
-									className="h-6"
+									className="h-5"
 								>
 									<path
 										fill-rule="evenodd"
@@ -176,7 +176,7 @@ const VoucherModal: React.FC<{
 									/>
 								</svg>
 
-								<p className="text-base ">Descargar PDF</p>
+								<p className="text-2xl ">Descargar PDF</p>
 							</div>
 						)}
 					</button>
