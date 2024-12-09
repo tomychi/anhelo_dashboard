@@ -60,6 +60,100 @@ const VoucherModal: React.FC<{
 		}
 	}, [isOpen]);
 
+	useEffect(() => {
+		if (!isOpen) return;
+
+		const canvas = canvasRef.current;
+		const ctx = canvas?.getContext("2d");
+
+		if (!canvas || !ctx) return;
+
+		const image = new Image();
+		image.src = voucherImg;
+
+		const handleResize = () => {
+			if (!canvas) return;
+			canvas.width = canvas.offsetWidth;
+			canvas.height = canvas.offsetWidth / (image.width / image.height);
+			drawImage();
+		};
+
+		const drawImage = () => {
+			if (!canvas || !ctx) return;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+			if (clickPosition) {
+				drawClickPosition(ctx, clickPosition);
+			}
+		};
+
+		const drawClickPosition = (
+			ctx: CanvasRenderingContext2D,
+			pos: { x: number; y: number }
+		) => {
+			ctx.save();
+
+			const rectWidth = 70;
+			const rectHeight = 24;
+			const borderRadius = 6;
+
+			const centerX = pos.x;
+			const centerY = pos.y;
+
+			const rectX = centerX - rectWidth / 2;
+			const rectY = centerY - rectHeight / 2;
+
+			// Draw rounded rectangle
+			ctx.beginPath();
+			ctx.moveTo(rectX + borderRadius, rectY);
+			ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
+			ctx.quadraticCurveTo(
+				rectX + rectWidth,
+				rectY,
+				rectX + rectWidth,
+				rectY + borderRadius
+			);
+			ctx.lineTo(rectX + rectWidth, rectY + rectHeight - borderRadius);
+			ctx.quadraticCurveTo(
+				rectX + rectWidth,
+				rectY + rectHeight,
+				rectX + rectWidth - borderRadius,
+				rectY + rectHeight
+			);
+			ctx.lineTo(rectX + borderRadius, rectY + rectHeight);
+			ctx.quadraticCurveTo(
+				rectX,
+				rectY + rectHeight,
+				rectX,
+				rectY + rectHeight - borderRadius
+			);
+			ctx.lineTo(rectX, rectY + borderRadius);
+			ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
+			ctx.closePath();
+
+			ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+			ctx.fill();
+
+			ctx.fillStyle = "white";
+			ctx.font = "medium 10px Coolvetica";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillText("Preview", centerX, centerY);
+
+			ctx.restore();
+		};
+
+		image.onload = () => {
+			handleResize();
+			window.addEventListener("resize", handleResize);
+		};
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, [isOpen, clickPosition]);
+
 	const handleTouchStart = (e: React.TouchEvent) => {
 		setDragStart(e.touches[0].clientY);
 	};
@@ -149,7 +243,7 @@ const VoucherModal: React.FC<{
 					</div>
 				</div>
 
-				<div className="flex flex-col ">
+				<div className="flex flex-col">
 					<div className="flex flex-row gap-4 items-center">
 						<div className="w-3/5">
 							<canvas
@@ -170,7 +264,7 @@ const VoucherModal: React.FC<{
 					<button
 						onClick={generateVoucherPDF}
 						disabled={!clickPosition || loading}
-						className={`font-bold rounded-lg text-center h-20 mt-4  text-xl text-gray-100 ${
+						className={`font-bold rounded-lg text-center h-20 mt-4 text-xl text-gray-100 ${
 							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
 						} w-full transition-colors`}
 					>
@@ -212,14 +306,13 @@ export const VoucherList: React.FC = () => {
 	const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
 		[]
 	);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState(false);
 	const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
 	const [clickPosition, setClickPosition] = useState<{
 		x: number;
 		y: number;
 	} | null>(null);
 	const [showModal, setShowModal] = useState(false);
-	const [updateTrigger, setUpdateTrigger] = useState(0);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -237,92 +330,6 @@ export const VoucherList: React.FC = () => {
 		fetchVouchers();
 	}, []);
 
-	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) {
-			console.error("El elemento canvas no se encontró.");
-			return;
-		}
-
-		const ctx = canvas.getContext("2d");
-		if (!ctx) {
-			console.error("No se pudo obtener el contexto 2D del canvas.");
-			return;
-		}
-
-		const image = new Image();
-		image.src = voucherImg;
-
-		image.onload = () => {
-			console.log("Imagen cargada exitosamente.");
-			const aspectRatio = image.width / image.height;
-			canvas.width = canvas.offsetWidth;
-			canvas.height = canvas.offsetWidth / aspectRatio;
-			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-			if (clickPosition) {
-				ctx.save();
-
-				const rectWidth = 70;
-				const rectHeight = 24;
-				const borderRadius = 6;
-
-				const centerX = clickPosition.x;
-				const centerY = clickPosition.y;
-
-				const rectX = centerX - rectWidth / 2;
-				const rectY = centerY - rectHeight / 2;
-
-				ctx.beginPath();
-				ctx.moveTo(rectX + borderRadius, rectY);
-				ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
-				ctx.quadraticCurveTo(
-					rectX + rectWidth,
-					rectY,
-					rectX + rectWidth,
-					rectY + borderRadius
-				);
-				ctx.lineTo(rectX + rectWidth, rectY + rectHeight - borderRadius);
-				ctx.quadraticCurveTo(
-					rectX + rectWidth,
-					rectY + rectHeight,
-					rectX + rectWidth - borderRadius,
-					rectY + rectHeight
-				);
-				ctx.lineTo(rectX + borderRadius, rectY + rectHeight);
-				ctx.quadraticCurveTo(
-					rectX,
-					rectY + rectHeight,
-					rectX,
-					rectY + rectHeight - borderRadius
-				);
-				ctx.lineTo(rectX, rectY + borderRadius);
-				ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
-				ctx.closePath();
-
-				ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-				ctx.fill();
-
-				ctx.fillStyle = "white";
-				ctx.font = "medium 10px Coolvetica";
-				ctx.textAlign = "center";
-				ctx.textBaseline = "middle";
-
-				ctx.fillText("Preview", centerX, centerY);
-
-				ctx.restore();
-			}
-		};
-
-		image.onerror = () => {
-			console.error("Error al cargar la imagen.");
-		};
-
-		return () => {
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-		};
-	}, [updateTrigger, clickPosition]);
-
 	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -335,16 +342,12 @@ export const VoucherList: React.FC = () => {
 		const y = (event.clientY - rect.top) * scaleY;
 
 		setClickPosition({ x, y });
-		setUpdateTrigger((prev) => prev + 1);
 	};
 
 	const handleVoucherSelect = (titulo: string) => {
 		setSelectedVoucher(titulo);
 		setShowModal(true);
 		setClickPosition(null);
-		setTimeout(() => {
-			setUpdateTrigger((prev) => prev + 1);
-		}, 100);
 	};
 
 	const generateVoucherPDF = async () => {
@@ -506,10 +509,10 @@ export const VoucherList: React.FC = () => {
 										{formatearFecha(t.fecha)}
 									</td>
 									<td className="w-1/12 pl-4 font-light ">
-										<div className="flex flex-row  items-center  gap-2">
+										<div className="flex flex-row items-center gap-2">
 											<p className="">{usedCount}</p>
 											<p
-												className={` flex flex-row rounded-full px-2 py-1 text-gray-100 font-bold ${getUsageColor(
+												className={`flex flex-row rounded-full px-2 py-1 text-gray-100 font-bold ${getUsageColor(
 													usedCount,
 													t.usados
 												)}`}
@@ -537,20 +540,9 @@ export const VoucherList: React.FC = () => {
 									<td className="w-1/12 font-bold pl-4 pr-4">
 										<button
 											onClick={() => handleVoucherSelect(t.titulo)}
-											className="px-2 py-1 rounded-full text-center text-gray-100 bg-gray-300 w-full"
+											className="px-2 py-1 rounded-full text-center text-gray-100 bg-black w-full"
 										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												viewBox="0 0 24 24"
-												fill="currentColor"
-												className="h-4 text-black"
-											>
-												<path
-													fill-rule="evenodd"
-													d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z"
-													clip-rule="evenodd"
-												/>
-											</svg>
+											PDF
 										</button>
 									</td>
 								</tr>
