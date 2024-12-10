@@ -267,7 +267,7 @@ export const CampañaDetalle: React.FC = () => {
 					<div className="grid grid-cols-2 gap-4">
 						<div>
 							<p className="text-sm text-gray-500">
-								Pedidos con cupon de la campaña encontrados
+								Pedidos de la campaña encontrados
 							</p>
 							<p className="text-lg font-medium">{estadisticas.totalPedidos}</p>
 						</div>
