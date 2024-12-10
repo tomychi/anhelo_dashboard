@@ -3,11 +3,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
 	actualizarCostosCampana,
 	obtenerCostosCampana,
+	obtenerPedidosDesdeCampana,
+	calcularEstadisticasPedidos,
 } from "../firebase/voucher";
 
 interface CostItem {
 	title: string;
 	value: number;
+}
+
+interface Pedido {
+	fecha: string;
+	total: number;
+	subTotal: number;
+	couponCodes?: string[];
 }
 
 interface CampañaDetalleProps {
@@ -31,6 +40,24 @@ export const CampañaDetalle: React.FC = () => {
 	const [newCostValue, setNewCostValue] = useState<string>("");
 	const [isUpdating, setIsUpdating] = useState(false);
 	const [costs, setCosts] = useState<CostItem[]>([]);
+	const [pedidosConCupon, setPedidosConCupon] = useState<Pedido[]>([]);
+	const [estadisticas, setEstadisticas] = useState<{
+		totalPedidos: number;
+		totalCupones: number;
+		promedioCuponesPorPedido: number;
+		montoTotal: number;
+		montoSinDescuento: number;
+		descuentoTotal: number;
+		promedioDescuento: number;
+	}>({
+		totalPedidos: 0,
+		totalCupones: 0,
+		promedioCuponesPorPedido: 0,
+		montoTotal: 0,
+		montoSinDescuento: 0,
+		descuentoTotal: 0,
+		promedioDescuento: 0,
+	});
 
 	useEffect(() => {
 		const loadCampaignCosts = async () => {
@@ -46,6 +73,38 @@ export const CampañaDetalle: React.FC = () => {
 
 		loadCampaignCosts();
 	}, [campaignData?.titulo]);
+
+	useEffect(() => {
+		const cargarPedidos = async () => {
+			if (!campaignData?.titulo || !campaignData?.fecha) {
+				console.log("No hay datos de campaña:", { campaignData });
+				return;
+			}
+
+			console.log("Iniciando carga de pedidos con datos:", {
+				titulo: campaignData.titulo,
+				fecha: campaignData.fecha,
+			});
+
+			try {
+				const pedidos = await obtenerPedidosDesdeCampana(
+					campaignData.fecha,
+					campaignData.titulo
+				);
+
+				console.log("Pedidos obtenidos:", pedidos);
+				setPedidosConCupon(pedidos);
+
+				const stats = calcularEstadisticasPedidos(pedidos);
+				console.log("Estadísticas calculadas:", stats);
+				setEstadisticas(stats);
+			} catch (error) {
+				console.error("Error al cargar los pedidos:", error);
+			}
+		};
+
+		cargarPedidos();
+	}, [campaignData?.titulo, campaignData?.fecha]);
 
 	if (!campaignData) {
 		return (
@@ -132,14 +191,19 @@ export const CampañaDetalle: React.FC = () => {
 		return costs.reduce((sum, cost) => sum + cost.value, 0);
 	};
 
-	useEffect(() => {
-		if (campaignData?.codigos) {
-			const codigosUsados = campaignData.codigos.filter(
-				(codigo) => codigo.estado === "usado"
-			);
-			console.log("Códigos usados:", codigosUsados);
+	const calcularPorcentajeDiscrepancia = (): number => {
+		if (!campaignData?.codigos || !estadisticas.totalCupones) {
+			return 0;
 		}
-	}, [campaignData?.codigos]);
+
+		// Contamos cuántos códigos están marcados como "usado"
+		const codigosUsados = campaignData.codigos.filter(
+			(codigo) => codigo.estado === "usado"
+		).length;
+
+		const cuponesNoEncontrados = codigosUsados - estadisticas.totalCupones;
+		return (cuponesNoEncontrados * 100) / codigosUsados;
+	};
 
 	return (
 		<div className="container mx-auto px-4 py-8 font-coolvetica">
@@ -193,6 +257,48 @@ export const CampañaDetalle: React.FC = () => {
 								{getUsagePercentage()}
 							</span>
 						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+				<div className="mb-4">
+					<h2 className="text-xl font-bold mb-4">Estadísticas de Uso</h2>
+					<div className="grid grid-cols-2 gap-4">
+						<div>
+							<p className="text-sm text-gray-500">Total de Pedidos</p>
+							<p className="text-lg font-medium">{estadisticas.totalPedidos}</p>
+						</div>
+						<div>
+							<p className="text-sm text-gray-500">Total de Cupones Usados</p>
+							<p className="text-lg font-medium">{estadisticas.totalCupones}</p>
+						</div>
+						<div>
+							<p className="text-sm text-gray-500">
+								Cupones sin pedido asociado
+							</p>
+							<p className="text-lg font-medium text-red-500">
+								{(() => {
+									const codigosUsados =
+										campaignData.codigos?.filter(
+											(codigo) => codigo.estado === "usado"
+										).length || 0;
+									const noEncontrados =
+										codigosUsados - estadisticas.totalCupones;
+									const porcentaje = calcularPorcentajeDiscrepancia();
+									return `${noEncontrados} (${porcentaje.toFixed(2)}%)`;
+								})()}
+							</p>
+						</div>
+						<div>
+							<p className="text-sm text-gray-500">
+								Promedio de Cupones por Pedido
+							</p>
+							<p className="text-lg font-medium">
+								{estadisticas.promedioCuponesPorPedido.toFixed(2)}
+							</p>
+						</div>
+						{/* ... resto de las estadísticas ... */}
 					</div>
 				</div>
 			</div>

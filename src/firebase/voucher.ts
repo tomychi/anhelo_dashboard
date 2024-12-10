@@ -23,6 +23,163 @@ interface CostItem {
 	value: number;
 }
 
+interface Pedido {
+	fecha: string;
+	total: number;
+	subTotal: number;
+	couponCodes?: string[];
+	// ... otros campos que necesites
+}
+
+export const obtenerPedidosDesdeCampana = async (
+	fechaCampana: string,
+	titulo: string
+): Promise<Pedido[]> => {
+	const firestore = getFirestore();
+	const pedidosEncontrados: Pedido[] = [];
+	const cuponesEncontrados = new Set<string>();
+
+	try {
+		// 1. Primero obtenemos los datos de la campaña
+		const voucherRef = doc(firestore, "vouchers", titulo);
+		const voucherDoc = await getDoc(voucherRef);
+
+		if (!voucherDoc.exists()) {
+			// console.log("No se encontró la campaña:", titulo);
+			return [];
+		}
+
+		const voucherData = voucherDoc.data();
+		const codigosCampana = voucherData.codigos
+			.filter((c) => c.estado === "usado")
+			.map((c) => c.codigo);
+
+		// console.log(`Códigos marcados como usados:`, codigosCampana);
+		// console.log(
+		// 	`Total de códigos usados en la campaña ${titulo}:`,
+		// 	codigosCampana.length
+		// );
+
+		// 2. Convertimos la fecha de inicio
+		let fechaInicio: Date;
+		if (fechaCampana.includes("-")) {
+			const [ano, mes, dia] = fechaCampana.split("-");
+			fechaInicio = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+		} else {
+			const [dia, mes, ano] = fechaCampana.split("/");
+			fechaInicio = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+		}
+		// console.log("Buscando pedidos desde:", fechaInicio);
+
+		// 3. Configuramos el rango de fechas a buscar
+		const fechaActual = new Date();
+		const anoActual = fechaActual.getFullYear();
+		const mesActual = fechaActual.getMonth() + 1;
+
+		// 4. Iteramos por cada mes desde la fecha de inicio
+		for (let ano = fechaInicio.getFullYear(); ano <= anoActual; ano++) {
+			const mesInicial =
+				ano === fechaInicio.getFullYear() ? fechaInicio.getMonth() + 1 : 1;
+			const mesFinal = ano === anoActual ? mesActual : 12;
+
+			for (let mes = mesInicial; mes <= mesFinal; mes++) {
+				const mesStr = mes.toString().padStart(2, "0");
+				const collectionPath = `pedidos/${ano}/${mesStr}`;
+
+				try {
+					// console.log(`Buscando en ${collectionPath}`);
+					const pedidosRef = collection(firestore, collectionPath);
+					const querySnapshot = await getDocs(pedidosRef);
+
+					for (const doc of querySnapshot.docs) {
+						const docData = doc.data();
+
+						// Verificar si el documento tiene la estructura correcta
+						if (!docData.pedidos || !Array.isArray(docData.pedidos)) {
+							// console.log(`Documento ${doc.id} no tiene pedidos válidos`);
+							continue;
+						}
+
+						// 5. Revisamos cada pedido del mes
+						for (const pedido of docData.pedidos) {
+							if (!pedido.fecha || !pedido.couponCodes) continue;
+
+							// 6. Verificamos si el pedido usó algún código de la campaña
+							const codigosUsados = pedido.couponCodes.filter((cupon) =>
+								codigosCampana.includes(cupon)
+							);
+
+							if (codigosUsados.length > 0) {
+								codigosUsados.forEach((codigo) =>
+									cuponesEncontrados.add(codigo)
+								);
+								// console.log("Pedido encontrado:", {
+								// 	fecha: pedido.fecha,
+								// 	cupones: pedido.couponCodes,
+								// 	total: pedido.total,
+								// 	subTotal: pedido.subTotal,
+								// });
+								pedidosEncontrados.push(pedido);
+							}
+						}
+					}
+				} catch (error) {
+					console.error("Error procesando mes:", mesStr, error);
+				}
+			}
+		}
+
+		// console.log(
+		// 	`Códigos que NO se encontraron en ningún pedido:`,
+		// 	codigosCampana.filter((codigo) => !cuponesEncontrados.has(codigo))
+		// );
+
+		// console.log(
+		// 	`Total códigos encontrados en pedidos: ${cuponesEncontrados.size}`
+		// );
+		// console.log(`Total códigos marcados como usados: ${codigosCampana.length}`);
+		// console.log(
+		// 	`Total de pedidos encontrados que usaron cupones de ${titulo}:`,
+		// 	pedidosEncontrados.length
+		// );
+		return pedidosEncontrados;
+	} catch (error) {
+		console.error("Error al obtener los pedidos:", error);
+		throw error;
+	}
+};
+
+// Función auxiliar para calcular estadísticas de los pedidos
+export const calcularEstadisticasPedidos = (pedidos: Pedido[]) => {
+	// Suma total de cupones usados entre todos los pedidos
+	const totalCupones = pedidos.reduce(
+		(sum, pedido) => sum + (pedido.couponCodes?.length || 0),
+		0
+	);
+
+	return {
+		totalPedidos: pedidos.length,
+		totalCupones: totalCupones,
+		promedioCuponesPorPedido: totalCupones / pedidos.length,
+		montoTotal: pedidos.reduce((sum, pedido) => sum + pedido.total, 0),
+		montoSinDescuento: pedidos.reduce(
+			(sum, pedido) => sum + pedido.subTotal,
+			0
+		),
+		descuentoTotal: pedidos.reduce(
+			(sum, pedido) => sum + (pedido.subTotal - pedido.total),
+			0
+		),
+		promedioDescuento:
+			pedidos.length > 0
+				? pedidos.reduce(
+						(sum, pedido) => sum + (pedido.subTotal - pedido.total),
+						0
+				  ) / pedidos.length
+				: 0,
+	};
+};
+
 export const actualizarCostosCampana = async (
 	titulo: string,
 	costo: CostItem,
@@ -80,9 +237,9 @@ export const generarCodigos = async (cantidad: number): Promise<Codigo[]> => {
 			codigosGenerados.push(nuevoCodigo);
 		}
 
-		console.log(
-			`Se han generado y almacenado ${cantidad} códigos correctamente.`
-		);
+		// console.log(
+		// 	`Se han generado y almacenado ${cantidad} códigos correctamente.`
+		// );
 		return codigosGenerados;
 	} catch (error) {
 		console.error("Error al generar y almacenar los códigos:", error);
@@ -109,9 +266,9 @@ export const crearVoucher = async (
 			usados: 0,
 		});
 
-		console.log(`Documento creado exitosamente con el título: ${titulo}`);
+		// console.log(`Documento creado exitosamente con el título: ${titulo}`);
 	} catch (error) {
-		console.error("Error al crear el documento:", error);
+		// console.error("Error al crear el documento:", error);
 		throw error;
 	}
 };
@@ -218,11 +375,11 @@ export const actualizarVouchersUsados = async (
 			usados: cantidadUsados,
 		});
 
-		console.log(
-			`Cantidad de vouchers usados actualizada a ${cantidadUsados} para el título: ${titulo}`
-		);
+		// console.log(
+		// 	`Cantidad de vouchers usados actualizada a ${cantidadUsados} para el título: ${titulo}`
+		// );
 	} catch (error) {
-		console.error("Error al actualizar la cantidad de vouchers usados:", error);
+		// console.error("Error al actualizar la cantidad de vouchers usados:", error);
 		throw error;
 	}
 };
@@ -239,11 +396,11 @@ export const obtenerCodigosCampana = async (
 			const data = voucherDoc.data();
 			return data.codigos || [];
 		} else {
-			console.log("No se encontró el documento para la campaña:", titulo);
+			// console.log("No se encontró el documento para la campaña:", titulo);
 			return [];
 		}
 	} catch (error) {
-		console.error("Error al obtener los códigos de la campaña:", error);
+		// console.error("Error al obtener los códigos de la campaña:", error);
 		throw error;
 	}
 };
@@ -280,9 +437,9 @@ export const subirCodigosExistentes = async (
 			});
 		}
 
-		console.log(`Códigos subidos correctamente bajo el título: ${titulo}`);
+		// console.log(`Códigos subidos correctamente bajo el título: ${titulo}`);
 	} catch (error) {
-		console.error("Error al subir los códigos:", error);
+		// console.error("Error al subir los códigos:", error);
 		throw error;
 	}
 };
@@ -310,7 +467,7 @@ export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
 
 		return codigos;
 	} catch (error) {
-		console.error("Error al obtener los códigos:", error);
+		// console.error("Error al obtener los códigos:", error);
 		throw error;
 	}
 };
@@ -348,7 +505,7 @@ export const moverCodigosARango = async (
 
 		await batch.commit();
 
-		console.log("Códigos movidos y eliminados correctamente");
+		// console.log("Códigos movidos y eliminados correctamente");
 	} catch (error) {
 		console.error("Error al mover códigos:", error);
 	}
