@@ -266,16 +266,20 @@ export const CampañaDetalle: React.FC = () => {
 					<h2 className="text-xl font-bold mb-4">Estadísticas de Uso</h2>
 					<div className="grid grid-cols-2 gap-4">
 						<div>
-							<p className="text-sm text-gray-500">Total de Pedidos</p>
+							<p className="text-sm text-gray-500">
+								Pedidos con cupon de la campaña encontrados
+							</p>
 							<p className="text-lg font-medium">{estadisticas.totalPedidos}</p>
 						</div>
 						<div>
-							<p className="text-sm text-gray-500">Total de Cupones Usados</p>
+							<p className="text-sm text-gray-500">
+								Cupones Usados con pedido asociado
+							</p>
 							<p className="text-lg font-medium">{estadisticas.totalCupones}</p>
 						</div>
 						<div>
 							<p className="text-sm text-gray-500">
-								Cupones sin pedido asociado
+								Cupones Usados sin pedido asociado
 							</p>
 							<p className="text-lg font-medium text-red-500">
 								{(() => {
