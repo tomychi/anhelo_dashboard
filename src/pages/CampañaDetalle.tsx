@@ -41,6 +41,9 @@ export const CampañaDetalle: React.FC = () => {
 	const [isUpdating, setIsUpdating] = useState(false);
 	const [costs, setCosts] = useState<CostItem[]>([]);
 	const [pedidosConCupon, setPedidosConCupon] = useState<Pedido[]>([]);
+	const [porcentajeDiscrepancia, setPorcentajeDiscrepancia] =
+		useState<number>(0);
+
 	const [estadisticas, setEstadisticas] = useState<{
 		totalPedidos: number;
 		totalCupones: number;
@@ -205,6 +208,23 @@ export const CampañaDetalle: React.FC = () => {
 		return (cuponesNoEncontrados * 100) / codigosUsados;
 	};
 
+	useEffect(() => {
+		const calcularPorcentaje = () => {
+			if (!campaignData?.codigos || !estadisticas.totalCupones) {
+				return 0;
+			}
+
+			const codigosUsados = campaignData.codigos.filter(
+				(codigo) => codigo.estado === "usado"
+			).length;
+
+			const cuponesNoEncontrados = codigosUsados - estadisticas.totalCupones;
+			return (cuponesNoEncontrados * 100) / codigosUsados;
+		};
+
+		setPorcentajeDiscrepancia(calcularPorcentaje());
+	}, [campaignData?.codigos, estadisticas.totalCupones]);
+
 	return (
 		<div className="container mx-auto px-4 py-8 font-coolvetica">
 			<div className="flex items-center mb-6">
@@ -289,8 +309,9 @@ export const CampañaDetalle: React.FC = () => {
 										).length || 0;
 									const noEncontrados =
 										codigosUsados - estadisticas.totalCupones;
-									const porcentaje = calcularPorcentajeDiscrepancia();
-									return `${noEncontrados} (${porcentaje.toFixed(2)}%)`;
+									return `${noEncontrados} (${porcentajeDiscrepancia.toFixed(
+										2
+									)}%)`;
 								})()}
 							</p>
 						</div>
@@ -310,18 +331,23 @@ export const CampañaDetalle: React.FC = () => {
 			<div className="bg-white rounded-lg shadow-lg p-6 mb-6">
 				<div className="mb-4">
 					<h2 className="text-xl font-bold mb-4">Estadisticas financieras </h2>
-					<h2 className="  font-bold mb-4">
+					<h2 className="font-bold mb-4">
 						Bruto estimado hasta la fecha: $
-						{(estadisticas.montoSinDescuento * 1.25).toLocaleString()}
+						{Math.ceil(
+							estadisticas.montoSinDescuento *
+								(1 + porcentajeDiscrepancia / 100)
+						).toLocaleString()}
 					</h2>
-					<h2 className=" font-bold mb-4">
-						Costos: ${getTotalCosts().toLocaleString()}
+					<h2 className="font-bold mb-4">
+						Costos: ${Math.ceil(getTotalCosts()).toLocaleString()}
 					</h2>
-					<h2 className="  font-bold mb-4">
+					<h2 className="font-bold mb-4">
 						Neto (18%) estimado hasta la fecha : $
-						{(
-							(estadisticas.montoSinDescuento * 1.25 - getTotalCosts()) *
-							0.18
+						{Math.ceil(
+							(estadisticas.montoSinDescuento *
+								(1 + porcentajeDiscrepancia / 100) -
+								getTotalCosts()) *
+								0.18
 						).toLocaleString()}
 					</h2>
 					<div className="flex gap-4 mb-4">
