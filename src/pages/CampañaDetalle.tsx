@@ -318,7 +318,7 @@ export const CampañaDetalle: React.FC = () => {
 						Costos: ${getTotalCosts().toLocaleString()}
 					</h2>
 					<h2 className="  font-bold mb-4">
-						Neto estimado hasta la fecha: $
+						Neto (18%) estimado hasta la fecha : $
 						{(
 							(estadisticas.montoSinDescuento - getTotalCosts()) *
 							0.18
