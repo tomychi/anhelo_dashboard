@@ -311,8 +311,8 @@ export const CampañaDetalle: React.FC = () => {
 				<div className="mb-4">
 					<h2 className="text-xl font-bold mb-4">Estadisticas financieras </h2>
 					<h2 className="  font-bold mb-4">
-						Bruto generado hasta la fecha: $
-						{estadisticas.montoSinDescuento.toLocaleString()}
+						Bruto estimado hasta la fecha: $
+						{(estadisticas.montoSinDescuento * 1.25).toLocaleString()}
 					</h2>
 					<h2 className=" font-bold mb-4">
 						Costos: ${getTotalCosts().toLocaleString()}
@@ -320,7 +320,7 @@ export const CampañaDetalle: React.FC = () => {
 					<h2 className="  font-bold mb-4">
 						Neto (18%) estimado hasta la fecha : $
 						{(
-							(estadisticas.montoSinDescuento - getTotalCosts()) *
+							(estadisticas.montoSinDescuento * 1.25 - getTotalCosts()) *
 							0.18
 						).toLocaleString()}
 					</h2>
