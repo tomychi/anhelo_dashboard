@@ -194,20 +194,6 @@ export const CampañaDetalle: React.FC = () => {
 		return costs.reduce((sum, cost) => sum + cost.value, 0);
 	};
 
-	const calcularPorcentajeDiscrepancia = (): number => {
-		if (!campaignData?.codigos || !estadisticas.totalCupones) {
-			return 0;
-		}
-
-		// Contamos cuántos códigos están marcados como "usado"
-		const codigosUsados = campaignData.codigos.filter(
-			(codigo) => codigo.estado === "usado"
-		).length;
-
-		const cuponesNoEncontrados = codigosUsados - estadisticas.totalCupones;
-		return (cuponesNoEncontrados * 100) / codigosUsados;
-	};
-
 	useEffect(() => {
 		const calcularPorcentaje = () => {
 			if (!campaignData?.codigos || !estadisticas.totalCupones) {
@@ -224,6 +210,8 @@ export const CampañaDetalle: React.FC = () => {
 
 		setPorcentajeDiscrepancia(calcularPorcentaje());
 	}, [campaignData?.codigos, estadisticas.totalCupones]);
+
+	console.log(estadisticas);
 
 	return (
 		<div className="container mx-auto px-4 py-8 font-coolvetica">
