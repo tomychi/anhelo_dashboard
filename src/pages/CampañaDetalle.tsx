@@ -309,7 +309,21 @@ export const CampañaDetalle: React.FC = () => {
 
 			<div className="bg-white rounded-lg shadow-lg p-6 mb-6">
 				<div className="mb-4">
-					<h2 className="text-xl font-bold mb-4">Costos de la Campaña</h2>
+					<h2 className="text-xl font-bold mb-4">Estadisticas financieras </h2>
+					<h2 className="  font-bold mb-4">
+						Bruto generado hasta la fecha: $
+						{estadisticas.montoSinDescuento.toLocaleString()}
+					</h2>
+					<h2 className=" font-bold mb-4">
+						Costos: ${getTotalCosts().toLocaleString()}
+					</h2>
+					<h2 className="  font-bold mb-4">
+						Neto estimado hasta la fecha: $
+						{(
+							(estadisticas.montoSinDescuento - getTotalCosts()) *
+							0.18
+						).toLocaleString()}
+					</h2>
 					<div className="flex gap-4 mb-4">
 						<input
 							type="text"
@@ -346,10 +360,6 @@ export const CampañaDetalle: React.FC = () => {
 								</span>
 							</div>
 						))}
-						<div className="flex justify-between items-center p-3 bg-black text-white rounded-md mt-4">
-							<span className="font-bold">Total</span>
-							<span>${getTotalCosts().toLocaleString()}</span>
-						</div>
 					</div>
 				</div>
 			</div>
