@@ -401,7 +401,6 @@ const InvestorGroup: React.FC<{
 				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
-				{/* Acaaaaaaaaaa */}
 				<th
 					scope="row"
 					className="pl-4 w-1/4 font-light flex flex-row items-center gap-2"
@@ -432,13 +431,27 @@ const InvestorGroup: React.FC<{
 			</tr>
 			{isExpanded &&
 				sortedInvestments.map((investment, index) => (
-					<InvestmentRow
+					<tr
 						key={index}
-						investment={investment}
-						investor={investor}
-						showInvestor={false}
-						onEdit={onEdit}
-					/>
+						className="text-black border font-light h-10 border-black border-opacity-20"
+					>
+						<td className="pl-4 w-1/4 font-light">{index + 1}.</td>
+						<td className="pl-4 w-1/4 font-light">
+							{currencyFormat(investment.monto)}
+						</td>
+						<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
+						<td className="pl-4 w-1/4 font-light">
+							{investment.deadline.toLocaleDateString("es-AR")}
+						</td>
+						<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
+							<p
+								className="absolute text-2xl top-[-4px] cursor-pointer"
+								onClick={() => onEdit(investor, investment)}
+							>
+								...
+							</p>
+						</td>
+					</tr>
 				))}
 		</>
 	);
