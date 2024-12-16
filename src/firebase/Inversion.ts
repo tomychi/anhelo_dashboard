@@ -5,38 +5,48 @@ import {
 	setDoc,
 	doc,
 	updateDoc,
+	arrayUnion,
+	arrayRemove,
 } from "firebase/firestore";
 
-export interface Inversion {
-	Deadline: Date;
-	Monto: number;
-	id: string;
-}
-
-export interface NewInversion {
-	nombreInversor: string;
+export interface Investment {
 	monto: number;
 	deadline: Date;
+	moneda: string;
 }
 
-export interface UpdateInversion extends NewInversion {
+export interface Investor {
 	id: string;
+	investments: Investment[];
 }
 
-export const getInversiones = async (): Promise<Inversion[]> => {
+export interface NewInvestment {
+	nombreInversor: string;
+	investment: Investment;
+}
+
+export interface UpdateInvestment {
+	investorId: string;
+	oldInvestment?: Investment;
+	newInvestment: Investment;
+}
+
+export const getInversiones = async (): Promise<Investor[]> => {
 	const firestore = getFirestore();
 
 	try {
 		const inversionesCollection = collection(firestore, "inversion");
 		const inversionesSnapshot = await getDocs(inversionesCollection);
 
-		const inversiones = inversionesSnapshot.docs.map((doc) => ({
+		const inversores = inversionesSnapshot.docs.map((doc) => ({
 			id: doc.id,
-			...doc.data(),
-			Deadline: doc.data().Deadline?.toDate(),
-		})) as Inversion[];
+			investments: (doc.data().investments || []).map((inv: any) => ({
+				...inv,
+				deadline: inv.deadline?.toDate(),
+			})),
+		})) as Investor[];
 
-		return inversiones;
+		return inversores;
 	} catch (error) {
 		console.error("Error al obtener las inversiones:", error);
 		throw error;
@@ -44,15 +54,14 @@ export const getInversiones = async (): Promise<Inversion[]> => {
 };
 
 export const createInversion = async (
-	inversion: NewInversion
+	inversion: NewInvestment
 ): Promise<void> => {
 	const firestore = getFirestore();
 	const inversionesCollection = collection(firestore, "inversion");
 
 	try {
 		await setDoc(doc(inversionesCollection, inversion.nombreInversor), {
-			Monto: inversion.monto,
-			Deadline: inversion.deadline,
+			investments: [inversion.investment],
 		});
 	} catch (error) {
 		console.error("Error al crear la inversión:", error);
@@ -61,15 +70,21 @@ export const createInversion = async (
 };
 
 export const updateInversion = async (
-	inversion: UpdateInversion
+	params: UpdateInvestment
 ): Promise<void> => {
 	const firestore = getFirestore();
-	const inversionDoc = doc(firestore, "inversion", inversion.id);
+	const inversionDoc = doc(firestore, "inversion", params.investorId);
 
 	try {
+		if (params.oldInvestment) {
+			// Replace old investment with new one
+			await updateDoc(inversionDoc, {
+				investments: arrayRemove(params.oldInvestment),
+			});
+		}
+
 		await updateDoc(inversionDoc, {
-			Monto: inversion.monto,
-			Deadline: inversion.deadline,
+			investments: arrayUnion(params.newInvestment),
 		});
 	} catch (error) {
 		console.error("Error al actualizar la inversión:", error);

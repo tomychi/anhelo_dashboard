@@ -3,41 +3,66 @@ import {
 	getInversiones,
 	createInversion,
 	updateInversion,
-	type Inversion,
+	type Investor,
+	type Investment,
 } from "../firebase/Inversion";
 import currencyFormat from "../helpers/currencyFormat";
 
 interface InversionModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	inversion?: Inversion;
+	investor?: Investor;
+	selectedInvestment?: Investment;
 }
 
 const InversionModal: React.FC<InversionModalProps> = ({
 	isOpen,
 	onClose,
-	inversion,
+	investor,
+	selectedInvestment,
 }) => {
+	const [isNewInvestor, setIsNewInvestor] = useState(true);
 	const [nombreInversor, setNombreInversor] = useState("");
+	const [selectedInvestorId, setSelectedInvestorId] = useState("");
 	const [monto, setMonto] = useState("");
+	const [moneda, setMoneda] = useState("USD");
 	const [deadline, setDeadline] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [inversores, setInversores] = useState<Investor[]>([]);
+
+	// Fetch inversores when modal opens
+	useEffect(() => {
+		if (isOpen) {
+			const fetchInversores = async () => {
+				try {
+					const data = await getInversiones();
+					setInversores(data);
+				} catch (error) {
+					console.error("Error al obtener inversores:", error);
+				}
+			};
+			fetchInversores();
+		}
+	}, [isOpen]);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const [dragStart, setDragStart] = useState<number | null>(null);
 	const [currentTranslate, setCurrentTranslate] = useState(0);
 	const [isAnimating, setIsAnimating] = useState(false);
 
 	useEffect(() => {
-		if (inversion) {
-			setNombreInversor(inversion.id);
-			setMonto(inversion.Monto.toString());
-			setDeadline(inversion.Deadline.toISOString().split("T")[0]);
+		if (investor) {
+			setNombreInversor(investor.id);
+		}
+		if (selectedInvestment) {
+			setMonto(selectedInvestment.monto.toString());
+			setMoneda(selectedInvestment.moneda);
+			setDeadline(selectedInvestment.deadline.toISOString().split("T")[0]);
 		} else {
-			setNombreInversor("");
 			setMonto("");
+			setMoneda("USD");
 			setDeadline("");
 		}
-	}, [inversion, isOpen]);
+	}, [investor, selectedInvestment, isOpen]);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -98,19 +123,36 @@ const InversionModal: React.FC<InversionModalProps> = ({
 		e.preventDefault();
 		setLoading(true);
 
+		const newInvestment: Investment = {
+			monto: parseFloat(monto),
+			moneda,
+			deadline: new Date(deadline),
+		};
+
 		try {
-			if (inversion) {
+			if (investor && selectedInvestment) {
+				// Caso de edición
 				await updateInversion({
-					id: inversion.id,
-					nombreInversor,
-					monto: parseFloat(monto),
-					deadline: new Date(deadline),
+					investorId: investor.id,
+					oldInvestment: selectedInvestment,
+					newInvestment,
 				});
+			} else if (!isNewInvestor && selectedInvestorId) {
+				// Caso de agregar inversión a inversor existente
+				const selectedInvestor = inversores.find(
+					(inv) => inv.id === selectedInvestorId
+				);
+				if (selectedInvestor) {
+					await updateInversion({
+						investorId: selectedInvestorId,
+						newInvestment,
+					});
+				}
 			} else {
+				// Caso de nuevo inversor
 				await createInversion({
 					nombreInversor,
-					monto: parseFloat(monto),
-					deadline: new Date(deadline),
+					investment: newInvestment,
 				});
 			}
 
@@ -159,18 +201,74 @@ const InversionModal: React.FC<InversionModalProps> = ({
 				</div>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Nombre del Inversor
-						</label>
-						<input
-							type="text"
-							value={nombreInversor}
-							onChange={(e) => setNombreInversor(e.target.value)}
-							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
-							required
-							disabled={!!inversion}
-						/>
+					<div className="space-y-4">
+						{!investor && (
+							<>
+								<div>
+									<label className="block text-sm font-medium text-gray-700">
+										Tipo de Inversión
+									</label>
+									<div className="mt-2 flex gap-4">
+										<button
+											type="button"
+											className={`px-4 py-2 rounded-md text-sm flex-1 ${
+												isNewInvestor
+													? "bg-black text-white"
+													: "bg-gray-100 text-gray-700"
+											}`}
+											onClick={() => setIsNewInvestor(true)}
+										>
+											Nuevo Inversor
+										</button>
+										<button
+											type="button"
+											className={`px-4 py-2 rounded-md text-sm flex-1 ${
+												!isNewInvestor
+													? "bg-black text-white"
+													: "bg-gray-100 text-gray-700"
+											}`}
+											onClick={() => setIsNewInvestor(false)}
+										>
+											Inversor Existente
+										</button>
+									</div>
+								</div>
+
+								{isNewInvestor ? (
+									<div>
+										<label className="block text-sm font-medium text-gray-700">
+											Nombre del Inversor
+										</label>
+										<input
+											type="text"
+											value={nombreInversor}
+											onChange={(e) => setNombreInversor(e.target.value)}
+											className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+											required
+										/>
+									</div>
+								) : (
+									<div>
+										<label className="block text-sm font-medium text-gray-700">
+											Seleccionar Inversor
+										</label>
+										<select
+											value={selectedInvestorId}
+											onChange={(e) => setSelectedInvestorId(e.target.value)}
+											className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+											required
+										>
+											<option value="">Seleccionar...</option>
+											{inversores.map((inversor) => (
+												<option key={inversor.id} value={inversor.id}>
+													{inversor.id}
+												</option>
+											))}
+										</select>
+									</div>
+								)}
+							</>
+						)}
 					</div>
 
 					<div>
@@ -184,6 +282,22 @@ const InversionModal: React.FC<InversionModalProps> = ({
 							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
 							required
 						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-gray-700">
+							Moneda
+						</label>
+						<select
+							value={moneda}
+							onChange={(e) => setMoneda(e.target.value)}
+							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+							required
+						>
+							<option value="USD">USD</option>
+							<option value="ARS">ARS</option>
+							<option value="EUR">EUR</option>
+						</select>
 					</div>
 
 					<div>
@@ -212,10 +326,10 @@ const InversionModal: React.FC<InversionModalProps> = ({
 									<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
 								</div>
 							</div>
-						) : inversion ? (
-							"Actualizar Inversor"
+						) : investor ? (
+							"Actualizar Inversión"
 						) : (
-							"Agregar Inversor"
+							"Agregar Inversión"
 						)}
 					</button>
 				</form>
@@ -225,19 +339,22 @@ const InversionModal: React.FC<InversionModalProps> = ({
 };
 
 export const DeudaManager: React.FC = () => {
-	const [inversiones, setInversiones] = useState<Inversion[]>([]);
+	const [inversores, setInversores] = useState<Investor[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [showModal, setShowModal] = useState(false);
-	const [selectedInversion, setSelectedInversion] = useState<
-		Inversion | undefined
+	const [selectedInvestor, setSelectedInvestor] = useState<
+		Investor | undefined
+	>();
+	const [selectedInvestment, setSelectedInvestment] = useState<
+		Investment | undefined
 	>();
 
 	useEffect(() => {
 		const fetchInversiones = async () => {
 			try {
 				const inversionesData = await getInversiones();
-				setInversiones(inversionesData);
+				setInversores(inversionesData);
 				setLoading(false);
 			} catch (err) {
 				console.error("Error al obtener las inversiones:", err);
@@ -249,14 +366,16 @@ export const DeudaManager: React.FC = () => {
 		fetchInversiones();
 	}, []);
 
-	const handleEdit = (inversion: Inversion) => {
-		setSelectedInversion(inversion);
+	const handleEdit = (investor: Investor, investment: Investment) => {
+		setSelectedInvestor(investor);
+		setSelectedInvestment(investment);
 		setShowModal(true);
 	};
 
 	const handleCloseModal = () => {
 		setShowModal(false);
-		setSelectedInversion(undefined);
+		setSelectedInvestor(undefined);
+		setSelectedInvestment(undefined);
 	};
 
 	if (loading) {
@@ -275,7 +394,7 @@ export const DeudaManager: React.FC = () => {
 					onClick={() => setShowModal(true)}
 					className="bg-black text-gray-100 rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
 				>
-					+ Nuevo inversor
+					+ Nueva inversión
 				</button>
 			</div>
 
@@ -283,43 +402,49 @@ export const DeudaManager: React.FC = () => {
 				<table className="w-full text-xs text-left text-black">
 					<thead className="text-black border-b h-10">
 						<tr>
-							<th scope="col" className="pl-4 w-2/5">
+							<th scope="col" className="pl-4 w-1/4">
 								Inversor
 							</th>
 							<th scope="col" className="pl-4 w-1/4">
 								Monto
 							</th>
+							<th scope="col" className="pl-4 w-1/6">
+								Moneda
+							</th>
 							<th scope="col" className="pl-4 w-1/4">
 								Deadline
 							</th>
-							<th scope="col" className="pl-4 w-1/6"></th>
+							<th scope="col" className="pl-4 w-1/12"></th>
 						</tr>
 					</thead>
 					<tbody>
-						{inversiones.map((inversion) => (
-							<tr
-								key={inversion.id}
-								className="text-black border font-light h-10 border-black border-opacity-20"
-							>
-								<th scope="row" className="pl-4 w-2/5 font-light">
-									{inversion.id}
-								</th>
-								<td className="pl-4 w-1/4 font-light">
-									{currencyFormat(inversion.Monto)}
-								</td>
-								<td className="pl-4 w-1/4 font-light">
-									{inversion.Deadline.toLocaleDateString("es-AR")}
-								</td>
-								<td className="pl-4 pr-4 w-1/6 font-black text-2xl flex items-center justify-end h-full relative">
-									<p
-										className="absolute text-2xl top-[-4px] cursor-pointer"
-										onClick={() => handleEdit(inversion)}
-									>
-										...
-									</p>
-								</td>
-							</tr>
-						))}
+						{inversores.map((investor) =>
+							investor.investments.map((investment, index) => (
+								<tr
+									key={`${investor.id}-${index}`}
+									className="text-black border font-light h-10 border-black border-opacity-20"
+								>
+									<th scope="row" className="pl-4 w-1/4 font-light">
+										{investor.id}
+									</th>
+									<td className="pl-4 w-1/4 font-light">
+										{currencyFormat(investment.monto)}
+									</td>
+									<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
+									<td className="pl-4 w-1/4 font-light">
+										{investment.deadline.toLocaleDateString("es-AR")}
+									</td>
+									<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
+										<p
+											className="absolute text-2xl top-[-4px] cursor-pointer"
+											onClick={() => handleEdit(investor, investment)}
+										>
+											...
+										</p>
+									</td>
+								</tr>
+							))
+						)}
 					</tbody>
 				</table>
 			</div>
@@ -327,7 +452,8 @@ export const DeudaManager: React.FC = () => {
 			<InversionModal
 				isOpen={showModal}
 				onClose={handleCloseModal}
-				inversion={selectedInversion}
+				investor={selectedInvestor}
+				selectedInvestment={selectedInvestment}
 			/>
 		</div>
 	);
