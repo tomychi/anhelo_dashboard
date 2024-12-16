@@ -7,6 +7,7 @@ import {
 	type Investor,
 	type Investment,
 } from "../firebase/Inversion";
+import arrow from "../assets/arrowIcon.png";
 
 interface InversionModalProps {
 	isOpen: boolean;
@@ -335,6 +336,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 	);
 };
 
+// Esta es la fila comun
 const InvestmentRow: React.FC<{
 	investment: Investment;
 	investor: Investor;
@@ -366,6 +368,7 @@ const InvestmentRow: React.FC<{
 	</tr>
 );
 
+// Esta es la fila agrupada
 const InvestorGroup: React.FC<{
 	investor: Investor;
 	onEdit: (investor: Investor, investment: Investment) => void;
@@ -398,11 +401,11 @@ const InvestorGroup: React.FC<{
 				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
+				{/* Acaaaaaaaaaa */}
 				<th
 					scope="row"
-					className="pl-4 w-1/4 font-light flex items-center gap-2"
+					className="pl-4 w-1/4 font-light flex flex-row items-center gap-2"
 				>
-					<span className="text-sm">{isExpanded ? "▼" : "▶"}</span>
 					{investor.id}
 				</th>
 				<td className="pl-4 w-1/4 font-light">
@@ -419,7 +422,13 @@ const InvestorGroup: React.FC<{
 					{firstDeadline.toLocaleDateString("es-AR")} -{" "}
 					{lastDeadline.toLocaleDateString("es-AR")}
 				</td>
-				<td className="w-1/12" />
+				<td className="w-1/12">
+					{isExpanded ? (
+						<img src={arrow} className="h-2  rotate-90" />
+					) : (
+						<img src={arrow} className="h-2 rotate-180" />
+					)}
+				</td>
 			</tr>
 			{isExpanded &&
 				sortedInvestments.map((investment, index) => (
