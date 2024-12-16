@@ -1,10 +1,10 @@
-// Inversion.ts
 import {
 	collection,
 	getDocs,
 	getFirestore,
 	setDoc,
 	doc,
+	updateDoc,
 } from "firebase/firestore";
 
 export interface Inversion {
@@ -17,6 +17,10 @@ export interface NewInversion {
 	nombreInversor: string;
 	monto: number;
 	deadline: Date;
+}
+
+export interface UpdateInversion extends NewInversion {
+	id: string;
 }
 
 export const getInversiones = async (): Promise<Inversion[]> => {
@@ -52,6 +56,23 @@ export const createInversion = async (
 		});
 	} catch (error) {
 		console.error("Error al crear la inversión:", error);
+		throw error;
+	}
+};
+
+export const updateInversion = async (
+	inversion: UpdateInversion
+): Promise<void> => {
+	const firestore = getFirestore();
+	const inversionDoc = doc(firestore, "inversion", inversion.id);
+
+	try {
+		await updateDoc(inversionDoc, {
+			Monto: inversion.monto,
+			Deadline: inversion.deadline,
+		});
+	} catch (error) {
+		console.error("Error al actualizar la inversión:", error);
 		throw error;
 	}
 };

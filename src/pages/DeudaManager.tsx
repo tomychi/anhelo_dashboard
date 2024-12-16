@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
 	getInversiones,
 	createInversion,
+	updateInversion,
 	type Inversion,
 } from "../firebase/Inversion";
 import currencyFormat from "../helpers/currencyFormat";
@@ -9,9 +10,14 @@ import currencyFormat from "../helpers/currencyFormat";
 interface InversionModalProps {
 	isOpen: boolean;
 	onClose: () => void;
+	inversion?: Inversion;
 }
 
-const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
+const InversionModal: React.FC<InversionModalProps> = ({
+	isOpen,
+	onClose,
+	inversion,
+}) => {
 	const [nombreInversor, setNombreInversor] = useState("");
 	const [monto, setMonto] = useState("");
 	const [deadline, setDeadline] = useState("");
@@ -20,6 +26,18 @@ const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
 	const [dragStart, setDragStart] = useState<number | null>(null);
 	const [currentTranslate, setCurrentTranslate] = useState(0);
 	const [isAnimating, setIsAnimating] = useState(false);
+
+	useEffect(() => {
+		if (inversion) {
+			setNombreInversor(inversion.id);
+			setMonto(inversion.Monto.toString());
+			setDeadline(inversion.Deadline.toISOString().split("T")[0]);
+		} else {
+			setNombreInversor("");
+			setMonto("");
+			setDeadline("");
+		}
+	}, [inversion, isOpen]);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -81,17 +99,26 @@ const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
 		setLoading(true);
 
 		try {
-			await createInversion({
-				nombreInversor,
-				monto: parseFloat(monto),
-				deadline: new Date(deadline),
-			});
+			if (inversion) {
+				await updateInversion({
+					id: inversion.id,
+					nombreInversor,
+					monto: parseFloat(monto),
+					deadline: new Date(deadline),
+				});
+			} else {
+				await createInversion({
+					nombreInversor,
+					monto: parseFloat(monto),
+					deadline: new Date(deadline),
+				});
+			}
 
 			onClose();
-			window.location.reload(); // Refresh to show new data
+			window.location.reload();
 		} catch (error) {
-			console.error("Error al agregar inversión:", error);
-			alert("Error al agregar la inversión");
+			console.error("Error al procesar la inversión:", error);
+			alert("Error al procesar la inversión");
 		} finally {
 			setLoading(false);
 		}
@@ -142,6 +169,7 @@ const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
 							onChange={(e) => setNombreInversor(e.target.value)}
 							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
 							required
+							disabled={!!inversion}
 						/>
 					</div>
 
@@ -184,6 +212,8 @@ const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
 									<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
 								</div>
 							</div>
+						) : inversion ? (
+							"Actualizar Inversor"
 						) : (
 							"Agregar Inversor"
 						)}
@@ -199,6 +229,9 @@ export const DeudaManager: React.FC = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [showModal, setShowModal] = useState(false);
+	const [selectedInversion, setSelectedInversion] = useState<
+		Inversion | undefined
+	>();
 
 	useEffect(() => {
 		const fetchInversiones = async () => {
@@ -215,6 +248,16 @@ export const DeudaManager: React.FC = () => {
 
 		fetchInversiones();
 	}, []);
+
+	const handleEdit = (inversion: Inversion) => {
+		setSelectedInversion(inversion);
+		setShowModal(true);
+	};
+
+	const handleCloseModal = () => {
+		setShowModal(false);
+		setSelectedInversion(undefined);
+	};
 
 	if (loading) {
 		return <div className="p-4">Cargando inversiones...</div>;
@@ -268,7 +311,10 @@ export const DeudaManager: React.FC = () => {
 									{inversion.Deadline.toLocaleDateString("es-AR")}
 								</td>
 								<td className="pl-4 pr-4 w-1/6 font-black text-2xl flex items-center justify-end h-full relative">
-									<p className="absolute text-2xl top-[-4px] cursor-pointer">
+									<p
+										className="absolute text-2xl top-[-4px] cursor-pointer"
+										onClick={() => handleEdit(inversion)}
+									>
 										...
 									</p>
 								</td>
@@ -278,7 +324,11 @@ export const DeudaManager: React.FC = () => {
 				</table>
 			</div>
 
-			<InversionModal isOpen={showModal} onClose={() => setShowModal(false)} />
+			<InversionModal
+				isOpen={showModal}
+				onClose={handleCloseModal}
+				inversion={selectedInversion}
+			/>
 		</div>
 	);
 };
