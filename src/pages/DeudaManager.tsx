@@ -34,7 +34,7 @@ export const DeudaManager: React.FC = () => {
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
-				<p className="text-black font-bold text-4xl mt-1">Inversiones</p>
+				<p className="text-black font-bold text-4xl mt-1">Deuda</p>
 			</div>
 
 			<div className="font-coolvetica">
