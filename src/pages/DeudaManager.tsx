@@ -69,7 +69,9 @@ export const DeudaManager: React.FC = () => {
 									{inversion.Deadline.toLocaleDateString("es-AR")}
 								</td>
 								<td className="pl-4 pr-4 w-1/6 font-black text-2xl flex items-center justify-end h-full relative">
-									<p className="absolute top-[-4px] cursor-pointer">. . .</p>
+									<p className="absolute text-2xl top-[-4px] cursor-pointer">
+										...
+									</p>
 								</td>
 							</tr>
 						))}
