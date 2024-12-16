@@ -424,7 +424,7 @@ const InvestorGroup: React.FC<{
 				</td>
 				<td className="w-1/12">
 					{isExpanded ? (
-						<img src={arrow} className="h-2  rotate-90" />
+						<img src={arrow} className="h-2  rotate-90 " />
 					) : (
 						<img src={arrow} className="h-2 rotate-180" />
 					)}
