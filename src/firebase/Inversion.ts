@@ -1,9 +1,22 @@
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+// Inversion.ts
+import {
+	collection,
+	getDocs,
+	getFirestore,
+	setDoc,
+	doc,
+} from "firebase/firestore";
 
 export interface Inversion {
 	Deadline: Date;
 	Monto: number;
 	id: string;
+}
+
+export interface NewInversion {
+	nombreInversor: string;
+	monto: number;
+	deadline: Date;
 }
 
 export const getInversiones = async (): Promise<Inversion[]> => {
@@ -13,31 +26,32 @@ export const getInversiones = async (): Promise<Inversion[]> => {
 		const inversionesCollection = collection(firestore, "inversion");
 		const inversionesSnapshot = await getDocs(inversionesCollection);
 
-		// Log del snapshot completo
-		console.log("Snapshot completo:", inversionesSnapshot);
-
-		const inversiones = inversionesSnapshot.docs.map((doc) => {
-			// Log de cada documento individual
-			console.log("Documento raw:", doc.data());
-
-			const data = {
-				id: doc.id,
-				...doc.data(),
-				Deadline: doc.data().Deadline?.toDate(),
-			};
-
-			// Log del documento procesado
-			console.log("Documento procesado:", data);
-
-			return data;
-		}) as Inversion[];
-
-		// Log del array final de inversiones
-		console.log("Array final de inversiones:", inversiones);
+		const inversiones = inversionesSnapshot.docs.map((doc) => ({
+			id: doc.id,
+			...doc.data(),
+			Deadline: doc.data().Deadline?.toDate(),
+		})) as Inversion[];
 
 		return inversiones;
 	} catch (error) {
-		console.error("Error detallado al obtener las inversiones:", error);
+		console.error("Error al obtener las inversiones:", error);
+		throw error;
+	}
+};
+
+export const createInversion = async (
+	inversion: NewInversion
+): Promise<void> => {
+	const firestore = getFirestore();
+	const inversionesCollection = collection(firestore, "inversion");
+
+	try {
+		await setDoc(doc(inversionesCollection, inversion.nombreInversor), {
+			Monto: inversion.monto,
+			Deadline: inversion.deadline,
+		});
+	} catch (error) {
+		console.error("Error al crear la inversión:", error);
 		throw error;
 	}
 };

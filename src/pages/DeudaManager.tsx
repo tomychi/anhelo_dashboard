@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getInversiones, type Inversion } from "../firebase/Inversion";
-import { setDoc, doc, collection, getFirestore } from "firebase/firestore";
+import {
+	getInversiones,
+	createInversion,
+	type Inversion,
+} from "../firebase/Inversion";
 import currencyFormat from "../helpers/currencyFormat";
 
 interface InversionModalProps {
@@ -78,12 +81,10 @@ const InversionModal: React.FC<InversionModalProps> = ({ isOpen, onClose }) => {
 		setLoading(true);
 
 		try {
-			const firestore = getFirestore();
-			const inversionesCollection = collection(firestore, "inversion");
-
-			await setDoc(doc(inversionesCollection, nombreInversor), {
-				Monto: parseFloat(monto),
-				Deadline: new Date(deadline),
+			await createInversion({
+				nombreInversor,
+				monto: parseFloat(monto),
+				deadline: new Date(deadline),
 			});
 
 			onClose();
