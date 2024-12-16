@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import currencyFormat from "../helpers/currencyFormat";
 import {
 	getInversiones,
 	createInversion,
@@ -6,7 +7,6 @@ import {
 	type Investor,
 	type Investment,
 } from "../firebase/Inversion";
-import currencyFormat from "../helpers/currencyFormat";
 
 interface InversionModalProps {
 	isOpen: boolean;
@@ -30,7 +30,6 @@ const InversionModal: React.FC<InversionModalProps> = ({
 	const [loading, setLoading] = useState(false);
 	const [inversores, setInversores] = useState<Investor[]>([]);
 
-	// Fetch inversores when modal opens
 	useEffect(() => {
 		if (isOpen) {
 			const fetchInversores = async () => {
@@ -44,6 +43,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 			fetchInversores();
 		}
 	}, [isOpen]);
+
 	const modalRef = useRef<HTMLDivElement>(null);
 	const [dragStart, setDragStart] = useState<number | null>(null);
 	const [currentTranslate, setCurrentTranslate] = useState(0);
@@ -131,14 +131,12 @@ const InversionModal: React.FC<InversionModalProps> = ({
 
 		try {
 			if (investor && selectedInvestment) {
-				// Caso de edición
 				await updateInversion({
 					investorId: investor.id,
 					oldInvestment: selectedInvestment,
 					newInvestment,
 				});
 			} else if (!isNewInvestor && selectedInvestorId) {
-				// Caso de agregar inversión a inversor existente
 				const selectedInvestor = inversores.find(
 					(inv) => inv.id === selectedInvestorId
 				);
@@ -149,7 +147,6 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					});
 				}
 			} else {
-				// Caso de nuevo inversor
 				await createInversion({
 					nombreInversor,
 					investment: newInvestment,
@@ -338,6 +335,106 @@ const InversionModal: React.FC<InversionModalProps> = ({
 	);
 };
 
+const InvestmentRow: React.FC<{
+	investment: Investment;
+	investor: Investor;
+	showInvestor?: boolean;
+	onEdit: (investor: Investor, investment: Investment) => void;
+}> = ({ investment, investor, showInvestor = true, onEdit }) => (
+	<tr className="text-black border font-light h-10 border-black border-opacity-20">
+		{showInvestor && (
+			<th scope="row" className="pl-4 w-1/4 font-light">
+				{investor.id}
+			</th>
+		)}
+		{!showInvestor && <td className="pl-4 w-1/4" />}
+		<td className="pl-4 w-1/4 font-light">
+			{currencyFormat(investment.monto)}
+		</td>
+		<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
+		<td className="pl-4 w-1/4 font-light">
+			{investment.deadline.toLocaleDateString("es-AR")}
+		</td>
+		<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
+			<p
+				className="absolute text-2xl top-[-4px] cursor-pointer"
+				onClick={() => onEdit(investor, investment)}
+			>
+				...
+			</p>
+		</td>
+	</tr>
+);
+
+const InvestorGroup: React.FC<{
+	investor: Investor;
+	onEdit: (investor: Investor, investment: Investment) => void;
+}> = ({ investor, onEdit }) => {
+	const [isExpanded, setIsExpanded] = useState(false);
+	const sortedInvestments = [...investor.investments].sort(
+		(a, b) => a.deadline.getTime() - b.deadline.getTime()
+	);
+
+	const firstDeadline = sortedInvestments[0].deadline;
+	const lastDeadline = sortedInvestments[sortedInvestments.length - 1].deadline;
+	const totalByCurrency = sortedInvestments.reduce((acc, inv) => {
+		acc[inv.moneda] = (acc[inv.moneda] || 0) + inv.monto;
+		return acc;
+	}, {} as Record<string, number>);
+
+	if (sortedInvestments.length === 1) {
+		return (
+			<InvestmentRow
+				investment={sortedInvestments[0]}
+				investor={investor}
+				onEdit={onEdit}
+			/>
+		);
+	}
+
+	return (
+		<>
+			<tr
+				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
+				onClick={() => setIsExpanded(!isExpanded)}
+			>
+				<th
+					scope="row"
+					className="pl-4 w-1/4 font-light flex items-center gap-2"
+				>
+					<span className="text-sm">{isExpanded ? "▼" : "▶"}</span>
+					{investor.id}
+				</th>
+				<td className="pl-4 w-1/4 font-light">
+					{Object.entries(totalByCurrency).map(([currency, amount], index) => (
+						<div key={currency}>
+							{currencyFormat(amount)} {currency}
+						</div>
+					))}
+				</td>
+				<td className="pl-4 w-1/6 font-light">
+					{Object.keys(totalByCurrency).join(", ")}
+				</td>
+				<td className="pl-4 w-1/4 font-light">
+					{firstDeadline.toLocaleDateString("es-AR")} -{" "}
+					{lastDeadline.toLocaleDateString("es-AR")}
+				</td>
+				<td className="w-1/12" />
+			</tr>
+			{isExpanded &&
+				sortedInvestments.map((investment, index) => (
+					<InvestmentRow
+						key={index}
+						investment={investment}
+						investor={investor}
+						showInvestor={false}
+						onEdit={onEdit}
+					/>
+				))}
+		</>
+	);
+};
+
 export const DeudaManager: React.FC = () => {
 	const [inversores, setInversores] = useState<Investor[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -418,33 +515,13 @@ export const DeudaManager: React.FC = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{inversores.map((investor) =>
-							investor.investments.map((investment, index) => (
-								<tr
-									key={`${investor.id}-${index}`}
-									className="text-black border font-light h-10 border-black border-opacity-20"
-								>
-									<th scope="row" className="pl-4 w-1/4 font-light">
-										{investor.id}
-									</th>
-									<td className="pl-4 w-1/4 font-light">
-										{currencyFormat(investment.monto)}
-									</td>
-									<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
-									<td className="pl-4 w-1/4 font-light">
-										{investment.deadline.toLocaleDateString("es-AR")}
-									</td>
-									<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
-										<p
-											className="absolute text-2xl top-[-4px] cursor-pointer"
-											onClick={() => handleEdit(investor, investment)}
-										>
-											...
-										</p>
-									</td>
-								</tr>
-							))
-						)}
+						{inversores.map((investor) => (
+							<InvestorGroup
+								key={investor.id}
+								investor={investor}
+								onEdit={handleEdit}
+							/>
+						))}
 					</tbody>
 				</table>
 			</div>
