@@ -33,7 +33,7 @@ interface CampañaDetalleProps {
 	costos?: CostItem[];
 }
 
-export const CampañaDetalle: React.FC = () => {
+export const DeudaManager: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const campaignData = location.state?.campaignData as CampañaDetalleProps;
@@ -483,4 +483,4 @@ export const CampañaDetalle: React.FC = () => {
 	);
 };
 
-export default CampañaDetalle;
+export default DeudaManager;

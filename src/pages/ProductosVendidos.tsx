@@ -531,7 +531,7 @@ export const ProductosVendidos = () => {
 					<br />
 					Medallones: {totalMedallonesNecesarios}
 					<br />
-					Carne: {(totalMedallonesNecesarios * 90) / 1000} KG
+					Carne: {(totalMedallonesNecesarios * 80) / 1000} KG
 					<br />
 					Bacon: {totalBaconNecesario + totalBaconToppings} fetas
 					<br />

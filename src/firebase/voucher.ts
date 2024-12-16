@@ -28,37 +28,39 @@ interface Pedido {
 	total: number;
 	subTotal: number;
 	couponCodes?: string[];
-	// ... otros campos que necesites
+	telefono?: string;
 }
 
 export const obtenerPedidosDesdeCampana = async (
 	fechaCampana: string,
 	titulo: string
-): Promise<Pedido[]> => {
+): Promise<{
+	todosPedidos: Pedido[];
+	pedidosConCupon: Pedido[];
+	codigosCampana: string[];
+}> => {
 	const firestore = getFirestore();
-	const pedidosEncontrados: Pedido[] = [];
+	const todosPedidos: Pedido[] = [];
+	const pedidosConCupon: Pedido[] = [];
 	const cuponesEncontrados = new Set<string>();
 
 	try {
-		// 1. Primero obtenemos los datos de la campaña
+		// 1. Primero obtenemos los códigos de la campaña
 		const voucherRef = doc(firestore, "vouchers", titulo);
 		const voucherDoc = await getDoc(voucherRef);
 
 		if (!voucherDoc.exists()) {
-			// console.log("No se encontró la campaña:", titulo);
-			return [];
+			return {
+				todosPedidos: [],
+				pedidosConCupon: [],
+				codigosCampana: [],
+			};
 		}
 
 		const voucherData = voucherDoc.data();
 		const codigosCampana = voucherData.codigos
 			.filter((c) => c.estado === "usado")
 			.map((c) => c.codigo);
-
-		// console.log(`Códigos marcados como usados:`, codigosCampana);
-		// console.log(
-		// 	`Total de códigos usados en la campaña ${titulo}:`,
-		// 	codigosCampana.length
-		// );
 
 		// 2. Convertimos la fecha de inicio
 		let fechaInicio: Date;
@@ -69,7 +71,6 @@ export const obtenerPedidosDesdeCampana = async (
 			const [dia, mes, ano] = fechaCampana.split("/");
 			fechaInicio = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
 		}
-		// console.log("Buscando pedidos desde:", fechaInicio);
 
 		// 3. Configuramos el rango de fechas a buscar
 		const fechaActual = new Date();
@@ -87,39 +88,45 @@ export const obtenerPedidosDesdeCampana = async (
 				const collectionPath = `pedidos/${ano}/${mesStr}`;
 
 				try {
-					// console.log(`Buscando en ${collectionPath}`);
 					const pedidosRef = collection(firestore, collectionPath);
 					const querySnapshot = await getDocs(pedidosRef);
 
 					for (const doc of querySnapshot.docs) {
 						const docData = doc.data();
 
-						// Verificar si el documento tiene la estructura correcta
 						if (!docData.pedidos || !Array.isArray(docData.pedidos)) {
-							// console.log(`Documento ${doc.id} no tiene pedidos válidos`);
 							continue;
 						}
 
 						// 5. Revisamos cada pedido del mes
 						for (const pedido of docData.pedidos) {
-							if (!pedido.fecha || !pedido.couponCodes) continue;
+							if (!pedido.fecha) continue;
 
-							// 6. Verificamos si el pedido usó algún código de la campaña
-							const codigosUsados = pedido.couponCodes.filter((cupon) =>
-								codigosCampana.includes(cupon)
+							// Convertir la fecha del pedido a Date para comparar
+							const [diaPedido, mesPedido, anoPedido] = pedido.fecha.split("/");
+							const fechaPedido = new Date(
+								parseInt(anoPedido),
+								parseInt(mesPedido) - 1,
+								parseInt(diaPedido)
 							);
 
-							if (codigosUsados.length > 0) {
-								codigosUsados.forEach((codigo) =>
-									cuponesEncontrados.add(codigo)
-								);
-								// console.log("Pedido encontrado:", {
-								// 	fecha: pedido.fecha,
-								// 	cupones: pedido.couponCodes,
-								// 	total: pedido.total,
-								// 	subTotal: pedido.subTotal,
-								// });
-								pedidosEncontrados.push(pedido);
+							// Solo incluir pedidos desde la fecha de inicio de la campaña
+							if (fechaPedido >= fechaInicio) {
+								todosPedidos.push(pedido);
+
+								// Verificar si este pedido usó algún cupón de la campaña
+								if (pedido.couponCodes) {
+									const codigosUsados = pedido.couponCodes.filter((cupon) =>
+										codigosCampana.includes(cupon)
+									);
+
+									if (codigosUsados.length > 0) {
+										codigosUsados.forEach((codigo) =>
+											cuponesEncontrados.add(codigo)
+										);
+										pedidosConCupon.push(pedido);
+									}
+								}
 							}
 						}
 					}
@@ -129,54 +136,215 @@ export const obtenerPedidosDesdeCampana = async (
 			}
 		}
 
-		// console.log(
-		// 	`Códigos que NO se encontraron en ningún pedido:`,
-		// 	codigosCampana.filter((codigo) => !cuponesEncontrados.has(codigo))
-		// );
-
-		// console.log(
-		// 	`Total códigos encontrados en pedidos: ${cuponesEncontrados.size}`
-		// );
-		// console.log(`Total códigos marcados como usados: ${codigosCampana.length}`);
-		// console.log(
-		// 	`Total de pedidos encontrados que usaron cupones de ${titulo}:`,
-		// 	pedidosEncontrados.length
-		// );
-		return pedidosEncontrados;
+		return {
+			todosPedidos,
+			pedidosConCupon,
+			codigosCampana,
+		};
 	} catch (error) {
 		console.error("Error al obtener los pedidos:", error);
 		throw error;
 	}
 };
 
-// Función auxiliar para calcular estadísticas de los pedidos
-export const calcularEstadisticasPedidos = (pedidos: Pedido[]) => {
-	// Suma total de cupones usados entre todos los pedidos
-	const totalCupones = pedidos.reduce(
+export const calcularEstadisticasPedidos = (
+	todosPedidos: Pedido[],
+	pedidosConCupon: Pedido[]
+) => {
+	console.log("=== DEBUG ESTADÍSTICAS ===");
+	console.log("Total pedidos encontrados:", todosPedidos.length);
+	console.log("Pedidos con cupón:", pedidosConCupon.length);
+
+	// Total de cupones usados
+	const totalCupones = pedidosConCupon.reduce(
 		(sum, pedido) => sum + (pedido.couponCodes?.length || 0),
 		0
 	);
 
+	// Ordenar todos los pedidos por fecha
+	const pedidosOrdenados = [...todosPedidos].sort((a, b) => {
+		const fechaA = new Date(a.fecha.split("/").reverse().join("-"));
+		const fechaB = new Date(b.fecha.split("/").reverse().join("-"));
+		return fechaA.getTime() - fechaB.getTime();
+	});
+
+	// Mapa para trackear clientes y sus compras
+	const clientesUnicos = new Map<
+		string,
+		{
+			primeraCompraConCupon: string; // Fecha de primera compra con cupón
+			comprasAnteriores: string[]; // Compras antes de usar cupón
+			comprasPosteriores: string[]; // Compras después de usar cupón
+			fechasPedidos: string[]; // Todas las fechas de pedidos
+		}
+	>();
+
+	// Primero procesamos los pedidos con cupón para identificar la fecha de activación
+	pedidosConCupon.forEach((pedido) => {
+		if (!pedido.telefono) return;
+
+		if (!clientesUnicos.has(pedido.telefono)) {
+			clientesUnicos.set(pedido.telefono, {
+				primeraCompraConCupon: pedido.fecha,
+				comprasAnteriores: [],
+				comprasPosteriores: [],
+				fechasPedidos: [pedido.fecha],
+			});
+			console.log("Nuevo cliente con cupón:", {
+				telefono: pedido.telefono,
+				fecha: pedido.fecha,
+			});
+		} else {
+			// Si ya existe el cliente, actualizamos la primera compra con cupón si esta es anterior
+			const cliente = clientesUnicos.get(pedido.telefono)!;
+			const fechaActual = new Date(pedido.fecha.split("/").reverse().join("-"));
+			const fechaPrimeraCupon = new Date(
+				cliente.primeraCompraConCupon.split("/").reverse().join("-")
+			);
+
+			if (fechaActual < fechaPrimeraCupon) {
+				cliente.primeraCompraConCupon = pedido.fecha;
+			}
+			cliente.fechasPedidos.push(pedido.fecha);
+		}
+	});
+
+	// Ahora procesamos todos los pedidos para identificar compras anteriores y posteriores
+	pedidosOrdenados.forEach((pedido) => {
+		if (!pedido.telefono) return;
+
+		const clienteInfo = clientesUnicos.get(pedido.telefono);
+		if (clienteInfo) {
+			const fechaPedido = new Date(pedido.fecha.split("/").reverse().join("-"));
+			const fechaPrimeraCupon = new Date(
+				clienteInfo.primeraCompraConCupon.split("/").reverse().join("-")
+			);
+
+			// Si el pedido es anterior a la primera compra con cupón
+			if (fechaPedido < fechaPrimeraCupon) {
+				clienteInfo.comprasAnteriores.push(pedido.fecha);
+				console.log("Compra anterior encontrada:", {
+					telefono: pedido.telefono,
+					fechaPedido: pedido.fecha,
+					fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
+				});
+			}
+			// Si el pedido es posterior a la primera compra con cupón y no es un pedido con cupón
+			else if (
+				fechaPedido > fechaPrimeraCupon &&
+				!pedidosConCupon.some(
+					(p) => p.fecha === pedido.fecha && p.telefono === pedido.telefono
+				)
+			) {
+				clienteInfo.comprasPosteriores.push(pedido.fecha);
+				console.log("Compra posterior encontrada:", {
+					telefono: pedido.telefono,
+					fechaPedido: pedido.fecha,
+					fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
+				});
+			}
+		}
+	});
+
+	// Categorías mutuamente excluyentes
+	let soloUsaronCupon = 0;
+	let recurrentesNoVolvieron = 0;
+	let recurrentesVolvieron = 0;
+	let nuevosVolvieron = 0;
+	let montoTotalRecomprasDeNuevos = 0;
+
+	clientesUnicos.forEach((cliente, telefono) => {
+		const eraRecurrente = cliente.comprasAnteriores.length > 0;
+		const volvioAComprar = cliente.comprasPosteriores.length > 0;
+
+		if (eraRecurrente && volvioAComprar) {
+			recurrentesVolvieron++;
+		} else if (eraRecurrente && !volvioAComprar) {
+			recurrentesNoVolvieron++;
+		} else if (!eraRecurrente && volvioAComprar) {
+			nuevosVolvieron++;
+			console.log("=== DETALLE CLIENTE NUEVO QUE VOLVIÓ ===");
+			console.log(`Cliente ${telefono}:`);
+			console.log("Primera compra (con cupón):", cliente.primeraCompraConCupon);
+			console.log("Compras posteriores:", cliente.comprasPosteriores);
+
+			// Buscamos los pedidos posteriores y sumamos sus totales
+			const todosLosPedidosCliente = todosPedidos
+				.filter((p) => p.telefono === telefono)
+				.sort(
+					(a, b) =>
+						new Date(a.fecha.split("/").reverse().join("-")).getTime() -
+						new Date(b.fecha.split("/").reverse().join("-")).getTime()
+				);
+
+			todosLosPedidosCliente.forEach((pedido) => {
+				// Si es un pedido posterior al uso del cupón
+				if (cliente.comprasPosteriores.includes(pedido.fecha)) {
+					montoTotalRecomprasDeNuevos += pedido.total;
+					console.log(
+						`Sumando recompra: $${pedido.total} (Fecha: ${pedido.fecha})`
+					);
+				}
+
+				console.log("=== PEDIDO ===");
+				console.log({
+					...pedido,
+					esPedidoConCuponCampaña: pedidosConCupon.some(
+						(p) => p.fecha === pedido.fecha && p.telefono === pedido.telefono
+					),
+				});
+				console.log("Detalle Items:");
+				if (pedido.detallePedido) {
+					pedido.detallePedido.forEach((item, index) => {
+						console.log(`Item ${index + 1}:`, item);
+					});
+				}
+				console.log("------------------------");
+			});
+			console.log("===============================");
+		} else {
+			soloUsaronCupon++;
+		}
+	});
+
+	console.log("=== ESTADÍSTICAS FINALES ===", {
+		totalClientes: clientesUnicos.size,
+		soloUsaronCupon,
+		recurrentesNoVolvieron,
+		recurrentesVolvieron,
+		nuevosVolvieron,
+		montoTotalRecomprasDeNuevos,
+	});
+
 	return {
-		totalPedidos: pedidos.length,
-		totalCupones: totalCupones,
-		promedioCuponesPorPedido: totalCupones / pedidos.length,
-		montoTotal: pedidos.reduce((sum, pedido) => sum + pedido.total, 0),
-		montoSinDescuento: pedidos.reduce(
+		totalPedidos: pedidosConCupon.length,
+		totalCupones,
+		promedioCuponesPorPedido:
+			pedidosConCupon.length > 0 ? totalCupones / pedidosConCupon.length : 0,
+		montoTotal: pedidosConCupon.reduce((sum, pedido) => sum + pedido.total, 0),
+		montoSinDescuento: pedidosConCupon.reduce(
 			(sum, pedido) => sum + pedido.subTotal,
 			0
 		),
-		descuentoTotal: pedidos.reduce(
+		descuentoTotal: pedidosConCupon.reduce(
 			(sum, pedido) => sum + (pedido.subTotal - pedido.total),
 			0
 		),
 		promedioDescuento:
-			pedidos.length > 0
-				? pedidos.reduce(
+			pedidosConCupon.length > 0
+				? pedidosConCupon.reduce(
 						(sum, pedido) => sum + (pedido.subTotal - pedido.total),
 						0
-				  ) / pedidos.length
+				  ) / pedidosConCupon.length
 				: 0,
+		estadisticasClientes: {
+			totalClientesUnicos: clientesUnicos.size,
+			soloUsaronCupon,
+			recurrentesNoVolvieron,
+			recurrentesVolvieron,
+			nuevosVolvieron,
+			montoTotalRecomprasDeNuevos,
+		},
 	};
 };
 
@@ -236,10 +404,6 @@ export const generarCodigos = async (cantidad: number): Promise<Codigo[]> => {
 			};
 			codigosGenerados.push(nuevoCodigo);
 		}
-
-		// console.log(
-		// 	`Se han generado y almacenado ${cantidad} códigos correctamente.`
-		// );
 		return codigosGenerados;
 	} catch (error) {
 		console.error("Error al generar y almacenar los códigos:", error);
@@ -265,10 +429,7 @@ export const crearVoucher = async (
 			creados: cant,
 			usados: 0,
 		});
-
-		// console.log(`Documento creado exitosamente con el título: ${titulo}`);
 	} catch (error) {
-		// console.error("Error al crear el documento:", error);
 		throw error;
 	}
 };
@@ -374,12 +535,7 @@ export const actualizarVouchersUsados = async (
 		await updateDoc(voucherDocRef, {
 			usados: cantidadUsados,
 		});
-
-		// console.log(
-		// 	`Cantidad de vouchers usados actualizada a ${cantidadUsados} para el título: ${titulo}`
-		// );
 	} catch (error) {
-		// console.error("Error al actualizar la cantidad de vouchers usados:", error);
 		throw error;
 	}
 };
@@ -396,11 +552,9 @@ export const obtenerCodigosCampana = async (
 			const data = voucherDoc.data();
 			return data.codigos || [];
 		} else {
-			// console.log("No se encontró el documento para la campaña:", titulo);
 			return [];
 		}
 	} catch (error) {
-		// console.error("Error al obtener los códigos de la campaña:", error);
 		throw error;
 	}
 };
@@ -436,10 +590,7 @@ export const subirCodigosExistentes = async (
 				creados: (voucherDoc.data().creados || 0) + codigos.length,
 			});
 		}
-
-		// console.log(`Códigos subidos correctamente bajo el título: ${titulo}`);
 	} catch (error) {
-		// console.error("Error al subir los códigos:", error);
 		throw error;
 	}
 };
@@ -467,7 +618,6 @@ export const obtenerCodigosOrdenados = async (): Promise<Codigo[]> => {
 
 		return codigos;
 	} catch (error) {
-		// console.error("Error al obtener los códigos:", error);
 		throw error;
 	}
 };
@@ -504,8 +654,6 @@ export const moverCodigosARango = async (
 		}
 
 		await batch.commit();
-
-		// console.log("Códigos movidos y eliminados correctamente");
 	} catch (error) {
 		console.error("Error al mover códigos:", error);
 	}
