@@ -95,7 +95,7 @@ const PaymentTimeline = ({ investors }) => {
 	}
 
 	return (
-		<div className="mb-6 px-4 bg-gray-300 ">
+		<div className="mb-6 px-4 ">
 			<div className="mb-6">
 				<h3 className="text-lg font-bold mb-2">Línea de tiempo de pagos</h3>
 				<p className="text-sm text-gray-600">
@@ -105,7 +105,7 @@ const PaymentTimeline = ({ investors }) => {
 
 			<div
 				ref={timelineRef}
-				className="relative h-10 bg-gray-100 rounded-lg mb-4 cursor-crosshair"
+				className="relative h-10 bg-gray-300 rounded-lg mb-4 cursor-crosshair"
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
