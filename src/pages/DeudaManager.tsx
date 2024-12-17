@@ -194,7 +194,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					onMouseMove={handleMouseMove}
 				>
 					<div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-						<div className="w-12 h-1 bg-gray-200 rounded-full" />
+						<div className="w-12 h-1 bg-gray-300 rounded-full" />
 					</div>
 				</div>
 
@@ -259,7 +259,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 											<option value="">Seleccionar...</option>
 											{inversores.map((inversor) => (
 												<option key={inversor.id} value={inversor.id}>
-													{inversor.id}
+													{formatInvestorName(inversor.id)}
 												</option>
 											))}
 										</select>
@@ -346,7 +346,7 @@ const InvestmentRow: React.FC<{
 	<tr className="text-black border font-light h-10 border-black border-opacity-20">
 		{showInvestor && (
 			<th scope="row" className="pl-4 w-1/4 font-light">
-				{investor.id}
+				{formatInvestorName(investor.id)}
 			</th>
 		)}
 		{!showInvestor && <td className="pl-4 w-1/4" />}
@@ -369,6 +369,14 @@ const InvestmentRow: React.FC<{
 );
 
 // Esta es la fila agrupada
+const formatInvestorName = (name: string) => {
+	const parts = name.split(" ");
+	if (parts.length > 1) {
+		return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
+	}
+	return name;
+};
+
 const InvestorGroup: React.FC<{
 	investor: Investor;
 	onEdit: (investor: Investor, investment: Investment) => void;
@@ -398,11 +406,14 @@ const InvestorGroup: React.FC<{
 	return (
 		<>
 			<tr
-				className="text-black border-x border-b font-light h-10 border-black border-opacity-20 cursor-pointer "
+				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
-				<th scope="row" className="pl-4 w-1/4 font-light">
-					{investor.id}
+				<th
+					scope="row"
+					className="pl-4 w-1/4 font-light flex flex-row items-center gap-2"
+				>
+					{formatInvestorName(investor.id)}
 				</th>
 				<td className="pl-4 w-1/4 font-light">
 					{Object.entries(totalByCurrency).map(([currency, amount], index) => (
@@ -428,23 +439,16 @@ const InvestorGroup: React.FC<{
 			</tr>
 			{isExpanded &&
 				sortedInvestments.map((investment, index) => (
-					<tr
-						key={index}
-						className="text-black  border-2 border-gray-200 font-light h-10 bg-gray-200 "
-					>
-						<td className="pl-4 w-1/4 border-2 border-gray-200  font-light">
-							{index + 1}.
-						</td>
-						<td className="pl-4 border-2 border-gray-200  w-1/4 font-light">
+					<tr key={index} className="text-black font-light h-10">
+						<td className="pl-4 w-1/4 font-light">{index + 1}</td>
+						<td className="pl-4 w-1/4 font-light">
 							{currencyFormat(investment.monto)}
 						</td>
-						<td className="pl-4 w-1/6 border-2 border-gray-200  font-light">
-							{investment.moneda}
-						</td>
-						<td className="pl-4 w-1/4 border-2 border-gray-200  font-light">
+						<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
+						<td className="pl-4 w-1/4 font-light">
 							{investment.deadline.toLocaleDateString("es-AR")}
 						</td>
-						<td className="pl-4 pr-4 w-1/12 border-2 border-gray-200  font-black text-2xl flex items-center justify-end h-full relative">
+						<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
 							<p
 								className="absolute text-2xl top-[-4px] cursor-pointer"
 								onClick={() => onEdit(investor, investment)}
@@ -532,7 +536,7 @@ export const DeudaManager: React.FC = () => {
 								Moneda
 							</th>
 							<th scope="col" className="pl-4 w-1/4">
-								Deadline(s)
+								Deadline
 							</th>
 							<th scope="col" className="pl-4 w-1/12"></th>
 						</tr>
