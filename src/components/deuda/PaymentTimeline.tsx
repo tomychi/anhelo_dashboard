@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const TimelineRange = ({
 	start,
 	end,
-	investor,
+	investment,
 	onDelete,
 	row,
 	startDate,
@@ -29,7 +31,10 @@ const TimelineRange = ({
 			}}
 		>
 			<div className="w-full flex items-center justify-between">
-				<span className="text-white text-xs truncate">{investor}</span>
+				<span className="text-white text-xs truncate">
+					{investment.investorId} ({investment.investmentIndex + 1}/
+					{investment.totalInvestments}): {investment.monto} {investment.moneda}
+				</span>
 				<button
 					onClick={onDelete}
 					className="text-white hover:text-red-300 text-xs"
@@ -51,10 +56,18 @@ const PaymentTimeline = ({ investors }) => {
 		start: 0,
 		end: 0,
 	});
-	const [selectedInvestor, setSelectedInvestor] = useState("");
-	const [showInvestorSelect, setShowInvestorSelect] = useState(false);
+	const [selectedInvestment, setSelectedInvestment] = useState(null);
+	const [showInvestmentSelect, setShowInvestmentSelect] = useState(false);
 	const [previewRow, setPreviewRow] = useState(0);
 	const timelineRef = useRef(null);
+
+	// Flatten all investments with their investor information
+	const allInvestments = investors.flatMap((investor) =>
+		investor.investments.map((investment) => ({
+			...investment,
+			investorId: investor.id,
+		}))
+	);
 
 	const calculateRow = (newStart, newEnd) => {
 		const rows = ranges.map((range) => range.row || 0);
@@ -87,12 +100,9 @@ const PaymentTimeline = ({ investors }) => {
 
 	const startDate = getStartDate();
 
-	const latestDeadline = investors.reduce((latest, investor) => {
-		const investorLatest = Math.max(
-			...investor.investments.map((inv) => inv.deadline.getTime())
-		);
-		return Math.max(latest, investorLatest);
-	}, startDate.getTime());
+	const latestDeadline = Math.max(
+		...allInvestments.map((inv) => inv.deadline.getTime())
+	);
 
 	const weekDiff = (start, end) => {
 		const msInWeek = 1000 * 60 * 60 * 24 * 7;
@@ -101,16 +111,11 @@ const PaymentTimeline = ({ investors }) => {
 
 	const totalWeeks = weekDiff(startDate.getTime(), latestDeadline);
 
-	const percentageToDate = (percentage) => {
+	const formatDate = (percentage) => {
 		const totalDays = totalWeeks * 7;
 		const daysToAdd = Math.floor((percentage / 100) * totalDays);
 		const date = new Date(startDate);
 		date.setDate(startDate.getDate() + daysToAdd);
-		return date;
-	};
-
-	const formatDate = (percentage) => {
-		const date = percentageToDate(percentage);
 		return date.toLocaleDateString("es-AR");
 	};
 
@@ -137,7 +142,7 @@ const PaymentTimeline = ({ investors }) => {
 		} else {
 			setIsSelecting(false);
 			if (Math.abs(currentSelection.end - currentSelection.start) > 2) {
-				setShowInvestorSelect(true);
+				setShowInvestmentSelect(true);
 			} else {
 				setCurrentSelection({ start: 0, end: 0 });
 			}
@@ -154,16 +159,16 @@ const PaymentTimeline = ({ investors }) => {
 	};
 
 	useEffect(() => {
-		if (isSelecting || showInvestorSelect) {
+		if (isSelecting || showInvestmentSelect) {
 			const start = Math.min(currentSelection.start, currentSelection.end);
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
 			setPreviewRow(row);
 		}
-	}, [currentSelection, isSelecting, showInvestorSelect]);
+	}, [currentSelection, isSelecting, showInvestmentSelect]);
 
 	const addRange = () => {
-		if (selectedInvestor) {
+		if (selectedInvestment) {
 			const start = Math.min(currentSelection.start, currentSelection.end);
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
@@ -173,13 +178,13 @@ const PaymentTimeline = ({ investors }) => {
 				{
 					start,
 					end,
-					investor: selectedInvestor,
+					investment: selectedInvestment,
 					row,
 				},
 			]);
 			setCurrentSelection({ start: 0, end: 0 });
-			setSelectedInvestor("");
-			setShowInvestorSelect(false);
+			setSelectedInvestment(null);
+			setShowInvestmentSelect(false);
 			setIsSelecting(false);
 		}
 	};
@@ -191,20 +196,14 @@ const PaymentTimeline = ({ investors }) => {
 	const generateTimelineData = () => {
 		const data = [];
 		let currentDate = new Date(startDate);
-		let weekCounter = 1;
-
-		let currentMonth = null;
-		let monthData = null;
 
 		for (let week = 0; week < totalWeeks; week++) {
-			const monthKey = currentDate
-				.toLocaleString("es-AR", {
-					month: "long",
-				})
-				.toUpperCase();
+			const monthKey = format(currentDate, "MMMM", {
+				locale: es,
+			}).toUpperCase();
 
-			if (monthKey !== currentMonth) {
-				currentMonth = monthKey;
+			let monthData = data.find((m) => m.label === monthKey);
+			if (!monthData) {
 				monthData = {
 					label: monthKey,
 					weeks: [],
@@ -213,7 +212,7 @@ const PaymentTimeline = ({ investors }) => {
 			}
 
 			monthData.weeks.push({
-				weekNum: weekCounter++,
+				weekNum: week + 1,
 				startPercentage: (week * 100) / totalWeeks,
 				startDate: new Date(currentDate),
 			});
@@ -266,10 +265,10 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					{/* Week labels and dividers */}
+					{/* Week labels */}
 					<div className="absolute w-full flex px-2 bottom-2 text-xs text-gray-500">
 						{timelineData.flatMap((month) =>
-							month.weeks.map((week, weekIndex) => (
+							month.weeks.map((week) => (
 								<div
 									key={`week-${week.weekNum}`}
 									className="text-center relative"
@@ -281,13 +280,13 @@ const PaymentTimeline = ({ investors }) => {
 						)}
 					</div>
 
-					{/* Ranges */}
+					{/* Existing ranges */}
 					{ranges.map((range, i) => (
 						<TimelineRange
 							key={i}
 							start={range.start}
 							end={range.end}
-							investor={range.investor}
+							investment={range.investment}
 							onDelete={() => deleteRange(i)}
 							row={range.row}
 							startDate={startDate}
@@ -296,7 +295,7 @@ const PaymentTimeline = ({ investors }) => {
 					))}
 
 					{/* Selection preview */}
-					{(isSelecting || showInvestorSelect) &&
+					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
 								className="absolute h-10 bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
@@ -327,31 +326,49 @@ const PaymentTimeline = ({ investors }) => {
 				</div>
 			</div>
 
-			{showInvestorSelect && (
+			{showInvestmentSelect && (
 				<div className="">
 					<select
-						value={selectedInvestor}
-						onChange={(e) => setSelectedInvestor(e.target.value)}
+						value={selectedInvestment ? JSON.stringify(selectedInvestment) : ""}
+						onChange={(e) =>
+							setSelectedInvestment(
+								e.target.value ? JSON.parse(e.target.value) : null
+							)
+						}
 						className="w-full mt-2 px-4 h-10 bg-gray-300 appearance-none border rounded-md"
 					>
-						<option value="">Seleccionar inversor</option>
+						<option value="">Seleccionar inversión</option>
 						{investors.map((investor) => (
-							<option key={investor.id} value={investor.id}>
-								{investor.id}
-							</option>
+							<optgroup key={investor.id} label={investor.id}>
+								{investor.investments.map((investment, index) => (
+									<option
+										key={`${investor.id}-${index}`}
+										value={JSON.stringify({
+											...investment,
+											investorId: investor.id,
+											investmentIndex: index,
+											totalInvestments: investor.investments.length,
+										})}
+									>
+										{investor.id} ({index + 1}/{investor.investments.length}):{" "}
+										{investment.monto} {investment.moneda} -{" "}
+										{investment.deadline.toLocaleDateString("es-AR")}
+									</option>
+								))}
+							</optgroup>
 						))}
 					</select>
 					<div className="flex gap-2 mt-4">
 						<button
 							onClick={addRange}
-							disabled={!selectedInvestor}
+							disabled={!selectedInvestment}
 							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 rounded-md"
 						>
 							Confirmar
 						</button>
 						<button
 							onClick={() => {
-								setShowInvestorSelect(false);
+								setShowInvestmentSelect(false);
 								setCurrentSelection({ start: 0, end: 0 });
 								setIsSelecting(false);
 							}}
