@@ -475,7 +475,7 @@ const PaymentTimeline = ({ investors }) => {
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className=" pl-4 flex-grow border-r pt-2 border-opacity-20 border-black font-bold"
+								className=" pl-4 flex-grow border-r h-2 pt-2 border-opacity-20 border-black font-bold"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
@@ -486,15 +486,17 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					<div className="absolute w-full  flex px-1.5 bottom-2 text-xs text-black">
+					<div className="absolute w-full  flex bottom-0  text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
 									key={`week-${week.weekNum}`}
-									className="text-center relative"
+									className="pl-4 h-2 border-r  border-black border-opacity-20 relative"
 									style={{ width: `${100 / totalWeeks}%` }}
 								>
-									<span className="text-xs font-bold">s{week.weekNum}</span>
+									<span className="text-xs font-bold absolute bottom-[10px]">
+										s{week.weekNum}
+									</span>
 								</div>
 							))
 						)}
