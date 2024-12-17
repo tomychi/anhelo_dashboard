@@ -23,20 +23,20 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-10 bg-black rounded-lg flex flex-col items-start justify-center px-2 cursor-pointer"
+			className="absolute h-12 bg-black rounded-lg flex flex-col items-start justify-center px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
-				top: `${row * 40 + 60}px`,
+				top: `${row * 48 + 68}px`,
 				transform: "translateY(-50%)",
 			}}
 		>
 			<div className="w-full flex items-center justify-between">
 				<span className="text-white text-xs truncate">
-					{formatInvestorName(investment.investorId)} (
-					{investment.investmentIndex + 1}/{investment.totalInvestments}):{" "}
-					{investment.monto} {investment.moneda}
+					{formatInvestorName(investment.investorId)}
+					<br />({investment.investmentIndex + 1}/{investment.totalInvestments}
+					): ${investment.monto} {investment.moneda}
 				</span>
 				<button
 					onClick={(e) => {
@@ -49,8 +49,15 @@ const TimelineRange = ({
 				</button>
 			</div>
 			<div className="text-white text-[10px] opacity-75">
-				{investment.inicioEstimado?.toLocaleDateString("es-AR")} -
-				{investment.finEstimado?.toLocaleDateString("es-AR")}
+				{investment.inicioEstimado?.toLocaleDateString("es-AR", {
+					day: "numeric",
+					month: "numeric",
+				})}{" "}
+				-
+				{investment.finEstimado?.toLocaleDateString("es-AR", {
+					day: "numeric",
+					month: "numeric",
+				})}
 			</div>
 		</div>
 	);
@@ -179,12 +186,15 @@ const PaymentTimeline = ({ investors }) => {
 
 	const totalWeeks = weekDiff(startDate.getTime(), latestDeadline);
 
-	const formatDate = (percentage) => {
+	const formatDate = (percentage, options = {}) => {
+		const defaultOptions = {};
+		const mergedOptions = { ...defaultOptions, ...options };
+
 		const totalDays = totalWeeks * 7;
 		const daysToAdd = Math.floor((percentage / 100) * totalDays);
 		const date = new Date(startDate);
 		date.setDate(startDate.getDate() + daysToAdd);
-		return date.toLocaleDateString("es-AR");
+		return date.toLocaleDateString("es-AR", mergedOptions);
 	};
 
 	const calculatePositionForInvestment = (investment) => {
@@ -446,7 +456,7 @@ const PaymentTimeline = ({ investors }) => {
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
 			: previewRow;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 40 + 80);
+	const timelineHeight = Math.max(120, (maxRow + 1) * 48 + 88);
 
 	return (
 		<div className="font-coolvetica">
@@ -487,7 +497,7 @@ const PaymentTimeline = ({ investors }) => {
 									className="text-center relative"
 									style={{ width: `${100 / totalWeeks}%` }}
 								>
-									<span className="text-xs">{week.weekNum}</span>
+									<span className="text-xs">S{week.weekNum}</span>
 								</div>
 							))
 						)}
@@ -509,7 +519,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
+								className="absolute h-12  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -519,17 +529,19 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
-									top: `${previewRow * 40 + 60}px`,
+									top: `${previewRow * 48 + 68}px`,
 									transform: "translateY(-50%)",
 								}}
 							>
 								<div className="text-white text-[10px] opacity-75">
 									{formatDate(
-										Math.min(currentSelection.start, currentSelection.end)
+										Math.min(currentSelection.start, currentSelection.end),
+										{ day: "numeric", month: "numeric" }
 									)}{" "}
 									-{" "}
 									{formatDate(
-										Math.max(currentSelection.start, currentSelection.end)
+										Math.max(currentSelection.start, currentSelection.end),
+										{ day: "numeric", month: "numeric" }
 									)}
 								</div>
 							</div>
