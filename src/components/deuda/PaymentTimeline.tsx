@@ -179,7 +179,7 @@ const PaymentTimeline = ({ investors }) => {
 					</div>
 
 					{/* Week labels and dividers */}
-					<div className="absolute w-full flex px-2 bottom-4 text-xs text-gray-500">
+					<div className="absolute w-full flex px-2 bottom-2 text-xs text-gray-500">
 						{timelineData.map((month) =>
 							month.weeks.map((week, weekIndex) => (
 								<div
