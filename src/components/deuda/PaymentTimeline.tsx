@@ -158,7 +158,7 @@ const PaymentTimeline = ({ investors }) => {
 			<div className="overflow-x-auto">
 				<div
 					ref={timelineRef}
-					className="relative h-16 bg-gray-300 rounded-lg cursor-crosshair"
+					className="relative h-[120px] bg-gray-300 rounded-lg cursor-crosshair"
 					style={{ minWidth: `${Math.max(100, totalMonths * 8)}%` }}
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
@@ -177,7 +177,7 @@ const PaymentTimeline = ({ investors }) => {
 					</div>
 
 					{/* Week labels and dividers */}
-					<div className="absolute w-full flex px-2 top-6 text-xs text-gray-500">
+					<div className="absolute w-full flex px-2 bottom-4 text-xs text-gray-500">
 						{timelineData.map((month) =>
 							month.weeks.map((week, weekIndex) => (
 								<div
@@ -207,7 +207,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-16 bg-blue-500 bg-opacity-50 rounded-lg"
+								className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
