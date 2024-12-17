@@ -459,10 +459,6 @@ const PaymentTimeline = ({ investors }) => {
 
 	return (
 		<div className="font-coolvetica ">
-			<p className="text-xs text-black mb-2 px-4">
-				Clickea para posicionar las deudas en el timeline.
-			</p>
-
 			<div className="overflow-x-auto px-4 border-y border-opacity-20 border-black w-full">
 				<div
 					ref={timelineRef}
