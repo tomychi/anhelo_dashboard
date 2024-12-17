@@ -23,12 +23,12 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-12 bg-black  rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
+			className="absolute h-16  bg-black  rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
-				top: `${row * 48 + 68}px`,
+				top: `${row * 64 + 74}px`,
 				transform: "translateY(-50%)",
 			}}
 		>
@@ -455,7 +455,7 @@ const PaymentTimeline = ({ investors }) => {
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
 			: previewRow;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 48 + 84);
+	const timelineHeight = Math.max(120, (maxRow + 1) * 64 + 80);
 
 	return (
 		<div className="font-coolvetica">
@@ -518,7 +518,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-12  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
+								className="absolute h-16  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -528,7 +528,7 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
-									top: `${previewRow * 48 + 68}px`,
+									top: `${previewRow * 64 + 68}px`,
 									transform: "translateY(-50%)",
 								}}
 							>
