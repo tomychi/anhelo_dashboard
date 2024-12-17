@@ -41,6 +41,8 @@ const PaymentTimeline = ({ investors }) => {
 
 	// Calculate the date range
 	const today = new Date();
+	today.setDate(1); // Set to first day of the month
+
 	const latestDeadline = investors.reduce((latest, investor) => {
 		const investorLatest = Math.max(
 			...investor.investments.map((inv) => inv.deadline.getTime())
@@ -120,16 +122,19 @@ const PaymentTimeline = ({ investors }) => {
 		setRanges(ranges.filter((_, i) => i !== index));
 	};
 
-	// Generate months array dynamically
+	// Generate months array dynamically with first day of each month
 	const generateTimelineData = () => {
 		const data = [];
+		const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
 		for (let i = 0; i < totalMonths; i++) {
-			const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+			const date = new Date(firstDay.getFullYear(), firstDay.getMonth() + i, 1);
 			const month = {
-				label: date.toLocaleString("default", {
-					month: "short",
-					year: "2-digit",
-				}),
+				label: `1 ${date
+					.toLocaleString("es-AR", {
+						month: "long",
+					})
+					.slice(0, 3)}`,
 				weeks: [1, 2, 3, 4].map((week) => ({
 					weekNum: week,
 					startPercentage: (i * 4 + (week - 1)) * (100 / totalWeeks),
