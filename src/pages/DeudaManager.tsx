@@ -497,7 +497,7 @@ export const DeudaManager: React.FC = () => {
 	};
 
 	if (loading) {
-		return <div className="p-4">Cargando inversiones...</div>;
+		return <div></div>;
 	}
 
 	if (error) {
