@@ -23,7 +23,7 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-16  bg-black items-center rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
+			className="absolute h-16 mx-4 bg-black items-center rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -484,7 +484,7 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					<div className="absolute w-full flex px-1.5 bottom-2 text-xs text-black">
+					<div className="absolute w-full  flex px-1.5 bottom-2 text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
