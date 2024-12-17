@@ -234,7 +234,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 										<input
 											type="text"
 											value={nombreInversor}
-											placeholder="Nombre del inversor"
+											placeholder="Nombre y Apellido"
 											onChange={(e) => setNombreInversor(e.target.value)}
 											className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm"
 											required
