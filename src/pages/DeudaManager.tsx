@@ -8,6 +8,7 @@ import {
 	type Investment,
 } from "../firebase/Inversion";
 import arrow from "../assets/arrowIcon.png";
+import PaymentTimeline from "../components/deuda/PaymentTimeline";
 
 interface InversionModalProps {
 	isOpen: boolean;
@@ -527,6 +528,8 @@ export const DeudaManager: React.FC = () => {
 					<p className="font-bold ">Nueva inversión</p>
 				</button>
 			</div>
+
+			<PaymentTimeline investors={inversores} />
 
 			<div className="font-coolvetica">
 				<table className="w-full text-xs text-left text-black">
