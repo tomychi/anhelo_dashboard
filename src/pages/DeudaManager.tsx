@@ -398,7 +398,7 @@ const InvestorGroup: React.FC<{
 	return (
 		<>
 			<tr
-				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer "
+				className="text-black border-x border-b font-light h-10 border-black border-opacity-20 cursor-pointer "
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
 				<th scope="row" className="pl-4 w-1/4 font-light">
