@@ -96,11 +96,9 @@ const PaymentTimeline = ({ investors }) => {
 
 	return (
 		<div className="mb-6 px-4 font-coolvetica">
-			<div className="mb-6">
-				<p className="text-xs text-black">
-					Arrastra para establecer un período de pago
-				</p>
-			</div>
+			<p className="text-xs text-black mb-2">
+				Arrastra para establecer un período de pago
+			</p>
 
 			<div
 				ref={timelineRef}
