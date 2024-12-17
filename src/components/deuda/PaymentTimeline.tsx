@@ -458,15 +458,15 @@ const PaymentTimeline = ({ investors }) => {
 	const timelineHeight = Math.max(120, (maxRow + 1) * 64 + 80);
 
 	return (
-		<div className="font-coolvetica">
-			<p className="text-xs text-black mb-2">
+		<div className="font-coolvetica ">
+			<p className="text-xs text-black mb-2 px-4">
 				Clickea para posicionar las deudas en el timeline.
 			</p>
 
-			<div className="overflow-x-auto">
+			<div className="overflow-x-auto px-4 border-y border-opacity-20 border-black w-full">
 				<div
 					ref={timelineRef}
-					className="relative bg-gray-300 rounded-lg cursor-crosshair"
+					className="relative   cursor-crosshair"
 					style={{
 						minWidth: `${Math.max(100, totalWeeks * 2)}%`,
 						height: `${timelineHeight}px`,
