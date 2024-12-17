@@ -194,7 +194,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					onMouseMove={handleMouseMove}
 				>
 					<div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-						<div className="w-12 h-1 bg-gray-300 rounded-full" />
+						<div className="w-12 h-1 bg-gray-200 rounded-full" />
 					</div>
 				</div>
 
@@ -398,7 +398,7 @@ const InvestorGroup: React.FC<{
 	return (
 		<>
 			<tr
-				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
+				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer "
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
 				<th scope="row" className="pl-4 w-1/4 font-light">
@@ -430,17 +430,21 @@ const InvestorGroup: React.FC<{
 				sortedInvestments.map((investment, index) => (
 					<tr
 						key={index}
-						className="text-black border font-light h-10 border-black border-opacity-20"
+						className="text-black  border-2 border-gray-200 font-light h-10 bg-gray-200 "
 					>
-						<td className="pl-4 w-1/4 font-light">{index + 1}.</td>
-						<td className="pl-4 w-1/4 font-light">
+						<td className="pl-4 w-1/4 border-2 border-gray-200  font-light">
+							{index + 1}.
+						</td>
+						<td className="pl-4 border-2 border-gray-200  w-1/4 font-light">
 							{currencyFormat(investment.monto)}
 						</td>
-						<td className="pl-4 w-1/6 font-light">{investment.moneda}</td>
-						<td className="pl-4 w-1/4 font-light">
+						<td className="pl-4 w-1/6 border-2 border-gray-200  font-light">
+							{investment.moneda}
+						</td>
+						<td className="pl-4 w-1/4 border-2 border-gray-200  font-light">
 							{investment.deadline.toLocaleDateString("es-AR")}
 						</td>
-						<td className="pl-4 pr-4 w-1/12 font-black text-2xl flex items-center justify-end h-full relative">
+						<td className="pl-4 pr-4 w-1/12 border-2 border-gray-200  font-black text-2xl flex items-center justify-end h-full relative">
 							<p
 								className="absolute text-2xl top-[-4px] cursor-pointer"
 								onClick={() => onEdit(investor, investment)}
