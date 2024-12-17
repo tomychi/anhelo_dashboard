@@ -8,7 +8,7 @@ const TimelineRange = ({ start, end, investor, onDelete, row }) => {
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
-				top: `${row * 40 + 60}px`, // Ajustamos la posición vertical según la fila
+				top: `${row * 40 + 60}px`,
 				transform: "translateY(-50%)",
 			}}
 		>
@@ -39,15 +39,15 @@ const PaymentTimeline = ({ investors }) => {
 	});
 	const [selectedInvestor, setSelectedInvestor] = useState("");
 	const [showInvestorSelect, setShowInvestorSelect] = useState(false);
+	const [previewRow, setPreviewRow] = useState(0);
 	const timelineRef = useRef(null);
 
-	// Función para calcular la fila para una nueva barra
+	// Función para calcular la fila para una barra
 	const calculateRow = (newStart, newEnd) => {
 		const rows = ranges.map((range) => range.row || 0);
 		let row = 0;
 
 		while (true) {
-			// Verifica si hay superposición en esta fila
 			const hasOverlap = ranges.some(
 				(range) =>
 					range.row === row &&
@@ -124,6 +124,16 @@ const PaymentTimeline = ({ investors }) => {
 		}));
 	};
 
+	// Actualizar la fila del preview cuando cambia la selección
+	useEffect(() => {
+		if (isSelecting || showInvestorSelect) {
+			const start = Math.min(currentSelection.start, currentSelection.end);
+			const end = Math.max(currentSelection.start, currentSelection.end);
+			const row = calculateRow(start, end);
+			setPreviewRow(row);
+		}
+	}, [currentSelection, isSelecting, showInvestorSelect]);
+
 	const addRange = () => {
 		if (selectedInvestor) {
 			const start = Math.min(currentSelection.start, currentSelection.end);
@@ -176,8 +186,10 @@ const PaymentTimeline = ({ investors }) => {
 
 	// Calcular la altura dinámica basada en el número máximo de filas
 	const maxRow =
-		ranges.length > 0 ? Math.max(...ranges.map((range) => range.row)) : 0;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 40 + 80); // 80px para los labels y padding
+		ranges.length > 0
+			? Math.max(...ranges.map((range) => range.row), previewRow)
+			: previewRow;
+	const timelineHeight = Math.max(120, (maxRow + 1) * 40 + 80);
 
 	return (
 		<div className="font-coolvetica">
@@ -243,7 +255,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-black rounded-lg"
+								className="absolute h-10 bg-black bg-opacity-50 rounded-lg"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -253,7 +265,7 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
-									top: "50%",
+									top: `${previewRow * 40 + 60}px`,
 									transform: "translateY(-50%)",
 								}}
 							/>
