@@ -95,10 +95,9 @@ const PaymentTimeline = ({ investors }) => {
 	}
 
 	return (
-		<div className="mb-6 px-4 ">
+		<div className="mb-6 px-4 font-coolvetica">
 			<div className="mb-6">
-				<h3 className="text-lg font-bold mb-2">Línea de tiempo de pagos</h3>
-				<p className="text-sm text-gray-600">
+				<p className="text-xs text-black">
 					Arrastra para establecer un período de pago
 				</p>
 			</div>
