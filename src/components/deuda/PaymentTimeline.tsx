@@ -442,9 +442,7 @@ const PaymentTimeline = ({ investors }) => {
 	return (
 		<div className="font-coolvetica">
 			<p className="text-xs text-black mb-2">
-				Haz click para iniciar la selección, mueve el mouse y vuelve a hacer
-				click para terminar. La selección se ajustará automáticamente a las
-				semanas.
+				Clickea para posicionar las deudas en el timeline.
 			</p>
 
 			<div className="overflow-x-auto">
