@@ -23,17 +23,37 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-16 mx-4 bg-black items-center rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
+			className="absolute h-20 mx-4 justify-center bg-black items-center rounded-lg flex flex-col  px-2 cursor-pointer"
 			// acaaaaaaaaaaa
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
-				top: `${row * 64 + 74}px`,
+				top: `${row * 80 + 90}px`,
 				transform: "translateY(-50%)",
 			}}
 		>
 			<div className="w-full flex  flex-col justify-start">
+				<button
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete();
+					}}
+					className="text-gray-100  "
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						className="h-4 mb-0.5"
+					>
+						<path
+							fill-rule="evenodd"
+							d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+				</button>
 				<p className="text-white font-bold text-xs truncate">
 					{formatInvestorName(investment.investorId)}
 				</p>
@@ -52,15 +72,6 @@ const TimelineRange = ({
 					})}
 				</div>
 			</div>
-			<button
-				onClick={(e) => {
-					e.stopPropagation();
-					onDelete();
-				}}
-				className="text-gray-100 text- font-bold "
-			>
-				×
-			</button>
 		</div>
 	);
 };
@@ -458,7 +469,7 @@ const PaymentTimeline = ({ investors }) => {
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
 			: previewRow;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 64 + 85);
+	const timelineHeight = Math.max(120, (maxRow + 1) * 80 + 90);
 
 	return (
 		<div className="font-coolvetica ">
@@ -519,7 +530,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-16  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
+								className="absolute h-20  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -529,7 +540,7 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
-									top: `${previewRow * 64 + 74}px`,
+									top: `${previewRow * 80 + 90}px`,
 									transform: "translateY(-50%)",
 								}}
 							>
