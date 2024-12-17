@@ -542,7 +542,7 @@ export const DeudaManager: React.FC = () => {
 								Moneda
 							</th>
 							<th scope="col" className="pl-4 w-1/4">
-								Deadline
+								Deadline(s)
 							</th>
 							<th scope="col" className="pl-4 w-1/12"></th>
 						</tr>
