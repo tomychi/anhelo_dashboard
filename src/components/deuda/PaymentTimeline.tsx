@@ -471,11 +471,11 @@ const PaymentTimeline = ({ investors }) => {
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					<div className="absolute w-full border-t  border-opacity-20 border-black flex  pt-2  text-xs black">
+					<div className="absolute w-full border-t  border-opacity-20 border-black flex    text-xs black">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className=" pl-4 flex-grow font-bold"
+								className=" pl-4 flex-grow border-r pt-2 border-opacity-20 border-black font-bold"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
