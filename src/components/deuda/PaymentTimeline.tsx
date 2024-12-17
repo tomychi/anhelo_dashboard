@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { updateInversion } from "../../firebase/Inversion";
 
 const TimelineRange = ({
 	start,
@@ -11,14 +12,6 @@ const TimelineRange = ({
 	startDate,
 	totalWeeks,
 }) => {
-	const formatDate = (percentage) => {
-		const totalDays = totalWeeks * 7;
-		const daysToAdd = Math.floor((percentage / 100) * totalDays);
-		const date = new Date(startDate);
-		date.setDate(startDate.getDate() + daysToAdd);
-		return date.toLocaleDateString("es-AR");
-	};
-
 	return (
 		<div
 			className="absolute h-10 bg-black rounded-lg flex flex-col items-start justify-center px-2 cursor-pointer"
@@ -43,7 +36,8 @@ const TimelineRange = ({
 				</button>
 			</div>
 			<div className="text-white text-[10px] opacity-75">
-				{new Date(investment.deadline).toLocaleDateString("es-AR")}
+				{investment.inicioEstimado?.toLocaleDateString("es-AR")} -
+				{investment.finEstimado?.toLocaleDateString("es-AR")}
 			</div>
 		</div>
 	);
@@ -173,12 +167,47 @@ const PaymentTimeline = ({ investors }) => {
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
 
+			// Calcular las fechas de inicio y fin basadas en los porcentajes
+			const totalDays = totalWeeks * 7;
+			const startDays = Math.floor((start / 100) * totalDays);
+			const endDays = Math.floor((end / 100) * totalDays);
+
+			const inicioEstimado = new Date(startDate);
+			inicioEstimado.setDate(startDate.getDate() + startDays);
+
+			const finEstimado = new Date(startDate);
+			finEstimado.setDate(startDate.getDate() + endDays);
+
+			// Actualizar la inversión en Firebase
+			const investor = investors.find(
+				(inv) => inv.id === selectedInvestment.investorId
+			);
+			if (investor) {
+				const investment =
+					investor.investments[selectedInvestment.investmentIndex];
+				const updatedInvestment = {
+					...investment,
+					inicioEstimado,
+					finEstimado,
+				};
+
+				updateInversion({
+					investorId: selectedInvestment.investorId,
+					oldInvestment: investment,
+					newInvestment: updatedInvestment,
+				});
+			}
+
 			setRanges([
 				...ranges,
 				{
 					start,
 					end,
-					investment: selectedInvestment,
+					investment: {
+						...selectedInvestment,
+						inicioEstimado,
+						finEstimado,
+					},
 					row,
 				},
 			]);

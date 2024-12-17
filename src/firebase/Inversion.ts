@@ -14,6 +14,8 @@ export interface Investment {
 	monto: number;
 	deadline: Date;
 	moneda: string;
+	inicioEstimado?: Date;
+	finEstimado?: Date;
 }
 
 export interface Investor {
