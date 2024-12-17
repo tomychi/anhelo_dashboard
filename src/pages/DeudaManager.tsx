@@ -528,8 +528,9 @@ export const DeudaManager: React.FC = () => {
 					<p className="font-bold ">Nueva inversión</p>
 				</button>
 			</div>
-
-			<PaymentTimeline investors={inversores} />
+			<div className="px-4">
+				<PaymentTimeline investors={inversores} />
+			</div>
 
 			<div className="font-coolvetica">
 				<table className="w-full text-xs text-left text-black">
