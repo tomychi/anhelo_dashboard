@@ -513,9 +513,22 @@ export const DeudaManager: React.FC = () => {
 				<p className="text-black font-bold text-4xl mt-1">Deuda</p>
 				<button
 					onClick={() => setShowModal(true)}
-					className="bg-black text-gray-100 rounded-lg px-4 py-2 text-sm hover:bg-gray-800 transition-colors"
+					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
 				>
-					+ Nueva inversión
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						className="h-6 mt-1"
+					>
+						<path
+							fill-rule="evenodd"
+							d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+
+					<p className="font-bold ">Nueva inversión</p>
 				</button>
 			</div>
 
