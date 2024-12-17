@@ -455,7 +455,7 @@ const PaymentTimeline = ({ investors }) => {
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
 			: previewRow;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 48 + 88);
+	const timelineHeight = Math.max(120, (maxRow + 1) * 48 + 84);
 
 	return (
 		<div className="font-coolvetica">
@@ -532,7 +532,7 @@ const PaymentTimeline = ({ investors }) => {
 									transform: "translateY(-50%)",
 								}}
 							>
-								<div className="text-white text-[10px] opacity-75">
+								<div className="text-white text-xs opacity-75">
 									{formatDate(
 										Math.min(currentSelection.start, currentSelection.end),
 										{ day: "numeric", month: "numeric" }
