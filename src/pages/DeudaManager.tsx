@@ -298,7 +298,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					<button
 						type="submit"
 						disabled={loading}
-						className="w-full bg-black h-20 text-gray-100 font-bold rounded-lg text-3xl hover:bg-gray-800 transition-colors disabled:bg-gray-400"
+						className="w-full bg-black h-20 text-gray-100 font-bold rounded-lg text-3xl hover:bg-gray-800  transition-colors disabled:bg-gray-400"
 					>
 						{loading ? (
 							<div className="flex justify-center">
