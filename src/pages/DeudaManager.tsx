@@ -475,7 +475,17 @@ export const DeudaManager: React.FC = () => {
 		const fetchInversiones = async () => {
 			try {
 				const inversionesData = await getInversiones();
-				setInversores(inversionesData);
+				// Sort investors based on their earliest deadline
+				const sortedInversores = inversionesData.sort((a, b) => {
+					const aEarliestDeadline = Math.min(
+						...a.investments.map((inv) => inv.deadline.getTime())
+					);
+					const bEarliestDeadline = Math.min(
+						...b.investments.map((inv) => inv.deadline.getTime())
+					);
+					return aEarliestDeadline - bEarliestDeadline;
+				});
+				setInversores(sortedInversores);
 				setLoading(false);
 			} catch (err) {
 				console.error("Error al obtener las inversiones:", err);
