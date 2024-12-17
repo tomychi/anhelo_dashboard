@@ -484,7 +484,7 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					<div className="absolute w-full flex px-2 bottom-2 text-xs text-black">
+					<div className="absolute w-full flex px-1.5 bottom-2 text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
@@ -497,7 +497,6 @@ const PaymentTimeline = ({ investors }) => {
 							))
 						)}
 					</div>
-
 					{ranges.map((range, i) => (
 						<TimelineRange
 							key={i}
