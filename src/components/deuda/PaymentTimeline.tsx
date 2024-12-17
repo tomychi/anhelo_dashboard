@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 const TimelineRange = ({ start, end, investor, onDelete }) => {
 	return (
 		<div
-			className="absolute h-10 bg-black bg-opacity-80 rounded-lg flex items-center justify-between px-2 cursor-pointer"
+			className="absolute h-10 bg-black  rounded-lg flex items-center justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -209,7 +209,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-blue-500  bg-opacity-50 rounded-lg"
+								className="absolute h-10 bg-black   rounded-lg"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
