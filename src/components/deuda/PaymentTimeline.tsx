@@ -46,6 +46,7 @@ const TimelineRange = ({
 
 const PaymentTimeline = ({ investors }) => {
 	const [ranges, setRanges] = useState([]);
+	const [loading, setLoading] = useState(false);
 	const [isSelecting, setIsSelecting] = useState(false);
 	const [currentSelection, setCurrentSelection] = useState({
 		start: 0,
@@ -251,10 +252,9 @@ const PaymentTimeline = ({ investors }) => {
 		}
 	}, [currentSelection, isSelecting, showInvestmentSelect]);
 
-	// En PaymentTimeline.js, modifica la función addRange:
-
 	const addRange = async () => {
 		if (selectedInvestment) {
+			setLoading(true);
 			const start = Math.min(currentSelection.start, currentSelection.end);
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
@@ -274,10 +274,7 @@ const PaymentTimeline = ({ investors }) => {
 			);
 
 			if (investor) {
-				// Crear una copia del array de inversiones
 				const updatedInvestments = [...investor.investments];
-
-				// Actualizar la inversión específica
 				updatedInvestments[selectedInvestment.investmentIndex] = {
 					...updatedInvestments[selectedInvestment.investmentIndex],
 					inicioEstimado,
@@ -288,12 +285,10 @@ const PaymentTimeline = ({ investors }) => {
 					const firestore = getFirestore();
 					const inversionDoc = doc(firestore, "inversion", investor.id);
 
-					// Actualizar todo el documento con el array actualizado
 					await setDoc(inversionDoc, {
 						investments: updatedInvestments,
 					});
 
-					// Actualizar el estado local de ranges
 					const newRange = {
 						start,
 						end,
@@ -305,7 +300,6 @@ const PaymentTimeline = ({ investors }) => {
 						row,
 					};
 
-					// Reemplazar el range existente si ya existe
 					const existingRangeIndex = ranges.findIndex(
 						(range) =>
 							range.investment.investorId === selectedInvestment.investorId &&
@@ -325,6 +319,8 @@ const PaymentTimeline = ({ investors }) => {
 				} catch (error) {
 					console.error("Error al actualizar la inversión:", error);
 					alert("Error al actualizar la inversión");
+				} finally {
+					setLoading(false);
 				}
 			}
 
@@ -568,10 +564,20 @@ const PaymentTimeline = ({ investors }) => {
 					<div className="flex gap-2 mt-4">
 						<button
 							onClick={addRange}
-							disabled={!selectedInvestment}
-							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 rounded-md"
+							disabled={!selectedInvestment || loading}
+							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 rounded-md disabled:bg-gray-400"
 						>
-							Confirmar
+							{loading ? (
+								<div className="flex justify-center">
+									<div className="flex flex-row gap-1">
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-75"></div>
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
+									</div>
+								</div>
+							) : (
+								"Confirmar"
+							)}
 						</button>
 						<button
 							onClick={() => {
