@@ -30,7 +30,10 @@ const TimelineRange = ({
 					{investment.totalInvestments}): {investment.monto} {investment.moneda}
 				</span>
 				<button
-					onClick={onDelete}
+					onClick={(e) => {
+						e.stopPropagation();
+						onDelete();
+					}}
 					className="text-white hover:text-red-300 text-xs"
 				>
 					×
@@ -112,14 +115,48 @@ const PaymentTimeline = ({ investors }) => {
 	};
 
 	const getStartDate = () => {
+		// First, check if any investment has inicioEstimado before current date
+		const currentDate = new Date();
+
+		// Find earliest inicioEstimado across all investments
+		const earliestInicioEstimado = investors.reduce((earliest, investor) => {
+			const investmentDates = investor.investments
+				.filter((inv) => inv.inicioEstimado) // Only consider investments with inicioEstimado
+				.map((inv) =>
+					inv.inicioEstimado instanceof Date
+						? inv.inicioEstimado
+						: inv.inicioEstimado.toDate()
+				);
+
+			if (investmentDates.length === 0) return earliest;
+
+			const investorEarliest = new Date(Math.min(...investmentDates));
+			return earliest
+				? investorEarliest < earliest
+					? investorEarliest
+					: earliest
+				: investorEarliest;
+		}, null);
+
+		// If we found an inicioEstimado before current date, use it
+		if (earliestInicioEstimado && earliestInicioEstimado < currentDate) {
+			// Adjust to start of week
+			const date = new Date(earliestInicioEstimado);
+			const day = date.getDay();
+			const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+			date.setDate(diff);
+			return date;
+		}
+
+		// Otherwise, use current date
 		const date = new Date();
-		date.setDate(1);
 		const day = date.getDay();
 		const diff = date.getDate() - day + (day === 0 ? -6 : 1);
 		date.setDate(diff);
 		return date;
 	};
 
+	// Rest of the component remains the same...
 	const startDate = getStartDate();
 
 	const latestDeadline = Math.max(
