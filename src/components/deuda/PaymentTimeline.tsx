@@ -57,7 +57,7 @@ const TimelineRange = ({
 					e.stopPropagation();
 					onDelete();
 				}}
-				className="text-gray-100 font-bold text-xs"
+				className="text-gray-100 text- font-bold "
 			>
 				×
 			</button>
