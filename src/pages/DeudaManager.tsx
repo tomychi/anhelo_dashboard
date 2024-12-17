@@ -60,7 +60,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 			setDeadline(selectedInvestment.deadline.toISOString().split("T")[0]);
 		} else {
 			setMonto("");
-			setMoneda("USD");
+			setMoneda("ARS");
 			setDeadline("");
 		}
 	}, [investor, selectedInvestment, isOpen]);
