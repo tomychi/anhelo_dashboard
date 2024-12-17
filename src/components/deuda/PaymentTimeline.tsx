@@ -470,7 +470,7 @@ const PaymentTimeline = ({ investors }) => {
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					<div className="absolute w-full border-b border-opacity-20 border-black flex  pb-2  text-xs black">
+					<div className="absolute w-full border-b  border-opacity-20 border-black flex  pb-2  text-xs black">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
