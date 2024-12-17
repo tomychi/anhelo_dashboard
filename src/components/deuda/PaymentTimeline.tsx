@@ -474,12 +474,13 @@ const PaymentTimeline = ({ investors }) => {
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className="text-center  flex-grow"
+								className="text-center  flex-grow font-bold"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
 							>
-								{month.label}
+								{month.label.charAt(0).toUpperCase() +
+									month.label.slice(1).toLowerCase()}
 							</div>
 						))}
 					</div>
