@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const TimelineRange = ({ start, end, investor, onDelete }) => {
+const TimelineRange = ({ start, end, investor, onDelete, row }) => {
 	return (
 		<div
-			className="absolute h-10 bg-black  rounded-lg flex items-center justify-between px-2 cursor-pointer"
+			className="absolute h-10 bg-black rounded-lg flex items-center justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
-				top: "50%",
+				top: `${row * 40 + 60}px`, // Ajustamos la posición vertical según la fila
 				transform: "translateY(-50%)",
 			}}
 		>
@@ -41,9 +41,31 @@ const PaymentTimeline = ({ investors }) => {
 	const [showInvestorSelect, setShowInvestorSelect] = useState(false);
 	const timelineRef = useRef(null);
 
+	// Función para calcular la fila para una nueva barra
+	const calculateRow = (newStart, newEnd) => {
+		const rows = ranges.map((range) => range.row || 0);
+		let row = 0;
+
+		while (true) {
+			// Verifica si hay superposición en esta fila
+			const hasOverlap = ranges.some(
+				(range) =>
+					range.row === row &&
+					((newStart >= range.start && newStart <= range.end) ||
+						(newEnd >= range.start && newEnd <= range.end) ||
+						(newStart <= range.start && newEnd >= range.end))
+			);
+
+			if (!hasOverlap) {
+				return row;
+			}
+			row++;
+		}
+	};
+
 	// Calculate the date range
 	const today = new Date();
-	today.setDate(1); // Set to first day of the month
+	today.setDate(1);
 
 	const latestDeadline = investors.reduce((latest, investor) => {
 		const investorLatest = Math.max(
@@ -52,7 +74,6 @@ const PaymentTimeline = ({ investors }) => {
 		return Math.max(latest, investorLatest);
 	}, today.getTime());
 
-	// Calculate the number of months between today and the latest deadline
 	const monthDiff = (latestDate) => {
 		const end = new Date(latestDate);
 		let months = (end.getFullYear() - today.getFullYear()) * 12;
@@ -62,7 +83,7 @@ const PaymentTimeline = ({ investors }) => {
 	};
 
 	const totalMonths = monthDiff(latestDeadline);
-	const totalWeeks = totalMonths * 4; // 4 weeks per month
+	const totalWeeks = totalMonths * 4;
 
 	const getPercentageFromMouseEvent = (e) => {
 		if (!timelineRef.current) return 0;
@@ -70,7 +91,6 @@ const PaymentTimeline = ({ investors }) => {
 		const x = e.clientX - rect.left;
 		const rawPercentage = (x / rect.width) * 100;
 
-		// Snap to nearest week
 		const weekWidth = 100 / totalWeeks;
 		const weekIndex = Math.round(rawPercentage / weekWidth);
 		return Math.max(0, Math.min(100, weekIndex * weekWidth));
@@ -106,11 +126,17 @@ const PaymentTimeline = ({ investors }) => {
 
 	const addRange = () => {
 		if (selectedInvestor) {
+			const start = Math.min(currentSelection.start, currentSelection.end);
+			const end = Math.max(currentSelection.start, currentSelection.end);
+			const row = calculateRow(start, end);
+
 			setRanges([
 				...ranges,
 				{
-					...currentSelection,
+					start,
+					end,
 					investor: selectedInvestor,
+					row,
 				},
 			]);
 			setCurrentSelection({ start: 0, end: 0 });
@@ -124,7 +150,6 @@ const PaymentTimeline = ({ investors }) => {
 		setRanges(ranges.filter((_, i) => i !== index));
 	};
 
-	// Generate months array dynamically with first day of each month
 	const generateTimelineData = () => {
 		const data = [];
 		const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -149,6 +174,11 @@ const PaymentTimeline = ({ investors }) => {
 
 	const timelineData = generateTimelineData();
 
+	// Calcular la altura dinámica basada en el número máximo de filas
+	const maxRow =
+		ranges.length > 0 ? Math.max(...ranges.map((range) => range.row)) : 0;
+	const timelineHeight = Math.max(120, (maxRow + 1) * 40 + 80); // 80px para los labels y padding
+
 	return (
 		<div className="font-coolvetica">
 			<p className="text-xs text-black mb-2">
@@ -160,8 +190,11 @@ const PaymentTimeline = ({ investors }) => {
 			<div className="overflow-x-auto">
 				<div
 					ref={timelineRef}
-					className="relative h-[120px] bg-gray-300 rounded-lg cursor-crosshair"
-					style={{ minWidth: `${Math.max(100, totalMonths * 8)}%` }}
+					className="relative bg-gray-300 rounded-lg cursor-crosshair"
+					style={{
+						minWidth: `${Math.max(100, totalMonths * 8)}%`,
+						height: `${timelineHeight}px`,
+					}}
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
@@ -202,6 +235,7 @@ const PaymentTimeline = ({ investors }) => {
 							end={range.end}
 							investor={range.investor}
 							onDelete={() => deleteRange(i)}
+							row={range.row}
 						/>
 					))}
 
@@ -209,7 +243,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-black   rounded-lg"
+								className="absolute h-10 bg-black rounded-lg"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
