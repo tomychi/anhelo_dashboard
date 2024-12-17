@@ -459,7 +459,7 @@ const PaymentTimeline = ({ investors }) => {
 
 	return (
 		<div className="font-coolvetica ">
-			<div className="overflow-x-auto px-4 border-y border-opacity-20 border-black w-full">
+			<div className="overflow-x-auto  border-b border-opacity-20 border-black w-full">
 				<div
 					ref={timelineRef}
 					className="relative   cursor-crosshair"
@@ -470,11 +470,11 @@ const PaymentTimeline = ({ investors }) => {
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					<div className="absolute w-full flex px-2 top-3 text-xs text-gray-600">
+					<div className="absolute w-full border-b border-opacity-20 border-black flex  pb-2  text-xs black">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className="text-center uppercase flex-grow"
+								className="text-center  flex-grow"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
@@ -484,7 +484,7 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					<div className="absolute w-full flex px-2 bottom-2 text-xs text-gray-500">
+					<div className="absolute w-full flex px-2 bottom-2 text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
