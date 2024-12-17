@@ -24,7 +24,6 @@ const TimelineRange = ({ start, end, investor, onDelete }) => {
 const PaymentTimeline = ({ investors }) => {
 	const [ranges, setRanges] = useState([]);
 	const [isSelecting, setIsSelecting] = useState(false);
-	const [selectionStart, setSelectionStart] = useState(null);
 	const [currentSelection, setCurrentSelection] = useState({
 		start: 0,
 		end: 0,
@@ -40,30 +39,35 @@ const PaymentTimeline = ({ investors }) => {
 		return Math.max(0, Math.min(100, (x / rect.width) * 100));
 	};
 
-	const handleMouseDown = (e) => {
+	const handleClick = (e) => {
 		const percentage = getPercentageFromMouseEvent(e);
-		setIsSelecting(true);
-		setSelectionStart(percentage);
-		setCurrentSelection({ start: percentage, end: percentage });
+
+		if (!isSelecting) {
+			// Primer click - Iniciar selección
+			setIsSelecting(true);
+			setCurrentSelection({
+				start: percentage,
+				end: percentage,
+			});
+		} else {
+			// Segundo click - Finalizar selección y mostrar selector
+			setIsSelecting(false);
+			if (Math.abs(currentSelection.end - currentSelection.start) > 5) {
+				setShowInvestorSelect(true);
+			} else {
+				// Si la selección es muy pequeña, resetear
+				setCurrentSelection({ start: 0, end: 0 });
+			}
+		}
 	};
 
 	const handleMouseMove = (e) => {
 		if (!isSelecting) return;
 		const percentage = getPercentageFromMouseEvent(e);
-		setCurrentSelection({
-			start: Math.min(selectionStart, percentage),
-			end: Math.max(selectionStart, percentage),
-		});
-	};
-
-	const handleMouseUp = () => {
-		if (!isSelecting) return;
-		setIsSelecting(false);
-		if (currentSelection.end - currentSelection.start > 5) {
-			setShowInvestorSelect(true);
-		} else {
-			setCurrentSelection({ start: 0, end: 0 });
-		}
+		setCurrentSelection((prev) => ({
+			...prev,
+			end: percentage,
+		}));
 	};
 
 	const addRange = () => {
@@ -78,6 +82,7 @@ const PaymentTimeline = ({ investors }) => {
 			setCurrentSelection({ start: 0, end: 0 });
 			setSelectedInvestor("");
 			setShowInvestorSelect(false);
+			setIsSelecting(false);
 		}
 	};
 
@@ -95,21 +100,19 @@ const PaymentTimeline = ({ investors }) => {
 	}
 
 	return (
-		<div className=" font-coolvetica">
+		<div className="font-coolvetica">
 			<p className="text-xs text-black mb-2">
-				Arrastra para establecer periodos de pago
+				Haz click para iniciar la selección, mueve el mouse y vuelve a hacer
+				click para terminar
 			</p>
 
 			<div
 				ref={timelineRef}
-				className="relative h-10 bg-gray-300 rounded-lg  cursor-crosshair"
-				onMouseDown={handleMouseDown}
+				className="relative h-10 bg-gray-300 rounded-lg cursor-crosshair"
+				onClick={handleClick}
 				onMouseMove={handleMouseMove}
-				onMouseUp={handleMouseUp}
-				onMouseLeave={() => setIsSelecting(false)}
 			>
-				{/* Month markers */}
-				<div className="absolute  w-full flex justify-between px-2 top-1 text-xs text-gray-600">
+				<div className="absolute w-full flex justify-between px-2 top-1 text-xs text-gray-600">
 					{months.map((month, i) => (
 						<div key={i} className="text-center" style={{ width: "40px" }}>
 							{month}
@@ -117,7 +120,6 @@ const PaymentTimeline = ({ investors }) => {
 					))}
 				</div>
 
-				{/* Existing ranges */}
 				{ranges.map((range, i) => (
 					<TimelineRange
 						key={i}
@@ -128,38 +130,39 @@ const PaymentTimeline = ({ investors }) => {
 					/>
 				))}
 
-				{/* Current selection */}
-				{isSelecting && currentSelection.end - currentSelection.start > 0 && (
-					<div
-						className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
-						style={{
-							left: `${currentSelection.start}%`,
-							width: `${currentSelection.end - currentSelection.start}%`,
-							minWidth: "20px",
-						}}
-					/>
-				)}
+				{/* Preview de selección */}
+				{(isSelecting || showInvestorSelect) &&
+					currentSelection.end - currentSelection.start > 0 && (
+						<div
+							className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
+							style={{
+								left: `${currentSelection.start}%`,
+								width: `${currentSelection.end - currentSelection.start}%`,
+								minWidth: "20px",
+							}}
+						/>
+					)}
 			</div>
 
-			{/* Investor selection dialog */}
 			{showInvestorSelect && (
 				<div className="">
 					<select
 						value={selectedInvestor}
 						onChange={(e) => setSelectedInvestor(e.target.value)}
-						className=" w-full mt-2 px-4  h-10 bg-gray-300 appearance-none border rounded-md "
+						className="w-full mt-2 px-4 h-10 bg-gray-300 appearance-none border rounded-md"
 					>
+						<option value="">Seleccionar inversor</option>
 						{investors.map((investor) => (
 							<option key={investor.id} value={investor.id}>
 								{investor.id}
 							</option>
 						))}
 					</select>
-					<div className="flex gap-2 mt-4 ">
+					<div className="flex gap-2 mt-4">
 						<button
 							onClick={addRange}
 							disabled={!selectedInvestor}
-							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4  rounded-md "
+							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 rounded-md"
 						>
 							Confirmar
 						</button>
@@ -167,8 +170,9 @@ const PaymentTimeline = ({ investors }) => {
 							onClick={() => {
 								setShowInvestorSelect(false);
 								setCurrentSelection({ start: 0, end: 0 });
+								setIsSelecting(false);
 							}}
-							className="bg-gray-300 text-red-main h-20 flex-1 font-bold text-2xl px-4  rounded-md"
+							className="bg-gray-300 text-red-main h-20 flex-1 font-bold text-2xl px-4 rounded-md"
 						>
 							Cancelar
 						</button>
