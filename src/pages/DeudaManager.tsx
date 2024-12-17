@@ -410,12 +410,14 @@ const InvestorGroup: React.FC<{
 					{firstDeadline.toLocaleDateString("es-AR")} -{" "}
 					{lastDeadline.toLocaleDateString("es-AR")}
 				</td>
-				<td className="w-1/12">
-					{isExpanded ? (
-						<img src={arrow} className="h-2  rotate-90 " />
-					) : (
-						<img src={arrow} className="h-2 rotate-180" />
-					)}
+				<td className="w-1/12 ">
+					<div className=" mr-4 flex justify-end">
+						{isExpanded ? (
+							<img src={arrow} className="h-2  rotate-90 " />
+						) : (
+							<img src={arrow} className="h-2 rotate-180" />
+						)}
+					</div>
 				</td>
 			</tr>
 			{isExpanded &&
