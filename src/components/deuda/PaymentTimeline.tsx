@@ -251,7 +251,9 @@ const PaymentTimeline = ({ investors }) => {
 		}
 	}, [currentSelection, isSelecting, showInvestmentSelect]);
 
-	const addRange = () => {
+	// En PaymentTimeline.js, modifica la función addRange:
+
+	const addRange = async () => {
 		if (selectedInvestment) {
 			const start = Math.min(currentSelection.start, currentSelection.end);
 			const end = Math.max(currentSelection.start, currentSelection.end);
@@ -270,35 +272,62 @@ const PaymentTimeline = ({ investors }) => {
 			const investor = investors.find(
 				(inv) => inv.id === selectedInvestment.investorId
 			);
+
 			if (investor) {
-				const investment =
-					investor.investments[selectedInvestment.investmentIndex];
-				const updatedInvestment = {
-					...investment,
+				// Crear una copia del array de inversiones
+				const updatedInvestments = [...investor.investments];
+
+				// Actualizar la inversión específica
+				updatedInvestments[selectedInvestment.investmentIndex] = {
+					...updatedInvestments[selectedInvestment.investmentIndex],
 					inicioEstimado,
 					finEstimado,
 				};
 
-				updateInversion({
-					investorId: selectedInvestment.investorId,
-					oldInvestment: investment,
-					newInvestment: updatedInvestment,
-				});
+				try {
+					const firestore = getFirestore();
+					const inversionDoc = doc(firestore, "inversion", investor.id);
+
+					// Actualizar todo el documento con el array actualizado
+					await setDoc(inversionDoc, {
+						investments: updatedInvestments,
+					});
+
+					// Actualizar el estado local de ranges
+					const newRange = {
+						start,
+						end,
+						investment: {
+							...selectedInvestment,
+							inicioEstimado,
+							finEstimado,
+						},
+						row,
+					};
+
+					// Reemplazar el range existente si ya existe
+					const existingRangeIndex = ranges.findIndex(
+						(range) =>
+							range.investment.investorId === selectedInvestment.investorId &&
+							range.investment.investmentIndex ===
+								selectedInvestment.investmentIndex
+					);
+
+					if (existingRangeIndex !== -1) {
+						setRanges(
+							ranges.map((range, index) =>
+								index === existingRangeIndex ? newRange : range
+							)
+						);
+					} else {
+						setRanges([...ranges, newRange]);
+					}
+				} catch (error) {
+					console.error("Error al actualizar la inversión:", error);
+					alert("Error al actualizar la inversión");
+				}
 			}
 
-			setRanges([
-				...ranges,
-				{
-					start,
-					end,
-					investment: {
-						...selectedInvestment,
-						inicioEstimado,
-						finEstimado,
-					},
-					row,
-				},
-			]);
 			setCurrentSelection({ start: 0, end: 0 });
 			setSelectedInvestment(null);
 			setShowInvestmentSelect(false);
