@@ -232,7 +232,7 @@ const PaymentTimeline = ({ investors }) => {
 									className="text-center relative"
 									style={{ width: `${100 / totalWeeks}%` }}
 								>
-									<span className="text-[10px]">Sem {week.weekNum}</span>
+									<span className="text-[10px]">{week.weekNum}</span>
 									<WeekDivider left={100} />
 								</div>
 							))
