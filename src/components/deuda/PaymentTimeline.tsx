@@ -97,12 +97,12 @@ const PaymentTimeline = ({ investors }) => {
 	return (
 		<div className=" font-coolvetica">
 			<p className="text-xs text-black mb-2">
-				Arrastra para establecer un período de pago
+				Arrastra para establecer periodos de pago
 			</p>
 
 			<div
 				ref={timelineRef}
-				className="relative h-10 bg-gray-300 rounded-lg mb-4 cursor-crosshair"
+				className="relative h-10 bg-gray-300 rounded-lg  cursor-crosshair"
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
@@ -143,11 +143,11 @@ const PaymentTimeline = ({ investors }) => {
 
 			{/* Investor selection dialog */}
 			{showInvestorSelect && (
-				<div className="mt-4">
+				<div className="">
 					<select
 						value={selectedInvestor}
 						onChange={(e) => setSelectedInvestor(e.target.value)}
-						className="block w-full px-4 h-10 bg-gray-300 appearance-none border rounded-md mb-2"
+						className=" w-full mt-2 px-4  h-10 bg-gray-300 appearance-none border rounded-md "
 					>
 						{investors.map((investor) => (
 							<option key={investor.id} value={investor.id}>
@@ -155,11 +155,11 @@ const PaymentTimeline = ({ investors }) => {
 							</option>
 						))}
 					</select>
-					<div className="flex gap-2">
+					<div className="flex gap-2 mt-4 ">
 						<button
 							onClick={addRange}
 							disabled={!selectedInvestor}
-							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 py-2 rounded-md "
+							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4  rounded-md "
 						>
 							Confirmar
 						</button>
@@ -168,7 +168,7 @@ const PaymentTimeline = ({ investors }) => {
 								setShowInvestorSelect(false);
 								setCurrentSelection({ start: 0, end: 0 });
 							}}
-							className="bg-gray-300 text-red-main h-20 flex-1 font-bold text-2xl px-4 py-2 rounded-md"
+							className="bg-gray-300 text-red-main h-20 flex-1 font-bold text-2xl px-4  rounded-md"
 						>
 							Cancelar
 						</button>
