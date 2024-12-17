@@ -207,7 +207,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
+								className="absolute h-10 bg-blue-500  bg-opacity-50 rounded-lg"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
