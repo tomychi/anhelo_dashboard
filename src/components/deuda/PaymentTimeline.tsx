@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 const TimelineRange = ({ start, end, investor, onDelete }) => {
 	return (
 		<div
-			className="absolute h-8 bg-black bg-opacity-80 rounded-lg flex items-center justify-between px-2 cursor-pointer"
+			className="absolute h-10 bg-black bg-opacity-80 rounded-lg flex items-center justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -95,24 +95,24 @@ const PaymentTimeline = ({ investors }) => {
 	}
 
 	return (
-		<div className="p-6 mb-6 mx-4 bg-white rounded-lg shadow">
+		<div className="mb-6 px-4 bg-gray-300 ">
 			<div className="mb-6">
 				<h3 className="text-lg font-bold mb-2">Línea de tiempo de pagos</h3>
 				<p className="text-sm text-gray-600">
-					Arrastra para seleccionar un período de pago
+					Arrastra para establecer un período de pago
 				</p>
 			</div>
 
 			<div
 				ref={timelineRef}
-				className="relative h-20 bg-gray-100 rounded-lg mb-4 cursor-crosshair"
+				className="relative h-10 bg-gray-100 rounded-lg mb-4 cursor-crosshair"
 				onMouseDown={handleMouseDown}
 				onMouseMove={handleMouseMove}
 				onMouseUp={handleMouseUp}
 				onMouseLeave={() => setIsSelecting(false)}
 			>
 				{/* Month markers */}
-				<div className="absolute w-full flex justify-between px-2 top-1 text-xs text-gray-600">
+				<div className="absolute  w-full flex justify-between px-2 top-1 text-xs text-gray-600">
 					{months.map((month, i) => (
 						<div key={i} className="text-center" style={{ width: "40px" }}>
 							{month}
@@ -134,7 +134,7 @@ const PaymentTimeline = ({ investors }) => {
 				{/* Current selection */}
 				{isSelecting && currentSelection.end - currentSelection.start > 0 && (
 					<div
-						className="absolute h-8 bg-blue-500 bg-opacity-50 rounded-lg"
+						className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
 						style={{
 							left: `${currentSelection.start}%`,
 							width: `${currentSelection.end - currentSelection.start}%`,
