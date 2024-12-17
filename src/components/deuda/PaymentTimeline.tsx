@@ -32,6 +32,26 @@ const PaymentTimeline = ({ investors }) => {
 	const [showInvestorSelect, setShowInvestorSelect] = useState(false);
 	const timelineRef = useRef(null);
 
+	// Calculate the date range
+	const today = new Date();
+	const latestDeadline = investors.reduce((latest, investor) => {
+		const investorLatest = Math.max(
+			...investor.investments.map((inv) => inv.deadline.getTime())
+		);
+		return Math.max(latest, investorLatest);
+	}, today.getTime());
+
+	// Calculate the number of months between today and the latest deadline
+	const monthDiff = (latestDate) => {
+		const end = new Date(latestDate);
+		let months = (end.getFullYear() - today.getFullYear()) * 12;
+		months -= today.getMonth();
+		months += end.getMonth();
+		return months + 1; // Add 1 to include the current month
+	};
+
+	const totalMonths = monthDiff(latestDeadline);
+
 	const getPercentageFromMouseEvent = (e) => {
 		if (!timelineRef.current) return 0;
 		const rect = timelineRef.current.getBoundingClientRect();
@@ -43,19 +63,16 @@ const PaymentTimeline = ({ investors }) => {
 		const percentage = getPercentageFromMouseEvent(e);
 
 		if (!isSelecting) {
-			// Primer click - Iniciar selección
 			setIsSelecting(true);
 			setCurrentSelection({
 				start: percentage,
 				end: percentage,
 			});
 		} else {
-			// Segundo click - Finalizar selección y mostrar selector
 			setIsSelecting(false);
 			if (Math.abs(currentSelection.end - currentSelection.start) > 5) {
 				setShowInvestorSelect(true);
 			} else {
-				// Si la selección es muy pequeña, resetear
 				setCurrentSelection({ start: 0, end: 0 });
 			}
 		}
@@ -90,9 +107,9 @@ const PaymentTimeline = ({ investors }) => {
 		setRanges(ranges.filter((_, i) => i !== index));
 	};
 
+	// Generate months array dynamically
 	const months = [];
-	const today = new Date();
-	for (let i = 0; i < 12; i++) {
+	for (let i = 0; i < totalMonths; i++) {
 		const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
 		months.push(
 			date.toLocaleString("default", { month: "short", year: "2-digit" })
@@ -106,42 +123,44 @@ const PaymentTimeline = ({ investors }) => {
 				click para terminar
 			</p>
 
-			<div
-				ref={timelineRef}
-				className="relative h-10 bg-gray-300 rounded-lg cursor-crosshair"
-				onClick={handleClick}
-				onMouseMove={handleMouseMove}
-			>
-				<div className="absolute w-full flex justify-between px-2 top-1 text-xs text-gray-600">
-					{months.map((month, i) => (
-						<div key={i} className="text-center" style={{ width: "40px" }}>
-							{month}
-						</div>
-					))}
-				</div>
+			<div className="overflow-x-auto">
+				<div
+					ref={timelineRef}
+					className="relative h-10 bg-gray-300 rounded-lg cursor-crosshair"
+					style={{ minWidth: `${Math.max(100, totalMonths * 8)}%` }}
+					onClick={handleClick}
+					onMouseMove={handleMouseMove}
+				>
+					<div className="absolute w-full flex justify-between px-2 top-1 text-xs text-gray-600">
+						{months.map((month, i) => (
+							<div key={i} className="text-center" style={{ width: "40px" }}>
+								{month}
+							</div>
+						))}
+					</div>
 
-				{ranges.map((range, i) => (
-					<TimelineRange
-						key={i}
-						start={range.start}
-						end={range.end}
-						investor={range.investor}
-						onDelete={() => deleteRange(i)}
-					/>
-				))}
-
-				{/* Preview de selección */}
-				{(isSelecting || showInvestorSelect) &&
-					currentSelection.end - currentSelection.start > 0 && (
-						<div
-							className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
-							style={{
-								left: `${currentSelection.start}%`,
-								width: `${currentSelection.end - currentSelection.start}%`,
-								minWidth: "20px",
-							}}
+					{ranges.map((range, i) => (
+						<TimelineRange
+							key={i}
+							start={range.start}
+							end={range.end}
+							investor={range.investor}
+							onDelete={() => deleteRange(i)}
 						/>
-					)}
+					))}
+
+					{(isSelecting || showInvestorSelect) &&
+						currentSelection.end - currentSelection.start > 0 && (
+							<div
+								className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
+								style={{
+									left: `${currentSelection.start}%`,
+									width: `${currentSelection.end - currentSelection.start}%`,
+									minWidth: "20px",
+								}}
+							/>
+						)}
+				</div>
 			</div>
 
 			{showInvestorSelect && (
