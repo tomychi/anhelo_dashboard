@@ -43,7 +43,7 @@ const TimelineRange = ({
 				</button>
 			</div>
 			<div className="text-white text-[10px] opacity-75">
-				{formatDate(start)} - {formatDate(end)}
+				{new Date(investment.deadline).toLocaleDateString("es-AR")}
 			</div>
 		</div>
 	);
@@ -330,33 +330,75 @@ const PaymentTimeline = ({ investors }) => {
 				<div className="">
 					<select
 						value={selectedInvestment ? JSON.stringify(selectedInvestment) : ""}
-						onChange={(e) =>
-							setSelectedInvestment(
-								e.target.value ? JSON.parse(e.target.value) : null
-							)
-						}
+						onChange={(e) => {
+							if (!e.target.value) {
+								setSelectedInvestment(null);
+								return;
+							}
+							const parsed = JSON.parse(e.target.value);
+							// Convertir la fecha de nuevo a objeto Date
+							parsed.deadline = new Date(parsed.deadline);
+							setSelectedInvestment(parsed);
+						}}
 						className="w-full mt-2 px-4 h-10 bg-gray-300 appearance-none border rounded-md"
 					>
 						<option value="">Seleccionar inversión</option>
-						{investors.map((investor) => (
-							<optgroup key={investor.id} label={investor.id}>
-								{investor.investments.map((investment, index) => (
-									<option
-										key={`${investor.id}-${index}`}
-										value={JSON.stringify({
-											...investment,
-											investorId: investor.id,
-											investmentIndex: index,
-											totalInvestments: investor.investments.length,
-										})}
-									>
-										{investor.id} ({index + 1}/{investor.investments.length}):{" "}
-										{investment.monto} {investment.moneda} -{" "}
-										{investment.deadline.toLocaleDateString("es-AR")}
-									</option>
-								))}
-							</optgroup>
-						))}
+						{investors
+							.map((investor) => {
+								// Filtrar inversiones que ya están en el timeline
+								// Agregar índice original a cada inversión
+								const investmentsWithIndices = investor.investments.map(
+									(investment, originalIndex) => ({
+										...investment,
+										originalIndex,
+									})
+								);
+
+								// Filtrar manteniendo el índice original
+								const availableInvestments = investmentsWithIndices.filter(
+									(investment) => {
+										return !ranges.some((range) => {
+											// Asegurarse de que las fechas sean objetos Date
+											const rangeDeadline = new Date(range.investment.deadline);
+											const investmentDeadline = new Date(investment.deadline);
+
+											return (
+												range.investment.investorId === investor.id &&
+												range.investment.monto === investment.monto &&
+												range.investment.moneda === investment.moneda &&
+												rangeDeadline.getTime() === investmentDeadline.getTime()
+											);
+										});
+									}
+								);
+
+								// Solo mostrar el optgroup si hay inversiones disponibles
+								if (availableInvestments.length === 0) return null;
+
+								return (
+									<optgroup key={investor.id} label={investor.id}>
+										{availableInvestments.map((investment) => (
+											<option
+												key={`${investor.id}-${investment.originalIndex}`}
+												value={JSON.stringify({
+													...investment,
+													investorId: investor.id,
+													investmentIndex: investment.originalIndex,
+													totalInvestments: investor.investments.length,
+												})}
+											>
+												{investor.id} ({investment.originalIndex + 1}/
+												{investor.investments.length}): {investment.monto}{" "}
+												{investment.moneda} -{" "}
+												{new Date(investment.deadline).toLocaleDateString(
+													"es-AR"
+												)}
+											</option>
+										))}
+									</optgroup>
+								);
+							})
+							.filter(Boolean)}
 					</select>
 					<div className="flex gap-2 mt-4">
 						<button
