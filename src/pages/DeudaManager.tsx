@@ -563,6 +563,12 @@ export const DeudaManager: React.FC = () => {
 				</table>
 			</div>
 
+			<div className="flex justify-center items-center gap-8 pt-8 pb-8">
+				<img src={arrow} className="h-2 rotate-180" alt="" />
+				<p className="font-bold font-coolvetica text-xs">1</p>
+				<img src={arrow} className="h-2" alt="" />
+			</div>
+
 			<InversionModal
 				isOpen={showModal}
 				onClose={handleCloseModal}
