@@ -506,7 +506,7 @@ export const DeudaManager: React.FC = () => {
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
-				<p className="text-black font-bold text-4xl mt-1">Deuda</p>
+				<p className="text-black font-bold text-4xl mt-1">Deuda L.P.</p>
 				<button
 					onClick={() => setShowModal(true)}
 					className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
