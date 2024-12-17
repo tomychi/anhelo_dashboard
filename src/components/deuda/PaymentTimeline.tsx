@@ -63,27 +63,42 @@ const PaymentTimeline = ({ investors }) => {
 		}
 	};
 
-	// Calculate the date range
-	const today = new Date();
-	today.setDate(1);
+	// Obtener el primer día de la semana (lunes) del mes actual
+	const getStartDate = () => {
+		const date = new Date();
+		date.setDate(1); // Ir al primer día del mes
+		const day = date.getDay(); // 0 = domingo, 1 = lunes, ...
+		const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+		date.setDate(diff);
+		return date;
+	};
 
+	const startDate = getStartDate();
+
+	// Calcular el último día basado en la última fecha límite
 	const latestDeadline = investors.reduce((latest, investor) => {
 		const investorLatest = Math.max(
 			...investor.investments.map((inv) => inv.deadline.getTime())
 		);
 		return Math.max(latest, investorLatest);
-	}, today.getTime());
+	}, startDate.getTime());
 
-	const monthDiff = (latestDate) => {
-		const end = new Date(latestDate);
-		let months = (end.getFullYear() - today.getFullYear()) * 12;
-		months -= today.getMonth();
-		months += end.getMonth();
-		return months + 1;
+	// Calcular el número total de semanas
+	const weekDiff = (start, end) => {
+		const msInWeek = 1000 * 60 * 60 * 24 * 7;
+		return Math.ceil((end - start) / msInWeek);
 	};
 
-	const totalMonths = monthDiff(latestDeadline);
-	const totalWeeks = totalMonths * 4;
+	const totalWeeks = weekDiff(startDate.getTime(), latestDeadline);
+
+	// Función para convertir porcentaje a fecha
+	const percentageToDate = (percentage) => {
+		const totalDays = totalWeeks * 7;
+		const daysToAdd = Math.floor((percentage / 100) * totalDays);
+		const date = new Date(startDate);
+		date.setDate(startDate.getDate() + daysToAdd);
+		return date;
+	};
 
 	const getPercentageFromMouseEvent = (e) => {
 		if (!timelineRef.current) return 0;
@@ -124,7 +139,6 @@ const PaymentTimeline = ({ investors }) => {
 		}));
 	};
 
-	// Actualizar la fila del preview cuando cambia la selección
 	useEffect(() => {
 		if (isSelecting || showInvestorSelect) {
 			const start = Math.min(currentSelection.start, currentSelection.end);
@@ -139,6 +153,26 @@ const PaymentTimeline = ({ investors }) => {
 			const start = Math.min(currentSelection.start, currentSelection.end);
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
+
+			// Convertir porcentajes a fechas
+			const startDate = percentageToDate(start);
+			const endDate = percentageToDate(end);
+
+			const formatDate = (date) => {
+				const dayName = date.toLocaleDateString("es-AR", { weekday: "long" });
+				const formattedDate = date.toLocaleDateString("es-AR");
+				return `${dayName} ${formattedDate}`;
+			};
+
+			console.log("Rango de fechas seleccionado:", {
+				inicio: formatDate(startDate),
+				fin: formatDate(endDate),
+				semanas: {
+					inicio: Math.floor((start / 100) * totalWeeks) + 1,
+					fin: Math.floor((end / 100) * totalWeeks) + 1,
+				},
+				porcentajes: { start, end },
+			});
 
 			setRanges([
 				...ranges,
@@ -162,29 +196,46 @@ const PaymentTimeline = ({ investors }) => {
 
 	const generateTimelineData = () => {
 		const data = [];
-		const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+		let currentDate = new Date(startDate);
+		let weekCounter = 1;
 
-		for (let i = 0; i < totalMonths; i++) {
-			const date = new Date(firstDay.getFullYear(), firstDay.getMonth() + i, 1);
-			const month = {
-				label: `${date
-					.toLocaleString("es-AR", {
-						month: "long",
-					})
-					.slice(0, 3)}`,
-				weeks: [1, 2, 3, 4].map((week) => ({
-					weekNum: week,
-					startPercentage: (i * 4 + (week - 1)) * (100 / totalWeeks),
-				})),
-			};
-			data.push(month);
+		let currentMonth = null;
+		let monthData = null;
+
+		for (let week = 0; week < totalWeeks; week++) {
+			// Obtener el mes actual
+			const monthKey = currentDate
+				.toLocaleString("es-AR", {
+					month: "long",
+				})
+				.toUpperCase();
+
+			// Si cambió el mes, crear nuevo mes
+			if (monthKey !== currentMonth) {
+				currentMonth = monthKey;
+				monthData = {
+					label: monthKey,
+					weeks: [],
+				};
+				data.push(monthData);
+			}
+
+			// Agregar la semana al mes actual
+			monthData.weeks.push({
+				weekNum: weekCounter++,
+				startPercentage: (week * 100) / totalWeeks,
+				startDate: new Date(currentDate),
+			});
+
+			// Avanzar a la siguiente semana
+			currentDate.setDate(currentDate.getDate() + 7);
 		}
+
 		return data;
 	};
 
 	const timelineData = generateTimelineData();
 
-	// Calcular la altura dinámica basada en el número máximo de filas
 	const maxRow =
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
@@ -204,7 +255,7 @@ const PaymentTimeline = ({ investors }) => {
 					ref={timelineRef}
 					className="relative bg-gray-300 rounded-lg cursor-crosshair"
 					style={{
-						minWidth: `${Math.max(100, totalMonths * 8)}%`,
+						minWidth: `${Math.max(100, totalWeeks * 2)}%`,
 						height: `${timelineHeight}px`,
 					}}
 					onClick={handleClick}
@@ -216,7 +267,9 @@ const PaymentTimeline = ({ investors }) => {
 							<div
 								key={i}
 								className="text-center uppercase flex-grow"
-								style={{ width: `${(400 / totalWeeks) * 4}%` }}
+								style={{
+									width: `${(month.weeks.length * 100) / totalWeeks}%`,
+								}}
 							>
 								{month.label}
 							</div>
@@ -225,10 +278,10 @@ const PaymentTimeline = ({ investors }) => {
 
 					{/* Week labels and dividers */}
 					<div className="absolute w-full flex px-2 bottom-2 text-xs text-gray-500">
-						{timelineData.map((month) =>
+						{timelineData.flatMap((month) =>
 							month.weeks.map((week, weekIndex) => (
 								<div
-									key={`${month.label}-${week.weekNum}`}
+									key={`week-${week.weekNum}`}
 									className="text-center relative"
 									style={{ width: `${100 / totalWeeks}%` }}
 								>
