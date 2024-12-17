@@ -456,7 +456,7 @@ const PaymentTimeline = ({ investors }) => {
 		ranges.length > 0
 			? Math.max(...ranges.map((range) => range.row), previewRow)
 			: previewRow;
-	const timelineHeight = Math.max(120, (maxRow + 1) * 64 + 80);
+	const timelineHeight = Math.max(120, (maxRow + 1) * 64 + 85);
 
 	return (
 		<div className="font-coolvetica ">
