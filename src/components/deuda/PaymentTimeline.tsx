@@ -44,13 +44,6 @@ const TimelineRange = ({
 	);
 };
 
-const WeekDivider = ({ left }) => (
-	<div
-		className="absolute h-full w-px bg-gray-400 bg-opacity-30"
-		style={{ left: `${left}%` }}
-	/>
-);
-
 const PaymentTimeline = ({ investors }) => {
 	const [ranges, setRanges] = useState([]);
 	const [isSelecting, setIsSelecting] = useState(false);
@@ -282,8 +275,7 @@ const PaymentTimeline = ({ investors }) => {
 									className="text-center relative"
 									style={{ width: `${100 / totalWeeks}%` }}
 								>
-									<span className="text-[10px]">{week.weekNum}</span>
-									<WeekDivider left={100} />
+									<span className="text-xs">{week.weekNum}</span>
 								</div>
 							))
 						)}
