@@ -57,19 +57,38 @@ const PaymentTimeline = ({ investors }) => {
 
 	// Flatten all investments with their investor information
 	const allInvestments = investors.flatMap((investor) =>
-		investor.investments.map((investment) => ({
-			...investment,
-			investorId: investor.id,
-		}))
+		investor.investments.map((investment, index) => {
+			// Convertir todas las fechas a objetos Date
+			const convertedInvestment = {
+				...investment,
+				deadline:
+					investment.deadline instanceof Date
+						? investment.deadline
+						: investment.deadline?.toDate(),
+				inicioEstimado:
+					investment.inicioEstimado instanceof Date
+						? investment.inicioEstimado
+						: investment.inicioEstimado?.toDate(),
+				finEstimado:
+					investment.finEstimado instanceof Date
+						? investment.finEstimado
+						: investment.finEstimado?.toDate(),
+				investorId: investor.id,
+				investmentIndex: index,
+				totalInvestments: investor.investments.length,
+			};
+			return convertedInvestment;
+		})
 	);
 
-	const calculateRow = (newStart, newEnd) => {
+	const calculateRow = (newStart, newEnd, excludeIndex = -1) => {
 		const rows = ranges.map((range) => range.row || 0);
 		let row = 0;
 
 		while (true) {
 			const hasOverlap = ranges.some(
-				(range) =>
+				(range, index) =>
+					index !== excludeIndex &&
 					range.row === row &&
 					((newStart >= range.start && newStart <= range.end) ||
 						(newEnd >= range.start && newEnd <= range.end) ||
@@ -112,6 +131,57 @@ const PaymentTimeline = ({ investors }) => {
 		date.setDate(startDate.getDate() + daysToAdd);
 		return date.toLocaleDateString("es-AR");
 	};
+
+	const calculatePositionForInvestment = (investment) => {
+		if (!investment.inicioEstimado || !investment.finEstimado) return null;
+
+		const inicioEstimado =
+			investment.inicioEstimado instanceof Date
+				? investment.inicioEstimado
+				: investment.inicioEstimado.toDate();
+
+		const finEstimado =
+			investment.finEstimado instanceof Date
+				? investment.finEstimado
+				: investment.finEstimado.toDate();
+
+		const start =
+			((inicioEstimado.getTime() - startDate.getTime()) /
+				(totalWeeks * 7 * 24 * 60 * 60 * 1000)) *
+			100;
+		const end =
+			((finEstimado.getTime() - startDate.getTime()) /
+				(totalWeeks * 7 * 24 * 60 * 60 * 1000)) *
+			100;
+
+		return { start, end };
+	};
+
+	// Initialize ranges from existing investments with inicioEstimado and finEstimado
+	useEffect(() => {
+		const initialRanges = allInvestments
+			.filter((inv) => inv.inicioEstimado && inv.finEstimado)
+			.map((investment) => {
+				const position = calculatePositionForInvestment(investment);
+				if (!position) return null;
+
+				return {
+					start: position.start,
+					end: position.end,
+					investment,
+					row: 0, // Temporary row assignment
+				};
+			})
+			.filter(Boolean);
+
+		// Assign proper rows to prevent overlapping
+		const rangesWithRows = initialRanges.map((range) => ({
+			...range,
+			row: calculateRow(range.start, range.end),
+		}));
+
+		setRanges(rangesWithRows);
+	}, [investors]);
 
 	const getPercentageFromMouseEvent = (e) => {
 		if (!timelineRef.current) return 0;
@@ -219,6 +289,27 @@ const PaymentTimeline = ({ investors }) => {
 	};
 
 	const deleteRange = (index) => {
+		const rangeToDelete = ranges[index];
+		const investor = investors.find(
+			(inv) => inv.id === rangeToDelete.investment.investorId
+		);
+
+		if (investor) {
+			const investment =
+				investor.investments[rangeToDelete.investment.investmentIndex];
+			const updatedInvestment = {
+				...investment,
+				inicioEstimado: null,
+				finEstimado: null,
+			};
+
+			updateInversion({
+				investorId: rangeToDelete.investment.investorId,
+				oldInvestment: investment,
+				newInvestment: updatedInvestment,
+			});
+		}
+
 		setRanges(ranges.filter((_, i) => i !== index));
 	};
 
