@@ -198,62 +198,54 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					</div>
 				</div>
 
-				<form onSubmit={handleSubmit} className="space-y-4">
-					<div className="space-y-4">
+				<form onSubmit={handleSubmit} className="space-y-2 font-coolvetica">
+					<div className="space-y-8">
 						{!investor && (
 							<>
 								<div>
-									<label className="block text-sm font-medium text-gray-700">
-										Tipo de Inversión
-									</label>
-									<div className="mt-2 flex gap-4">
+									<div className="mt-2 flex gap-2">
 										<button
 											type="button"
-											className={`px-4 py-2 rounded-md text-sm flex-1 ${
+											className={` h-10 rounded-md font-bold flex-1 ${
 												isNewInvestor
 													? "bg-black text-white"
-													: "bg-gray-100 text-gray-700"
+													: "bg-gray-300 text-black"
 											}`}
 											onClick={() => setIsNewInvestor(true)}
 										>
-											Nuevo Inversor
+											Nuevo
 										</button>
 										<button
 											type="button"
-											className={`px-4 py-2 rounded-md text-sm flex-1 ${
+											className={` h-10 rounded-md font-bold flex-1 ${
 												!isNewInvestor
 													? "bg-black text-white"
-													: "bg-gray-100 text-gray-700"
+													: "bg-gray-300 text-black"
 											}`}
 											onClick={() => setIsNewInvestor(false)}
 										>
-											Inversor Existente
+											Existente
 										</button>
 									</div>
 								</div>
 
 								{isNewInvestor ? (
 									<div>
-										<label className="block text-sm font-medium text-gray-700">
-											Nombre del Inversor
-										</label>
 										<input
 											type="text"
 											value={nombreInversor}
+											placeholder="Nombre del inversor"
 											onChange={(e) => setNombreInversor(e.target.value)}
-											className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+											className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm"
 											required
 										/>
 									</div>
 								) : (
 									<div>
-										<label className="block text-sm font-medium text-gray-700">
-											Seleccionar Inversor
-										</label>
 										<select
 											value={selectedInvestorId}
 											onChange={(e) => setSelectedInvestorId(e.target.value)}
-											className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+											className=" block w-full h-10 rounded-md bg-gray-300 px-4 appearance-none shadow-sm  text-sm"
 											required
 										>
 											<option value="">Seleccionar...</option>
@@ -270,14 +262,12 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Monto
-						</label>
 						<input
+							placeholder="Monto"
 							type="number"
 							value={monto}
 							onChange={(e) => setMonto(e.target.value)}
-							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+							className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm"
 							required
 						/>
 					</div>
