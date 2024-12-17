@@ -4,6 +4,14 @@ import { es } from "date-fns/locale";
 import { updateInversion } from "../../firebase/Inversion";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
+const formatInvestorName = (name: string) => {
+	const parts = name.split(" ");
+	if (parts.length > 1) {
+		return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
+	}
+	return name;
+};
+
 const TimelineRange = ({
 	start,
 	end,
@@ -26,8 +34,9 @@ const TimelineRange = ({
 		>
 			<div className="w-full flex items-center justify-between">
 				<span className="text-white text-xs truncate">
-					{investment.investorId} ({investment.investmentIndex + 1}/
-					{investment.totalInvestments}): {investment.monto} {investment.moneda}
+					{formatInvestorName(investment.investorId)} (
+					{investment.investmentIndex + 1}/{investment.totalInvestments}):{" "}
+					{investment.monto} {investment.moneda}
 				</span>
 				<button
 					onClick={(e) => {
@@ -572,7 +581,10 @@ const PaymentTimeline = ({ investors }) => {
 								if (availableInvestments.length === 0) return null;
 
 								return (
-									<optgroup key={investor.id} label={investor.id}>
+									<optgroup
+										key={investor.id}
+										label={formatInvestorName(investor.id)}
+									>
 										{availableInvestments.map((investment) => (
 											<option
 												key={`${investor.id}-${investment.originalIndex}`}
@@ -583,7 +595,8 @@ const PaymentTimeline = ({ investors }) => {
 													totalInvestments: investor.investments.length,
 												})}
 											>
-												{investor.id} ({investment.originalIndex + 1}/
+												{formatInvestorName(investor.id)} (
+												{investment.originalIndex + 1}/
 												{investor.investments.length}): {investment.monto}{" "}
 												{investment.moneda} -{" "}
 												{new Date(investment.deadline).toLocaleDateString(
