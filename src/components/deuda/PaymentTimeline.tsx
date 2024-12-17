@@ -24,6 +24,7 @@ const TimelineRange = ({
 	return (
 		<div
 			className="absolute h-16 mx-4 bg-black items-center rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
+			// acaaaaaaaaaaa
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -514,6 +515,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
+								// acaaaaaaaaaaaaaaaaa
 								className="absolute h-16  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
@@ -524,7 +526,7 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
-									top: `${previewRow * 64 + 68}px`,
+									top: `${previewRow * 64 + 74}px`,
 									transform: "translateY(-50%)",
 								}}
 							>
