@@ -273,30 +273,24 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Moneda
-						</label>
 						<select
 							value={moneda}
 							onChange={(e) => setMoneda(e.target.value)}
-							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+							className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm appearance-none"
 							required
 						>
-							<option value="USD">USD</option>
 							<option value="ARS">ARS</option>
+							<option value="USD">USD</option>
 							<option value="EUR">EUR</option>
 						</select>
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Deadline
-						</label>
 						<input
 							type="date"
 							value={deadline}
 							onChange={(e) => setDeadline(e.target.value)}
-							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+							className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm"
 							required
 						/>
 					</div>
@@ -304,7 +298,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					<button
 						type="submit"
 						disabled={loading}
-						className="w-full bg-black text-white rounded-lg py-2 px-4 hover:bg-gray-800 transition-colors disabled:bg-gray-400"
+						className="w-full bg-black h-20 text-gray-100 font-bold rounded-lg text-3xl hover:bg-gray-800 transition-colors disabled:bg-gray-400"
 					>
 						{loading ? (
 							<div className="flex justify-center">
@@ -315,9 +309,9 @@ const InversionModal: React.FC<InversionModalProps> = ({
 								</div>
 							</div>
 						) : investor ? (
-							"Actualizar Inversión"
+							"Actualizar"
 						) : (
-							"Agregar Inversión"
+							"Agregar"
 						)}
 					</button>
 				</form>
