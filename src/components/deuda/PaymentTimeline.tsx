@@ -82,12 +82,17 @@ const PaymentTimeline = ({ investors }) => {
 		})
 	);
 
-	const calculateRow = (newStart, newEnd, excludeIndex = -1) => {
-		const rows = ranges.map((range) => range.row || 0);
+	const calculateRow = (
+		newStart,
+		newEnd,
+		excludeIndex = -1,
+		existingRanges = ranges
+	) => {
 		let row = 0;
+		const maxRow = 50; // Límite de seguridad para evitar bucles infinitos
 
-		while (true) {
-			const hasOverlap = ranges.some(
+		while (row < maxRow) {
+			const hasOverlap = existingRanges.some(
 				(range, index) =>
 					index !== excludeIndex &&
 					range.row === row &&
@@ -101,6 +106,8 @@ const PaymentTimeline = ({ investors }) => {
 			}
 			row++;
 		}
+
+		return 0; // Fallback por seguridad
 	};
 
 	const getStartDate = () => {
@@ -169,15 +176,29 @@ const PaymentTimeline = ({ investors }) => {
 					start: position.start,
 					end: position.end,
 					investment,
-					row: 0,
 				};
 			})
 			.filter(Boolean);
 
-		const rangesWithRows = initialRanges.map((range) => ({
-			...range,
-			row: calculateRow(range.start, range.end),
-		}));
+		// Ordenar las barras por fecha de inicio para asegurar consistencia
+		const sortedRanges = [...initialRanges].sort((a, b) => a.start - b.start);
+
+		// Asignar filas secuencialmente, verificando solapamientos
+		const rangesWithRows = sortedRanges.reduce((acc, range) => {
+			const row = calculateRow(
+				range.start,
+				range.end,
+				-1,
+				acc.map((r) => ({ start: r.start, end: r.end, row: r.row }))
+			);
+
+			acc.push({
+				...range,
+				row,
+			});
+
+			return acc;
+		}, []);
 
 		setRanges(rangesWithRows);
 	}, [investors]);
