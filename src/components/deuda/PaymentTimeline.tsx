@@ -21,6 +21,13 @@ const TimelineRange = ({ start, end, investor, onDelete }) => {
 	);
 };
 
+const WeekDivider = ({ left }) => (
+	<div
+		className="absolute h-full w-px bg-gray-400 bg-opacity-30"
+		style={{ left: `${left}%` }}
+	/>
+);
+
 const PaymentTimeline = ({ investors }) => {
 	const [ranges, setRanges] = useState([]);
 	const [isSelecting, setIsSelecting] = useState(false);
@@ -47,16 +54,22 @@ const PaymentTimeline = ({ investors }) => {
 		let months = (end.getFullYear() - today.getFullYear()) * 12;
 		months -= today.getMonth();
 		months += end.getMonth();
-		return months + 1; // Add 1 to include the current month
+		return months + 1;
 	};
 
 	const totalMonths = monthDiff(latestDeadline);
+	const totalWeeks = totalMonths * 4; // 4 weeks per month
 
 	const getPercentageFromMouseEvent = (e) => {
 		if (!timelineRef.current) return 0;
 		const rect = timelineRef.current.getBoundingClientRect();
 		const x = e.clientX - rect.left;
-		return Math.max(0, Math.min(100, (x / rect.width) * 100));
+		const rawPercentage = (x / rect.width) * 100;
+
+		// Snap to nearest week
+		const weekWidth = 100 / totalWeeks;
+		const weekIndex = Math.round(rawPercentage / weekWidth);
+		return Math.max(0, Math.min(100, weekIndex * weekWidth));
 	};
 
 	const handleClick = (e) => {
@@ -70,7 +83,7 @@ const PaymentTimeline = ({ investors }) => {
 			});
 		} else {
 			setIsSelecting(false);
-			if (Math.abs(currentSelection.end - currentSelection.start) > 5) {
+			if (Math.abs(currentSelection.end - currentSelection.start) > 2) {
 				setShowInvestorSelect(true);
 			} else {
 				setCurrentSelection({ start: 0, end: 0 });
@@ -108,37 +121,73 @@ const PaymentTimeline = ({ investors }) => {
 	};
 
 	// Generate months array dynamically
-	const months = [];
-	for (let i = 0; i < totalMonths; i++) {
-		const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
-		months.push(
-			date.toLocaleString("default", { month: "short", year: "2-digit" })
-		);
-	}
+	const generateTimelineData = () => {
+		const data = [];
+		for (let i = 0; i < totalMonths; i++) {
+			const date = new Date(today.getFullYear(), today.getMonth() + i, 1);
+			const month = {
+				label: date.toLocaleString("default", {
+					month: "short",
+					year: "2-digit",
+				}),
+				weeks: [1, 2, 3, 4].map((week) => ({
+					weekNum: week,
+					startPercentage: (i * 4 + (week - 1)) * (100 / totalWeeks),
+				})),
+			};
+			data.push(month);
+		}
+		return data;
+	};
+
+	const timelineData = generateTimelineData();
 
 	return (
 		<div className="font-coolvetica">
 			<p className="text-xs text-black mb-2">
 				Haz click para iniciar la selección, mueve el mouse y vuelve a hacer
-				click para terminar
+				click para terminar. La selección se ajustará automáticamente a las
+				semanas.
 			</p>
 
 			<div className="overflow-x-auto">
 				<div
 					ref={timelineRef}
-					className="relative h-10 bg-gray-300 rounded-lg cursor-crosshair"
+					className="relative h-16 bg-gray-300 rounded-lg cursor-crosshair"
 					style={{ minWidth: `${Math.max(100, totalMonths * 8)}%` }}
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					<div className="absolute w-full flex justify-between px-2 top-1 text-xs text-gray-600">
-						{months.map((month, i) => (
-							<div key={i} className="text-center" style={{ width: "40px" }}>
-								{month}
+					{/* Month labels */}
+					<div className="absolute w-full flex px-2 top-1 text-xs text-gray-600">
+						{timelineData.map((month, i) => (
+							<div
+								key={i}
+								className="text-center flex-grow border-l border-gray-400 border-opacity-30"
+								style={{ width: `${(400 / totalWeeks) * 4}%` }}
+							>
+								{month.label}
 							</div>
 						))}
 					</div>
 
+					{/* Week labels and dividers */}
+					<div className="absolute w-full flex px-2 top-6 text-xs text-gray-500">
+						{timelineData.map((month) =>
+							month.weeks.map((week, weekIndex) => (
+								<div
+									key={`${month.label}-${week.weekNum}`}
+									className="text-center relative"
+									style={{ width: `${100 / totalWeeks}%` }}
+								>
+									<span className="text-[10px]">S{week.weekNum}</span>
+									<WeekDivider left={100} />
+								</div>
+							))
+						)}
+					</div>
+
+					{/* Ranges */}
 					{ranges.map((range, i) => (
 						<TimelineRange
 							key={i}
@@ -149,13 +198,19 @@ const PaymentTimeline = ({ investors }) => {
 						/>
 					))}
 
+					{/* Selection preview */}
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-blue-500 bg-opacity-50 rounded-lg"
+								className="absolute h-16 bg-blue-500 bg-opacity-50 rounded-lg"
 								style={{
-									left: `${currentSelection.start}%`,
-									width: `${currentSelection.end - currentSelection.start}%`,
+									left: `${Math.min(
+										currentSelection.start,
+										currentSelection.end
+									)}%`,
+									width: `${Math.abs(
+										currentSelection.end - currentSelection.start
+									)}%`,
 									minWidth: "20px",
 								}}
 							/>
