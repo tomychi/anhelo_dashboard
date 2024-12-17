@@ -423,7 +423,7 @@ const InvestorGroup: React.FC<{
 			{isExpanded &&
 				sortedInvestments.map((investment, index) => (
 					<tr key={index} className="text-black font-light h-10">
-						<td className="pl-4 w-1/4 font-light">{index + 1}</td>
+						<td className="pl-4 w-1/4 font-light">{index + 1}.</td>
 						<td className="pl-4 w-1/4 font-light">
 							{currencyFormat(investment.monto)}
 						</td>
