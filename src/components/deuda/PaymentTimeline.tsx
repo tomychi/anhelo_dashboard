@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { updateInversion } from "../../firebase/Inversion";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const TimelineRange = ({
 	start,
@@ -55,7 +56,7 @@ const PaymentTimeline = ({ investors }) => {
 	const [previewRow, setPreviewRow] = useState(0);
 	const timelineRef = useRef(null);
 
-	// Flatten all investments with their investor information
+	// Flatten all investments with their investor information and convert dates
 	const allInvestments = investors.flatMap((investor) =>
 		investor.investments.map((investment, index) => {
 			// Convertir todas las fechas a objetos Date
@@ -157,7 +158,6 @@ const PaymentTimeline = ({ investors }) => {
 		return { start, end };
 	};
 
-	// Initialize ranges from existing investments with inicioEstimado and finEstimado
 	useEffect(() => {
 		const initialRanges = allInvestments
 			.filter((inv) => inv.inicioEstimado && inv.finEstimado)
@@ -169,12 +169,11 @@ const PaymentTimeline = ({ investors }) => {
 					start: position.start,
 					end: position.end,
 					investment,
-					row: 0, // Temporary row assignment
+					row: 0,
 				};
 			})
 			.filter(Boolean);
 
-		// Assign proper rows to prevent overlapping
 		const rangesWithRows = initialRanges.map((range) => ({
 			...range,
 			row: calculateRow(range.start, range.end),
@@ -237,7 +236,6 @@ const PaymentTimeline = ({ investors }) => {
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
 
-			// Calcular las fechas de inicio y fin basadas en los porcentajes
 			const totalDays = totalWeeks * 7;
 			const startDays = Math.floor((start / 100) * totalDays);
 			const endDays = Math.floor((end / 100) * totalDays);
@@ -248,7 +246,6 @@ const PaymentTimeline = ({ investors }) => {
 			const finEstimado = new Date(startDate);
 			finEstimado.setDate(startDate.getDate() + endDays);
 
-			// Actualizar la inversión en Firebase
 			const investor = investors.find(
 				(inv) => inv.id === selectedInvestment.investorId
 			);
@@ -288,26 +285,34 @@ const PaymentTimeline = ({ investors }) => {
 		}
 	};
 
-	const deleteRange = (index) => {
+	const deleteRange = async (index) => {
 		const rangeToDelete = ranges[index];
 		const investor = investors.find(
 			(inv) => inv.id === rangeToDelete.investment.investorId
 		);
 
 		if (investor) {
-			const investment =
-				investor.investments[rangeToDelete.investment.investmentIndex];
-			const updatedInvestment = {
-				...investment,
-				inicioEstimado: null,
-				finEstimado: null,
+			const allInvestments = [...investor.investments];
+			const investmentIndex = rangeToDelete.investment.investmentIndex;
+
+			// Actualizamos la inversión específica en el array
+			allInvestments[investmentIndex] = {
+				deadline: allInvestments[investmentIndex].deadline,
+				moneda: allInvestments[investmentIndex].moneda,
+				monto: allInvestments[investmentIndex].monto,
 			};
 
-			updateInversion({
-				investorId: rangeToDelete.investment.investorId,
-				oldInvestment: investment,
-				newInvestment: updatedInvestment,
-			});
+			// Actualizamos todo el documento con el nuevo array de inversiones
+			const firestore = getFirestore();
+			const inversionDoc = doc(firestore, "inversion", investor.id);
+
+			try {
+				await setDoc(inversionDoc, {
+					investments: allInvestments,
+				});
+			} catch (error) {
+				console.error("Error al actualizar las inversiones:", error);
+			}
 		}
 
 		setRanges(ranges.filter((_, i) => i !== index));
@@ -370,7 +375,6 @@ const PaymentTimeline = ({ investors }) => {
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					{/* Month labels */}
 					<div className="absolute w-full flex px-2 top-3 text-xs text-gray-600">
 						{timelineData.map((month, i) => (
 							<div
@@ -385,7 +389,6 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					{/* Week labels */}
 					<div className="absolute w-full flex px-2 bottom-2 text-xs text-gray-500">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
@@ -400,7 +403,6 @@ const PaymentTimeline = ({ investors }) => {
 						)}
 					</div>
 
-					{/* Existing ranges */}
 					{ranges.map((range, i) => (
 						<TimelineRange
 							key={i}
@@ -414,7 +416,6 @@ const PaymentTimeline = ({ investors }) => {
 						/>
 					))}
 
-					{/* Selection preview */}
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
@@ -456,7 +457,6 @@ const PaymentTimeline = ({ investors }) => {
 								return;
 							}
 							const parsed = JSON.parse(e.target.value);
-							// Convertir la fecha de nuevo a objeto Date
 							parsed.deadline = new Date(parsed.deadline);
 							setSelectedInvestment(parsed);
 						}}
@@ -465,8 +465,6 @@ const PaymentTimeline = ({ investors }) => {
 						<option value="">Seleccionar inversión</option>
 						{investors
 							.map((investor) => {
-								// Filtrar inversiones que ya están en el timeline
-								// Agregar índice original a cada inversión
 								const investmentsWithIndices = investor.investments.map(
 									(investment, originalIndex) => ({
 										...investment,
@@ -474,11 +472,9 @@ const PaymentTimeline = ({ investors }) => {
 									})
 								);
 
-								// Filtrar manteniendo el índice original
 								const availableInvestments = investmentsWithIndices.filter(
 									(investment) => {
 										return !ranges.some((range) => {
-											// Asegurarse de que las fechas sean objetos Date
 											const rangeDeadline = new Date(range.investment.deadline);
 											const investmentDeadline = new Date(investment.deadline);
 
@@ -492,7 +488,6 @@ const PaymentTimeline = ({ investors }) => {
 									}
 								);
 
-								// Solo mostrar el optgroup si hay inversiones disponibles
 								if (availableInvestments.length === 0) return null;
 
 								return (
