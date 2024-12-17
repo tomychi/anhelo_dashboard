@@ -43,7 +43,7 @@ const TimelineRange = ({
 						day: "numeric",
 						month: "numeric",
 					})}{" "}
-					-
+					-{" "}
 					{investment.finEstimado?.toLocaleDateString("es-AR", {
 						day: "numeric",
 						month: "numeric",
