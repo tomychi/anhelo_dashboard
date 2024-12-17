@@ -409,10 +409,7 @@ const InvestorGroup: React.FC<{
 				className="text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50"
 				onClick={() => setIsExpanded(!isExpanded)}
 			>
-				<th
-					scope="row"
-					className="pl-4 w-1/4 font-light flex flex-row items-center gap-2"
-				>
+				<th scope="row" className="pl-4 w-1/4 font-light">
 					{formatInvestorName(investor.id)}
 				</th>
 				<td className="pl-4 w-1/4 font-light">
