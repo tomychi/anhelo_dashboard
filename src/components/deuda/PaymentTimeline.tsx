@@ -23,7 +23,7 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-12 bg-black rounded-lg flex flex-col items-start justify-center px-2 cursor-pointer"
+			className="absolute h-12 bg-black  rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -32,33 +32,32 @@ const TimelineRange = ({
 				transform: "translateY(-50%)",
 			}}
 		>
-			<div className="w-full flex items-center justify-between">
+			<div className="w-full flex  flex-col justify-start">
 				<span className="text-white text-xs truncate">
 					{formatInvestorName(investment.investorId)}
-					<br />({investment.investmentIndex + 1}/{investment.totalInvestments}
-					): ${investment.monto} {investment.moneda}
+					<br />${investment.monto} {investment.moneda}
 				</span>
-				<button
-					onClick={(e) => {
-						e.stopPropagation();
-						onDelete();
-					}}
-					className="text-white hover:text-red-300 text-xs"
-				>
-					×
-				</button>
+				<div className="text-white text-xs opacity-75">
+					{investment.inicioEstimado?.toLocaleDateString("es-AR", {
+						day: "numeric",
+						month: "numeric",
+					})}{" "}
+					-
+					{investment.finEstimado?.toLocaleDateString("es-AR", {
+						day: "numeric",
+						month: "numeric",
+					})}
+				</div>
 			</div>
-			<div className="text-white text-[10px] opacity-75">
-				{investment.inicioEstimado?.toLocaleDateString("es-AR", {
-					day: "numeric",
-					month: "numeric",
-				})}{" "}
-				-
-				{investment.finEstimado?.toLocaleDateString("es-AR", {
-					day: "numeric",
-					month: "numeric",
-				})}
-			</div>
+			<button
+				onClick={(e) => {
+					e.stopPropagation();
+					onDelete();
+				}}
+				className="text-gray-100 text-xs"
+			>
+				×
+			</button>
 		</div>
 	);
 };
