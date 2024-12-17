@@ -475,7 +475,7 @@ const PaymentTimeline = ({ investors }) => {
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className="text-center  flex-grow font-bold"
+								className=" pl-4 flex-grow font-bold"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
@@ -515,7 +515,6 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								// acaaaaaaaaaaaaaaaaa
 								className="absolute h-16  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
