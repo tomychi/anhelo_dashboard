@@ -164,11 +164,11 @@ const PaymentTimeline = ({ investors }) => {
 					onMouseMove={handleMouseMove}
 				>
 					{/* Month labels */}
-					<div className="absolute w-full flex px-2 top-1 text-xs text-gray-600">
+					<div className="absolute w-full flex px-2 top-2 text-xs text-gray-600">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className="text-center flex-grow border-l border-gray-400 border-opacity-30"
+								className="text-center uppercase flex-grow border-l border-gray-400 border-opacity-30"
 								style={{ width: `${(400 / totalWeeks) * 4}%` }}
 							>
 								{month.label}
