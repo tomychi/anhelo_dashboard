@@ -132,7 +132,7 @@ const PaymentTimeline = ({ investors }) => {
 		for (let i = 0; i < totalMonths; i++) {
 			const date = new Date(firstDay.getFullYear(), firstDay.getMonth() + i, 1);
 			const month = {
-				label: `1 ${date
+				label: `${date
 					.toLocaleString("es-AR", {
 						month: "long",
 					})
@@ -166,11 +166,11 @@ const PaymentTimeline = ({ investors }) => {
 					onMouseMove={handleMouseMove}
 				>
 					{/* Month labels */}
-					<div className="absolute w-full flex px-2 top-2 text-xs text-gray-600">
+					<div className="absolute w-full flex px-2 top-3 text-xs text-gray-600">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className="text-center uppercase flex-grow border-l border-gray-400 border-opacity-30"
+								className="text-center uppercase flex-grow"
 								style={{ width: `${(400 / totalWeeks) * 4}%` }}
 							>
 								{month.label}
