@@ -34,10 +34,12 @@ const TimelineRange = ({
 			}}
 		>
 			<div className="w-full flex  flex-col justify-start">
-				<span className="text-white text-xs truncate">
+				<p className="text-white font-bold text-xs truncate">
 					{formatInvestorName(investment.investorId)}
-					<br />${investment.monto} {investment.moneda}
-				</span>
+				</p>
+				<p className="text-white text-xs opacity-75">
+					${investment.monto} {investment.moneda}
+				</p>
 				<div className="text-white text-xs opacity-75">
 					{investment.inicioEstimado?.toLocaleDateString("es-AR", {
 						day: "numeric",
