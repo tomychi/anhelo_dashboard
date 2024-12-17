@@ -147,9 +147,8 @@ const PaymentTimeline = ({ investors }) => {
 					<select
 						value={selectedInvestor}
 						onChange={(e) => setSelectedInvestor(e.target.value)}
-						className="block w-full p-2 border rounded-md mb-2"
+						className="block w-full px-4 h-10 bg-gray-300 appearance-none border rounded-md mb-2"
 					>
-						<option value="">Seleccionar inversor...</option>
 						{investors.map((investor) => (
 							<option key={investor.id} value={investor.id}>
 								{investor.id}
@@ -160,7 +159,7 @@ const PaymentTimeline = ({ investors }) => {
 						<button
 							onClick={addRange}
 							disabled={!selectedInvestor}
-							className="bg-black text-white px-4 py-2 rounded-md disabled:bg-gray-300"
+							className="bg-black flex-1 h-20 font-bold text-2xl text-white px-4 py-2 rounded-md "
 						>
 							Confirmar
 						</button>
@@ -169,7 +168,7 @@ const PaymentTimeline = ({ investors }) => {
 								setShowInvestorSelect(false);
 								setCurrentSelection({ start: 0, end: 0 });
 							}}
-							className="bg-gray-200 px-4 py-2 rounded-md"
+							className="bg-gray-300 text-red-main h-20 flex-1 font-bold text-2xl px-4 py-2 rounded-md"
 						>
 							Cancelar
 						</button>
