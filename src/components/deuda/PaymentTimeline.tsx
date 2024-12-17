@@ -1,9 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 
-const TimelineRange = ({ start, end, investor, onDelete, row }) => {
+const TimelineRange = ({
+	start,
+	end,
+	investor,
+	onDelete,
+	row,
+	startDate,
+	totalWeeks,
+}) => {
+	const formatDate = (percentage) => {
+		const totalDays = totalWeeks * 7;
+		const daysToAdd = Math.floor((percentage / 100) * totalDays);
+		const date = new Date(startDate);
+		date.setDate(startDate.getDate() + daysToAdd);
+		return date.toLocaleDateString("es-AR");
+	};
+
 	return (
 		<div
-			className="absolute h-10 bg-black rounded-lg flex items-center justify-between px-2 cursor-pointer"
+			className="absolute h-10 bg-black rounded-lg flex flex-col items-start justify-center px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -12,13 +28,18 @@ const TimelineRange = ({ start, end, investor, onDelete, row }) => {
 				transform: "translateY(-50%)",
 			}}
 		>
-			<span className="text-white text-xs truncate">{investor}</span>
-			<button
-				onClick={onDelete}
-				className="text-white hover:text-red-300 text-xs"
-			>
-				×
-			</button>
+			<div className="w-full flex items-center justify-between">
+				<span className="text-white text-xs truncate">{investor}</span>
+				<button
+					onClick={onDelete}
+					className="text-white hover:text-red-300 text-xs"
+				>
+					×
+				</button>
+			</div>
+			<div className="text-white text-[10px] opacity-75">
+				{formatDate(start)} - {formatDate(end)}
+			</div>
 		</div>
 	);
 };
@@ -42,7 +63,6 @@ const PaymentTimeline = ({ investors }) => {
 	const [previewRow, setPreviewRow] = useState(0);
 	const timelineRef = useRef(null);
 
-	// Función para calcular la fila para una barra
 	const calculateRow = (newStart, newEnd) => {
 		const rows = ranges.map((range) => range.row || 0);
 		let row = 0;
@@ -63,19 +83,17 @@ const PaymentTimeline = ({ investors }) => {
 		}
 	};
 
-	// Obtener el primer día de la semana (lunes) del mes actual
 	const getStartDate = () => {
 		const date = new Date();
-		date.setDate(1); // Ir al primer día del mes
-		const day = date.getDay(); // 0 = domingo, 1 = lunes, ...
-		const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
+		date.setDate(1);
+		const day = date.getDay();
+		const diff = date.getDate() - day + (day === 0 ? -6 : 1);
 		date.setDate(diff);
 		return date;
 	};
 
 	const startDate = getStartDate();
 
-	// Calcular el último día basado en la última fecha límite
 	const latestDeadline = investors.reduce((latest, investor) => {
 		const investorLatest = Math.max(
 			...investor.investments.map((inv) => inv.deadline.getTime())
@@ -83,7 +101,6 @@ const PaymentTimeline = ({ investors }) => {
 		return Math.max(latest, investorLatest);
 	}, startDate.getTime());
 
-	// Calcular el número total de semanas
 	const weekDiff = (start, end) => {
 		const msInWeek = 1000 * 60 * 60 * 24 * 7;
 		return Math.ceil((end - start) / msInWeek);
@@ -91,13 +108,17 @@ const PaymentTimeline = ({ investors }) => {
 
 	const totalWeeks = weekDiff(startDate.getTime(), latestDeadline);
 
-	// Función para convertir porcentaje a fecha
 	const percentageToDate = (percentage) => {
 		const totalDays = totalWeeks * 7;
 		const daysToAdd = Math.floor((percentage / 100) * totalDays);
 		const date = new Date(startDate);
 		date.setDate(startDate.getDate() + daysToAdd);
 		return date;
+	};
+
+	const formatDate = (percentage) => {
+		const date = percentageToDate(percentage);
+		return date.toLocaleDateString("es-AR");
 	};
 
 	const getPercentageFromMouseEvent = (e) => {
@@ -154,26 +175,6 @@ const PaymentTimeline = ({ investors }) => {
 			const end = Math.max(currentSelection.start, currentSelection.end);
 			const row = calculateRow(start, end);
 
-			// Convertir porcentajes a fechas
-			const startDate = percentageToDate(start);
-			const endDate = percentageToDate(end);
-
-			const formatDate = (date) => {
-				const dayName = date.toLocaleDateString("es-AR", { weekday: "long" });
-				const formattedDate = date.toLocaleDateString("es-AR");
-				return `${dayName} ${formattedDate}`;
-			};
-
-			console.log("Rango de fechas seleccionado:", {
-				inicio: formatDate(startDate),
-				fin: formatDate(endDate),
-				semanas: {
-					inicio: Math.floor((start / 100) * totalWeeks) + 1,
-					fin: Math.floor((end / 100) * totalWeeks) + 1,
-				},
-				porcentajes: { start, end },
-			});
-
 			setRanges([
 				...ranges,
 				{
@@ -203,14 +204,12 @@ const PaymentTimeline = ({ investors }) => {
 		let monthData = null;
 
 		for (let week = 0; week < totalWeeks; week++) {
-			// Obtener el mes actual
 			const monthKey = currentDate
 				.toLocaleString("es-AR", {
 					month: "long",
 				})
 				.toUpperCase();
 
-			// Si cambió el mes, crear nuevo mes
 			if (monthKey !== currentMonth) {
 				currentMonth = monthKey;
 				monthData = {
@@ -220,14 +219,12 @@ const PaymentTimeline = ({ investors }) => {
 				data.push(monthData);
 			}
 
-			// Agregar la semana al mes actual
 			monthData.weeks.push({
 				weekNum: weekCounter++,
 				startPercentage: (week * 100) / totalWeeks,
 				startDate: new Date(currentDate),
 			});
 
-			// Avanzar a la siguiente semana
 			currentDate.setDate(currentDate.getDate() + 7);
 		}
 
@@ -301,6 +298,8 @@ const PaymentTimeline = ({ investors }) => {
 							investor={range.investor}
 							onDelete={() => deleteRange(i)}
 							row={range.row}
+							startDate={startDate}
+							totalWeeks={totalWeeks}
 						/>
 					))}
 
@@ -308,7 +307,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestorSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-10 bg-black bg-opacity-50 rounded-lg"
+								className="absolute h-10 bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -321,7 +320,17 @@ const PaymentTimeline = ({ investors }) => {
 									top: `${previewRow * 40 + 60}px`,
 									transform: "translateY(-50%)",
 								}}
-							/>
+							>
+								<div className="text-white text-[10px] opacity-75">
+									{formatDate(
+										Math.min(currentSelection.start, currentSelection.end)
+									)}{" "}
+									-{" "}
+									{formatDate(
+										Math.max(currentSelection.start, currentSelection.end)
+									)}
+								</div>
+							</div>
 						)}
 				</div>
 			</div>
