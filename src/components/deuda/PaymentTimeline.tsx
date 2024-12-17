@@ -23,7 +23,7 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-16  bg-black  rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
+			className="absolute h-16  bg-black items-center rounded-lg flex flex-row  justify-between px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -54,7 +54,7 @@ const TimelineRange = ({
 					e.stopPropagation();
 					onDelete();
 				}}
-				className="text-gray-100 text-xs"
+				className="text-gray-100 font-bold text-xs"
 			>
 				×
 			</button>
