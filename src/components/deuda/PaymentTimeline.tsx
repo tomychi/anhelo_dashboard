@@ -8,6 +8,8 @@ const TimelineRange = ({ start, end, investor, onDelete }) => {
 				left: `${start}%`,
 				width: `${end - start}%`,
 				minWidth: "100px",
+				top: "50%",
+				transform: "translateY(-50%)",
 			}}
 		>
 			<span className="text-white text-xs truncate">{investor}</span>
@@ -217,6 +219,8 @@ const PaymentTimeline = ({ investors }) => {
 										currentSelection.end - currentSelection.start
 									)}%`,
 									minWidth: "20px",
+									top: "50%",
+									transform: "translateY(-50%)",
 								}}
 							/>
 						)}
