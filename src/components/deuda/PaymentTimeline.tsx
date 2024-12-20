@@ -61,10 +61,10 @@ const ScrollableTimeline = ({ children }) => {
 				<div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
 					<button
 						onClick={() => scroll("left")}
-						className="bg-black bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-r-lg animate-pulse"
+						className="bg-gray-100 bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-r-lg animate-pulse"
 						aria-label="Scroll left"
 					>
-						<img src={arrow} className="h-2 invert rotate-180" alt="" />
+						<img src={arrow} className="h-2  rotate-180" alt="" />
 					</button>
 				</div>
 			)}
@@ -74,10 +74,10 @@ const ScrollableTimeline = ({ children }) => {
 				<div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
 					<button
 						onClick={() => scroll("right")}
-						className="bg-black bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-l-lg animate-pulse"
+						className="bg-gray-100 bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-l-lg animate-pulse"
 						aria-label="Scroll right"
 					>
-						<img src={arrow} className="h-2 invert " alt="" />
+						<img src={arrow} className="h-2  " alt="" />
 					</button>
 				</div>
 			)}
