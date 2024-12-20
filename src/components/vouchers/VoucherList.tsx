@@ -238,16 +238,11 @@ const VoucherModal = ({
 
 				<div className="flex flex-col">
 					<div className="mb-4">
-						<label className="block text-sm font-medium text-gray-700">
-							Número de códigos por voucher:
-						</label>
 						<input
 							type="number"
-							min="1"
-							max="10"
-							value={numCodes}
+							placeholder="Cantidad de codigos por voucher"
 							onChange={handleNumCodesChange}
-							className="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+							className="w-full h-10 bg-gray-300 px-4 text-center font-coolvetica rounded-md"
 						/>
 					</div>
 
@@ -260,7 +255,7 @@ const VoucherModal = ({
 							/>
 						</div>
 						<div className="w-2/5">
-							<h2 className="text-sm">
+							<h2 className="text-xs">
 								{clickPositions.length < numCodes
 									? `Haz clic en la imagen para elegir la ubicación del código ${
 											clickPositions.length + 1
@@ -310,7 +305,7 @@ const VoucherModal = ({
 										clipRule="evenodd"
 									/>
 								</svg>
-								<p className="text-2xl">Selecciona todas las posiciones</p>
+								<p className="text-2xl">Falta posicionar</p>
 							</div>
 						)}
 					</button>
