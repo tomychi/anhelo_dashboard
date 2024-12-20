@@ -4,6 +4,7 @@ import {
 	getInversiones,
 	createInversion,
 	updateInversion,
+	markInvestmentAsPaid,
 	type Investor,
 	type Investment,
 } from "../firebase/Inversion";
@@ -31,6 +32,33 @@ const InversionModal: React.FC<InversionModalProps> = ({
 	const [deadline, setDeadline] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [inversores, setInversores] = useState<Investor[]>([]);
+
+	// Add a handleMarkAsPaid function inside the InversionModal component
+	const handleMarkAsPaid = async () => {
+		if (!investor || !selectedInvestment) return;
+		setLoading(true);
+
+		try {
+			const newInvestment = {
+				...selectedInvestment,
+				paid: !selectedInvestment.paid, // Toggle el estado de paid
+			};
+
+			await updateInversion({
+				investorId: investor.id,
+				oldInvestment: selectedInvestment,
+				newInvestment: newInvestment,
+			});
+
+			onClose();
+			window.location.reload();
+		} catch (error) {
+			console.error("Error al cambiar estado de pago:", error);
+			alert("Error al cambiar estado de pago");
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	useEffect(() => {
 		if (isOpen) {
@@ -296,6 +324,32 @@ const InversionModal: React.FC<InversionModalProps> = ({
 						/>
 					</div>
 
+					{investor && selectedInvestment && (
+						<button
+							type="button"
+							onClick={handleMarkAsPaid}
+							disabled={loading}
+							className={`w-full h-12 text-white font-bold rounded-lg text-xl transition-colors mb-4 ${
+								selectedInvestment.paid
+									? "bg-red-600 hover:bg-red-700"
+									: "bg-green-600 hover:bg-green-700"
+							}`}
+						>
+							{loading ? (
+								<div className="flex justify-center">
+									<div className="flex flex-row gap-1">
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-75"></div>
+										<div className="w-2 h-2 bg-white rounded-full animate-pulse delay-150"></div>
+									</div>
+								</div>
+							) : selectedInvestment.paid ? (
+								"Marcar como NO pagado"
+							) : (
+								"Marcar como pagado"
+							)}
+						</button>
+					)}
 					<button
 						type="submit"
 						disabled={loading}

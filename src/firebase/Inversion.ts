@@ -16,6 +16,7 @@ export interface Investment {
 	moneda: string;
 	inicioEstimado?: Date;
 	finEstimado?: Date;
+	paid?: boolean;
 }
 
 export interface Investor {
@@ -150,6 +151,37 @@ export const updateInversion = async (
 		console.log("✅ Inversión actualizada exitosamente");
 	} catch (error) {
 		console.error("❌ Error al actualizar la inversión:", error);
+		throw error;
+	}
+};
+
+export const markInvestmentAsPaid = async (
+	params: UpdateInvestment
+): Promise<void> => {
+	const firestore = getFirestore();
+	const inversionDoc = doc(firestore, "inversion", params.investorId);
+
+	try {
+		console.log("🔄 Marcando inversión como pagada para:", params.investorId);
+
+		if (params.oldInvestment) {
+			await updateDoc(inversionDoc, {
+				investments: arrayRemove(params.oldInvestment),
+			});
+		}
+
+		const paidInvestment = {
+			...params.newInvestment,
+			paid: true,
+		};
+
+		await updateDoc(inversionDoc, {
+			investments: arrayUnion(paidInvestment),
+		});
+
+		console.log("✅ Inversión marcada como pagada exitosamente");
+	} catch (error) {
+		console.error("❌ Error al marcar la inversión como pagada:", error);
 		throw error;
 	}
 };
