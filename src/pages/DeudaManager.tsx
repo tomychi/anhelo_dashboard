@@ -314,7 +314,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 							<p className="font-bold text-sm">Pagado?</p>
 							<div
 								className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-									isPaid ? "bg-black" : "bg-gray-300"
+									isPaid ? "bg-green-500" : "bg-gray-300"
 								}`}
 								onClick={handleTogglePaid}
 							>
