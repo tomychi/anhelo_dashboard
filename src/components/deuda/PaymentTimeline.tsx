@@ -106,7 +106,7 @@ const TimelineRange = ({
 	return (
 		<div
 			className={`absolute h-20 mx-4 justify-center items-center rounded-lg flex flex-col px-2 cursor-pointer ${
-				investment.paid ? "bg-green-600" : "bg-black"
+				investment.paid ? "bg-green-500" : "bg-black"
 			}`}
 			style={{
 				left: `${start}%`,
