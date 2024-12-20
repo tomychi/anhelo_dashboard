@@ -7,8 +7,7 @@ import {
 } from "../../firebase/voucher";
 import { jsPDF } from "jspdf";
 import { projectAuth } from "../../firebase/config";
-
-import voucherImg from "../../assets/Voucher.jpg";
+import voucherImg from "../../assets/Voucher2x1 x5.jpg";
 import arrow from "../../assets/arrowIcon.png";
 import { NavLink } from "react-router-dom";
 
@@ -34,27 +33,21 @@ const TableLoadingRow = () => {
 	);
 };
 
-const VoucherModal: React.FC<{
-	isOpen: boolean;
-	onClose: () => void;
-	canvasRef: React.RefObject<HTMLCanvasElement>;
-	handleCanvasClick: (event: React.MouseEvent<HTMLCanvasElement>) => void;
-	clickPosition: { x: number; y: number } | null;
-	generateVoucherPDF: () => Promise<void>;
-	loading: boolean;
-}> = ({
+const VoucherModal = ({
 	isOpen,
 	onClose,
 	canvasRef,
 	handleCanvasClick,
-	clickPosition,
+	clickPositions,
 	generateVoucherPDF,
 	loading,
+	numCodes,
+	setNumCodes,
 }) => {
 	const [isAnimating, setIsAnimating] = useState(false);
-	const [dragStart, setDragStart] = useState<number | null>(null);
+	const [dragStart, setDragStart] = useState(null);
 	const [currentTranslate, setCurrentTranslate] = useState(0);
-	const modalRef = useRef<HTMLDivElement>(null);
+	const modalRef = useRef(null);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -86,15 +79,12 @@ const VoucherModal: React.FC<{
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-			if (clickPosition) {
-				drawClickPosition(ctx, clickPosition);
-			}
+			clickPositions.forEach((pos, index) => {
+				drawClickPosition(ctx, pos, index + 1);
+			});
 		};
 
-		const drawClickPosition = (
-			ctx: CanvasRenderingContext2D,
-			pos: { x: number; y: number }
-		) => {
+		const drawClickPosition = (ctx, pos, number) => {
 			ctx.save();
 
 			const rectWidth = 70;
@@ -107,7 +97,6 @@ const VoucherModal: React.FC<{
 			const rectX = centerX - rectWidth / 2;
 			const rectY = centerY - rectHeight / 2;
 
-			// Draw rounded rectangle
 			ctx.beginPath();
 			ctx.moveTo(rectX + borderRadius, rectY);
 			ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
@@ -142,7 +131,7 @@ const VoucherModal: React.FC<{
 			ctx.font = "medium 10px Coolvetica";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
-			ctx.fillText("Preview", centerX, centerY);
+			ctx.fillText(`Preview ${number}`, centerX, centerY);
 
 			ctx.restore();
 		};
@@ -155,34 +144,28 @@ const VoucherModal: React.FC<{
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
-	}, [isOpen, clickPosition]);
+	}, [isOpen, clickPositions]);
 
-	const handleTouchStart = (e: React.TouchEvent) => {
+	const handleTouchStart = (e) => {
 		setDragStart(e.touches[0].clientY);
 	};
 
-	const handleMouseDown = (e: React.MouseEvent) => {
+	const handleMouseDown = (e) => {
 		setDragStart(e.clientY);
 	};
 
-	const handleTouchMove = (e: React.TouchEvent) => {
+	const handleTouchMove = (e) => {
 		if (dragStart === null) return;
-
 		const currentPosition = e.touches[0].clientY;
 		const difference = currentPosition - dragStart;
-
 		if (difference < 0) return;
-
 		setCurrentTranslate(difference);
 	};
 
-	const handleMouseMove = (e: React.MouseEvent) => {
+	const handleMouseMove = (e) => {
 		if (dragStart === null) return;
-
 		const difference = e.clientY - dragStart;
-
 		if (difference < 0) return;
-
 		setCurrentTranslate(difference);
 	};
 
@@ -210,6 +193,13 @@ const VoucherModal: React.FC<{
 			window.removeEventListener("touchend", handleDragEnd);
 		};
 	}, [dragStart, currentTranslate]);
+
+	const handleNumCodesChange = (e) => {
+		const value = parseInt(e.target.value);
+		if (value > 0 && value <= 10) {
+			setNumCodes(value);
+		}
+	};
 
 	if (!isOpen) return null;
 
@@ -247,6 +237,20 @@ const VoucherModal: React.FC<{
 				</div>
 
 				<div className="flex flex-col">
+					<div className="mb-4">
+						<label className="block text-sm font-medium text-gray-700">
+							Número de códigos por voucher:
+						</label>
+						<input
+							type="number"
+							min="1"
+							max="10"
+							value={numCodes}
+							onChange={handleNumCodesChange}
+							className="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm"
+						/>
+					</div>
+
 					<div className="flex flex-row gap-4 items-center">
 						<div className="w-3/5">
 							<canvas
@@ -257,18 +261,29 @@ const VoucherModal: React.FC<{
 						</div>
 						<div className="w-2/5">
 							<h2 className="text-sm">
-								{clickPosition
-									? "Posición seleccionada. Haz clic de nuevo para cambiarla."
-									: "Haz clic en la imagen para elegir la ubicación del código"}
+								{clickPositions.length < numCodes
+									? `Haz clic en la imagen para elegir la ubicación del código ${
+											clickPositions.length + 1
+									  } de ${numCodes}`
+									: "Todas las posiciones seleccionadas. Haz clic de nuevo para cambiarlas."}
 							</h2>
+							{clickPositions.length > 0 && (
+								<div className="mt-2">
+									<p className="text-xs text-gray-500">
+										Posiciones seleccionadas: {clickPositions.length}/{numCodes}
+									</p>
+								</div>
+							)}
 						</div>
 					</div>
 
 					<button
 						onClick={generateVoucherPDF}
-						disabled={!clickPosition || loading}
+						disabled={clickPositions.length !== numCodes || loading}
 						className={`font-bold rounded-lg text-center h-20 mt-4 text-xl text-gray-100 ${
-							clickPosition ? "bg-black hover:bg-gray-800" : "bg-gray-400"
+							clickPositions.length === numCodes
+								? "bg-black hover:bg-gray-800"
+								: "bg-gray-400"
 						} w-full transition-colors`}
 					>
 						{loading ? (
@@ -279,7 +294,7 @@ const VoucherModal: React.FC<{
 									<div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
 								</div>
 							</div>
-						) : clickPosition ? (
+						) : clickPositions.length === numCodes ? (
 							"Descargar PDF"
 						) : (
 							<div className="flex flex-row justify-center items-center gap-2">
@@ -295,7 +310,7 @@ const VoucherModal: React.FC<{
 										clipRule="evenodd"
 									/>
 								</svg>
-								<p className="text-2xl">Descargar PDF</p>
+								<p className="text-2xl">Selecciona todas las posiciones</p>
 							</div>
 						)}
 					</button>
@@ -305,18 +320,14 @@ const VoucherModal: React.FC<{
 	);
 };
 
-export const VoucherList: React.FC = () => {
-	const [voucherTitles, setVoucherTitles] = useState<VoucherTituloConFecha[]>(
-		[]
-	);
+export const VoucherList = () => {
+	const [voucherTitles, setVoucherTitles] = useState([]);
 	const [loading, setLoading] = useState(false);
-	const [selectedVoucher, setSelectedVoucher] = useState<string | null>(null);
-	const [clickPosition, setClickPosition] = useState<{
-		x: number;
-		y: number;
-	} | null>(null);
+	const [selectedVoucher, setSelectedVoucher] = useState(null);
+	const [clickPositions, setClickPositions] = useState([]);
 	const [showModal, setShowModal] = useState(false);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const [numCodes, setNumCodes] = useState(1);
+	const canvasRef = useRef(null);
 
 	useEffect(() => {
 		const fetchVouchers = async () => {
@@ -333,7 +344,7 @@ export const VoucherList: React.FC = () => {
 		fetchVouchers();
 	}, []);
 
-	const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+	const handleCanvasClick = (event) => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
@@ -344,18 +355,22 @@ export const VoucherList: React.FC = () => {
 		const x = (event.clientX - rect.left) * scaleX;
 		const y = (event.clientY - rect.top) * scaleY;
 
-		setClickPosition({ x, y });
+		setClickPositions((prev) => {
+			if (prev.length >= numCodes) {
+				return [{ x, y }];
+			}
+			return [...prev, { x, y }];
+		});
 	};
 
-	const handleVoucherSelect = (titulo: string) => {
+	const handleVoucherSelect = (titulo) => {
 		setSelectedVoucher(titulo);
 		setShowModal(true);
-		setClickPosition(null);
+		setClickPositions([]);
 	};
 
 	const generateVoucherPDF = async () => {
-		if (selectedVoucher && clickPosition) {
-			console.log("Generando PDF para el voucher:", selectedVoucher);
+		if (selectedVoucher && clickPositions.length === numCodes) {
 			setLoading(true);
 			try {
 				const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
@@ -386,10 +401,10 @@ export const VoucherList: React.FC = () => {
 				const pdfToCanvasScaleX = voucherWidth / canvas.width;
 				const pdfToCanvasScaleY = voucherHeight / canvas.height;
 
-				const pdfX = clickPosition.x * pdfToCanvasScaleX;
-				const pdfY = clickPosition.y * pdfToCanvasScaleY;
+				// Group codes by voucher
+				for (let i = 0; i < codigosCampana.length; i += numCodes) {
+					const codesForThisVoucher = codigosCampana.slice(i, i + numCodes);
 
-				codigosCampana.forEach((codigoData) => {
 					if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
 						doc.addPage();
 					}
@@ -399,24 +414,40 @@ export const VoucherList: React.FC = () => {
 						(Math.floor(voucherIndex / numColumns) % numRows) *
 						(voucherHeight + margin);
 
+					// Add the voucher image
 					doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
 
+					// Add voucher number
 					doc.setFont("helvetica", "bold");
 					doc.setFontSize(6);
 					doc.setTextColor(255, 255, 255);
-					doc.text(`${codigoData.num}`, x + voucherWidth - 2, y + 3, {
-						align: "right",
-					});
+					doc.text(
+						`${codesForThisVoucher[0].num}`,
+						x + voucherWidth - 2,
+						y + 3,
+						{
+							align: "right",
+						}
+					);
 
-					doc.setFontSize(8);
-					doc.setTextColor(0, 0, 0);
-					doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY, {
-						align: "center",
-						baseline: "middle",
+					// Add each code at its corresponding position
+					codesForThisVoucher.forEach((codigoData, index) => {
+						if (index < clickPositions.length) {
+							const position = clickPositions[index];
+							const pdfX = position.x * pdfToCanvasScaleX;
+							const pdfY = position.y * pdfToCanvasScaleY;
+
+							doc.setFontSize(8);
+							doc.setTextColor(0, 0, 0);
+							doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY, {
+								align: "center",
+								baseline: "middle",
+							});
+						}
 					});
 
 					voucherIndex++;
-				});
+				}
 
 				doc.save(`vouchers_${selectedVoucher}.pdf`);
 			} catch (error) {
@@ -427,7 +458,7 @@ export const VoucherList: React.FC = () => {
 			}
 		} else {
 			alert(
-				"Por favor, seleccione un voucher y la posición del código antes de generar el PDF."
+				"Por favor, seleccione un voucher y todas las posiciones de los códigos antes de generar el PDF."
 			);
 		}
 	};
@@ -472,7 +503,6 @@ export const VoucherList: React.FC = () => {
 
 	const currentUserEmail = projectAuth.currentUser?.email;
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
-	console.log("acaa", isMarketingUser);
 
 	return (
 		<div className="font-coolvetica">
@@ -515,7 +545,7 @@ export const VoucherList: React.FC = () => {
 									<td className="w-1/12 pl-4 font-light">
 										{formatearFecha(t.fecha)}
 									</td>
-									<td className="w-1/12 pl-4 font-light ">
+									<td className="w-1/12 pl-4 font-light">
 										<div className="flex flex-row items-center gap-2">
 											<p className="">{usedCount}</p>
 											<p
@@ -557,9 +587,9 @@ export const VoucherList: React.FC = () => {
 													className="h-6 text-black"
 												>
 													<path
-														fill-rule="evenodd"
+														fillRule="evenodd"
 														d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z"
-														clip-rule="evenodd"
+														clipRule="evenodd"
 													/>
 												</svg>
 											</button>
@@ -570,7 +600,7 @@ export const VoucherList: React.FC = () => {
 											state={{ campaignData: t }}
 											className="w-1/12 pl-4 pr-4 h-6 flex items-center"
 										>
-											<p className="text-5xl h-6 mb-10 ">...</p>
+											<p className="text-5xl h-6 mb-10">...</p>
 										</NavLink>
 									)}
 								</tr>
@@ -590,12 +620,17 @@ export const VoucherList: React.FC = () => {
 
 			<VoucherModal
 				isOpen={showModal}
-				onClose={() => setShowModal(false)}
+				onClose={() => {
+					setShowModal(false);
+					setClickPositions([]);
+				}}
 				canvasRef={canvasRef}
 				handleCanvasClick={handleCanvasClick}
-				clickPosition={clickPosition}
+				clickPositions={clickPositions}
 				generateVoucherPDF={generateVoucherPDF}
 				loading={loading}
+				numCodes={numCodes}
+				setNumCodes={setNumCodes}
 			/>
 		</div>
 	);
