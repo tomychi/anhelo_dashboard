@@ -421,14 +421,11 @@ export const VoucherList = () => {
 					doc.setFont("helvetica", "bold");
 					doc.setFontSize(6);
 					doc.setTextColor(255, 255, 255);
-					doc.text(
-						`${codesForThisVoucher[0].num}`,
-						x + voucherWidth - 2,
-						y + 3,
-						{
-							align: "right",
-						}
-					);
+					// Calculate the correct voucher number based on the group index
+					const voucherNumber = Math.floor(i / numCodes) + 1;
+					doc.text(`${voucherNumber}`, x + voucherWidth - 2, y + 3, {
+						align: "right",
+					});
 
 					// Add each code at its corresponding position
 					codesForThisVoucher.forEach((codigoData, index) => {
