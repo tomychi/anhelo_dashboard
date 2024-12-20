@@ -61,23 +61,10 @@ const ScrollableTimeline = ({ children }) => {
 				<div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
 					<button
 						onClick={() => scroll("left")}
-						className="bg-black bg-opacity-50 p-2 rounded-r-lg animate-pulse"
+						className="bg-black bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-r-lg animate-pulse"
 						aria-label="Scroll left"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							className="w-6 h-6 text-white"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M15 19l-7-7 7-7"
-							/>
-						</svg>
+						<img src={arrow} className="h-2 invert rotate-180" alt="" />
 					</button>
 				</div>
 			)}
@@ -87,23 +74,10 @@ const ScrollableTimeline = ({ children }) => {
 				<div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
 					<button
 						onClick={() => scroll("right")}
-						className="bg-black bg-opacity-50 p-2 rounded-l-lg animate-pulse"
+						className="bg-black bg-opacity-50 h-10 w-10 flex justify-center items-center rounded-l-lg animate-pulse"
 						aria-label="Scroll right"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							className="w-6 h-6 text-white"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M9 5l7 7-7 7"
-							/>
-						</svg>
+						<img src={arrow} className="h-2 invert " alt="" />
 					</button>
 				</div>
 			)}
