@@ -264,7 +264,7 @@ const VoucherModal = ({
 							</h2>
 							{clickPositions.length > 0 && (
 								<div className="mt-2">
-									<p className="text-xs text-gray-500">
+									<p className="text-xs text-opacity-40 text-black">
 										Posiciones seleccionadas: {clickPositions.length}/{numCodes}
 									</p>
 								</div>
