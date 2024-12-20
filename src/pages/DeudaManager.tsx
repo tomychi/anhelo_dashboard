@@ -310,17 +310,21 @@ const InversionModal: React.FC<InversionModalProps> = ({
 					</div>
 
 					{investor && selectedInvestment && (
-						<button
-							type="button"
-							onClick={handleTogglePaid}
-							className={`w-full h-12 text-white font-bold rounded-lg text-xl transition-colors mb-4 ${
-								isPaid
-									? "bg-red-600 hover:bg-red-700"
-									: "bg-green-600 hover:bg-green-700"
-							}`}
-						>
-							{isPaid ? "Marcar como NO pagado" : "Marcar como pagado"}
-						</button>
+						<div className="flex items-center justify-between mb-4">
+							<p className="font-bold text-sm">Pagado?</p>
+							<div
+								className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
+									isPaid ? "bg-black" : "bg-gray-300"
+								}`}
+								onClick={handleTogglePaid}
+							>
+								<div
+									className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+										isPaid ? "translate-x-6" : ""
+									}`}
+								/>
+							</div>
+						</div>
 					)}
 					<button
 						type="submit"
