@@ -105,7 +105,9 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-20 mx-4 justify-center bg-black items-center rounded-lg flex flex-col px-2 cursor-pointer"
+			className={`absolute h-20 mx-4 justify-center items-center rounded-lg flex flex-col px-2 cursor-pointer ${
+				investment.paid ? "bg-green-600" : "bg-black"
+			}`}
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -116,28 +118,34 @@ const TimelineRange = ({
 		>
 			<div className="w-full flex flex-col justify-start">
 				<div className="flex flex-row gap-1 mb-1">
-					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							onDelete();
-						}}
-						className="text-gray-100"
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="currentColor"
-							className="h-4"
+					{investment.paid ? (
+						<></>
+					) : (
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								onDelete();
+							}}
+							className="text-gray-100"
 						>
-							<path
-								fillRule="evenodd"
-								d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-								clipRule="evenodd"
-							/>
-						</svg>
-					</button>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-4"
+							>
+								<path
+									fillRule="evenodd"
+									d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+									clipRule="evenodd"
+								/>
+							</svg>
+						</button>
+					)}
+
 					<p className="text-white font-bold text-xs truncate">
 						{formatInvestorName(investment.investorId)}
+						{investment.paid && " (Pagado)"}
 					</p>
 				</div>
 				<p className="text-white text-xs opacity-75">
