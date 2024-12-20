@@ -472,7 +472,7 @@ const PaymentTimeline = ({ investors }) => {
 
 	return (
 		<div className="font-coolvetica">
-			<div className="overflow-x-auto  w-full border-b border-opacity-20 border-black">
+			<div className="overflow-x-auto  w-full ">
 				<div
 					ref={timelineRef}
 					className="relative cursor-crosshair"
@@ -500,7 +500,7 @@ const PaymentTimeline = ({ investors }) => {
 					</div>
 
 					{/* week label */}
-					<div className="absolute w-full flex bottom-0 text-xs text-black">
+					<div className="absolute w-full flex border-b border-opacity-20 border-black bottom-0 text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
