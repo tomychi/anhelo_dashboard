@@ -304,7 +304,7 @@ const InversionModal: React.FC<InversionModalProps> = ({
 							type="date"
 							value={deadline}
 							onChange={(e) => setDeadline(e.target.value)}
-							className=" block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm  text-sm"
+							className="block w-full h-10 rounded-md bg-gray-300 px-4 shadow-sm text-sm [&::-webkit-calendar-picker-indicator]:invert-[0.8]"
 							required
 						/>
 					</div>
