@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
+import arrow from "../../assets/arrowIcon.png";
 
 const formatInvestorName = (name) => {
 	const parts = name.split(" ");
@@ -9,6 +10,114 @@ const formatInvestorName = (name) => {
 		return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
 	}
 	return name;
+};
+
+// ScrollableTimeline wrapper component
+const ScrollableTimeline = ({ children }) => {
+	const [showLeftArrow, setShowLeftArrow] = useState(false);
+	const [showRightArrow, setShowRightArrow] = useState(false);
+	const scrollContainerRef = useRef(null);
+
+	const checkScrollPosition = () => {
+		const container = scrollContainerRef.current;
+		if (!container) return;
+
+		const hasHorizontalScroll = container.scrollWidth > container.clientWidth;
+		const isAtStart = container.scrollLeft <= 0;
+		const isAtEnd =
+			container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+
+		setShowLeftArrow(hasHorizontalScroll && !isAtStart);
+		setShowRightArrow(hasHorizontalScroll && !isAtEnd);
+	};
+
+	useEffect(() => {
+		const container = scrollContainerRef.current;
+		if (container) {
+			checkScrollPosition();
+			// Observe size changes
+			const resizeObserver = new ResizeObserver(checkScrollPosition);
+			resizeObserver.observe(container);
+
+			return () => resizeObserver.disconnect();
+		}
+	}, []);
+
+	const scroll = (direction) => {
+		const container = scrollContainerRef.current;
+		if (container) {
+			const scrollAmount = container.clientWidth * 0.75;
+			container.scrollBy({
+				left: direction === "left" ? -scrollAmount : scrollAmount,
+				behavior: "smooth",
+			});
+		}
+	};
+
+	return (
+		<div className="relative w-full">
+			{/* Left scroll indicator */}
+			{showLeftArrow && (
+				<div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+					<button
+						onClick={() => scroll("left")}
+						className="bg-black bg-opacity-50 p-2 rounded-r-lg animate-pulse"
+						aria-label="Scroll left"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							className="w-6 h-6 text-white"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M15 19l-7-7 7-7"
+							/>
+						</svg>
+					</button>
+				</div>
+			)}
+
+			{/* Right scroll indicator */}
+			{showRightArrow && (
+				<div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+					<button
+						onClick={() => scroll("right")}
+						className="bg-black bg-opacity-50 p-2 rounded-l-lg animate-pulse"
+						aria-label="Scroll right"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							className="w-6 h-6 text-white"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M9 5l7 7-7 7"
+							/>
+						</svg>
+					</button>
+				</div>
+			)}
+
+			{/* Main scroll container */}
+			<div
+				ref={scrollContainerRef}
+				className="overflow-x-auto w-full"
+				onScroll={checkScrollPosition}
+			>
+				{children}
+			</div>
+		</div>
+	);
 };
 
 const TimelineRange = ({
@@ -472,7 +581,7 @@ const PaymentTimeline = ({ investors }) => {
 
 	return (
 		<div className="font-coolvetica">
-			<div className="overflow-x-auto  w-full ">
+			<ScrollableTimeline>
 				<div
 					ref={timelineRef}
 					className="relative cursor-crosshair"
@@ -569,7 +678,7 @@ const PaymentTimeline = ({ investors }) => {
 							</div>
 						)}
 				</div>
-			</div>
+			</ScrollableTimeline>
 
 			{showInvestmentSelect && (
 				<div className="mt-4">
