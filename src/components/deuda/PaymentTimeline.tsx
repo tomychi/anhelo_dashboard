@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { updateInversion } from "../../firebase/Inversion";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-const formatInvestorName = (name: string) => {
+const formatInvestorName = (name) => {
 	const parts = name.split(" ");
 	if (parts.length > 1) {
 		return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
@@ -23,8 +22,7 @@ const TimelineRange = ({
 }) => {
 	return (
 		<div
-			className="absolute h-20 mx-4 justify-center bg-black items-center rounded-lg flex flex-col  px-2 cursor-pointer"
-			// acaaaaaaaaaaa
+			className="absolute h-20 mx-4 justify-center bg-black items-center rounded-lg flex flex-col px-2 cursor-pointer"
 			style={{
 				left: `${start}%`,
 				width: `${end - start}%`,
@@ -33,25 +31,25 @@ const TimelineRange = ({
 				transform: "translateY(-50%)",
 			}}
 		>
-			<div className="w-full flex  flex-col justify-start">
+			<div className="w-full flex flex-col justify-start">
 				<div className="flex flex-row gap-1 mb-1">
 					<button
 						onClick={(e) => {
 							e.stopPropagation();
 							onDelete();
 						}}
-						className="text-gray-100  "
+						className="text-gray-100"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
 							fill="currentColor"
-							className="h-4 "
+							className="h-4"
 						>
 							<path
-								fill-rule="evenodd"
+								fillRule="evenodd"
 								d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-								clip-rule="evenodd"
+								clipRule="evenodd"
 							/>
 						</svg>
 					</button>
@@ -187,7 +185,6 @@ const PaymentTimeline = ({ investors }) => {
 		return date;
 	};
 
-	// Rest of the component remains the same...
 	const startDate = getStartDate();
 
 	const latestDeadline = Math.max(
@@ -474,23 +471,24 @@ const PaymentTimeline = ({ investors }) => {
 	const timelineHeight = Math.max(120, (maxRow + 1) * 80 + 100);
 
 	return (
-		<div className="font-coolvetica ">
-			<div className="overflow-x-auto  border-b border-opacity-20 border-black w-full">
+		<div className="font-coolvetica">
+			<div className="overflow-x-auto  w-full border-b border-opacity-20 border-black">
 				<div
 					ref={timelineRef}
-					className="relative   cursor-crosshair"
+					className="relative cursor-crosshair"
 					style={{
-						minWidth: `${Math.max(100, totalWeeks * 2)}%`,
+						width: `${totalWeeks * 100}px`,
 						height: `${timelineHeight}px`,
 					}}
 					onClick={handleClick}
 					onMouseMove={handleMouseMove}
 				>
-					<div className="absolute w-full border-t  border-opacity-20 border-black flex    text-xs black">
+					{/* month label */}
+					<div className="absolute w-full border-t border-opacity-20 border-black flex text-xs black">
 						{timelineData.map((month, i) => (
 							<div
 								key={i}
-								className=" pl-4 flex-grow border-r h-2 pt-2 border-opacity-20 border-black font-bold"
+								className="pl-4 flex-grow border-r h-2 pt-2 border-opacity-20 border-black font-bold"
 								style={{
 									width: `${(month.weeks.length * 100) / totalWeeks}%`,
 								}}
@@ -501,13 +499,17 @@ const PaymentTimeline = ({ investors }) => {
 						))}
 					</div>
 
-					<div className="absolute w-full  flex bottom-0  text-xs text-black">
+					{/* week label */}
+					<div className="absolute w-full flex bottom-0 text-xs text-black">
 						{timelineData.flatMap((month) =>
 							month.weeks.map((week) => (
 								<div
 									key={`week-${week.weekNum}`}
-									className="pl-4 h-2 border-r  border-black border-opacity-20 relative"
-									style={{ width: `${96.5 / totalWeeks}%` }}
+									className="pl-4 h-2 border-r border-black border-opacity-20 relative"
+									style={{
+										width: `${100 / totalWeeks}%`,
+										minWidth: "100px",
+									}}
 								>
 									<span className="text-xs font-bold absolute bottom-[10px]">
 										s{week.weekNum}
@@ -516,6 +518,7 @@ const PaymentTimeline = ({ investors }) => {
 							))
 						)}
 					</div>
+
 					{ranges.map((range, i) => (
 						<TimelineRange
 							key={i}
@@ -532,7 +535,7 @@ const PaymentTimeline = ({ investors }) => {
 					{(isSelecting || showInvestmentSelect) &&
 						currentSelection.end - currentSelection.start > 0 && (
 							<div
-								className="absolute h-20  bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
+								className="absolute h-20 bg-black bg-opacity-50 rounded-lg flex flex-col justify-center px-2"
 								style={{
 									left: `${Math.min(
 										currentSelection.start,
@@ -546,15 +549,21 @@ const PaymentTimeline = ({ investors }) => {
 									transform: "translateY(-50%)",
 								}}
 							>
-								<div className="text-white text-xs opacity-75">
+								<div className="text-gray-100 text-xs opacity-75">
 									{formatDate(
 										Math.min(currentSelection.start, currentSelection.end),
-										{ day: "numeric", month: "numeric" }
+										{
+											day: "numeric",
+											month: "numeric",
+										}
 									)}{" "}
 									-{" "}
 									{formatDate(
 										Math.max(currentSelection.start, currentSelection.end),
-										{ day: "numeric", month: "numeric" }
+										{
+											day: "numeric",
+											month: "numeric",
+										}
 									)}
 								</div>
 							</div>
@@ -563,7 +572,7 @@ const PaymentTimeline = ({ investors }) => {
 			</div>
 
 			{showInvestmentSelect && (
-				<div className="">
+				<div className="mt-4">
 					<select
 						value={selectedInvestment ? JSON.stringify(selectedInvestment) : ""}
 						onChange={(e) => {
@@ -575,7 +584,7 @@ const PaymentTimeline = ({ investors }) => {
 							parsed.deadline = new Date(parsed.deadline);
 							setSelectedInvestment(parsed);
 						}}
-						className="w-full mt-2 px-4 h-10 bg-gray-300 appearance-none border rounded-md"
+						className="w-full px-4 h-10 bg-gray-300 appearance-none border rounded-md"
 					>
 						<option value="">Seleccionar inversión</option>
 						{investors
