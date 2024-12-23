@@ -420,17 +420,29 @@ export const crearVoucher = async (
 	const voucherDocRef = doc(firestore, "vouchers", titulo);
 
 	try {
+		console.log(`Iniciando generación de ${cant} códigos...`);
 		const codigos = await generarCodigos(cant);
+		console.log(`Códigos generados exitosamente`);
 
-		await setDoc(voucherDocRef, {
+		const docData = {
 			titulo,
 			fecha,
 			codigos,
 			creados: cant,
 			usados: 0,
-		});
+		};
+
+		console.log(`Intentando guardar en Firestore...`);
+		console.log(
+			`Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
+		);
+
+		await setDoc(voucherDocRef, docData);
+		console.log(`Documento guardado exitosamente`);
 	} catch (error) {
-		throw error;
+		console.error("Error detallado al crear voucher:", error);
+		// Re-lanzar el error con más información
+		throw new Error(`Error al crear voucher: ${error.message || error}`);
 	}
 };
 
