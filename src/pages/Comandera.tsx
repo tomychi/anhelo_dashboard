@@ -313,6 +313,13 @@ export const Comandera: React.FC = () => {
 			if (order.hora > obtenerHoraActual()) {
 				return false; // Este es un pedido de reserva
 			}
+			if (
+				order.deliveryMethod === "takeaway" ||
+				order.direccion ===
+					"Buenos Aires 618, X5800 Río Cuarto, Córdoba, Argentina"
+			) {
+				return false; // Excluir takeaway y dirección específica
+			}
 			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
 				return true;
 			}
@@ -371,10 +378,17 @@ export const Comandera: React.FC = () => {
 		});
 	}
 	const pedidosConDistancias = useMemo(() => {
-		let filteredPedidos = pedidosDisponibles;
+		let filteredPedidos = pedidosDisponibles.filter(
+			(pedido) =>
+				pedido.deliveryMethod !== "takeaway" &&
+				pedido.direccion !==
+					"Buenos Aires 618, X5800 Río Cuarto, Córdoba, Argentina"
+		);
+
 		if (onlyElaborated) {
-			filteredPedidos = pedidosDisponibles.filter((pedido) => pedido.elaborado);
+			filteredPedidos = filteredPedidos.filter((pedido) => pedido.elaborado);
 		}
+
 		return agregarDistanciasAPedidos(filteredPedidos);
 	}, [pedidosDisponibles, onlyElaborated]);
 
@@ -465,7 +479,9 @@ export const Comandera: React.FC = () => {
 					grupo.pedidos.some((p) => p.id === pedido.id)
 				) &&
 				isPedidoValid(pedido) &&
-				pedido.deliveryMethod !== "takeaway" // Filtrar pedidos takeaway
+				pedido.deliveryMethod !== "takeaway" && // Filtrar pedidos takeaway
+				pedido.direccion !==
+					"Buenos Aires 618, X5800 Río Cuarto, Córdoba, Argentina" // Filtrar dirección específica
 		);
 
 		const pedidosManuales = pedidos.filter(
