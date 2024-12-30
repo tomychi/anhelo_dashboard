@@ -1,5 +1,3 @@
-// ../components/Dashboard.tsx
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
@@ -55,6 +53,14 @@ export const Dashboard: React.FC = () => {
 	} = useSelector((state: RootState) => state.data);
 	const currentUserEmail = projectAuth.currentUser?.email;
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+
+	// Calculate delivery and takeaway counts
+	const deliveryCount = orders.filter(
+		(order) => order.deliveryMethod === "delivery"
+	).length;
+	const takeawayCount = orders.filter(
+		(order) => order.deliveryMethod === "takeaway"
+	).length;
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -401,14 +407,14 @@ export const Dashboard: React.FC = () => {
 		/>,
 		<CardInfo
 			key="delivery"
-			info={orders.length.toString()}
+			info={deliveryCount.toString()}
 			link={"ventas"}
 			title={"Ventas delivery"}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
 			key="takeaway"
-			info="-"
+			info={takeawayCount.toString()}
 			link={"ventas"}
 			title={"Ventas take away"}
 			isLoading={isLoading}
