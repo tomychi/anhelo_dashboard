@@ -1,27 +1,15 @@
-import React, { useEffect, useState } from "react";
 import { PedidoProps } from "../../types/types";
 import { CardComanda } from "./Card/CardComanda";
-import { ReadOrdersForToday } from "../../firebase/ReadData";
 
 interface OrderSectionProps {
+	orders: PedidoProps[];
 	cadetes: string[];
 }
 
-export const OrderSection: React.FC<OrderSectionProps> = ({ cadetes }) => {
-	const [orders, setOrders] = useState<PedidoProps[]>([]);
-
-	useEffect(() => {
-		// Suscribirse a los cambios en tiempo real
-		const unsubscribe = ReadOrdersForToday((updatedOrders) => {
-			setOrders(updatedOrders);
-		});
-
-		// Limpiar la suscripción cuando el componente se desmonte
-		return () => {
-			unsubscribe();
-		};
-	}, []);
-
+export const OrderSection: React.FC<OrderSectionProps> = ({
+	orders,
+	cadetes,
+}) => {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
 			{orders.map(

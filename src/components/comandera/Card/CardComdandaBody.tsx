@@ -9,49 +9,35 @@ export const CardComdandaBody = ({
 	aclaraciones,
 	detallePedido,
 }: CardComdandaBodyProps) => {
-	// Filter the products to show only non-extra items or confirmed extra items
-	const filteredPedido = detallePedido.filter(
-		(item) => !item.extra || (item.extra && item.isConfirmed)
-	);
-
 	return (
-		<div className="mt-8">
+		<div className=" mt-8">
 			{aclaraciones && (
-				<p className="w-full mt-8 bg-black pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
+				<p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
 					{aclaraciones}
 				</p>
 			)}
-			{filteredPedido.map(
+			{detallePedido.map(
 				(
 					{
 						burger,
 						toppings,
 						quantity,
-						extra,
-					}: {
-						burger: string;
-						toppings: string[];
-						quantity: number;
-						extra?: boolean;
-					},
+					}: { burger: string; toppings: string[]; quantity: number },
 					i: number
 				) => (
 					<div key={i} className="flex mt-4 items-center flex-col">
-						<p
-							className={`text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1 
-              ${extra ? "bg-purple-300" : ""}`}
-						>
+						<p className="text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1">
 							{quantity}X {burger}
 						</p>
 						<div>
-							<div className="flex flex-col items-center">
+							<div className="flex flex-col items-center ">
 								{toppings.map((topping: string, toppingIndex: number) => (
 									<span
 										key={`${topping}-${toppingIndex}`}
-										className={`text-2xl flex text-black font-black ${
+										className={`text-2xl flex  text-black font-black ${
 											topping.toLowerCase() === "huevo" ||
 											topping.toLowerCase() === "carne"
-												? "bg-black mt-4 text-2xl text-center text-green-500"
+												? "bg-black mt-4  text-2xl text-center text-green-500"
 												: ""
 										}`}
 									>

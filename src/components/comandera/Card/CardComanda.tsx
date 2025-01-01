@@ -80,36 +80,26 @@ export const CardComanda = ({
 		kms,
 		minutosDistancia,
 	};
-
 	const { user } = useSelector((state: RootState) => state.auth);
 	// Estado para almacenar la cantidad de minutos de demora
 	const [minutosDeDemora, setMinutosDeDemora] = useState(
 		obtenerDiferenciaHoraria(hora)
 	);
-
 	const [bgColor, setBgColor] = useState(obtenerColorTailwind(minutosDeDemora));
-
 	// Efecto para actualizar la cantidad de minutos de demora cada minuto
 	// Función para calcular y actualizar la cantidad de minutos de demora
 	const actualizarMinutosDeDemora = () => {
 		const nuevaDiferencia = obtenerDiferenciaHoraria(hora);
-
 		// Actualizar el estado de bg-color
 		setBgColor(obtenerColorTailwind(obtenerDiferenciaHorariaWithColor(hora)));
-
 		setMinutosDeDemora(nuevaDiferencia);
 	};
-
 	// Actualiza la cantidad de minutos de demora cada minuto
 	setInterval(actualizarMinutosDeDemora, 60000); // 60000 milisegundos = 1 minuto
-
 	useEffect(() => {
 		// Actualizar el estado de bg-color
 		setBgColor(obtenerColorTailwind(obtenerDiferenciaHorariaWithColor(hora)));
 	}, [hora]);
-
-	console.log("Comanda completa:", comanda);
-
 	return (
 		<div
 			className={`flex justify-center font-coolvetica uppercase flex-col max-w-sm overflow-hidden h-min p-4
@@ -126,7 +116,6 @@ export const CardComanda = ({
 				fecha={fecha}
 				minutosDeDemora={minutosDeDemora}
 			/>
-
 			<CardComandaInfo
 				direccion={direccion}
 				ubicacion={ubicacion}
@@ -146,19 +135,16 @@ export const CardComanda = ({
 				updateTiempoEntregaForOrder={updateTiempoEntregaForOrder}
 				entregado={entregado}
 			/>
-
 			<SelectCadete
 				elaborado={elaborado}
 				cadete={cadete}
 				fecha={fecha}
 				id={id}
 			/>
-
 			<CardComdandaBody
 				aclaraciones={aclaraciones}
 				detallePedido={detallePedido}
 			/>
-
 			<CardComandaFooter user={user} comanda={comanda} />
 		</div>
 	);
