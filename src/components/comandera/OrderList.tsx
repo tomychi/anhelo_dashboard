@@ -31,10 +31,9 @@ export const OrderList: React.FC<OrderListProps> = ({
 		});
 	};
 
-	// Observa cambios en la longitud del array de pedidos
 	useEffect(() => {
 		setPedidosOrdenados(reorderPedidos(pedidosPorHacer));
-	}, [pedidosPorHacer.length]); // Dependencia: solo la longitud del array
+	}, [pedidosPorHacer]); // Dependencia: el array completo para detectar cambios 'en tiempo real'
 
 	return (
 		<div>

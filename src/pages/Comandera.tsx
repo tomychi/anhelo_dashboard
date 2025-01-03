@@ -1448,93 +1448,93 @@ export const Comandera: React.FC = () => {
 
 	// Add these new states after the existing states
 
-	function armarGruposAutomaticos(
-		pedidos: PedidoProps[],
-		tiempoMaximoRecorrido: number | null, // Changed from tiempoMaximoAutomatico
-		pedidosPrioritariosAutomaticos: PedidoProps[],
-		setPedidosPrioritariosAutomaticos: React.Dispatch<
-			React.SetStateAction<PedidoProps[]>
-		>
-	): Grupo[] {
-		// First, automatically identify orders that need to be prioritized
-		let pedidosPrioritariosActualizados = [...pedidosPrioritariosAutomaticos];
+	// function armarGruposAutomaticos(
+	// 	pedidos: PedidoProps[],
+	// 	tiempoMaximoRecorrido: number | null, // Changed from tiempoMaximoAutomatico
+	// 	pedidosPrioritariosAutomaticos: PedidoProps[],
+	// 	setPedidosPrioritariosAutomaticos: React.Dispatch<
+	// 		React.SetStateAction<PedidoProps[]>
+	// 	>
+	// ): Grupo[] {
+	// 	// First, automatically identify orders that need to be prioritized
+	// 	let pedidosPrioritariosActualizados = [...pedidosPrioritariosAutomaticos];
 
-		// Add orders older than 20 minutes to priority list and update UI state
-		pedidos.forEach((pedido) => {
-			const tiempoEspera = calcularTiempoEspera(pedido.hora);
-			if (
-				tiempoEspera > 20 &&
-				!pedidosPrioritariosActualizados.some((p) => p.id === pedido.id)
-			) {
-				pedidosPrioritariosActualizados.push(pedido);
-				setPedidosPrioritariosAutomaticos((prev) => {
-					if (!prev.some((p) => p.id === pedido.id)) {
-						return [...prev, pedido];
-					}
-					return prev;
-				});
-			}
-		});
+	// 	// Add orders older than 20 minutes to priority list and update UI state
+	// 	pedidos.forEach((pedido) => {
+	// 		const tiempoEspera = calcularTiempoEspera(pedido.hora);
+	// 		if (
+	// 			tiempoEspera > 20 &&
+	// 			!pedidosPrioritariosActualizados.some((p) => p.id === pedido.id)
+	// 		) {
+	// 			pedidosPrioritariosActualizados.push(pedido);
+	// 			setPedidosPrioritariosAutomaticos((prev) => {
+	// 				if (!prev.some((p) => p.id === pedido.id)) {
+	// 					return [...prev, pedido];
+	// 				}
+	// 				return prev;
+	// 			});
+	// 		}
+	// 	});
 
-		const pedidosDisponiblesAuto = pedidos.filter(
-			(pedido) =>
-				!gruposAutomaticos.some((grupo) =>
-					grupo.pedidos.some((p) => p.id === pedido.id)
-				) && isPedidoValid(pedido)
-		);
+	// 	const pedidosDisponiblesAuto = pedidos.filter(
+	// 		(pedido) =>
+	// 			!gruposAutomaticos.some((grupo) =>
+	// 				grupo.pedidos.some((p) => p.id === pedido.id)
+	// 			) && isPedidoValid(pedido)
+	// 	);
 
-		if (pedidosDisponiblesAuto.length === 0) return [];
+	// 	if (pedidosDisponiblesAuto.length === 0) return [];
 
-		const gruposAutomaticosTemp: Grupo[] = [];
-		let pedidosRestantes = [...pedidosDisponiblesAuto];
+	// 	const gruposAutomaticosTemp: Grupo[] = [];
+	// 	let pedidosRestantes = [...pedidosDisponiblesAuto];
 
-		// Process prioritized orders first
-		while (pedidosPrioritariosActualizados.length > 0) {
-			const pedidoPrioritario = pedidosPrioritariosActualizados[0];
-			const grupo = formarGrupoAutomatico(
-				pedidosRestantes,
-				tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
-				[pedidoPrioritario]
-			);
-			gruposAutomaticosTemp.push(grupo);
+	// 	// Process prioritized orders first
+	// 	while (pedidosPrioritariosActualizados.length > 0) {
+	// 		const pedidoPrioritario = pedidosPrioritariosActualizados[0];
+	// 		const grupo = formarGrupoAutomatico(
+	// 			pedidosRestantes,
+	// 			tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
+	// 			[pedidoPrioritario]
+	// 		);
+	// 		gruposAutomaticosTemp.push(grupo);
 
-			pedidosRestantes = pedidosRestantes.filter(
-				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
-			);
-			pedidosPrioritariosActualizados = pedidosPrioritariosActualizados.filter(
-				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
-			);
-		}
+	// 		pedidosRestantes = pedidosRestantes.filter(
+	// 			(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+	// 		);
+	// 		pedidosPrioritariosActualizados = pedidosPrioritariosActualizados.filter(
+	// 			(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+	// 		);
+	// 	}
 
-		// Process remaining non-priority orders
-		while (pedidosRestantes.length > 0) {
-			const grupo = formarGrupoAutomatico(
-				pedidosRestantes,
-				tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
-				[]
-			);
-			gruposAutomaticosTemp.push(grupo);
-			pedidosRestantes = pedidosRestantes.filter(
-				(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
-			);
-		}
+	// 	// Process remaining non-priority orders
+	// 	while (pedidosRestantes.length > 0) {
+	// 		const grupo = formarGrupoAutomatico(
+	// 			pedidosRestantes,
+	// 			tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido here
+	// 			[]
+	// 		);
+	// 		gruposAutomaticosTemp.push(grupo);
+	// 		pedidosRestantes = pedidosRestantes.filter(
+	// 			(pedido) => !grupo.pedidos.some((p) => p.id === pedido.id)
+	// 		);
+	// 	}
 
-		return gruposAutomaticosTemp;
-	}
+	// 	return gruposAutomaticosTemp;
+	// }
 
 	function calcularTiempoPeorEntrega(
 		pedidos: PedidosGrupos[],
 		latitudInicio: number,
 		longitudInicio: number
 	): number {
-		console.log(
-			"\n🔄 Calculando tiempo de peor entrega para configuración:",
-			pedidos.map((p) => ({
-				id: p.id,
-				direccion: getFormattedAddress(p),
-				priorizado: p.priorizado,
-			}))
-		);
+		// console.log(
+		// 	"\n🔄 Calculando tiempo de peor entrega para configuración:",
+		// 	pedidos.map((p) => ({
+		// 		id: p.id,
+		// 		direccion: getFormattedAddress(p),
+		// 		priorizado: p.priorizado,
+		// 	}))
+		// );
 
 		let tiempoTotal = 0;
 		let latitudActual = latitudInicio;
@@ -1558,11 +1558,11 @@ export const Comandera: React.FC = () => {
 
 			if (tiempoPercibido > peorTiempoPercibido) {
 				peorTiempoPercibido = tiempoPercibido;
-				console.log(
-					`📊 Nuevo peor tiempo encontrado: ${Math.round(
-						peorTiempoPercibido
-					)} minutos para ${getFormattedAddress(pedido)}`
-				);
+				// console.log(
+				// 	`📊 Nuevo peor tiempo encontrado: ${Math.round(
+				// 		peorTiempoPercibido
+				// 	)} minutos para ${getFormattedAddress(pedido)}`
+				// );
 			}
 
 			latitudActual = pedido.map[0];
@@ -1572,224 +1572,224 @@ export const Comandera: React.FC = () => {
 		return peorTiempoPercibido;
 	}
 
-	function formarGrupoAutomatico(
-		pedidosDisponibles: PedidoProps[],
-		tiempoMaximoRecorrido: number | null,
-		pedidosPrioritarios: PedidoProps[]
-	): Grupo {
-		console.log("\n🚀 Iniciando formación de grupo automático");
-		console.log(`📦 Pedidos disponibles: ${pedidosDisponibles.length}`);
+	// function formarGrupoAutomatico(
+	// 	pedidosDisponibles: PedidoProps[],
+	// 	tiempoMaximoRecorrido: number | null,
+	// 	pedidosPrioritarios: PedidoProps[]
+	// ): Grupo {
+	// 	// console.log("\n🚀 Iniciando formación de grupo automático");
+	// 	// console.log(`📦 Pedidos disponibles: ${pedidosDisponibles.length}`);
 
-		// Función auxiliar para calcular KPIs de un grupo
-		const calcularKPIs = (grupo: PedidosGrupos[]) => {
-			const tiemposEntrega = grupo.map((pedido) => pedido.tiempoPercibido || 0);
-			const pedidosFueraTiempo = tiemposEntrega.filter(
-				(tiempo) => tiempo > 50
-			).length;
-			const customerSuccess =
-				((grupo.length - pedidosFueraTiempo) / grupo.length) * 100;
-			const tiempoPromedio =
-				tiemposEntrega.reduce((a, b) => a + b, 0) / grupo.length;
+	// 	// Función auxiliar para calcular KPIs de un grupo
+	// 	const calcularKPIs = (grupo: PedidosGrupos[]) => {
+	// 		const tiemposEntrega = grupo.map((pedido) => pedido.tiempoPercibido || 0);
+	// 		const pedidosFueraTiempo = tiemposEntrega.filter(
+	// 			(tiempo) => tiempo > 50
+	// 		).length;
+	// 		const customerSuccess =
+	// 			((grupo.length - pedidosFueraTiempo) / grupo.length) * 100;
+	// 		const tiempoPromedio =
+	// 			tiemposEntrega.reduce((a, b) => a + b, 0) / grupo.length;
 
-			return {
-				customerSuccess,
-				tiempoPromedio,
-			};
-		};
+	// 		return {
+	// 			customerSuccess,
+	// 			tiempoPromedio,
+	// 		};
+	// 	};
 
-		// Función para formar un grupo con un pedido inicial específico
-		const formarGrupoConInicio = (pedidoInicial: PedidoProps) => {
-			let grupoSimulado: PedidosGrupos[] = [];
-			let latitudActual = LATITUD_INICIO;
-			let longitudActual = LONGITUD_INICIO;
-			let tiempoTotalGrupo = 0;
-			let pedidosRestantes = pedidosDisponibles.filter(
-				(p) => p.id !== pedidoInicial.id
-			);
+	// 	// Función para formar un grupo con un pedido inicial específico
+	// 	const formarGrupoConInicio = (pedidoInicial: PedidoProps) => {
+	// 		let grupoSimulado: PedidosGrupos[] = [];
+	// 		let latitudActual = LATITUD_INICIO;
+	// 		let longitudActual = LONGITUD_INICIO;
+	// 		let tiempoTotalGrupo = 0;
+	// 		let pedidosRestantes = pedidosDisponibles.filter(
+	// 			(p) => p.id !== pedidoInicial.id
+	// 		);
 
-			// Agregar pedido inicial
-			const distanciaInicial = calcularDistancia(
-				latitudActual,
-				longitudActual,
-				pedidoInicial.map[0],
-				pedidoInicial.map[1]
-			);
-			const tiempoViajeInicial = (distanciaInicial / getVelocidadActual()) * 60;
-			const tiempoEsperaInicial = calcularTiempoEspera(pedidoInicial.hora);
-			const tiempoPercibidoInicial = tiempoEsperaInicial + tiempoViajeInicial;
+	// 		// Agregar pedido inicial
+	// 		const distanciaInicial = calcularDistancia(
+	// 			latitudActual,
+	// 			longitudActual,
+	// 			pedidoInicial.map[0],
+	// 			pedidoInicial.map[1]
+	// 		);
+	// 		const tiempoViajeInicial = (distanciaInicial / getVelocidadActual()) * 60;
+	// 		const tiempoEsperaInicial = calcularTiempoEspera(pedidoInicial.hora);
+	// 		const tiempoPercibidoInicial = tiempoEsperaInicial + tiempoViajeInicial;
 
-			grupoSimulado.push({
-				...pedidoInicial,
-				tiempoPercibido: Math.round(tiempoPercibidoInicial),
-			});
+	// 		grupoSimulado.push({
+	// 			...pedidoInicial,
+	// 			tiempoPercibido: Math.round(tiempoPercibidoInicial),
+	// 		});
 
-			tiempoTotalGrupo += tiempoViajeInicial;
-			latitudActual = pedidoInicial.map[0];
-			longitudActual = pedidoInicial.map[1];
+	// 		tiempoTotalGrupo += tiempoViajeInicial;
+	// 		latitudActual = pedidoInicial.map[0];
+	// 		longitudActual = pedidoInicial.map[1];
 
-			// Agregar resto de pedidos optimizando por distancia
-			while (pedidosRestantes.length > 0) {
-				let mejorPedido = null;
-				let mejorDistancia = Infinity;
+	// 		// Agregar resto de pedidos optimizando por distancia
+	// 		while (pedidosRestantes.length > 0) {
+	// 			let mejorPedido = null;
+	// 			let mejorDistancia = Infinity;
 
-				for (const pedido of pedidosRestantes) {
-					if (!isPedidoValid(pedido)) continue;
+	// 			for (const pedido of pedidosRestantes) {
+	// 				if (!isPedidoValid(pedido)) continue;
 
-					const distancia = calcularDistancia(
-						latitudActual,
-						longitudActual,
-						pedido.map[0],
-						pedido.map[1]
-					);
+	// 				const distancia = calcularDistancia(
+	// 					latitudActual,
+	// 					longitudActual,
+	// 					pedido.map[0],
+	// 					pedido.map[1]
+	// 				);
 
-					if (distancia < mejorDistancia) {
-						mejorDistancia = distancia;
-						mejorPedido = pedido;
-					}
-				}
+	// 				if (distancia < mejorDistancia) {
+	// 					mejorDistancia = distancia;
+	// 					mejorPedido = pedido;
+	// 				}
+	// 			}
 
-				if (!mejorPedido) break;
+	// 			if (!mejorPedido) break;
 
-				const tiempoViaje = (mejorDistancia / getVelocidadActual()) * 60;
-				const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
-				const tiempoPercibido = tiempoEspera + tiempoTotalGrupo + tiempoViaje;
+	// 			const tiempoViaje = (mejorDistancia / getVelocidadActual()) * 60;
+	// 			const tiempoEspera = calcularTiempoEspera(mejorPedido.hora);
+	// 			const tiempoPercibido = tiempoEspera + tiempoTotalGrupo + tiempoViaje;
 
-				grupoSimulado.push({
-					...mejorPedido,
-					tiempoPercibido: Math.round(tiempoPercibido),
-				});
+	// 			grupoSimulado.push({
+	// 				...mejorPedido,
+	// 				tiempoPercibido: Math.round(tiempoPercibido),
+	// 			});
 
-				tiempoTotalGrupo += tiempoViaje;
-				latitudActual = mejorPedido.map[0];
-				longitudActual = mejorPedido.map[1];
-				pedidosRestantes = pedidosRestantes.filter(
-					(p) => p.id !== mejorPedido!.id
-				);
-			}
+	// 			tiempoTotalGrupo += tiempoViaje;
+	// 			latitudActual = mejorPedido.map[0];
+	// 			longitudActual = mejorPedido.map[1];
+	// 			pedidosRestantes = pedidosRestantes.filter(
+	// 				(p) => p.id !== mejorPedido!.id
+	// 			);
+	// 		}
 
-			return grupoSimulado;
-		};
+	// 		return grupoSimulado;
+	// 	};
 
-		// Primero formar grupo base optimizando solo por distancia
-		let mejorGrupo = formarGrupoConInicio(pedidosDisponibles[0]);
-		let mejoresKPIs = calcularKPIs(mejorGrupo);
+	// 	// Primero formar grupo base optimizando solo por distancia
+	// 	let mejorGrupo = formarGrupoConInicio(pedidosDisponibles[0]);
+	// 	let mejoresKPIs = calcularKPIs(mejorGrupo);
 
-		console.log("\n📊 Grupo base formado:");
-		console.log(
-			`Ruta: ${mejorGrupo.map((p) => getFormattedAddress(p)).join(" -> ")}`
-		);
-		console.log(`Customer Success: ${mejoresKPIs.customerSuccess.toFixed(1)}%`);
-		console.log(
-			`Tiempo promedio: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min`
-		);
+	// 	console.log("\n📊 Grupo base formado:");
+	// 	console.log(
+	// 		`Ruta: ${mejorGrupo.map((p) => getFormattedAddress(p)).join(" -> ")}`
+	// 	);
+	// 	console.log(`Customer Success: ${mejoresKPIs.customerSuccess.toFixed(1)}%`);
+	// 	console.log(
+	// 		`Tiempo promedio: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min`
+	// 	);
 
-		// Evaluar si priorizar pedidos demorados mejora los KPIs
-		const pedidosDemorados = pedidosDisponibles.filter(
-			(pedido) => calcularTiempoEspera(pedido.hora) > 20
-		);
+	// 	// Evaluar si priorizar pedidos demorados mejora los KPIs
+	// 	const pedidosDemorados = pedidosDisponibles.filter(
+	// 		(pedido) => calcularTiempoEspera(pedido.hora) > 20
+	// 	);
 
-		if (pedidosDemorados.length > 0) {
-			console.log("\n🔍 Evaluando priorización de pedidos demorados:");
+	// 	if (pedidosDemorados.length > 0) {
+	// 		console.log("\n🔍 Evaluando priorización de pedidos demorados:");
 
-			for (const pedidoDemorado of pedidosDemorados) {
-				console.log(
-					`\n⭐ Probando priorizar: ${getFormattedAddress(pedidoDemorado)}`
-				);
-				console.log(
-					`Tiempo de espera actual: ${calcularTiempoEspera(
-						pedidoDemorado.hora
-					)} min`
-				);
+	// 		for (const pedidoDemorado of pedidosDemorados) {
+	// 			console.log(
+	// 				`\n⭐ Probando priorizar: ${getFormattedAddress(pedidoDemorado)}`
+	// 			);
+	// 			console.log(
+	// 				`Tiempo de espera actual: ${calcularTiempoEspera(
+	// 					pedidoDemorado.hora
+	// 				)} min`
+	// 			);
 
-				const grupoSimulado = formarGrupoConInicio(pedidoDemorado);
-				const kpisSimulados = calcularKPIs(grupoSimulado);
+	// 			const grupoSimulado = formarGrupoConInicio(pedidoDemorado);
+	// 			const kpisSimulados = calcularKPIs(grupoSimulado);
 
-				console.log(`Resultados con priorización:`);
-				console.log(
-					`- Customer Success: ${kpisSimulados.customerSuccess.toFixed(
-						1
-					)}% (actual: ${mejoresKPIs.customerSuccess.toFixed(1)}%)`
-				);
-				console.log(
-					`- Tiempo promedio: ${kpisSimulados.tiempoPromedio.toFixed(
-						1
-					)} min (actual: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min)`
-				);
+	// 			console.log(`Resultados con priorización:`);
+	// 			console.log(
+	// 				`- Customer Success: ${kpisSimulados.customerSuccess.toFixed(
+	// 					1
+	// 				)}% (actual: ${mejoresKPIs.customerSuccess.toFixed(1)}%)`
+	// 			);
+	// 			console.log(
+	// 				`- Tiempo promedio: ${kpisSimulados.tiempoPromedio.toFixed(
+	// 					1
+	// 				)} min (actual: ${mejoresKPIs.tiempoPromedio.toFixed(1)} min)`
+	// 			);
 
-				// Decisión de priorización basada en mejora de KPIs
-				const mejoraCustomerSuccess =
-					kpisSimulados.customerSuccess - mejoresKPIs.customerSuccess;
-				const mejoraTiempo =
-					mejoresKPIs.tiempoPromedio - kpisSimulados.tiempoPromedio;
+	// 			// Decisión de priorización basada en mejora de KPIs
+	// 			const mejoraCustomerSuccess =
+	// 				kpisSimulados.customerSuccess - mejoresKPIs.customerSuccess;
+	// 			const mejoraTiempo =
+	// 				mejoresKPIs.tiempoPromedio - kpisSimulados.tiempoPromedio;
 
-				if (
-					mejoraCustomerSuccess > 5 ||
-					(mejoraCustomerSuccess >= 0 && mejoraTiempo > 2)
-				) {
-					console.log(`✅ Priorizando pedido - Mejora significativa detectada`);
-					mejorGrupo = grupoSimulado;
-					mejoresKPIs = kpisSimulados;
-				} else {
-					console.log(
-						`❌ Manteniendo orden original - No hay mejora significativa`
-					);
-				}
-			}
-		}
+	// 			if (
+	// 				mejoraCustomerSuccess > 5 ||
+	// 				(mejoraCustomerSuccess >= 0 && mejoraTiempo > 2)
+	// 			) {
+	// 				console.log(`✅ Priorizando pedido - Mejora significativa detectada`);
+	// 				mejorGrupo = grupoSimulado;
+	// 				mejoresKPIs = kpisSimulados;
+	// 			} else {
+	// 				console.log(
+	// 					`❌ Manteniendo orden original - No hay mejora significativa`
+	// 				);
+	// 			}
+	// 		}
+	// 	}
 
-		// Calcular métricas finales usando la misma función que los grupos normales
-		const rutaCompleta = calcularTiempoYDistanciaRecorrido(
-			mejorGrupo,
-			LATITUD_INICIO,
-			LONGITUD_INICIO
-		);
+	// 	// Calcular métricas finales usando la misma función que los grupos normales
+	// 	const rutaCompleta = calcularTiempoYDistanciaRecorrido(
+	// 		mejorGrupo,
+	// 		LATITUD_INICIO,
+	// 		LONGITUD_INICIO
+	// 	);
 
-		// Agregar el tiempo y distancia de regreso exactamente igual que en grupos normales
-		if (mejorGrupo.length > 0) {
-			const ultimoPedido = mejorGrupo[mejorGrupo.length - 1];
-			const distanciaRegreso = calcularDistancia(
-				ultimoPedido.map[0],
-				ultimoPedido.map[1],
-				LATITUD_INICIO,
-				LONGITUD_INICIO
-			);
-			const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
+	// 	// Agregar el tiempo y distancia de regreso exactamente igual que en grupos normales
+	// 	if (mejorGrupo.length > 0) {
+	// 		const ultimoPedido = mejorGrupo[mejorGrupo.length - 1];
+	// 		const distanciaRegreso = calcularDistancia(
+	// 			ultimoPedido.map[0],
+	// 			ultimoPedido.map[1],
+	// 			LATITUD_INICIO,
+	// 			LONGITUD_INICIO
+	// 		);
+	// 		const tiempoRegreso = (distanciaRegreso / getVelocidadActual()) * 60;
 
-			return {
-				pedidos: mejorGrupo,
-				tiempoTotal: Math.round(rutaCompleta.tiempoTotal + tiempoRegreso),
-				distanciaTotal: Number(
-					(rutaCompleta.distanciaTotal + distanciaRegreso).toFixed(2)
-				),
-				peorTiempoPercibido: Math.max(
-					...mejorGrupo.map((p) => p.tiempoPercibido || 0)
-				),
-				pedidoPeorTiempo: mejorGrupo.reduce(
-					(peor, actual) =>
-						(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
-							? actual
-							: peor,
-					mejorGrupo[0]
-				),
-			};
-		}
+	// 		return {
+	// 			pedidos: mejorGrupo,
+	// 			tiempoTotal: Math.round(rutaCompleta.tiempoTotal + tiempoRegreso),
+	// 			distanciaTotal: Number(
+	// 				(rutaCompleta.distanciaTotal + distanciaRegreso).toFixed(2)
+	// 			),
+	// 			peorTiempoPercibido: Math.max(
+	// 				...mejorGrupo.map((p) => p.tiempoPercibido || 0)
+	// 			),
+	// 			pedidoPeorTiempo: mejorGrupo.reduce(
+	// 				(peor, actual) =>
+	// 					(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
+	// 						? actual
+	// 						: peor,
+	// 				mejorGrupo[0]
+	// 			),
+	// 		};
+	// 	}
 
-		return {
-			pedidos: mejorGrupo,
-			tiempoTotal: Math.round(rutaCompleta.tiempoTotal),
-			distanciaTotal: Number(rutaCompleta.distanciaTotal.toFixed(2)),
-			peorTiempoPercibido: Math.max(
-				...mejorGrupo.map((p) => p.tiempoPercibido || 0)
-			),
-			pedidoPeorTiempo: mejorGrupo.reduce(
-				(peor, actual) =>
-					(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
-						? actual
-						: peor,
-				mejorGrupo[0]
-			),
-		};
-	}
+	// 	return {
+	// 		pedidos: mejorGrupo,
+	// 		tiempoTotal: Math.round(rutaCompleta.tiempoTotal),
+	// 		distanciaTotal: Number(rutaCompleta.distanciaTotal.toFixed(2)),
+	// 		peorTiempoPercibido: Math.max(
+	// 			...mejorGrupo.map((p) => p.tiempoPercibido || 0)
+	// 		),
+	// 		pedidoPeorTiempo: mejorGrupo.reduce(
+	// 			(peor, actual) =>
+	// 				(actual.tiempoPercibido || 0) > (peor?.tiempoPercibido || 0)
+	// 					? actual
+	// 					: peor,
+	// 			mejorGrupo[0]
+	// 		),
+	// 	};
+	// }
 
 	function encontrarMejorPedidoAutomatico(
 		pedidosDisponibles: PedidoProps[],
@@ -1829,25 +1829,25 @@ export const Comandera: React.FC = () => {
 		});
 	};
 
-	const gruposAutomaticosOptimosMemo = useMemo(() => {
-		return armarGruposAutomaticos(
-			pedidosConDistancias,
-			tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido instead of tiempoMaximoAutomatico
-			pedidosPrioritariosAutomaticos,
-			setPedidosPrioritariosAutomaticos
-		);
-	}, [
-		pedidosConDistancias,
-		tiempoMaximoRecorrido, // Changed dependency
-		gruposAutomaticos,
-		pedidosPrioritariosAutomaticos,
-		velocidadPromedio,
-	]);
+	// const gruposAutomaticosOptimosMemo = useMemo(() => {
+	// 	return armarGruposAutomaticos(
+	// 		pedidosConDistancias,
+	// 		tiempoMaximoRecorrido, // Use tiempoMaximoRecorrido instead of tiempoMaximoAutomatico
+	// 		pedidosPrioritariosAutomaticos,
+	// 		setPedidosPrioritariosAutomaticos
+	// 	);
+	// }, [
+	// 	pedidosConDistancias,
+	// 	tiempoMaximoRecorrido, // Changed dependency
+	// 	gruposAutomaticos,
+	// 	pedidosPrioritariosAutomaticos,
+	// 	velocidadPromedio,
+	// ]);
 
 	// Add this useEffect
-	useEffect(() => {
-		setGruposAutomaticosOptimos(gruposAutomaticosOptimosMemo);
-	}, [gruposAutomaticosOptimosMemo]);
+	// useEffect(() => {
+	// 	setGruposAutomaticosOptimos(gruposAutomaticosOptimosMemo);
+	// }, [gruposAutomaticosOptimosMemo]);
 
 	return (
 		<>
@@ -3282,304 +3282,6 @@ export const Comandera: React.FC = () => {
 						)}
 					</div>
 				</div>
-
-				{/* Después del div de grupos óptimos, añade este código para los grupos automáticos */}
-				{/* <div className="flex-col md:grid md:grid-cols-4 gap-4">
-          {gruposAutomaticosOptimos.length > 0 ? (
-            gruposAutomaticosOptimos.map((grupo, index) => {
-              const horaActual = new Date();
-              const horaRegreso = new Date(
-                horaActual.getTime() + grupo.tiempoTotal * 60000
-              );
-              const horaRegresoFormateada = horaRegreso.toLocaleTimeString(
-                'es-ES',
-                {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                }
-              );
-              const uniqueKey = `auto-${grupo.tiempoTotal}-${grupo.distanciaTotal}-${index}`;
-
-              return (
-                <div
-                  key={uniqueKey}
-                  className="bg-gray-300 shadow-gray-400 h-min font-coolvetica w-full shadow-lg p-4 mb-4 rounded-lg"
-                >
-                  <div className="flex flex-col mt-4 mb-10 text-center items-center justify-center">
-                    <h3 className="font-bold text-4xl md:text-3xl mb-2 items-center gap-4 flex flex-row">
-                      <svg
-                        className="w-3 h-3 text-gray-100 animate-spin dark:fill-black"
-                        viewBox="0 0 100 101"
-                      >
-                        <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentFill"
-                        />
-                      </svg>
-                      Grupo Automático {index + 1}
-                    </h3>
-                    <p className="text-xs">
-                      Peor entrega: {grupo.peorTiempoPercibido} minutos (
-                      {grupo.pedidoPeorTiempo?.direccion
-                        ? getFirstPartOfAddress(
-                            grupo.pedidoPeorTiempo.direccion
-                          )
-                        : 'N/A'}
-                      )
-                    </p>
-                    <p className="text-xs">
-                      Duración: {grupo.tiempoTotal} minutos
-                    </p>
-                    <p className="text-xs">
-                      Distancia: {grupo.distanciaTotal} km
-                    </p>
-                    <p className="text-xs">
-                      El cadete regresa a ANHELO a las {horaRegresoFormateada}{' '}
-                      hs
-                    </p>
-                    <p className="text-xs">
-                      Costo por entrega aproximado: $
-                      {Math.round(
-                        (grupo.distanciaTotal * 200 +
-                          grupo.pedidos.length * 1200) /
-                          grupo.pedidos.length
-                      )}
-                    </p>
-                  </div>
-                  <button
-                    className="bg-black w-full h-[64px] mb-2 text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica"
-                    onClick={() => handleGrupoListo(grupo)}
-                  >
-                    Confirmar Grupo Automático
-                  </button>
-                  {grupo.pedidos.map((pedido, pedidoIndex) => (
-                    <div
-                      className="flex flex-row"
-                      key={`auto-pedido-${pedido.id}`}
-                    >
-                      <div
-                        className={`bg-gray-100 relative w-full flex flex-row items-center ${
-                          pedidoIndex === 0
-                            ? 'rounded-t-lg'
-                            : pedidoIndex === grupo.pedidos.length - 1
-                            ? 'rounded-b-lg'
-                            : ''
-                        }`}
-                        onClick={() => handlePedidoClick(pedido)}
-                      >
-                        <div className="bg-black absolute z-10 text-center ml-4 justify-center font-bold flex items-center text-gray-100 h-10 w-10 rounded-full">
-                          {pedidoIndex + 1}
-                        </div>
-                        <div className="ml-14 mr-4">
-                          {grupo.pedidos.length > 1 && (
-                            <div
-                              className={`w-1.5 bg-black absolute left-[33px] ${
-                                pedidoIndex === 0
-                                  ? 'h-1/2 bottom-0'
-                                  : pedidoIndex === grupo.pedidos.length - 1
-                                  ? 'h-1/2 top-0'
-                                  : 'h-full'
-                              }`}
-                            ></div>
-                          )}
-                          <div
-                            className={`flex flex-row justify-between items-center ${
-                              pedidoIndex !== grupo.pedidos.length - 1
-                                ? 'border-b border-black border-opacity-20'
-                                : ''
-                            } w-full ml-4 pb-3.5 pt-2`}
-                          >
-                            <div className="flex flex-col">
-                              <p className="font-bold text-lg leading-none mb-2 mt-1">
-                                {getFormattedAddress(pedido)}{' '}
-                                <span className="text-xs font-normal">
-                                  (
-                                  {isPedidoValid(pedido)
-                                    ? `${pedido.distancia} km`
-                                    : 'Desconocido'}
-                                  )
-                                </span>
-                              </p>
-                              <div className="flex flex-row items-center gap-1.5">
-                                {calcularTiempoEspera(pedido.hora) > 20 && (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 200 500"
-                                    className="h-3"
-                                  >
-                                    <rect
-                                      x="75"
-                                      y="400"
-                                      width="100"
-                                      height="75"
-                                      rx="20"
-                                      ry="20"
-                                      fill={
-                                        calcularTiempoEspera(pedido.hora) > 30
-                                          ? '#FF0000'
-                                          : '#F59E0B'
-                                      }
-                                    />
-                                    <rect
-                                      x="75"
-                                      y="50"
-                                      width="100"
-                                      height="300"
-                                      rx="20"
-                                      ry="20"
-                                      fill={
-                                        calcularTiempoEspera(pedido.hora) > 30
-                                          ? '#FF0000'
-                                          : '#F59E0B'
-                                      }
-                                    />
-                                  </svg>
-                                )}
-                                <p className="text-xs">
-                                  Pidió hace:{' '}
-                                  {calcularTiempoEspera(pedido.hora)} minutos
-                                </p>
-                              </div>
-                              <div className="flex flex-row gap-1.5 items-center">
-                                {pedido.tiempoPercibido != null &&
-                                  pedido.tiempoPercibido >= 30 && (
-                                    <div
-                                      className={`text-xs h-1.5 w-1.5 rounded-full ${
-                                        pedido.tiempoPercibido < 50
-                                          ? 'bg-yellow-500'
-                                          : 'bg-red-main'
-                                      }`}
-                                    ></div>
-                                  )}
-                                <p className="text-xs">
-                                  Percibe entrega de:{' '}
-                                  {pedido.tiempoPercibido ?? 0} minutos
-                                </p>
-                              </div>
-                              {pedido.hasOwnProperty('elaborado') &&
-                                (pedido.elaborado ? (
-                                  <p className="text-xs text-green-600 font-medium">
-                                    Ya cocinado
-                                  </p>
-                                ) : (
-                                  <p className="text-xs font-medium text-red-600">
-                                    {pedido.cookNow
-                                      ? `Priorizado para cocinar: ${calcularTiempoEstimadoElaboracion(
-                                          pedido
-                                        )} minutos`
-                                      : `No cocinado (${calcularTiempoEstimadoElaboracion(
-                                          pedido
-                                        )} min. necesarios)`}
-                                  </p>
-                                ))}
-                            </div>
-                            <div className="flex items-center relative">
-                              <button className="ml-2 p-1 rounded-full relative">
-                                {pedido.priorizado ? (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                    className="w-4 text-red-main"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      clipRule="evenodd"
-                                      d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-                                    />
-                                  </svg>
-                                ) : (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-4 text-black opacity-50"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
-                                    />
-                                  </svg>
-                                )}
-                                {starTooltipVisibility[`auto-${pedido.id}`] && (
-                                  <div className="absolute z-50 px-2 py-2 font-light text-white bg-black rounded-lg shadow-sm tooltip text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-                                    <p className="mb-[1.5px] text-xs">
-                                      {pedido.priorizado
-                                        ? 'Este pedido está priorizado automáticamente por tiempo de espera'
-                                        : 'Este pedido no está priorizado'}
-                                    </p>
-                                  </div>
-                                )}
-                              </button>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1.5"
-                                stroke="currentColor"
-                                className="w-6 mr-4 cursor-pointer opacity-50"
-                                onMouseEnter={() =>
-                                  setTooltipVisibility((prev) => ({
-                                    ...prev,
-                                    [`auto-${index}-${pedidoIndex}`]: true,
-                                  }))
-                                }
-                                onMouseLeave={() =>
-                                  setTooltipVisibility((prev) => ({
-                                    ...prev,
-                                    [`auto-${index}-${pedidoIndex}`]: false,
-                                  }))
-                                }
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M3.75 9h16.5m-16.5 6.75h16.5"
-                                />
-                              </svg>
-                              {tooltipVisibility[
-                                `auto-${index}-${pedidoIndex}`
-                              ] && (
-                                <div className="absolute z-50 px-2 py-2 font-light text-white rounded-lg shadow-sm tooltip bg-black text-xs bottom-full left-1/2 transform -translate-x-1/2 mb-2 whitespace-nowrap flex flex-row items-center gap-2 h-[30px]">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-3 h-3"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-                                    />
-                                  </svg>
-                                  <p className="mb-[1.5px] text-xs">
-                                    Pedido en proceso automático
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })
-          ) : (
-            <></>
-          )}
-        </div> */}
 
 				{modalIsOpen && selectedPedido && (
 					<div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
