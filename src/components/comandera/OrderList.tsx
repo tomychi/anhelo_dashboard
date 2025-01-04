@@ -25,15 +25,24 @@ export const OrderList: React.FC<OrderListProps> = ({
 	// Función para reordenar los pedidos
 	const reorderPedidos = (pedidos: PedidoProps[]): PedidoProps[] => {
 		return pedidos.sort((a, b) => {
+			// Primero priorizamos por envioExpress
+			if (a.envioExpress && !b.envioExpress) return -1;
+			if (!a.envioExpress && b.envioExpress) return 1;
+
+			// Si el envioExpress es igual, entonces miramos cookNow
 			if (a.cookNow && !b.cookNow) return -1;
 			if (!a.cookNow && b.cookNow) return 1;
+
 			return 0;
 		});
 	};
 
 	useEffect(() => {
-		setPedidosOrdenados(reorderPedidos(pedidosPorHacer));
-	}, [pedidosPorHacer]); // Dependencia: el array completo para detectar cambios 'en tiempo real'
+		console.log("Pedidos originales:", pedidosPorHacer);
+		const ordenados = reorderPedidos(pedidosPorHacer);
+		console.log("Pedidos reordenados:", ordenados);
+		setPedidosOrdenados(ordenados);
+	}, [pedidosPorHacer]);
 
 	return (
 		<div>
