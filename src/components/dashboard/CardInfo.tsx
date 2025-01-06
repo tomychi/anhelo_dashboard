@@ -82,7 +82,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 			typeof cuadrito === "number"
 				? Math.ceil(cuadrito)
 				: Math.ceil(parseFloat(cuadrito as string));
-
 		return showAsRatings ? `(${value} ratings)` : `(${value}%)`;
 	};
 

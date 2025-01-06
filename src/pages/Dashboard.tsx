@@ -382,6 +382,10 @@ export const Dashboard: React.FC = () => {
 		/>,
 	];
 
+	const expressTotalCount = orders.filter(
+		(order) => order.envioExpress && order.envioExpress > 0
+	).length;
+
 	const allCards = [
 		<CardInfo
 			key="bruto"
@@ -427,6 +431,17 @@ export const Dashboard: React.FC = () => {
 					: 0
 			)}%`}
 			title={"Customer success"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="express"
+			info={expressTotalCount.toString()}
+			title="Envio express"
+			cuadrito={
+				orders.length > 0
+					? ((expressTotalCount / orders.length) * 100).toFixed(2)
+					: "0"
+			}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
