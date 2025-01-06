@@ -104,51 +104,72 @@ export const CardComanda = ({
 	}, [hora]);
 	return (
 		<div
-			className={`flex justify-center font-coolvetica uppercase flex-col max-w-sm overflow-hidden h-min p-4
+			className={`flex justify-center font-coolvetica uppercase flex-col max-w-sm overflow-hidden h-min 
   ${bgColor}
    `}
 		>
-			{envioExpress > 0 ? <>Enviar yaaaaaaaaaa</> : <></>}
-			<CardComandaHeader
-				user={user}
-				hora={hora}
-				id={id}
-				entregado={entregado}
-				tiempoEntregado={tiempoEntregado}
-				tiempoElaborado={tiempoElaborado}
-				fecha={fecha}
-				minutosDeDemora={minutosDeDemora}
-			/>
-			<CardComandaInfo
-				direccion={direccion}
-				ubicacion={ubicacion}
-				referencias={referencias}
-				telefono={telefono}
-				metodoPago={metodoPago}
-				total={total}
-				efectivoCantidad={efectivoCantidad}
-				mercadopagoCantidad={mercadopagoCantidad}
-				user={user}
-				id={id}
-				fecha={fecha}
-				paid={paid}
-				tiempoElaborado={tiempoElaborado}
-				tiempoEntregado={tiempoEntregado}
-				updateTiempoElaboradoForOrder={updateTiempoElaboradoForOrder}
-				updateTiempoEntregaForOrder={updateTiempoEntregaForOrder}
-				entregado={entregado}
-			/>
-			<SelectCadete
-				elaborado={elaborado}
-				cadete={cadete}
-				fecha={fecha}
-				id={id}
-			/>
-			<CardComdandaBody
-				aclaraciones={aclaraciones}
-				detallePedido={detallePedido}
-			/>
-			<CardComandaFooter user={user} comanda={comanda} />
+			{envioExpress > 0 ? (
+				<div className="bg-blue-500 flex flex-row justify-center h-20 gap-2 items-center ">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						className="h-6"
+					>
+						<path
+							fill-rule="evenodd"
+							d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
+							clip-rule="evenodd"
+						/>
+					</svg>
+
+					<p className="text-2xl font-bold">COCINAR YA Y CADETE SOLO</p>
+				</div>
+			) : (
+				<></>
+			)}
+			<div className="p-4">
+				<CardComandaHeader
+					user={user}
+					hora={hora}
+					id={id}
+					entregado={entregado}
+					tiempoEntregado={tiempoEntregado}
+					tiempoElaborado={tiempoElaborado}
+					fecha={fecha}
+					minutosDeDemora={minutosDeDemora}
+				/>
+				<CardComandaInfo
+					direccion={direccion}
+					ubicacion={ubicacion}
+					referencias={referencias}
+					telefono={telefono}
+					metodoPago={metodoPago}
+					total={total}
+					efectivoCantidad={efectivoCantidad}
+					mercadopagoCantidad={mercadopagoCantidad}
+					user={user}
+					id={id}
+					fecha={fecha}
+					paid={paid}
+					tiempoElaborado={tiempoElaborado}
+					tiempoEntregado={tiempoEntregado}
+					updateTiempoElaboradoForOrder={updateTiempoElaboradoForOrder}
+					updateTiempoEntregaForOrder={updateTiempoEntregaForOrder}
+					entregado={entregado}
+				/>
+				<SelectCadete
+					elaborado={elaborado}
+					cadete={cadete}
+					fecha={fecha}
+					id={id}
+				/>
+				<CardComdandaBody
+					aclaraciones={aclaraciones}
+					detallePedido={detallePedido}
+				/>
+				<CardComandaFooter user={user} comanda={comanda} />
+			</div>
 		</div>
 	);
 };
