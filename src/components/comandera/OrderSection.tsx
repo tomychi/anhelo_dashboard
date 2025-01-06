@@ -19,6 +19,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 					direccion,
 					elaborado,
 					envio,
+					envioExpress,
 					fecha,
 					hora,
 					metodoPago,
@@ -46,6 +47,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 							aclaraciones={aclaraciones}
 							direccion={direccion}
 							hora={hora}
+							envioExpress={envioExpress}
 							metodoPago={metodoPago}
 							total={total}
 							paid={paid}

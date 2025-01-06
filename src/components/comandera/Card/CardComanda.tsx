@@ -44,6 +44,7 @@ export const CardComanda = ({
 	ubicacion,
 	cadete,
 	dislike,
+	envioExpress,
 	delay,
 	tiempoElaborado,
 	tiempoEntregado,
@@ -59,6 +60,7 @@ export const CardComanda = ({
 		elaborado,
 		envio,
 		fecha,
+		envioExpress,
 		hora,
 		metodoPago,
 		subTotal,
@@ -106,6 +108,7 @@ export const CardComanda = ({
   ${bgColor}
    `}
 		>
+			{envioExpress > 0 ? <>Enviar yaaaaaaaaaa</> : <></>}
 			<CardComandaHeader
 				user={user}
 				hora={hora}

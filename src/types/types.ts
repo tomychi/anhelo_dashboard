@@ -12,6 +12,7 @@ export interface PedidoProps {
 	aclaraciones: string;
 	detallePedido: DetallePedidoItem[];
 	direccion: string;
+	envioExpress: number;
 	elaborado: boolean;
 	envio: number;
 	fecha: string;
