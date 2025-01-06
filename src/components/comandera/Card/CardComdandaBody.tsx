@@ -9,10 +9,20 @@ export const CardComdandaBody = ({
 	aclaraciones,
 	detallePedido,
 }: CardComdandaBodyProps) => {
+	console.log("Detalle del pedido completo:", detallePedido);
+	detallePedido.forEach((item, index) => {
+		console.log(`--- Ítem ${index + 1} ---`);
+		console.log("Hamburguesa:", item.burger);
+		console.log("Cantidad:", item.quantity);
+		console.log("Extra:", item.extra);
+		console.log("isConfirmed:", item.isConfirmed);
+		console.log("Toppings:", item.toppings);
+	});
+
 	return (
-		<div className=" mt-8">
+		<div className="mt-8">
 			{aclaraciones && (
-				<p className="w-full mt-8 bg-black  pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
+				<p className="w-full mt-8 bg-black pr-1 pl-1 pb-1 text-4xl text-center text-green-500 font-black">
 					{aclaraciones}
 				</p>
 			)}
@@ -22,22 +32,38 @@ export const CardComdandaBody = ({
 						burger,
 						toppings,
 						quantity,
-					}: { burger: string; toppings: string[]; quantity: number },
+						extra,
+						isConfirmed,
+					}: {
+						burger: string;
+						toppings: string[];
+						quantity: number;
+						extra?: boolean;
+						isConfirmed?: boolean;
+					},
 					i: number
 				) => (
 					<div key={i} className="flex mt-4 items-center flex-col">
-						<p className="text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1">
+						<p
+							className={`text-black text-4xl font-black border-4 w-full text-center border-black pr-1 pl-1 pb-1 ${
+								extra && isConfirmed
+									? "bg-violet-500"
+									: extra && !isConfirmed
+									? "bg-gray-500"
+									: ""
+							}`}
+						>
 							{quantity}X {burger}
 						</p>
 						<div>
-							<div className="flex flex-col items-center ">
+							<div className="flex flex-col items-center">
 								{toppings.map((topping: string, toppingIndex: number) => (
 									<span
 										key={`${topping}-${toppingIndex}`}
-										className={`text-2xl flex  text-black font-black ${
+										className={`text-2xl flex text-black font-black ${
 											topping.toLowerCase() === "huevo" ||
 											topping.toLowerCase() === "carne"
-												? "bg-black mt-4  text-2xl text-center text-green-500"
+												? "bg-black mt-4 text-2xl text-center text-green-500"
 												: ""
 										}`}
 									>
