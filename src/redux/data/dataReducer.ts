@@ -109,7 +109,7 @@ const dataReducer = (state = initialState, action: DataAction) => {
             console.log(`   Costo unitario: ${pedido.costoBurger}`);
             
             if (pedido.costoBurger) {
-              return subtotal + pedido.costoBurger; // Ya no multiplicamos por quantity
+              return subtotal + pedido.costoBurger;
             }
             return subtotal;
           },

@@ -387,23 +387,20 @@ export const Dashboard: React.FC = () => {
 	).length;
 
 	// Primero, agrega estas constantes justo antes del array allCards
-const canceledOrders = orders.filter(order => order.canceled);
-const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+	const canceledOrders = orders.filter(order => order.canceled);
+	const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+	const canceledProducts = orders
+	  .filter(order => order.canceled)
+	  .reduce((total, order) => {
+		return total + order.detallePedido.reduce((accumulator, detail) => {
+		  const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
+		  return accumulator + detail.quantity + additionalQuantity;
+		}, 0);
+	  }, 0);
 
 // Luego, agrega las nuevas cards al principio del array allCards
 const allCards = [
-    <CardInfo
-        key="canceledOrders"
-        info={canceledOrders.length.toString()}
-        title={"Pedidos cancelados"}
-        isLoading={isLoading}
-    />,
-    <CardInfo
-        key="canceledAmount"
-        info={currencyFormat(canceledOrdersTotal)}
-        title={"Facturación cancelada"}
-        isLoading={isLoading}
-    />,
+   
 		<CardInfo
 			key="bruto"
 			info={currencyFormat(facturacionTotal)}
@@ -440,6 +437,24 @@ const allCards = [
 			title={"Ventas take away"}
 			isLoading={isLoading}
 		/>,
+		<CardInfo
+        key="canceledProducts"
+        info={canceledProducts.toString()}
+        title={"Productos cancelados"}
+        isLoading={isLoading}
+    />,
+		<CardInfo
+        key="canceledOrders"
+        info={canceledOrders.length.toString()}
+        title={"Pedidos cancelados"}
+        isLoading={isLoading}
+    />,
+    <CardInfo
+        key="canceledAmount"
+        info={currencyFormat(canceledOrdersTotal)}
+        title={"Facturación cancelada"}
+        isLoading={isLoading}
+    />,
 		<CardInfo
 			key="success"
 			info={`${Math.ceil(
