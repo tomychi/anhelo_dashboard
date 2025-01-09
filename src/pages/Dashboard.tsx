@@ -56,11 +56,12 @@ export const Dashboard: React.FC = () => {
 
 	// Calculate delivery and takeaway counts
 	const deliveryCount = orders.filter(
-		(order) => order.deliveryMethod === "delivery"
-	).length;
-	const takeawayCount = orders.filter(
-		(order) => order.deliveryMethod === "takeaway"
-	).length;
+		(order) => order.deliveryMethod === "delivery" && !order.canceled
+	  ).length;
+	  
+	  const takeawayCount = orders.filter(
+		(order) => order.deliveryMethod === "takeaway" && !order.canceled
+	  ).length;
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -405,6 +406,13 @@ const canceledCostTotal = canceledOrders.reduce((total, order) => {
 // Calcular la facturación neta cancelada (facturación cancelada - costos cancelados)
 const canceledNetAmount = canceledOrdersTotal - canceledCostTotal;
 
+const canceledDeliveryOrders = canceledOrders.filter(
+	order => order.deliveryMethod === "delivery"
+  );
+  const canceledTakeawayOrders = canceledOrders.filter(
+	order => order.deliveryMethod === "takeaway"
+  );
+
 const allCards = [
    
 		<CardInfo
@@ -462,12 +470,18 @@ const allCards = [
         title={"Productos cancelados"}
         isLoading={isLoading}
     />,
-		<CardInfo
-        key="canceledOrders"
-        info={canceledOrders.length.toString()}
-        title={"Pedidos cancelados"}
-        isLoading={isLoading}
-    />,
+	<CardInfo
+	key="canceledDelivery"
+	info={canceledDeliveryOrders.length.toString()}
+	title={"Ventas delivery canceladas"}
+	isLoading={isLoading}
+/>,
+<CardInfo
+	key="canceledTakeaway"
+	info={canceledTakeawayOrders.length.toString()}
+	title={"Ventas take away canceladas"}
+	isLoading={isLoading}
+/>,
    
 		<CardInfo
 			key="success"
