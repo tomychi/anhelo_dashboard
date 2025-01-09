@@ -34,7 +34,7 @@ const KPILineChart = ({ orders }) => {
 
 	useEffect(() => {
 		if (orders.length === 0) return;
-
+	 
 		const ordersByDate = orders.reduce((acc, order) => {
 			if (!order.fecha) return acc;
 			const dateStr = order.fecha;
@@ -42,124 +42,150 @@ const KPILineChart = ({ orders }) => {
 			acc[dateStr].push(order);
 			return acc;
 		}, {});
-
-		const dailyData = Object.entries(ordersByDate).map(
-			([dateStr, dailyOrders]) => {
-				const facturacionBruta = dailyOrders.reduce(
-					(sum, order) => sum + (Number(order.total) || 0),
-					0
-				);
-
-				const productosVendidos = dailyOrders.reduce(
-					(sum, order) =>
-						sum +
-						(order.detallePedido ? contarProductos(order.detallePedido) : 0),
-					0
-				);
-
-				// Customer Success
-				const pedidosDemorados = dailyOrders.filter((order) => {
-					if (!order.tiempoEntregado || !order.hora) return false;
+	 
+		const dailyData = Object.entries(ordersByDate).map(([dateStr, dailyOrders]) => {
+			// Separar órdenes activas y canceladas
+			const activeOrders = dailyOrders.filter(order => !order.canceled);
+			const canceledOrders = dailyOrders.filter(order => order.canceled);
+	 
+			// Facturación bruta activa
+			const facturacionBrutaActiva = activeOrders.reduce(
+				(sum, order) => sum + (Number(order.total) || 0),
+				0
+			);
+	 
+			// Facturación bruta cancelada 
+			const facturacionBrutaCancelada = canceledOrders.reduce(
+				(sum, order) => sum + (Number(order.total) || 0),
+				0
+			);
+	 
+			// Calcular costos de órdenes activas
+			const costosActivos = activeOrders.reduce((total, order) => {
+				return total + order.detallePedido.reduce((subtotal, pedido) => {
+					return subtotal + (pedido.costoBurger || 0);
+				}, 0);
+			}, 0);
+	 
+			// Calcular costos de órdenes canceladas
+			const costosCancelados = canceledOrders.reduce((total, order) => {
+				return total + order.detallePedido.reduce((subtotal, pedido) => {
+					return subtotal + (pedido.costoBurger || 0);
+				}, 0);
+			}, 0);
+	 
+			// Calcular netos
+			const facturacionNetaActiva = facturacionBrutaActiva - costosActivos;
+			const facturacionNetaCancelada = facturacionBrutaCancelada - costosCancelados;
+	 
+			const productosVendidos = activeOrders.reduce(
+				(sum, order) =>
+					sum +
+					(order.detallePedido ? contarProductos(order.detallePedido) : 0),
+				0
+			);
+	 
+			// Customer Success
+			const pedidosDemorados = activeOrders.filter((order) => {
+				if (!order.tiempoEntregado || !order.hora) return false;
+				const horaEntrega = order.tiempoEntregado.split(":").map(Number);
+				const horaInicio = order.hora.split(":").map(Number);
+				const tiempoTotal =
+					horaEntrega[0] * 60 +
+					horaEntrega[1] -
+					(horaInicio[0] * 60 + horaInicio[1]);
+				return tiempoTotal > 60;
+			}).length;
+	 
+			const customerSuccess =
+				activeOrders.length > 0
+					? Math.ceil(100 - (pedidosDemorados * 100) / activeOrders.length)
+					: 0;
+	 
+			// Cálculo de tiempos
+			const tiemposCoccion = activeOrders
+				.filter((order) => order.tiempoElaborado)
+				.map((order) => {
+					const [minutos] = order.tiempoElaborado.split(":").map(Number);
+					return minutos;
+				});
+	 
+			const tiempoCoccion =
+				tiemposCoccion.length > 0
+					? tiemposCoccion.reduce((sum, time) => sum + time, 0) /
+					  tiemposCoccion.length
+					: 0;
+	 
+			const tiemposEntrega = activeOrders
+				.filter((order) => order.tiempoEntregado && order.hora)
+				.map((order) => {
 					const horaEntrega = order.tiempoEntregado.split(":").map(Number);
 					const horaInicio = order.hora.split(":").map(Number);
-					const tiempoTotal =
+					return (
 						horaEntrega[0] * 60 +
 						horaEntrega[1] -
-						(horaInicio[0] * 60 + horaInicio[1]);
-					return tiempoTotal > 60;
-				}).length;
-
-				const customerSuccess =
-					dailyOrders.length > 0
-						? Math.ceil(100 - (pedidosDemorados * 100) / dailyOrders.length)
-						: 0;
-
-				// Cálculo de tiempos
-				const tiemposCoccion = dailyOrders
-					.filter((order) => order.tiempoElaborado)
-					.map((order) => {
-						const [minutos] = order.tiempoElaborado.split(":").map(Number);
-						return minutos;
-					});
-
-				const tiempoCoccion =
-					tiemposCoccion.length > 0
-						? tiemposCoccion.reduce((sum, time) => sum + time, 0) /
-						  tiemposCoccion.length
-						: 0;
-
-				const tiemposEntrega = dailyOrders
-					.filter((order) => order.tiempoEntregado && order.hora)
-					.map((order) => {
-						const horaEntrega = order.tiempoEntregado.split(":").map(Number);
-						const horaInicio = order.hora.split(":").map(Number);
-						return (
-							horaEntrega[0] * 60 +
-							horaEntrega[1] -
-							(horaInicio[0] * 60 + horaInicio[1])
-						);
-					});
-
-				const tiempoEntregaTotal =
-					tiemposEntrega.length > 0
-						? tiemposEntrega.reduce((sum, time) => sum + time, 0) /
-						  tiemposEntrega.length
-						: 0;
-
-				// Cálculo de KMs
-				const kmRecorridos = dailyOrders.reduce((total, order) => {
-					if (!order.map || order.map.length !== 2) return total;
-					return total + 5; // Ejemplo simplificado
-				}, 0);
-
-				// Calcular ratings promedios diarios
-				const presentacionRatings = dailyOrders
-					.filter((order) => order.rating?.presentacion)
-					.map((order) => order.rating.presentacion);
-
-				const paginaRatings = dailyOrders
-					.filter((order) => order.rating?.pagina)
-					.map((order) => order.rating.pagina);
-
-				const avgPresentacion =
-					presentacionRatings.length > 0
-						? presentacionRatings.reduce((sum, rating) => sum + rating, 0) /
-						  presentacionRatings.length
-						: 0;
-
-				const avgPagina =
-					paginaRatings.length > 0
-						? paginaRatings.reduce((sum, rating) => sum + rating, 0) /
-						  paginaRatings.length
-						: 0;
-
-				// Calculamos qué porcentaje del total representa la facturación bruta de este día
-				const porcentajeDiario = facturacionBruta / facturacionTotal;
-				// Aplicamos ese porcentaje al neto total para obtener el neto del día
-				const facturacionNetaDiaria = neto * porcentajeDiario;
-
-				return {
-					fecha: dateStr,
-					facturacionBruta,
-					facturacionNeta: facturacionNetaDiaria,
-					productosVendidos: isMarketingUser
-						? Math.ceil(productosVendidos * 2)
-						: productosVendidos,
-					ventasDelivery: isMarketingUser
-						? Math.ceil(dailyOrders.length * 2)
-						: dailyOrders.length,
-					customerSuccess,
-					tiempoCoccion,
-					tiempoEntregaTotal,
-					kmRecorridos,
-					ticketPromedio:
-						dailyOrders.length > 0 ? facturacionBruta / dailyOrders.length : 0,
-					ratingPresentacion: avgPresentacion,
-					ratingPagina: avgPagina,
-				};
-			}
-		);
-
+						(horaInicio[0] * 60 + horaInicio[1])
+					);
+				});
+	 
+			const tiempoEntregaTotal =
+				tiemposEntrega.length > 0
+					? tiemposEntrega.reduce((sum, time) => sum + time, 0) /
+					  tiemposEntrega.length
+					: 0;
+	 
+			// Cálculo de KMs
+			const kmRecorridos = activeOrders.reduce((total, order) => {
+				if (!order.map || order.map.length !== 2) return total;
+				return total + 5; // Ejemplo simplificado
+			}, 0);
+	 
+			// Calcular ratings promedios diarios
+			const presentacionRatings = activeOrders
+				.filter((order) => order.rating?.presentacion)
+				.map((order) => order.rating.presentacion);
+	 
+			const paginaRatings = activeOrders
+				.filter((order) => order.rating?.pagina)
+				.map((order) => order.rating.pagina);
+	 
+			const avgPresentacion =
+				presentacionRatings.length > 0
+					? presentacionRatings.reduce((sum, rating) => sum + rating, 0) /
+					  presentacionRatings.length
+					: 0;
+	 
+			const avgPagina =
+				paginaRatings.length > 0
+					? paginaRatings.reduce((sum, rating) => sum + rating, 0) /
+					  paginaRatings.length
+					: 0;
+	 
+			return {
+				fecha: dateStr,
+				facturacionBrutaActiva,
+				facturacionNetaActiva,
+				facturacionBrutaCancelada,
+				facturacionNetaCancelada,
+				productosVendidos: isMarketingUser
+					? Math.ceil(productosVendidos * 2)
+					: productosVendidos,
+				ventasDelivery: isMarketingUser
+					? Math.ceil(activeOrders.length * 2)
+					: activeOrders.length,
+				customerSuccess,
+				tiempoCoccion,
+				tiempoEntregaTotal,
+				kmRecorridos,
+				ticketPromedio:
+					activeOrders.length > 0 
+						? facturacionBrutaActiva / activeOrders.length 
+						: 0,
+				ratingPresentacion: avgPresentacion,
+				ratingPagina: avgPagina,
+			};
+		});
+	 
 		const sortedData = dailyData.sort((a, b) => {
 			const [diaA, mesA, añoA] = a.fecha.split("/");
 			const [diaB, mesB, añoB] = b.fecha.split("/");
@@ -167,9 +193,9 @@ const KPILineChart = ({ orders }) => {
 			const fechaB = new Date(Number(añoB), Number(mesB) - 1, Number(diaB));
 			return fechaA.getTime() - fechaB.getTime();
 		});
-
+	 
 		setChartData(sortedData);
-	}, [orders, isMarketingUser, neto, facturacionTotal]);
+	 }, [orders, isMarketingUser, neto, facturacionTotal]);
 
 	const marketingKPIOptions = [
 		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
@@ -179,17 +205,15 @@ const KPILineChart = ({ orders }) => {
 	];
 
 	const allKPIOptions = [
-		{ id: "facturacionBruta", name: "Facturación bruta", color: "#FA0202" },
-		{ id: "facturacionNeta", name: "Facturación neta", color: "#4DFF88" },
+		{ id: "facturacionBrutaActiva", name: "Facturación bruta", color: "#32CD32" },
+		{ id: "facturacionNetaActiva", name: "Facturación neta", color: "#228B22" },
+		{ id: "facturacionBrutaCancelada", name: "Facturación bruta cancelada", color: "#FF4500" },
+		{ id: "facturacionNetaCancelada", name: "Facturación neta cancelada", color: "#DC143C" },
 		{ id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
 		{ id: "ventasDelivery", name: "Ventas delivery", color: "#4D4DFF" },
 		{ id: "customerSuccess", name: "Customer success", color: "#FF66FF" },
 		{ id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#00E6E6" },
-		{
-			id: "tiempoEntregaTotal",
-			name: "Tiempo entrega total",
-			color: "#B266FF",
-		},
+		{ id: "tiempoEntregaTotal", name: "Tiempo entrega total", color: "#B266FF" },
 		{ id: "kmRecorridos", name: "KMs recorridos", color: "#FF9933" },
 		{ id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
 	];
