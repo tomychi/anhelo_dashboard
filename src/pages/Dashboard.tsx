@@ -386,19 +386,25 @@ export const Dashboard: React.FC = () => {
 		(order) => order.envioExpress && order.envioExpress > 0
 	).length;
 
-	// Primero, agrega estas constantes justo antes del array allCards
 	const canceledOrders = orders.filter(order => order.canceled);
-	const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
-	const canceledProducts = orders
-	  .filter(order => order.canceled)
-	  .reduce((total, order) => {
-		return total + order.detallePedido.reduce((accumulator, detail) => {
-		  const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
-		  return accumulator + detail.quantity + additionalQuantity;
-		}, 0);
-	  }, 0);
+const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+const canceledProducts = orders
+  .filter(order => order.canceled)
+  .reduce((total, order) => {
+    return total + order.detallePedido.reduce((accumulator, detail) => {
+      const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
+      return accumulator + detail.quantity + additionalQuantity;
+    }, 0);
+  }, 0);
+const canceledCostTotal = canceledOrders.reduce((total, order) => {
+  return total + order.detallePedido.reduce((subtotal, pedido) => {
+    return subtotal + (pedido.costoBurger || 0);
+  }, 0);
+}, 0);
 
-// Luego, agrega las nuevas cards al principio del array allCards
+// Calcular la facturación neta cancelada (facturación cancelada - costos cancelados)
+const canceledNetAmount = canceledOrdersTotal - canceledCostTotal;
+
 const allCards = [
    
 		<CardInfo
@@ -452,9 +458,16 @@ const allCards = [
     <CardInfo
         key="canceledAmount"
         info={currencyFormat(canceledOrdersTotal)}
-        title={"Facturación cancelada"}
+        title={"Facturación bruta cancelada"}
         isLoading={isLoading}
     />,
+	<CardInfo
+	key="canceledNetAmount"
+	info={currencyFormat(Math.ceil(canceledNetAmount))}
+	cuadrito={canceledOrdersTotal > 0 ? (canceledNetAmount * 100) / canceledOrdersTotal : 0}
+	title={"Facturación neta cancelada"}
+	isLoading={isLoading}
+/>,
 		<CardInfo
 			key="success"
 			info={`${Math.ceil(
