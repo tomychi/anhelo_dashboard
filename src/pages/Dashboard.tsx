@@ -444,18 +444,6 @@ const allCards = [
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-        key="canceledProducts"
-        info={canceledProducts.toString()}
-        title={"Productos cancelados"}
-        isLoading={isLoading}
-    />,
-		<CardInfo
-        key="canceledOrders"
-        info={canceledOrders.length.toString()}
-        title={"Pedidos cancelados"}
-        isLoading={isLoading}
-    />,
-    <CardInfo
         key="canceledAmount"
         info={currencyFormat(canceledOrdersTotal)}
         title={"Facturación bruta cancelada"}
@@ -468,6 +456,19 @@ const allCards = [
 	title={"Facturación neta cancelada"}
 	isLoading={isLoading}
 />,
+		<CardInfo
+        key="canceledProducts"
+        info={canceledProducts.toString()}
+        title={"Productos cancelados"}
+        isLoading={isLoading}
+    />,
+		<CardInfo
+        key="canceledOrders"
+        info={canceledOrders.length.toString()}
+        title={"Pedidos cancelados"}
+        isLoading={isLoading}
+    />,
+   
 		<CardInfo
 			key="success"
 			info={`${Math.ceil(
