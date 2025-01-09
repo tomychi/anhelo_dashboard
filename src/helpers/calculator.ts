@@ -19,7 +19,7 @@ export const calcularTotales = (
       facturacionTotal: 0,
       totalProductosVendidos: 0,
       productosPedidos: [],
-    }; // Devuelve 0 si no hay pedidos
+    };
   }
 
   // Objeto temporal para realizar el seguimiento de las hamburguesas y sus cantidades acumuladas
@@ -31,9 +31,9 @@ export const calcularTotales = (
   const sumarCantidades = (burger: string, quantity: number, hora: string) => {
     if (hamburguesasMap[burger]) {
       hamburguesasMap[burger].quantity += quantity;
-      hamburguesasMap[burger].hora = hora; // Agregamos la hora aquí
+      hamburguesasMap[burger].hora = hora;
     } else {
-      hamburguesasMap[burger] = { quantity, hora }; // Aquí inicializamos el objeto si no existe
+      hamburguesasMap[burger] = { quantity, hora };
     }
   };
 
@@ -41,20 +41,23 @@ export const calcularTotales = (
   const { facturacionTotal, totalProductosVendidos } = ordersData.reduce(
     (totals, order) => {
       if ("detallePedido" in order) {
-        // Si es un PedidoProps, suma el total de facturación y la cantidad de productos vendidos en el detalle del pedido
-        totals.facturacionTotal += order.total || 0;
-        totals.totalProductosVendidos += order.detallePedido.reduce(
-          (accumulator, detail) => {
-            // Acumula la cantidad de productos vendidos y agrega cada hamburguesa al objeto hamburguesasMap
-            sumarCantidades(detail.burger, detail.quantity, order.hora);
-            // Si es una hamburguesa 2x1, suma una cantidad adicional
-            const additionalQuantity = detail.burger.includes("2x1")
-              ? detail.quantity
-              : 0;
-            return accumulator + detail.quantity + additionalQuantity;
-          },
-          0,
-        );
+        // Solo procesar si el pedido no está cancelado
+        if (!order.canceled) {
+          // Si es un PedidoProps, suma el total de facturación y la cantidad de productos vendidos
+          totals.facturacionTotal += order.total || 0;
+          totals.totalProductosVendidos += order.detallePedido.reduce(
+            (accumulator, detail) => {
+              // Acumula la cantidad de productos vendidos y agrega cada hamburguesa al objeto hamburguesasMap
+              sumarCantidades(detail.burger, detail.quantity, order.hora);
+              // Si es una hamburguesa 2x1, suma una cantidad adicional
+              const additionalQuantity = detail.burger.includes("2x1")
+                ? detail.quantity
+                : 0;
+              return accumulator + detail.quantity + additionalQuantity;
+            },
+            0,
+          );
+        }
       } else {
         // Si es un ExpenseProps, suma el total de facturación y la cantidad directamente
         totals.facturacionTotal += order.total || 0;
@@ -76,6 +79,37 @@ export const calcularTotales = (
 
   return { facturacionTotal, totalProductosVendidos, productosPedidos };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const calculateUnitCost = (
   total: number,

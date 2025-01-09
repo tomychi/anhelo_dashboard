@@ -37,6 +37,8 @@ export interface PedidoProps {
 	map: [number, number];
 	kms: number;
 	minutosDistancia: number;
+  canceled?: string;
+
 	cerca?: boolean;
 	rating?: Rating;
 }

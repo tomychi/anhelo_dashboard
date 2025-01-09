@@ -386,7 +386,24 @@ export const Dashboard: React.FC = () => {
 		(order) => order.envioExpress && order.envioExpress > 0
 	).length;
 
-	const allCards = [
+	// Primero, agrega estas constantes justo antes del array allCards
+const canceledOrders = orders.filter(order => order.canceled);
+const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+
+// Luego, agrega las nuevas cards al principio del array allCards
+const allCards = [
+    <CardInfo
+        key="canceledOrders"
+        info={canceledOrders.length.toString()}
+        title={"Pedidos cancelados"}
+        isLoading={isLoading}
+    />,
+    <CardInfo
+        key="canceledAmount"
+        info={currencyFormat(canceledOrdersTotal)}
+        title={"Facturación cancelada"}
+        isLoading={isLoading}
+    />,
 		<CardInfo
 			key="bruto"
 			info={currencyFormat(facturacionTotal)}
@@ -511,6 +528,44 @@ export const Dashboard: React.FC = () => {
 			return total;
 		}, 0);
 	};
+
+	useEffect(() => {
+		orders.forEach((order, index) => {
+		  console.log(`\n====== Order ${index + 1} ======`);
+		  console.log(`ID: ${order.id}`);
+		  console.log(`Date: ${order.fecha}`);
+		  console.log(`Time: ${order.hora}`);
+		  console.log(`Delivery Method: ${order.deliveryMethod}`);
+		  console.log(`Payment Method: ${order.metodoPago}`);
+		  console.log(`Status: ${order.elaborado ? 'Prepared' : 'Not Prepared'}`);
+		  console.log(`Delivery Status: ${order.cadete}`);
+		  console.log(`Canceled: ${order.canceled || 'Not canceled'}`);
+		  
+		  console.log('\nOrder Details:');
+		  order.detallePedido.forEach((item, idx) => {
+			console.log(`  Item ${idx + 1}:`);
+			console.log(`    - Product: ${item.burger}`);
+			console.log(`    - Quantity: ${item.quantity}`);
+			console.log(`    - Price: $${item.priceBurger}`);
+			console.log(`    - Cost: $${item.costoBurger}`);
+			if (item.toppings && item.toppings.length > 0) {
+			  console.log(`    - Toppings: ${item.toppings.join(', ')}`);
+			}
+		  });
+	
+		  console.log('\nFinancial Details:');
+		  console.log(`Subtotal: $${order.subTotal}`);
+		  console.log(`Delivery Fee: $${order.envio}`);
+		  console.log(`Express Delivery Fee: $${order.envioExpress}`);
+		  console.log(`Total: $${order.total}`);
+	
+		  if (order.direccion) {
+			console.log(`\nDelivery Address: ${order.direccion}`);
+		  }
+		  
+		  console.log('========================\n');
+		});
+	  }, [orders]);
 
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">

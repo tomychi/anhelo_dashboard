@@ -82,48 +82,65 @@ const dataReducer = (state = initialState, action: DataAction) => {
 
     case 'READ_ORDERS': {
       const orders = action.payload?.orders;
-      if (!orders) return state; // Si orders es undefined, retornar el estado actual
-      // Calcular totales basados en las nuevas órdenes
+      if (!orders) return state;
+    
+      console.log("1. Total de órdenes recibidas:", orders.length);
+    
+      // Filtrar pedidos no cancelados
+      const activeOrders = orders.filter(order => !order.canceled);
+      console.log("2. Órdenes activas (no canceladas):", activeOrders.length);
+      console.log("3. Órdenes canceladas:", orders.length - activeOrders.length);
+      
+      // Calcular totales basados solo en órdenes activas
       const { facturacionTotal, totalProductosVendidos, productosPedidos } =
-        calcularTotales(orders);
-
-      // Sumar todos los valores de costoBurger en todos los elementos de orders.detallePedido
-      const totalCostoBurger = orders.reduce((total, order) => {
-        // Para cada orden, sumamos el costoBurger de cada elemento en su detallePedido
+        calcularTotales(activeOrders);
+      
+      console.log("4. Facturación total de órdenes activas:", facturacionTotal);
+    
+      // Calcular costo total solo de órdenes activas
+      const totalCostoBurger = activeOrders.reduce((total, order) => {
+        console.log("\n5. Procesando orden:", order.id);
+        console.log("   Total de la orden:", order.total);
+        
         const costoBurgerOrden = order.detallePedido.reduce(
           (subtotal, pedido) => {
-            // Verificar si la propiedad costoBurger existe en el pedido
+            console.log(`   Hamburguesa: ${pedido.burger}`);
+            console.log(`   Cantidad: ${pedido.quantity}`);
+            console.log(`   Costo unitario: ${pedido.costoBurger}`);
+            
             if (pedido.costoBurger) {
-              // Si existe, sumar su valor al subtotal
-              return subtotal + pedido.costoBurger;
-            } else {
-              // Si no existe, sumar 0 al subtotal
-              return subtotal;
+              return subtotal + pedido.costoBurger; // Ya no multiplicamos por quantity
             }
+            return subtotal;
           },
           0
-        ); // Comenzamos el subtotal en 0 para esta orden
-
-        // Sumamos el costoBurger de esta orden al total
+        );
+        console.log("   Costo total de la orden:", costoBurgerOrden);
         return total + costoBurgerOrden;
-      }, 0); // Comenzamos el total en 0
-
-      // Obtener todos los toppings de todas las órdenes
-      const allToppings = orders
+      }, 0);
+    
+      console.log("\n6. Costo total de todas las hamburguesas:", totalCostoBurger);
+      console.log("7. Facturación total:", facturacionTotal);
+      console.log("8. Neto calculado:", facturacionTotal - totalCostoBurger);
+    
+      // Obtener todos los toppings solo de órdenes activas
+      const allToppings = activeOrders
         .flatMap((o) =>
           o.detallePedido.flatMap((d) =>
             Array.from({ length: d.quantity }, () => d.toppings)
           )
         )
         .flat();
-
+    
       // Contar la cantidad de cada topping
       const toppingCounts = allToppings.reduce((acc, topping) => {
-        topping = topping.toLowerCase();
-        acc[topping] = (acc[topping] || 0) + 1;
+        if (topping) {
+          topping = topping.toLowerCase();
+          acc[topping] = (acc[topping] || 0) + 1;
+        }
         return acc;
       }, {} as { [topping: string]: number });
-
+    
       // Construir el objeto con la cantidad y el nombre de cada topping
       const toppingsData = Object.entries(toppingCounts).map(
         ([name, quantity]) => ({
@@ -131,16 +148,23 @@ const dataReducer = (state = initialState, action: DataAction) => {
           quantity,
         })
       );
-      return {
+    
+      const returnValue = {
         ...state,
         orders,
         toppingsData,
         neto: facturacionTotal - totalCostoBurger,
-        facturacionTotal: facturacionTotal ?? state.facturacionTotal,
-        totalProductosVendidos:
-          totalProductosVendidos ?? state.totalProductosVendidos,
-        productosPedidos: productosPedidos ?? state.productosPedidos,
+        facturacionTotal,
+        totalProductosVendidos,
+        productosPedidos,
       };
+    
+      console.log("\n9. Valores finales:");
+      console.log("   Facturación total:", returnValue.facturacionTotal);
+      console.log("   Neto:", returnValue.neto);
+      console.log("   Total productos vendidos:", returnValue.totalProductosVendidos);
+    
+      return returnValue;
     }
 
     case 'READ_EXPENSES': {
