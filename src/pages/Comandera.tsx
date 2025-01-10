@@ -208,29 +208,32 @@ export const Comandera: React.FC = () => {
 
 	const filteredOrders = useMemo(() => {
 		return orders
-			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
-			.sort((a, b) => {
-				const [horaA, minutosA] = a.hora.split(":").map(Number);
-				const [horaB, minutosB] = b.hora.split(":").map(Number);
-				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
-			});
-	}, [orders, selectedCadete]);
+		  .filter((o) => !o.canceled) // Filtramos los pedidos que no están cancelados
+		  .filter((o) => !selectedCadete || o.cadete === selectedCadete)
+		  .sort((a, b) => {
+			const [horaA, minutosA] = a.hora.split(":").map(Number);
+			const [horaB, minutosB] = b.hora.split(":").map(Number);
+			return horaA * 60 + minutosA - (horaB * 60 + minutosB);
+		  });
+	  }, [orders, selectedCadete]);
 
-	const pedidosPorHacer = useMemo(() => {
+	  const pedidosPorHacer = useMemo(() => {
 		return filteredOrders.filter((o) => !o.elaborado && !o.entregado);
-	}, [filteredOrders]);
-
-	const pedidosHechos = useMemo(() => {
+	  }, [filteredOrders]);
+	  
+	  const pedidosHechos = useMemo(() => {
 		return filteredOrders.filter((o) => o.elaborado && !o.entregado);
-	}, [filteredOrders]);
-
-	const pedidosEntregados = useMemo(() => {
+	  }, [filteredOrders]);
+	  
+	  const pedidosEntregados = useMemo(() => {
 		return filteredOrders.filter((o) => o.entregado);
-	}, [filteredOrders]);
-
-	const pedidosCerca = useMemo(() => {
+	  }, [filteredOrders]);
+	  
+	  const pedidosCerca = useMemo(() => {
 		return filteredOrders.filter((o) => o.cerca);
-	}, [filteredOrders]);
+	  }, [filteredOrders]);
+
+
 	const customerSuccess = useMemo(() => {
 		return (
 			100 -
@@ -242,37 +245,34 @@ export const Comandera: React.FC = () => {
 	useEffect(() => {
 		let unsubscribeEmpleados: Unsubscribe | null = null;
 		let unsubscribeOrders: Unsubscribe | null = null;
-
+	  
 		const iniciarEscuchas = async () => {
-			unsubscribeEmpleados = listenToEmpleadosChanges(
-				(empleadosActualizados) => {
-					setEmpleados(empleadosActualizados);
-					const cadetesFiltrados = empleadosActualizados
-						.filter((empleado) => empleado.category === "cadete")
-						.map((empleado) => empleado.name);
-					setCadetes(cadetesFiltrados);
-				}
-			);
-
-			if (location.pathname === "/comandas") {
-				unsubscribeOrders = ReadOrdersForToday(
-					async (pedidos: PedidoProps[]) => {
-						dispatch(readOrdersData(pedidos));
-					}
-				);
-			}
+		  unsubscribeEmpleados = listenToEmpleadosChanges((empleadosActualizados) => {
+			setEmpleados(empleadosActualizados);
+			const cadetesFiltrados = empleadosActualizados
+			  .filter((empleado) => empleado.category === "cadete")
+			  .map((empleado) => empleado.name);
+			setCadetes(cadetesFiltrados);
+		  });
+	  
+		  if (location.pathname === "/comandas") {
+			unsubscribeOrders = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
+			  console.log("Pedidos recibidos:", pedidos); // Agregar este console.log
+			  dispatch(readOrdersData(pedidos));
+			});
+		  }
 		};
-
+	  
 		iniciarEscuchas();
 		return () => {
-			if (unsubscribeEmpleados) {
-				unsubscribeEmpleados();
-			}
-			if (unsubscribeOrders) {
-				unsubscribeOrders();
-			}
+		  if (unsubscribeEmpleados) {
+			unsubscribeEmpleados();
+		  }
+		  if (unsubscribeOrders) {
+			unsubscribeOrders();
+		  }
 		};
-	}, [dispatch, location]);
+	  }, [dispatch, location]);
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
@@ -309,31 +309,30 @@ export const Comandera: React.FC = () => {
 	}, [orders, tiempoActual]);
 
 	const pedidosDisponibles = useMemo(() => {
-		return orders.filter((order) => {
-			if (order.hora > obtenerHoraActual()) {
-				return false; // Este es un pedido de reserva
-			}
-			if (
-				order.deliveryMethod === "takeaway" ||
-				order.direccion ===
-					"Buenos Aires 618, X5800 Río Cuarto, Córdoba, Argentina"
-			) {
-				return false; // Excluir takeaway y dirección específica
-			}
-			if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
-				return true;
-			}
-			if (order.entregado) {
-				return false;
-			}
-			const cadeteAsignado = empleados.find(
-				(empleado) =>
-					empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
-					empleado.category === "cadete"
-			);
-			return cadeteAsignado && cadeteAsignado.available;
+		return filteredOrders.filter((order) => {
+		  if (order.hora > obtenerHoraActual()) {
+			return false; // Este es un pedido de reserva
+		  }
+		  if (
+			order.deliveryMethod === "takeaway" ||
+			order.direccion === "Buenos Aires 618, X5800 Río Cuarto, Córdoba, Argentina"
+		  ) {
+			return false; // Excluir takeaway y dirección específica
+		  }
+		  if (order.cadete === "NO ASIGNADO" || order.cadete === "no asignado") {
+			return true;
+		  }
+		  if (order.entregado) {
+			return false;
+		  }
+		  const cadeteAsignado = empleados.find(
+			(empleado) =>
+			  empleado.name.toLowerCase() === order.cadete.toLowerCase() &&
+			  empleado.category === "cadete"
+		  );
+		  return cadeteAsignado && cadeteAsignado.available;
 		});
-	}, [orders, empleados, tiempoActual]);
+	  }, [filteredOrders, empleados, tiempoActual]);
 
 	function calcularDistancia(
 		lat1: number,
