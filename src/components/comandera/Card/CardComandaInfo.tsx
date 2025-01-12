@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import currencyFormat from "../../../helpers/currencyFormat";
 import { TiempoEditable } from "../../Card/TiempoEditable";
 import { updateOrderFields } from "../../../firebase/UploadOrder";
@@ -51,6 +51,10 @@ export const CardComandaInfo = ({
   updateTiempoEntregaForOrder,
   entregado,
 }: CardComandaInfoProps) => {
+
+ 
+
+
   const [mostrarInfoCompleta, setMostrarInfoCompleta] = useState(false);
   const [editando, setEditando] = useState(false);
   const [direccion, setDireccion] = useState(initialDireccion);
@@ -66,6 +70,11 @@ export const CardComandaInfo = ({
   const [mercadopagoCantidad, setMercadopagoCantidad] = useState(
     initalMercadopagoCantidad,
   );
+
+  useEffect(() => {
+    setTotal(initialTotal);
+  }, [initialTotal]);
+
 
   const canEdit = user.email === "tomas.arcostanzo5@gmail.com";
 
