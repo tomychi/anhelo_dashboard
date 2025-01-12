@@ -39,6 +39,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 					map,
 					kms,
 					minutosDistancia,
+					pendingOfBeingAccepted,
 					efectivoCantidad,
 					mercadopagoCantidad,
 				}) => (
@@ -57,6 +58,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 							referencias={referencias}
 							ubicacion={ubicacion}
 							fecha={fecha}
+							pendingOfBeingAccepted={pendingOfBeingAccepted}
 							cadete={cadete}
 							efectivoCantidad={efectivoCantidad}
 							mercadopagoCantidad={mercadopagoCantidad}

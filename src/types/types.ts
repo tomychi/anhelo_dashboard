@@ -38,6 +38,7 @@ export interface PedidoProps {
 	kms: number;
 	minutosDistancia: number;
   canceled?: string;
+  pendingOfBeingAccepted?: boolean;
 
 	cerca?: boolean;
 	rating?: Rating;
