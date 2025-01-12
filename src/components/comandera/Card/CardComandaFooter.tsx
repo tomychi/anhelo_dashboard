@@ -68,7 +68,7 @@ export const CardComandaFooter = ({
   const [botonDesactivado, setBotonDesactivado] = useState(false);
   const [mostrarExtras, setMostrarExtras] = useState(false);
 
-  const handleAcceptOrder = async () => {
+  const handleOrderAction = async (action: 'accept' | 'reject') => {
     try {
       const firestore = getFirestore();
       const [dia, mes, anio] = fecha.split("/");
@@ -87,23 +87,28 @@ export const CardComandaFooter = ({
 
         if (index !== -1) {
           pedidosDelDia[index].pendingOfBeingAccepted = false;
+          if (action === 'accept') {
+            pedidosDelDia[index].aceptado = true;
+          } else {
+            pedidosDelDia[index].rechazado = true;
+          }
           transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
           
           Swal.fire({
             icon: 'success',
-            title: 'Pedido Aceptado',
-            text: `El pedido con ID ${id} ha sido aceptado.`,
+            title: action === 'accept' ? 'Pedido Aceptado' : 'Pedido Rechazado',
+            text: `El pedido con ID ${id} ha sido ${action === 'accept' ? 'aceptado' : 'rechazado'}.`,
           });
         } else {
           throw new Error("Pedido no encontrado");
         }
       });
     } catch (error) {
-      console.error('Error al aceptar el pedido:', error);
+      console.error('Error al procesar el pedido:', error);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo aceptar el pedido.',
+        text: 'No se pudo procesar el pedido.',
       });
     }
   };
@@ -195,20 +200,37 @@ export const CardComandaFooter = ({
       )}
 
       {pendingOfBeingAccepted ? (
-        <button
-          onClick={handleAcceptOrder}
-          className="bg-black w-full flex justify-center mt-14 text-blue-500 font-black p-4 inline-flex items-center"
-          disabled={botonDesactivado}
-        >
-          <svg
-            className="fill-current w-4 h-4 mr-2 text-blue-500"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
+        <div className="flex gap-2 mt-14">
+          <button
+            onClick={() => handleOrderAction('accept')}
+            className="bg-black w-full flex justify-center text-green-500 font-black p-4 inline-flex items-center"
+            disabled={botonDesactivado}
           >
-            <path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/>
-          </svg>
-          <span>ACEPTAR PEDIDO</span>
-        </button>
+            <svg
+              className="fill-current w-4 h-4 mr-2 text-green-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/>
+            </svg>
+            <span>ACEPTAR</span>
+          </button>
+          
+          <button
+            onClick={() => handleOrderAction('reject')}
+            className="bg-black w-full flex justify-center text-red-500 font-black p-4 inline-flex items-center"
+            disabled={botonDesactivado}
+          >
+            <svg
+              className="fill-current w-4 h-4 mr-2 text-red-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/>
+            </svg>
+            <span>RECHAZAR</span>
+          </button>
+        </div>
       ) : (
         <button
           onClick={() => imprimirTicket(comanda, setBotonDesactivado, hora, id)}
