@@ -413,7 +413,36 @@ const canceledDeliveryOrders = canceledOrders.filter(
 	order => order.deliveryMethod === "takeaway"
   );
 
+  const ordersWithExtra = orders.filter((order) =>
+    order.detallePedido.some((detalle) => detalle.extra === true)
+);
+
+const extraProductsCount = orders.reduce((total, order) => {
+	return (
+	  total +
+	  order.detallePedido.reduce((subTotal, producto) => {
+		return producto.extra === true ? subTotal + producto.quantity : subTotal;
+	  }, 0)
+	);
+  }, 0);
+
+const extraOrdersDetails = ordersWithExtra.map((order) => ({
+    id: order.id,
+    fecha: order.fecha,
+    hora: order.hora,
+    total: order.total,
+    detalle: order.detallePedido
+        .filter((detalle) => detalle.extra === true)
+        .map((detalle) => ({
+            burger: detalle.burger,
+            price: detalle.priceBurger,
+            quantity: detalle.quantity,
+            subTotal: detalle.subTotal,
+        })),
+}));
+
 const allCards = [
+	
    
 		<CardInfo
 			key="bruto"
@@ -451,6 +480,42 @@ const allCards = [
 			title={"Ventas take away"}
 			isLoading={isLoading}
 		/>,
+		<CardInfo
+    key="extraProducts"
+    info={extraProductsCount.toString()} // Total de productos con 'extra: true'
+    title={"Productos extra al final"} // Título del card
+    isLoading={isLoading} // Indicador de carga
+/>,
+	<CardInfo
+    key="extraOrders"
+    info={ordersWithExtra.length.toString()} // Muestra el número total de pedidos con 'extra: true'
+    title={"Pedidos con extras al final "} // Título del card
+	isLoading={isLoading} // Muestra un indicador de carga si es necesario
+
+	cuadrito={facturacionTotal > 0 
+    ? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount) 
+    : 0}
+
+/>,
+<CardInfo
+    key="extraFacturacion"
+    info={currencyFormat(
+        orders.reduce((total, order) => {
+            return (
+                total +
+                order.detallePedido
+                    .filter((producto) => producto.extra)
+                    .reduce(
+                        (subtotal, producto) =>
+                            subtotal + producto.priceBurger * producto.quantity,
+                        0
+                    )
+            );
+        }, 0)
+    )}
+    title={"Facturación por extras"}
+    isLoading={isLoading}
+/>,
 		<CardInfo
         key="canceledAmount"
         info={currencyFormat(canceledOrdersTotal)}
