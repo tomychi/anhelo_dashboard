@@ -637,43 +637,43 @@ const allCards = [
 		}, 0);
 	};
 
-	useEffect(() => {
-		orders.forEach((order, index) => {
-		  console.log(`\n====== Order ${index + 1} ======`);
-		  console.log(`ID: ${order.id}`);
-		  console.log(`Date: ${order.fecha}`);
-		  console.log(`Time: ${order.hora}`);
-		  console.log(`Delivery Method: ${order.deliveryMethod}`);
-		  console.log(`Payment Method: ${order.metodoPago}`);
-		  console.log(`Status: ${order.elaborado ? 'Prepared' : 'Not Prepared'}`);
-		  console.log(`Delivery Status: ${order.cadete}`);
-		  console.log(`Canceled: ${order.canceled || 'Not canceled'}`);
+	// useEffect(() => {
+	// 	orders.forEach((order, index) => {
+	// 	  console.log(`\n====== Order ${index + 1} ======`);
+	// 	  console.log(`ID: ${order.id}`);
+	// 	  console.log(`Date: ${order.fecha}`);
+	// 	  console.log(`Time: ${order.hora}`);
+	// 	  console.log(`Delivery Method: ${order.deliveryMethod}`);
+	// 	  console.log(`Payment Method: ${order.metodoPago}`);
+	// 	  console.log(`Status: ${order.elaborado ? 'Prepared' : 'Not Prepared'}`);
+	// 	  console.log(`Delivery Status: ${order.cadete}`);
+	// 	  console.log(`Canceled: ${order.canceled || 'Not canceled'}`);
 		  
-		  console.log('\nOrder Details:');
-		  order.detallePedido.forEach((item, idx) => {
-			console.log(`  Item ${idx + 1}:`);
-			console.log(`    - Product: ${item.burger}`);
-			console.log(`    - Quantity: ${item.quantity}`);
-			console.log(`    - Price: $${item.priceBurger}`);
-			console.log(`    - Cost: $${item.costoBurger}`);
-			if (item.toppings && item.toppings.length > 0) {
-			  console.log(`    - Toppings: ${item.toppings.join(', ')}`);
-			}
-		  });
+	// 	  console.log('\nOrder Details:');
+	// 	  order.detallePedido.forEach((item, idx) => {
+	// 		console.log(`  Item ${idx + 1}:`);
+	// 		console.log(`    - Product: ${item.burger}`);
+	// 		console.log(`    - Quantity: ${item.quantity}`);
+	// 		console.log(`    - Price: $${item.priceBurger}`);
+	// 		console.log(`    - Cost: $${item.costoBurger}`);
+	// 		if (item.toppings && item.toppings.length > 0) {
+	// 		  console.log(`    - Toppings: ${item.toppings.join(', ')}`);
+	// 		}
+	// 	  });
 	
-		  console.log('\nFinancial Details:');
-		  console.log(`Subtotal: $${order.subTotal}`);
-		  console.log(`Delivery Fee: $${order.envio}`);
-		  console.log(`Express Delivery Fee: $${order.envioExpress}`);
-		  console.log(`Total: $${order.total}`);
+	// 	  console.log('\nFinancial Details:');
+	// 	  console.log(`Subtotal: $${order.subTotal}`);
+	// 	  console.log(`Delivery Fee: $${order.envio}`);
+	// 	  console.log(`Express Delivery Fee: $${order.envioExpress}`);
+	// 	  console.log(`Total: $${order.total}`);
 	
-		  if (order.direccion) {
-			console.log(`\nDelivery Address: ${order.direccion}`);
-		  }
+	// 	  if (order.direccion) {
+	// 		console.log(`\nDelivery Address: ${order.direccion}`);
+	// 	  }
 		  
-		  console.log('========================\n');
-		});
-	  }, [orders]);
+	// 	  console.log('========================\n');
+	// 	});
+	//   }, [orders]);
 
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
