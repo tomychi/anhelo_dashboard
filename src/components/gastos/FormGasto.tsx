@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
+import { CATEGORIAS, UNIDADES } from '../../constants/expenses';
 
 interface FileUploadProps {
 	onFileSelect: (file: File) => void;
@@ -114,14 +115,14 @@ export const FormGasto = () => {
 	const [formData, setFormData] = useState<ExpenseProps>({
 		description: "",
 		total: 0,
-		category: isMarketingUser ? "marketing" : "", // Si es usuario de marketing, la categoría es 'marketing'
+		category: isMarketingUser ? "marketing" : "ingredientes", // Valor por defecto
 		fecha: obtenerFechaActual(),
 		name: "",
 		quantity: 0,
-		unit: "",
+		unit: "unidad", // Valor por defecto
 		id: "",
-		estado: "",
-	});
+		estado: "pendiente",
+	  });
 
 	const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -249,50 +250,55 @@ export const FormGasto = () => {
 			<div className="item-section w-full flex flex-col gap-2">
 				<FileUpload onFileSelect={handleFileSelect} />
 				<div className="section relative z-0">
-					<input
-						type="text"
-						id="name"
-						name="name"
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.name}
-						onChange={handleNameChange}
-						placeholder="Nombre del item"
-						list={isMarketingUser ? undefined : "itemNames"}
-						required
-						autoComplete="off"
-					/>
-					{!isMarketingUser && (
-						<datalist id="itemNames">
-							{materiales.map((material, index) => (
-								<option key={index} value={material.nombre} />
-							))}
-						</datalist>
-					)}
-				</div>
-				<div className="section relative z-0">
-					<input
-						type="number"
-						id="quantity"
-						name="quantity"
-						value={formData.quantity || ""}
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						onChange={handleChange}
-						placeholder="Cantidad"
-						required
-					/>
-				</div>
-				<div className="section relative z-0">
-					<input
-						type="text"
-						id="unit"
-						name="unit"
-						value={formData.unit}
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						onChange={handleChange}
-						placeholder="Unidad de medida"
-						required
-					/>
-				</div>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.name}
+            onChange={handleNameChange}
+            placeholder="Nombre del item"
+            list={isMarketingUser ? undefined : "itemNames"}
+            required
+            autoComplete="off"
+          />
+          {!isMarketingUser && (
+            <datalist id="itemNames">
+              {materiales.map((material, index) => (
+                <option key={index} value={material.nombre} />
+              ))}
+            </datalist>
+          )}
+        </div>
+		<div className="section relative z-0">
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value={formData.quantity || ""}
+            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            onChange={handleChange}
+            placeholder="Cantidad"
+            required
+          />
+        </div>
+		<div className="section relative z-0">
+          <select
+            id="unit"
+            name="unit"
+            value={formData.unit}
+            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            onChange={handleChange}
+            required
+          >
+            <option value="">Seleccionar unidad</option>
+            {UNIDADES.map((unit) => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
 				<div className="section w-full relative z-0">
 					<input
 						type="number"
@@ -330,19 +336,24 @@ export const FormGasto = () => {
 					</select>
 				</div>
 				{!isMarketingUser && (
-					<div className="section w-full relative z-0">
-						<input
-							type="text"
-							id="category"
-							name="category"
-							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-							value={formData.category}
-							placeholder="Categoría"
-							onChange={handleChange}
-							required
-						/>
-					</div>
-				)}
+          <div className="section w-full relative z-0">
+            <select
+              id="category"
+              name="category"
+              className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccionar categoría</option>
+              {CATEGORIAS.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 				<div className="section w-full relative z-0">
 					<input
 						type="string"

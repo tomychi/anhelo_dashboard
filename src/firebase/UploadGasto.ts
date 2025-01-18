@@ -8,15 +8,18 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+import { CategoriaType, UnidadType } from '../constants/expenses';
+
+
 
 export interface ExpenseProps {
   description: string;
   total: number;
-  category: string;
+  category: CategoriaType;
   fecha: string;
   name: string;
   quantity: number;
-  unit: string;
+  unit: UnidadType;
   id: string;
   estado: string;
 }
