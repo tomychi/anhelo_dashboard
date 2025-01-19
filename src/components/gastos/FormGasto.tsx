@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { obtenerFechaActual } from "../../helpers/dateToday";
-import { UploadExpense, ExpenseProps } from "../../firebase/UploadGasto";
+import { UploadExpense,  } from "../../firebase/UploadGasto";
 import Swal from "sweetalert2";
 import { updateMaterialCost } from "../../firebase/Materiales";
 import { calculateUnitCost } from "../../helpers/calculator";
@@ -8,7 +8,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
-import { CATEGORIAS, UNIDADES } from '../../constants/expenses';
+import { CATEGORIAS, UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
+
 
 interface FileUploadProps {
 	onFileSelect: (file: File) => void;
@@ -112,135 +113,136 @@ export const FormGasto = () => {
 	const { materiales } = useSelector((state: RootState) => state.materials);
 	const [file, setFile] = useState<File | null>(null);
 
-	const [formData, setFormData] = useState<ExpenseProps>({
+	const [formData, setFormData] = useState<Omit<ExpenseProps, 'id'>>({
 		description: "",
 		total: 0,
-		category: isMarketingUser ? "marketing" : "ingredientes", // Valor por defecto
+		category: isMarketingUser ? "marketing" : "ingredientes",
 		fecha: obtenerFechaActual(),
 		name: "",
 		quantity: 0,
-		unit: "unidad", // Valor por defecto
-		id: "",
-		estado: "pendiente",
+		unit: "unidad",
+		estado: "pendiente"
 	  });
 
-	const handleChange = (
+	  const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
+	  ) => {
 		const { name, value } = e.target;
-
-		const numericValue = parseFloat(value);
-		const sanitizedValue = isNaN(numericValue) ? "" : numericValue;
-
-		setFormData((prevData) => ({
-			...prevData,
-			[name]: name === "total" || name === "quantity" ? sanitizedValue : value,
-		}));
-	};
-
-	const handleFileSelect = (selectedFile: File) => {
+	
+		if (name === "total" || name === "quantity") {
+		  const numericValue = parseFloat(value);
+		  setFormData(prev => ({
+			...prev,
+			[name]: isNaN(numericValue) ? 0 : numericValue
+		  }));
+		} else {
+		  setFormData(prev => ({
+			...prev,
+			[name]: value
+		  }));
+		}
+	  };
+	
+	  const handleFileSelect = (selectedFile: File) => {
 		setFile(selectedFile);
-	};
-
-	const handleNameChange = (
+	  };
+	
+	  const handleNameChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
+	  ) => {
 		const { value } = e.target;
 		const selectedMaterial = materiales.find(
-			(material) => material.nombre === value
+		  (material) => material.nombre === value
 		);
-
+	
 		if (selectedMaterial) {
-			setUnidadPorPrecio(selectedMaterial.unidadPorPrecio);
-			setFormData({
-				...formData,
-				id: selectedMaterial.id,
-				name: selectedMaterial.nombre,
-				quantity: 0,
-				unit: selectedMaterial.unit,
-				total: 0,
-				description: "",
-				category: selectedMaterial.categoria,
-				fecha: obtenerFechaActual(),
-				estado: "",
-			});
+		  setUnidadPorPrecio(selectedMaterial.unidadPorPrecio);
+		  setFormData({
+			...formData,
+			name: selectedMaterial.nombre,
+			quantity: 0,
+			unit: selectedMaterial.unit,
+			total: 0,
+			description: "",
+			category: selectedMaterial.categoria,
+			estado: "pendiente"
+		  });
 		} else {
-			setFormData({
-				...formData,
-				name: value,
-				quantity: 0,
-				unit: "",
-				total: 0,
-				description: "",
-				category: isMarketingUser ? "marketing" : "", // Si es usuario de marketing, la categoría es 'marketing'
-				fecha: obtenerFechaActual(),
-				estado: "",
-			});
+		  setFormData({
+			...formData,
+			name: value,
+			quantity: 0,
+			unit: "unidad",
+			total: 0,
+			description: "",
+			category: isMarketingUser ? "marketing" : "ingredientes",
+			estado: "pendiente"
+		  });
 		}
-	};
-
-	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+	  };
+	
+	  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+	
 		const cost = calculateUnitCost(
-			formData.total,
-			formData.quantity,
-			unidadPorPrecio,
-			formData.unit,
-			formData.name
+		  formData.total,
+		  formData.quantity,
+		  unidadPorPrecio,
+		  formData.unit,
+		  formData.name
 		);
-
-		// Aquí deberías manejar la carga del archivo si es necesario
-		// Por ejemplo, podrías usar una función para subir el archivo a Firebase Storage
-
-		UploadExpense(formData)
-			.then((result) => {
-				Swal.fire({
-					icon: "success",
-					title: `Gasto cargado`,
-					text: `El gasto ${result.id} se cargó correctamente`,
-				});
-				// Aquí podrías agregar lógica adicional para manejar el archivo subido
-			})
-			.then(() => {
-				updateMaterialCost(formData.id, cost, formData.quantity)
-					.then((result) => {
-						Swal.fire({
-							icon: "success",
-							title: `Gasto actualizado`,
-							text: `El costo ${result} se cargó correctamente`,
-						});
-					})
-					.catch((error) => {
-						Swal.fire({
-							icon: "error",
-							title: "Error",
-							text: `Hubo un error al cargar el gasto: ${error}`,
-						});
-					});
-			})
-			.catch((error) => {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: `Hubo un error al cargar el gasto: ${error}`,
-				});
-			});
-
-		setFormData({
+	
+		try {
+		  const expenseWithId = { ...formData, id: '' }; // El ID se genera en UploadExpense
+		  const result = await UploadExpense(expenseWithId);
+		  
+		  await Swal.fire({
+			icon: "success",
+			title: "Gasto cargado",
+			text: `El gasto ${result.id} se cargó correctamente`
+		  });
+	
+		  // Solo actualizar el costo del material si hay un ID seleccionado
+		  if (cost) {
+			try {
+			  await updateMaterialCost(formData.id, cost, formData.quantity);
+			  await Swal.fire({
+				icon: "success",
+				title: "Gasto actualizado",
+				text: `El costo ${cost} se cargó correctamente`
+			  });
+			} catch (error) {
+			  Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: `Error al actualizar el costo del material: ${error}`
+			  });
+			}
+		  }
+	
+		  // Resetear el formulario
+		  setFormData({
 			description: "",
 			total: 0,
-			category: isMarketingUser ? "marketing" : "", // Si es usuario de marketing, la categoría es 'marketing'
+			category: isMarketingUser ? "marketing" : "ingredientes",
 			fecha: obtenerFechaActual(),
 			name: "",
 			quantity: 0,
-			unit: "",
-			id: "",
-			estado: "",
-		});
-		setFile(null);
-	};
+			unit: "unidad",
+			estado: "pendiente"
+		  });
+		  setFile(null);
+		  
+		} catch (error) {
+		  Swal.fire({
+			icon: "error",
+			title: "Error",
+			text: `Hubo un error al cargar el gasto: ${error}`
+		  });
+		}
+	  };
+	
 
-	console.log(isMarketingUser);
 
 	return (
 		<form
@@ -323,18 +325,21 @@ export const FormGasto = () => {
 					/>
 				</div>
 				<div className="section w-full relative z-0">
-					<select
-						id="estado"
-						name="estado"
-						className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.estado}
-						onChange={handleChange}
-						required
-					>
-						<option value="pendiente">Pendiente</option>
-						<option value="pagado">Pagado</option>
-					</select>
-				</div>
+          <select
+            id="estado"
+            name="estado"
+            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.estado}
+            onChange={handleChange}
+            required
+          >
+            {ESTADOS.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
+            ))}
+          </select>
+        </div>
 				{!isMarketingUser && (
           <div className="section w-full relative z-0">
             <select

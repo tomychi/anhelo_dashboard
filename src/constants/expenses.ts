@@ -1,21 +1,42 @@
 export const CATEGORIAS = [
-    'ingredientes',
-    'packaging',
-    'cocina',
-    'bebidas',
-    'limpieza',
-    'flete',
-  ] as const;
+  'ingredientes',
+  'packaging',
+  'cocina',
+  'bebidas',
+  'limpieza',
+  'flete',
+  'marketing'
+] as const;
+
+export const UNIDADES = [
+  'unidad',
+  'kg',
+  'lts',
+  'mts',
+  'x100',
+  'bolsas',
+  'envio'
+] as const;
+
+export const ESTADOS = ['pendiente', 'pagado'] as const;
+
+export type CategoriaType = typeof CATEGORIAS[number];
+export type UnidadType = typeof UNIDADES[number];
+export type EstadoType = typeof ESTADOS[number];
+
+export interface ExpenseProps {
+  // Campos requeridos
+  name: string;
+  quantity: number;
+  unit: UnidadType;
+  total: number;
+  fecha: string;
+  estado: EstadoType;
+  category: CategoriaType;
   
-  export const UNIDADES = [
-    'unidad',
-    'kg',
-    'lts',
-    'mts',
-    'x100',
-    'bolsas',
-    'envio',
-  ] as const;
+  // Campo opcional
+  description?: string;
   
-  export type CategoriaType = typeof CATEGORIAS[number];
-  export type UnidadType = typeof UNIDADES[number];
+  // Campo generado automáticamente
+  id: string;
+}
