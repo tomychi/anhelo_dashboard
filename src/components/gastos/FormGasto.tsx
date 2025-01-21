@@ -247,12 +247,12 @@ export const FormGasto = () => {
 			}
 		  }
 	
-		  // Resetear el formulario
+		  const currentDate = formData.fecha;
 		  setFormData({
 			description: "",
 			total: 0,
 			category: isMarketingUser ? "marketing" : "ingredientes",
-			fecha: obtenerFechaActual(),
+			fecha: currentDate,
 			name: "",
 			quantity: 0,
 			unit: "unidad",

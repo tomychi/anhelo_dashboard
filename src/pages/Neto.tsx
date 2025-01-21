@@ -17,8 +17,91 @@ export const Neto = () => {
 	} = useSelector((state: RootState) => state.data);
 
 	const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
+	const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
+
+	const getHistoricalData = (label: string) => {
+		console.log("Label clicked:", label);
+		console.log("gastosHaceDosMeses:", gastosHaceDosMeses);
+		
+		let result = [];
+		switch (label) {
+		  case "Marketing":
+			result = gastosHaceDosMeses
+			  .filter(expense => {
+				console.log("Checking marketing expense:", expense);
+				return expense.category === "marketing";
+			  })
+			  .sort((a, b) => new Date(convertirFecha(b.fecha)).getTime() - new Date(convertirFecha(a.fecha)).getTime());
+			break;
+		  case "Alquiler":
+			result = gastosHaceDosMeses
+			  .filter(expense => {
+				console.log("Checking alquiler expense:", expense);
+				return expense.name === "Alquiler";
+			  })
+			  .sort((a, b) => new Date(convertirFecha(b.fecha)).getTime() - new Date(convertirFecha(a.fecha)).getTime());
+			break;
+		  case "Agua":
+			result = gastosHaceDosMeses
+			  .filter(expense => {
+				console.log("Checking agua expense:", expense);
+				return expense.name.toLowerCase() === "agua";
+			  })
+			  .sort((a, b) => new Date(convertirFecha(b.fecha)).getTime() - new Date(convertirFecha(a.fecha)).getTime());
+			break;
+		}
+		
+		console.log("Filtered historical data:", result);
+		return result;
+	  };
 	
+	  const renderHistoricalData = (label: string) => {
+		console.log("Rendering historical data for:", label);
+		const historicalData = getHistoricalData(label);
+		console.log("Historical data to render:", historicalData);
+		
+		if (historicalData.length === 0) {
+		  console.log("No historical data found");
+		  return null;
+		}
+	
+		const maxValue = Math.max(...historicalData.map(g => g.total));
+		console.log("Max value for bars:", maxValue);
+	
+		return (
+		  <tr>
+			<td colSpan={5} className="p-0">
+			  <div className="bg-gray-50 px-4 py-3">
+				<p className="font-medium mb-2">Gastos históricos:</p>
+				<div className="space-y-2">
+				  {historicalData.map((gasto, index) => {
+					const percentage = (gasto.total / maxValue) * 100;
+					console.log(`Bar ${index}:`, { date: gasto.fecha, amount: gasto.total, percentage });
+					return (
+					  <div 
+						key={index} 
+						className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
+					  >
+						<span>{gasto.fecha}</span>
+						<div className="flex-1 mx-4">
+						  <div className="h-2 bg-gray-200 rounded-full">
+							<div 
+							  className="h-2 bg-blue-500 rounded-full" 
+							  style={{ width: `${percentage}%` }}
+							></div>
+						  </div>
+						</div>
+						<span className="font-medium">$ {gasto.total.toFixed(0)}</span>
+					  </div>
+					);
+				  })}
+				</div>
+			  </div>
+			</td>
+		  </tr>
+		);
+	  };
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -431,47 +514,41 @@ export const Neto = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{data.map(
-							(
-								{ label, value, percentage, manual = false, estado },
-								index: number
-							) => (
-								<tr
-									key={index}
-									className={`text-black border font-light h-10 border-black border-opacity-20`}
-								>
-									<th scope="row" className="pl-4 h-10 w-2/5 font-light">
-										{label}
-									</th>
-									<td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(
-										0
-									)}`}</td>
-									<td className="pl-4 w-1/5 h-10 pr-1 font-bold">
-										<div className="bg-gray-300 py-1 px-2 rounded-full">
-											<p
-												className={`text-center ${
-													manual ? "text-red-500" : "text-black"
-												}`}
-											>
-												{estado}
-											</p>
-										</div>
-									</td>
-									<td className="pl-4 pr-8 w-1/5 h-10 font-light">
-										{percentage}
-									</td>
-									<td className="pl-4 w-1/5 h-10 font-light relative">
-    <div className="absolute right-3.5 bottom-2.5">
-      <Tooltip
-        text={getCalculationDescription(label)}
-        position="left"
-      />
-    </div>
-  </td>
-								</tr>
-							)
-						)}
-					</tbody>
+            {data.map(({ label, value, percentage, manual = false, estado }, index) => (
+              <React.Fragment key={index}>
+                <tr
+  className={`text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50 transition-colors`}
+  onClick={() => {
+    console.log("Row clicked:", label);
+    console.log("Current expandedRow:", expandedRow);
+    setExpandedRow(expandedRow === label ? null : label);
+  }}
+>
+                  <th scope="row" className="pl-4 h-10 w-2/5 font-light">
+                    {label}
+                  </th>
+                  <td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(0)}`}</td>
+                  <td className="pl-4 w-1/5 h-10 pr-1 font-bold">
+                    <div className="bg-gray-300 py-1 px-2 rounded-full">
+                      <p className={`text-center ${manual ? "text-red-500" : "text-black"}`}>
+                        {estado}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="pl-4 pr-8 w-1/5 h-10 font-light">{percentage}</td>
+                  <td className="pl-4 w-1/5 h-10 font-light relative">
+                    <div className="absolute right-3.5 bottom-2.5">
+                      <Tooltip
+                        text={getCalculationDescription(label)}
+                        position="left"
+                      />
+                    </div>
+                  </td>
+                </tr>
+                {expandedRow === label && renderHistoricalData(label)}
+              </React.Fragment>
+            ))}
+          </tbody>
 				</table>
 			</div>
 		</div>
