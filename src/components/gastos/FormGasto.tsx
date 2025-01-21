@@ -106,6 +106,16 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 	);
 };
 
+const formatDateForInput = (dateString: string): string => {
+	const [day, month, year] = dateString.split('/');
+	return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
+  const formatDateForDB = (dateString: string): string => {
+	const [year, month, day] = dateString.split('-');
+	return `${day}/${month}/${year}`;
+  };
+
 export const FormGasto = () => {
 	const currentUserEmail = projectAuth.currentUser?.email;
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
@@ -113,16 +123,21 @@ export const FormGasto = () => {
 	const { materiales } = useSelector((state: RootState) => state.materials);
 	const [file, setFile] = useState<File | null>(null);
 
+
 	const [formData, setFormData] = useState<Omit<ExpenseProps, 'id'>>({
 		description: "",
 		total: 0,
 		category: isMarketingUser ? "marketing" : "ingredientes",
-		fecha: obtenerFechaActual(),
+		fecha: obtenerFechaActual(), // Asumimos que esto devuelve DD/MM/YYYY
 		name: "",
 		quantity: 0,
 		unit: "unidad",
 		estado: "pendiente"
 	  });
+	  const [inputDateValue, setInputDateValue] = useState(formatDateForInput(obtenerFechaActual()));
+
+
+	
 
 	  const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -142,6 +157,18 @@ export const FormGasto = () => {
 		  }));
 		}
 	  };
+
+	  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const inputDate = e.target.value; // Formato YYYY-MM-DD
+		setInputDateValue(inputDate);
+		
+		// Actualizar el formData con el formato DD/MM/YYYY
+		setFormData(prev => ({
+		  ...prev,
+		  fecha: formatDateForDB(inputDate)
+		}));
+	  };
+	
 	
 	  const handleFileSelect = (selectedFile: File) => {
 		setFile(selectedFile);
@@ -359,18 +386,17 @@ export const FormGasto = () => {
             </select>
           </div>
         )}
-				<div className="section w-full relative z-0">
-					<input
-						type="string"
-						id="fecha"
-						name="fecha"
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.fecha}
-						placeholder="Fecha"
-						onChange={handleChange}
-						required
-					/>
-				</div>
+		   <div className="section w-full relative z-0">
+        <input
+          type="date"
+          id="fecha"
+          name="fecha"
+          className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+          value={inputDateValue}
+          onChange={handleDateChange}
+          required
+        />
+      </div>
 				<button
 					type="submit"
 					className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
