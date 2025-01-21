@@ -1,7 +1,7 @@
 export const CATEGORIAS = [
   'ingredientes',
   'packaging',
-  'cocina',
+  'cocina y produccion',
   'bebidas',
   'limpieza',
   'flete',
