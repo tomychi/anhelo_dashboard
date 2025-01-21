@@ -1,8 +1,6 @@
 export const CATEGORIAS = [
-  'ingredientes',
-  'packaging',
+  'materia prima',
   'cocina y produccion',
-  'bebidas',
   'limpieza',
   'flete',
   'infraestructura',
@@ -16,7 +14,8 @@ export const UNIDADES = [
   'mts',
   'x100',
   'bolsas',
-  'envio'
+  'envio',
+  "horas"
 ] as const;
 
 export const ESTADOS = ['pendiente', 'pagado'] as const;
