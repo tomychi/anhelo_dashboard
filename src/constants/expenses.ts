@@ -5,6 +5,7 @@ export const CATEGORIAS = [
   'bebidas',
   'limpieza',
   'flete',
+  'infraestructura',
   'marketing'
 ] as const;
 
