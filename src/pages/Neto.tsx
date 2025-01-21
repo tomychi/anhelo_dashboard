@@ -319,26 +319,87 @@ export const Neto = () => {
 	const getCalculationDescription = (label: string): string => {
 		switch (label) {
 		  case "Bruto":
-			return "Es la facturación total sin ningún descuento";
+			return `Es la facturación total sin ningún descuento. En este caso es: $ ${facturacionTotal.toFixed(0)}`;
+			
 		  case "Materia prima":
-			return "Se calcula como la diferencia entre la facturación total y el neto";
-		  case "Cadete":
-			return "Se obtiene sumando todas las pagas de los cadetes por sus vueltas realizadas. Si existe un gasto manual en la categoría 'cadetes', se usa ese valor";
-		  case "Cocina y producción":
-			return "Se calcula multiplicando los productos vendidos por 230 × 2, más un costo fijo de 400,000 dividido por los días del mes y multiplicado por los días seleccionados. Si existe un gasto manual en la categoría 'cocina', se usa ese valor";
-		  case "Marketing":
-			return "Se toma del gasto más reciente en la categoría 'marketing', ajustado proporcionalmente a los días seleccionados";
-		  case "Alquiler":
-			return "Se toma del gasto más reciente con nombre 'Alquiler', ajustado proporcionalmente a los días seleccionados";
-		  case "Agua":
-			return "Se toma del gasto más reciente con nombre 'Agua', ajustado proporcionalmente a los días seleccionados";
+			return `Se calcula como la diferencia entre la facturación total ($ ${facturacionTotal.toFixed(0)}) y el neto ($ ${neto.toFixed(0)}). En este caso es: $ ${materiaPrima.toFixed(0)}`;
+			
+		  case "Cadete": {
+			const manualGasto = expenseData.find((expense: Gasto) => expense.category === "cadetes");
+			if (manualGasto) {
+			  return `Se está usando el gasto manual ingresado en la categoría 'cadetes': $ ${manualGasto.total.toFixed(0)}`;
+			}
+			const detallesCadetes = Object.entries(cadetePagas)
+			  .map(([name, paga]) => `${name}: $ ${paga.toFixed(0)}`)
+			  .join('<br>');
+			return `Se calcula sumando las pagas de todos los cadetes:<br>${detallesCadetes}<br>Total: $ ${cadeteTotal.toFixed(0)}`;
+		  }
+			
+		  case "Cocina y producción": {
+			const manualGasto = expenseData.find((expense: Gasto) => expense.category === "cocina");
+			if (manualGasto) {
+			  return `Se está usando el gasto manual ingresado en la categoría 'cocina': $ ${manualGasto.total.toFixed(0)}`;
+			}
+			const costoVariable = totalProductosVendidos * 230 * 2;
+			const costoFijo = (400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
+			return `Se calcula:<br>
+			  - Costo variable: ${totalProductosVendidos} productos × $230 × 2 = $ ${costoVariable.toFixed(0)}<br>
+			  - Costo fijo: ($400,000 ÷ ${calcularDiasDelMes()} días) × ${calcularDiasSeleccionados()} días seleccionados = $ ${costoFijo.toFixed(0)}<br>
+			  Total: $ ${cocinaTotal.toFixed(0)}`;
+		  }
+			
+		  case "Marketing": {
+			const manualGasto = expenseData.find((expense: Gasto) => expense.category === "marketing");
+			if (manualGasto) {
+			  return `Se está usando el gasto actual en marketing: $ ${manualGasto.total.toFixed(0)}`;
+			}
+			const marketingGastos = gastosHaceDosMeses.filter(expense => expense.category === "marketing");
+			if (marketingGastos.length > 0) {
+			  const gastoReciente = marketingGastos[0];
+			  return `Se toma el gasto más reciente (${gastoReciente.fecha}) de $ ${gastoReciente.total.toFixed(0)} y se ajusta proporcionalmente a los ${calcularDiasSeleccionados()} días seleccionados: $ ${marketingData.total.toFixed(0)}`;
+			}
+			return `No hay gastos de marketing registrados`;
+		  }
+			
+		  case "Alquiler": {
+			if (alquilerData.isEstimated) {
+			  const alquilerGastos = gastosHaceDosMeses.filter(expense => expense.name === "Alquiler");
+			  if (alquilerGastos.length > 0) {
+				const gastoReciente = alquilerGastos[0];
+				return `Se toma el alquiler más reciente (${gastoReciente.fecha}) de $ ${gastoReciente.total.toFixed(0)} y se ajusta proporcionalmente a los ${calcularDiasSeleccionados()} días seleccionados: $ ${alquilerData.total.toFixed(0)}`;
+			  }
+			  return `No hay gastos de alquiler registrados`;
+			}
+			const alquilerActual = expenseData.find(expense => expense.name === "Alquiler");
+			return `Se está usando el alquiler actual: $ ${alquilerActual?.total.toFixed(0)}`;
+		  }
+			
+		  case "Agua": {
+			if (aguaData.isEstimated) {
+			  const aguaGastos = gastosHaceDosMeses.filter(expense => expense.name.toLowerCase() === "agua");
+			  if (aguaGastos.length > 0) {
+				const gastoReciente = aguaGastos[0];
+				return `Se toma el gasto de agua más reciente (${gastoReciente.fecha}) de $ ${gastoReciente.total.toFixed(0)} y se ajusta proporcionalmente a los ${calcularDiasSeleccionados()} días seleccionados: $ ${aguaData.total.toFixed(0)}`;
+			  }
+			  return `No hay gastos de agua registrados`;
+			}
+			const aguaActual = expenseData.find(expense => expense.name.toLowerCase() === "agua");
+			return `Se está usando el gasto de agua actual: $ ${aguaActual?.total.toFixed(0)}`;
+		  }
+			
 		  case "Error":
-			return "Se calcula como el 5% de la facturación total";
+			return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
+			
 		  case "Excedente":
-			return "Es la diferencia entre la facturación total y la suma de todos los gastos";
+			return `Es la diferencia entre:<br>
+			  Facturación total: $ ${facturacionTotal.toFixed(0)}<br>
+			  - Total gastos: $ ${totalExpenses.toFixed(0)}<br>
+			  = $ ${excedenteValue.toFixed(0)}`;
+			
 		  default:
 			return "No hay información disponible sobre el cálculo de este gasto";
-		}}
+		}
+	  };
 
 	return (
 		<div className="flex flex-col">
