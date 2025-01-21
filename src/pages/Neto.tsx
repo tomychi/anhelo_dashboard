@@ -4,6 +4,7 @@ import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
 import { ReadGastosSinceTwoMonthsAgo } from "../firebase/ReadData";
 import { Gasto, Cadete, Vuelta, PedidoProps } from "../types/types"; // Importamos las interfaces desde types.ts
+import Tooltip from "../components/Tooltip"
 
 export const Neto = () => {
 	const {
@@ -16,6 +17,8 @@ export const Neto = () => {
 	} = useSelector((state: RootState) => state.data);
 
 	const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
+
+	
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -313,6 +316,30 @@ export const Neto = () => {
 		},
 	];
 
+	const getCalculationDescription = (label: string): string => {
+		switch (label) {
+		  case "Bruto":
+			return "Es la facturación total sin ningún descuento";
+		  case "Materia prima":
+			return "Se calcula como la diferencia entre la facturación total y el neto";
+		  case "Cadete":
+			return "Se obtiene sumando todas las pagas de los cadetes por sus vueltas realizadas. Si existe un gasto manual en la categoría 'cadetes', se usa ese valor";
+		  case "Cocina y producción":
+			return "Se calcula multiplicando los productos vendidos por 230 × 2, más un costo fijo de 400,000 dividido por los días del mes y multiplicado por los días seleccionados. Si existe un gasto manual en la categoría 'cocina', se usa ese valor";
+		  case "Marketing":
+			return "Se toma del gasto más reciente en la categoría 'marketing', ajustado proporcionalmente a los días seleccionados";
+		  case "Alquiler":
+			return "Se toma del gasto más reciente con nombre 'Alquiler', ajustado proporcionalmente a los días seleccionados";
+		  case "Agua":
+			return "Se toma del gasto más reciente con nombre 'Agua', ajustado proporcionalmente a los días seleccionados";
+		  case "Error":
+			return "Se calcula como el 5% de la facturación total";
+		  case "Excedente":
+			return "Es la diferencia entre la facturación total y la suma de todos los gastos";
+		  default:
+			return "No hay información disponible sobre el cálculo de este gasto";
+		}}
+
 	return (
 		<div className="flex flex-col">
 			<div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
@@ -373,19 +400,13 @@ export const Neto = () => {
 										{percentage}
 									</td>
 									<td className="pl-4 w-1/5 h-10 font-light relative">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 20 20"
-											fill="currentColor"
-											className="h-5 absolute right-3.5 bottom-2.5"
-										>
-											<path
-												fillRule="evenodd"
-												d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM8.94 6.94a.75.75 0 1 1-1.061-1.061 3 3 0 1 1 2.871 5.026v.345a.75.75 0 0 1-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 1 0 8.94 6.94ZM10 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-												clipRule="evenodd"
-											/>
-										</svg>
-									</td>
+    <div className="absolute right-3.5 bottom-2.5">
+      <Tooltip
+        text={getCalculationDescription(label)}
+        position="left"
+      />
+    </div>
+  </td>
 								</tr>
 							)
 						)}
