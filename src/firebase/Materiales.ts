@@ -58,33 +58,54 @@ export const updateMaterialStockManual = async (
 };
 
 export const updateMaterialCost = async (
-  materialId: string,
+  materialName: string,
   newCost: number,
   cant: number
 ): Promise<void> => {
   const firestore = getFirestore();
-  const materialRef = doc(firestore, 'materiales', materialId);
-
+  const materialesRef = collection(firestore, 'materiales');
+  
   try {
-    // Get current material data
-    const materialSnap = await getDoc(materialRef);
-    if (materialSnap.exists()) {
-      const materialData = materialSnap.data();
+    console.log('Buscando material:', materialName);
+    console.log('Nuevo costo:', newCost);
+    console.log('Cantidad:', cant);
 
-      // Calculate new stock value
-      const currentStock = materialData.stock || 0; // Default to 0 if stock doesn't exist
+    // Primero, obtener todos los materiales para verificar
+    const materialesSnapshot = await getDocs(materialesRef);
+    const materiales = materialesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Buscar el material por nombre (case insensitive)
+    const material = materiales.find(
+      m => m.nombre.toLowerCase() === materialName.toLowerCase()
+    );
+
+    if (material) {
+      console.log('Material encontrado:', material);
+      
+      // Calcular nuevo stock
+      const currentStock = material.stock || 0;
       const newStock = currentStock + cant;
+      
+      console.log('Stock actual:', currentStock);
+      console.log('Nuevo stock:', newStock);
 
-      // Update material document
-      await updateDoc(materialRef, {
+      // Actualizar el documento
+      await updateDoc(doc(firestore, 'materiales', material.id), {
         costo: newCost,
         stock: newStock,
       });
+
+      console.log('Material actualizado exitosamente');
     } else {
-      console.error('Material document does not exist');
+      console.error('Material no encontrado. Materiales disponibles:', materiales.map(m => m.nombre));
+      throw new Error(`Material no encontrado: ${materialName}`);
     }
   } catch (error) {
-    console.error('Error updating material cost:', error);
+    console.error('Error actualizando el costo del material:', error);
+    throw error;
   }
 };
 

@@ -207,10 +207,12 @@ export const FormGasto = () => {
 		  });
 		}
 	  };
-	
 	  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-	
+	  
+		console.log('Formulario enviado con datos:', formData);
+		console.log('Unidad por precio:', unidadPorPrecio);
+	  
 		const cost = calculateUnitCost(
 		  formData.total,
 		  formData.quantity,
@@ -218,35 +220,51 @@ export const FormGasto = () => {
 		  formData.unit,
 		  formData.name
 		);
-	
+	  
+		console.log('Costo calculado:', cost);
+	  
 		try {
-		  const expenseWithId = { ...formData, id: '' }; // El ID se genera en UploadExpense
+		  const expenseWithId = { ...formData, id: '' };
 		  const result = await UploadExpense(expenseWithId);
 		  
+		  console.log('Gasto guardado con éxito:', result);
+	  
 		  await Swal.fire({
 			icon: "success",
 			title: "Gasto cargado",
 			text: `El gasto ${result.id} se cargó correctamente`
 		  });
-	
-		  // Solo actualizar el costo del material si hay un ID seleccionado
-		  if (cost) {
+	  
+		  if (cost && formData.name) {
 			try {
-			  await updateMaterialCost(formData.id, cost, formData.quantity);
+			  console.log('Intentando actualizar material:', {
+				nombre: formData.name,
+				costo: cost,
+				cantidad: formData.quantity
+			  });
+	  
+			  await updateMaterialCost(formData.name, cost, formData.quantity);
+			  
 			  await Swal.fire({
 				icon: "success",
-				title: "Gasto actualizado",
-				text: `El costo ${cost} se cargó correctamente`
+				title: "Costo actualizado",
+				text: `El costo ${cost} se actualizó correctamente`
 			  });
 			} catch (error) {
+			  console.error('Error al actualizar material:', error);
 			  Swal.fire({
 				icon: "error",
 				title: "Error",
 				text: `Error al actualizar el costo del material: ${error}`
 			  });
 			}
+		  } else {
+			console.log('No se actualizó el material porque:', {
+			  tieneNombre: Boolean(formData.name),
+			  tieneCosto: Boolean(cost)
+			});
 		  }
-	
+	  
 		  const currentDate = formData.fecha;
 		  setFormData({
 			description: "",
@@ -261,6 +279,7 @@ export const FormGasto = () => {
 		  setFile(null);
 		  
 		} catch (error) {
+		  console.error('Error en el proceso completo:', error);
 		  Swal.fire({
 			icon: "error",
 			title: "Error",
@@ -268,8 +287,6 @@ export const FormGasto = () => {
 		  });
 		}
 	  };
-	
-
 
 	return (
 		<form
