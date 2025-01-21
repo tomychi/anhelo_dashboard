@@ -3,6 +3,7 @@ export const CATEGORIAS = [
   'cocina y produccion',
   'limpieza',
   'flete',
+  'cadeteria',
   'infraestructura',
   'marketing'
 ] as const;
