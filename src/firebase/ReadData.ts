@@ -613,38 +613,56 @@ export const updatePendingOfBeingAccepted = async (
 	pedidoId: string,
 	fecha: string,
 	newValue: boolean
-  ) => {
+) => {
 	const [dia, mes, anio] = fecha.split("/");
-	
+
 	try {
-	  const firestore = getFirestore();
-	  const pedidoDocRef = doc(firestore, "pedidos", anio, mes, dia);
-  
-	  await runTransaction(firestore, async (transaction) => {
-		const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
-  
-		if (!pedidoDocSnapshot.exists()) {
-		  console.error("No se encontró el documento del día en Firestore");
-		  return;
-		}
-  
-		const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
-		const index = pedidosDelDia.findIndex(
-		  (pedido: PedidoProps) => pedido.id === pedidoId
-		);
-  
-		if (index !== -1) {
-		  pedidosDelDia[index].pendingOfBeingAccepted = newValue;
-		  transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-		  console.log("Estado de pendingOfBeingAccepted actualizado en Firestore");
-		} else {
-		  console.error(
-			"El pedido no fue encontrado en el arreglo de pedidos del día"
-		  );
-		}
-	  });
+		const firestore = getFirestore();
+		const pedidoDocRef = doc(firestore, "pedidos", anio, mes, dia);
+
+		await runTransaction(firestore, async (transaction) => {
+			const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+
+			if (!pedidoDocSnapshot.exists()) {
+				console.error("No se encontró el documento del día en Firestore");
+				return;
+			}
+
+			const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
+			const index = pedidosDelDia.findIndex(
+				(pedido: PedidoProps) => pedido.id === pedidoId
+			);
+
+			if (index !== -1) {
+				pedidosDelDia[index].pendingOfBeingAccepted = newValue;
+				transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
+				console.log("Estado de pendingOfBeingAccepted actualizado en Firestore");
+			} else {
+				console.error(
+					"El pedido no fue encontrado en el arreglo de pedidos del día"
+				);
+			}
+		});
 	} catch (error) {
-	  console.error("Error al actualizar pendingOfBeingAccepted en Firestore:", error);
-	  throw error;
+		console.error("Error al actualizar pendingOfBeingAccepted en Firestore:", error);
+		throw error;
 	}
-  };
+};
+
+
+export const ReadMaterials = async () => {
+	const firestore = getFirestore();
+	const materialsCollectionRef = collection(firestore, 'materiales');
+
+	try {
+		const querySnapshot = await getDocs(materialsCollectionRef);
+		const materialsData = querySnapshot.docs.map(doc => ({
+			id: doc.id,
+			...doc.data()
+		}));
+		return materialsData;
+	} catch (error) {
+		console.error('Error al leer los materiales:', error);
+		throw error;
+	}
+};

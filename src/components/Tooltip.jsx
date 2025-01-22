@@ -1,60 +1,39 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 const Tooltip = ({ text, duration = 10000, className = "", position = "right" }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const showTooltip = () => {
     setIsVisible(true);
-
     const timer = setTimeout(() => {
       setIsVisible(false);
     }, duration);
-
     return () => clearTimeout(timer);
   };
 
   const getPositionClasses = () => {
     // Base classes for the tooltip container
     const baseClasses = `
-      absolute z-50 w-72
-      bottom-full mb-2
+      absolute z-50 w-96
+      top-full right-full mt-2  
       transition-all duration-200 ease-out
     `;
-
-    // Position-specific classes
-    const positionClasses = position === "left" 
-      ? "right-0" // Align to the right edge of the container
-      : "left-0"; // Default - align to the left edge
 
     // Visibility classes
     const visibilityClasses = isVisible
       ? "opacity-100 translate-y-0"
       : "opacity-0 translate-y-2 pointer-events-none";
 
-    return `${baseClasses} ${positionClasses} ${visibilityClasses}`;
+    return `${baseClasses} ${visibilityClasses}`;
   };
 
   return (
     <div className={`relative inline-block ${className}`}>
-      {/* Tooltip */}
-      <div className={getPositionClasses()}>
-        <div className="relative bg-black bg-opacity-50 backdrop-blur-sm 
-          rounded-2xl shadow-lg border border-gray-200
-          overflow-hidden"
-        >
-          <div className="px-4 py-3">
-            <p
-              className="text-gray-100 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: text }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Info Icon */}
       <div
         onClick={showTooltip}
-        className="cursor-pointer hover:bg-gray-100 rounded-full transition-colors duration-200"
+        className="cursor-pointer rounded-full transition-colors duration-200"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -69,8 +48,36 @@ const Tooltip = ({ text, duration = 10000, className = "", position = "right" })
           />
         </svg>
       </div>
+
+      {/* Tooltip */}
+      <div className={getPositionClasses()}>
+        <div className="relative bg-black bg-opacity-50 backdrop-blur-sm 
+          rounded-2xl shadow-lg border border-gray-200
+          overflow-hidden"
+        >
+          <div className="px-4 py-3">
+            {typeof text === 'string' ? (
+              <p
+                className="text-black leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: text }}
+              />
+            ) : (
+              <div className="text-black leading-relaxed">
+                {text}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
+};
+
+Tooltip.propTypes = {
+  text: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  duration: PropTypes.number,
+  className: PropTypes.string,
+  position: PropTypes.string
 };
 
 export default Tooltip;

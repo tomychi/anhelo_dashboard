@@ -2,9 +2,22 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
-import { ReadGastosSinceTwoMonthsAgo } from "../firebase/ReadData";
+import { ReadGastosSinceTwoMonthsAgo, ReadMaterials } from "../firebase/ReadData";
 import { Gasto, Cadete, Vuelta, PedidoProps } from "../types/types";
 import Tooltip from "../components/Tooltip"
+import MaterialCostBreakdown from "../components/neto/MaterialCostBreakdown"
+
+
+interface Material {
+    id: string;
+    nombre: string;
+    categoria: string;
+    costo: number;
+    stock: number;
+    unidadPorPrecio: number;
+    unit: string;
+}
+
 
 export const Neto = () => {
     const {
@@ -18,6 +31,20 @@ export const Neto = () => {
 
     const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [materials, setMaterials] = useState<Material[]>([]);
+
+    useEffect(() => {
+        const fetchMaterials = async () => {
+            try {
+                const materialsData = await ReadMaterials();
+                setMaterials(materialsData);
+            } catch (error) {
+                console.error('Error fetching materials:', error);
+            }
+        };
+
+        fetchMaterials();
+    }, []);
 
     // Función para calcular los días seleccionados en el rango
     const calcularDiasSeleccionados = (): number => {
@@ -49,121 +76,121 @@ export const Neto = () => {
         const diasSeleccionados = calcularDiasSeleccionados();
         return gastoDiario * diasSeleccionados;
     };// Nueva función para obtener gastos de infraestructura
-	const getInfrastructureTotal = (): { 
-		total: number; 
-		items: Array<{ 
-			name: string; 
-			total: number; 
-			originalTotal: number;
-			fecha: string;
-			isEstimated: boolean 
-		}> 
-	} => {
-		const infrastructureExpenses = expenseData.filter(
-			(expense: Gasto) => expense.category === "infraestructura"
-		);
-	
-		if (infrastructureExpenses.length > 0) {
-			// Gastos del período actual
-			const items = infrastructureExpenses.map(expense => ({
-				name: expense.name,
-				total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-				originalTotal: expense.total,
-				fecha: expense.fecha,
-				isEstimated: false
-			}));
-			const total = items.reduce((acc, item) => acc + item.total, 0);
-			return { total, items };
-		} else {
-			// Buscar en datos históricos
-			const historicalInfrastructure = gastosHaceDosMeses.filter(
-				expense => expense.category === "infraestructura"
-			);
-	
-			if (historicalInfrastructure.length > 0) {
-				const latestByName = new Map();
-				historicalInfrastructure.forEach(expense => {
-					const existing = latestByName.get(expense.name);
-					if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-						latestByName.set(expense.name, expense);
-					}
-				});
-	
-				const items = Array.from(latestByName.values()).map(expense => ({
-					name: expense.name,
-					total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-					originalTotal: expense.total,
-					fecha: expense.fecha,
-					isEstimated: true
-				}));
-	
-				const total = items.reduce((acc, item) => acc + item.total, 0);
-				return { total, items };
-			}
-		}
-	
-		return { total: 0, items: [] };
-	};
+    const getInfrastructureTotal = (): {
+        total: number;
+        items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }>
+    } => {
+        const infrastructureExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "infraestructura"
+        );
 
-	const getMarketingTotal = (): { 
-		total: number; 
-		items: Array<{ 
-			name: string; 
-			total: number; 
-			originalTotal: number;
-			fecha: string;
-			isEstimated: boolean 
-		}> 
-	} => {
-		const marketingExpenses = expenseData.filter(
-			(expense: Gasto) => expense.category === "marketing"
-		);
-	
-		if (marketingExpenses.length > 0) {
-			// Gastos del período actual
-			const items = marketingExpenses.map(expense => ({
-				name: expense.name,
-				total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-				originalTotal: expense.total,
-				fecha: expense.fecha,
-				isEstimated: false
-			}));
-			const total = items.reduce((acc, item) => acc + item.total, 0);
-			return { total, items };
-		} else {
-			// Buscar en datos históricos
-			const historicalMarketing = gastosHaceDosMeses.filter(
-				expense => expense.category === "marketing"
-			);
-	
-			if (historicalMarketing.length > 0) {
-				const latestByName = new Map();
-				historicalMarketing.forEach(expense => {
-					const existing = latestByName.get(expense.name);
-					if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-						latestByName.set(expense.name, expense);
-					}
-				});
-	
-				const items = Array.from(latestByName.values()).map(expense => ({
-					name: expense.name,
-					total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-					originalTotal: expense.total,
-					fecha: expense.fecha,
-					isEstimated: true
-				}));
-	
-				const total = items.reduce((acc, item) => acc + item.total, 0);
-				return { total, items };
-			}
-		}
-	
-		return { total: 0, items: [] };
-	};
-	
-	
-	
-	;useEffect(() => {
+        if (infrastructureExpenses.length > 0) {
+            // Gastos del período actual
+            const items = infrastructureExpenses.map(expense => ({
+                name: expense.name,
+                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                originalTotal: expense.total,
+                fecha: expense.fecha,
+                isEstimated: false
+            }));
+            const total = items.reduce((acc, item) => acc + item.total, 0);
+            return { total, items };
+        } else {
+            // Buscar en datos históricos
+            const historicalInfrastructure = gastosHaceDosMeses.filter(
+                expense => expense.category === "infraestructura"
+            );
+
+            if (historicalInfrastructure.length > 0) {
+                const latestByName = new Map();
+                historicalInfrastructure.forEach(expense => {
+                    const existing = latestByName.get(expense.name);
+                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                        latestByName.set(expense.name, expense);
+                    }
+                });
+
+                const items = Array.from(latestByName.values()).map(expense => ({
+                    name: expense.name,
+                    total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                    originalTotal: expense.total,
+                    fecha: expense.fecha,
+                    isEstimated: true
+                }));
+
+                const total = items.reduce((acc, item) => acc + item.total, 0);
+                return { total, items };
+            }
+        }
+
+        return { total: 0, items: [] };
+    };
+
+    const getMarketingTotal = (): {
+        total: number;
+        items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }>
+    } => {
+        const marketingExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "marketing"
+        );
+
+        if (marketingExpenses.length > 0) {
+            // Gastos del período actual
+            const items = marketingExpenses.map(expense => ({
+                name: expense.name,
+                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                originalTotal: expense.total,
+                fecha: expense.fecha,
+                isEstimated: false
+            }));
+            const total = items.reduce((acc, item) => acc + item.total, 0);
+            return { total, items };
+        } else {
+            // Buscar en datos históricos
+            const historicalMarketing = gastosHaceDosMeses.filter(
+                expense => expense.category === "marketing"
+            );
+
+            if (historicalMarketing.length > 0) {
+                const latestByName = new Map();
+                historicalMarketing.forEach(expense => {
+                    const existing = latestByName.get(expense.name);
+                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                        latestByName.set(expense.name, expense);
+                    }
+                });
+
+                const items = Array.from(latestByName.values()).map(expense => ({
+                    name: expense.name,
+                    total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                    originalTotal: expense.total,
+                    fecha: expense.fecha,
+                    isEstimated: true
+                }));
+
+                const total = items.reduce((acc, item) => acc + item.total, 0);
+                return { total, items };
+            }
+        }
+
+        return { total: 0, items: [] };
+    };
+
+
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await ReadGastosSinceTwoMonthsAgo();
@@ -212,7 +239,7 @@ export const Neto = () => {
         expenseData.find((expense: Gasto) => expense.category === "cocina")
             ?.total ||
         totalProductosVendidos * 230 * 2 +
-            (400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
+        (400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
 
     const errorValue: number = facturacionTotal * 0.05;
     const materiaPrima: number = facturacionTotal - neto;
@@ -298,14 +325,46 @@ export const Neto = () => {
             percentage: calculatePercentage(excedenteValue),
             estado: "Estimado",
         },
-    ];const getCalculationDescription = (label: string): string => {
+    ]; const getCalculationDescription = (label: string): string | JSX.Element => {
         switch (label) {
             case "Bruto":
                 return `Es la facturación total sin ningún descuento. En este caso es: $ ${facturacionTotal.toFixed(0)}`;
-            
-            case "Materia prima":
-                return `Se calcula como la diferencia entre la facturación total ($ ${facturacionTotal.toFixed(0)}) y el neto ($ ${neto.toFixed(0)}). En este caso es: $ ${materiaPrima.toFixed(0)}`;
-            
+
+            case "Materia prima": {
+                const ingredientes = materials
+                    .filter(material => material.categoria === "ingredientes")
+                    .sort((a, b) => b.costo - a.costo);  // Ordenar por costo descendente
+
+                return (
+                    <div>
+                        <div className="mb-4">
+                            <div className="text-sm font-medium text-gray-100">Cálculo base:</div>
+                            <div className="ml-4 text-sm text-gray-100">
+                                <div>Facturación total: $ {facturacionTotal.toFixed(0)}</div>
+                                <div>Neto: $ {neto.toFixed(0)}</div>
+                                <div>Materia prima total: $ {(facturacionTotal - neto).toFixed(0)}</div>
+                            </div>
+                        </div>
+
+                        <div className="text-sm font-medium mb-2 text-gray-100">
+                            Desglose de materiales:
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            {ingredientes.map(material => (
+                                <>
+                                    <span className="font-medium text-gray-100">{material.nombre}</span>
+                                    <span className="text-gray-100">costo{material.costo}</span>
+                                </>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 text-xs text-gray-100">
+                            * Los costos mostrados son los registrados en el sistema. Verificar regularmente para mantener actualizado.
+                        </div>
+                    </div>
+                );
+            }
+
             case "Cadete": {
                 const manualGasto = expenseData.find((expense: Gasto) => expense.category === "cadetes");
                 if (manualGasto) {
@@ -316,7 +375,7 @@ export const Neto = () => {
                     .join('<br>');
                 return `Se calcula sumando las pagas de todos los cadetes:<br>${detallesCadetes}<br>Total: $ ${cadeteTotal.toFixed(0)}`;
             }
-            
+
             case "Cocina y producción": {
                 const manualGasto = expenseData.find((expense: Gasto) => expense.category === "cocina");
                 if (manualGasto) {
@@ -329,95 +388,95 @@ export const Neto = () => {
                     - Costo fijo: ($400,000 ÷ ${calcularDiasDelMes()} días) × ${calcularDiasSeleccionados()} días seleccionados = $ ${costoFijo.toFixed(0)}<br>
                     Total: $ ${cocinaTotal.toFixed(0)}`;
             }
-            
-			case "Marketing": {
-				const itemDescriptions = marketingData.items.map(item => {
-					const diasDelMes = new Date(
-						new Date(convertirFecha(item.fecha)).getFullYear(),
-						new Date(convertirFecha(item.fecha)).getMonth() + 1,
-						0
-					).getDate();
-					
-					return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-					→ Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-					→ Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
-					→ Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
-					→ Fecha del gasto: ${item.fecha}`;
-				}).join('<br><br>');
-				
-				return `Desglose detallado de gastos de marketing:<br><br>${itemDescriptions}<br><br>Total de marketing: $ ${marketingData.total.toFixed(0)}`;
-			}
-            
-			case "Infraestructura": {
-				const itemDescriptions = infrastructureData.items.map(item => {
-					const diasDelMes = new Date(
-						new Date(convertirFecha(item.fecha)).getFullYear(),
-						new Date(convertirFecha(item.fecha)).getMonth() + 1,
-						0
-					).getDate();
-					
-					return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-					→ Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-					→ Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
-					→ Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
-					→ Fecha del gasto: ${item.fecha}`;
-				}).join('<br><br>');
-				
-				return `Desglose detallado de gastos de infraestructura:<br><br>${itemDescriptions}<br><br>Total de infraestructura: $ ${infrastructureData.total.toFixed(0)}`;
-			}
-            
+
+            case "Marketing": {
+                const itemDescriptions = marketingData.items.map(item => {
+                    const diasDelMes = new Date(
+                        new Date(convertirFecha(item.fecha)).getFullYear(),
+                        new Date(convertirFecha(item.fecha)).getMonth() + 1,
+                        0
+                    ).getDate();
+
+                    return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
+                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
+                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
+                    → Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
+                    → Fecha del gasto: ${item.fecha}`;
+                }).join('<br><br>');
+
+                return `Desglose detallado de gastos de marketing:<br><br>${itemDescriptions}<br><br>Total de marketing: $ ${marketingData.total.toFixed(0)}`;
+            }
+
+            case "Infraestructura": {
+                const itemDescriptions = infrastructureData.items.map(item => {
+                    const diasDelMes = new Date(
+                        new Date(convertirFecha(item.fecha)).getFullYear(),
+                        new Date(convertirFecha(item.fecha)).getMonth() + 1,
+                        0
+                    ).getDate();
+
+                    return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
+                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
+                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
+                    → Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
+                    → Fecha del gasto: ${item.fecha}`;
+                }).join('<br><br>');
+
+                return `Desglose detallado de gastos de infraestructura:<br><br>${itemDescriptions}<br><br>Total de infraestructura: $ ${infrastructureData.total.toFixed(0)}`;
+            }
+
             case "Error":
                 return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
-            
+
             case "Excedente":
                 return `Es la diferencia entre:<br>
                     Facturación total: $ ${facturacionTotal.toFixed(0)}<br>
                     - Total gastos: $ ${totalExpenses.toFixed(0)}<br>
                     = $ ${excedenteValue.toFixed(0)}`;
-            
+
             default:
                 return "No hay información disponible sobre el cálculo de este gasto";
         }
     };
 
     const renderHistoricalData = (label: string) => {
-		if (label === "Infraestructura" || label === "Marketing") {
-			const data = label === "Infraestructura" ? infrastructureData : marketingData;
-			return (
-				<tr>
-					<td colSpan={5} className="p-0">
-						<div className="bg-gray-50 px-4 py-3">
-							<p className="font-medium mb-2">Desglose de {label.toLowerCase()}:</p>
-							<div className="space-y-2">
-								{data.items.map((item, index) => (
-									<div 
-										key={index} 
-										className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
-									>
-										<span className="font-medium">{item.name}</span>
-										<div className="flex items-center gap-4">
-											<span>${item.total.toFixed(0)}</span>
-											<span className="text-gray-500">
-												{calculatePercentage(item.total)}
-											</span>
-											<span className={`text-sm ${item.isEstimated ? "text-red-500" : "text-black"}`}>
-												{item.isEstimated ? "Estimado" : "Exacto"}
-											</span>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-					</td>
-				</tr>
-			);
-		}
-		return null;
-	};
-	
-	
-	
-	;return (
+        if (label === "Infraestructura" || label === "Marketing") {
+            const data = label === "Infraestructura" ? infrastructureData : marketingData;
+            return (
+                <tr>
+                    <td colSpan={5} className="p-0">
+                        <div className="bg-gray-50 px-4 py-3">
+                            <p className="font-medium mb-2">Desglose de {label.toLowerCase()}:</p>
+                            <div className="space-y-2">
+                                {data.items.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
+                                    >
+                                        <span className="font-medium">{item.name}</span>
+                                        <div className="flex items-center gap-4">
+                                            <span>${item.total.toFixed(0)}</span>
+                                            <span className="text-gray-500">
+                                                {calculatePercentage(item.total)}
+                                            </span>
+                                            <span className={`text-sm ${item.isEstimated ? "text-red-500" : "text-black"}`}>
+                                                {item.isEstimated ? "Estimado" : "Exacto"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            );
+        }
+        return null;
+    };
+
+
+
+    ; return (
         <div className="flex flex-col">
             <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
                 <p className="text-black font-bold text-4xl mt-1">Neto</p>
@@ -471,7 +530,7 @@ export const Neto = () => {
                                         <div className="absolute right-3.5 bottom-2.5">
                                             <Tooltip
                                                 text={getCalculationDescription(label)}
-                                                position="left"
+                                                position="down"
                                             />
                                         </div>
                                     </td>
