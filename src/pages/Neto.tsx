@@ -351,10 +351,8 @@ export const Neto = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                             {ingredientes.map(material => (
-                                <>
-                                    <span className="font-medium text-gray-100">{material.nombre}</span>
-                                    <span className="text-gray-100">costo{material.costo}</span>
-                                </>
+                                <span className="font-medium text-gray-100">{material.nombre}: {material.costo}</span>
+
                             ))}
                         </div>
 
