@@ -38,7 +38,7 @@ const QRGlobal: React.FC = () => {
     }
   }, []);
 
-  return <div ref={qrRef} className="w-2/4" />;
+  return <div ref={qrRef} className="w-2/4 border border-gray-300 rounded-xl p-2  " />;
 };
 
 export const Equipo: React.FC = () => {
@@ -131,7 +131,8 @@ export const Equipo: React.FC = () => {
          }
        `}
       </style>
-      <div className="flex justify-center border-b border-gray-300 items-center gap-2 flex-col pb-6 mt-8  bg-gray-100">
+      <div className="flex justify-center border-b border-gray-300 items-center gap-2 flex-col pb-6 mt-8 ">
+
         <QRGlobal />
         <p className="font-bold font-coolvetica">Registro horario</p>
       </div>
