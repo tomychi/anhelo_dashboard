@@ -38,7 +38,7 @@ const QRGlobal: React.FC = () => {
     }
   }, []);
 
-  return <div ref={qrRef} className="w-2/4 border border-gray-300 rounded-xl p-2  " />;
+  return <div ref={qrRef} className="w-2/4 bg-white rounded-xl p-2  " />;
 };
 
 export const Equipo: React.FC = () => {
