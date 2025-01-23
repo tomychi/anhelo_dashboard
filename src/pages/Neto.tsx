@@ -438,6 +438,41 @@ export const Neto = () => {
     };
 
     const renderHistoricalData = (label: string) => {
+        if (label === "Cocina y producción") {
+            const cocinaExpenses = expenseData.filter(
+                (expense: Gasto) => expense.category === "cocina y produccion"
+            );
+
+            return (
+                <tr>
+                    <td colSpan={5} className="p-0">
+                        <div className="bg-gray-50 px-4 py-3">
+                            <div className="space-y-2">
+                                {cocinaExpenses.map((expense, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
+                                    >
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{expense.name}</span>
+                                            <span className="text-sm text-gray-500">
+                                                {expense.quantity} {expense.unit} - {expense.fecha}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <span>${expense.total.toFixed(0)}</span>
+                                            <span className="text-sm text-gray-500">
+                                                {expense.estado}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            );
+        }
         if (label === "Infraestructura" || label === "Marketing") {
             const data = label === "Infraestructura" ? infrastructureData : marketingData;
             return (
