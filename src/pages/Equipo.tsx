@@ -6,6 +6,7 @@ import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
 import { useSelector } from "react-redux";
 import arrow from "../assets/arrowIcon.png";
+import QRGlobal from "../components/QRGlobal";
 
 interface Empleado {
   id: string;
@@ -21,25 +22,7 @@ interface Empleado {
   endTime?: string;
 }
 
-const QRGlobal: React.FC = () => {
-  const qrRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (qrRef.current) {
-      const qr = qrcode(0, 'L');
-      const data = `https://dashboard.onlyanhelo.com/registroHorario`;
-      qr.addData(data);
-      qr.make();
-      qrRef.current.innerHTML = qr.createSvgTag({
-        scalable: true,
-        cellSize: 4,
-        margin: 1
-      });
-    }
-  }, []);
-
-  return <div ref={qrRef} className="w-2/4 bg-white rounded-xl p-2  " />;
-};
 
 export const Equipo: React.FC = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
