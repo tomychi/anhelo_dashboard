@@ -18,7 +18,9 @@ interface Empleado {
   area: string;
   puesto: string;
   depto: string;
-  scanned: boolean;
+  isWorking: boolean;
+  startTime?: string;
+  endTime?: string;
 }
 
 const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeId, name }) => {
@@ -47,6 +49,8 @@ const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeI
 
   return <div ref={qrRef} className="w-24 h-24" />;
 };
+
+
 
 export const Equipo: React.FC = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
@@ -351,8 +355,12 @@ export const Equipo: React.FC = () => {
                     employeeId={empleado.id}
                     name={empleado.name}
                   />
-                  <span className={`ml-2 ${empleado.scanned ? "text-green-500" : "text-red-500"}`}>
-                    {empleado.scanned ? "✓" : "✗"}
+                  <span className={`ml-2 ${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
+                    {empleado.isWorking ? (
+                      `Entrada: ${empleado.startTime}`
+                    ) : empleado.endTime ? (
+                      `Salida: ${empleado.endTime}`
+                    ) : "✗"}
                   </span>
                 </td>
               </tr>

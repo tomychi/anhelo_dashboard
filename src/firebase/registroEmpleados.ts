@@ -207,25 +207,31 @@ export const listenToEmpleadosChanges = (
 export const handleQRScan = async (scanData: string): Promise<void> => {
   try {
     const data = JSON.parse(scanData);
-    if (data.type === 'employee_scan' && data.id) {
-      const firestore = getFirestore();
-      const employeeRef = doc(firestore, 'empleados', data.id);
-      const employeeDoc = await getDoc(employeeRef);
+    const firestore = getFirestore();
+    const employeeRef = doc(firestore, 'empleados', data.id);
 
-      if (employeeDoc.exists()) {
-        const employeeData = employeeDoc.data();
-        if (!employeeData.scanned) {
-          await marcarEntrada(data.name);
-        } else {
-          await marcarSalida(data.name);
-        }
-        await updateDoc(employeeRef, {
-          scanned: !employeeData.scanned
-        });
-      }
+    // Obtener los datos actuales
+    const employeeDoc = await getDoc(employeeRef);
+    const employeeData = employeeDoc.data();
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+    if (employeeData.isWorking) {
+      await updateDoc(employeeRef, {
+        isWorking: false,
+        endTime: currentTime
+      });
+      await marcarSalida(data.name);
+    } else {
+      await updateDoc(employeeRef, {
+        isWorking: true,
+        startTime: currentTime,
+        endTime: null // Limpiar endTime al comenzar nuevo turno
+      });
+      await marcarEntrada(data.name);
     }
+
   } catch (error) {
-    console.error('Error processing QR scan:', error);
+    console.error('Error:', error);
     throw error;
   }
 };
