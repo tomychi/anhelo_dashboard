@@ -40,7 +40,7 @@ const QRGlobal: React.FC = () => {
     }
   }, []);
 
-  return <div ref={qrRef} className="w-24 h-24" />;
+  return <div ref={qrRef} className="w-2/4" />;
 };
 
 export const Equipo: React.FC = () => {
@@ -303,8 +303,9 @@ export const Equipo: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex justify-center pb-8  bg-gray-100">
+      <div className="flex justify-center items-center gap-2 flex-col pb-8  bg-gray-100">
         <QRGlobal />
+        <p className="font-bold font-coolvetica">Registro horario</p>
       </div>
 
       <div className="font-coolvetica">
@@ -313,9 +314,9 @@ export const Equipo: React.FC = () => {
             <tr>
               <th scope="col" className="pl-4 w-2/5">Nombre
               </th>
-              <th scope="col" className="pl-4 w-1/6">
+              {/* <th scope="col" className="pl-4 w-1/6">
                 Sueldo
-              </th>
+              </th> */}
               <th scope="col" className="pl-4 w-1/6">
                 Puesto
               </th>
@@ -333,7 +334,7 @@ export const Equipo: React.FC = () => {
                 <th scope="row" className="pl-4 w-1/5 font-light">
                   {capitalizeFirstLetter(empleado.name)}
                 </th>
-                <td className="pl-4 w-1/7 font-light">
+                {/* <td className="pl-4 w-1/7 font-light">
                   {empleado.area === "cocina"
                     ? `$${totalProductosVendidos * 230}`
                     : empleado.puesto === "cadete"
@@ -342,7 +343,7 @@ export const Equipo: React.FC = () => {
                         : "0.00"
                       }`
                       : "$0"}
-                </td>
+                </td> */}
                 <td className="pl-4 w-1/7 font-light">
                   {capitalizeFirstLetter(empleado.puesto)}
                 </td>
