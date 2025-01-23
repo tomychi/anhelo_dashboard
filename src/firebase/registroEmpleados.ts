@@ -13,13 +13,37 @@ import {
 import { Unsubscribe } from "firebase/auth";
 import { obtenerFechaActual } from "../helpers/dateToday";
 
-// Define y exporta la interfaz RegistroProps
 export interface RegistroProps {
   horaEntrada: string;
   nombreEmpleado: string;
   horaSalida: string;
   marcado: boolean;
 }
+
+export interface EmpleadosProps {
+  id: string;
+  category: string;
+  name: string;
+  available: boolean;
+  correo: string;
+  area: string;
+  puesto: string;
+  depto: string;
+  scanned: boolean;
+}
+
+export const handleScan = async (employeeId: string): Promise<void> => {
+  const firestore = getFirestore();
+  const employeeRef = doc(firestore, 'empleados', employeeId);
+  const employeeDoc = await getDoc(employeeRef);
+
+  if (employeeDoc.exists()) {
+    const data = employeeDoc.data();
+    await updateDoc(employeeRef, {
+      scanned: !data.scanned
+    });
+  }
+};
 
 export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
   const firestore = getFirestore();
@@ -54,6 +78,7 @@ export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
     throw error;
   }
 };
+
 export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
   const firestore = getFirestore();
   const horaActual = new Date().toLocaleTimeString("en-US", { hour12: false });
@@ -90,6 +115,7 @@ export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
     throw error;
   }
 };
+
 export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
   const firestore = getFirestore();
   const fechaActual = obtenerFechaActual();
@@ -139,23 +165,15 @@ export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
   const collectionRef = collection(firestore, "empleados");
   const snapshot = await getDocs(collectionRef);
 
-  // Mapear los nombres de los empleados desde los documentos de Firestore
-  const empleados = snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      name: data.name,
-      id: data.id,
-      category: data.category,
-      vueltas: data.vueltas || [],
-      available: data.available || false,
-      depto: data.depto || "",
-      area: data.area || "",
-      puesto: data.puesto || "",
-      correo: data.correo || "",
-    };
-  });
+  const empleados = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+    scanned: doc.data().scanned || false,
+  })) as EmpleadosProps[];
+
   return empleados;
 };
+
 export const listenToEmpleadosChanges = (
   callback: (empleados: EmpleadosProps[]) => void,
 ): Unsubscribe => {
@@ -184,4 +202,30 @@ export const listenToEmpleadosChanges = (
       console.error("Error al escuchar cambios en empleados:", error);
     },
   );
+};
+
+export const handleQRScan = async (scanData: string): Promise<void> => {
+  try {
+    const data = JSON.parse(scanData);
+    if (data.type === 'employee_scan' && data.id) {
+      const firestore = getFirestore();
+      const employeeRef = doc(firestore, 'empleados', data.id);
+      const employeeDoc = await getDoc(employeeRef);
+
+      if (employeeDoc.exists()) {
+        const employeeData = employeeDoc.data();
+        if (!employeeData.scanned) {
+          await marcarEntrada(data.name);
+        } else {
+          await marcarSalida(data.name);
+        }
+        await updateDoc(employeeRef, {
+          scanned: !employeeData.scanned
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error processing QR scan:', error);
+    throw error;
+  }
 };

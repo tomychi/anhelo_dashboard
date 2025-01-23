@@ -25,6 +25,7 @@ import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersFor
 import { NuevaCompra } from "./NuevaCompra";
 import CampañaDetalle from "./CampañaDetalle";
 import { DeudaManager } from "./DeudaManager";
+import ScanPage from "./ScanPage"
 
 export const DashboardMainPage = () => {
 	return (
@@ -57,6 +58,7 @@ export const DashboardMainPage = () => {
 						<Route path="ventas" element={<Comandera />} />
 						<Route path="monthdata" element={<MonthData />} />
 						<Route path="empleados" element={<RegistroEmpleado />} />
+						<Route path="scan" element={<ScanPage />} />
 						<Route path="equipo" element={<Equipo />} />
 						<Route path="deudaManager" element={<DeudaManager />} />
 						<Route path="AnheloRiders" element={<AnheloRiders />} />

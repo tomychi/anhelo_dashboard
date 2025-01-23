@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import qrcode from 'qrcode-generator';
 import { readEmpleados } from "../firebase/registroEmpleados";
 import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
@@ -9,6 +10,7 @@ import arrow from "../assets/arrowIcon.png";
 import { Cadete } from "../types/types";
 
 interface Empleado {
+  id: string;
   name: string;
   category: string;
   correo: string;
@@ -16,7 +18,35 @@ interface Empleado {
   area: string;
   puesto: string;
   depto: string;
+  scanned: boolean;
 }
+
+const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeId, name }) => {
+  const qrRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (qrRef.current) {
+      const qr = qrcode(0, 'L');
+      const data = `${window.location.origin}/scan?data=${encodeURIComponent(
+        JSON.stringify({
+          type: 'employee_scan',
+          id: employeeId,
+          name: name
+        })
+      )}`;
+
+      qr.addData(data);
+      qr.make();
+      qrRef.current.innerHTML = qr.createSvgTag({
+        scalable: true,
+        cellSize: 4,
+        margin: 1
+      });
+    }
+  }, [employeeId, name]);
+
+  return <div ref={qrRef} className="w-24 h-24" />;
+};
 
 export const Equipo: React.FC = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
@@ -104,15 +134,6 @@ export const Equipo: React.FC = () => {
   const handlePayAllSalaries = async () => {
     setIsPaying(true);
     try {
-      // Aquí iría la lógica para crear un pago en MercadoPago
-      // Por ejemplo:
-      // const response = await createMercadoPagoPayment(totalSalaries);
-      // if (response.success) {
-      //   // Actualizar el estado de los pagos en Firebase
-      //   await updatePaymentStatus(empleados);
-      // }
-      console.log("Procesando pago de todos los sueldos...");
-      // Simular un proceso de pago
       await new Promise((resolve) => setTimeout(resolve, 2000));
       alert("Todos los sueldos han sido pagados exitosamente");
     } catch (error) {
@@ -168,9 +189,8 @@ export const Equipo: React.FC = () => {
             <p className="font-bold">Nuevo miembro</p>
           </NavLink>
           <button
-            className={`text-black font-coolvetica bg-gray-300 font-black rounded-full flex items-center justify-center h-10 ${
-              isPaying ? " cursor-not-allowed" : ""
-            }`}
+            className={`text-black font-coolvetica bg-gray-300 font-black rounded-full flex items-center justify-center h-10 ${isPaying ? "cursor-not-allowed" : ""
+              }`}
             onClick={handlePayAllSalaries}
             disabled={isPaying}
           >
@@ -190,9 +210,9 @@ export const Equipo: React.FC = () => {
                 >
                   <path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
                   <path
-                    fill-rule="evenodd"
+                    fillRule="evenodd"
                     d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 14.625v-9.75ZM8.25 9.75a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM18.75 9a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V9.75a.75.75 0 0 0-.75-.75h-.008ZM4.5 9.75A.75.75 0 0 1 5.25 9h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75V9.75Z"
-                    clip-rule="evenodd"
+                    clipRule="evenodd"
                   />
                   <path d="M2.25 18a.75.75 0 0 0 0 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 0 0-.75-.75H2.25Z" />
                 </svg>
@@ -203,7 +223,7 @@ export const Equipo: React.FC = () => {
         </div>
       </div>
 
-      <div className=" px-4 pb-8">
+      <div className="px-4 pb-8">
         <Calendar />
         <div className="flex flex-row gap-2 mt-2">
           <div
@@ -289,19 +309,20 @@ export const Equipo: React.FC = () => {
 
       <div className="font-coolvetica">
         <table className="w-full text-xs text-left text-black">
-          <thead className="text-black border-b h-10">
-            <tr>
-              <th scope="col" className="pl-4 w-2/5 ">
-                Nombre
-              </th>
-              <th scope="col" className="pl-4 w-1/6 ">
-                Sueldo
-              </th>
-              <th scope="col" className="pl-4 w-1/6 ">
-                Puesto
-              </th>
-              <th scope="col" className="pl-4 w-1/6 "></th>
-            </tr>
+          <thead className="text-black border-b h-10"><tr>
+            <th scope="col" className="pl-4 w-2/5 ">
+              Nombre
+            </th>
+            <th scope="col" className="pl-4 w-1/6 ">
+              Sueldo
+            </th>
+            <th scope="col" className="pl-4 w-1/6 ">
+              Puesto
+            </th>
+            <th scope="col" className="pl-4 w-1/6 ">
+              QR
+            </th>
+          </tr>
           </thead>
           <tbody>
             {filteredEmpleados.map((empleado) => (
@@ -316,18 +337,23 @@ export const Equipo: React.FC = () => {
                   {empleado.area === "cocina"
                     ? `$${totalProductosVendidos * 230}`
                     : empleado.puesto === "cadete"
-                      ? `$${
-                          cadetePagas[empleado.name]
-                            ? cadetePagas[empleado.name].toFixed(2)
-                            : "0.00"
-                        }`
+                      ? `$${cadetePagas[empleado.name]
+                        ? cadetePagas[empleado.name].toFixed(2)
+                        : "0.00"
+                      }`
                       : "$0"}
                 </td>
                 <td className="pl-4 w-1/7 font-light">
                   {capitalizeFirstLetter(empleado.puesto)}
                 </td>
-                <td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
-                  <p className="absolute top-[-4px]">. . .</p>
+                <td className="pl-4 w-1/7 font-light flex items-center gap-2">
+                  <QRComponent
+                    employeeId={empleado.id}
+                    name={empleado.name}
+                  />
+                  <span className={`ml-2 ${empleado.scanned ? "text-green-500" : "text-red-500"}`}>
+                    {empleado.scanned ? "✓" : "✗"}
+                  </span>
                 </td>
               </tr>
             ))}
@@ -337,3 +363,5 @@ export const Equipo: React.FC = () => {
     </div>
   );
 };
+
+export default Equipo;

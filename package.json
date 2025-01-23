@@ -27,6 +27,7 @@
     "mapbox-gl": "^3.3.0",
     "npm": "^10.2.5",
     "pdf-lib": "^1.17.1",
+    "qrcode-generator": "^1.4.4",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-chartjs-2": "^5.2.0",
