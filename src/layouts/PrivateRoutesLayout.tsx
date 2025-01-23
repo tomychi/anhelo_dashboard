@@ -1,12 +1,10 @@
 import { Outlet, useLocation, Navigate, Route, Routes } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
 import { Comandera, Dashboard } from "../pages";
-import { Marketing } from "../components/marketing/Marketing";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
-import ScanPage from "../pages/ScanPage";
-import { Equipo } from "../pages";
+import RegistroHorario from "../pages/RegistroHorario";
 
 export const PrivateRoutesLayout = () => {
 	const location = useLocation();
@@ -40,8 +38,7 @@ export const PrivateRoutesLayout = () => {
 						<Route index element={<Dashboard />} />
 						<Route path="nuevaCompra" element={<NuevaCompra />} />
 						<Route path="vouchers" element={<GenerateVouchersForm />} />
-						<Route path="scan" element={<ScanPage />} />
-						<Route path="equipo" element={<Equipo />} />
+						<Route path="registroHorario" element={<RegistroHorario />} />
 					</Routes>
 				</div>
 			</div>

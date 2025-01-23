@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 import qrcode from 'qrcode-generator';
@@ -22,25 +22,14 @@ interface Empleado {
   startTime?: string;
   endTime?: string;
 }
-const QRComponent: React.FC<{ employeeId: string, name: string, email: string }> = ({
-  employeeId,
-  name,
-  email
-}) => {
+
+const QRGlobal: React.FC = () => {
   const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (qrRef.current) {
       const qr = qrcode(0, 'L');
-      const data = `http://192.168.0.6:5173/scan?data=${encodeURIComponent(
-        JSON.stringify({
-          type: 'employee_scan',
-          id: employeeId,
-          name: name,
-          email: email || '' // Ensure email is never undefined
-        })
-      )}`;
-
+      const data = `http://192.168.0.6:5173/registroHorario`;
       qr.addData(data);
       qr.make();
       qrRef.current.innerHTML = qr.createSvgTag({
@@ -49,12 +38,10 @@ const QRComponent: React.FC<{ employeeId: string, name: string, email: string }>
         margin: 1
       });
     }
-  }, [employeeId, name, email]);
+  }, []);
 
   return <div ref={qrRef} className="w-24 h-24" />;
 };
-
-
 
 export const Equipo: React.FC = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
@@ -106,7 +93,7 @@ export const Equipo: React.FC = () => {
     };
   }, []);
 
-  const cadetePagas = useMemo(() => {
+  const cadetePagas = React.useMemo(() => {
     const pagas: { [key: string]: number } = {};
     vueltas.forEach((cadete: Cadete) => {
       if (cadete.name && cadete.vueltas) {
@@ -154,7 +141,7 @@ export const Equipo: React.FC = () => {
     }
   };
 
-  const totalSalaries = useMemo(() => {
+  const totalSalaries = React.useMemo(() => {
     return filteredEmpleados.reduce((total, empleado) => {
       let salary = 0;
       if (empleado.area === "cocina") {
@@ -168,16 +155,20 @@ export const Equipo: React.FC = () => {
 
   return (
     <div className="flex flex-col">
+      <div className="flex justify-center py-4 bg-gray-100">
+        <QRGlobal />
+      </div>
+
       <style>
         {`
-          .arrow-down {
-            transition: transform 0.3s ease;
-            transform: rotate(90deg);
-          }
-          .arrow-down.open {
-            transform: rotate(-90deg);
-          }
-        `}
+         .arrow-down {
+           transition: transform 0.3s ease;
+           transform: rotate(90deg);
+         }
+         .arrow-down.open {
+           transform: rotate(-90deg);
+         }
+       `}
       </style>
       <div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
         <p className="text-black font-bold text-4xl mt-1">Equipo</p>
@@ -197,8 +188,7 @@ export const Equipo: React.FC = () => {
             <p className="font-bold">Nuevo miembro</p>
           </NavLink>
           <button
-            className={`text-black font-coolvetica bg-gray-300 font-black rounded-full flex items-center justify-center h-10 ${isPaying ? "cursor-not-allowed" : ""
-              }`}
+            className={`text-black font-coolvetica bg-gray-300 font-black rounded-full flex items-center justify-center h-10 ${isPaying ? "cursor-not-allowed" : ""}`}
             onClick={handlePayAllSalaries}
             disabled={isPaying}
           >
@@ -317,20 +307,20 @@ export const Equipo: React.FC = () => {
 
       <div className="font-coolvetica">
         <table className="w-full text-xs text-left text-black">
-          <thead className="text-black border-b h-10"><tr>
-            <th scope="col" className="pl-4 w-2/5 ">
-              Nombre
-            </th>
-            <th scope="col" className="pl-4 w-1/6 ">
-              Sueldo
-            </th>
-            <th scope="col" className="pl-4 w-1/6 ">
-              Puesto
-            </th>
-            <th scope="col" className="pl-4 w-1/6 ">
-              QR
-            </th>
-          </tr>
+          <thead className="text-black border-b h-10">
+            <tr>
+              <th scope="col" className="pl-4 w-2/5">Nombre
+              </th>
+              <th scope="col" className="pl-4 w-1/6">
+                Sueldo
+              </th>
+              <th scope="col" className="pl-4 w-1/6">
+                Puesto
+              </th>
+              <th scope="col" className="pl-4 w-1/6">
+                Estado
+              </th>
+            </tr>
           </thead>
           <tbody>
             {filteredEmpleados.map((empleado) => (
@@ -338,10 +328,10 @@ export const Equipo: React.FC = () => {
                 key={empleado.name}
                 className="text-black border font-light h-10 border-black border-opacity-20"
               >
-                <th scope="row" className="pl-4 w-1/5 font-light ">
+                <th scope="row" className="pl-4 w-1/5 font-light">
                   {capitalizeFirstLetter(empleado.name)}
                 </th>
-                <td className="pl-4 w-1/7 font-light ">
+                <td className="pl-4 w-1/7 font-light">
                   {empleado.area === "cocina"
                     ? `$${totalProductosVendidos * 230}`
                     : empleado.puesto === "cadete"
@@ -354,13 +344,8 @@ export const Equipo: React.FC = () => {
                 <td className="pl-4 w-1/7 font-light">
                   {capitalizeFirstLetter(empleado.puesto)}
                 </td>
-                <td className="pl-4 w-1/7 font-light flex items-center gap-2">
-                  <QRComponent
-                    employeeId={empleado.id}
-                    name={empleado.name}
-                    email={empleado.correo || ''} // Explicitly use correo and provide a fallback
-                  />
-                  <span className={`ml-2 ${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
+                <td className="pl-4 w-1/7 font-light">
+                  <span className={`${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
                     {empleado.isWorking ? (
                       `Entrada: ${empleado.startTime}`
                     ) : empleado.endTime ? (

@@ -19,13 +19,13 @@ import {
 	ComanderaAutomatizada,
 } from "../pages";
 import { MonthData } from "./MonthData";
+import RegistroHorario from "./RegistroHorario";
 import { Stock } from "./Stock";
 import RegistroEmpleado from "./Empleados";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
 import { NuevaCompra } from "./NuevaCompra";
 import CampañaDetalle from "./CampañaDetalle";
 import { DeudaManager } from "./DeudaManager";
-import ScanPage from "./ScanPage"
 
 export const DashboardMainPage = () => {
 	return (
@@ -56,9 +56,9 @@ export const DashboardMainPage = () => {
 						<Route path="clientes" element={<Clientes />} />
 						<Route path="productosVendidos" element={<ProductosVendidos />} />
 						<Route path="ventas" element={<Comandera />} />
+						<Route path="registroHorario" element={<RegistroHorario />} />
 						<Route path="monthdata" element={<MonthData />} />
 						<Route path="empleados" element={<RegistroEmpleado />} />
-						<Route path="scan" element={<ScanPage />} />
 						<Route path="equipo" element={<Equipo />} />
 						<Route path="deudaManager" element={<DeudaManager />} />
 						<Route path="AnheloRiders" element={<AnheloRiders />} />

@@ -204,46 +204,39 @@ export const listenToEmpleadosChanges = (
   );
 };
 
-export const handleQRScan = async (
-  scanData: string,
-  currentUserEmail: string | null | undefined
-): Promise<void> => {
+export const handleQRScan = async (currentUserEmail: string | null | undefined): Promise<void> => {
   try {
-    const data = JSON.parse(scanData);
-    const firestore = getFirestore();
-    const employeeRef = doc(firestore, 'empleados', data.id);
-
-    // Retrieve full employee document to verify email
-    const employeeDoc = await getDoc(employeeRef);
-    const employeeData = employeeDoc.data();
-
-    // Verify the scanned QR matches the employee's email
-    if (!employeeData) {
-      alert('No se encontró información del empleado');
-      throw new Error('Employee not found');
+    if (!currentUserEmail) {
+      throw new Error('Usuario no autenticado');
     }
 
-    // Alert with the current user's email
-    alert(`Estás escaneando desde el correo: ${currentUserEmail}`);
+    const firestore = getFirestore();
+    const empleadosRef = collection(firestore, 'empleados');
+    const q = query(empleadosRef, where('correo', '==', currentUserEmail));
+    const querySnapshot = await getDocs(q);
 
-    // Proceed with normal check-in/check-out logic
+    if (querySnapshot.empty) {
+      throw new Error('Empleado no encontrado');
+    }
+
+    const employeeDoc = querySnapshot.docs[0];
+    const employeeData = employeeDoc.data();
     const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
 
     if (employeeData.isWorking) {
-      await updateDoc(employeeRef, {
+      await updateDoc(employeeDoc.ref, {
         isWorking: false,
         endTime: currentTime
       });
       await marcarSalida(employeeData.name);
     } else {
-      await updateDoc(employeeRef, {
+      await updateDoc(employeeDoc.ref, {
         isWorking: true,
         startTime: currentTime,
-        endTime: null // Clear endTime when starting a new shift
+        endTime: null
       });
       await marcarEntrada(employeeData.name);
     }
-
   } catch (error) {
     console.error('Error:', error);
     throw error;
