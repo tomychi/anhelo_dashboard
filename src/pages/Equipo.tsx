@@ -228,7 +228,7 @@ export const Equipo: React.FC = () => {
 
       <div className="font-coolvetica">
         <table className="w-full text-xs text-left text-black">
-          <thead className="text-black border-b h-10">
+          <thead className="text-black bor h-10">
             <tr>
               <th scope="col" className="pl-4 w-2/5">Nombre
               </th>
@@ -247,7 +247,7 @@ export const Equipo: React.FC = () => {
             {filteredEmpleados.map((empleado) => (
               <tr
                 key={empleado.name}
-                className="text-black border font-light h-10 border-black border-opacity-20"
+                className="text-black border-y font-light h-10 border-gray-300"
               >
                 <th scope="row" className="pl-4 w-1/5 font-light">
                   {capitalizeFirstLetter(empleado.name)}
@@ -265,12 +265,12 @@ export const Equipo: React.FC = () => {
                 <td className="pl-4 w-1/7 font-light">
                   {capitalizeFirstLetter(empleado.puesto)}
                 </td>
-                <td className="pl-4 w-1/7 font-light">
+                <td className="pl-4 w-1/7 font-light ">
                   <span className={`${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
                     {empleado.isWorking ? (
-                      `Entrada: ${empleado.startTime}`
+                      ` ${empleado.startTime}`
                     ) : empleado.endTime ? (
-                      `Salida: ${empleado.endTime}`
+                      ` ${empleado.endTime}`
                     ) : "✗"}
                   </span>
                 </td>
