@@ -27,7 +27,7 @@ const QRGlobal: React.FC = () => {
   useEffect(() => {
     if (qrRef.current) {
       const qr = qrcode(0, 'L');
-      const data = `http://192.168.0.6:5173/registroHorario`;
+      const data = `https://dashboard.onlyanhelo.com/registroHorario`;
       qr.addData(data);
       qr.make();
       qrRef.current.innerHTML = qr.createSvgTag({
