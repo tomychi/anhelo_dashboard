@@ -27,7 +27,7 @@ const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeI
   useEffect(() => {
     if (qrRef.current) {
       const qr = qrcode(0, 'L');
-      const data = `${window.location.origin}/scan?data=${encodeURIComponent(
+      const data = `http://192.168.100.67:5173/scan?data=${encodeURIComponent(
         JSON.stringify({
           type: 'employee_scan',
           id: employeeId,
