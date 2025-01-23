@@ -61,7 +61,10 @@ export const RegistroHorario: React.FC = () => {
     }, [currentUserEmail, navigate]);
 
     return (
-        <div className="h-full bg-green-500 bg-opacity-10 flex flex-col items-center justify-center p-4">
+        <div className={`h-full ${status === 'success' ? 'bg-green-500' :
+                status === 'error' ? 'bg-red-500' :
+                    'bg-gray-100'
+            } bg-opacity-10 font-coolvetica flex flex-col items-center justify-center p-4`}>
             <style>
                 {`
                 @keyframes scaleIn {
@@ -84,43 +87,51 @@ export const RegistroHorario: React.FC = () => {
                 `}
             </style>
 
-            <div className="w-full max-w-md">
+            <div className="w-full max-w-md ">
                 {status === 'loading' && (
-                    <div className="flex flex-col items-center space-y-4">
-                        <div className="w-12 h-12 border-4 border-t-black border-r-black border-transparent rounded-full animate-spin"></div>
-                        <p className="text-lg font-medium">Procesando registro...</p>
+                    <div className="flex flex-col items-center space-y-2">
+                        <div className="w-4 h-4 border-4 border-t-black border-r-black border-transparent rounded-full animate-spin"></div>
                     </div>
                 )}
 
                 {status === 'success' && (
-                    <div className="border-2 flex-col flex justify-center items-center rounded-lg p-4 scale-in">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                            className="text-green-500 size-6 scale-in">
-                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
-                        </svg>
-                        <h3 className="text-green-500 font-bold text-lg fade-up">¡Registro exitoso!</h3>
-                        <p className="text-green-400 text-center fade-up">{message} hs</p>
-                    </div>
+                    <>
+                        <div className="border-2 flex-col flex justify-center items-center rounded-lg p-4 scale-in">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                className="text-green-500 size-6 scale-in">
+                                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                            </svg>
+                            <h3 className="text-green-500 font-bold text-lg fade-up">¡Registro exitoso!</h3>
+                            <p className="text-green-500 text-center fade-up">{message} hs</p>
+                        </div>
+                        <div className="mt-8 text-center text-black text-sm fade-up">
+                            Serás redirigido automáticamente...
+                        </div>
+                    </>
                 )}
 
                 {status === 'error' && (
-                    <div className="border border-red-500 bg-red-500 bg-opacity-10 rounded-lg p-4 relative scale-in">
-                        <div className="flex items-start space-x-3">
-                            <svg className="w-6 h-6 text-red-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div className="fade-up">
-                                <h3 className="text-red-500 font-bold text-lg">Error en el registro</h3>
-                                <p className="text-red-400">{message}</p>
+                    <>
+
+                        <div className="border border-red-500 bg-red-500 bg-opacity-10 rounded-lg p-4 relative scale-in">
+                            <div className="flex items-start space-x-3">
+                                <svg className="w-6 h-6 text-red-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div className="fade-up">
+                                    <h3 className="text-red-500 font-bold text-lg">Error en el registro</h3>
+                                    <p className="text-red-400">{message}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div className="mt-8 text-center text-black text-sm fade-up">
+                            Serás redirigido automáticamente...
+                        </div>
+                    </>
                 )}
 
-                <div className="mt-8 text-center text-gray-400 text-sm fade-up">
-                    Serás redirigido automáticamente...
-                </div>
+
             </div>
         </div>
     );
