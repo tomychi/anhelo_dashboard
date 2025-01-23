@@ -62,7 +62,7 @@ const Tooltip = ({ text, duration = 10000, className = "", position = "right" })
                 dangerouslySetInnerHTML={{ __html: text }}
               />
             ) : (
-              <div className="text-black leading-relaxed">
+              <div className="text-gray-100 leading-relaxed">
                 {text}
               </div>
             )}
