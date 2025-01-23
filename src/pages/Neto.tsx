@@ -444,7 +444,6 @@ export const Neto = () => {
                 <tr>
                     <td colSpan={5} className="p-0">
                         <div className="bg-gray-50 px-4 py-3">
-                            <p className="font-medium mb-2">Desglose de {label.toLowerCase()}:</p>
                             <div className="space-y-2">
                                 {data.items.map((item, index) => (
                                     <div
