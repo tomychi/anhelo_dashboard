@@ -22,8 +22,11 @@ interface Empleado {
   startTime?: string;
   endTime?: string;
 }
-
-const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeId, name }) => {
+const QRComponent: React.FC<{ employeeId: string, name: string, email: string }> = ({
+  employeeId,
+  name,
+  email
+}) => {
   const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +36,8 @@ const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeI
         JSON.stringify({
           type: 'employee_scan',
           id: employeeId,
-          name: name
+          name: name,
+          email: email || '' // Ensure email is never undefined
         })
       )}`;
 
@@ -45,7 +49,7 @@ const QRComponent: React.FC<{ employeeId: string, name: string }> = ({ employeeI
         margin: 1
       });
     }
-  }, [employeeId, name]);
+  }, [employeeId, name, email]);
 
   return <div ref={qrRef} className="w-24 h-24" />;
 };
@@ -354,6 +358,7 @@ export const Equipo: React.FC = () => {
                   <QRComponent
                     employeeId={empleado.id}
                     name={empleado.name}
+                    email={empleado.correo || ''} // Explicitly use correo and provide a fallback
                   />
                   <span className={`ml-2 ${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
                     {empleado.isWorking ? (

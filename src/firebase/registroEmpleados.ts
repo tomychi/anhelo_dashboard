@@ -204,15 +204,29 @@ export const listenToEmpleadosChanges = (
   );
 };
 
-export const handleQRScan = async (scanData: string): Promise<void> => {
+export const handleQRScan = async (
+  scanData: string,
+  currentUserEmail: string | null | undefined
+): Promise<void> => {
   try {
     const data = JSON.parse(scanData);
     const firestore = getFirestore();
     const employeeRef = doc(firestore, 'empleados', data.id);
 
-    // Obtener los datos actuales
+    // Retrieve full employee document to verify email
     const employeeDoc = await getDoc(employeeRef);
     const employeeData = employeeDoc.data();
+
+    // Verify the scanned QR matches the employee's email
+    if (!employeeData) {
+      alert('No se encontró información del empleado');
+      throw new Error('Employee not found');
+    }
+
+    // Alert with the current user's email
+    alert(`Estás escaneando desde el correo: ${currentUserEmail}`);
+
+    // Proceed with normal check-in/check-out logic
     const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
 
     if (employeeData.isWorking) {
@@ -220,14 +234,14 @@ export const handleQRScan = async (scanData: string): Promise<void> => {
         isWorking: false,
         endTime: currentTime
       });
-      await marcarSalida(data.name);
+      await marcarSalida(employeeData.name);
     } else {
       await updateDoc(employeeRef, {
         isWorking: true,
         startTime: currentTime,
-        endTime: null // Limpiar endTime al comenzar nuevo turno
+        endTime: null // Clear endTime when starting a new shift
       });
-      await marcarEntrada(data.name);
+      await marcarEntrada(employeeData.name);
     }
 
   } catch (error) {
