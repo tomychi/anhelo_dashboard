@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { collection, getFirestore, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { collection, getFirestore, query, where, getDocs, updateDoc, arrayUnion } from "firebase/firestore";
 import { marcarEntrada, marcarSalida } from '../firebase/registroEmpleados';
 import { RootState } from '../redux/configureStore';
+
+interface RegistroDiario {
+    fecha: string;
+    turnos: Array<{
+        entrada: string;
+        salida: string | null;
+    }>;
+}
 
 export const RegistroHorario: React.FC = () => {
     const navigate = useNavigate();
@@ -15,35 +23,46 @@ export const RegistroHorario: React.FC = () => {
     useEffect(() => {
         const registrarAsistencia = async () => {
             try {
-                if (!currentUserEmail) {
-                    throw new Error('Usuario no autenticado');
-                }
+                if (!currentUserEmail) throw new Error('Usuario no autenticado');
 
                 const firestore = getFirestore();
                 const empleadosRef = collection(firestore, 'empleados');
                 const q = query(empleadosRef, where('correo', '==', currentUserEmail));
                 const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    throw new Error('Empleado no encontrado');
-                }
+                if (querySnapshot.empty) throw new Error('Empleado no encontrado');
 
                 const employeeDoc = querySnapshot.docs[0];
                 const employeeData = employeeDoc.data();
                 const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+                const currentDate = new Date().toISOString().split('T')[0];
+
+                const registros = employeeData.registroHorario || [];
+                const registroHoy = registros.find(r => r.fecha === currentDate);
 
                 if (employeeData.isWorking) {
+                    if (registroHoy) {
+                        const lastTurno = registroHoy.turnos[registroHoy.turnos.length - 1];
+                        lastTurno.salida = currentTime;
+                    }
+
                     await updateDoc(employeeDoc.ref, {
                         isWorking: false,
-                        endTime: currentTime
+                        registroHorario: registroHoy ?
+                            registros.map(r => r.fecha === currentDate ? registroHoy : r) :
+                            [...registros, { fecha: currentDate, turnos: [{ entrada: employeeData.startTime, salida: currentTime }] }]
                     });
                     await marcarSalida(employeeData.name);
                     setAction('salida');
                 } else {
+                    const nuevoTurno = { entrada: currentTime, salida: null };
+
                     await updateDoc(employeeDoc.ref, {
                         isWorking: true,
-                        startTime: currentTime,
-                        endTime: null
+                        registroHorario: registroHoy ?
+                            registros.map(r => r.fecha === currentDate ?
+                                { ...r, turnos: [...r.turnos, nuevoTurno] } : r) :
+                            [...registros, { fecha: currentDate, turnos: [nuevoTurno] }]
                     });
                     await marcarEntrada(employeeData.name);
                     setAction('entrada');
@@ -60,10 +79,19 @@ export const RegistroHorario: React.FC = () => {
         registrarAsistencia();
     }, [currentUserEmail, navigate]);
 
+    useEffect(() => {
+        if (status === 'success' || status === 'error') {
+            const timer = setTimeout(() => {
+                navigate('/');
+            }, 3500); // 3000ms for animation + 500ms buffer
+            return () => clearTimeout(timer);
+        }
+    }, [status, navigate]);
+
     return (
         <div className={`h-full ${status === 'success' ? 'bg-green-500' :
-                status === 'error' ? 'bg-red-500' :
-                    'bg-gray-100'
+            status === 'error' ? 'bg-red-500' :
+                'bg-gray-100'
             } bg-opacity-10 font-coolvetica flex flex-col items-center justify-center p-4`}>
             <style>
                 {`
