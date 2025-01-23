@@ -155,9 +155,7 @@ export const Equipo: React.FC = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-center py-4 bg-gray-100">
-        <QRGlobal />
-      </div>
+
 
       <style>
         {`
@@ -172,7 +170,7 @@ export const Equipo: React.FC = () => {
       </style>
       <div className="flex flex-row justify-between items-center mt-8 mx-4 mb-4">
         <p className="text-black font-bold text-4xl mt-1">Equipo</p>
-        <div className="flex gap-2 flex-col">
+        {/* <div className="flex gap-2 flex-col">
           <NavLink
             className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
             to={"/nuevoMiembro"}
@@ -218,7 +216,7 @@ export const Equipo: React.FC = () => {
               </div>
             )}
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="px-4 pb-8">
@@ -303,6 +301,10 @@ export const Equipo: React.FC = () => {
             />
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-center pb-8  bg-gray-100">
+        <QRGlobal />
       </div>
 
       <div className="font-coolvetica">

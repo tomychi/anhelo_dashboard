@@ -1,6 +1,6 @@
 import { Outlet, useLocation, Navigate, Route, Routes } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
-import { Comandera, Dashboard } from "../pages";
+import { Comandera, Dashboard, Equipo } from "../pages";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
@@ -38,6 +38,8 @@ export const PrivateRoutesLayout = () => {
 						<Route index element={<Dashboard />} />
 						<Route path="nuevaCompra" element={<NuevaCompra />} />
 						<Route path="vouchers" element={<GenerateVouchersForm />} />
+						<Route path="equipo" element={<Equipo />} />
+
 						<Route path="registroHorario" element={<RegistroHorario />} />
 					</Routes>
 				</div>
