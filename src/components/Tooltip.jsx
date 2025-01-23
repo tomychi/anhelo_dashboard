@@ -58,7 +58,7 @@ const Tooltip = ({ text, duration = 10000, className = "", position = "right" })
           <div className="px-4 py-3">
             {typeof text === 'string' ? (
               <p
-                className="text-black leading-relaxed"
+                className="text-gray-100 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: text }}
               />
             ) : (
