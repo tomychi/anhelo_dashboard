@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { obtenerFechaActual } from "../../helpers/dateToday";
-import { UploadExpense,  } from "../../firebase/UploadGasto";
+import { UploadExpense, } from "../../firebase/UploadGasto";
 import Swal from "sweetalert2";
 import { updateMaterialCost } from "../../firebase/Materiales";
 import { calculateUnitCost } from "../../helpers/calculator";
@@ -109,12 +109,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 const formatDateForInput = (dateString: string): string => {
 	const [day, month, year] = dateString.split('/');
 	return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-  };
+};
 
-  const formatDateForDB = (dateString: string): string => {
+const formatDateForDB = (dateString: string): string => {
 	const [year, month, day] = dateString.split('-');
 	return `${day}/${month}/${year}`;
-  };
+};
 
 export const FormGasto = () => {
 	const currentUserEmail = projectAuth.currentUser?.email;
@@ -133,160 +133,158 @@ export const FormGasto = () => {
 		quantity: 0,
 		unit: "unidad",
 		estado: "pendiente"
-	  });
-	  const [inputDateValue, setInputDateValue] = useState(formatDateForInput(obtenerFechaActual()));
+	});
+	const [inputDateValue, setInputDateValue] = useState(formatDateForInput(obtenerFechaActual()));
 
-
-	
-
-	  const handleChange = (
+	const handleChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	  ) => {
+	) => {
 		const { name, value } = e.target;
-	
-		if (name === "total" || name === "quantity") {
-		  const numericValue = parseFloat(value);
-		  setFormData(prev => ({
-			...prev,
-			[name]: isNaN(numericValue) ? 0 : numericValue
-		  }));
-		} else {
-		  setFormData(prev => ({
-			...prev,
-			[name]: value
-		  }));
-		}
-	  };
 
-	  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (name === "total" || name === "quantity") {
+			const numericValue = parseFloat(value);
+			setFormData(prev => ({
+				...prev,
+				[name]: isNaN(numericValue) ? 0 : numericValue
+			}));
+		} else {
+			setFormData(prev => ({
+				...prev,
+				[name]: value
+			}));
+		}
+	};
+
+	const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const inputDate = e.target.value; // Formato YYYY-MM-DD
 		setInputDateValue(inputDate);
-		
+
 		// Actualizar el formData con el formato DD/MM/YYYY
 		setFormData(prev => ({
-		  ...prev,
-		  fecha: formatDateForDB(inputDate)
+			...prev,
+			fecha: formatDateForDB(inputDate)
 		}));
-	  };
-	
-	
-	  const handleFileSelect = (selectedFile: File) => {
+	};
+
+
+	const handleFileSelect = (selectedFile: File) => {
 		setFile(selectedFile);
-	  };
-	
-	  const handleNameChange = (
+	};
+
+	const handleNameChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	  ) => {
+	) => {
 		const { value } = e.target;
 		const selectedMaterial = materiales.find(
-		  (material) => material.nombre === value
+			(material) => material.nombre === value
 		);
-	
+
 		if (selectedMaterial) {
-		  setUnidadPorPrecio(selectedMaterial.unidadPorPrecio);
-		  setFormData({
-			...formData,
-			name: selectedMaterial.nombre,
-			quantity: 0,
-			unit: selectedMaterial.unit,
-			total: 0,
-			description: "",
-			category: selectedMaterial.categoria,
-			estado: "pendiente"
-		  });
+			setUnidadPorPrecio(selectedMaterial.unidadPorPrecio);
+			setFormData({
+				...formData,
+				name: selectedMaterial.nombre,
+				quantity: 0,
+				unit: selectedMaterial.unit,
+				total: 0,
+				description: "",
+				category: selectedMaterial.categoria,
+				estado: "pendiente"
+			});
 		} else {
-		  setFormData({
-			...formData,
-			name: value,
-			quantity: 0,
-			unit: "unidad",
-			total: 0,
-			description: "",
-			category: isMarketingUser ? "marketing" : "ingredientes",
-			estado: "pendiente"
-		  });
+			setFormData({
+				...formData,
+				name: value,
+				quantity: 0,
+				unit: "unidad",
+				total: 0,
+				description: "",
+				category: isMarketingUser ? "marketing" : "ingredientes",
+				estado: "pendiente"
+			});
 		}
-	  };
-	  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+	};
+
+	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-	  
+
 		console.log('Formulario enviado con datos:', formData);
 		console.log('Unidad por precio:', unidadPorPrecio);
-	  
+
 		const cost = calculateUnitCost(
-		  formData.total,
-		  formData.quantity,
-		  unidadPorPrecio,
-		  formData.unit,
-		  formData.name
+			formData.total,
+			formData.quantity,
+			unidadPorPrecio,
+			formData.unit,
+			formData.name
 		);
-	  
+
 		console.log('Costo calculado:', cost);
-	  
+
 		try {
-		  const expenseWithId = { ...formData, id: '' };
-		  const result = await UploadExpense(expenseWithId);
-		  
-		  console.log('Gasto guardado con éxito:', result);
-	  
-		  await Swal.fire({
-			icon: "success",
-			title: "Gasto cargado",
-			text: `El gasto ${result.id} se cargó correctamente`
-		  });
-	  
-		  if (cost && formData.name) {
-			try {
-			  console.log('Intentando actualizar material:', {
-				nombre: formData.name,
-				costo: cost,
-				cantidad: formData.quantity
-			  });
-	  
-			  await updateMaterialCost(formData.name, cost, formData.quantity);
-			  
-			  await Swal.fire({
+			const expenseWithId = { ...formData, id: '' };
+			const result = await UploadExpense(expenseWithId);
+
+			console.log('Gasto guardado con éxito:', result);
+
+			await Swal.fire({
 				icon: "success",
-				title: "Costo actualizado",
-				text: `El costo ${cost} se actualizó correctamente`
-			  });
-			} catch (error) {
-			  console.error('Error al actualizar material:', error);
-			  Swal.fire({
+				title: "Gasto cargado",
+				text: `El gasto ${result.id} se cargó correctamente`
+			});
+
+			if (cost && formData.name) {
+				try {
+					console.log('Intentando actualizar material:', {
+						nombre: formData.name,
+						costo: cost,
+						cantidad: formData.quantity
+					});
+
+					await updateMaterialCost(formData.name, cost, formData.quantity);
+
+					await Swal.fire({
+						icon: "success",
+						title: "Costo actualizado",
+						text: `El costo ${cost} se actualizó correctamente`
+					});
+				} catch (error) {
+					console.error('Error al actualizar material:', error);
+					Swal.fire({
+						icon: "error",
+						title: "Error",
+						text: `Error al actualizar el costo del material: ${error}`
+					});
+				}
+			} else {
+				console.log('No se actualizó el material porque:', {
+					tieneNombre: Boolean(formData.name),
+					tieneCosto: Boolean(cost)
+				});
+			}
+
+			const currentDate = formData.fecha;
+			setFormData({
+				description: "",
+				total: 0,
+				category: isMarketingUser ? "marketing" : "ingredientes",
+				fecha: currentDate,
+				name: "",
+				quantity: 0,
+				unit: "unidad",
+				estado: "pendiente"
+			});
+			setFile(null);
+
+		} catch (error) {
+			console.error('Error en el proceso completo:', error);
+			Swal.fire({
 				icon: "error",
 				title: "Error",
-				text: `Error al actualizar el costo del material: ${error}`
-			  });
-			}
-		  } else {
-			console.log('No se actualizó el material porque:', {
-			  tieneNombre: Boolean(formData.name),
-			  tieneCosto: Boolean(cost)
+				text: `Hubo un error al cargar el gasto: ${error}`
 			});
-		  }
-	  
-		  const currentDate = formData.fecha;
-		  setFormData({
-			description: "",
-			total: 0,
-			category: isMarketingUser ? "marketing" : "ingredientes",
-			fecha: currentDate,
-			name: "",
-			quantity: 0,
-			unit: "unidad",
-			estado: "pendiente"
-		  });
-		  setFile(null);
-		  
-		} catch (error) {
-		  console.error('Error en el proceso completo:', error);
-		  Swal.fire({
-			icon: "error",
-			title: "Error",
-			text: `Hubo un error al cargar el gasto: ${error}`
-		  });
 		}
-	  };
+	};
 
 	return (
 		<form
@@ -296,55 +294,74 @@ export const FormGasto = () => {
 			<div className="item-section w-full flex flex-col gap-2">
 				<FileUpload onFileSelect={handleFileSelect} />
 				<div className="section relative z-0">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.name}
-            onChange={handleNameChange}
-            placeholder="Nombre del item"
-            list={isMarketingUser ? undefined : "itemNames"}
-            required
-            autoComplete="off"
-          />
-          {!isMarketingUser && (
-            <datalist id="itemNames">
-              {materiales.map((material, index) => (
-                <option key={index} value={material.nombre} />
-              ))}
-            </datalist>
-          )}
-        </div>
-		<div className="section relative z-0">
-          <input
-            type="number"
-            id="quantity"
-            name="quantity"
-            value={formData.quantity || ""}
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            onChange={handleChange}
-            placeholder="Cantidad"
-            required
-          />
-        </div>
-		<div className="section relative z-0">
-          <select
-            id="unit"
-            name="unit"
-            value={formData.unit}
-            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccionar unidad</option>
-            {UNIDADES.map((unit) => (
-              <option key={unit} value={unit}>
-                {unit}
-              </option>
-            ))}
-          </select>
-        </div>
+					{!isMarketingUser && (
+						<div className="section w-full relative mb-2 z-0">
+							<select
+								id="category"
+								name="category"
+								className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+								value={formData.category}
+								onChange={handleChange}
+								required
+							>
+								<option value="">Seleccionar categoría</option>
+								{CATEGORIAS.map((category) => (
+									<option key={category} value={category}>
+										{category}
+									</option>
+								))}
+							</select>
+						</div>
+					)}
+					<input
+						type="text"
+						id="name"
+						name="name"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+						value={formData.name}
+						onChange={handleNameChange}
+						placeholder="Nombre del item"
+						list={isMarketingUser ? undefined : "itemNames"}
+						required
+						autoComplete="off"
+					/>
+					{!isMarketingUser && (
+						<datalist id="itemNames">
+							{materiales.map((material, index) => (
+								<option key={index} value={material.nombre} />
+							))}
+						</datalist>
+					)}
+				</div>
+				<div className="section relative z-0">
+					<input
+						type="number"
+						id="quantity"
+						name="quantity"
+						value={formData.quantity || ""}
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+						onChange={handleChange}
+						placeholder="Cantidad"
+						required
+					/>
+				</div>
+				<div className="section relative z-0">
+					<select
+						id="unit"
+						name="unit"
+						value={formData.unit}
+						className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+						onChange={handleChange}
+						required
+					>
+						<option value="">Seleccionar unidad</option>
+						{UNIDADES.map((unit) => (
+							<option key={unit} value={unit}>
+								{unit}
+							</option>
+						))}
+					</select>
+				</div>
 				<div className="section w-full relative z-0">
 					<input
 						type="number"
@@ -369,51 +386,33 @@ export const FormGasto = () => {
 					/>
 				</div>
 				<div className="section w-full relative z-0">
-          <select
-            id="estado"
-            name="estado"
-            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.estado}
-            onChange={handleChange}
-            required
-          >
-            {ESTADOS.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
-            ))}
-          </select>
-        </div>
-				{!isMarketingUser && (
-          <div className="section w-full relative z-0">
-            <select
-              id="category"
-              name="category"
-              className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccionar categoría</option>
-              {CATEGORIAS.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-		   <div className="section w-full relative z-0">
-        <input
-          type="date"
-          id="fecha"
-          name="fecha"
-          className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-          value={inputDateValue}
-          onChange={handleDateChange}
-          required
-        />
-      </div>
+					<select
+						id="estado"
+						name="estado"
+						className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+						value={formData.estado}
+						onChange={handleChange}
+						required
+					>
+						{ESTADOS.map((estado) => (
+							<option key={estado} value={estado}>
+								{estado}
+							</option>
+						))}
+					</select>
+				</div>
+
+				<div className="section w-full relative z-0">
+					<input
+						type="date"
+						id="fecha"
+						name="fecha"
+						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+						value={inputDateValue}
+						onChange={handleDateChange}
+						required
+					/>
+				</div>
 				<button
 					type="submit"
 					className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"

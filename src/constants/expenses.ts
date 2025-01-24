@@ -1,8 +1,7 @@
 export const CATEGORIAS = [
   'materia prima',
   'cocina y produccion',
-  'limpieza',
-  'flete',
+  'extra',
   'cadeteria',
   'infraestructura',
   'marketing'
@@ -34,10 +33,10 @@ export interface ExpenseProps {
   fecha: string;
   estado: EstadoType;
   category: CategoriaType;
-  
+
   // Campo opcional
   description?: string;
-  
+
   // Campo generado automáticamente
   id: string;
 }

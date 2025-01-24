@@ -5,7 +5,6 @@ import Calendar from "../components/Calendar";
 import { ReadGastosSinceTwoMonthsAgo, ReadMaterials } from "../firebase/ReadData";
 import { Gasto, Cadete, Vuelta, PedidoProps } from "../types/types";
 import Tooltip from "../components/Tooltip"
-import MaterialCostBreakdown from "../components/neto/MaterialCostBreakdown"
 
 
 interface Material {
@@ -245,12 +244,52 @@ export const Neto = () => {
     const materiaPrima: number = facturacionTotal - neto;
     const marketingData = getMarketingTotal();
     const infrastructureData = getInfrastructureTotal();// Calcular gastos totales incluyendo infraestructura
+
+
+
+
+    const getExtraTotal = (): {
+        total: number;
+        items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }>
+    } => {
+        const extraExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "extra"
+        );
+
+        if (extraExpenses.length > 0) {
+            const items = extraExpenses.map(expense => ({
+                name: expense.name,
+                total: expense.total,
+                originalTotal: expense.total,
+                fecha: expense.fecha,
+                isEstimated: false
+            }));
+            const total = items.reduce((acc, item) => acc + item.total, 0);
+            return { total, items };
+        }
+        return { total: 0, items: [] };
+    };
+
+
+
+    const extraData = getExtraTotal();
+
+
+
+
     const totalExpenses: number = [
         materiaPrima,
         cadeteTotal,
         cocinaTotal,
         marketingData.total,
         infrastructureData.total,
+        extraData.total,
         errorValue,
     ].reduce((acc, curr) => acc + curr, 0);
 
@@ -314,6 +353,13 @@ export const Neto = () => {
             estado: infrastructureData.items.some(item => item.isEstimated) ? "Estimado" : "Exacto",
         },
         {
+            label: "Gastos Extra",
+            value: extraData.total,
+            percentage: calculatePercentage(extraData.total),
+            manual: false,
+            estado: "Exacto",
+        },
+        {
             label: "Error",
             value: errorValue,
             percentage: "5.0%",
@@ -334,6 +380,8 @@ export const Neto = () => {
                 const ingredientes = materials
                     .filter(material => material.categoria === "ingredientes")
                     .sort((a, b) => b.costo - a.costo);  // Ordenar por costo descendente
+
+
 
                 return (
                     <div>
@@ -426,6 +474,15 @@ export const Neto = () => {
             case "Error":
                 return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
 
+            case "Gastos Extra": {
+                const itemDescriptions = extraData.items.map(item =>
+                    `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
+                        → Fecha del gasto: ${item.fecha}`
+                ).join('<br><br>');
+
+                return `Desglose detallado de gastos extra:<br><br>${itemDescriptions}<br><br>Total de gastos extra: $ ${extraData.total.toFixed(0)}`;
+            }
+
             case "Excedente":
                 return `Es la diferencia entre:<br>
                     Facturación total: $ ${facturacionTotal.toFixed(0)}<br>
@@ -473,8 +530,9 @@ export const Neto = () => {
                 </tr>
             );
         }
-        if (label === "Infraestructura" || label === "Marketing") {
-            const data = label === "Infraestructura" ? infrastructureData : marketingData;
+        if (label === "Infraestructura" || label === "Marketing" || label === "Gastos Extra") {
+            const data = label === "Infraestructura" ? infrastructureData :
+                label === "Marketing" ? marketingData : extraData;
             return (
                 <tr>
                     <td colSpan={5} className="p-0">
