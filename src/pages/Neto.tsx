@@ -353,7 +353,7 @@ export const Neto = () => {
             estado: infrastructureData.items.some(item => item.isEstimated) ? "Estimado" : "Exacto",
         },
         {
-            label: "Gastos Extra",
+            label: "Extra",
             value: extraData.total,
             percentage: calculatePercentage(extraData.total),
             manual: false,
@@ -474,13 +474,13 @@ export const Neto = () => {
             case "Error":
                 return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
 
-            case "Gastos Extra": {
+            case "Extra": {
                 const itemDescriptions = extraData.items.map(item =>
                     `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
                         → Fecha del gasto: ${item.fecha}`
                 ).join('<br><br>');
 
-                return `Desglose detallado de gastos extra:<br><br>${itemDescriptions}<br><br>Total de gastos extra: $ ${extraData.total.toFixed(0)}`;
+                return `Desglose detallado de Extra:<br><br>${itemDescriptions}<br><br>Total de Extra: $ ${extraData.total.toFixed(0)}`;
             }
 
             case "Excedente":
@@ -530,7 +530,7 @@ export const Neto = () => {
                 </tr>
             );
         }
-        if (label === "Infraestructura" || label === "Marketing" || label === "Gastos Extra") {
+        if (label === "Infraestructura" || label === "Marketing" || label === "Extra") {
             const data = label === "Infraestructura" ? infrastructureData :
                 label === "Marketing" ? marketingData : extraData;
             return (
