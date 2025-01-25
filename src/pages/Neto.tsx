@@ -345,6 +345,7 @@ export const Neto = () => {
         cocinaTotal,
         marketingData.total,
         infrastructureData.total,
+        legalData.total,
         extraData.total,
         errorValue,
     ].reduce((acc, curr) => acc + curr, 0);
