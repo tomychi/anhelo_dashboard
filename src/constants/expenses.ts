@@ -2,6 +2,7 @@ export const CATEGORIAS = [
   'materia prima',
   'cocina y produccion',
   'extra',
+  'legalidad',
   'cadeteria',
   'infraestructura',
   'marketing'
