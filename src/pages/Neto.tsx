@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import Calendar from "../components/Calendar";
 import { ReadGastosSinceTwoMonthsAgo, ReadMaterials } from "../firebase/ReadData";
-import { Gasto, Cadete, Vuelta, PedidoProps } from "../types/types";
+import { Gasto, Cadete, Vuelta } from "../types/types";
 import Tooltip from "../components/Tooltip"
 
 
@@ -614,7 +614,7 @@ export const Neto = () => {
 
 
 
-    ; return (
+    return (
         <div className="flex flex-col">
             <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
                 <p className="text-black font-bold text-4xl mt-1">Neto</p>
