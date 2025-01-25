@@ -199,7 +199,6 @@ export const FormGasto = () => {
 				unit: "unidad",
 				total: 0,
 				description: "",
-				category: isMarketingUser ? "marketing" : "ingredientes",
 				estado: "pendiente"
 			});
 		}
