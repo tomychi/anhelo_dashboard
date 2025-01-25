@@ -249,16 +249,7 @@ export const Neto = () => {
 
 
 
-    const getLegalTotal = (): {
-        total: number;
-        items: Array<{
-            name: string;
-            total: number;
-            originalTotal: number;
-            fecha: string;
-            isEstimated: boolean
-        }>
-    } => {
+    const getLegalTotal = () => {
         const legalExpenses = expenseData.filter(
             (expense: Gasto) => expense.category === "legalidad"
         );
@@ -266,13 +257,36 @@ export const Neto = () => {
         if (legalExpenses.length > 0) {
             const items = legalExpenses.map(expense => ({
                 name: expense.name,
-                total: expense.total,
+                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
                 originalTotal: expense.total,
                 fecha: expense.fecha,
                 isEstimated: false
             }));
-            const total = items.reduce((acc, item) => acc + item.total, 0);
-            return { total, items };
+            return { total: items.reduce((acc, item) => acc + item.total, 0), items };
+        } else {
+            const historicalLegal = gastosHaceDosMeses.filter(
+                expense => expense.category === "legalidad"
+            );
+
+            if (historicalLegal.length > 0) {
+                const latestByName = new Map();
+                historicalLegal.forEach(expense => {
+                    const existing = latestByName.get(expense.name);
+                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                        latestByName.set(expense.name, expense);
+                    }
+                });
+
+                const items = Array.from(latestByName.values()).map(expense => ({
+                    name: expense.name,
+                    total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                    originalTotal: expense.total,
+                    fecha: expense.fecha,
+                    isEstimated: true
+                }));
+
+                return { total: items.reduce((acc, item) => acc + item.total, 0), items };
+            }
         }
         return { total: 0, items: [] };
     };
@@ -280,16 +294,7 @@ export const Neto = () => {
 
 
 
-    const getExtraTotal = (): {
-        total: number;
-        items: Array<{
-            name: string;
-            total: number;
-            originalTotal: number;
-            fecha: string;
-            isEstimated: boolean
-        }>
-    } => {
+    const getExtraTotal = () => {
         const extraExpenses = expenseData.filter(
             (expense: Gasto) => expense.category === "extra"
         );
@@ -297,13 +302,36 @@ export const Neto = () => {
         if (extraExpenses.length > 0) {
             const items = extraExpenses.map(expense => ({
                 name: expense.name,
-                total: expense.total,
+                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
                 originalTotal: expense.total,
                 fecha: expense.fecha,
                 isEstimated: false
             }));
-            const total = items.reduce((acc, item) => acc + item.total, 0);
-            return { total, items };
+            return { total: items.reduce((acc, item) => acc + item.total, 0), items };
+        } else {
+            const historicalExtra = gastosHaceDosMeses.filter(
+                expense => expense.category === "extra"
+            );
+
+            if (historicalExtra.length > 0) {
+                const latestByName = new Map();
+                historicalExtra.forEach(expense => {
+                    const existing = latestByName.get(expense.name);
+                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                        latestByName.set(expense.name, expense);
+                    }
+                });
+
+                const items = Array.from(latestByName.values()).map(expense => ({
+                    name: expense.name,
+                    total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                    originalTotal: expense.total,
+                    fecha: expense.fecha,
+                    isEstimated: true
+                }));
+
+                return { total: items.reduce((acc, item) => acc + item.total, 0), items };
+            }
         }
         return { total: 0, items: [] };
     };
@@ -474,6 +502,21 @@ export const Neto = () => {
                     Total: $ ${cocinaTotal.toFixed(0)}`;
             }
 
+            case "Legalidad": {
+                const itemDescriptions = legalData.items.map(item => {
+                    const diasDelMes = new Date(new Date(convertirFecha(item.fecha)).getFullYear(),
+                        new Date(convertirFecha(item.fecha)).getMonth() + 1, 0).getDate();
+
+                    return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
+                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
+                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días
+                    → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
+                    → Fecha registro: ${item.fecha}`;
+                }).join('<br><br>');
+
+                return `Desglose de gastos legales (basado en datos de los últimos 2 meses, seleccionando el ultimo en caso de ser un gasto concurrente):<br><br>${itemDescriptions}<br><br>Total: $ ${legalData.total.toFixed(0)}`;
+            }
+
             case "Marketing": {
                 const itemDescriptions = marketingData.items.map(item => {
                     const diasDelMes = new Date(
@@ -494,35 +537,36 @@ export const Neto = () => {
 
             case "Infraestructura": {
                 const itemDescriptions = infrastructureData.items.map(item => {
-                    const diasDelMes = new Date(
-                        new Date(convertirFecha(item.fecha)).getFullYear(),
-                        new Date(convertirFecha(item.fecha)).getMonth() + 1,
-                        0
-                    ).getDate();
+                    const diasDelMes = new Date(new Date(convertirFecha(item.fecha)).getFullYear(),
+                        new Date(convertirFecha(item.fecha)).getMonth() + 1, 0).getDate();
 
                     return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
                     → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
-                    → Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
-                    → Fecha del gasto: ${item.fecha}`;
+                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días
+                    → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
+                    → Fecha registro: ${item.fecha}`;
                 }).join('<br><br>');
 
-                return `Desglose detallado de gastos de infraestructura:<br><br>${itemDescriptions}<br><br>Total de infraestructura: $ ${infrastructureData.total.toFixed(0)}`;
+                return `Desglose de gastos legales (basado en datos de los últimos 2 meses, seleccionando el ultimo en caso de ser un gasto concurrente):<br><br>${itemDescriptions}<br><br>Total: $ ${infrastructureData.total.toFixed(0)}`;
             }
 
             case "Error":
                 return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
 
             case "Extra": {
-                const itemDescriptions = extraData.items.map(item =>
-                    `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-                        → Fecha del gasto: ${item.fecha}`
-                ).join('<br><br>');
+                const itemDescriptions = extraData.items.map(item => {
+                    const diasDelMes = new Date(new Date(convertirFecha(item.fecha)).getFullYear(),
+                        new Date(convertirFecha(item.fecha)).getMonth() + 1, 0).getDate();
 
-                return `Desglose detallado de Extra:<br><br>${itemDescriptions}<br><br>Total de Extra: $ ${extraData.total.toFixed(0)}`;
+                    return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
+                        → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
+                        → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días
+                        → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
+                        → Fecha registro: ${item.fecha}`;
+                }).join('<br><br>');
+
+                return `Desglose de gastos legales (basado en datos de los últimos 2 meses, seleccionando el ultimo en caso de ser un gasto concurrente):<br><br>${itemDescriptions}<br><br>Total: $ ${extraData.total.toFixed(0)}`;
             }
-
-
 
             case "Excedente":
                 return `Es la diferencia entre:<br>
