@@ -409,10 +409,10 @@ export const Neto = () => {
             value: cocinaTotal,
             percentage: calculatePercentage(cocinaTotal),
             manual: !expenseData.find(
-                (expense: Gasto) => expense.category === "cocina"
+                (expense: Gasto) => expense.category === "cocina y produccion"
             ),
             estado: expenseData.find(
-                (expense: Gasto) => expense.category === "cocina"
+                (expense: Gasto) => expense.category === "cocina y produccion"
             )
                 ? "Exacto"
                 : "Estimado",
