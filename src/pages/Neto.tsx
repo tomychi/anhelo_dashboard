@@ -248,6 +248,38 @@ export const Neto = () => {
 
 
 
+
+    const getLegalTotal = (): {
+        total: number;
+        items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }>
+    } => {
+        const legalExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "legalidad"
+        );
+
+        if (legalExpenses.length > 0) {
+            const items = legalExpenses.map(expense => ({
+                name: expense.name,
+                total: expense.total,
+                originalTotal: expense.total,
+                fecha: expense.fecha,
+                isEstimated: false
+            }));
+            const total = items.reduce((acc, item) => acc + item.total, 0);
+            return { total, items };
+        }
+        return { total: 0, items: [] };
+    };
+
+
+
+
     const getExtraTotal = (): {
         total: number;
         items: Array<{
@@ -277,7 +309,7 @@ export const Neto = () => {
     };
 
 
-
+    const legalData = getLegalTotal();
     const extraData = getExtraTotal();
 
 
@@ -310,6 +342,13 @@ export const Neto = () => {
             label: "Materia prima",
             value: materiaPrima,
             percentage: calculatePercentage(materiaPrima),
+            estado: "Exacto",
+        },
+        {
+            label: "Legal",
+            value: legalData.total,
+            percentage: calculatePercentage(legalData.total),
+            manual: false,
             estado: "Exacto",
         },
         {
@@ -483,6 +522,8 @@ export const Neto = () => {
                 return `Desglose detallado de Extra:<br><br>${itemDescriptions}<br><br>Total de Extra: $ ${extraData.total.toFixed(0)}`;
             }
 
+
+
             case "Excedente":
                 return `Es la diferencia entre:<br>
                     Facturación total: $ ${facturacionTotal.toFixed(0)}<br>
@@ -530,9 +571,10 @@ export const Neto = () => {
                 </tr>
             );
         }
-        if (label === "Infraestructura" || label === "Marketing" || label === "Extra") {
+        if (label === "Infraestructura" || label === "Marketing" || label === "Extra" || label === "Legal") {
             const data = label === "Infraestructura" ? infrastructureData :
-                label === "Marketing" ? marketingData : extraData;
+                label === "Marketing" ? marketingData :
+                    label === "Extra" ? extraData : legalData;
             return (
                 <tr>
                     <td colSpan={5} className="p-0">
@@ -543,7 +585,12 @@ export const Neto = () => {
                                         key={index}
                                         className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
                                     >
-                                        <span className="font-medium">{item.name}</span>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{item.name}</span>
+                                            <span className="text-sm text-gray-500">
+                                                {item.fecha}
+                                            </span>
+                                        </div>
                                         <div className="flex items-center gap-4">
                                             <span>${item.total.toFixed(0)}</span>
                                             <span className="text-gray-500">
