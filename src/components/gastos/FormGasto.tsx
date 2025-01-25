@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { obtenerFechaActual } from "../../helpers/dateToday";
 import { UploadExpense, } from "../../firebase/UploadGasto";
 import Swal from "sweetalert2";
@@ -9,6 +9,7 @@ import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
 import { CATEGORIAS, UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
+import { EmpleadosProps, readEmpleados } from "../../firebase/registroEmpleados";
 
 
 interface FileUploadProps {
@@ -122,7 +123,15 @@ export const FormGasto = () => {
 	const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
 	const { materiales } = useSelector((state: RootState) => state.materials);
 	const [file, setFile] = useState<File | null>(null);
+	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
 
+	useEffect(() => {
+		const fetchEmpleados = async () => {
+			const empleadosData = await readEmpleados();
+			setEmpleados(empleadosData);
+		};
+		fetchEmpleados();
+	}, []);
 
 	const [formData, setFormData] = useState<Omit<ExpenseProps, 'id'>>({
 		description: "",
@@ -312,24 +321,46 @@ export const FormGasto = () => {
 							</select>
 						</div>
 					)}
-					<input
-						type="text"
-						id="name"
-						name="name"
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={formData.name}
-						onChange={handleNameChange}
-						placeholder="Nombre del item"
-						list={isMarketingUser ? undefined : "itemNames"}
-						required
-						autoComplete="off"
-					/>
-					{!isMarketingUser && (
-						<datalist id="itemNames">
-							{materiales.map((material, index) => (
-								<option key={index} value={material.nombre} />
-							))}
-						</datalist>
+					{formData.category === 'cocina y produccion' ? (
+						<select
+							id="name"
+							name="name"
+							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							value={formData.name}
+							onChange={handleNameChange}
+							required
+						>
+							<option value="">Seleccionar empleado</option>
+							{empleados
+								.filter(emp => emp.area === 'cocina')
+								.map((empleado, index) => (
+									<option key={index} value={empleado.name}>
+										{empleado.name}
+									</option>
+								))}
+						</select>
+					) : (
+						<>
+							<input
+								type="text"
+								id="name"
+								name="name"
+								className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+								value={formData.name}
+								onChange={handleNameChange}
+								placeholder="Nombre del item"
+								list={isMarketingUser ? undefined : "itemNames"}
+								required
+								autoComplete="off"
+							/>
+							{!isMarketingUser && (
+								<datalist id="itemNames">
+									{materiales.map((material, index) => (
+										<option key={index} value={material.nombre} />
+									))}
+								</datalist>
+							)}
+						</>
 					)}
 				</div>
 				<div className="section relative z-0">
