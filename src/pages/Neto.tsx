@@ -252,89 +252,55 @@ export const Neto = () => {
         return gastoDiario * calcularDiasSeleccionados();
     };
 
-    const getLegalTotal = () => {
-        const legalExpenses = expenseData.filter(
-            (expense: Gasto) => expense.category === "legalidad"
+
+
+
+    const getHistoricalExpenseTotal = (
+        expenseData: Gasto[],
+        gastosHaceDosMeses: Gasto[],
+        category: string
+    ) => {
+        const historicalExpenses = gastosHaceDosMeses.filter(
+            expense => expense.category === category
         );
 
-        if (legalExpenses.length > 0) {
-            const items = legalExpenses.map(expense => ({
+        if (historicalExpenses.length > 0) {
+            const latestByName = new Map();
+            historicalExpenses.forEach(expense => {
+                const existing = latestByName.get(expense.name);
+                if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                    latestByName.set(expense.name, expense);
+                }
+            });
+
+            const items = Array.from(latestByName.values()).map(expense => ({
                 name: expense.name,
                 total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
                 originalTotal: expense.total,
                 fecha: expense.fecha,
-                isEstimated: false
+                isEstimated: true
             }));
-            return { total: items.reduce((acc, item) => acc + item.total, 0), items };
-        } else {
-            const historicalLegal = gastosHaceDosMeses.filter(
-                expense => expense.category === "legalidad"
-            );
 
-            if (historicalLegal.length > 0) {
-                const latestByName = new Map();
-                historicalLegal.forEach(expense => {
-                    const existing = latestByName.get(expense.name);
-                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-                        latestByName.set(expense.name, expense);
-                    }
-                });
-
-                const items = Array.from(latestByName.values()).map(expense => ({
-                    name: expense.name,
-                    total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
-                    originalTotal: expense.total,
-                    fecha: expense.fecha,
-                    isEstimated: true
-                }));
-
-                return { total: items.reduce((acc, item) => acc + item.total, 0), items };
-            }
+            return {
+                total: items.reduce((acc, item) => acc + item.total, 0),
+                items
+            };
         }
+
         return { total: 0, items: [] };
     };
 
-
-
-
-    const getExtraTotal = () => {
-        const extraExpenses = expenseData.filter(
-            (expense: Gasto) => expense.category === "extra"
-        );
-
-        if (extraExpenses.length > 0) {
-            const items = extraExpenses.map(expense => ({
-                name: expense.name,
-                total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
-                originalTotal: expense.total,
-                fecha: expense.fecha,
-                isEstimated: false
-            }));
-            return { total: items.reduce((acc, item) => acc + item.total, 0), items };
-        } else {
-            // Para gastos históricos, tomar todos sin filtrar por último
-            const historicalExtra = gastosHaceDosMeses.filter(
-                expense => expense.category === "extra"
-            );
-
-            if (historicalExtra.length > 0) {
-                const items = historicalExtra.map(expense => ({
-                    name: expense.name,
-                    total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
-                    originalTotal: expense.total,
-                    fecha: expense.fecha,
-                    isEstimated: true
-                }));
-
-                return { total: items.reduce((acc, item) => acc + item.total, 0), items };
-            }
-        }
-        return { total: 0, items: [] };
-    };
-
+    const getLegalTotal = () => getHistoricalExpenseTotal(expenseData, gastosHaceDosMeses, "legalidad");
+    const getExtraTotal = () => getHistoricalExpenseTotal(expenseData, gastosHaceDosMeses, "extra");
 
     const legalData = getLegalTotal();
     const extraData = getExtraTotal();
+
+
+
+
+
+
 
 
 
