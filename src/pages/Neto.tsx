@@ -345,7 +345,7 @@ export const Neto = () => {
             estado: "Exacto",
         },
         {
-            label: "Legal",
+            label: "Legalidad",
             value: legalData.total,
             percentage: calculatePercentage(legalData.total),
             manual: false,
@@ -571,7 +571,7 @@ export const Neto = () => {
                 </tr>
             );
         }
-        if (label === "Infraestructura" || label === "Marketing" || label === "Extra" || label === "Legal") {
+        if (label === "Infraestructura" || label === "Marketing" || label === "Extra" || label === "Legalidad") {
             const data = label === "Infraestructura" ? infrastructureData :
                 label === "Marketing" ? marketingData :
                     label === "Extra" ? extraData : legalData;
