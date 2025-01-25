@@ -187,8 +187,6 @@ export const Neto = () => {
         return { total: 0, items: [] };
     };
 
-
-
     useEffect(() => {
         const fetchData = async () => {
             try {
