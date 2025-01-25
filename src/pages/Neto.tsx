@@ -502,16 +502,41 @@ export const Neto = () => {
             }
 
             case "Cocina y producción": {
-                const manualGasto = expenseData.find((expense: Gasto) => expense.category === "cocina");
-                if (manualGasto) {
-                    return `Se está usando el gasto manual ingresado en la categoría 'cocina': $ ${manualGasto.total.toFixed(0)}`;
+                const cocinaExpenses = expenseData.filter(
+                    (expense: Gasto) => expense.category === "cocina y produccion"
+                );
+
+                if (cocinaExpenses.length > 0) {
+                    const total = cocinaExpenses.reduce((acc, expense) => acc + expense.total, 0);
+                    return `Se calcula sumando los gastos actuales:<br> ${cocinaExpenses.map(expense =>
+                        `- ${expense.name}: ${expense.quantity} horas × $${(expense.total / expense.quantity).toFixed(0)} = $${expense.total.toFixed(0)}`
+                    ).join('<br>')}<br>Total: $${total.toFixed(0)}`;
                 }
-                const costoVariable = totalProductosVendidos * 230 * 2;
-                const costoFijo = (400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
-                return `Se calcula:<br>
-                    - Costo variable: ${totalProductosVendidos} productos × $230 × 2 = $ ${costoVariable.toFixed(0)}<br>
-                    - Costo fijo: ($400,000 ÷ ${calcularDiasDelMes()} días) × ${calcularDiasSeleccionados()} días seleccionados = $ ${costoFijo.toFixed(0)}<br>
-                    Total: $ ${cocinaTotal.toFixed(0)}`;
+
+                const selectedDate = new Date(valueDate.startDate);
+                const dayOfWeek = selectedDate.getDay();
+
+                const lastWeekExpenses = gastosHaceDosMeses.filter(expense => {
+                    const expenseDate = new Date(convertirFecha(expense.fecha));
+                    return expenseDate.getDay() === dayOfWeek &&
+                        expense.category === "cocina y produccion";
+                });
+
+                if (lastWeekExpenses.length > 0) {
+                    const totalHoras = lastWeekExpenses.reduce((acc, expense) => acc + (expense.quantity || 0), 0);
+                    const totalGastos = lastWeekExpenses.reduce((acc, expense) => acc + expense.total, 0);
+                    const costoPromedioPorHora = totalGastos / totalHoras;
+
+                    return `Se estima basado en el mismo día de la semana anterior:<br>
+                        ${lastWeekExpenses.map(expense =>
+                        `- ${expense.name}: ${expense.quantity} horas × $${(expense.total / expense.quantity).toFixed(0)} = $${expense.total}`
+                    ).join('<br>')}<br>
+                        Total horas: ${totalHoras}<br>
+                        Costo promedio por hora: $${costoPromedioPorHora.toFixed(0)}<br>
+                        Estimación total: ${totalHoras} horas × $${costoPromedioPorHora.toFixed(0)} = $${(totalHoras * costoPromedioPorHora).toFixed(0)}`;
+                }
+
+                return "No hay datos suficientes para calcular el gasto.";
             }
 
             case "Legalidad": {
