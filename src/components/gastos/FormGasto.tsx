@@ -124,6 +124,8 @@ export const FormGasto = () => {
 	const { materiales } = useSelector((state: RootState) => state.materials);
 	const [file, setFile] = useState<File | null>(null);
 	const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
+	const [fechaInicio, setFechaInicio] = useState('');
+	const [fechaFin, setFechaFin] = useState('');
 
 	useEffect(() => {
 		const fetchEmpleados = async () => {
@@ -145,9 +147,7 @@ export const FormGasto = () => {
 	});
 	const [inputDateValue, setInputDateValue] = useState(formatDateForInput(obtenerFechaActual()));
 
-	const handleChange = (
-		e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
+	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 
 		if (name === "total" || name === "quantity") {
@@ -155,6 +155,17 @@ export const FormGasto = () => {
 			setFormData(prev => ({
 				...prev,
 				[name]: isNaN(numericValue) ? 0 : numericValue
+			}));
+		} else if (name === "category") {
+			if (value === "cocina y produccion") {
+				// Mostrar los inputs de fechaInicio y fechaFin
+			} else {
+				setFechaInicio("");
+				setFechaFin("");
+			}
+			setFormData(prev => ({
+				...prev,
+				[name]: value
 			}));
 		} else {
 			setFormData(prev => ({
@@ -432,17 +443,44 @@ export const FormGasto = () => {
 					</select>
 				</div>
 
-				<div className="section w-full relative z-0">
-					<input
-						type="date"
-						id="fecha"
-						name="fecha"
-						className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-						value={inputDateValue}
-						onChange={handleDateChange}
-						required
-					/>
-				</div>
+				{formData.category === 'cocina y produccion' ? (
+					< div className=" flex flex-row gap-2">
+						<div className="section w-full relative z-0">
+							<input
+								type="date"
+								id="fechaInicio"
+								name="fechaInicio"
+								className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+								value={fechaInicio}
+								onChange={(e) => setFechaInicio(e.target.value)}
+								required
+							/>
+						</div>
+						<div className="section w-full relative z-0">
+							<input
+								type="date"
+								id="fechaFin"
+								name="fechaFin"
+								className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+								value={fechaFin}
+								onChange={(e) => setFechaFin(e.target.value)}
+								required
+							/>
+						</div>
+					</div>
+				) : (
+					<div className="section w-full relative z-0">
+						<input
+							type="date"
+							id="fecha"
+							name="fecha"
+							className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							value={inputDateValue}
+							onChange={handleDateChange}
+							required
+						/>
+					</div>
+				)}
 				<button
 					type="submit"
 					className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
