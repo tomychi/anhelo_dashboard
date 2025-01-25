@@ -24,48 +24,91 @@ export interface ExpenseProps {
   estado: string;
 }
 
-export const UploadExpense = (
-  expenseDetail: ExpenseProps
-): Promise<DocumentReference> => {
+export const UploadExpense = async (
+  expenseDetail: ExpenseProps,
+  fechaInicio?: string,
+  fechaFin?: string
+): Promise<DocumentReference[]> => {
   const firestore = getFirestore();
 
-  // Generar un ID único para el gasto
-  const gastoId = uuidv4();
+  if (fechaInicio && fechaFin) {
+    console.log('Input fechas:', { fechaInicio, fechaFin });
 
-  // Separar la fecha en día, mes y año
-  const [dia, mes, anio] = expenseDetail.fecha.split('/');
+    const startDate = new Date(fechaInicio + 'T00:00:00');
+    const endDate = new Date(fechaFin + 'T23:59:59');
 
-  // Crear la referencia a la colección con tres segmentos: gastos/año/mes
-  const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
+    console.log('Dates before loop:', {
+      startDate: startDate.toLocaleString(),
+      endDate: endDate.toLocaleString()
+    });
 
-  // Crear la referencia a un documento con el ID igual al día
-  const gastoDocRef = doc(gastosCollectionRef, dia);
+    const documentRefs: DocumentReference[] = [];
 
-  // Retorna una promesa
-  return new Promise((resolve, reject) => {
-    // Obtener los datos actuales del documento
-    getDoc(gastoDocRef)
-      .then((docSnap) => {
-        const existingData = docSnap.exists() ? docSnap.data() : {};
+    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+      const dia = date.getDate().toString().padStart(2, '0');
+      const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+      const anio = date.getFullYear().toString();
 
-        // Obtener o inicializar el arreglo de gastos para el día
-        const gastosDelDia = existingData.gastos || [];
-
-        // Agregar el nuevo gasto al arreglo
-        gastosDelDia.push({ ...expenseDetail, id: gastoId });
-
-        // Actualizar los datos del documento con el nuevo arreglo de gastos
-        setDoc(gastoDocRef, {
-          ...existingData,
-          gastos: gastosDelDia,
-        }).then(() => {
-          resolve(gastoDocRef); // Resuelve la promesa con la referencia al documento
-        });
-      })
-      .catch((error) => {
-        reject(error); // Rechaza la promesa con el error
+      const formattedDate = `${dia}/${mes}/${anio}`;
+      console.log('Processing date:', {
+        currentDate: date.toLocaleString(),
+        formattedDate,
+        dia,
+        mes,
+        anio
       });
-  });
+
+      const gastoId = uuidv4();
+      const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
+      const gastoDocRef = doc(gastosCollectionRef, dia);
+
+      console.log('Firebase save:', {
+        path: `gastos/${anio}/${mes}/${dia}`,
+        expense: {
+          ...expenseDetail,
+          id: gastoId,
+          fecha: formattedDate
+        }
+      });
+
+      const docSnap = await getDoc(gastoDocRef);
+      const existingData = docSnap.exists() ? docSnap.data() : {};
+      const gastosDelDia = existingData.gastos || [];
+
+      gastosDelDia.push({
+        ...expenseDetail,
+        id: gastoId,
+        fecha: formattedDate
+      });
+
+      await setDoc(gastoDocRef, {
+        ...existingData,
+        gastos: gastosDelDia,
+      });
+
+      documentRefs.push(gastoDocRef);
+    }
+
+    return documentRefs;
+  } else {
+    const gastoId = uuidv4();
+    const [dia, mes, anio] = expenseDetail.fecha.split('/');
+    const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
+    const gastoDocRef = doc(gastosCollectionRef, dia);
+
+    const docSnap = await getDoc(gastoDocRef);
+    const existingData = docSnap.exists() ? docSnap.data() : {};
+    const gastosDelDia = existingData.gastos || [];
+
+    gastosDelDia.push({ ...expenseDetail, id: gastoId });
+
+    await setDoc(gastoDocRef, {
+      ...existingData,
+      gastos: gastosDelDia,
+    });
+
+    return [gastoDocRef];
+  }
 };
 
 // Función para actualizar el estado del gasto
