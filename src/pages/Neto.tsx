@@ -232,9 +232,62 @@ export const Neto = () => {
         ).getDate();
     };
 
-    const cocinaTotal = expenseData
-        .filter((expense: Gasto) => expense.category === "cocina y produccion")
-        .reduce((acc, expense) => acc + expense.total, 0);
+    const getCocinaYProduccionTotal = () => {
+        if (!valueDate?.startDate) return 0;
+
+        const cocinaExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "cocina y produccion"
+        );
+
+        console.log("[Debug] Gastos actuales:", cocinaExpenses);
+
+        if (cocinaExpenses.length > 0) {
+            const total = cocinaExpenses.reduce((acc, expense) => acc + expense.total, 0);
+            console.log("[Debug] Total actual:", total);
+            return total;
+        }
+
+        const selectedDate = new Date(valueDate.startDate);
+        const dayOfWeek = selectedDate.getDay();
+        console.log("[Debug] Fecha seleccionada:", selectedDate.toISOString(), "día:", dayOfWeek);
+
+        // Filtrar gastos del mismo día de la semana anterior
+        const lastWeekExpenses = gastosHaceDosMeses.filter(expense => {
+            const expenseDate = new Date(convertirFecha(expense.fecha));
+            const isMatch = expenseDate.getDay() === dayOfWeek &&
+                expense.category === "cocina y produccion";
+
+            if (isMatch) {
+                console.log("[Debug] Encontrado gasto de la semana anterior:", {
+                    fecha: expense.fecha,
+                    nombre: expense.name,
+                    horas: expense.quantity,
+                    total: expense.total
+                });
+            }
+            return isMatch;
+        });
+
+        if (lastWeekExpenses.length === 0) {
+            console.log("[Debug] No se encontraron gastos del mismo día de la semana anterior");
+            return 0;
+        }
+
+        const totalHoras = lastWeekExpenses.reduce((acc, expense) => acc + (expense.quantity || 0), 0);
+        const totalGastos = lastWeekExpenses.reduce((acc, expense) => acc + expense.total, 0);
+        const costoPromedioPorHora = totalGastos / totalHoras;
+
+        console.log("[Debug] Resumen:", {
+            totalHoras,
+            totalGastos,
+            costoPromedioPorHora,
+            estimatedTotal: totalHoras * costoPromedioPorHora
+        });
+
+        return totalHoras * costoPromedioPorHora;
+    };
+
+    const cocinaTotal = getCocinaYProduccionTotal();
 
     const errorValue: number = facturacionTotal * 0.05;
     const materiaPrima: number = facturacionTotal - neto;
