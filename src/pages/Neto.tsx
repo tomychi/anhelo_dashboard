@@ -312,20 +312,13 @@ export const Neto = () => {
             }));
             return { total: items.reduce((acc, item) => acc + item.total, 0), items };
         } else {
+            // Para gastos históricos, tomar todos sin filtrar por último
             const historicalExtra = gastosHaceDosMeses.filter(
                 expense => expense.category === "extra"
             );
 
             if (historicalExtra.length > 0) {
-                const latestByName = new Map();
-                historicalExtra.forEach(expense => {
-                    const existing = latestByName.get(expense.name);
-                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-                        latestByName.set(expense.name, expense);
-                    }
-                });
-
-                const items = Array.from(latestByName.values()).map(expense => ({
+                const items = historicalExtra.map(expense => ({
                     name: expense.name,
                     total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
                     originalTotal: expense.total,
