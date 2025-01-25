@@ -232,11 +232,9 @@ export const Neto = () => {
         ).getDate();
     };
 
-    const cocinaTotal: number =
-        expenseData.find((expense: Gasto) => expense.category === "cocina")
-            ?.total ||
-        totalProductosVendidos * 230 * 2 +
-        (400000 / calcularDiasDelMes()) * calcularDiasSeleccionados();
+    const cocinaTotal = expenseData
+        .filter((expense: Gasto) => expense.category === "cocina y produccion")
+        .reduce((acc, expense) => acc + expense.total, 0);
 
     const errorValue: number = facturacionTotal * 0.05;
     const materiaPrima: number = facturacionTotal - neto;
