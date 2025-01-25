@@ -310,58 +310,69 @@ export const Neto = () => {
             isEstimated: boolean
         }>
     } => {
-        const infrastructureExpenses = expenseData.filter(
+        const requiredExpenses = ['alquiler', 'gas', 'wifi', 'luz'];
+        const items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }> = [];
+
+        // Check current period expenses first
+        const currentExpenses = expenseData.filter(
             (expense: Gasto) => expense.category === "infraestructura"
         );
 
-        if (infrastructureExpenses.length > 0) {
-            // Current period expenses
-            const items = infrastructureExpenses.map(expense => ({
-                name: expense.name,
-                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-                originalTotal: expense.total,
-                fecha: expense.fecha,
-                isEstimated: false
-            }));
-            const total = items.reduce((acc, item) => acc + item.total, 0);
-            return { total, items };
-        } else {
-            // Look in historical data
-            const historicalInfrastructure = gastosHaceDosMeses.filter(
-                expense => expense.category === "infraestructura"
+        // Check historical data
+        const historicalExpenses = gastosHaceDosMeses.filter(
+            expense => expense.category === "infraestructura"
+        );
+
+        // Process each required expense type
+        requiredExpenses.forEach(expenseType => {
+            // Look in current period first
+            const currentExpense = currentExpenses.find(
+                expense => expense.name.toLowerCase().includes(expenseType)
             );
 
-            if (historicalInfrastructure.length > 0) {
-                const latestByName = new Map();
-                historicalInfrastructure.forEach(expense => {
-                    const existing = latestByName.get(expense.name);
-                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-                        latestByName.set(expense.name, expense);
-                    }
+            if (currentExpense) {
+                items.push({
+                    name: currentExpense.name,
+                    total: getGastoAjustadoPorDias(currentExpense.total, currentExpense.fecha),
+                    originalTotal: currentExpense.total,
+                    fecha: currentExpense.fecha,
+                    isEstimated: false
                 });
+            } else {
+                // Look in historical data for the latest expense of this type
+                const historicalExpensesOfType = historicalExpenses
+                    .filter(expense => expense.name.toLowerCase().includes(expenseType))
+                    .sort((a, b) => new Date(convertirFecha(b.fecha)).getTime() - new Date(convertirFecha(a.fecha)).getTime());
 
-                const items = Array.from(latestByName.values()).map(expense => {
+                if (historicalExpensesOfType.length > 0) {
+                    const latestExpense = historicalExpensesOfType[0];
                     const diasDelMes = new Date(
-                        new Date(convertirFecha(expense.fecha)).getFullYear(),
-                        new Date(convertirFecha(expense.fecha)).getMonth() + 1,
+                        new Date(convertirFecha(latestExpense.fecha)).getFullYear(),
+                        new Date(convertirFecha(latestExpense.fecha)).getMonth() + 1,
                         0
                     ).getDate();
 
-                    return {
-                        name: expense.name,
-                        total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, diasDelMes),
-                        originalTotal: expense.total,
-                        fecha: expense.fecha,
+                    items.push({
+                        name: latestExpense.name,
+                        total: getGastoAjustadoPorDiasPeriodo(latestExpense.total, latestExpense.fecha, diasDelMes),
+                        originalTotal: latestExpense.total,
+                        fecha: latestExpense.fecha,
                         isEstimated: true
-                    };
-                });
-
-                const total = items.reduce((acc, item) => acc + item.total, 0);
-                return { total, items };
+                    });
+                }
             }
-        }
+        });
 
-        return { total: 0, items: [] };
+        return {
+            total: items.reduce((acc, item) => acc + item.total, 0),
+            items
+        };
     };
 
 
