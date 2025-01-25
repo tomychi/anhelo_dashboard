@@ -75,61 +75,8 @@ export const Neto = () => {
         const diasSeleccionados = calcularDiasSeleccionados();
         return gastoDiario * diasSeleccionados;
     };// Nueva función para obtener gastos de infraestructura
-    const getInfrastructureTotal = (): {
-        total: number;
-        items: Array<{
-            name: string;
-            total: number;
-            originalTotal: number;
-            fecha: string;
-            isEstimated: boolean
-        }>
-    } => {
-        const infrastructureExpenses = expenseData.filter(
-            (expense: Gasto) => expense.category === "infraestructura"
-        );
 
-        if (infrastructureExpenses.length > 0) {
-            // Gastos del período actual
-            const items = infrastructureExpenses.map(expense => ({
-                name: expense.name,
-                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-                originalTotal: expense.total,
-                fecha: expense.fecha,
-                isEstimated: false
-            }));
-            const total = items.reduce((acc, item) => acc + item.total, 0);
-            return { total, items };
-        } else {
-            // Buscar en datos históricos
-            const historicalInfrastructure = gastosHaceDosMeses.filter(
-                expense => expense.category === "infraestructura"
-            );
 
-            if (historicalInfrastructure.length > 0) {
-                const latestByName = new Map();
-                historicalInfrastructure.forEach(expense => {
-                    const existing = latestByName.get(expense.name);
-                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
-                        latestByName.set(expense.name, expense);
-                    }
-                });
-
-                const items = Array.from(latestByName.values()).map(expense => ({
-                    name: expense.name,
-                    total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-                    originalTotal: expense.total,
-                    fecha: expense.fecha,
-                    isEstimated: true
-                }));
-
-                const total = items.reduce((acc, item) => acc + item.total, 0);
-                return { total, items };
-            }
-        }
-
-        return { total: 0, items: [] };
-    };
 
     const getMarketingTotal = (): {
         total: number;
@@ -287,12 +234,13 @@ export const Neto = () => {
         return totalHoras * costoPromedioPorHora;
     };
 
+
+
     const cocinaTotal = getCocinaYProduccionTotal();
 
     const errorValue: number = facturacionTotal * 0.05;
     const materiaPrima: number = facturacionTotal - neto;
     const marketingData = getMarketingTotal();
-    const infrastructureData = getInfrastructureTotal();// Calcular gastos totales incluyendo infraestructura
 
 
 
@@ -344,6 +292,82 @@ export const Neto = () => {
 
     const legalData = getLegalTotal();
     const extraData = getExtraTotal();
+
+
+
+
+
+
+
+
+    const getInfrastructureTotal = (): {
+        total: number;
+        items: Array<{
+            name: string;
+            total: number;
+            originalTotal: number;
+            fecha: string;
+            isEstimated: boolean
+        }>
+    } => {
+        const infrastructureExpenses = expenseData.filter(
+            (expense: Gasto) => expense.category === "infraestructura"
+        );
+
+        if (infrastructureExpenses.length > 0) {
+            // Current period expenses
+            const items = infrastructureExpenses.map(expense => ({
+                name: expense.name,
+                total: getGastoAjustadoPorDias(expense.total, expense.fecha),
+                originalTotal: expense.total,
+                fecha: expense.fecha,
+                isEstimated: false
+            }));
+            const total = items.reduce((acc, item) => acc + item.total, 0);
+            return { total, items };
+        } else {
+            // Look in historical data
+            const historicalInfrastructure = gastosHaceDosMeses.filter(
+                expense => expense.category === "infraestructura"
+            );
+
+            if (historicalInfrastructure.length > 0) {
+                const latestByName = new Map();
+                historicalInfrastructure.forEach(expense => {
+                    const existing = latestByName.get(expense.name);
+                    if (!existing || new Date(convertirFecha(expense.fecha)) > new Date(convertirFecha(existing.fecha))) {
+                        latestByName.set(expense.name, expense);
+                    }
+                });
+
+                const items = Array.from(latestByName.values()).map(expense => {
+                    const diasDelMes = new Date(
+                        new Date(convertirFecha(expense.fecha)).getFullYear(),
+                        new Date(convertirFecha(expense.fecha)).getMonth() + 1,
+                        0
+                    ).getDate();
+
+                    return {
+                        name: expense.name,
+                        total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, diasDelMes),
+                        originalTotal: expense.total,
+                        fecha: expense.fecha,
+                        isEstimated: true
+                    };
+                });
+
+                const total = items.reduce((acc, item) => acc + item.total, 0);
+                return { total, items };
+            }
+        }
+
+        return { total: 0, items: [] };
+    };
+
+
+
+
+    const infrastructureData = getInfrastructureTotal();// Calcular gastos totales incluyendo infraestructura
 
 
 
