@@ -313,6 +313,22 @@ export const FormGasto = () => {
 									</option>
 								))}
 						</select>
+					) : formData.category === 'infraestructura' ? (
+						<select
+							id="name"
+							name="name"
+							className="custo m-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+							value={formData.name}
+							onChange={handleNameChange}
+							required
+						>
+							<option value="">Seleccionar servicio</option>
+							<option value="gas">Gas</option>
+							<option value="wifi">WiFi</option>
+							<option value="alquiler">Alquiler</option>
+							<option value="luz">Luz</option>
+							<option value="agua">Agua</option>
+						</select>
 					) : (
 						<>
 							<input
