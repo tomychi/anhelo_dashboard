@@ -38,9 +38,9 @@ export const OrderList: React.FC<OrderListProps> = ({
 	};
 
 	useEffect(() => {
-		console.log("Pedidos originales:", pedidosPorHacer);
+		// console.log("Pedidos originales:", pedidosPorHacer);
 		const ordenados = reorderPedidos(pedidosPorHacer);
-		console.log("Pedidos reordenados:", ordenados);
+		// console.log("Pedidos reordenados:", ordenados);
 		setPedidosOrdenados(ordenados);
 	}, [pedidosPorHacer]);
 
