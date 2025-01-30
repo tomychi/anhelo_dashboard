@@ -2188,7 +2188,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 													)}
 												</button>
 
-												<div className="flex flex-row items-center justify-between w-full mt-2 mb-2 gap-2">
+												<div className="flex flex-col items-center justify-between w-full mt-2 mb-2 gap-2">
 													{/* No asignado */}
 													<PhoneNumberInput
 														value={grupo.pedidos[0]?.cadete || ""}
