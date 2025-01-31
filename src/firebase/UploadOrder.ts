@@ -558,7 +558,7 @@ export const updateOrderCookNow = (
 
 export const updateMultipleOrders = async (
   fecha: string,
-  updates: { orderId: string; newCadete: string; }[]
+  updates: { orderId: string, newCadete: string }[]
 ): Promise<void> => {
   const firestore = getFirestore();
   const [dia, mes, anio] = fecha.split('/');

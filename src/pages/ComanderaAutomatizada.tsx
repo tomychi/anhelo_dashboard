@@ -35,6 +35,7 @@ import {
 	updateCadeteForOrder,
 	updateOrderTime,
 	updateOrderCookNow,
+	updateMultipleOrders
 } from "../firebase/UploadOrder";
 import { obtenerHoraActual } from "../helpers/dateToday";
 import AnimatedSvgButton from "../components/svgAnimation/AnimatedSvgButton";
@@ -801,9 +802,13 @@ export const ComanderaAutomatizada: React.FC = () => {
 
 				await updateCadetRecorridos(cadeteName, recorridoData);
 
-				for (const pedido of grupoActualizado.pedidos) {
-					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteName);
-				}
+				// Usar la nueva función para actualizar múltiples pedidos
+				const updates = grupoActualizado.pedidos.map(pedido => ({
+					orderId: pedido.id,
+					newCadete: cadeteName
+				}));
+
+				await updateMultipleOrders(grupoActualizado.pedidos[0].fecha, updates);
 
 				Swal.fire({
 					icon: 'success',

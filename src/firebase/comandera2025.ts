@@ -153,7 +153,7 @@ export const cancelCadetRecorrido = async (
             available: true
         });
 
-        // Formato de fecha correcto DD/MM/YYYY
+        // Formato de fecha correcto DD/MM/YYYY 
         const fecha = new Date().toLocaleDateString('es-AR', {
             day: '2-digit',
             month: '2-digit',
@@ -177,4 +177,3 @@ export const cancelCadetRecorrido = async (
         throw error;
     }
 };
-
