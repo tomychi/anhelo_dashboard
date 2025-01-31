@@ -9,11 +9,12 @@ import {
     getFirestore,
     getDocs,
     arrayUnion,
-    getDoc
+    getDoc,
+    writeBatch
 } from 'firebase/firestore';
 import { startOfDay, endOfDay } from 'date-fns';
 import { CadetData, RecorridoData } from '../types/comandera2025types';
-import { updateCadeteForOrder } from '../firebase/UploadOrder';
+import { updateMultipleOrders } from '../firebase/UploadOrder';
 
 
 export const createCadet = async (phoneNumber: string, name: string): Promise<void> => {
@@ -160,14 +161,15 @@ export const cancelCadetRecorrido = async (
         }).replace(/\//g, '/');
 
         console.log("Fecha formateada para actualizar pedidos:", fecha);
-
-        // Update each order
         console.log("Actualizando pedidos...", pedidosIds);
-        const actualizacionesPedidos = pedidosIds.map(pedidoId => {
-            return updateCadeteForOrder(fecha, pedidoId, "NO ASIGNADO");
-        });
 
-        await Promise.all(actualizacionesPedidos);
+        // Usar la nueva función para actualizar múltiples pedidos
+        const updates = pedidosIds.map(pedidoId => ({
+            orderId: pedidoId,
+            newCadete: "NO ASIGNADO"
+        }));
+
+        await updateMultipleOrders(fecha, updates);
         console.log("Proceso completado exitosamente");
 
     } catch (error) {
@@ -175,3 +177,4 @@ export const cancelCadetRecorrido = async (
         throw error;
     }
 };
+

@@ -555,3 +555,47 @@ export const updateOrderCookNow = (
       });
   });
 };
+
+export const updateMultipleOrders = async (
+  fecha: string,
+  updates: { orderId: string; newCadete: string; }[]
+): Promise<void> => {
+  const firestore = getFirestore();
+  const [dia, mes, anio] = fecha.split('/');
+  const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+  const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+  return new Promise((resolve, reject) => {
+    runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+      if (!pedidoDocSnapshot.exists()) {
+        reject(new Error('El documento no existe para la fecha especificada.'));
+        return;
+      }
+
+      const existingData = pedidoDocSnapshot.data();
+      const pedidosDelDia = existingData.pedidos || [];
+
+      const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
+        const updateInfo = updates.find(update => update.orderId === pedido.id);
+        if (updateInfo && pedido.fecha === fecha) {
+          return { ...pedido, cadete: updateInfo.newCadete };
+        }
+        return pedido;
+      });
+
+      transaction.set(pedidoDocRef, {
+        ...existingData,
+        pedidos: pedidosActualizados,
+      });
+    })
+      .then(() => {
+        console.log('Actualización múltiple completada exitosamente');
+        resolve();
+      })
+      .catch((error) => {
+        console.error('Error en actualización múltiple:', error);
+        reject(error);
+      });
+  });
+};
