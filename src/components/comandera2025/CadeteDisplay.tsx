@@ -1,80 +1,24 @@
 import React, { useState } from 'react';
-
-interface PedidoDetalle {
-    burger: string;
-    costoBurger: number;
-    priceBurger: number;
-    priceToppings: number;
-    quantity: number;
-    subTotal: number;
-    toppings: any[];
-}
-
-interface DetallePedido {
-    id: string;
-    direccion: string;
-    distancia: number;
-    tiempoEspera: number;
-    tiempoPercibidoESTIMADO: number;
-    estadoCocina: string;
-    fecha: string;
-    hora: string;
-    telefono: string;
-    metodoPago: string;
-    total: number;
-    subTotal: number;
-    envio: number;
-    envioExpress: number;
-    map: number[];
-    detallePedido: PedidoDetalle[];
-    aclaraciones: string;
-    referencias: string;
-    ubicacion: string;
-    cerca: boolean;
-    elaborado: boolean;
-    paid: boolean;
-    pendingOfBeingAccepted: boolean;
-    deliveryMethod: string;
-    couponCodes: string[];
-}
-
-interface Recorrido {
-    date: Date;
-    totalDistanceESTIMADA: number;
-    totalTimeESTIMADO: number;
-    costoPorEntregaESTIMADO: number;
-    horaRegresoESTIMADA: string;
-    peorEntrega: {
-        tiempoESTIMADO: number;
-        direccion: string;
-    };
-    salio?: Date;
-    regreso?: Date;
-    detallesPedidos: DetallePedido[];
-}
-
-interface CadeteData {
-    id: string;
-    name: string;
-    available: boolean;
-    recorridos: Recorrido[];
-    lastSession: Date;
-}
+import { CadetData, RecorridoData } from '../../types/comandera2025types';
 
 interface CadeteDisplayProps {
-    cadete: CadeteData;
-    handleCadeteSalida: (cadete: CadeteData) => void;
-    handleCadeteRegreso: (cadete: CadeteData) => void;
+    cadete: CadetData;
+    handleCadeteSalida: (cadete: CadetData) => void;
+    handleCadeteRegreso: (cadete: CadetData) => void;
 }
 
-const CadeteDisplay: React.FC<CadeteDisplayProps> = ({ cadete, handleCadeteSalida, handleCadeteRegreso }) => {
+const CadeteDisplay: React.FC<CadeteDisplayProps> = ({
+    cadete,
+    handleCadeteSalida,
+    handleCadeteRegreso
+}) => {
     const [showCompleted, setShowCompleted] = useState(false);
 
     const recorridos = cadete.recorridos || [];
     const activeRecorrido = recorridos.find(r => !r.regreso);
     const completedRecorridos = recorridos.filter(r => r.regreso);
 
-    const renderRecorrido = (recorrido: Recorrido, index: number, isCompleted = false) => {
+    const renderRecorrido = (recorrido: RecorridoData, index: number, isCompleted = false) => {
         let tiempoAcumulado = 0;
 
         return (
@@ -86,7 +30,6 @@ const CadeteDisplay: React.FC<CadeteDisplayProps> = ({ cadete, handleCadeteSalid
                     <div className="mb-1">
                         Direcciones:
                         {recorrido.datosEstimados.pedidos.map((pedido, idx) => {
-                            // Assuming base hour is current time for display
                             const horaBase = new Date();
                             const horaLlegada = new Date(horaBase.getTime() + (tiempoAcumulado + pedido.tiempoPercibido) * 60000);
                             const horaFormateada = horaLlegada.toLocaleTimeString('es-ES', {
