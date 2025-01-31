@@ -9,6 +9,7 @@ import CadeteSelect from "../components/Cadet/CadeteSelect";
 
 import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
 import { listenToActiveCadetes, updateCadetRecorridos, updateCadetAvailability, findCadetPhoneByName } from "../firebase/comandera2025";
+import CadeteDisplay from "../components/comandera2025/CadeteDisplay"
 import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
@@ -771,53 +772,31 @@ export const ComanderaAutomatizada: React.FC = () => {
 
 				const recorridoData = {
 					date: new Date(),
-					totalDistance: grupoActualizado.distanciaTotal,
-					totalTime: grupoActualizado.tiempoTotal,
-					peorEntrega: {
-						tiempo: grupoActualizado.peorTiempoPercibido,
-						direccion: grupoActualizado.pedidoPeorTiempo?.direccion
+					datosEstimados: {
+						totalDistance: grupoActualizado.distanciaTotal,
+						totalTime: grupoActualizado.tiempoTotal,
+						costoPorEntrega: Math.round(
+							(grupoActualizado.distanciaTotal * 200 +
+								grupoActualizado.pedidos.length * 1200) /
+							grupoActualizado.pedidos.length
+						),
+						horaRegreso: grupoActualizado.horaRegreso,
+						peorEntrega: {
+							tiempo: grupoActualizado.peorTiempoPercibido,
+							direccion: grupoActualizado.pedidoPeorTiempo?.direccion
+						},
+						pedidos: grupoActualizado.pedidos.map(p => ({
+							id: p.id,
+							direccion: p.direccion,
+							distancia: Number(p.distancia),
+							tiempoEspera: calcularTiempoEspera(p.hora),
+							tiempoPercibido: p.tiempoPercibido,
+							estado: p.elaborado ? 'Cocinado' : 'No cocinado',
+							metodoPago: p.metodoPago,
+							total: p.total
+						}))
 					},
-					horaRegreso: grupoActualizado.horaRegreso,
-					costoPorEntrega: Math.round(
-						(grupoActualizado.distanciaTotal * 200 +
-							grupoActualizado.pedidos.length * 1200) /
-						grupoActualizado.pedidos.length
-					),
-					detallesPedidos: grupoActualizado.pedidos.map(pedido => ({
-						id: pedido.id,
-						direccion: pedido.direccion,
-						distancia: Number(pedido.distancia),
-						tiempoEspera: calcularTiempoEspera(pedido.hora),
-						tiempoPercibido: pedido.tiempoPercibido,
-						estadoCocina: pedido.elaborado ? 'Cocinado' : 'No cocinado',
-						fecha: pedido.fecha,
-						hora: pedido.hora,
-						telefono: pedido.telefono,
-						metodoPago: pedido.metodoPago,
-						total: pedido.total,
-						subTotal: pedido.subTotal,
-						envio: pedido.envio,
-						envioExpress: pedido.envioExpress || 0,
-						map: pedido.map,
-						detallePedido: pedido.detallePedido.map(item => ({
-							burger: item.burger,
-							costoBurger: item.costoBurger,
-							priceBurger: item.priceBurger,
-							priceToppings: item.priceToppings,
-							quantity: item.quantity,
-							subTotal: item.subTotal,
-							toppings: item.toppings
-						})),
-						aclaraciones: pedido.aclaraciones,
-						referencias: pedido.referencias,
-						ubicacion: pedido.ubicacion,
-						cerca: pedido.cerca || false,
-						elaborado: pedido.elaborado || false,
-						paid: pedido.paid || false,
-						pendingOfBeingAccepted: pedido.pendingOfBeingAccepted || false,
-						deliveryMethod: pedido.deliveryMethod || 'delivery',
-						couponCodes: pedido.couponCodes || ['']
-					}))
+					salio: new Date()
 				};
 
 				await updateCadetRecorridos(cadeteName, recorridoData);
@@ -1742,87 +1721,12 @@ export const ComanderaAutomatizada: React.FC = () => {
 				/>
 				<div className="flex flex-col mt-4 mb-8 gap-4 overflow-x-auto">
 					{activeCadetes.map((cadete) => (
-						<div
+						<CadeteDisplay
 							key={cadete.id}
-							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center w-full"
-						>
-							<div className="flex items-center mb-2">
-								<div
-									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"
-										}`}
-								></div>
-								<h3 className="text-lg font-semibold">{cadete.name}</h3>
-							</div>
-							{cadete.available ? (
-								<button
-									onClick={() => handleCadeteSalida(cadete)}
-									className="mt-2 px-4 py-1 bg-red-main text-white rounded-full text-sm hover:bg-red-700 transition-colors"
-								>
-									SALIO
-								</button>
-							) : (
-								<button
-									onClick={() => handleCadeteRegreso(cadete)}
-									className="mt-2 px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors"
-								>
-									REGRESO
-								</button>
-							)}
-
-							{/* Mostrar recorridos */}
-							{cadete.recorridos && cadete.recorridos.length > 0 && (
-								<div className="mt-4 w-full">
-									<h4 className="font-medium text-gray-700 mb-2">Recorridos de hoy:</h4>
-									{cadete.recorridos.map((recorrido, index) => {
-										let tiempoAcumulado = 0;
-
-										return (
-											<div key={index} className="bg-gray-50 p-3 rounded-lg mb-2 text-sm">
-												<div className="font-medium text-gray-800">
-													Recorrido {index + 1}
-												</div>
-												<div className="text-gray-600 mt-1">
-													<div className="mb-1">
-														Direcciones:
-														{recorrido.detallesPedidos.map((pedido, idx) => {
-															const [horas, minutos] = pedido.hora.split(':').map(Number);
-															const horaBase = new Date();
-															horaBase.setHours(horas, minutos, 0, 0);
-
-															// Usamos el tiempoPercibido específico de cada pedido
-															const horaLlegada = new Date(horaBase.getTime() + (tiempoAcumulado + pedido.tiempoPercibido) * 60000);
-															const horaFormateada = horaLlegada.toLocaleTimeString('es-ES', {
-																hour: '2-digit',
-																minute: '2-digit'
-															});
-
-															// Actualizamos el tiempo acumulado
-															tiempoAcumulado += pedido.tiempoPercibido;
-
-															return (
-																<div key={idx} className="ml-2 text-xs flex justify-between items-center">
-																	<span>• {pedido.direccion.split(',')[0]}</span>
-																	<span className="text-gray-500">
-																		(llegada estimada: {horaFormateada})
-																	</span>
-																</div>
-															);
-														})}
-													</div>
-													<div className="mt-2 text-xs text-gray-500">
-														Regresa a las: {recorrido.horaRegreso}
-													</div>
-													<div className="flex justify-between text-xs text-gray-500 mt-1">
-														<span>Distancia: {recorrido.totalDistance}km</span>
-														<span>Tiempo: {recorrido.totalTime}min</span>
-													</div>
-												</div>
-											</div>
-										);
-									})}
-								</div>
-							)}
-						</div>
+							cadete={cadete}
+							handleCadeteRegreso={handleCadeteRegreso}
+							handleCadeteSalida={handleCadeteSalida}
+						/>
 					))}
 				</div>
 
