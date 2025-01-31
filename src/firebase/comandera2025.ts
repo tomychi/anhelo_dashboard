@@ -167,34 +167,42 @@ export const updateCadetAvailability = async (
     const firestore = getFirestore();
     const cadetRef = doc(firestore, 'riders2025', phoneNumber);
 
-    // Get current cadet data
+    // Obtener datos actuales del cadete
     const cadetDoc = await getDoc(cadetRef);
-    const cadetData = cadetDoc.data();
-    console.log('Current cadet data:', cadetData);
+    const cadetData = cadetDoc.data() as CadetData;
 
-    if (cadetData && cadetData.recorridos && cadetData.recorridos.length > 0) {
+    if (!cadetData) {
+        console.error('Cadet data not found');
+        return;
+    }
+
+    const updatedData: Partial<CadetData> = {
+        available: available,
+        lastSession: new Date()
+    };
+
+    if (cadetData.recorridos && cadetData.recorridos.length > 0) {
         const recorridos = [...cadetData.recorridos];
-        const lastRecorrido = recorridos[recorridos.length - 1];
-        console.log('Last recorrido:', lastRecorrido);
+        const lastIndex = recorridos.length - 1;
+        const lastRecorrido = recorridos[lastIndex];
 
-        // Update the last recorrido with regreso timestamp when the cadet becomes available
-        if (available && !lastRecorrido.regreso && lastRecorrido.salio) {
-            console.log('Adding regreso timestamp to last recorrido');
-            lastRecorrido.regreso = new Date();
-            await updateDoc(cadetRef, {
-                available: available,
-                lastSession: new Date(),
-                recorridos: recorridos
-            });
-            console.log('Updated recorrido with regreso timestamp');
-            return;
+        if (!available) { // Cuando el cadete sale (Salio)
+            // Buscar el primer recorrido sin salio y actualizarlo
+            const recorridoToUpdate = recorridos.find(r => !r.salio);
+            if (recorridoToUpdate) {
+                recorridoToUpdate.salio = new Date();
+                updatedData.recorridos = recorridos;
+            }
+        } else { // Cuando el cadete regresa (Regreso)
+            // Buscar el último recorrido con salio pero sin regreso
+            const recorridoToUpdate = recorridos.reverse().find(r => r.salio && !r.regreso);
+            if (recorridoToUpdate) {
+                recorridoToUpdate.regreso = new Date();
+                updatedData.recorridos = recorridos;
+            }
         }
     }
 
-    console.log('Updating only availability status');
-    await updateDoc(cadetRef, {
-        available: available,
-        lastSession: new Date()
-    });
+    await updateDoc(cadetRef, updatedData);
     console.log('Availability updated successfully');
 };
