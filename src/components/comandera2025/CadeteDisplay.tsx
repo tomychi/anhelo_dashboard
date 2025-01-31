@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { CadetData, RecorridoData } from '../../types/comandera2025types';
+import { cancelCadetRecorrido } from '../../firebase/comandera2025';
 
 interface CadeteDisplayProps {
     cadete: CadetData;
     handleCadeteSalida: (cadete: CadetData) => void;
     handleCadeteRegreso: (cadete: CadetData) => void;
 }
+
 
 const CadeteDisplay: React.FC<CadeteDisplayProps> = ({
     cadete,
@@ -18,6 +20,25 @@ const CadeteDisplay: React.FC<CadeteDisplayProps> = ({
     const activeRecorrido = recorridos.find(r => !r.regreso);
     const completedRecorridos = recorridos.filter(r => r.regreso);
 
+    const handleCancelarRecorrido = async (recorrido: RecorridoData) => {
+        if (window.confirm('¿Estás seguro de que deseas cancelar este recorrido?')) {
+            try {
+                const pedidosIds = recorrido.datosEstimados.pedidos.map(p => p.id);
+
+                await cancelCadetRecorrido(
+                    cadete.name,
+                    recorrido,
+                    pedidosIds
+                );
+
+                alert('Recorrido cancelado exitosamente');
+            } catch (error) {
+                console.error('Error al cancelar recorrido:', error);
+                alert('Hubo un problema al cancelar el recorrido');
+            }
+        }
+    };
+
     const renderRecorrido = (recorrido: RecorridoData, index: number, isCompleted = false) => {
         let tiempoAcumulado = 0;
 
@@ -26,10 +47,19 @@ const CadeteDisplay: React.FC<CadeteDisplayProps> = ({
                 <div className="font-medium text-gray-800">
                     {isCompleted ? `Recorrido Completado ${index + 1}` : 'Recorrido Actual'}
                 </div>
+                {!isCompleted && (
+                    <button
+                        onClick={() => handleCancelarRecorrido(recorrido)}
+                        className="mt-2 w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                        Cancelar Recorrido
+                    </button>
+                )}
                 <div className="text-gray-600 mt-1">
                     <div className="mb-1">
                         Direcciones:
                         {recorrido.datosEstimados.pedidos.map((pedido, idx) => {
+                            // Assuming base hour is current time for display
                             const horaBase = new Date();
                             const horaLlegada = new Date(horaBase.getTime() + (tiempoAcumulado + pedido.tiempoPercibido) * 60000);
                             const horaFormateada = horaLlegada.toLocaleTimeString('es-ES', {
@@ -90,6 +120,8 @@ const CadeteDisplay: React.FC<CadeteDisplayProps> = ({
                     REGRESO
                 </button>
             )}
+
+
 
             {recorridos.length > 0 && (
                 <div className="mt-4 w-full">

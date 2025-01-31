@@ -13,6 +13,8 @@ import {
 } from 'firebase/firestore';
 import { startOfDay, endOfDay } from 'date-fns';
 import { CadetData, RecorridoData } from '../types/comandera2025types';
+import { updateCadeteForOrder } from '../firebase/UploadOrder';
+
 
 export const createCadet = async (phoneNumber: string, name: string): Promise<void> => {
     const firestore = getFirestore();
@@ -115,4 +117,61 @@ export const updateCadetAvailability = async (
     }
 
     await updateDoc(cadetRef, updatedData);
+};
+
+export const cancelCadetRecorrido = async (
+    name: string,
+    recorrido: RecorridoData,
+    pedidosIds: string[]
+): Promise<void> => {
+    try {
+        console.log("Iniciando cancelación para:", name);
+
+        const phoneNumber = await findCadetPhoneByName(name);
+        if (!phoneNumber) {
+            throw new Error(`No se encontró un cadete con el nombre: ${name}`);
+        }
+
+        const firestore = getFirestore();
+        const cadetRef = doc(firestore, 'riders2025', phoneNumber);
+
+        const cadetDoc = await getDoc(cadetRef);
+        const cadetData = cadetDoc.data() as CadetData;
+
+        if (!cadetData) return;
+
+        const recorridoSeconds = recorrido.date.seconds;
+
+        // Actualizar recorridos del cadete
+        const updatedRecorridos = cadetData.recorridos.filter(r => {
+            return r.date.seconds !== recorridoSeconds;
+        });
+
+        await updateDoc(cadetRef, {
+            recorridos: updatedRecorridos,
+            available: true
+        });
+
+        // Formato de fecha correcto DD/MM/YYYY
+        const fecha = new Date().toLocaleDateString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace(/\//g, '/');
+
+        console.log("Fecha formateada para actualizar pedidos:", fecha);
+
+        // Update each order
+        console.log("Actualizando pedidos...", pedidosIds);
+        const actualizacionesPedidos = pedidosIds.map(pedidoId => {
+            return updateCadeteForOrder(fecha, pedidoId, "NO ASIGNADO");
+        });
+
+        await Promise.all(actualizacionesPedidos);
+        console.log("Proceso completado exitosamente");
+
+    } catch (error) {
+        console.error('Error detallado al cancelar recorrido:', error);
+        throw error;
+    }
 };
