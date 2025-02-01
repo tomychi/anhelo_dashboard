@@ -1610,6 +1610,15 @@ export const ComanderaAutomatizada: React.FC = () => {
 							isSidebarOpen={sidebarOpen}
 						/>
 						<div className="flex flex-row w-fit ">
+							<div className="relative  w-full mr-2">
+
+								<button
+									onClick={() => setIsCreateCadetModalOpen(true)}
+									className="bg-black font-coolvetica  text-gray-100 px-6  h-10 rounded-full font-bold  "
+								>
+									Cadete
+								</button>
+							</div>
 							{/* Delay */}
 							<div className="relative  w-full">
 								<svg
@@ -1725,12 +1734,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 					showComandas={showComandas}
 					setShowComandas={setShowComandas}
 				/>
-				<button
-					onClick={() => setIsCreateCadetModalOpen(true)}
-					className="bg-black font-coolvetica text-gray-100 px-6 h-20 rounded-xl font-bold  "
-				>
-					Agregar cadete
-				</button>
+
 
 				<CreateCadetModal
 					isOpen={isCreateCadetModalOpen}
