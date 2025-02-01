@@ -78,6 +78,10 @@ interface PedidosGrupos extends PedidoProps {
 	distancia?: number;
 	tiempoPercibido?: number;
 	tiempoEspera?: number;
+	couponCodes?: string[];
+	deliveryMethod?: string;
+	envioExpress?: number;
+	pendingOfBeingAccepted?: boolean;
 }
 
 type Grupo = {
@@ -780,11 +784,39 @@ export const ComanderaAutomatizada: React.FC = () => {
 						grupoActualizado.pedidos.length
 					),
 					detallesPedidos: grupoActualizado.pedidos.map(pedido => ({
+						id: pedido.id,
 						direccion: pedido.direccion,
 						distancia: Number(pedido.distancia),
 						tiempoEspera: calcularTiempoEspera(pedido.hora),
 						tiempoPercibido: pedido.tiempoPercibido,
-						estadoCocina: pedido.elaborado ? 'Cocinado' : 'No cocinado'
+						estadoCocina: pedido.elaborado ? 'Cocinado' : 'No cocinado',
+						fecha: pedido.fecha,
+						hora: pedido.hora,
+						telefono: pedido.telefono,
+						metodoPago: pedido.metodoPago,
+						total: pedido.total,
+						subTotal: pedido.subTotal,
+						envio: pedido.envio,
+						envioExpress: pedido.envioExpress || 0,
+						map: pedido.map,
+						detallePedido: pedido.detallePedido.map(item => ({
+							burger: item.burger,
+							costoBurger: item.costoBurger,
+							priceBurger: item.priceBurger,
+							priceToppings: item.priceToppings,
+							quantity: item.quantity,
+							subTotal: item.subTotal,
+							toppings: item.toppings
+						})),
+						aclaraciones: pedido.aclaraciones,
+						referencias: pedido.referencias,
+						ubicacion: pedido.ubicacion,
+						cerca: pedido.cerca || false,
+						elaborado: pedido.elaborado || false,
+						paid: pedido.paid || false,
+						pendingOfBeingAccepted: pedido.pendingOfBeingAccepted || false,
+						deliveryMethod: pedido.deliveryMethod || 'delivery',
+						couponCodes: pedido.couponCodes || ['']
 					}))
 				};
 

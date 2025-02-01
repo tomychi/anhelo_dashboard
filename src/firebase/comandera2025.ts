@@ -12,6 +12,16 @@ import {
 } from 'firebase/firestore';
 import { startOfDay, endOfDay } from 'date-fns';
 
+interface PedidoDetalle {
+    burger: string;
+    costoBurger: number;
+    priceBurger: number;
+    priceToppings: number;
+    quantity: number;
+    subTotal: number;
+    toppings: any[];
+}
+
 interface RecorridoData {
     date: Date;
     totalDistance: number;
@@ -23,13 +33,34 @@ interface RecorridoData {
         direccion: string;
     };
     detallesPedidos: Array<{
+        id: string;
         direccion: string;
         distancia: number;
         tiempoEspera: number;
         tiempoPercibido: number;
         estadoCocina: string;
+        fecha: string;
+        hora: string;
+        telefono: string;
+        metodoPago: string;
+        total: number;
+        subTotal: number;
+        envio: number;
+        envioExpress: number;
+        map: number[];
+        detallePedido: PedidoDetalle[];
+        aclaraciones: string;
+        referencias: string;
+        ubicacion: string;
+        cerca: boolean;
+        elaborado: boolean;
+        paid: boolean;
+        pendingOfBeingAccepted: boolean;
+        deliveryMethod: string;
+        couponCodes: string[];
     }>;
 }
+
 
 interface CadetData {
     name: string;
