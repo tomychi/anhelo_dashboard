@@ -6,18 +6,9 @@ import { GeneralStats, OrderList } from "../components/comandera";
 import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	doc,
-	updateDoc,
-	arrayUnion,
-	getFirestore
-} from 'firebase/firestore';
+
 import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
-import { listenToActiveCadetes } from "../firebase/comandera2025";
+import { listenToActiveCadetes, updateCadetRecorridos } from "../firebase/comandera2025";
 import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
@@ -760,36 +751,18 @@ export const ComanderaAutomatizada: React.FC = () => {
 		setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
 		try {
-			// Buscar el número de teléfono del cadete en la colección riders2025
-			const firestore = getFirestore();
-			const cadetesQuery = query(
-				collection(firestore, 'riders2025'),
-				where('name', '==', cadeteName)
-			);
-
-			const cadetesSnapshot = await getDocs(cadetesQuery);
-
-			if (cadetesSnapshot.empty) {
-				Swal.fire({
-					icon: 'error',
-					title: 'Cadete no encontrado',
-					text: `No se encontró un cadete con el nombre: ${cadeteName}`,
-				});
-				return;
-			}
-
-			// Obtener el primer documento (número de teléfono) del cadete
-			const cadetDoc = cadetesSnapshot.docs[0];
-			const phoneNumber = cadetDoc.id;
-
 			let grupoActualizado: Grupo;
 			if (esGrupoListo) {
 				const nuevosGruposListos = [...gruposListos];
 				grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
+
+				// Actualizar los pedidos con el nombre del cadete
 				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
 					...pedido,
 					cadete: cadeteName,
 				}));
+
+				// Actualizar los grupos listos
 				nuevosGruposListos[grupoIndex] = grupoActualizado;
 				setGruposListos(nuevosGruposListos);
 
@@ -802,16 +775,14 @@ export const ComanderaAutomatizada: React.FC = () => {
 				};
 
 				// Actualizar recorridos del cadete
-				const cadetRef = doc(firestore, 'riders2025', phoneNumber);
-				await updateDoc(cadetRef, {
-					recorridos: arrayUnion(recorridoData)
-				});
+				await updateCadetRecorridos(cadeteName, recorridoData);
 
 				// Actualizar cada pedido con el cadete
 				for (const pedido of grupoActualizado.pedidos) {
 					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteName);
 				}
 
+				// Mostrar mensaje de éxito
 				Swal.fire({
 					icon: 'success',
 					title: 'CADETE ASIGNADO',
@@ -819,6 +790,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 				});
 			}
 
+			// Actualizar el estado global de órdenes
 			const nuevasOrdenes = orders.map((orden) => {
 				const pedidoEnGrupo = grupoActualizado.pedidos.find(
 					(p) => p.id === orden.id
@@ -828,16 +800,20 @@ export const ComanderaAutomatizada: React.FC = () => {
 				}
 				return orden;
 			});
+
+			// Dispatch de la acción para actualizar las órdenes
 			dispatch(readOrdersData(nuevasOrdenes));
 
 		} catch (error) {
+			// Manejo de errores
 			Swal.fire({
 				icon: 'error',
 				title: 'Error',
-				text: 'Hubo un problema al asignar el cadete',
+				text: error.message || 'Hubo un problema al asignar el cadete',
 			});
 			console.error('Error al asignar el cadete:', error);
 		} finally {
+			// Desactivar estado de carga
 			setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
 		}
 	};
