@@ -1384,8 +1384,8 @@ export const ComanderaAutomatizada: React.FC = () => {
 		);
 	};
 
-	const PhoneNumberInput = ({ value, onAssign, loading, index }) => {
-		const [phoneNumber, setPhoneNumber] = useState(value || "");
+	const PhoneNumberInput = ({ value, onAssign, loading, index, activeCadetes }) => {
+		const [selectedCadete, setSelectedCadete] = useState(value || "");
 
 		return (
 			<div className="relative flex items-center gap-2 w-full">
@@ -1403,19 +1403,24 @@ export const ComanderaAutomatizada: React.FC = () => {
 						/>
 					</svg>
 
-					<input
-						type="tel"
-						className="bg-gray-400 text-red-main bg-opacity-50 h-10 text-center rounded-full font-bold pl-12 pr-4 w-full"
-						placeholder="Ingrese número"
-						value={phoneNumber}
-						onChange={(e) => setPhoneNumber(e.target.value)}
+					<select
+						className="bg-gray-400 text-red-main bg-opacity-50 h-10 text-center rounded-full font-bold pl-12 pr-4 w-full appearance-none"
+						value={selectedCadete}
+						onChange={(e) => setSelectedCadete(e.target.value)}
 						disabled={loading}
-					/>
+					>
+						<option value="">Seleccione un cadete</option>
+						{activeCadetes.map((cadete) => (
+							<option key={cadete.id} value={cadete.phoneNumber}>
+								{cadete.name}
+							</option>
+						))}
+					</select>
 				</div>
 
 				<button
-					onClick={() => onAssign(phoneNumber)}
-					disabled={loading}
+					onClick={() => onAssign(selectedCadete)}
+					disabled={loading || !selectedCadete}
 					className="bg-red-main text-white h-10 px-4 rounded-full font-bold hover:bg-red-700 transition-colors"
 				>
 					{loading ? (
@@ -2232,9 +2237,10 @@ export const ComanderaAutomatizada: React.FC = () => {
 													{/* No asignado */}
 													<PhoneNumberInput
 														value={grupo.pedidos[0]?.cadete || ""}
-														onAssign={(number) => handleAsignarCadete(index, number, true)}
+														onAssign={(cadete) => handleAsignarCadete(index, cadete, true)}
 														loading={loadingStates[`asignar-${index}`]}
 														index={index}
+														activeCadetes={activeCadetes}
 													/>
 
 													{grupo.pedidos.some((pedido) =>
