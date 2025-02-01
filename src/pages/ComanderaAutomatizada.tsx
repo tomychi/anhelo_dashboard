@@ -1471,7 +1471,37 @@ export const ComanderaAutomatizada: React.FC = () => {
 		}
 	};
 
+	const handleCadeteRegreso = async (cadete: CadetData) => {
+		try {
+			// Buscar el número de teléfono del cadete
+			const phoneNumber = await findCadetPhoneByName(cadete.name);
 
+			if (!phoneNumber) {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: `No se encontró el número de teléfono para ${cadete.name}`,
+				});
+				return;
+			}
+
+			// Actualizar disponibilidad a true
+			await updateCadetAvailability(phoneNumber, true);
+
+			Swal.fire({
+				icon: 'success',
+				title: 'Cadete Actualizado',
+				text: `${cadete.name} ha vuelto a estar disponible`,
+			});
+		} catch (error) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Hubo un problema al actualizar el cadete',
+			});
+			console.error('Error al actualizar cadete:', error);
+		}
+	};
 
 
 
@@ -1552,12 +1582,19 @@ export const ComanderaAutomatizada: React.FC = () => {
 								></div>
 								<h3 className="text-lg font-semibold">{cadete.name}</h3>
 							</div>
-							{cadete.available && (
+							{cadete.available ? (
 								<button
 									onClick={() => handleCadeteSalida(cadete)}
 									className="mt-2 px-4 py-1 bg-red-main text-white rounded-full text-sm hover:bg-red-700 transition-colors"
 								>
 									SALIO
+								</button>
+							) : (
+								<button
+									onClick={() => handleCadeteRegreso(cadete)}
+									className="mt-2 px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors"
+								>
+									REGRESO
 								</button>
 							)}
 						</div>
