@@ -757,33 +757,43 @@ export const ComanderaAutomatizada: React.FC = () => {
 				const nuevosGruposListos = [...gruposListos];
 				grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
 
-				// Actualizar los pedidos con el nombre del cadete
 				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
 					...pedido,
 					cadete: cadeteName,
 				}));
 
-				// Actualizar los grupos listos
 				nuevosGruposListos[grupoIndex] = grupoActualizado;
 				setGruposListos(nuevosGruposListos);
 
-				// Preparar datos de recorrido
 				const recorridoData = {
 					date: new Date(),
-					addresses: grupoActualizado.pedidos.map(pedido => pedido.direccion),
 					totalDistance: grupoActualizado.distanciaTotal,
-					totalTime: grupoActualizado.tiempoTotal
+					totalTime: grupoActualizado.tiempoTotal,
+					peorEntrega: {
+						tiempo: grupoActualizado.peorTiempoPercibido,
+						direccion: grupoActualizado.pedidoPeorTiempo?.direccion
+					},
+					horaRegreso: grupoActualizado.horaRegreso,
+					costoPorEntrega: Math.round(
+						(grupoActualizado.distanciaTotal * 200 +
+							grupoActualizado.pedidos.length * 1200) /
+						grupoActualizado.pedidos.length
+					),
+					detallesPedidos: grupoActualizado.pedidos.map(pedido => ({
+						direccion: pedido.direccion,
+						distancia: Number(pedido.distancia),
+						tiempoEspera: calcularTiempoEspera(pedido.hora),
+						tiempoPercibido: pedido.tiempoPercibido,
+						estadoCocina: pedido.elaborado ? 'Cocinado' : 'No cocinado'
+					}))
 				};
 
-				// Actualizar recorridos del cadete
 				await updateCadetRecorridos(cadeteName, recorridoData);
 
-				// Actualizar cada pedido con el cadete
 				for (const pedido of grupoActualizado.pedidos) {
 					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteName);
 				}
 
-				// Mostrar mensaje de éxito
 				Swal.fire({
 					icon: 'success',
 					title: 'CADETE ASIGNADO',
@@ -791,7 +801,6 @@ export const ComanderaAutomatizada: React.FC = () => {
 				});
 			}
 
-			// Actualizar el estado global de órdenes
 			const nuevasOrdenes = orders.map((orden) => {
 				const pedidoEnGrupo = grupoActualizado.pedidos.find(
 					(p) => p.id === orden.id
@@ -802,11 +811,9 @@ export const ComanderaAutomatizada: React.FC = () => {
 				return orden;
 			});
 
-			// Dispatch de la acción para actualizar las órdenes
 			dispatch(readOrdersData(nuevasOrdenes));
 
 		} catch (error) {
-			// Manejo de errores
 			Swal.fire({
 				icon: 'error',
 				title: 'Error',
@@ -814,7 +821,6 @@ export const ComanderaAutomatizada: React.FC = () => {
 			});
 			console.error('Error al asignar el cadete:', error);
 		} finally {
-			// Desactivar estado de carga
 			setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
 		}
 	};

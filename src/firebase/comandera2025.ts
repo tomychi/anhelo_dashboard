@@ -12,10 +12,29 @@ import {
 } from 'firebase/firestore';
 import { startOfDay, endOfDay } from 'date-fns';
 
+interface RecorridoData {
+    date: Date;
+    totalDistance: number;
+    totalTime: number;
+    costoPorEntrega: number;
+    horaRegreso: string;
+    peorEntrega: {
+        tiempo: number;
+        direccion: string;
+    };
+    detallesPedidos: Array<{
+        direccion: string;
+        distancia: number;
+        tiempoEspera: number;
+        tiempoPercibido: number;
+        estadoCocina: string;
+    }>;
+}
+
 interface CadetData {
     name: string;
     available: boolean;
-    recorridos: any[];
+    recorridos: RecorridoData[];
     lastSession: Date;
 }
 
@@ -32,12 +51,21 @@ export const createCadet = async (phoneNumber: string, name: string): Promise<vo
     await setDoc(doc(firestore, 'riders2025', phoneNumber), cadetData);
 };
 
-export const updateCadetSession = async (phoneNumber: string): Promise<void> => {
+export const updateCadetRecorridos = async (
+    name: string,
+    recorridoData: RecorridoData
+): Promise<void> => {
+    const phoneNumber = await findCadetPhoneByName(name);
+
+    if (!phoneNumber) {
+        throw new Error(`No se encontró un cadete con el nombre: ${name}`);
+    }
+
     const firestore = getFirestore();
     const cadetRef = doc(firestore, 'riders2025', phoneNumber);
 
     await updateDoc(cadetRef, {
-        lastSession: new Date(),
+        recorridos: arrayUnion(recorridoData)
     });
 };
 
@@ -68,32 +96,6 @@ export const listenToActiveCadetes = (
     );
 };
 
-// Función para actualizar los recorridos de un cadete
-export const updateCadetRecorridos = async (
-    name: string,
-    recorridoData: {
-        date: Date,
-        addresses: string[],
-        totalDistance: number,
-        totalTime: number
-    }
-): Promise<void> => {
-    // Primero encontramos el número de teléfono del cadete
-    const phoneNumber = await findCadetPhoneByName(name);
-
-    if (!phoneNumber) {
-        throw new Error(`No se encontró un cadete con el nombre: ${name}`);
-    }
-
-    const firestore = getFirestore();
-    const cadetRef = doc(firestore, 'riders2025', phoneNumber);
-
-    // Actualizamos los recorridos del cadete
-    await updateDoc(cadetRef, {
-        recorridos: arrayUnion(recorridoData)
-    });
-};
-
 export const findCadetPhoneByName = async (name: string): Promise<string | null> => {
     const firestore = getFirestore();
     const cadetesQuery = query(
@@ -107,7 +109,6 @@ export const findCadetPhoneByName = async (name: string): Promise<string | null>
         return null;
     }
 
-    // Retorna el ID del documento (número de teléfono)
     return cadetesSnapshot.docs[0].id;
 };
 
@@ -120,6 +121,6 @@ export const updateCadetAvailability = async (
 
     await updateDoc(cadetRef, {
         available: available,
-        lastSession: new Date() // Actualizar también la última sesión
+        lastSession: new Date()
     });
 };
