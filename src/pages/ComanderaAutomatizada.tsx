@@ -6,6 +6,16 @@ import { GeneralStats, OrderList } from "../components/comandera";
 import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
+import {
+	collection,
+	query,
+	where,
+	getDocs,
+	doc,
+	updateDoc,
+	arrayUnion,
+	getFirestore
+} from 'firebase/firestore';
 import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
 import { listenToActiveCadetes } from "../firebase/comandera2025";
 import { Unsubscribe } from "firebase/firestore";
@@ -743,23 +753,34 @@ export const ComanderaAutomatizada: React.FC = () => {
 
 	const handleAsignarCadete = async (
 		grupoIndex: number,
-		phoneNumber: string,
+		cadeteName: string,
 		esGrupoListo: boolean = false
 	) => {
 		const loadingKey = `asignar-${grupoIndex}`;
 		setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
 		try {
-			// Validación solo cuando se hace clic en el botón
-			const phoneRegex = /^[0-9]{10,15}$/;
-			if (!phoneRegex.test(phoneNumber)) {
+			// Buscar el número de teléfono del cadete en la colección riders2025
+			const firestore = getFirestore();
+			const cadetesQuery = query(
+				collection(firestore, 'riders2025'),
+				where('name', '==', cadeteName)
+			);
+
+			const cadetesSnapshot = await getDocs(cadetesQuery);
+
+			if (cadetesSnapshot.empty) {
 				Swal.fire({
 					icon: 'error',
-					title: 'Número inválido',
-					text: 'Por favor ingrese un número de 10 a 15 dígitos',
+					title: 'Cadete no encontrado',
+					text: `No se encontró un cadete con el nombre: ${cadeteName}`,
 				});
 				return;
 			}
+
+			// Obtener el primer documento (número de teléfono) del cadete
+			const cadetDoc = cadetesSnapshot.docs[0];
+			const phoneNumber = cadetDoc.id;
 
 			let grupoActualizado: Grupo;
 			if (esGrupoListo) {
@@ -767,19 +788,34 @@ export const ComanderaAutomatizada: React.FC = () => {
 				grupoActualizado = { ...nuevosGruposListos[grupoIndex] };
 				grupoActualizado.pedidos = grupoActualizado.pedidos.map((pedido) => ({
 					...pedido,
-					cadete: phoneNumber,
+					cadete: cadeteName,
 				}));
 				nuevosGruposListos[grupoIndex] = grupoActualizado;
 				setGruposListos(nuevosGruposListos);
 
+				// Preparar datos de recorrido
+				const recorridoData = {
+					date: new Date(),
+					addresses: grupoActualizado.pedidos.map(pedido => pedido.direccion),
+					totalDistance: grupoActualizado.distanciaTotal,
+					totalTime: grupoActualizado.tiempoTotal
+				};
+
+				// Actualizar recorridos del cadete
+				const cadetRef = doc(firestore, 'riders2025', phoneNumber);
+				await updateDoc(cadetRef, {
+					recorridos: arrayUnion(recorridoData)
+				});
+
+				// Actualizar cada pedido con el cadete
 				for (const pedido of grupoActualizado.pedidos) {
-					await updateCadeteForOrder(pedido.fecha, pedido.id, phoneNumber);
+					await updateCadeteForOrder(pedido.fecha, pedido.id, cadeteName);
 				}
 
 				Swal.fire({
 					icon: 'success',
-					title: 'NÚMERO ASIGNADO',
-					text: `Los pedidos fueron asignados al número: ${phoneNumber}`,
+					title: 'CADETE ASIGNADO',
+					text: `Los pedidos fueron asignados a: ${cadeteName}`,
 				});
 			}
 
@@ -788,7 +824,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 					(p) => p.id === orden.id
 				);
 				if (pedidoEnGrupo) {
-					return { ...orden, cadete: phoneNumber };
+					return { ...orden, cadete: cadeteName };
 				}
 				return orden;
 			});
@@ -798,9 +834,9 @@ export const ComanderaAutomatizada: React.FC = () => {
 			Swal.fire({
 				icon: 'error',
 				title: 'Error',
-				text: 'Hubo un problema al asignar el número',
+				text: 'Hubo un problema al asignar el cadete',
 			});
-			console.error('Error al asignar el número:', error);
+			console.error('Error al asignar el cadete:', error);
 		} finally {
 			setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
 		}
@@ -1390,19 +1426,6 @@ export const ComanderaAutomatizada: React.FC = () => {
 		return (
 			<div className="relative flex items-center gap-2 w-full">
 				<div className="flex-1 relative">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="currentColor"
-						className="h-6 absolute left-4 top-1/2 -translate-y-1/2 text-red-main"
-					>
-						<path
-							fillRule="evenodd"
-							d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
-							clipRule="evenodd"
-						/>
-					</svg>
-
 					<select
 						className="bg-gray-400 text-red-main bg-opacity-50 h-10 text-center rounded-full font-bold pl-12 pr-4 w-full appearance-none"
 						value={selectedCadete}
@@ -1411,7 +1434,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 					>
 						<option value="">Seleccione un cadete</option>
 						{activeCadetes.map((cadete) => (
-							<option key={cadete.id} value={cadete.phoneNumber}>
+							<option key={cadete.id} value={cadete.name}>
 								{cadete.name}
 							</option>
 						))}
@@ -1436,7 +1459,6 @@ export const ComanderaAutomatizada: React.FC = () => {
 			</div>
 		);
 	};
-
 
 
 
