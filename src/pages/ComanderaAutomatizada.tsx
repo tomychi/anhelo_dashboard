@@ -6,6 +6,7 @@ import { GeneralStats, OrderList } from "../components/comandera";
 import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
+import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
 import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
@@ -22,7 +23,6 @@ import {
 import { ReadOrdersForToday } from "../firebase/ReadData";
 import { PedidoProps } from "../types/types";
 import { readOrdersData } from "../redux/data/dataAction";
-import { DeliveryMap } from "../components/maps/DeliveryMap";
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
 import wspIcon from "../assets/wsp.png";
@@ -34,7 +34,6 @@ import {
 	updateOrderCookNow,
 } from "../firebase/UploadOrder";
 import { obtenerHoraActual } from "../helpers/dateToday";
-import RegistroEmpleado from "./Empleados";
 import AnimatedSvgButton from "../components/svgAnimation/AnimatedSvgButton";
 import {
 	DragDropContext,
@@ -123,6 +122,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 		"entrega"
 	);
 	const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
+	const [isCreateCadetModalOpen, setIsCreateCadetModalOpen] = useState(false);
 	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
 	const [gruposAutomaticos, setGruposAutomaticos] = useState<Grupo[]>([]);
 	const [gruposAutomaticosOptimos, setGruposAutomaticosOptimos] = useState<
@@ -1478,6 +1478,17 @@ export const ComanderaAutomatizada: React.FC = () => {
       `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
+				<button
+					onClick={() => setIsCreateCadetModalOpen(true)}
+					className="bg-red-main text-white px-6 py-2 rounded-lg font-bold mt-4 hover:bg-red-700 transition-colors"
+				>
+					CREAR CADETE
+				</button>
+
+				<CreateCadetModal
+					isOpen={isCreateCadetModalOpen}
+					onClose={() => setIsCreateCadetModalOpen(false)}
+				/>
 				<div className="flex  flex-col  w-full mt-4 mb-12 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
 						<AnimatedSvgButton
