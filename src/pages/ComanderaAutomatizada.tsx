@@ -1559,48 +1559,8 @@ export const ComanderaAutomatizada: React.FC = () => {
       `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-				<button
-					onClick={() => setIsCreateCadetModalOpen(true)}
-					className="bg-black font-coolvetica text-gray-100 px-6 h-20 rounded-xl font-bold mt-4 "
-				>
-					Agregar cadete
-				</button>
 
-				<CreateCadetModal
-					isOpen={isCreateCadetModalOpen}
-					onClose={() => setIsCreateCadetModalOpen(false)}
-				/>
-				<div className="flex flex-col mt-4 mb-8 gap-4 overflow-x-auto">
-					{activeCadetes.map((cadete) => (
-						<div
-							key={cadete.id}
-							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"
-						>
-							<div className="flex items-center mb-2">
-								<div
-									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"}`}
-								></div>
-								<h3 className="text-lg font-semibold">{cadete.name}</h3>
-							</div>
-							{cadete.available ? (
-								<button
-									onClick={() => handleCadeteSalida(cadete)}
-									className="mt-2 px-4 py-1 bg-red-main text-white rounded-full text-sm hover:bg-red-700 transition-colors"
-								>
-									SALIO
-								</button>
-							) : (
-								<button
-									onClick={() => handleCadeteRegreso(cadete)}
-									className="mt-2 px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors"
-								>
-									REGRESO
-								</button>
-							)}
-						</div>
-					))}
-				</div>
-				<div className="flex  flex-col  w-full mt-4 mb-12 gap-y-2">
+				<div className="flex  flex-col  w-full mt-4 mb-4 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
 						<AnimatedSvgButton
 							onToggleSidebar={toggleSidebar}
@@ -1722,6 +1682,47 @@ export const ComanderaAutomatizada: React.FC = () => {
 					showComandas={showComandas}
 					setShowComandas={setShowComandas}
 				/>
+				<button
+					onClick={() => setIsCreateCadetModalOpen(true)}
+					className="bg-black font-coolvetica text-gray-100 px-6 h-20 rounded-xl font-bold  "
+				>
+					Agregar cadete
+				</button>
+
+				<CreateCadetModal
+					isOpen={isCreateCadetModalOpen}
+					onClose={() => setIsCreateCadetModalOpen(false)}
+				/>
+				<div className="flex flex-col mt-4 mb-8 gap-4 overflow-x-auto">
+					{activeCadetes.map((cadete) => (
+						<div
+							key={cadete.id}
+							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"
+						>
+							<div className="flex items-center mb-2">
+								<div
+									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"}`}
+								></div>
+								<h3 className="text-lg font-semibold">{cadete.name}</h3>
+							</div>
+							{cadete.available ? (
+								<button
+									onClick={() => handleCadeteSalida(cadete)}
+									className="mt-2 px-4 py-1 bg-red-main text-white rounded-full text-sm hover:bg-red-700 transition-colors"
+								>
+									SALIO
+								</button>
+							) : (
+								<button
+									onClick={() => handleCadeteRegreso(cadete)}
+									className="mt-2 px-4 py-1 bg-green-500 text-white rounded-full text-sm hover:bg-green-600 transition-colors"
+								>
+									REGRESO
+								</button>
+							)}
+						</div>
+					))}
+				</div>
 
 				<div>
 					<div className="hidden md:flex md:flex-row items-center w-full mb-8 mt-2">
