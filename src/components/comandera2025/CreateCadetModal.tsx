@@ -17,18 +17,18 @@ const CreateCadetModal: React.FC<CreateCadetModalProps> = ({ isOpen, onClose }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('1. Inicio de handleSubmit');
+        // console.log('1. Inicio de handleSubmit');
         setLoading(true);
 
         try {
-            console.log('2. Validando número de teléfono:', phoneNumber);
+            // console.log('2. Validando número de teléfono:', phoneNumber);
             const phoneRegex = /^[0-9]{10}$/;
             if (!phoneRegex.test(phoneNumber)) {
                 throw new Error('El número de teléfono debe tener 10 dígitos');
             }
 
-            console.log('3. Validación de teléfono exitosa, llamando a createCadet');
-            console.log('4. Datos a enviar:', { phoneNumber, name });
+            // console.log('3. Validación de teléfono exitosa, llamando a createCadet');
+            // console.log('4. Datos a enviar:', { phoneNumber, name });
 
             await createCadet(phoneNumber, name);
             console.log('5. Cadete creado exitosamente');
@@ -39,20 +39,20 @@ const CreateCadetModal: React.FC<CreateCadetModalProps> = ({ isOpen, onClose }) 
                 text: `El cadete ${name} ha sido creado exitosamente`
             });
 
-            console.log('6. Limpiando formulario');
+            // console.log('6. Limpiando formulario');
             setPhoneNumber('');
             setName('');
             onClose();
 
         } catch (error) {
-            console.error('Error en handleSubmit:', error);
+            // console.error('Error en handleSubmit:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: error instanceof Error ? error.message : 'Error al crear el cadete'
             });
         } finally {
-            console.log('7. Finalizando proceso');
+            // console.log('7. Finalizando proceso');
             setLoading(false);
         }
     };
