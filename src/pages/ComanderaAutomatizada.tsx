@@ -7,6 +7,7 @@ import { CardComanda } from "../components/comandera/Card/CardComanda";
 import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
+import { listenToActiveCadetes } from "../firebase/comandera2025";
 import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
@@ -94,6 +95,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 	const [selectedDelay, setSelectedDelay] = useState<number>(30);
 	const dispatch = useDispatch();
 	const [sumaTotalPedidos, setSumaTotalPedidos] = useState<number>(0);
+	const [activeCadetes, setActiveCadetes] = useState<CadetData[]>([]);
 	const [sumaTotalEfectivo, setSumaTotalEfectivo] = useState<number>(0);
 	const [hideAssignedGroups, setHideAssignedGroups] = useState(false);
 	// Agregar nuevo estado para pedidos prioritarios automáticos
@@ -158,6 +160,17 @@ export const ComanderaAutomatizada: React.FC = () => {
 	const getVelocidadActual = () => {
 		return velocidadPromedio || VELOCIDAD_PROMEDIO_MOTO;
 	};
+
+	useEffect(() => {
+		const unsubscribe = listenToActiveCadetes((updatedCadetes) => {
+			setActiveCadetes(updatedCadetes);
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -1489,6 +1502,22 @@ export const ComanderaAutomatizada: React.FC = () => {
 					isOpen={isCreateCadetModalOpen}
 					onClose={() => setIsCreateCadetModalOpen(false)}
 				/>
+				<div className="flex flex-row mt-4 mb-8 gap-4 overflow-x-auto">
+					{activeCadetes.map((cadete) => (
+						<div
+							key={cadete.id}
+							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"
+						>
+							<div className="flex items-center mb-2">
+								<div
+									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"
+										}`}
+								></div>
+								<h3 className="text-lg font-semibold">{cadete.name}</h3>
+							</div>
+						</div>
+					))}
+				</div>
 				<div className="flex  flex-col  w-full mt-4 mb-12 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
 						<AnimatedSvgButton
