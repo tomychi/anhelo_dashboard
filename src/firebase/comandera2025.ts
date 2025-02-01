@@ -1,37 +1,31 @@
 // firebase/comandera2025.ts
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc } from 'firebase/firestore';
 
 interface CadetData {
     name: string;
     available: boolean;
     recorridos: any[];
+    lastSession: Date;  // Ya no es null por defecto
 }
 
 export const createCadet = async (phoneNumber: string, name: string): Promise<void> => {
-    console.log('1. Iniciando createCadet con:', { phoneNumber, name });
+    const firestore = getFirestore();
 
-    try {
-        const firestore = getFirestore();
-        console.log('2. Firestore inicializado:', !!firestore);
+    const cadetData: CadetData = {
+        name,
+        available: true,
+        recorridos: [],
+        lastSession: new Date()  // Guardamos la fecha y hora de creación
+    };
 
-        // Formato de los datos del cadete
-        const cadetData: CadetData = {
-            name,
-            available: true,
-            recorridos: []
-        };
-        console.log('3. Datos del cadete preparados:', cadetData);
+    await setDoc(doc(firestore, 'riders2025', phoneNumber), cadetData);
+};
 
-        const cadetDocRef = doc(firestore, 'riders2025', phoneNumber);
-        console.log('4. Referencia del documento creada:', cadetDocRef.path);
+export const updateCadetSession = async (phoneNumber: string): Promise<void> => {
+    const firestore = getFirestore();
+    const cadetRef = doc(firestore, 'riders2025', phoneNumber);
 
-        console.log('5. Intentando escribir en Firestore...');
-        await setDoc(cadetDocRef, cadetData);
-        console.log('6. Cadete creado exitosamente');
-
-    } catch (error) {
-        console.error('Error en createCadet:', error);
-        console.error('Stack trace:', new Error().stack);
-        throw error;
-    }
+    await updateDoc(cadetRef, {
+        lastSession: new Date()
+    });
 };
