@@ -1402,6 +1402,11 @@ export const ComanderaAutomatizada: React.FC = () => {
 	const PhoneNumberInput = ({ value, onAssign, loading, index, activeCadetes }) => {
 		const [selectedCadete, setSelectedCadete] = useState(value || "");
 
+		// Filter for only available cadetes
+		const cadetesEnElLocal = useMemo(() => {
+			return activeCadetes.filter(cadete => cadete.available);
+		}, [activeCadetes]);
+
 		return (
 			<div className="relative flex items-center gap-2 w-full">
 				<div className="flex-1 relative">
@@ -1412,7 +1417,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 						disabled={loading}
 					>
 						<option value="">Seleccione un cadete</option>
-						{activeCadetes.map((cadete) => (
+						{cadetesEnElLocal.map((cadete) => (
 							<option key={cadete.id} value={cadete.name}>
 								{cadete.name}
 							</option>
