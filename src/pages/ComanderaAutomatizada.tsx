@@ -1740,11 +1740,12 @@ export const ComanderaAutomatizada: React.FC = () => {
 					{activeCadetes.map((cadete) => (
 						<div
 							key={cadete.id}
-							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center"
+							className="bg-white shadow-md rounded-lg p-4 flex flex-col items-center w-full"
 						>
 							<div className="flex items-center mb-2">
 								<div
-									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"}`}
+									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"
+										}`}
 								></div>
 								<h3 className="text-lg font-semibold">{cadete.name}</h3>
 							</div>
@@ -1762,6 +1763,60 @@ export const ComanderaAutomatizada: React.FC = () => {
 								>
 									REGRESO
 								</button>
+							)}
+
+							{/* Mostrar recorridos */}
+							{cadete.recorridos && cadete.recorridos.length > 0 && (
+								<div className="mt-4 w-full">
+									<h4 className="font-medium text-gray-700 mb-2">Recorridos de hoy:</h4>
+									{cadete.recorridos.map((recorrido, index) => {
+										let tiempoAcumulado = 0;
+
+										return (
+											<div key={index} className="bg-gray-50 p-3 rounded-lg mb-2 text-sm">
+												<div className="font-medium text-gray-800">
+													Recorrido {index + 1}
+												</div>
+												<div className="text-gray-600 mt-1">
+													<div className="mb-1">
+														Direcciones:
+														{recorrido.detallesPedidos.map((pedido, idx) => {
+															const [horas, minutos] = pedido.hora.split(':').map(Number);
+															const horaBase = new Date();
+															horaBase.setHours(horas, minutos, 0, 0);
+
+															// Usamos el tiempoPercibido específico de cada pedido
+															const horaLlegada = new Date(horaBase.getTime() + (tiempoAcumulado + pedido.tiempoPercibido) * 60000);
+															const horaFormateada = horaLlegada.toLocaleTimeString('es-ES', {
+																hour: '2-digit',
+																minute: '2-digit'
+															});
+
+															// Actualizamos el tiempo acumulado
+															tiempoAcumulado += pedido.tiempoPercibido;
+
+															return (
+																<div key={idx} className="ml-2 text-xs flex justify-between items-center">
+																	<span>• {pedido.direccion.split(',')[0]}</span>
+																	<span className="text-gray-500">
+																		(llegada estimada: {horaFormateada})
+																	</span>
+																</div>
+															);
+														})}
+													</div>
+													<div className="mt-2 text-xs text-gray-500">
+														Regresa a las: {recorrido.horaRegreso}
+													</div>
+													<div className="flex justify-between text-xs text-gray-500 mt-1">
+														<span>Distancia: {recorrido.totalDistance}km</span>
+														<span>Tiempo: {recorrido.totalTime}min</span>
+													</div>
+												</div>
+											</div>
+										);
+									})}
+								</div>
 							)}
 						</div>
 					))}
