@@ -8,7 +8,7 @@ import { NavButtons } from "../components/comandera/NavButtons";
 import CadeteSelect from "../components/Cadet/CadeteSelect";
 
 import CreateCadetModal from "../components/comandera2025/CreateCadetModal";
-import { listenToActiveCadetes, updateCadetRecorridos } from "../firebase/comandera2025";
+import { listenToActiveCadetes, updateCadetRecorridos, updateCadetAvailability, findCadetPhoneByName } from "../firebase/comandera2025";
 import { Unsubscribe } from "firebase/firestore";
 import Sidebar from "../components/comandera/Sidebar";
 import {
@@ -714,6 +714,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 		pedidosPrioritarios,
 		velocidadPromedio,
 	]);
+
 	useEffect(() => {
 		setGruposOptimos(gruposOptimosMemo);
 	}, [gruposOptimosMemo]);
@@ -951,6 +952,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 			}
 		};
 	}, []);
+
 	function sumar30Minutos(hora: string): string {
 		if (!hora) return "";
 		try {
@@ -1179,6 +1181,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 			}
 		}
 	}, [orders]);
+
 	const handleSendToCook = async (index: number, grupo: Grupo) => {
 		setLoadingCook((prev) => ({ ...prev, [index]: true }));
 		try {
@@ -1436,6 +1439,38 @@ export const ComanderaAutomatizada: React.FC = () => {
 		);
 	};
 
+	const handleCadeteSalida = async (cadete: CadetData) => {
+		try {
+			// Buscar el número de teléfono del cadete
+			const phoneNumber = await findCadetPhoneByName(cadete.name);
+
+			if (!phoneNumber) {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: `No se encontró el número de teléfono para ${cadete.name}`,
+				});
+				return;
+			}
+
+			// Actualizar disponibilidad
+			await updateCadetAvailability(phoneNumber, false);
+
+			Swal.fire({
+				icon: 'success',
+				title: 'Cadete Actualizado',
+				text: `${cadete.name} ha salido de servicio`,
+			});
+		} catch (error) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Error',
+				text: 'Hubo un problema al actualizar el cadete',
+			});
+			console.error('Error al actualizar cadete:', error);
+		}
+	};
+
 
 
 
@@ -1513,11 +1548,18 @@ export const ComanderaAutomatizada: React.FC = () => {
 						>
 							<div className="flex items-center mb-2">
 								<div
-									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"
-										}`}
+									className={`w-3 h-3 rounded-full mr-2 ${cadete.available ? "bg-green-500" : "bg-red-500"}`}
 								></div>
 								<h3 className="text-lg font-semibold">{cadete.name}</h3>
 							</div>
+							{cadete.available && (
+								<button
+									onClick={() => handleCadeteSalida(cadete)}
+									className="mt-2 px-4 py-1 bg-red-main text-white rounded-full text-sm hover:bg-red-700 transition-colors"
+								>
+									SALIO
+								</button>
+							)}
 						</div>
 					))}
 				</div>

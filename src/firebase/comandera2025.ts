@@ -110,3 +110,16 @@ export const findCadetPhoneByName = async (name: string): Promise<string | null>
     // Retorna el ID del documento (número de teléfono)
     return cadetesSnapshot.docs[0].id;
 };
+
+export const updateCadetAvailability = async (
+    phoneNumber: string,
+    available: boolean
+): Promise<void> => {
+    const firestore = getFirestore();
+    const cadetRef = doc(firestore, 'riders2025', phoneNumber);
+
+    await updateDoc(cadetRef, {
+        available: available,
+        lastSession: new Date() // Actualizar también la última sesión
+    });
+};
