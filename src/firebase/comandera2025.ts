@@ -51,10 +51,16 @@ export const listenToActiveCadetes = (
             where('lastSession', '<=', endOfDay(new Date()))
         ),
         (snapshot) => {
-            const updatedCadetes = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            })) as CadetData[];
+            const updatedCadetes = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    name: data.name,
+                    available: data.available,
+                    recorridos: data.recorridos,
+                    lastSession: data.lastSession.toDate(),
+                } as CadetData;
+            });
             onCadetesChange(updatedCadetes);
         }
     );
