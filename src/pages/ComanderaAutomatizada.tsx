@@ -1570,7 +1570,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 					isOpen={isCreateCadetModalOpen}
 					onClose={() => setIsCreateCadetModalOpen(false)}
 				/>
-				<div className="flex flex-row mt-4 mb-8 gap-4 overflow-x-auto">
+				<div className="flex flex-col mt-4 mb-8 gap-4 overflow-x-auto">
 					{activeCadetes.map((cadete) => (
 						<div
 							key={cadete.id}
