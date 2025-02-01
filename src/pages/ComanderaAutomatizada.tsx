@@ -1561,9 +1561,9 @@ export const ComanderaAutomatizada: React.FC = () => {
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<button
 					onClick={() => setIsCreateCadetModalOpen(true)}
-					className="bg-red-main text-white px-6 py-2 rounded-lg font-bold mt-4 hover:bg-red-700 transition-colors"
+					className="bg-black font-coolvetica text-gray-100 px-6 h-20 rounded-xl font-bold mt-4 "
 				>
-					CREAR CADETE
+					Agregar cadete
 				</button>
 
 				<CreateCadetModal
