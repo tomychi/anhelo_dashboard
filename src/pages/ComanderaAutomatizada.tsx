@@ -45,6 +45,7 @@ import {
 	Draggable,
 	DropResult,
 } from "react-beautiful-dnd";
+import PhoneSearch from "../components/comandera2025/PhoneSearch";
 
 // Funciones auxiliares seguras
 const getFirstPartOfAddress = (direccion: string | undefined): string => {
@@ -1586,6 +1587,7 @@ export const ComanderaAutomatizada: React.FC = () => {
       `}
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
+				<PhoneSearch orders={orders} />
 
 				<div className="flex  flex-col  w-full mt-4 mb-4 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
