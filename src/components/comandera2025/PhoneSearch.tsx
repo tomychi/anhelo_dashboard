@@ -48,14 +48,14 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     };
 
     return (
-        <div className="relative w-full max-w-2xl">
+        <div className="relative w-full mt-4">
             <div className="relative">
                 <input
                     type="text"
                     placeholder="Buscar por teléfono..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-10 px-4 rounded-full border border-gray-300 focus:outline-none focus:border-black"
+                    className="w-full h-10 px-4 rounded-full bg-gray-100 border-black border-4  focus:outline-none text-xs"
                 />
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
