@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 type PhoneSearchProps = {
     orders: any[];
@@ -8,24 +8,17 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log('Orders prop:', orders);
-        console.log('Search term:', searchTerm);
-
+        // Filter orders based on search term
         if (searchTerm.length >= 3) {
-            console.log('Filtering orders...');
-            if (!orders) {
-                console.log('Orders is undefined!');
-                return;
-            }
+            if (!orders) return;
 
             const filteredOrders = orders.filter(order => {
-                console.log('Checking order:', order);
                 return order.telefono && order.telefono.includes(searchTerm);
             });
 
-            console.log('Filtered orders:', filteredOrders);
             setSearchResults(filteredOrders);
             setShowResults(true);
         } else {
@@ -33,6 +26,32 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
             setShowResults(false);
         }
     }, [searchTerm, orders]);
+
+    useEffect(() => {
+        // Handle click outside
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false);
+            }
+        };
+
+        // Handle scroll
+        const handleScroll = () => {
+            if (showResults) {
+                setShowResults(false);
+            }
+        };
+
+        // Add event listeners
+        document.addEventListener('mousedown', handleClickOutside);
+        window.addEventListener('scroll', handleScroll, true);
+
+        // Cleanup
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            window.removeEventListener('scroll', handleScroll, true);
+        };
+    }, [showResults]);
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('es-AR', {
@@ -48,7 +67,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     };
 
     return (
-        <div className="relative w-full mt-4">
+        <div className="relative w-full mt-4" ref={searchRef}>
             <div className="relative">
                 <input
                     type="text"
