@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { updateOrderCookNow } from '../../firebase/UploadOrder';
 import currencyFormat from "../../helpers/currencyFormat";
-
+import { CardComanda } from "../comandera/Card/CardComanda";
 import _ from 'lodash';
 
 type Order = {
@@ -29,7 +29,8 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchResults, setSearchResults] = useState<Order[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loadingCook, setLoadingCook] = useState<Record<string, boolean>>({});
-    const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const searchRef = useRef<HTMLDivElement>(null);
 
     // Debounce search input
@@ -151,8 +152,6 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         return pedido.cookNow ? "No priorizar" : "Cocinar YA";
     };
 
-
-
     // Highlight matching text with improved normalization
     const highlightMatch = (text: string, searchTerm: string) => {
         if (!searchTerm.trim() || !text) return text;
@@ -209,6 +208,11 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         }));
     };
 
+    const handleViewOrder = (order: Order) => {
+        setSelectedOrder(order);
+        setModalIsOpen(true);
+    };
+
     return (
         <div className="relative w-full mt-4" ref={searchRef}>
             <div className="relative">
@@ -261,10 +265,10 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                     <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Priorizado</span>
                                 )}
                                 <button
-                                    onClick={() => toggleOrderDetails(order.id)}
+                                    onClick={() => handleViewOrder(order)}
                                     className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
                                 >
-                                    {expandedOrders[order.id] ? 'Ocultar pedido' : 'Ver pedido'}
+                                    Ver pedido
                                 </button>
                             </div>
                             {!order.elaborado && (
@@ -290,21 +294,31 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                     )}
                                 </button>
                             )}
-                            {expandedOrders[order.id] && (
-                                <div className="mt-2 p-2 bg-gray-50 rounded">
-                                    <p className="font-medium text-sm mb-1">Detalle del pedido:</p>
-                                    {order.detallePedido.map((item, index) => (
-                                        <p key={index} className="text-sm text-gray-600">
-                                            {item.quantity}x {item.burger}
-                                        </p>
-                                    ))}
-                                </div>
-                            )}
+
                         </div>
                     ))}
                 </div>
             )}
+            {/* Modal para mostrar CardComanda */}
+            {modalIsOpen && selectedOrder && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
+                    <div className="relative bg-white rounded-lg max-w-lg m-4 max-h-[90vh] flex flex-col">
+                        <div className="overflow-y-auto p-6 flex-grow">
+                            <CardComanda {...selectedOrder} />
+                        </div>
+                        <div className="sticky bottom-0 bg-white p-4 border-t">
+                            <button
+                                onClick={() => setModalIsOpen(false)}
+                                className="w-full bg-black text-white px-4 py-2 rounded"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
+
     );
 };
 
