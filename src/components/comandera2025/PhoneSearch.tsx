@@ -149,7 +149,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         if (pedido.elaborado) {
             return "Ya cocinado";
         }
-        return pedido.cookNow ? "No priorizar" : "Cocinar YA";
+        return pedido.cookNow ? "No priorizar" : "Cocinar ya";
     };
 
     // Highlight matching text with improved normalization
