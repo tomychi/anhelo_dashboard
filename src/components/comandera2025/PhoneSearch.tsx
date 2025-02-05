@@ -302,7 +302,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
             {/* Modal para mostrar CardComanda */}
             {modalIsOpen && selectedOrder && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
-                    <div className="relative bg-white rounded-lg max-w-lg m-4 max-h-[90vh] flex flex-col">
+                    <div className="relative bg-white w-full h-full flex flex-col">
                         <div className="overflow-y-auto p-6 flex-grow">
                             <CardComanda {...selectedOrder} />
                         </div>
