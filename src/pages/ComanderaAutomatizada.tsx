@@ -266,8 +266,15 @@ export const ComanderaAutomatizada: React.FC = () => {
 	useEffect(() => {
 		let unsubscribeEmpleados: Unsubscribe | null = null;
 		let unsubscribeOrders: Unsubscribe | null = null;
+		let unsubscribeActiveCadetes: Unsubscribe | null = null;
 
 		const iniciarEscuchas = async () => {
+			// Escucha de cadetes activos
+			unsubscribeActiveCadetes = listenToActiveCadetes((updatedCadetes) => {
+				setActiveCadetes(updatedCadetes);
+			});
+
+			// Escucha de empleados
 			unsubscribeEmpleados = listenToEmpleadosChanges((empleadosActualizados) => {
 				setEmpleados(empleadosActualizados);
 				const cadetesFiltrados = empleadosActualizados
@@ -276,24 +283,24 @@ export const ComanderaAutomatizada: React.FC = () => {
 				setCadetes(cadetesFiltrados);
 			});
 
-			if (location.pathname === "/comandas") {
-				unsubscribeOrders = ReadOrdersForToday(async (pedidos: PedidoProps[]) => {
-					// console.log("Pedidos recibidos:", pedidos); // Agregar este console.log
+			// Escucha de órdenes - IMPORTANTE: Verificar que la ruta sea correcta
+			if (location.pathname === "/comanderaAutomatizada") { // Cambiar esta línea
+				unsubscribeOrders = ReadOrdersForToday((pedidos: PedidoProps[]) => {
+					console.log("Nuevos pedidos recibidos:", pedidos);
 					dispatch(readOrdersData(pedidos));
 				});
 			}
 		};
 
 		iniciarEscuchas();
+
+		// Limpieza al desmontar
 		return () => {
-			if (unsubscribeEmpleados) {
-				unsubscribeEmpleados();
-			}
-			if (unsubscribeOrders) {
-				unsubscribeOrders();
-			}
+			if (unsubscribeEmpleados) unsubscribeEmpleados();
+			if (unsubscribeOrders) unsubscribeOrders();
+			if (unsubscribeActiveCadetes) unsubscribeActiveCadetes();
 		};
-	}, [dispatch, location]);
+	}, [dispatch, location.pathname]); // Añadir location.pathname como dependencia
 
 	const handleCadeteChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nuevoCadeteSeleccionado = event.target.value;
