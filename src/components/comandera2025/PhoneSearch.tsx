@@ -234,20 +234,20 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
             {showResults && searchResults.length > 0 && (
                 <div className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto bg-white shadow-lg rounded-lg border border-gray-200">
                     {searchResults.map((order) => (
-                        <div key={order.id} className="p-4 border-b hover:bg-gray-50">
+                        <div key={order.id} className="px-4 pb-4 pt-2 border-b hover:bg-gray-50">
                             <div className="flex  justify-between items-start">
                                 <div className='w-full '>
-                                    <p className="font-bold">
+                                    <p className="font-bold text-xl">
                                         {highlightMatch(order.telefono, searchTerm)}
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-xs text-gray-600">
                                         {highlightMatch(order.direccion, searchTerm)}
                                     </p>
 
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold">{currencyFormat(order.total)}</p>
-                                    <p className="text-sm text-gray-600">{order.hora}</p>
+                                    <p className="font-bold text-xl">{currencyFormat(order.total)}</p>
+                                    <p className="text-xs text-gray-600">{order.hora}</p>
 
                                 </div>
                             </div>
@@ -275,7 +275,11 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                         handleSendToCook(order);
                                     }}
                                     disabled={loadingCook[order.id]}
-                                    className={`mt-2 w-full h-10 px-4 py-1 rounded-md  text-xs font-bold ${order.cookNow
+
+
+
+
+                                    className={`mt-4 bg-black w-full h-[64px]  text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica${order.cookNow
                                         ? 'bg-gray-300 text-red-main '
                                         : 'bg-black text-gray-100'
                                         } transition-colors whitespace-nowrap`}
