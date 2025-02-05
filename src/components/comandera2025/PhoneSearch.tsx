@@ -27,6 +27,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchResults, setSearchResults] = useState<Order[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loadingCook, setLoadingCook] = useState<Record<string, boolean>>({});
+    const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
     const searchRef = useRef<HTMLDivElement>(null);
 
     // Debounce search input
@@ -210,6 +211,13 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         }
     };
 
+    const toggleOrderDetails = (orderId: string) => {
+        setExpandedOrders(prev => ({
+            ...prev,
+            [orderId]: !prev[orderId]
+        }));
+    };
+
     return (
         <div className="relative w-full mt-4" ref={searchRef}>
             <div className="relative">
@@ -233,33 +241,40 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                 <div className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto bg-white shadow-lg rounded-lg border border-gray-200">
                     {searchResults.map((order) => (
                         <div key={order.id} className="p-4 border-b hover:bg-gray-50">
-                            <div className="flex justify-between items-start">
-                                <div>
+                            <div className="flex  justify-between items-start">
+                                <div className='w-full '>
                                     <p className="font-bold">
                                         {highlightMatch(order.telefono, searchTerm)}
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         {highlightMatch(order.direccion, searchTerm)}
                                     </p>
-                                    <div className="flex gap-2 mt-1">
-                                        {order.elaborado ? (
-                                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Elaborado</span>
-                                        ) : (
-                                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pendiente</span>
-                                        )}
-                                        <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                                            {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
-                                        </span>
-                                        {order.cookNow && !order.elaborado && (
-                                            <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Priorizado</span>
-                                        )}
-                                    </div>
+
                                 </div>
                                 <div className="text-right">
                                     <p className="font-bold">{formatPrice(order.total)}</p>
                                     <p className="text-sm text-gray-600">{order.hora}</p>
 
                                 </div>
+                            </div>
+                            <div className="flex gap-2 mt-1">
+                                {order.elaborado ? (
+                                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Elaborado</span>
+                                ) : (
+                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pendiente</span>
+                                )}
+                                <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                                    {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
+                                </span>
+                                {order.cookNow && !order.elaborado && (
+                                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Priorizado</span>
+                                )}
+                                <button
+                                    onClick={() => toggleOrderDetails(order.id)}
+                                    className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                                >
+                                    {expandedOrders[order.id] ? 'Ocultar pedido' : 'Ver pedido'}
+                                </button>
                             </div>
                             {!order.elaborado && (
                                 <button
@@ -284,13 +299,16 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                     )}
                                 </button>
                             )}
-                            <div className="mt-2">
-                                {order.detallePedido.map((item, index) => (
-                                    <p key={index} className="text-sm text-gray-600">
-                                        {item.quantity}x {item.burger}
-                                    </p>
-                                ))}
-                            </div>
+                            {expandedOrders[order.id] && (
+                                <div className="mt-2 p-2 bg-gray-50 rounded">
+                                    <p className="font-medium text-sm mb-1">Detalle del pedido:</p>
+                                    {order.detallePedido.map((item, index) => (
+                                        <p key={index} className="text-sm text-gray-600">
+                                            {item.quantity}x {item.burger}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
