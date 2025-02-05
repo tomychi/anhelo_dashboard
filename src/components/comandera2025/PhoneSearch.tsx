@@ -201,13 +201,6 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         }
     };
 
-    const toggleOrderDetails = (orderId: string) => {
-        setExpandedOrders(prev => ({
-            ...prev,
-            [orderId]: !prev[orderId]
-        }));
-    };
-
     const handleViewOrder = (order: Order) => {
         setSelectedOrder(order);
         setModalIsOpen(true);
@@ -267,9 +260,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                 <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
                                     {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
                                 </span>
-                                {order.cookNow && !order.elaborado && (
-                                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Priorizado</span>
-                                )}
+
                                 <button
                                     onClick={() => handleViewOrder(order)}
                                     className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
