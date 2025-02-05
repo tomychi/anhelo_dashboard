@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { updateOrderCookNow } from '../../firebase/UploadOrder';
 
 type PhoneSearchProps = {
     orders: any[];
@@ -8,10 +9,10 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const [loadingCook, setLoadingCook] = useState<Record<string, boolean>>({});
     const searchRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        // Filter orders based on search term
         if (searchTerm.length >= 3) {
             if (!orders) return;
 
@@ -28,39 +29,54 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     }, [searchTerm, orders]);
 
     useEffect(() => {
-        // Handle click outside
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
                 setShowResults(false);
             }
         };
 
-        // Handle scroll
         const handleScroll = () => {
             if (showResults) {
                 setShowResults(false);
             }
         };
 
-        // Add event listeners
         document.addEventListener('mousedown', handleClickOutside);
         window.addEventListener('scroll', handleScroll, true);
 
-        // Cleanup
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll, true);
         };
     }, [showResults]);
 
-    const formatPrice = (price) => {
+    const handleSendToCook = async (pedido: any) => {
+        setLoadingCook((prev) => ({ ...prev, [pedido.id]: true }));
+        try {
+            const nuevoEstadoCookNow = !pedido.cookNow;
+            await updateOrderCookNow(pedido.fecha, pedido.id, nuevoEstadoCookNow);
+        } catch (error) {
+            console.error('Error al modificar estado de cocina:', error);
+        } finally {
+            setLoadingCook((prev) => ({ ...prev, [pedido.id]: false }));
+        }
+    };
+
+    const getCookButtonText = (pedido: any): string => {
+        if (pedido.elaborado) {
+            return "Ya cocinado";
+        }
+        return pedido.cookNow ? "No priorizar" : "Cocinar YA";
+    };
+
+    const formatPrice = (price: number) => {
         return new Intl.NumberFormat('es-AR', {
             style: 'currency',
             currency: 'ARS'
         }).format(price);
     };
 
-    const formatAddress = (direccion) => {
+    const formatAddress = (direccion: string) => {
         if (!direccion) return 'Sin dirección';
         const parts = direccion.split(',');
         return parts[0].toLowerCase().charAt(0).toUpperCase() + parts[0].toLowerCase().slice(1);
@@ -103,11 +119,37 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                         <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
                                             {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
                                         </span>
+                                        {order.cookNow && !order.elaborado && (
+                                            <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Priorizado</span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <p className="font-bold">{formatPrice(order.total)}</p>
                                     <p className="text-sm text-gray-600">{order.hora}</p>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSendToCook(order);
+                                        }}
+                                        disabled={order.elaborado || loadingCook[order.id]}
+                                        className={`mt-2 px-4 py-1 rounded-full text-xs font-bold ${order.elaborado
+                                            ? 'bg-gray-200 text-gray-600 cursor-not-allowed'
+                                            : order.cookNow
+                                                ? 'bg-gray-800 text-white hover:bg-gray-700'
+                                                : 'bg-red-main text-white hover:bg-red-600'
+                                            } transition-colors whitespace-nowrap`}
+                                    >
+                                        {loadingCook[order.id] ? (
+                                            <div className="flex items-center justify-center gap-1">
+                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-75"></div>
+                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-150"></div>
+                                            </div>
+                                        ) : (
+                                            getCookButtonText(order)
+                                        )}
+                                    </button>
                                 </div>
                             </div>
                             <div className="mt-2">

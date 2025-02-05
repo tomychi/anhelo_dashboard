@@ -53,6 +53,7 @@ export const CardComanda = ({
 	map,
 	kms,
 	minutosDistancia,
+	cookNow,
 }: CardComandaProps) => {
 	const comanda = {
 		aclaraciones,
@@ -110,6 +111,24 @@ export const CardComanda = ({
   ${bgColor}
    `}
 		>
+			{/* Barra violeta para cookNow */}
+			{cookNow && !elaborado && (
+				<div className="bg-purple-600 flex flex-row justify-center h-20 gap-2 items-center">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						className="h-6 text-white"
+					>
+						<path
+							fillRule="evenodd"
+							clipRule="evenodd"
+							d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
+						/>
+					</svg>
+					<p className="text-2xl font-bold text-white">COCINAR YA</p>
+				</div>
+			)}
 			{envioExpress > 0 ? (
 				<div className="bg-blue-500 flex flex-row justify-center h-20 gap-2 items-center ">
 					<svg

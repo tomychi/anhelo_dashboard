@@ -42,6 +42,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 					pendingOfBeingAccepted,
 					efectivoCantidad,
 					mercadopagoCantidad,
+					cookNow,
 				}) => (
 					<div key={`comanda-${hora}-${id}`}>
 						<CardComanda
@@ -74,6 +75,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 							minutosDistancia={minutosDistancia}
 							envio={envio}
 							cadetes={cadetes}
+							cookNow={cookNow}
 						/>
 					</div>
 				)
