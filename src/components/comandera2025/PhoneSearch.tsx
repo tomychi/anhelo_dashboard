@@ -215,21 +215,27 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
 
     return (
         <div className="relative w-full mt-4" ref={searchRef}>
-            <div className="relative">
+            <div className="flex items-center h-10 gap-1 rounded-lg border-4 border-black focus:ring-0 text-black text-xs font-light">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-6 ml-1.5 mb-0.5"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                </svg>
                 <input
                     type="text"
                     placeholder="Buscar por teléfono o dirección..."
                     onChange={(e) => debouncedSearchTerm(e.target.value)}
-                    className="w-full h-10 px-4 rounded-full bg-gray-100 border-black border-4 focus:outline-none text-xs"
+                    className="w-full bg-transparent outline-none"
                 />
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-5 h-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                >
-                    <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clipRule="evenodd" />
-                </svg>
             </div>
 
             {showResults && searchResults.length > 0 && (
