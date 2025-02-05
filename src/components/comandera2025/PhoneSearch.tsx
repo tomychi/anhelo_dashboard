@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { updateOrderCookNow } from '../../firebase/UploadOrder';
+import currencyFormat from "../../helpers/currencyFormat";
+
 import _ from 'lodash';
 
 type Order = {
@@ -149,18 +151,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         return pedido.cookNow ? "No priorizar" : "Cocinar YA";
     };
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('es-AR', {
-            style: 'currency',
-            currency: 'ARS'
-        }).format(price);
-    };
 
-    const formatAddress = (direccion: string) => {
-        if (!direccion) return 'Sin dirección';
-        const mainPart = direccion.split(',')[0];
-        return mainPart.toLowerCase().charAt(0).toUpperCase() + mainPart.toLowerCase().slice(1);
-    };
 
     // Highlight matching text with improved normalization
     const highlightMatch = (text: string, searchTerm: string) => {
@@ -252,7 +243,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
 
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold">{formatPrice(order.total)}</p>
+                                    <p className="font-bold">{currencyFormat(order.total)}</p>
                                     <p className="text-sm text-gray-600">{order.hora}</p>
 
                                 </div>
