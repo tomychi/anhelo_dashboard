@@ -1,56 +1,137 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { updateOrderCookNow } from '../../firebase/UploadOrder';
+import _ from 'lodash';
+
+type Order = {
+    id: string;
+    telefono: string;
+    direccion: string;
+    total: number;
+    hora: string;
+    elaborado: boolean;
+    cookNow: boolean;
+    cadete: string;
+    detallePedido: Array<{
+        quantity: number;
+        burger: string;
+    }>;
+    fecha: string;
+};
 
 type PhoneSearchProps = {
-    orders: any[];
+    orders: Order[];
 };
 
 const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<Order[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loadingCook, setLoadingCook] = useState<Record<string, boolean>>({});
     const searchRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (searchTerm.length >= 3) {
-            if (!orders) return;
+    // Debounce search input
+    const debouncedSearchTerm = useMemo(
+        () => _.debounce((term: string) => setSearchTerm(term), 300),
+        []
+    );
 
-            const filteredOrders = orders.filter(order => {
-                return order.telefono && order.telefono.includes(searchTerm);
-            });
 
-            setSearchResults(filteredOrders);
-            setShowResults(true);
-        } else {
-            setSearchResults([]);
-            setShowResults(false);
+
+    const cleanAddressForSearch = (fullAddress: string): string => {
+        if (!fullAddress) return '';
+
+        // 1. Convertir a minúsculas y normalizar
+        let address = fullAddress.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+        // 2. Remover códigos postales (X seguido de números)
+        address = address.replace(/x\d+/g, '');
+
+        // 3. Remover partes comunes de la dirección
+        const partsToRemove = [
+            'rio cuarto',
+            'cordoba',
+            'argentina',
+            ', x'  // Para casos donde quedó una coma seguida de x
+        ];
+
+        partsToRemove.forEach(part => {
+            address = address.replace(new RegExp(part, 'gi'), '');
+        });
+
+        // 4. Limpiar comas y espacios múltiples
+        address = address.replace(/\s+/g, ' ')
+            .replace(/,+/g, ',')
+            .replace(/\s*,\s*/g, ',')
+            .trim();
+
+        return address;
+    };
+
+    const filteredOrders = useMemo(() => {
+        if (!orders || !searchTerm.trim()) {
+            return [];
         }
+
+        const isNumericSearch = /\d/.test(searchTerm);
+
+        return orders.filter(order => {
+            if (isNumericSearch) {
+                // Para búsqueda numérica, solo buscar en teléfono
+                const cleanPhone = (order.telefono || '').replace(/\D/g, '');
+                const cleanSearch = searchTerm.replace(/\D/g, '');
+                return cleanPhone.includes(cleanSearch);
+            } else {
+                // Para búsqueda de texto, buscar en la dirección limpia
+                const cleanedAddress = cleanAddressForSearch(order.direccion);
+                const normalizedSearch = searchTerm.toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .trim();
+
+                // Dividir la búsqueda en palabras para buscar cada una
+                const searchWords = normalizedSearch.split(/\s+/);
+
+                // Retornar true solo si todas las palabras de búsqueda están en la dirección
+                return searchWords.every(word => cleanedAddress.includes(word));
+            }
+        });
     }, [searchTerm, orders]);
 
+    // Update search results
     useEffect(() => {
+        setSearchResults(filteredOrders);
+        setShowResults(filteredOrders.length > 0);
+    }, [filteredOrders]);
+
+    // Click outside handler
+    useEffect(() => {
+        if (!showResults) return;
+
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
                 setShowResults(false);
             }
         };
 
-        const handleScroll = () => {
+        const handleScroll = _.throttle(() => {
             if (showResults) {
                 setShowResults(false);
             }
-        };
+        }, 100);
 
         document.addEventListener('mousedown', handleClickOutside);
-        window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
-            window.removeEventListener('scroll', handleScroll, true);
+            window.removeEventListener('scroll', handleScroll);
+            handleScroll.cancel();
         };
     }, [showResults]);
 
-    const handleSendToCook = async (pedido: any) => {
+    const handleSendToCook = async (pedido: Order) => {
         setLoadingCook((prev) => ({ ...prev, [pedido.id]: true }));
         try {
             const nuevoEstadoCookNow = !pedido.cookNow;
@@ -62,7 +143,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         }
     };
 
-    const getCookButtonText = (pedido: any): string => {
+    const getCookButtonText = (pedido: Order): string => {
         if (pedido.elaborado) {
             return "Ya cocinado";
         }
@@ -78,8 +159,57 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
 
     const formatAddress = (direccion: string) => {
         if (!direccion) return 'Sin dirección';
-        const parts = direccion.split(',');
-        return parts[0].toLowerCase().charAt(0).toUpperCase() + parts[0].toLowerCase().slice(1);
+        const mainPart = direccion.split(',')[0];
+        return mainPart.toLowerCase().charAt(0).toUpperCase() + mainPart.toLowerCase().slice(1);
+    };
+
+    // Highlight matching text with improved normalization
+    const highlightMatch = (text: string, searchTerm: string) => {
+        if (!searchTerm.trim() || !text) return text;
+
+        const isNumericSearch = /\d/.test(searchTerm);
+
+        if (isNumericSearch) {
+            const cleanText = text.replace(/\D/g, '');
+            const cleanSearch = searchTerm.replace(/\D/g, '');
+            const index = cleanText.indexOf(cleanSearch);
+
+            if (index === -1) return text;
+
+            return (
+                <>
+                    {text.slice(0, index)}
+                    <span className="bg-yellow-200">
+                        {text.slice(index, index + cleanSearch.length)}
+                    </span>
+                    {text.slice(index + cleanSearch.length)}
+                </>
+            );
+        } else {
+            // Para texto, solo buscar en la parte principal
+            const mainText = text.split(',')[0];
+            const normalizedText = mainText.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+            const normalizedSearchTerm = searchTerm.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
+            const index = normalizedText.indexOf(normalizedSearchTerm);
+
+            if (index === -1) return text;
+
+            return (
+                <>
+                    {mainText.slice(0, index)}
+                    <span className="bg-yellow-200">
+                        {mainText.slice(index, index + searchTerm.length)}
+                    </span>
+                    {mainText.slice(index + searchTerm.length)}
+                    {text.includes(',') ? text.slice(text.indexOf(',')) : ''}
+                </>
+            );
+        }
     };
 
     return (
@@ -87,10 +217,9 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
             <div className="relative">
                 <input
                     type="text"
-                    placeholder="Buscar por teléfono..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full h-10 px-4 rounded-full bg-gray-100 border-black border-4  focus:outline-none text-xs"
+                    placeholder="Buscar por teléfono o dirección..."
+                    onChange={(e) => debouncedSearchTerm(e.target.value)}
+                    className="w-full h-10 px-4 rounded-full bg-gray-100 border-black border-4 focus:outline-none text-xs"
                 />
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -108,8 +237,12 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                         <div key={order.id} className="p-4 border-b hover:bg-gray-50">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="font-bold">{order.telefono}</p>
-                                    <p className="text-sm text-gray-600">{formatAddress(order.direccion)}</p>
+                                    <p className="font-bold">
+                                        {highlightMatch(order.telefono, searchTerm)}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        {highlightMatch(order.direccion, searchTerm)}
+                                    </p>
                                     <div className="flex gap-2 mt-1">
                                         {order.elaborado ? (
                                             <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Elaborado</span>
