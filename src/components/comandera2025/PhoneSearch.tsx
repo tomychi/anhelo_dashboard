@@ -35,8 +35,6 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         []
     );
 
-
-
     const cleanAddressForSearch = (fullAddress: string): string => {
         if (!fullAddress) return '';
 
@@ -260,31 +258,32 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                 <div className="text-right">
                                     <p className="font-bold">{formatPrice(order.total)}</p>
                                     <p className="text-sm text-gray-600">{order.hora}</p>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleSendToCook(order);
-                                        }}
-                                        disabled={order.elaborado || loadingCook[order.id]}
-                                        className={`mt-2 px-4 py-1 rounded-full text-xs font-bold ${order.elaborado
-                                            ? 'bg-gray-200 text-gray-600 cursor-not-allowed'
-                                            : order.cookNow
-                                                ? 'bg-gray-800 text-white hover:bg-gray-700'
-                                                : 'bg-red-main text-white hover:bg-red-600'
-                                            } transition-colors whitespace-nowrap`}
-                                    >
-                                        {loadingCook[order.id] ? (
-                                            <div className="flex items-center justify-center gap-1">
-                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
-                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-75"></div>
-                                                <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-150"></div>
-                                            </div>
-                                        ) : (
-                                            getCookButtonText(order)
-                                        )}
-                                    </button>
+
                                 </div>
                             </div>
+                            {!order.elaborado && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSendToCook(order);
+                                    }}
+                                    disabled={loadingCook[order.id]}
+                                    className={`mt-2 w-full h-10 px-4 py-1 rounded-md  text-xs font-bold ${order.cookNow
+                                        ? 'bg-gray-300 text-red-main '
+                                        : 'bg-black text-gray-100'
+                                        } transition-colors whitespace-nowrap`}
+                                >
+                                    {loadingCook[order.id] ? (
+                                        <div className="flex items-center justify-center gap-1">
+                                            <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                                            <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-75"></div>
+                                            <div className="w-1 h-1 bg-white rounded-full animate-pulse delay-150"></div>
+                                        </div>
+                                    ) : (
+                                        getCookButtonText(order)
+                                    )}
+                                </button>
+                            )}
                             <div className="mt-2">
                                 {order.detallePedido.map((item, index) => (
                                     <p key={index} className="text-sm text-gray-600">
