@@ -261,7 +261,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                 {order.elaborado ? (
                                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Elaborado</span>
                                 ) : (
-                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pendiente</span>
+                                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">No elaborado</span>
                                 )}
                                 <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
                                     {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
