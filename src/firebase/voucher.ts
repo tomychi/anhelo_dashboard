@@ -333,9 +333,9 @@ export const calcularEstadisticasPedidos = (
 		promedioDescuento:
 			pedidosConCupon.length > 0
 				? pedidosConCupon.reduce(
-						(sum, pedido) => sum + (pedido.subTotal - pedido.total),
-						0
-				  ) / pedidosConCupon.length
+					(sum, pedido) => sum + (pedido.subTotal - pedido.total),
+					0
+				) / pedidosConCupon.length
 				: 0,
 		estadisticasClientes: {
 			totalClientesUnicos: clientesUnicos.size,
@@ -452,6 +452,7 @@ export interface VoucherTituloConFecha {
 	canjeados: number;
 	usados: number;
 	creados: number;
+	group?: string;
 	codigos: {
 		codigo: string;
 		estado: string;
@@ -478,6 +479,8 @@ export const obtenerTitulosVouchers = async (): Promise<
 				usados: data.usados,
 				creados: data.creados,
 				codigos: data.codigos,
+				group: data.group
+
 			});
 		});
 

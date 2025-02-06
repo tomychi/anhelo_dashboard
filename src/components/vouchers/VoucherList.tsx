@@ -206,9 +206,8 @@ const VoucherModal = ({
 	return (
 		<div className="fixed inset-0 z-50 flex items-end justify-center">
 			<div
-				className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-					isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-				}`}
+				className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+					}`}
 				style={{
 					opacity: Math.max(0, 1 - currentTranslate / 400),
 				}}
@@ -217,9 +216,8 @@ const VoucherModal = ({
 
 			<div
 				ref={modalRef}
-				className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
-					isAnimating ? "translate-y-0" : "translate-y-full"
-				}`}
+				className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${isAnimating ? "translate-y-0" : "translate-y-full"
+					}`}
 				style={{
 					transform: `translateY(${currentTranslate}px)`,
 				}}
@@ -257,9 +255,8 @@ const VoucherModal = ({
 						<div className="w-2/5">
 							<h2 className="text-xs">
 								{clickPositions.length < numCodes
-									? `Haz clic en la imagen para elegir la ubicación del código ${
-											clickPositions.length + 1
-									  } de ${numCodes}`
+									? `Haz clic en la imagen para elegir la ubicación del código ${clickPositions.length + 1
+									} de ${numCodes}`
 									: "Todas las posiciones seleccionadas. Haz clic de nuevo para cambiarlas."}
 							</h2>
 							{clickPositions.length > 0 && (
@@ -275,11 +272,10 @@ const VoucherModal = ({
 					<button
 						onClick={generateVoucherPDF}
 						disabled={clickPositions.length !== numCodes || loading}
-						className={`font-bold rounded-lg text-center h-20 mt-4 text-xl text-gray-100 ${
-							clickPositions.length === numCodes
-								? "bg-black hover:bg-gray-800"
-								: "bg-gray-400"
-						} w-full transition-colors`}
+						className={`font-bold rounded-lg text-center h-20 mt-4 text-xl text-gray-100 ${clickPositions.length === numCodes
+							? "bg-black hover:bg-gray-800"
+							: "bg-gray-400"
+							} w-full transition-colors`}
 					>
 						{loading ? (
 							<div className="flex justify-center w-full items-center">
@@ -330,6 +326,26 @@ export const VoucherList = () => {
 			try {
 				const titles = await obtenerTitulosVouchers();
 				setVoucherTitles(titles);
+
+				const groupedCampaigns = titles.reduce((acc, voucher) => {
+					if (voucher.group) {
+						if (!acc[voucher.group]) {
+							acc[voucher.group] = {
+								totalUsados: 0,
+								totalCreados: 0,
+								vouchers: []
+							};
+						}
+						acc[voucher.group].totalUsados += voucher.codigos
+							? voucher.codigos.filter((c) => c.estado === "usado").length
+							: 0;
+						acc[voucher.group].totalCreados += voucher.creados || 0;
+						acc[voucher.group].vouchers.push(voucher.titulo);
+					}
+					return acc;
+				}, {});
+
+				console.log("=== CAMPAÑAS AGRUPADAS ===", groupedCampaigns);
 			} catch (error) {
 				console.error("Error al obtener los títulos de vouchers:", error);
 			} finally {
@@ -496,111 +512,100 @@ export const VoucherList = () => {
 	const currentUserEmail = projectAuth.currentUser?.email;
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
+
+
 	return (
 		<div className="font-coolvetica">
 			<table className="w-full text-xs text-left text-black">
 				<thead className="text-black border-b h-10">
 					<tr>
-						<th scope="col" className="pl-4 w-3/12">
-							Campaña
-						</th>
-						<th scope="col" className="pl-4 w-1/12">
-							Fecha
-						</th>
-						<th scope="col" className="pl-4 w-1/12">
-							Canjeados
-						</th>
-						<th scope="col" className="pl-4 w-1/12">
-							Entregados / Creados
-						</th>
+						<th scope="col" className="pl-4 w-3/12">Campaña</th>
+						<th scope="col" className="pl-4 w-1/12">Fecha</th>
+						<th scope="col" className="pl-4 w-1/12">Canjeados</th>
+						<th scope="col" className="pl-4 w-1/12">Entregados / Creados</th>
 						<th scope="col" className="w-2/12"></th>
 					</tr>
 				</thead>
 				<tbody>
 					{loading ? (
-						Array.from({ length: 8 }).map((_, index) => (
-							<TableLoadingRow key={index} />
-						))
+						Array.from({ length: 8 }).map((_, index) => <TableLoadingRow key={index} />)
 					) : voucherTitles.length > 0 ? (
 						voucherTitles.map((t, index) => {
-							const usedCount = t.codigos
-								? t.codigos.filter((c) => c.estado === "usado").length
-								: 0;
+							const usedCount = t.codigos ? t.codigos.filter((c) => c.estado === "usado").length : 0;
 							const percentage = calculatePercentage(usedCount, t.usados);
 
+							if (t.group) {
+								const isFirstInGroup = index === 0 || t.group !== voucherTitles[index - 1].group;
+								if (!isFirstInGroup) return null;
+
+								const groupTitles = voucherTitles.filter(v => v.group === t.group);
+								const groupUsedCount = groupTitles.reduce((total, v) =>
+									total + (v.codigos ? v.codigos.filter(c => c.estado === "usado").length : 0), 0);
+								const groupCreatedCount = groupTitles.reduce((total, v) => total + (v.creados || 0), 0);
+								const groupPercentage = calculatePercentage(groupUsedCount, groupCreatedCount);
+
+								return (
+									<tr key={t.group} className="text-black border font-light h-10 border-black border-opacity-20">
+										<td className="w-3/12 font-light pl-4">{t.group}</td>
+										<td className="w-1/12 pl-4 font-light">{formatearFecha(t.fecha)}</td>
+										<td className="w-1/12 pl-4 font-light">
+											<div className="flex flex-row items-center gap-2">
+												<p>{groupUsedCount}</p>
+												<p className={`flex flex-row rounded-full h-6 px-2 items-center text-gray-100 font-bold ${getUsageColor(groupUsedCount, groupCreatedCount)}`}>
+													{groupPercentage}
+												</p>
+											</div>
+										</td>
+										<td className="w-1/12 pl-4 font-light">
+											{groupCreatedCount} / {groupCreatedCount}
+										</td>
+										<td className="w-1/12 pl-4 pr-4">
+											<NavLink to={`/campañaDetalle/${t.titulo}`} state={{ campaignData: t }}>
+												<p className="text-5xl h-6 mb-10">...</p>
+											</NavLink>
+										</td>
+									</tr>
+								);
+							}
+
 							return (
-								<tr
-									key={index}
-									className="text-black border font-light h-10 border-black border-opacity-20"
-								>
+								<tr key={index} className="text-black border font-light h-10 border-black border-opacity-20">
 									<td className="w-3/12 font-light pl-4">{t.titulo}</td>
-									<td className="w-1/12 pl-4 font-light">
-										{formatearFecha(t.fecha)}
-									</td>
+									<td className="w-1/12 pl-4 font-light">{formatearFecha(t.fecha)}</td>
 									<td className="w-1/12 pl-4 font-light">
 										<div className="flex flex-row items-center gap-2">
 											<p className="">{usedCount}</p>
-											<p
-												className={`flex flex-row rounded-full h-6 px-2 items-center text-gray-100 font-bold ${getUsageColor(
-													usedCount,
-													t.usados
-												)}`}
-											>
+											<p className={`flex flex-row rounded-full h-6 px-2 items-center text-gray-100 font-bold ${getUsageColor(usedCount, t.usados)}`}>
 												{percentage}
 											</p>
 										</div>
 									</td>
-									<td
-										className="w-1/12 pl-4 font-light cursor-pointer"
-										onClick={() => {
-											const nuevaCantidadUsados = prompt(
-												"Ingrese la nueva cantidad de vouchers usados:"
-											);
-											if (nuevaCantidadUsados !== null) {
-												actualizarVouchersUsados(
-													t.titulo,
-													parseInt(nuevaCantidadUsados, 10)
-												);
-											}
-										}}
+									<td className="w-1/12 pl-4 font-light cursor-pointer" onClick={() => {
+										const nuevaCantidadUsados = prompt("Ingrese la nueva cantidad de vouchers usados:");
+										if (nuevaCantidadUsados !== null) {
+											actualizarVouchersUsados(t.titulo, parseInt(nuevaCantidadUsados, 10));
+										}
+									}}
 									>
 										{t.usados} / {t.creados}
 									</td>
 									{isMarketingUser ? (
 										<td className="w-1/12 pl-4 pr-4">
-											<button
-												onClick={() => handleVoucherSelect(t.titulo)}
-												className="flex justify-end w-full"
-											>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 24 24"
-													fill="currentColor"
-													className="h-6 text-black"
-												>
-													<path
-														fillRule="evenodd"
-														d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z"
-														clipRule="evenodd"
-													/>
+											<button onClick={() => handleVoucherSelect(t.titulo)} className="flex justify-end w-full">
+												<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 text-black">
+													<path fillRule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z" clipRule="evenodd" />
 												</svg>
 											</button>
 										</td>
 									) : (
-										<NavLink
-											to={`/campañaDetalle/${t.titulo}`}
-											state={{ campaignData: t }}
-											className="w-1/12 pl-4 pr-4 h-6 flex items-center"
-										>
+										<NavLink to={`/campañaDetalle/${t.titulo}`} state={{ campaignData: t }} className="w-1/12 pl-4 pr-4 h-6 flex items-center">
 											<p className="text-5xl h-6 mb-10">...</p>
 										</NavLink>
 									)}
 								</tr>
 							);
 						})
-					) : (
-						<></>
-					)}
+					) : <></>}
 				</tbody>
 			</table>
 
