@@ -19,7 +19,7 @@ export const CardComdandaBody = ({
 		<div className="mt-8">
 			{message && (
 				<div className="w-full bg-blue-100 p-2 rounded-md mb-2">
-					<p className="text-blue-600 text-center font-medium">{message}</p>
+					<p className="text-blue-600 text-center font-medium">El cliente acepto pedir despues de este mensaje: <br /> {message}</p>
 				</div>
 			)}
 			{aclaraciones && (
