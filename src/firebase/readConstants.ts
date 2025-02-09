@@ -13,6 +13,7 @@ export interface AltaDemandaProps {
 	delayMinutes: number;
 	highDemandStartTime: Date;
 	isHighDemand: boolean;
+	message: string;
 }
 
 // Función para leer una sola vez
@@ -49,23 +50,25 @@ export const readAltaDemanda = async (): Promise<AltaDemandaProps | null> => {
 export const listenToAltaDemanda = (
 	callback: (altaDemanda: AltaDemandaProps) => void
 ): Unsubscribe => {
-	// console.log("Iniciando escucha de cambios en Alta Demanda...");
+	console.log("1. Iniciando escucha de Alta Demanda");
 	const firestore = getFirestore();
 	const docRef = doc(firestore, "constantes", "altaDemanda");
 
 	return onSnapshot(
 		docRef,
 		(docSnap) => {
+			console.log("2. Snapshot recibido");
 			if (docSnap.exists()) {
 				const data = docSnap.data();
-				// console.log("Cambios detectados en Alta Demanda:", data);
+				console.log("3. Datos del snapshot:", data);
 
-				// Si no hay alta demanda activa o falta highDemandStartTime
 				if (!data.isHighDemand || !data.highDemandStartTime) {
+					console.log("4. Alta demanda no activa o sin tiempo de inicio");
 					callback({
 						delayMinutes: 0,
-						highDemandStartTime: new Date(), // fecha actual como fallback
+						highDemandStartTime: new Date(),
 						isHighDemand: false,
+						message: data.message || ""  // Incluir mensaje aquí
 					});
 					return;
 				}
@@ -74,18 +77,21 @@ export const listenToAltaDemanda = (
 					delayMinutes: data.delayMinutes,
 					highDemandStartTime: data.highDemandStartTime.toDate(),
 					isHighDemand: data.isHighDemand,
+					message: data.message || ""  // Incluir mensaje aquí
 				});
+				console.log("5. Callback ejecutado con éxito");
 			} else {
-				console.log("El documento de Alta Demanda no existe");
+				console.log("6. Documento no existe");
 				callback({
 					delayMinutes: 0,
 					highDemandStartTime: new Date(),
 					isHighDemand: false,
+					message: ""  // Valor por defecto
 				});
 			}
 		},
 		(error) => {
-			console.error("Error en la escucha de Alta Demanda:", error);
+			console.error("7. Error en listener:", error);
 		}
 	);
 };
@@ -130,6 +136,30 @@ export const deactivateHighDemand = async (): Promise<void> => {
 		console.log("Alta Demanda desactivada exitosamente");
 	} catch (error) {
 		console.error("Error al desactivar Alta Demanda:", error);
+		throw error;
+	}
+};
+
+export const updateAltaDemandaMessage = async (message: string): Promise<void> => {
+	console.log("1. Iniciando actualización del mensaje de Alta Demanda...");
+	console.log("2. Mensaje a actualizar:", message);
+
+	const firestore = getFirestore();
+	console.log("3. Firestore obtenido");
+
+	try {
+		const docRef = doc(firestore, "constantes", "altaDemanda");
+		console.log("4. Referencia al documento creada:", docRef);
+
+		console.log("5. Intentando actualizar el documento con mensaje:", message);
+		await updateDoc(docRef, {
+			message: message
+		});
+		console.log("6. Mensaje actualizado exitosamente");
+	} catch (error) {
+		console.error("7. Error detallado al actualizar mensaje:", error);
+		console.error("8. Tipo de error:", typeof error);
+		console.error("9. Stack trace:", error.stack);
 		throw error;
 	}
 };

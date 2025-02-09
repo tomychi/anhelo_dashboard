@@ -22,6 +22,7 @@ import {
 	AltaDemandaProps,
 	updateAltaDemanda,
 	deactivateHighDemand,
+	updateAltaDemandaMessage
 } from "../firebase/readConstants";
 import { ReadOrdersForToday } from "../firebase/ReadData";
 import { PedidoProps } from "../types/types";
@@ -131,6 +132,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 	const [modoAgrupacion, setModoAgrupacion] = useState<"entrega" | "recorrido">(
 		"entrega"
 	);
+	const [altaDemandaMessage, setAltaDemandaMessage] = useState<string>("");
 	const [tiempoActual, setTiempoActual] = useState<Date>(new Date());
 	const [isCreateCadetModalOpen, setIsCreateCadetModalOpen] = useState(false);
 	const [gruposListos, setGruposListos] = useState<Grupo[]>([]);
@@ -1538,9 +1540,42 @@ export const ComanderaAutomatizada: React.FC = () => {
 		}
 	};
 
+	useEffect(() => {
+		if (altaDemanda) {
+			setAltaDemandaMessage(altaDemanda.message || "");
+		}
+	}, [altaDemanda]);
 
+	const handleMessageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log("1. Iniciando handleMessageChange");
+		console.log("2. Valor actual del input:", e.target.value);
+		console.log("3. Estado actual de altaDemanda:", altaDemanda);
 
+		try {
+			console.log("4. Intentando actualizar mensaje...");
+			await updateAltaDemandaMessage(e.target.value);
+			console.log("5. Mensaje actualizado correctamente");
 
+			setAltaDemandaMessage(e.target.value);
+			console.log("6. Estado local actualizado");
+
+			Swal.fire({
+				icon: "success",
+				title: "Mensaje Actualizado",
+				text: "El mensaje ha sido actualizado exitosamente",
+				showConfirmButton: false,
+				timer: 1500
+			});
+			console.log("7. Alerta de éxito mostrada");
+		} catch (error) {
+			console.error("8. Error en handleMessageChange:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "No se pudo actualizar el mensaje: " + error.message
+			});
+		}
+	};
 
 
 
@@ -1595,6 +1630,27 @@ export const ComanderaAutomatizada: React.FC = () => {
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<PhoneSearch orders={orders} />
+
+				<div className="mt-4 mb-4">
+					<div className="relative">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+						>
+							<path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
+						</svg>
+						<input
+							type="text"
+							value={altaDemandaMessage}
+							onChange={(e) => setAltaDemandaMessage(e.target.value)}
+							onBlur={handleMessageChange}
+							placeholder="Mensaje de alta demanda..."
+							className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-main focus:border-transparent"
+						/>
+					</div>
+				</div>
 
 				<div className="flex  flex-col  w-full mt-4 mb-4 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
