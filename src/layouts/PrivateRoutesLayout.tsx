@@ -1,6 +1,6 @@
 import { Outlet, useLocation, Navigate, Route, Routes } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
-import { Comandera, Dashboard, Equipo } from "../pages";
+import { Comandera, ComanderaAutomatizada, Dashboard, Equipo } from "../pages";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
@@ -61,6 +61,7 @@ export const PrivateRoutesLayout = () => {
 	return (
 		<Routes>
 			<Route path="/comandas" element={<Comandera />} />
+			<Route path="/comanderaAutomatizada" element={<ComanderaAutomatizada />} />
 			<Route path="/*" element={<Navigate to="/comandas" />} />
 		</Routes>
 	);
