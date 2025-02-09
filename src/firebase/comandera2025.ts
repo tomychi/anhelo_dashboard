@@ -10,7 +10,6 @@ import {
     getDocs,
     arrayUnion,
     getDoc,
-    writeBatch
 } from 'firebase/firestore';
 import { startOfDay, endOfDay } from 'date-fns';
 import { CadetData, RecorridoData } from '../types/comandera2025types';

@@ -19,6 +19,8 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 					direccion,
 					elaborado,
 					envio,
+					message,
+
 					envioExpress,
 					fecha,
 					hora,
@@ -47,6 +49,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 					<div key={`comanda-${hora}-${id}`}>
 						<CardComanda
 							aclaraciones={aclaraciones}
+							message={message}
 							direccion={direccion}
 							hora={hora}
 							envioExpress={envioExpress}

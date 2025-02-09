@@ -37,10 +37,11 @@ export interface PedidoProps {
 	map: [number, number];
 	kms: number;
 	minutosDistancia: number;
-  canceled?: string;
-  pendingOfBeingAccepted?: boolean;
+	canceled?: string;
+	pendingOfBeingAccepted?: boolean;
 
 	cerca?: boolean;
+	message?: string;
 	rating?: Rating;
 }
 

@@ -39,6 +39,7 @@ export const CardComanda = ({
 	total,
 	efectivoCantidad,
 	mercadopagoCantidad,
+	message,
 	referencias,
 	id,
 	ubicacion,
@@ -66,6 +67,8 @@ export const CardComanda = ({
 		hora,
 		metodoPago,
 		subTotal,
+		message,
+
 		paid,
 		telefono,
 		total,
@@ -170,6 +173,7 @@ export const CardComanda = ({
 					efectivoCantidad={efectivoCantidad}
 					mercadopagoCantidad={mercadopagoCantidad}
 					user={user}
+
 					id={id}
 					fecha={fecha}
 					paid={paid}
@@ -187,6 +191,8 @@ export const CardComanda = ({
 				/>
 				<CardComdandaBody
 					aclaraciones={aclaraciones}
+					message={message}
+
 					detallePedido={detallePedido}
 				/>
 				<CardComandaFooter user={user} comanda={comanda} />

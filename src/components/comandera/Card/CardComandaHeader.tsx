@@ -25,9 +25,6 @@ export const CardComandaHeader = ({
   entregado,
   tiempoEntregado,
 }: CardComandaHeaderProps) => {
-  // Convertir los tiempos a minutos y calcular la diferencia
-
-  // si existe tiempoEntregado
 
   if (tiempoEntregado === undefined) {
     tiempoEntregado = '00:00';
@@ -111,6 +108,8 @@ export const CardComandaHeader = ({
             )}
           </div>
         )}
+
+
 
         {user.email === 'cadetes@anhelo.com' ? null : (
           <>
