@@ -52,6 +52,7 @@ export const PrivateRoutesLayout = () => {
 		return (
 			<Routes>
 				<Route path="/comandas" element={<Comandera />} />
+				<Route path="/comanderaAutomatizada" element={<ComanderaAutomatizada />} />
 				<Route path="/*" element={<Navigate to="/comandas" />} />
 			</Routes>
 		);
