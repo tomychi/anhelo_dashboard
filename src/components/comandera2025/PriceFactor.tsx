@@ -74,7 +74,7 @@ const PriceFactor = () => {
                     </div>
 
                     <div className="text-sm text-gray-600">
-                        Ventas reales: {totalProductosVendidos} / {VENTAS_MAXIMAS}
+                        Ventas: {totalProductosVendidos} / {VENTAS_MAXIMAS}
                     </div>
 
                     {/* <div className="w-full max-w-md">
