@@ -50,8 +50,8 @@ const PriceFactor = () => {
                 <button
                     onClick={() => setIsActive(!isActive)}
                     className={`px-6 py-2 rounded-full font-bold transition-colors ${isActive
-                            ? 'bg-red-main text-white hover:bg-red-700'
-                            : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                        ? 'bg-red-main text-white hover:bg-red-700'
+                        : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                         }`}
                 >
                     {isActive ? 'Desactivar' : 'Activar'} Dynamic Pricing
@@ -77,7 +77,7 @@ const PriceFactor = () => {
                         Ventas reales: {totalProductosVendidos} / {VENTAS_MAXIMAS}
                     </div>
 
-                    <div className="w-full max-w-md">
+                    {/* <div className="w-full max-w-md">
                         <div className="bg-white p-4 rounded-lg shadow">
                             <h3 className="font-bold mb-2">Incrementos de precio (curva suave)</h3>
                             <div className="grid grid-cols-2 gap-2 text-sm">
@@ -88,7 +88,7 @@ const PriceFactor = () => {
                                 <div>250 ventas: +{(calcularFactor(250) - 1) * 100}%</div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </>
             )}
         </div>
