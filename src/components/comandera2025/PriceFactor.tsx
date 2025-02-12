@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { getFirestore, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 
-// Simulación de datos de ventas
-const FAKE_DB = {
-    ventasHoy: 0,
-    ventasMinimas: 100,
-    ventasMaximas: 250,
-    factores: {
-        base: 1.0,
-        nivel1: 1.05, // >50 productos
-        nivel2: 1.07, // >100 productos
-        nivel3: 1.09, // >150 productos
-        nivel4: 1.11, // >200 productos
-    }
-};
+const VENTAS_MAXIMAS = 250;
 
 const PriceFactor = () => {
     const [isActive, setIsActive] = useState(false);
     const [currentFactor, setCurrentFactor] = useState(1.0);
     const [fakeVentas, setFakeVentas] = useState(0);
+
+    // Función para calcular el factor con curva suave
+    const calcularFactor = (ventas: number) => {
+        const porcentajeAvance = ventas / VENTAS_MAXIMAS;
+        const factorIncremento = Math.pow(porcentajeAvance, 0.8) * 0.11; // máximo 11%
+        return Math.ceil((1 + factorIncremento) * 100) / 100; // Redondear a 2 decimales
+    };
 
     // Simular ventas cuando está activo
     useEffect(() => {
@@ -26,33 +21,24 @@ const PriceFactor = () => {
         if (isActive) {
             interval = setInterval(() => {
                 setFakeVentas(prev => {
-                    if (prev >= FAKE_DB.ventasMaximas) {
+                    if (prev >= VENTAS_MAXIMAS) {
                         clearInterval(interval);
                         return prev;
                     }
                     return prev + 1;
                 });
-            }, 500); // Incrementa cada 500ms para simulación
+            }, 500);
         } else {
             setFakeVentas(0);
         }
         return () => clearInterval(interval);
     }, [isActive]);
 
-    // Calcular factor basado en ventas
+    // Actualizar factor basado en ventas
     useEffect(() => {
-        const calcularFactor = () => {
-            if (fakeVentas > 200) return FAKE_DB.factores.nivel4;
-            if (fakeVentas > 150) return FAKE_DB.factores.nivel3;
-            if (fakeVentas > 100) return FAKE_DB.factores.nivel2;
-            if (fakeVentas > 50) return FAKE_DB.factores.nivel1;
-            return FAKE_DB.factores.base;
-        };
-
-        const nuevoFactor = calcularFactor();
+        const nuevoFactor = calcularFactor(fakeVentas);
         setCurrentFactor(nuevoFactor);
 
-        // Aquí iría la actualización a Firebase
         const updateFirebaseFactor = async () => {
             try {
                 const firestore = getFirestore();
@@ -70,15 +56,11 @@ const PriceFactor = () => {
         }
     }, [fakeVentas]);
 
-    const togglePriceFactor = () => {
-        setIsActive(!isActive);
-    };
-
     return (
         <div className="flex flex-col items-center gap-4 bg-gray-100 p-4 rounded-lg">
             <div className="flex items-center gap-4">
                 <button
-                    onClick={togglePriceFactor}
+                    onClick={() => setIsActive(!isActive)}
                     className={`px-6 py-2 rounded-full font-bold transition-colors ${isActive
                             ? 'bg-red-main text-white hover:bg-red-700'
                             : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
@@ -89,38 +71,38 @@ const PriceFactor = () => {
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-medium">Factor actual:</span>
                     <span className="text-lg font-bold text-red-main">
-                        x{currentFactor.toFixed(2)}
+                        x{currentFactor.toFixed(2)} (+{((currentFactor - 1) * 100).toFixed(1)}%)
                     </span>
                 </div>
             </div>
 
             {isActive && (
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                        className="bg-red-main h-2.5 rounded-full transition-all duration-500"
-                        style={{ width: `${(fakeVentas / FAKE_DB.ventasMaximas) * 100}%` }}
-                    ></div>
-                </div>
+                <>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                            className="bg-red-main h-2.5 rounded-full transition-all duration-500"
+                            style={{ width: `${(fakeVentas / VENTAS_MAXIMAS) * 100}%` }}
+                        ></div>
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                        Ventas simuladas: {fakeVentas} / {VENTAS_MAXIMAS}
+                    </div>
+
+                    <div className="w-full max-w-md">
+                        <div className="bg-white p-4 rounded-lg shadow">
+                            <h3 className="font-bold mb-2">Incrementos de precio (curva suave)</h3>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div>50 ventas: +{(calcularFactor(50) - 1) * 100}%</div>
+                                <div>100 ventas: +{(calcularFactor(100) - 1) * 100}%</div>
+                                <div>150 ventas: +{(calcularFactor(150) - 1) * 100}%</div>
+                                <div>200 ventas: +{(calcularFactor(200) - 1) * 100}%</div>
+                                <div>250 ventas: +{(calcularFactor(250) - 1) * 100}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </>
             )}
-
-            <div className="text-sm text-gray-600">
-                Ventas simuladas: {fakeVentas} / {FAKE_DB.ventasMaximas}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-sm w-full max-w-md">
-                <div className="bg-white p-2 rounded shadow">
-                    <span className="font-medium">{">"} 50 productos:</span> x1.05
-                </div>
-                <div className="bg-white p-2 rounded shadow">
-                    <span className="font-medium">{">"} 100 productos:</span> x1.07
-                </div>
-                <div className="bg-white p-2 rounded shadow">
-                    <span className="font-medium">{">"} 150 productos:</span> x1.09
-                </div>
-                <div className="bg-white p-2 rounded shadow">
-                    <span className="font-medium">{">"} 200 productos:</span> x1.11
-                </div>
-            </div>
         </div>
     );
 };
