@@ -57,11 +57,11 @@ export const Dashboard: React.FC = () => {
 	// Calculate delivery and takeaway counts
 	const deliveryCount = orders.filter(
 		(order) => order.deliveryMethod === "delivery" && !order.canceled
-	  ).length;
-	  
-	  const takeawayCount = orders.filter(
+	).length;
+
+	const takeawayCount = orders.filter(
 		(order) => order.deliveryMethod === "takeaway" && !order.canceled
-	  ).length;
+	).length;
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -142,7 +142,7 @@ export const Dashboard: React.FC = () => {
 					const averageRating =
 						ratings.length > 0
 							? ratings.reduce((sum, rating) => sum + rating, 0) /
-							  ratings.length
+							ratings.length
 							: 0;
 
 					console.log(`Burger: ${burgerName}`);
@@ -155,8 +155,7 @@ export const Dashboard: React.FC = () => {
 						`├── Promedio de calificaciones: ${averageRating.toFixed(1)}`
 					);
 					console.log(
-						`├── Todas las calificaciones: ${
-							ratings.length > 0 ? ratings.join(", ") : "Sin calificaciones"
+						`├── Todas las calificaciones: ${ratings.length > 0 ? ratings.join(", ") : "Sin calificaciones"
 						}`
 					);
 					console.log(
@@ -388,65 +387,65 @@ export const Dashboard: React.FC = () => {
 	).length;
 
 	const canceledOrders = orders.filter(order => order.canceled);
-const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
-const canceledProducts = orders
-  .filter(order => order.canceled)
-  .reduce((total, order) => {
-    return total + order.detallePedido.reduce((accumulator, detail) => {
-      const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
-      return accumulator + detail.quantity + additionalQuantity;
-    }, 0);
-  }, 0);
-const canceledCostTotal = canceledOrders.reduce((total, order) => {
-  return total + order.detallePedido.reduce((subtotal, pedido) => {
-    return subtotal + (pedido.costoBurger || 0);
-  }, 0);
-}, 0);
+	const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+	const canceledProducts = orders
+		.filter(order => order.canceled)
+		.reduce((total, order) => {
+			return total + order.detallePedido.reduce((accumulator, detail) => {
+				const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
+				return accumulator + detail.quantity + additionalQuantity;
+			}, 0);
+		}, 0);
+	const canceledCostTotal = canceledOrders.reduce((total, order) => {
+		return total + order.detallePedido.reduce((subtotal, pedido) => {
+			return subtotal + (pedido.costoBurger || 0);
+		}, 0);
+	}, 0);
 
-// Calcular la facturación neta cancelada (facturación cancelada - costos cancelados)
-const canceledNetAmount = canceledOrdersTotal - canceledCostTotal;
+	// Calcular la facturación neta cancelada (facturación cancelada - costos cancelados)
+	const canceledNetAmount = canceledOrdersTotal - canceledCostTotal;
 
-const canceledDeliveryOrders = canceledOrders.filter(
-	order => order.deliveryMethod === "delivery"
-  );
-  const canceledTakeawayOrders = canceledOrders.filter(
-	order => order.deliveryMethod === "takeaway"
-  );
-
-  const ordersWithExtra = orders.filter((order) =>
-    order.detallePedido.some((detalle) => detalle.extra === true)
-);
-
-const extraProductsCount = orders.reduce((total, order) => {
-	return (
-	  total +
-	  order.detallePedido.reduce((subTotal, producto) => {
-		return producto.extra === true ? subTotal + producto.quantity : subTotal;
-	  }, 0)
+	const canceledDeliveryOrders = canceledOrders.filter(
+		order => order.deliveryMethod === "delivery"
 	);
-  }, 0);
+	const canceledTakeawayOrders = canceledOrders.filter(
+		order => order.deliveryMethod === "takeaway"
+	);
 
-const extraOrdersDetails = ordersWithExtra.map((order) => ({
-    id: order.id,
-    fecha: order.fecha,
-    hora: order.hora,
-    total: order.total,
-    detalle: order.detallePedido
-        .filter((detalle) => detalle.extra === true)
-        .map((detalle) => ({
-            burger: detalle.burger,
-            price: detalle.priceBurger,
-            quantity: detalle.quantity,
-            subTotal: detalle.subTotal,
-        })),
-}));
+	const ordersWithExtra = orders.filter((order) =>
+		order.detallePedido.some((detalle) => detalle.extra === true)
+	);
 
-const allCards = [
-	
-   
+	const extraProductsCount = orders.reduce((total, order) => {
+		return (
+			total +
+			order.detallePedido.reduce((subTotal, producto) => {
+				return producto.extra === true ? subTotal + producto.quantity : subTotal;
+			}, 0)
+		);
+	}, 0);
+
+	const extraOrdersDetails = ordersWithExtra.map((order) => ({
+		id: order.id,
+		fecha: order.fecha,
+		hora: order.hora,
+		total: order.total,
+		detalle: order.detallePedido
+			.filter((detalle) => detalle.extra === true)
+			.map((detalle) => ({
+				burger: detalle.burger,
+				price: detalle.priceBurger,
+				quantity: detalle.quantity,
+				subTotal: detalle.subTotal,
+			})),
+	}));
+
+	const allCards = [
+
+
 		<CardInfo
 			key="bruto"
-			info={currencyFormat(facturacionTotal)}
+			info={currencyFormat(Math.ceil(facturacionTotal))}
 			link={"bruto"}
 			title={"Facturación bruta"}
 			isLoading={isLoading}
@@ -481,73 +480,73 @@ const allCards = [
 			isLoading={isLoading}
 		/>,
 		<CardInfo
-    key="extraProducts"
-    info={extraProductsCount.toString()} // Total de productos con 'extra: true'
-    title={"Productos extra al final"} // Título del card
-    isLoading={isLoading} // Indicador de carga
-/>,
-	<CardInfo
-    key="extraOrders"
-    info={ordersWithExtra.length.toString()} // Muestra el número total de pedidos con 'extra: true'
-    title={"Pedidos con extras al final "} // Título del card
-	isLoading={isLoading} // Muestra un indicador de carga si es necesario
-
-	cuadrito={facturacionTotal > 0 
-    ? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount) 
-    : 0}
-
-/>,
-<CardInfo
-    key="extraFacturacion"
-    info={currencyFormat(
-        orders.reduce((total, order) => {
-            return (
-                total +
-                order.detallePedido
-                    .filter((producto) => producto.extra)
-                    .reduce(
-                        (subtotal, producto) =>
-                            subtotal + producto.priceBurger * producto.quantity,
-                        0
-                    )
-            );
-        }, 0)
-    )}
-    title={"Facturación por extras"}
-    isLoading={isLoading}
-/>,
+			key="extraProducts"
+			info={extraProductsCount.toString()} // Total de productos con 'extra: true'
+			title={"Productos extra al final"} // Título del card
+			isLoading={isLoading} // Indicador de carga
+		/>,
 		<CardInfo
-        key="canceledAmount"
-        info={currencyFormat(canceledOrdersTotal)}
-        title={"Facturación bruta cancelada"}
-        isLoading={isLoading}
-    />,
-	<CardInfo
-	key="canceledNetAmount"
-	info={currencyFormat(Math.ceil(canceledNetAmount))}
-	cuadrito={canceledOrdersTotal > 0 ? (canceledNetAmount * 100) / canceledOrdersTotal : 0}
-	title={"Facturación neta cancelada"}
-	isLoading={isLoading}
-/>,
+			key="extraOrders"
+			info={ordersWithExtra.length.toString()} // Muestra el número total de pedidos con 'extra: true'
+			title={"Pedidos con extras al final "} // Título del card
+			isLoading={isLoading} // Muestra un indicador de carga si es necesario
+
+			cuadrito={facturacionTotal > 0
+				? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount)
+				: 0}
+
+		/>,
 		<CardInfo
-        key="canceledProducts"
-        info={canceledProducts.toString()}
-        title={"Productos cancelados"}
-        isLoading={isLoading}
-    />,
-	<CardInfo
-	key="canceledDelivery"
-	info={canceledDeliveryOrders.length.toString()}
-	title={"Ventas delivery canceladas"}
-	isLoading={isLoading}
-/>,
-<CardInfo
-	key="canceledTakeaway"
-	info={canceledTakeawayOrders.length.toString()}
-	title={"Ventas take away canceladas"}
-	isLoading={isLoading}
-/>,
-   
+			key="extraFacturacion"
+			info={currencyFormat(
+				orders.reduce((total, order) => {
+					return (
+						total +
+						order.detallePedido
+							.filter((producto) => producto.extra)
+							.reduce(
+								(subtotal, producto) =>
+									subtotal + producto.priceBurger * producto.quantity,
+								0
+							)
+					);
+				}, 0)
+			)}
+			title={"Facturación por extras"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="canceledAmount"
+			info={currencyFormat(canceledOrdersTotal)}
+			title={"Facturación bruta cancelada"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="canceledNetAmount"
+			info={currencyFormat(Math.ceil(canceledNetAmount))}
+			cuadrito={canceledOrdersTotal > 0 ? (canceledNetAmount * 100) / canceledOrdersTotal : 0}
+			title={"Facturación neta cancelada"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="canceledProducts"
+			info={canceledProducts.toString()}
+			title={"Productos cancelados"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="canceledDelivery"
+			info={canceledDeliveryOrders.length.toString()}
+			title={"Ventas delivery canceladas"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="canceledTakeaway"
+			info={canceledTakeawayOrders.length.toString()}
+			title={"Ventas take away canceladas"}
+			isLoading={isLoading}
+		/>,
+
 		<CardInfo
 			key="success"
 			info={`${Math.ceil(
@@ -648,7 +647,7 @@ const allCards = [
 	// 	  console.log(`Status: ${order.elaborado ? 'Prepared' : 'Not Prepared'}`);
 	// 	  console.log(`Delivery Status: ${order.cadete}`);
 	// 	  console.log(`Canceled: ${order.canceled || 'Not canceled'}`);
-		  
+
 	// 	  console.log('\nOrder Details:');
 	// 	  order.detallePedido.forEach((item, idx) => {
 	// 		console.log(`  Item ${idx + 1}:`);
@@ -660,17 +659,17 @@ const allCards = [
 	// 		  console.log(`    - Toppings: ${item.toppings.join(', ')}`);
 	// 		}
 	// 	  });
-	
+
 	// 	  console.log('\nFinancial Details:');
 	// 	  console.log(`Subtotal: $${order.subTotal}`);
 	// 	  console.log(`Delivery Fee: $${order.envio}`);
 	// 	  console.log(`Express Delivery Fee: $${order.envioExpress}`);
 	// 	  console.log(`Total: $${order.total}`);
-	
+
 	// 	  if (order.direccion) {
 	// 		console.log(`\nDelivery Address: ${order.direccion}`);
 	// 	  }
-		  
+
 	// 	  console.log('========================\n');
 	// 	});
 	//   }, [orders]);
