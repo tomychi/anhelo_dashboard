@@ -103,6 +103,28 @@ export const Dashboard: React.FC = () => {
 		fetchData();
 	}, [dispatch]);
 
+	// Log orders with priceFactor
+	useEffect(() => {
+		const ordersWithPriceFactor = orders.filter(order => 'priceFactor' in order);
+		const mappedOrders = ordersWithPriceFactor.map(order => ({
+			id: order.id,
+			fecha: order.fecha,
+			total: order.total,
+			priceFactor: order.priceFactor,
+			originalAmount: Number((order.total / order.priceFactor).toFixed(2))
+		}));
+
+		console.log('Orders with priceFactor:', mappedOrders);
+
+		const totalDifference = mappedOrders.reduce((acc, order) => {
+			const difference = order.total - order.originalAmount;
+			return acc + difference;
+		}, 0);
+
+		console.log('Total extra amount from priceFactor:', totalDifference.toFixed(2));
+		console.log(`Total orders with priceFactor: ${ordersWithPriceFactor.length}`);
+	}, [orders]);
+
 	// Efecto para actualizar ratings y mostrar log
 	useEffect(() => {
 		const logBurgersRatings = async () => {
@@ -457,6 +479,33 @@ export const Dashboard: React.FC = () => {
 			link={"neto"}
 			cuadrito={facturacionTotal > 0 ? (neto * 100) / facturacionTotal : 0}
 			title={"Facturación neta"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="priceFactor"
+			info={(() => {
+				const ordersWithPriceFactor = orders.filter(order => 'priceFactor' in order);
+				const extraAmount = ordersWithPriceFactor.reduce((acc, order) => {
+					const originalAmount = order.total / order.priceFactor;
+					return acc + (order.total - originalAmount);
+				}, 0);
+
+				const totalOriginalAmount = facturacionTotal - extraAmount;
+				const originalPercentage = (totalOriginalAmount * 100 / facturacionTotal);
+
+
+
+				return currencyFormat(extraAmount);
+			})()}
+			title={"Extra por Dynamic price"}
+			cuadrito={
+				facturacionTotal > 0
+					? 100 - ((facturacionTotal - orders.filter(order => 'priceFactor' in order).reduce((acc, order) => {
+						const originalAmount = order.total / order.priceFactor;
+						return acc + (order.total - originalAmount);
+					}, 0)) * 100) / facturacionTotal
+					: 0
+			}
 			isLoading={isLoading}
 		/>,
 		<CardInfo
