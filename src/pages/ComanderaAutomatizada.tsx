@@ -30,6 +30,7 @@ import { readOrdersData } from "../redux/data/dataAction";
 import arrowIcon from "../assets/arrowIcon.png";
 import listoIcon from "../assets/listoIcon.png";
 import wspIcon from "../assets/wsp.png";
+import PriceFactor from './../components/comandera2025/PriceFactor';
 
 import Swal from "sweetalert2";
 import {
@@ -1650,7 +1651,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 			</style>
 			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<PhoneSearch orders={orders} />
-
+				<PriceFactor />
 				<div className="mt-4 mb-4">
 					<div className="relative flex items-center gap-2">
 						<div className="relative flex-1">
