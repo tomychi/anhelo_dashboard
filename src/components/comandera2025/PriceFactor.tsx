@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { getFirestore, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/configureStore';
 
 const VENTAS_MAXIMAS = 250;
 
 const PriceFactor = () => {
     const [isActive, setIsActive] = useState(false);
     const [currentFactor, setCurrentFactor] = useState(1.0);
-    const [fakeVentas, setFakeVentas] = useState(0);
+
+    // Obtener productos vendidos del estado de Redux
+    const { totalProductosVendidos } = useSelector((state: RootState) => state.data);
 
     // Función para calcular el factor con curva suave
     const calcularFactor = (ventas: number) => {
@@ -15,28 +19,14 @@ const PriceFactor = () => {
         return Math.ceil((1 + factorIncremento) * 100) / 100; // Redondear a 2 decimales
     };
 
-    // Simular ventas cuando está activo
+    // Actualizar factor basado en ventas reales
     useEffect(() => {
-        let interval;
-        if (isActive) {
-            interval = setInterval(() => {
-                setFakeVentas(prev => {
-                    if (prev >= VENTAS_MAXIMAS) {
-                        clearInterval(interval);
-                        return prev;
-                    }
-                    return prev + 1;
-                });
-            }, 500);
-        } else {
-            setFakeVentas(0);
+        if (!isActive) {
+            setCurrentFactor(1.0);
+            return;
         }
-        return () => clearInterval(interval);
-    }, [isActive]);
 
-    // Actualizar factor basado en ventas
-    useEffect(() => {
-        const nuevoFactor = calcularFactor(fakeVentas);
+        const nuevoFactor = calcularFactor(totalProductosVendidos);
         setCurrentFactor(nuevoFactor);
 
         const updateFirebaseFactor = async () => {
@@ -51,10 +41,8 @@ const PriceFactor = () => {
             }
         };
 
-        if (isActive) {
-            updateFirebaseFactor();
-        }
-    }, [fakeVentas]);
+        updateFirebaseFactor();
+    }, [totalProductosVendidos, isActive]);
 
     return (
         <div className="flex flex-col items-center gap-4 bg-gray-100 p-4 rounded-lg">
@@ -81,12 +69,12 @@ const PriceFactor = () => {
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
                             className="bg-red-main h-2.5 rounded-full transition-all duration-500"
-                            style={{ width: `${(fakeVentas / VENTAS_MAXIMAS) * 100}%` }}
+                            style={{ width: `${(totalProductosVendidos / VENTAS_MAXIMAS) * 100}%` }}
                         ></div>
                     </div>
 
                     <div className="text-sm text-gray-600">
-                        Ventas simuladas: {fakeVentas} / {VENTAS_MAXIMAS}
+                        Ventas reales: {totalProductosVendidos} / {VENTAS_MAXIMAS}
                     </div>
 
                     <div className="w-full max-w-md">
