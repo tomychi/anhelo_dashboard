@@ -57,7 +57,7 @@ const PriceFactor = () => {
     return (
         <div className="bg-black  flex flex-col justify-center items-center rounded-3xl pb-6 pt-4 px-4">
             <div className="flex items-center justify-between w-full mb-6">
-                <p className="text-gray-100 text- font-bold ">Dynamic pricing</p>
+                <p className="text-gray-100 font-bold ">Dynamic pricing</p>
                 <Toggle
                     isOn={isActive}
                     onToggle={() => setIsActive(!isActive)}
@@ -65,7 +65,7 @@ const PriceFactor = () => {
             </div>
 
             <div className=" flex flex-col text-center ">
-                <p className="text-gray-100  font-bold text-6xl">
+                <p className="text-gray-100  font-bold text-7xl">
                     +{((currentFactor - 1) * 100).toFixed(1)}%
                 </p>
                 <div className="text-xs text-gray-100 opacity-50">
