@@ -151,7 +151,7 @@ export const Sidebar = () => {
 		: [
 			{ to: "/", text: "Dashboard" },
 			{ to: "/comandas", text: "Comandas y Grupos" },
-			{ to: "/comanderaAutomatizada", text: "comanderaAutomatizada" },
+			{ to: "/comanderaAutomatizada", text: "Operaciones" },
 			{ to: "/gastos", text: "Gastos" },
 			{ to: "/deudaManager", text: "Deuda " },
 			{ to: "/whatsappFeatures", text: "Reactivar clientes" },
