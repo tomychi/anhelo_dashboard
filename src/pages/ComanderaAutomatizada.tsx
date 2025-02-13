@@ -1652,34 +1652,7 @@ export const ComanderaAutomatizada: React.FC = () => {
 			<div className="px-4 pt-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<PriceFactor />
 				<PhoneSearch orders={orders} />
-				<div className="mt-4 mb-4">
-					<div className="relative flex items-center gap-2">
-						<div className="relative flex-1">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="currentColor"
-								className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-							>
-								<path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
-							</svg>
-							<input
-								type="text"
-								value={altaDemandaMessage}
-								onChange={(e) => setAltaDemandaMessage(e.target.value)}
-								onBlur={handleMessageChange}
-								placeholder="Mensaje de alta demanda..."
-								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-main focus:border-transparent"
-							/>
-						</div>
-						<button
-							onClick={handleClearMessage}
-							className="bg-red-main text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors"
-						>
-							Borrar
-						</button>
-					</div>
-				</div>
+
 
 				<div className="flex  flex-col  w-full mt-4 mb-4 gap-y-2">
 					<div className="flex items-center flex-row w-full justify-between ">
@@ -1687,113 +1660,9 @@ export const ComanderaAutomatizada: React.FC = () => {
 							onToggleSidebar={toggleSidebar}
 							isSidebarOpen={sidebarOpen}
 						/>
-						<div className="flex flex-row w-fit ">
-							<div className="relative  w-full mr-2">
 
-								<button
-									onClick={() => setIsCreateCadetModalOpen(true)}
-									className="bg-black font-coolvetica  text-gray-100 px-6  h-10 rounded-full font-bold  "
-								>
-									Cadete
-								</button>
-							</div>
-							{/* Delay */}
-							<div className="relative  w-full">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
-									style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
-								>
-									<path
-										fillRule="evenodd"
-										clipRule="evenodd"
-										d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
-									/>
-								</svg>
-								<select
-									value={selectedDelay}
-									onChange={(e) => setSelectedDelay(Number(e.target.value))}
-									className={`h-10   pl-9  pb-0.5 font-bold rounded-full ${selectedDelay === 0
-										? "bg-gray-300 text-black"
-										: "bg-black text-gray-100 "
-										}`}
-									style={{
-										WebkitAppearance: "none",
-										MozAppearance: "none",
-										width: "130px",
-									}}
-								>
-									<option value={0}>Minutos de demora</option>
-									<option value={15}>15 minutos</option>
-									<option value={30}>30 minutos</option>
-									<option value={45}>45 minutos</option>
-									<option value={60}>60 minutos</option>
-								</select>
-							</div>
 
-							{/* Botón que activa la alta demanda */}
-							{!altaDemanda?.isHighDemand && (
-								<button
-									onClick={handleActivateHighDemand}
-									disabled={selectedDelay === 0}
-									className={`px-4 w-full ml-2 flex flex-row items-center gap-1 h-10 rounded-full font-medium ${selectedDelay === 0
-										? "bg-gray-300 text-gray-500 cursor-not-allowed"
-										: "bg-black text-white hover:bg-gray-800"
-										}`}
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="currentColor"
-										className="h-6"
-									>
-										<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
-									</svg>
-									<p className="font-bold">Pausar</p>
-								</button>
-							)}
-
-							{/* Botón que desactiva la alta demanda */}
-							{altaDemanda?.isHighDemand &&
-								remainingMinutes &&
-								remainingMinutes > 0 && (
-									<div className="flex w-full">
-										<button
-											onClick={handleDeactivateHighDemand}
-											className="bg-red-main gap-2 text-gray-100 flex items-center w-full pl-4 h-10 ml-2 font-bold rounded-full "
-											style={{
-												WebkitAppearance: "none",
-												MozAppearance: "none",
-												width: "125px",
-											}}
-										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												viewBox="0 0 24 24"
-												fill="currentColor"
-												className="h-6"
-											>
-												<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
-											</svg>
-											Retomar
-										</button>
-									</div>
-								)}
-						</div>
 					</div>
-					{altaDemanda?.isHighDemand &&
-						remainingMinutes &&
-						remainingMinutes > 0 && (
-							<div className="flex items-center gap-2 w-full bg-red-100 px-4 h-10 rounded-full">
-								<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-								<span className="text-red-500 font-bold">
-									{remainingMinutes}{" "}
-									{remainingMinutes === 1 ? "minuto" : "minutos"} restantes
-								</span>
-							</div>
-						)}
 				</div>
 
 				<Sidebar
@@ -1811,6 +1680,18 @@ export const ComanderaAutomatizada: React.FC = () => {
 					setHideAssignedGroups={setHideAssignedGroups}
 					showComandas={showComandas}
 					setShowComandas={setShowComandas}
+					selectedDelay={selectedDelay}
+					setSelectedDelay={setSelectedDelay}
+					handleActivateHighDemand={handleActivateHighDemand}
+					handleDeactivateHighDemand={handleDeactivateHighDemand}
+					altaDemanda={altaDemanda}
+					remainingMinutes={remainingMinutes}
+					isCreateCadetModalOpen={isCreateCadetModalOpen}
+					setIsCreateCadetModalOpen={setIsCreateCadetModalOpen}
+					altaDemandaMessage={altaDemandaMessage}
+					setAltaDemandaMessage={setAltaDemandaMessage}
+					handleMessageChange={handleMessageChange}  // Asegúrate de que esta prop se esté pasando
+					handleClearMessage={handleClearMessage}    // Asegúrate de que esta prop se esté pasando
 				/>
 
 

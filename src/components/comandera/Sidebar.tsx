@@ -7,19 +7,27 @@ interface SidebarProps {
 	tiempoMaximoRecorrido: number | null;
 	setTiempoMaximoRecorrido: (tiempo: number | null) => void;
 	showComandas: boolean;
-	automatico: boolean;
-	setAutomatico: (value: boolean) => void;
 	setShowComandas: (show: boolean) => void;
 	velocidadPromedio: number | null;
-	handleCadeteVelocidadChange: (
-		e: React.ChangeEvent<HTMLSelectElement>
-	) => void;
+	handleCadeteVelocidadChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 	cadetesDisponibles: any[];
 	calcularVelocidadPromedio: (cadete: any) => number;
 	onlyElaborated: boolean;
 	setOnlyElaborated: (value: boolean) => void;
 	hideAssignedGroups: boolean;
 	setHideAssignedGroups: (value: boolean) => void;
+	selectedDelay: number;
+	setSelectedDelay: (delay: number) => void;
+	handleActivateHighDemand: () => void;
+	handleDeactivateHighDemand: () => void;
+	altaDemanda: any;
+	remainingMinutes: number | null;
+	isCreateCadetModalOpen: boolean;
+	setIsCreateCadetModalOpen: (isOpen: boolean) => void;
+	altaDemandaMessage: string;
+	setAltaDemandaMessage: (message: string) => void;
+	handleMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	handleClearMessage: () => void;
 }
 
 const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
@@ -27,15 +35,13 @@ const Toggle: React.FC<{ isOn: boolean; onToggle: () => void }> = ({
 	onToggle,
 }) => (
 	<div
-		className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-			isOn ? "bg-black" : "bg-gray-300"
-		}`}
+		className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${isOn ? "bg-black" : "bg-gray-300"
+			}`}
 		onClick={onToggle}
 	>
 		<div
-			className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-				isOn ? "translate-x-6" : ""
-			}`}
+			className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${isOn ? "translate-x-6" : ""
+				}`}
 		/>
 	</div>
 );
@@ -44,8 +50,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 	isOpen,
 	onClose,
 	tiempoMaximoRecorrido,
-	automatico,
-	setAutomatico,
 	setTiempoMaximoRecorrido,
 	showComandas,
 	setShowComandas,
@@ -57,6 +61,18 @@ const Sidebar: React.FC<SidebarProps> = ({
 	hideAssignedGroups,
 	setHideAssignedGroups,
 	setOnlyElaborated,
+	selectedDelay,
+	setSelectedDelay,
+	handleActivateHighDemand,
+	handleDeactivateHighDemand,
+	altaDemanda,
+	remainingMinutes,
+	isCreateCadetModalOpen,
+	setIsCreateCadetModalOpen,
+	altaDemandaMessage,
+	setAltaDemandaMessage,
+	handleMessageChange,
+	handleClearMessage
 }) => {
 	const [isRendered, setIsRendered] = useState(false);
 
@@ -73,21 +89,134 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 	return (
 		<div
-			className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
-				isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-			}`}
+			className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+				}`}
 			onClick={onClose}
 		>
 			<div
-				className={`fixed right-0 top-0 h-full w-64 bg-white shadow-lg p-4 transition-transform duration-300 ease-in-out transform ${
-					isOpen ? "translate-x-0" : "translate-x-full"
-				}`}
+				className={`fixed right-0 top-0 h-full w-64 bg-white shadow-lg p-4 transition-transform duration-300 ease-in-out transform ${isOpen ? "translate-x-0" : "translate-x-full"
+					}`}
 				onClick={(e) => e.stopPropagation()}
 			>
 				<h2 className="text-2xl text-center font-bold mb-6 mt-2">
 					Configuración
 				</h2>
 
+				{/* Action Buttons Section */}
+				<div className="mb-6 space-y-2">
+					{/* Alta Demanda Message Input */}
+					<div className="relative flex items-center gap-2 mb-4">
+						<div className="relative flex-1">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+							>
+								<path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
+							</svg>
+							<input
+								type="text"
+								value={altaDemandaMessage}
+								onChange={(e) => handleMessageChange(e)}
+								placeholder="Mensaje de alta demanda..."
+								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-main focus:border-transparent"
+							/>
+						</div>
+						<button
+							onClick={handleClearMessage}
+							className="bg-red-main text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors"
+						>
+							Borrar
+						</button>
+					</div>
+
+					<button
+						onClick={() => setIsCreateCadetModalOpen(true)}
+						className="bg-black font-coolvetica text-gray-100 px-6 h-10 rounded-full font-bold w-full"
+					>
+						Cadete
+					</button>
+
+					<div className="relative w-full">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							className="h-6 absolute left-2 top-1/2 -translate-y-1/2"
+							style={selectedDelay === 0 ? {} : { filter: "invert(100%)" }}
+						>
+							<path
+								fillRule="evenodd"
+								clipRule="evenodd"
+								d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z"
+							/>
+						</svg>
+						<select
+							value={selectedDelay}
+							onChange={(e) => setSelectedDelay(Number(e.target.value))}
+							className={`h-10 pl-9 pb-0.5 font-bold rounded-full w-full ${selectedDelay === 0
+								? "bg-gray-300 text-black"
+								: "bg-black text-gray-100"
+								}`}
+						>
+							<option value={0}>Minutos de demora</option>
+							<option value={15}>15 minutos</option>
+							<option value={30}>30 minutos</option>
+							<option value={45}>45 minutos</option>
+							<option value={60}>60 minutos</option>
+						</select>
+					</div>
+
+					{!altaDemanda?.isHighDemand && (
+						<button
+							onClick={handleActivateHighDemand}
+							disabled={selectedDelay === 0}
+							className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${selectedDelay === 0
+								? "bg-gray-300 text-gray-500 cursor-not-allowed"
+								: "bg-black text-white hover:bg-gray-800"
+								}`}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+								className="h-6"
+							>
+								<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+							</svg>
+							<p className="font-bold">Pausar</p>
+						</button>
+					)}
+
+					{altaDemanda?.isHighDemand && remainingMinutes && remainingMinutes > 0 && (
+						<>
+							<button
+								onClick={handleDeactivateHighDemand}
+								className="bg-red-main gap-2 text-gray-100 flex items-center w-full pl-4 h-10 font-bold rounded-full"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 24 24"
+									fill="currentColor"
+									className="h-6"
+								>
+									<path d="M15 6.75a.75.75 0 0 0-.75.75V18a.75.75 0 0 0 .75.75h.75a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75H15ZM20.25 6.75a.75.75 0 0 0-.75.75V18c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75V7.5a.75.75 0 0 0-.75-.75h-.75ZM5.055 7.06C3.805 6.347 2.25 7.25 2.25 8.69v8.122c0 1.44 1.555 2.343 2.805 1.628l7.108-4.061c1.26-.72 1.26-2.536 0-3.256L5.055 7.061Z" />
+								</svg>
+								Retomar
+							</button>
+
+							<div className="flex items-center gap-2 w-full bg-red-100 px-4 h-10 rounded-full">
+								<div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+								<span className="text-red-500 font-bold">
+									{remainingMinutes} {remainingMinutes === 1 ? "minuto" : "minutos"} restantes
+								</span>
+							</div>
+						</>
+					)}
+				</div>
+
+				{/* Existing Configuration Options */}
 				<div className="mb-4">
 					<p className="font-bold mb-2 text-sm">Recorrido</p>
 					<div className="relative inline-block mb-2 w-full">
@@ -112,11 +241,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 								const value = e.target.value ? parseInt(e.target.value) : null;
 								setTiempoMaximoRecorrido(value);
 							}}
-							className={`h-10 appearance-none text-sm pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${
-								tiempoMaximoRecorrido === null
-									? "bg-gray-300 text-black"
-									: "bg-black text-gray-100"
-							}`}
+							className={`h-10 appearance-none text-sm pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full ${tiempoMaximoRecorrido === null
+								? "bg-gray-300 text-black"
+								: "bg-black text-gray-100"
+								}`}
 							style={{
 								WebkitAppearance: "none",
 								MozAppearance: "none",
@@ -157,11 +285,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 						</svg>
 						<select
 							onChange={handleCadeteVelocidadChange}
-							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full text-sm ${
-								velocidadPromedio === null
-									? "bg-gray-300 text-black"
-									: "bg-black text-gray-100"
-							}`}
+							className={`h-10 appearance-none pt-2 pl-11 pr-8 pb-3 px-3 font-medium rounded-full w-full text-sm ${velocidadPromedio === null
+								? "bg-gray-300 text-black"
+								: "bg-black text-gray-100"
+								}`}
 							style={{
 								WebkitAppearance: "none",
 								MozAppearance: "none",
@@ -223,15 +350,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 							<Toggle
 								isOn={showComandas}
 								onToggle={() => setShowComandas(!showComandas)}
-							/>
-						</div>
-					</div>
-					<div className="flex flex-row items-center justify-between gap-2">
-						<p className="font-bold text-sm">Automático v0.0.1</p>
-						<div className="flex items-center justify-between">
-							<Toggle
-								isOn={automatico}
-								onToggle={() => setAutomatico(!automatico)}
 							/>
 						</div>
 					</div>
