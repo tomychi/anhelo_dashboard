@@ -478,6 +478,28 @@ export const Dashboard: React.FC = () => {
 			title={"Facturación neta"}
 			isLoading={isLoading}
 		/>,
+
+		<CardInfo
+			key="productos"
+			info={totalProductosVendidos.toString()}
+			link={"productosVendidos"}
+			title={"Productos vendidos"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="delivery"
+			info={deliveryCount.toString()}
+			link={"ventas"}
+			title={"Ventas delivery"}
+			isLoading={isLoading}
+		/>,
+		<CardInfo
+			key="takeaway"
+			info={takeawayCount.toString()}
+			link={"ventas"}
+			title={"Ventas take away"}
+			isLoading={isLoading}
+		/>,
 		<CardInfo
 			key="priceFactor"
 			info={(() => {
@@ -505,33 +527,7 @@ export const Dashboard: React.FC = () => {
 			}
 			isLoading={isLoading}
 		/>,
-		<CardInfo
-			key="productos"
-			info={totalProductosVendidos.toString()}
-			link={"productosVendidos"}
-			title={"Productos vendidos"}
-			isLoading={isLoading}
-		/>,
-		<CardInfo
-			key="delivery"
-			info={deliveryCount.toString()}
-			link={"ventas"}
-			title={"Ventas delivery"}
-			isLoading={isLoading}
-		/>,
-		<CardInfo
-			key="takeaway"
-			info={takeawayCount.toString()}
-			link={"ventas"}
-			title={"Ventas take away"}
-			isLoading={isLoading}
-		/>,
-		<CardInfo
-			key="extraProducts"
-			info={extraProductsCount.toString()} // Total de productos con 'extra: true'
-			title={"Productos extra al final"} // Título del card
-			isLoading={isLoading} // Indicador de carga
-		/>,
+
 		<CardInfo
 			key="extraOrders"
 			info={ordersWithExtra.length.toString()} // Muestra el número total de pedidos con 'extra: true'
@@ -542,6 +538,12 @@ export const Dashboard: React.FC = () => {
 				? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount)
 				: 0}
 
+		/>,
+		<CardInfo
+			key="extraProducts"
+			info={extraProductsCount.toString()} // Total de productos con 'extra: true'
+			title={"Productos extra al final"} // Título del card
+			isLoading={isLoading} // Indicador de carga
 		/>,
 		<CardInfo
 			key="extraFacturacion"

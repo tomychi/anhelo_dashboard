@@ -1649,9 +1649,9 @@ export const ComanderaAutomatizada: React.FC = () => {
         }
       `}
 			</style>
-			<div className="px-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
-				<PhoneSearch orders={orders} />
+			<div className="px-4 pt-4 flex flex-col font-coolvetica w-screen max-w-screen overflow-x-hidden">
 				<PriceFactor />
+				<PhoneSearch orders={orders} />
 				<div className="mt-4 mb-4">
 					<div className="relative flex items-center gap-2">
 						<div className="relative flex-1">
