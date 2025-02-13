@@ -74,11 +74,14 @@ const PriceFactor = () => {
             </div>
 
             {isActive && (
-                <div className="w-full bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 ">
+                <div className="w-full bg-gray-100 bg-opacity-50  rounded-full h-1 mt-4 relative">
                     <div
-                        className="bg-gray-100 h-1 rounded-full transition-all duration-500"
+                        className="bg-gray-100 h-1 rounded-full opacity-100 transition-all duration-500"
                         style={{ width: `${(totalProductosVendidos / VENTAS_MAXIMAS) * 100}%` }}
-                    ></div>
+                    >
+                        <div className="absolute right-[5px] -top-[1px] w-[4px] h-[4px] bg-black z-50 rounded-full"></div>
+                        <div className="absolute right-0 -top-[5px] w-3.5 h-3.5 bg-gray-500   rounded-full"></div>
+                    </div>
                 </div>
             )}
         </div>
