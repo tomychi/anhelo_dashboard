@@ -492,7 +492,7 @@ export const Dashboard: React.FC = () => {
 
 
 
-				return currencyFormat(extraAmount);
+				return currencyFormat(Math.ceil(extraAmount));
 			})()}
 			title={"Extra por Dynamic price"}
 			cuadrito={
