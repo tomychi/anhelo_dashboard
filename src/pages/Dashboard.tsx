@@ -564,7 +564,7 @@ export const Dashboard: React.FC = () => {
 		/>,
 		<CardInfo
 			key="canceledAmount"
-			info={currencyFormat(canceledOrdersTotal)}
+			info={currencyFormat(Math.round(canceledOrdersTotal))}
 			title={"Facturación bruta cancelada"}
 			isLoading={isLoading}
 		/>,
@@ -654,7 +654,7 @@ export const Dashboard: React.FC = () => {
 			key="ticket"
 			info={
 				orders.length > 0
-					? currencyFormat(facturacionTotal / orders.length)
+					? currencyFormat(Math.round(facturacionTotal / orders.length))
 					: currencyFormat(0)
 			}
 			title={"Ticket promedio"}
