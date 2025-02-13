@@ -114,86 +114,83 @@ export const Dashboard: React.FC = () => {
 			originalAmount: Number((order.total / order.priceFactor).toFixed(2))
 		}));
 
-		console.log('Orders with priceFactor:', mappedOrders);
 
 		const totalDifference = mappedOrders.reduce((acc, order) => {
 			const difference = order.total - order.originalAmount;
 			return acc + difference;
 		}, 0);
 
-		console.log('Total extra amount from priceFactor:', totalDifference.toFixed(2));
-		console.log(`Total orders with priceFactor: ${ordersWithPriceFactor.length}`);
 	}, [orders]);
 
 	// Efecto para actualizar ratings y mostrar log
-	useEffect(() => {
-		const logBurgersRatings = async () => {
-			try {
-				// Primero actualizamos los ratings
-				await updateBurgersRatings(orders);
+	// useEffect(() => {
+	// 	const logBurgersRatings = async () => {
+	// 		try {
+	// 			// Primero actualizamos los ratings
+	// 			await updateBurgersRatings(orders);
 
-				// Luego obtenemos los datos actualizados
-				const allProducts = await ReadData();
-				const burgers = allProducts.filter(
-					(product) => product.collectionName === "burgers"
-				);
+	// 			// Luego obtenemos los datos actualizados
+	// 			const allProducts = await ReadData();
+	// 			const burgers = allProducts.filter(
+	// 				(product) => product.collectionName === "burgers"
+	// 			);
 
-				// Obtener calificaciones de los pedidos
-				const productRatings: { [key: string]: number[] } = {};
+	// 			// Obtener calificaciones de los pedidos
+	// 			const productRatings: { [key: string]: number[] } = {};
 
-				orders.forEach((order) => {
-					if (order.rating) {
-						order.detallePedido.forEach((item) => {
-							const productName = item.burger;
-							const rating = order.rating?.[productName];
+	// 			orders.forEach((order) => {
+	// 				if (order.rating) {
+	// 					order.detallePedido.forEach((item) => {
+	// 						const productName = item.burger;
+	// 						const rating = order.rating?.[productName];
 
-							if (typeof rating === "number") {
-								if (!productRatings[productName]) {
-									productRatings[productName] = [];
-								}
-								productRatings[productName].push(rating);
-							}
-						});
-					}
-				});
+	// 						if (typeof rating === "number") {
+	// 							if (!productRatings[productName]) {
+	// 								productRatings[productName] = [];
+	// 							}
+	// 							productRatings[productName].push(rating);
+	// 						}
+	// 					});
+	// 				}
+	// 			});
 
-				// Mostrar información para cada burger
-				burgers.forEach((burger) => {
-					const burgerName = burger.data.name;
-					const ratings = productRatings[burgerName] || [];
-					const averageRating =
-						ratings.length > 0
-							? ratings.reduce((sum, rating) => sum + rating, 0) /
-							ratings.length
-							: 0;
+	// 			// Mostrar información para cada burger
+	// 			burgers.forEach((burger) => {
+	// 				const burgerName = burger.data.name;
+	// 				const ratings = productRatings[burgerName] || [];
+	// 				const averageRating =
+	// 					ratings.length > 0
+	// 						? ratings.reduce((sum, rating) => sum + rating, 0) /
+	// 						ratings.length
+	// 						: 0;
 
-					console.log(`Burger: ${burgerName}`);
-					console.log(`├── ID: ${burger.id}`);
-					console.log(`├── Precio: $${burger.data.price}`);
-					console.log(`├── Tipo: ${burger.data.type}`);
-					console.log(`├── Rating en Firebase: ${burger.data.rating || 0}`);
-					console.log(`├── Calificaciones de clientes: ${ratings.length}`);
-					console.log(
-						`├── Promedio de calificaciones: ${averageRating.toFixed(1)}`
-					);
-					console.log(
-						`├── Todas las calificaciones: ${ratings.length > 0 ? ratings.join(", ") : "Sin calificaciones"
-						}`
-					);
-					console.log(
-						`└── Ingredientes: ${Object.keys(
-							burger.data.ingredients || {}
-						).join(", ")}`
-					);
-					console.log("-----------------------------------");
-				});
-			} catch (error) {
-				console.error("Error al obtener las burgers:", error);
-			}
-		};
+	// 				console.log(`Burger: ${burgerName}`);
+	// 				console.log(`├── ID: ${burger.id}`);
+	// 				console.log(`├── Precio: $${burger.data.price}`);
+	// 				console.log(`├── Tipo: ${burger.data.type}`);
+	// 				console.log(`├── Rating en Firebase: ${burger.data.rating || 0}`);
+	// 				console.log(`├── Calificaciones de clientes: ${ratings.length}`);
+	// 				console.log(
+	// 					`├── Promedio de calificaciones: ${averageRating.toFixed(1)}`
+	// 				);
+	// 				console.log(
+	// 					`├── Todas las calificaciones: ${ratings.length > 0 ? ratings.join(", ") : "Sin calificaciones"
+	// 					}`
+	// 				);
+	// 				console.log(
+	// 					`└── Ingredientes: ${Object.keys(
+	// 						burger.data.ingredients || {}
+	// 					).join(", ")}`
+	// 				);
+	// 				console.log("-----------------------------------");
+	// 			});
+	// 		} catch (error) {
+	// 			console.error("Error al obtener las burgers:", error);
+	// 		}
+	// 	};
 
-		logBurgersRatings();
-	}, [orders]);
+	// 	logBurgersRatings();
+	// }, [orders]);
 
 	const startDate = valueDate?.startDate
 		? new Date(valueDate.startDate)

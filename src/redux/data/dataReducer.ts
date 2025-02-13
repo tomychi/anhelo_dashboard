@@ -115,7 +115,6 @@ const dataReducer = (state = initialState, action: DataAction) => {
           },
           0
         );
-        console.log("   Costo total de la orden:", costoBurgerOrden);
         return total + costoBurgerOrden;
       }, 0);
 

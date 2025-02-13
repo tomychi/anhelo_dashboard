@@ -144,23 +144,22 @@ export const Sidebar = () => {
 
 	const menuItems = isMarketingUser
 		? [
-				{ to: "/", text: "Dashboard" },
-				{ to: "/nuevaCompra", text: "Gastos" },
-				{ to: "/vouchers", text: "Campañas de vouchers" },
-		  ]
+			{ to: "/", text: "Dashboard" },
+			{ to: "/nuevaCompra", text: "Gastos" },
+			{ to: "/vouchers", text: "Campañas de vouchers" },
+		]
 		: [
-				{ to: "/", text: "Dashboard" },
-				{ to: "/pedidos", text: "Tomar pedidos" },
-				{ to: "/comandas", text: "Comandas y Grupos" },
-				{ to: "/comanderaAutomatizada", text: "comanderaAutomatizada" },
-				{ to: "/gastos", text: "Gastos" },
-				{ to: "/deudaManager", text: "Deuda " },
-				{ to: "/whatsappFeatures", text: "Reactivar clientes" },
-				{ to: "/vouchers", text: "Campañas de vouchers" },
-				{ to: "/equipo", text: "Equipo" },
-				{ to: "/clientes", text: "Comportamiento de clientes" },
-				{ to: "/settings", text: "Configuración" },
-		  ];
+			{ to: "/", text: "Dashboard" },
+			{ to: "/comandas", text: "Comandas y Grupos" },
+			{ to: "/comanderaAutomatizada", text: "comanderaAutomatizada" },
+			{ to: "/gastos", text: "Gastos" },
+			{ to: "/deudaManager", text: "Deuda " },
+			{ to: "/whatsappFeatures", text: "Reactivar clientes" },
+			{ to: "/vouchers", text: "Campañas de vouchers" },
+			{ to: "/equipo", text: "Equipo" },
+			{ to: "/clientes", text: "Comportamiento de clientes" },
+			{ to: "/settings", text: "Configuración" },
+		];
 
 	const profileMenuItems = [
 		{
