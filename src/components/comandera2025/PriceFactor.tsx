@@ -65,7 +65,7 @@ const PriceFactor = () => {
             </div>
 
             <div className=" flex flex-col text-center ">
-                <p className="text-gray-100  font-bold text-4xl">
+                <p className="text-gray-100  font-bold text-5xl">
                     +{((currentFactor - 1) * 100).toFixed(1)}%
                 </p>
                 <div className="text-sm text-gray-100 opacity-50">
