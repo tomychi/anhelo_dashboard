@@ -99,13 +99,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 				onClick={(e) => e.stopPropagation()}
 			>
 				<h2 className="text-2xl text-center font-bold mb-6 mt-2">
-					Configuración
+					Herramientas
 				</h2>
 
 				{/* Action Buttons Section */}
 				<div className="mb-6 space-y-2">
 					{/* Alta Demanda Message Input */}
-					<div className="relative flex items-center gap-2 mb-4">
+					<div className="relative flex items-center flex-col gap-2 mb-4">
 						<div className="relative flex-1">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -118,11 +118,17 @@ const Sidebar: React.FC<SidebarProps> = ({
 							<input
 								type="text"
 								value={altaDemandaMessage}
-								onChange={(e) => handleMessageChange(e)}
+								onChange={(e) => setAltaDemandaMessage(e.target.value)}
 								placeholder="Mensaje de alta demanda..."
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-red-main focus:border-transparent"
 							/>
 						</div>
+						<button
+							onClick={() => handleMessageChange({ target: { value: altaDemandaMessage } } as React.ChangeEvent<HTMLInputElement>)}
+							className="bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors"
+						>
+							Enviar
+						</button>
 						<button
 							onClick={handleClearMessage}
 							className="bg-red-main text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors"
