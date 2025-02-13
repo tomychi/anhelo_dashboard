@@ -54,7 +54,7 @@ const PriceFactor = () => {
     }, [totalProductosVendidos, isActive]);
 
     return (
-        <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-6 pt-4 px-4">
+        <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4 px-4">
             <div className="flex items-center justify-between w-full mb-6">
                 <p className="text-gray-100 font-bold">Dynamic pricing</p>
                 <Toggle
@@ -73,7 +73,7 @@ const PriceFactor = () => {
             </div>
 
             {isActive && (
-                <div className="w-full bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 relative">
+                <div className="w-full bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 mb-2 relative">
                     <div
                         className="bg-gray-100 h-1 rounded-full opacity-100 transition-all duration-500"
                         style={{ width: `${(totalProductosVendidos / VENTAS_MAXIMAS) * 100}%` }}
