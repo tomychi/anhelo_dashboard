@@ -7,7 +7,7 @@ const VENTAS_MAXIMAS = 250;
 
 const Toggle = ({ isOn, onToggle }) => (
     <div
-        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-300 ${isOn ? "" : " bg-opacity-50"
+        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-300 ${isOn ? "" : " bg-opacity-40"
             }`}
         onClick={onToggle}
     >
@@ -65,7 +65,7 @@ const PriceFactor = () => {
             </div>
 
             <div className=" flex flex-col text-center ">
-                <p className="text-gray-100  font-bold text-2xl">
+                <p className="text-gray-100  font-bold text-4xl">
                     +{((currentFactor - 1) * 100).toFixed(1)}%
                 </p>
                 <div className="text-sm text-gray-100 opacity-50">
