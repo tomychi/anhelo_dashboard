@@ -118,9 +118,9 @@ const dataReducer = (state = initialState, action: DataAction) => {
         return total + costoBurgerOrden;
       }, 0);
 
-      console.log("\n6. Costo total de todas las hamburguesas:", totalCostoBurger);
-      console.log("7. Facturación total:", facturacionTotal);
-      console.log("8. Neto calculado:", facturacionTotal - totalCostoBurger);
+      // console.log("\n6. Costo total de todas las hamburguesas:", totalCostoBurger);
+      // console.log("7. Facturación total:", facturacionTotal);
+      // console.log("8. Neto calculado:", facturacionTotal - totalCostoBurger);
 
       // Obtener todos los toppings solo de órdenes activas
       const allToppings = activeOrders
