@@ -7,7 +7,7 @@ const VENTAS_MAXIMAS = 250;
 
 const Toggle = ({ isOn, onToggle }) => (
     <div
-        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-100 bg-opacity-50 ${isOn ? "" : " "
+        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-100  ${isOn ? "bg-opacity-80" : "bg-opacity-50 "
             }`}
         onClick={onToggle}
     >
