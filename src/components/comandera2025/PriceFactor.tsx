@@ -2,35 +2,47 @@ import React, { useState, useEffect } from 'react';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
-import {
-    ReadDataForDateRange,
-} from "../../firebase/ReadData";
 
 const VENTAS_MAXIMAS = 250;
 
 const Toggle = ({ isOn, onToggle }) => (
     <div
-        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-100  ${isOn ? "bg-opacity-80" : "bg-opacity-50 "
-            }`}
+        className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer bg-gray-100  ${isOn ? "bg-opacity-80" : "bg-opacity-50 "}`}
         onClick={onToggle}
     >
         <div
-            className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${isOn ? "translate-x-6" : ""
-                }`}
+            className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${isOn ? "translate-x-6" : ""}`}
         />
     </div>
 );
 
 const PriceFactor = () => {
+    // 1. Todos los useState primero
     const [isActive, setIsActive] = useState(false);
     const [currentFactor, setCurrentFactor] = useState(1.0);
+    const [hasSetPrediction, setHasSetPrediction] = useState(false);
+    const [isTestMode, setIsTestMode] = useState(false);
+    const [testProductos, setTestProductos] = useState(0);
+    const [testHora, setTestHora] = useState(20);
 
-    const { totalProductosVendidos } = useSelector((state: RootState) => state.data);
+    // 2. useSelector después de todos los useState
+    const totalProductosVendidos = useSelector((state: RootState) => state.data.totalProductosVendidos ?? 0);
 
+    // 3. Variables derivadas
+    const productosActuales = isTestMode ? testProductos : totalProductosVendidos;
+
+    // 4. Funciones
     const calcularFactor = (ventas: number) => {
         const porcentajeAvance = ventas / VENTAS_MAXIMAS;
         const factorIncremento = Math.pow(porcentajeAvance, 0.8) * 0.11;
         return Math.ceil((1 + factorIncremento) * 100) / 100;
+    };
+
+    const predecirFactor = (productosEnPrimeraHora: number) => {
+        if (productosEnPrimeraHora >= 25) return 1.11;
+        if (productosEnPrimeraHora >= 15) return 1.09;
+        if (productosEnPrimeraHora >= 10) return 1.07;
+        return 1.06;
     };
 
     const updateFirebaseFactor = async (factor: number) => {
@@ -46,78 +58,40 @@ const PriceFactor = () => {
     };
 
     useEffect(() => {
-        let nuevoFactor = 1.0;
-
-        if (isActive) {
-            nuevoFactor = calcularFactor(totalProductosVendidos);
+        if (!isActive) {
+            updateFirebaseFactor(1.0);
+            setCurrentFactor(1.0);
+            setHasSetPrediction(false);
+            return;
         }
 
-        setCurrentFactor(nuevoFactor);
-        updateFirebaseFactor(nuevoFactor);
-    }, [totalProductosVendidos, isActive]);
+        const hora = isTestMode ? testHora : new Date().getHours();
+        const minutos = isTestMode ? 0 : new Date().getMinutes();
 
-    useEffect(() => {
-        const analizarUltimos7Dias = async () => {
-            try {
-                const endDate = new Date();
-                const startDate = new Date();
-                startDate.setDate(endDate.getDate() - 7);
-
-                const valueDate = {
-                    startDate: startDate.toISOString().split('T')[0],
-                    endDate: endDate.toISOString().split('T')[0]
-                };
-
-                const pedidos = await ReadDataForDateRange("pedidos", valueDate);
-                const analisisPorDia = {};
-
-                // Tu función calcularFactor actual
-                const calcularFactor = (ventas) => {
-                    const porcentajeAvance = ventas / VENTAS_MAXIMAS;
-                    const factorIncremento = Math.pow(porcentajeAvance, 0.8) * 0.11;
-                    return Math.ceil((1 + factorIncremento) * 100) / 100;
-                };
-
-                pedidos.forEach(pedido => {
-                    if (!pedido.fecha || !pedido.hora || pedido.canceled) return;
-
-                    const fecha = pedido.fecha;
-                    if (!analisisPorDia[fecha]) {
-                        analisisPorDia[fecha] = {
-                            productosPrimeraHora: 0,
-                            totalProductos: 0
-                        };
-                    }
-
-                    const cantidadProductos = pedido.detallePedido.reduce((acc, item) => {
-                        const cantidad = item.quantity;
-                        const es2x1 = item.burger.includes('2x1');
-                        return acc + (es2x1 ? cantidad * 2 : cantidad);
-                    }, 0);
-
-                    const hora = parseInt(pedido.hora.split(':')[0]);
-
-                    if (hora === 20) {
-                        analisisPorDia[fecha].productosPrimeraHora += cantidadProductos;
-                    }
-                    analisisPorDia[fecha].totalProductos += cantidadProductos;
-                });
-
-                Object.entries(analisisPorDia).forEach(([fecha, datos]) => {
-                    const factorFinal = calcularFactor(datos.totalProductos);
-                    console.log(`${fecha}: ${datos.productosPrimeraHora} -> ${datos.totalProductos} (factor final: ${factorFinal})`);
-                });
-
-            } catch (error) {
-                console.error('Error analizando pedidos:', error);
+        if (hora === 21 && minutos === 0 && !hasSetPrediction) {
+            console.log('🎯 Momento de predicción (21:00)');
+            const factorPredicho = predecirFactor(productosActuales);
+            console.log(`- Productos en primera hora: ${productosActuales}`);
+            console.log(`- Factor predicho: ${factorPredicho}`);
+            updateFirebaseFactor(factorPredicho);
+            setCurrentFactor(factorPredicho);
+            setHasSetPrediction(true);
+        } else if (hora >= 21 && hasSetPrediction) {
+            const factorGradual = calcularFactor(productosActuales);
+            if (factorGradual > currentFactor) {
+                console.log(`- Actualizando factor a: ${factorGradual}`);
+                updateFirebaseFactor(factorGradual);
+                setCurrentFactor(factorGradual);
             }
-        };
-
-        analizarUltimos7Dias();
-    }, []);
+        } else if (hora < 21) {
+            const nuevoFactor = calcularFactor(productosActuales);
+            updateFirebaseFactor(nuevoFactor);
+            setCurrentFactor(nuevoFactor);
+        }
+    }, [productosActuales, isActive, testHora, isTestMode, hasSetPrediction, currentFactor]);
 
     return (
-        <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4 ">
+        <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4">
             <div className="flex items-center justify-between w-full border-b border-gray-100 border-opacity-50 pb-4 px-4">
                 <p className="text-gray-100 font-medium">Dynamic pricing</p>
                 <Toggle
@@ -130,18 +104,20 @@ const PriceFactor = () => {
                 <p className="text-gray-100 font-bold text-6xl">
                     +{((currentFactor - 1) * 100).toFixed(1)}%
                 </p>
+                <p className="text-xs text-gray-100 font-medium mb-1">
+                    {(isTestMode ? testHora : new Date().getHours()) >= 21 && hasSetPrediction ? 'Valor predicho' : 'Valor exacto'}
+                </p>
                 <div className="text-xs text-gray-100 font-medium opacity-50">
-                    Ventas: {totalProductosVendidos} / {VENTAS_MAXIMAS}
+                    Ventas: {productosActuales} / {VENTAS_MAXIMAS}
                 </div>
             </div>
 
             {isActive && (
-                <div className='px-4 w-full'>
-
-                    <div className="w-full  bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 mb-2 relative">
+                <div className='px-4 w-full mt-4'>
+                    <div className="w-full bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 mb-2 relative">
                         <div
                             className="bg-gray-100 h-1 rounded-full opacity-100 transition-all duration-500"
-                            style={{ width: `${(totalProductosVendidos / VENTAS_MAXIMAS) * 100}%` }}
+                            style={{ width: `${(productosActuales / VENTAS_MAXIMAS) * 100}%` }}
                         >
                             <div className="absolute right-[5px] w-[4px] h-[4px] bg-black z-50 rounded-full"></div>
                             <div className="absolute right-0 -top-[5px] w-3.5 h-3.5 bg-gray-500 rounded-full"></div>
