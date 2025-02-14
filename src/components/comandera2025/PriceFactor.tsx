@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
+import {
+    ReadDataForDateRange,
+} from "../../firebase/ReadData";
 
 const VENTAS_MAXIMAS = 250;
 
@@ -52,6 +55,89 @@ const PriceFactor = () => {
         setCurrentFactor(nuevoFactor);
         updateFirebaseFactor(nuevoFactor);
     }, [totalProductosVendidos, isActive]);
+
+    useEffect(() => {
+        const analizarUltimos7Dias = async () => {
+            try {
+                const endDate = new Date();
+                const startDate = new Date();
+                startDate.setDate(endDate.getDate() - 7);
+
+                const valueDate = {
+                    startDate: startDate.toISOString().split('T')[0],
+                    endDate: endDate.toISOString().split('T')[0]
+                };
+
+                const pedidos = await ReadDataForDateRange("pedidos", valueDate);
+
+                // Tomemos un día como ejemplo para analizar en detalle
+                const unDia = pedidos.filter(pedido => pedido.fecha === '13/02/2025');
+
+                console.log('=== ANÁLISIS DETALLADO DE PRODUCTOS ===');
+                unDia.forEach(pedido => {
+                    if (pedido.hora.startsWith('20')) {  // Solo primera hora
+                        console.log(`\nPedido ID: ${pedido.id} - Hora: ${pedido.hora}`);
+                        pedido.detallePedido.forEach(item => {
+                            console.log(`- ${item.quantity}x ${item.burger} ${item.burger.includes('2x1') ? '[CUENTA DOBLE]' : ''}`);
+                        });
+                    }
+                });
+
+                // Análisis completo con conteo corregido
+                const analisisPorDia = {};
+
+                pedidos.forEach(pedido => {
+                    if (!pedido.fecha || !pedido.hora || pedido.canceled) return;
+
+                    const fecha = pedido.fecha;
+                    if (!analisisPorDia[fecha]) {
+                        analisisPorDia[fecha] = {
+                            totalProductos: 0,
+                            productosPrimeraHora: 0,
+                            pedidosTotales: 0,
+                            pedidosPrimeraHora: 0
+                        };
+                    }
+
+                    // Nuevo conteo que tiene en cuenta los 2x1
+                    const cantidadProductos = pedido.detallePedido.reduce((acc, item) => {
+                        const cantidad = item.quantity;
+                        const es2x1 = item.burger.includes('2x1');
+                        return acc + (es2x1 ? cantidad * 2 : cantidad);
+                    }, 0);
+
+                    const hora = parseInt(pedido.hora.split(':')[0]);
+
+                    if (hora === 20) {
+                        analisisPorDia[fecha].productosPrimeraHora += cantidadProductos;
+                        analisisPorDia[fecha].pedidosPrimeraHora++;
+                    }
+
+                    analisisPorDia[fecha].totalProductos += cantidadProductos;
+                    analisisPorDia[fecha].pedidosTotales++;
+                });
+
+                console.log('\n=== ANÁLISIS POR DÍA (CONTANDO 2x1 COMO DOS PRODUCTOS) ===');
+                Object.entries(analisisPorDia).forEach(([fecha, datos]) => {
+                    const ratioProductos = datos.productosPrimeraHora / datos.totalProductos;
+                    console.log(`
+    Fecha: ${fecha}
+    Productos primera hora: ${datos.productosPrimeraHora}
+    Productos totales: ${datos.totalProductos}
+    Ratio primera hora/total: ${(ratioProductos * 100).toFixed(2)}%
+    Pedidos primera hora: ${datos.pedidosPrimeraHora}
+    Pedidos totales: ${datos.pedidosTotales}
+                    `);
+                });
+
+            } catch (error) {
+                console.error('Error analizando pedidos:', error);
+            }
+        };
+
+        analizarUltimos7Dias();
+    }, []);
+
 
     return (
         <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4 ">
