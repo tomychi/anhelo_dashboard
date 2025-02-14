@@ -71,6 +71,13 @@ const PriceFactor = () => {
                 const pedidos = await ReadDataForDateRange("pedidos", valueDate);
                 const analisisPorDia = {};
 
+                // Tu función calcularFactor actual
+                const calcularFactor = (ventas) => {
+                    const porcentajeAvance = ventas / VENTAS_MAXIMAS;
+                    const factorIncremento = Math.pow(porcentajeAvance, 0.8) * 0.11;
+                    return Math.ceil((1 + factorIncremento) * 100) / 100;
+                };
+
                 pedidos.forEach(pedido => {
                     if (!pedido.fecha || !pedido.hora || pedido.canceled) return;
 
@@ -82,7 +89,6 @@ const PriceFactor = () => {
                         };
                     }
 
-                    // Conteo corregido considerando 2x1
                     const cantidadProductos = pedido.detallePedido.reduce((acc, item) => {
                         const cantidad = item.quantity;
                         const es2x1 = item.burger.includes('2x1');
@@ -98,7 +104,8 @@ const PriceFactor = () => {
                 });
 
                 Object.entries(analisisPorDia).forEach(([fecha, datos]) => {
-                    console.log(`${fecha}: ${datos.productosPrimeraHora} -> ${datos.totalProductos}`);
+                    const factorFinal = calcularFactor(datos.totalProductos);
+                    console.log(`${fecha}: ${datos.productosPrimeraHora} -> ${datos.totalProductos} (factor final: ${factorFinal})`);
                 });
 
             } catch (error) {
