@@ -69,21 +69,6 @@ const PriceFactor = () => {
                 };
 
                 const pedidos = await ReadDataForDateRange("pedidos", valueDate);
-
-                // Tomemos un día como ejemplo para analizar en detalle
-                const unDia = pedidos.filter(pedido => pedido.fecha === '13/02/2025');
-
-                console.log('=== ANÁLISIS DETALLADO DE PRODUCTOS ===');
-                unDia.forEach(pedido => {
-                    if (pedido.hora.startsWith('20')) {  // Solo primera hora
-                        console.log(`\nPedido ID: ${pedido.id} - Hora: ${pedido.hora}`);
-                        pedido.detallePedido.forEach(item => {
-                            console.log(`- ${item.quantity}x ${item.burger} ${item.burger.includes('2x1') ? '[CUENTA DOBLE]' : ''}`);
-                        });
-                    }
-                });
-
-                // Análisis completo con conteo corregido
                 const analisisPorDia = {};
 
                 pedidos.forEach(pedido => {
@@ -92,14 +77,12 @@ const PriceFactor = () => {
                     const fecha = pedido.fecha;
                     if (!analisisPorDia[fecha]) {
                         analisisPorDia[fecha] = {
-                            totalProductos: 0,
                             productosPrimeraHora: 0,
-                            pedidosTotales: 0,
-                            pedidosPrimeraHora: 0
+                            totalProductos: 0
                         };
                     }
 
-                    // Nuevo conteo que tiene en cuenta los 2x1
+                    // Conteo corregido considerando 2x1
                     const cantidadProductos = pedido.detallePedido.reduce((acc, item) => {
                         const cantidad = item.quantity;
                         const es2x1 = item.burger.includes('2x1');
@@ -110,24 +93,12 @@ const PriceFactor = () => {
 
                     if (hora === 20) {
                         analisisPorDia[fecha].productosPrimeraHora += cantidadProductos;
-                        analisisPorDia[fecha].pedidosPrimeraHora++;
                     }
-
                     analisisPorDia[fecha].totalProductos += cantidadProductos;
-                    analisisPorDia[fecha].pedidosTotales++;
                 });
 
-                console.log('\n=== ANÁLISIS POR DÍA (CONTANDO 2x1 COMO DOS PRODUCTOS) ===');
                 Object.entries(analisisPorDia).forEach(([fecha, datos]) => {
-                    const ratioProductos = datos.productosPrimeraHora / datos.totalProductos;
-                    console.log(`
-    Fecha: ${fecha}
-    Productos primera hora: ${datos.productosPrimeraHora}
-    Productos totales: ${datos.totalProductos}
-    Ratio primera hora/total: ${(ratioProductos * 100).toFixed(2)}%
-    Pedidos primera hora: ${datos.pedidosPrimeraHora}
-    Pedidos totales: ${datos.pedidosTotales}
-                    `);
+                    console.log(`${fecha}: ${datos.productosPrimeraHora} -> ${datos.totalProductos}`);
                 });
 
             } catch (error) {
@@ -137,7 +108,6 @@ const PriceFactor = () => {
 
         analizarUltimos7Dias();
     }, []);
-
 
     return (
         <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4 ">
