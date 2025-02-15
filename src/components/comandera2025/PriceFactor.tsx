@@ -57,6 +57,24 @@ const PriceFactor = () => {
         }
     };
 
+    // Effect para manejar SOLO la reactivación del toggle después de las 21
+    useEffect(() => {
+        if (!isActive) return;
+
+        const hora = isTestMode ? testHora : new Date().getHours();
+
+        if (hora >= 21 && !hasSetPrediction) {
+            console.log('🎯 Reactivación después de las 21:00');
+            const factorPredicho = predecirFactor(productosActuales);
+            console.log(`- Recuperando ventas primera hora: ${productosActuales}`);
+            console.log(`- Recalculando predicción: ${factorPredicho}`);
+            updateFirebaseFactor(factorPredicho);
+            setCurrentFactor(factorPredicho);
+            setHasSetPrediction(true);
+        }
+    }, [isActive]);
+
+    // Effect original que maneja toda la lógica normal
     useEffect(() => {
         if (!isActive) {
             updateFirebaseFactor(1.0);
