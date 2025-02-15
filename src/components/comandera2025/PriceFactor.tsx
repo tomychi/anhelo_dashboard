@@ -21,9 +21,6 @@ const PriceFactor = () => {
     const [isActive, setIsActive] = useState(false);
     const [currentFactor, setCurrentFactor] = useState(1.0);
     const [hasSetPrediction, setHasSetPrediction] = useState(false);
-    const [isTestMode, setIsTestMode] = useState(false);
-    const [testProductos, setTestProductos] = useState(0);
-    const [testHora, setTestHora] = useState(20);
 
     // 2. useSelector después de todos los useState
     const totalProductosVendidos = useSelector((state: RootState) => state.data.totalProductosVendidos ?? 0);
