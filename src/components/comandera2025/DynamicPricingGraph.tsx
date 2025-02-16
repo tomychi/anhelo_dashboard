@@ -5,11 +5,13 @@ import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 interface DynamicPricingGraphProps {
     activeStrategy: string;
     setActiveStrategy: (strategy: string) => void;
+    ventasMaximas: number;
 }
 
 const DynamicPricingGraph: React.FC<DynamicPricingGraphProps> = ({
     activeStrategy,
-    setActiveStrategy
+    setActiveStrategy,
+    ventasMaximas
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [curveParams, setCurveParams] = useState({
@@ -67,7 +69,7 @@ const DynamicPricingGraph: React.FC<DynamicPricingGraphProps> = ({
 
     const generateCurveData = (params: any) => {
         const points = [];
-        const totalPoints = 250;
+        const totalPoints = ventasMaximas;  // Usamos el valor dinámico
 
         for (let ventas = 0; ventas <= totalPoints; ventas += 10) {
             const porcentajeAvance = ventas / totalPoints;

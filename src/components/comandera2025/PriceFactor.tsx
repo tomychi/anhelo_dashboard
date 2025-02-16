@@ -5,7 +5,6 @@ import { RootState } from '../redux/configureStore';
 import DynamicPricingGraph from './DynamicPricingGraph';
 import { ReadDataForDateRange } from '../../firebase/ReadData';
 
-const VENTAS_MAXIMAS = 250;
 
 const Toggle = ({ isOn, onToggle }) => (
     <div
@@ -27,6 +26,7 @@ const PriceFactor = () => {
     const [testProductos, setTestProductos] = useState(0);
     const [testHora, setTestHora] = useState(20);
     const [activeStrategy, setActiveStrategy] = useState('balanced');
+    const [ventasMaximas, setVentasMaximas] = useState(1);
     const [pricingStrategies, setPricingStrategies] = useState({
         conservative: { power: 1.0, maxIncrease: 0.08 },
         balanced: { power: 0.8, maxIncrease: 0.11 },
@@ -46,7 +46,7 @@ const PriceFactor = () => {
         // console.log(`- Ventas actuales: ${ventas}`);
         // console.log(`- Estrategia activa: ${activeStrategy}`);
 
-        const porcentajeAvance = ventas / VENTAS_MAXIMAS;
+        const porcentajeAvance = ventas / ventasMaximas;
         // console.log(`- Porcentaje de avance: ${(porcentajeAvance * 100).toFixed(1)}%`);
 
         // Verificar que tenemos la estrategia correcta
@@ -83,9 +83,11 @@ const PriceFactor = () => {
                 if (data.activeStrategy) {
                     setActiveStrategy(data.activeStrategy);
                 }
-                // Leemos el valor existente
-                if (data.maxDailySales) {
-                    console.log('Máximo histórico actual:', data.maxDailySales);
+                // Leemos el máximo histórico y lo usamos como base para ventasMaximas
+                if (data.maxDailySales?.amount) {
+                    const nuevoMaximo = Math.ceil(data.maxDailySales.amount * 1.1); // 10% más que el máximo histórico
+                    setVentasMaximas(nuevoMaximo);
+                    console.log('Ventas máximas actualizadas:', nuevoMaximo);
                 }
             }
         } catch (error) {
@@ -293,7 +295,7 @@ const PriceFactor = () => {
                     {(isTestMode ? testHora : new Date().getHours()) >= 21 && hasSetPrediction ? 'Valor predicho' : 'Valor exacto'}
                 </p>
                 <div className="text-xs text-gray-100 font-medium opacity-50">
-                    Ventas: {productosActuales} / {VENTAS_MAXIMAS}
+                    Ventas: {productosActuales} / {ventasMaximas}
                 </div>
             </div>
 
@@ -302,7 +304,7 @@ const PriceFactor = () => {
                     <div className="w-full bg-gray-100 bg-opacity-50 rounded-full h-1 mt-4 mb-2 relative">
                         <div
                             className="bg-gray-100 h-1 rounded-full opacity-100 transition-all duration-500"
-                            style={{ width: `${(productosActuales / VENTAS_MAXIMAS) * 100}%` }}
+                            style={{ width: `${(productosActuales / ventasMaximas) * 100}%` }}
                         >
                             <div className="absolute right-[5px] w-[4px] h-[4px] bg-black z-50 rounded-full"></div>
                             <div className="absolute right-0 -top-[5px] w-3.5 h-3.5 bg-gray-500 rounded-full"></div>
@@ -313,6 +315,7 @@ const PriceFactor = () => {
             <DynamicPricingGraph
                 activeStrategy={activeStrategy}
                 setActiveStrategy={setActiveStrategy}
+                ventasMaximas={ventasMaximas}
             />
 
             {/* Panel de pruebas */}
@@ -347,7 +350,7 @@ const PriceFactor = () => {
                                     <input
                                         type="range"
                                         min="0"
-                                        max={VENTAS_MAXIMAS}
+                                        max={ventasMaximas}
                                         value={testProductos}
                                         onChange={(e) => setTestProductos(Number(e.target.value))}
                                         className="w-full"
