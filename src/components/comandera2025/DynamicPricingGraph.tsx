@@ -135,8 +135,8 @@ const DynamicPricingGraph: React.FC<DynamicPricingGraphProps> = ({
                         key={strategy}
                         onClick={() => updateActiveStrategy(strategy)}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${activeStrategy === strategy
-                                ? 'bg-gray-100 text-black'
-                                : 'bg-gray-800 text-gray-300'
+                            ? 'bg-gray-100 text-black'
+                            : 'bg-gray-800 text-gray-300'
                             }`}
                     >
                         {getStrategyLabel(strategy)}
@@ -146,7 +146,7 @@ const DynamicPricingGraph: React.FC<DynamicPricingGraphProps> = ({
 
             <div className="bg-gray-800 rounded-lg p-4 mb-4">
                 <h3 className="text-gray-100 font-medium mb-3">
-                    Configuración de {getStrategyLabel(activeStrategy).toLowerCase()}
+                    Configuración {getStrategyLabel(activeStrategy).toLowerCase()}
                 </h3><div className="space-y-4">
                     <div className="flex flex-col space-y-1">
                         <div className="flex items-center justify-between">
