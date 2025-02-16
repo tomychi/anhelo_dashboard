@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getFirestore, doc, updateDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
+import DynamicPricingGraph from './DynamicPricingGraph';
 
 const VENTAS_MAXIMAS = 250;
 
@@ -143,6 +144,7 @@ const PriceFactor = () => {
                     </div>
                 </div>
             )}
+            <DynamicPricingGraph />
         </div>
     );
 };
