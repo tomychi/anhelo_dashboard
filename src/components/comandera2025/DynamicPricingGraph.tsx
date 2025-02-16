@@ -151,7 +151,7 @@ const DynamicPricingGraph: React.FC<DynamicPricingGraphProps> = ({
                     <div className="flex flex-col space-y-1">
                         <div className="flex items-center justify-between">
                             <label className="text-xs text-gray-400">
-                                Power:
+                                Exponente:
                             </label>
                             <span className="text-xs text-gray-400">
                                 {curveParams[activeStrategy].power.toFixed(2)}
