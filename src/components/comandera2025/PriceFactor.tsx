@@ -3,6 +3,7 @@ import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import DynamicPricingGraph from './DynamicPricingGraph';
+import { ReadDataForDateRange } from '../../firebase/ReadData';
 
 const VENTAS_MAXIMAS = 250;
 
@@ -41,12 +42,12 @@ const PriceFactor = () => {
 
     // 4. Funciones
     const calcularFactor = (ventas: number) => {
-        console.log('\n📊 Calculando factor:');
-        console.log(`- Ventas actuales: ${ventas}`);
-        console.log(`- Estrategia activa: ${activeStrategy}`);
+        // console.log('\n📊 Calculando factor:');
+        // console.log(`- Ventas actuales: ${ventas}`);
+        // console.log(`- Estrategia activa: ${activeStrategy}`);
 
         const porcentajeAvance = ventas / VENTAS_MAXIMAS;
-        console.log(`- Porcentaje de avance: ${(porcentajeAvance * 100).toFixed(1)}%`);
+        // console.log(`- Porcentaje de avance: ${(porcentajeAvance * 100).toFixed(1)}%`);
 
         // Verificar que tenemos la estrategia correcta
         if (!pricingStrategies[activeStrategy]) {
@@ -55,15 +56,15 @@ const PriceFactor = () => {
         }
 
         const currentStrategy = pricingStrategies[activeStrategy];
-        console.log('- Estrategia completa:', currentStrategy);
-        console.log(`- Power: ${currentStrategy.power}`);
-        console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
+        // console.log('- Estrategia completa:', currentStrategy);
+        // console.log(`- Power: ${currentStrategy.power}`);
+        // console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
 
         const factorIncremento = Math.pow(porcentajeAvance, currentStrategy.power) * currentStrategy.maxIncrease;
-        console.log(`- Factor incremento: ${(factorIncremento * 100).toFixed(2)}%`);
+        // console.log(`- Factor incremento: ${(factorIncremento * 100).toFixed(2)}%`);
 
         const factorFinal = Math.ceil((1 + factorIncremento) * 100) / 100;
-        console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
+        // console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
 
         return factorFinal;
     };
@@ -82,20 +83,107 @@ const PriceFactor = () => {
                 if (data.activeStrategy) {
                     setActiveStrategy(data.activeStrategy);
                 }
+                // Leemos el valor existente
+                if (data.maxDailySales) {
+                    console.log('Máximo histórico actual:', data.maxDailySales);
+                }
             }
         } catch (error) {
             console.error('Error loading strategies:', error);
         }
     };
 
+    const obtenerVentasUltimos14Dias = async () => {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 14);
+
+        const dateValue: DateValueType = {
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0]
+        };
+
+        try {
+            const pedidos = await ReadDataForDateRange<PedidoProps>("pedidos", dateValue);
+            const ventasPorDia: { [key: string]: number } = {};
+
+            // Filtramos pedidos cancelados
+            pedidos
+                .filter(pedido => !pedido.canceled)
+                .forEach(pedido => {
+                    const fecha = pedido.fecha;
+
+                    if (!ventasPorDia[fecha]) {
+                        ventasPorDia[fecha] = 0;
+                    }
+
+                    pedido.detallePedido.forEach(item => {
+                        let cantidad = item.quantity;
+                        if (item.burger.toLowerCase().includes("2x1")) {
+                            cantidad = cantidad * 2;
+                        }
+                        ventasPorDia[fecha] += cantidad;
+                    });
+                });
+
+            console.log('Ventas diarias últimos 14 días (excluyendo cancelados):');
+            Object.entries(ventasPorDia).forEach(([fecha, total]) => {
+                console.log(`${fecha}: ${total} productos`);
+            });
+
+            const maxVenta = Object.entries(ventasPorDia).reduce((max, actual) =>
+                actual[1] > max[1] ? actual : max
+            );
+
+            console.log('\nDía con más ventas:', maxVenta[0], 'con', maxVenta[1], 'productos');
+
+            // Leer el valor actual de maxDailySales antes de actualizar
+            const firestore = getFirestore();
+            const docRef = doc(firestore, 'constantes', 'altaDemanda');
+            const docSnap = await getDoc(docRef);
+            const currentMax = docSnap.data()?.maxDailySales?.amount || 0;
+
+            // Solo actualizar si el nuevo máximo es mayor que el histórico
+            if (maxVenta[1] > currentMax) {
+                await updateMaxDailySales(maxVenta[0], maxVenta[1]);
+                console.log('Nuevo récord histórico!');
+            } else {
+                console.log('Máximo histórico actual:', currentMax, 'productos');
+            }
+
+        } catch (error) {
+            console.error('Error obteniendo datos históricos:', error);
+        }
+    };
+
     useEffect(() => {
         loadStrategiesFromFirestore();
+        obtenerVentasUltimos14Dias()
     }, []);
 
+    const updateMaxDailySales = async (date: string, amount: number) => {
+        try {
+            const firestore = getFirestore();
+            const constantesRef = doc(firestore, 'constantes', 'altaDemanda');
+
+            await updateDoc(constantesRef, {
+                maxDailySales: {
+                    date,
+                    amount,
+                    updatedAt: new Date().toISOString()
+                }
+            });
+
+            console.log('Máximo histórico actualizado:', date, amount, 'productos');
+        } catch (error) {
+            console.error('Error actualizando máximo histórico:', error);
+        }
+    };
+
     const predecirFactor = (productosEnPrimeraHora: number) => {
-        console.log('\n🎯 Prediciendo factor:');
-        console.log(`- Productos acumulados: ${productosEnPrimeraHora}`);
-        console.log(`- Estrategia activa: ${activeStrategy}`);
+        // console.log('\n🎯 Prediciendo factor:');
+        // console.log(`- Productos acumulados: ${productosEnPrimeraHora}`);
+        // console.log(`- Estrategia activa: ${activeStrategy}`);
 
         const currentStrategy = pricingStrategies[activeStrategy];
         console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
@@ -113,9 +201,9 @@ const PriceFactor = () => {
         const incremento = currentStrategy.maxIncrease * porcentajeDelMax;
         const factorFinal = Math.ceil((1 + incremento) * 100) / 100;
 
-        console.log(`- Porcentaje del máximo: ${(porcentajeDelMax * 100).toFixed(0)}%`);
-        console.log(`- Incremento calculado: ${(incremento * 100).toFixed(1)}%`);
-        console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
+        // console.log(`- Porcentaje del máximo: ${(porcentajeDelMax * 100).toFixed(0)}%`);
+        // console.log(`- Incremento calculado: ${(incremento * 100).toFixed(1)}%`);
+        // console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
 
         return factorFinal;
     };
@@ -142,28 +230,28 @@ const PriceFactor = () => {
 
         const hora = isTestMode ? testHora : new Date().getHours();
 
-        console.log('\n⚡ Inicio del efecto:');
-        console.log(`- Hora actual: ${hora}:00`);
-        console.log(`- HasSetPrediction: ${hasSetPrediction}`);
-        console.log(`- Factor actual: ${currentFactor}`);
-        console.log(`- Productos vendidos: ${productosActuales}`);
+        // console.log('\n⚡ Inicio del efecto:');
+        // console.log(`- Hora actual: ${hora}:00`);
+        // console.log(`- HasSetPrediction: ${hasSetPrediction}`);
+        // console.log(`- Factor actual: ${currentFactor}`);
+        // console.log(`- Productos vendidos: ${productosActuales}`);
 
         // Reset prediction flag when hour changes before 21:00
         if (hora < 21 && hasSetPrediction) {
-            console.log('🔄 Reseteando predicción (antes de las 21:00)');
+            // console.log('🔄 Reseteando predicción (antes de las 21:00)');
             setHasSetPrediction(false);
         }
 
         // Before 21:00 - Normal calculation
         if (hora < 21) {
-            console.log('📊 Modo pre-predicción');
+            // console.log('📊 Modo pre-predicción');
             const nuevoFactor = calcularFactor(productosActuales);
             updateFirebaseFactor(nuevoFactor);
             setCurrentFactor(nuevoFactor);
         }
         // At 21:00 - Make prediction
         else if (hora === 21 && !hasSetPrediction) {
-            console.log('🎯 Momento de predicción (21:00)');
+            // console.log('🎯 Momento de predicción (21:00)');
             const factorPredicho = predecirFactor(productosActuales);
             console.log(`- Factor predicho: ${factorPredicho}`);
             updateFirebaseFactor(factorPredicho);
@@ -172,7 +260,7 @@ const PriceFactor = () => {
         }
         // After 21:00 - Only increase if exceeds prediction
         else if (hora >= 21 && hasSetPrediction) {
-            console.log('📈 Modo post-predicción');
+            // console.log('📈 Modo post-predicción');
             const factorCalculado = calcularFactor(productosActuales);
             console.log(`- Factor calculado: ${factorCalculado}`);
             console.log(`- Factor predicho actual: ${currentFactor}`);
