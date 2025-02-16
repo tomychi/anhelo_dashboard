@@ -31,6 +31,7 @@ const PriceFactor = () => {
         balanced: { power: 0.8, maxIncrease: 0.11 },
         aggressive: { power: 0.6, maxIncrease: 0.15 }
     });
+    const [showTestPanel, setShowTestPanel] = useState(false);
 
     // 2. useSelector después de todos los useState
     const totalProductosVendidos = useSelector((state: RootState) => state.data.totalProductosVendidos ?? 0);
@@ -40,10 +41,31 @@ const PriceFactor = () => {
 
     // 4. Funciones
     const calcularFactor = (ventas: number) => {
+        console.log('\n📊 Calculando factor:');
+        console.log(`- Ventas actuales: ${ventas}`);
+        console.log(`- Estrategia activa: ${activeStrategy}`);
+
         const porcentajeAvance = ventas / VENTAS_MAXIMAS;
+        console.log(`- Porcentaje de avance: ${(porcentajeAvance * 100).toFixed(1)}%`);
+
+        // Verificar que tenemos la estrategia correcta
+        if (!pricingStrategies[activeStrategy]) {
+            console.error(`❌ Estrategia ${activeStrategy} no encontrada:`, pricingStrategies);
+            return 1.0;
+        }
+
         const currentStrategy = pricingStrategies[activeStrategy];
+        console.log('- Estrategia completa:', currentStrategy);
+        console.log(`- Power: ${currentStrategy.power}`);
+        console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
+
         const factorIncremento = Math.pow(porcentajeAvance, currentStrategy.power) * currentStrategy.maxIncrease;
-        return Math.ceil((1 + factorIncremento) * 100) / 100;
+        console.log(`- Factor incremento: ${(factorIncremento * 100).toFixed(2)}%`);
+
+        const factorFinal = Math.ceil((1 + factorIncremento) * 100) / 100;
+        console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
+
+        return factorFinal;
     };
 
     const loadStrategiesFromFirestore = async () => {
@@ -71,10 +93,33 @@ const PriceFactor = () => {
     }, []);
 
     const predecirFactor = (productosEnPrimeraHora: number) => {
-        if (productosEnPrimeraHora >= 25) return 1.11;
-        if (productosEnPrimeraHora >= 15) return 1.09;
-        if (productosEnPrimeraHora >= 10) return 1.07;
-        return 1.06;
+        console.log('\n🎯 Prediciendo factor:');
+        console.log(`- Productos acumulados: ${productosEnPrimeraHora}`);
+        console.log(`- Estrategia activa: ${activeStrategy}`);
+
+        const currentStrategy = pricingStrategies[activeStrategy];
+        console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
+
+        // Modificamos los thresholds basándonos en el total acumulado
+        let porcentajeDelMax;
+        if (productosEnPrimeraHora >= 50) {
+            porcentajeDelMax = 1; // 100% del maxIncrease
+        } else if (productosEnPrimeraHora >= 30) {
+            porcentajeDelMax = 0.8; // 80% del maxIncrease
+        } else if (productosEnPrimeraHora >= 20) {
+            porcentajeDelMax = 0.6; // 60% del maxIncrease
+        } else {
+            porcentajeDelMax = 0.5; // 50% del maxIncrease
+        }
+
+        const incremento = currentStrategy.maxIncrease * porcentajeDelMax;
+        const factorFinal = Math.ceil((1 + incremento) * 100) / 100;
+
+        console.log(`- Porcentaje del máximo: ${(porcentajeDelMax * 100).toFixed(0)}%`);
+        console.log(`- Incremento calculado: ${(incremento * 100).toFixed(1)}%`);
+        console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
+
+        return factorFinal;
     };
 
     const updateFirebaseFactor = async (factor: number) => {
@@ -89,24 +134,6 @@ const PriceFactor = () => {
         }
     };
 
-    // Effect para manejar SOLO la reactivación del toggle después de las 21
-    useEffect(() => {
-        if (!isActive) return;
-
-        const hora = isTestMode ? testHora : new Date().getHours();
-
-        if (hora >= 21 && !hasSetPrediction) {
-            console.log('🎯 Reactivación después de las 21:00');
-            const factorPredicho = predecirFactor(productosActuales);
-            console.log(`- Recuperando ventas primera hora: ${productosActuales}`);
-            console.log(`- Recalculando predicción: ${factorPredicho}`);
-            updateFirebaseFactor(factorPredicho);
-            setCurrentFactor(factorPredicho);
-            setHasSetPrediction(true);
-        }
-    }, [isActive]);
-
-    // Effect original que maneja toda la lógica normal
     useEffect(() => {
         if (!isActive) {
             updateFirebaseFactor(1.0);
@@ -116,27 +143,49 @@ const PriceFactor = () => {
         }
 
         const hora = isTestMode ? testHora : new Date().getHours();
-        const minutos = isTestMode ? 0 : new Date().getMinutes();
 
-        if (hora === 21 && minutos === 0 && !hasSetPrediction) {
+        console.log('\n⚡ Inicio del efecto:');
+        console.log(`- Hora actual: ${hora}:00`);
+        console.log(`- HasSetPrediction: ${hasSetPrediction}`);
+        console.log(`- Factor actual: ${currentFactor}`);
+        console.log(`- Productos vendidos: ${productosActuales}`);
+
+        // Reset prediction flag when hour changes before 21:00
+        if (hora < 21 && hasSetPrediction) {
+            console.log('🔄 Reseteando predicción (antes de las 21:00)');
+            setHasSetPrediction(false);
+        }
+
+        // Before 21:00 - Normal calculation
+        if (hora < 21) {
+            console.log('📊 Modo pre-predicción');
+            const nuevoFactor = calcularFactor(productosActuales);
+            updateFirebaseFactor(nuevoFactor);
+            setCurrentFactor(nuevoFactor);
+        }
+        // At 21:00 - Make prediction
+        else if (hora === 21 && !hasSetPrediction) {
             console.log('🎯 Momento de predicción (21:00)');
             const factorPredicho = predecirFactor(productosActuales);
-            console.log(`- Productos en primera hora: ${productosActuales}`);
             console.log(`- Factor predicho: ${factorPredicho}`);
             updateFirebaseFactor(factorPredicho);
             setCurrentFactor(factorPredicho);
             setHasSetPrediction(true);
-        } else if (hora >= 21 && hasSetPrediction) {
-            const factorGradual = calcularFactor(productosActuales);
-            if (factorGradual > currentFactor) {
-                console.log(`- Actualizando factor a: ${factorGradual}`);
-                updateFirebaseFactor(factorGradual);
-                setCurrentFactor(factorGradual);
+        }
+        // After 21:00 - Only increase if exceeds prediction
+        else if (hora >= 21 && hasSetPrediction) {
+            console.log('📈 Modo post-predicción');
+            const factorCalculado = calcularFactor(productosActuales);
+            console.log(`- Factor calculado: ${factorCalculado}`);
+            console.log(`- Factor predicho actual: ${currentFactor}`);
+
+            if (factorCalculado > currentFactor) {
+                console.log(`- Actualizando a nuevo factor: ${factorCalculado}`);
+                updateFirebaseFactor(factorCalculado);
+                setCurrentFactor(factorCalculado);
+            } else {
+                console.log('- Manteniendo factor predicho');
             }
-        } else if (hora < 21) {
-            const nuevoFactor = calcularFactor(productosActuales);
-            updateFirebaseFactor(nuevoFactor);
-            setCurrentFactor(nuevoFactor);
         }
     }, [productosActuales, isActive, testHora, isTestMode, hasSetPrediction, currentFactor, activeStrategy, pricingStrategies]);
 
@@ -179,6 +228,128 @@ const PriceFactor = () => {
                 activeStrategy={activeStrategy}
                 setActiveStrategy={setActiveStrategy}
             />
+
+            {/* Panel de pruebas */}
+            <div className="w-full px-4 mt-6">
+                <button
+                    onClick={() => setShowTestPanel(!showTestPanel)}
+                    className="w-full py-2 bg-gray-800 rounded-lg text-gray-300 text-sm font-medium"
+                >
+                    {showTestPanel ? 'Ocultar panel de pruebas' : 'Mostrar panel de pruebas'}
+                </button>
+
+                {showTestPanel && (
+                    <div className="mt-4 bg-gray-800 rounded-lg p-4">
+                        <h3 className="text-gray-100 font-medium mb-4">Panel de pruebas</h3>
+
+                        <div className="space-y-4">
+                            {/* Control de modo test */}
+                            <div className="flex items-center justify-between">
+                                <span className="text-gray-300">Modo test</span>
+                                <Toggle
+                                    isOn={isTestMode}
+                                    onToggle={() => setIsTestMode(!isTestMode)}
+                                />
+                            </div>
+
+                            {/* Controles de test */}
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="text-xs text-gray-400 mb-1 block">
+                                        Productos vendidos: {testProductos}
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max={VENTAS_MAXIMAS}
+                                        value={testProductos}
+                                        onChange={(e) => setTestProductos(Number(e.target.value))}
+                                        className="w-full"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs text-gray-400 mb-1 block">
+                                        Hora: {testHora}:00
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="19"
+                                        max="23"
+                                        value={testHora}
+                                        onChange={(e) => setTestHora(Number(e.target.value))}
+                                        className="w-full"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Casos de prueba predefinidos */}
+                            <div className="pt-2 border-t border-gray-700">
+                                <h4 className="text-gray-300 text-sm mb-2">Casos de prueba</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setIsTestMode(true);
+                                            setTestHora(20);
+                                            setTestProductos(5);
+                                            setIsActive(true);
+                                            setHasSetPrediction(false);
+                                        }}
+                                        className="px-3 py-2 bg-gray-700 rounded text-sm text-gray-300"
+                                    >
+                                        Baja demanda
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsTestMode(true);
+                                            setTestHora(20);
+                                            setTestProductos(30);
+                                            setIsActive(true);
+                                            setHasSetPrediction(false);
+                                        }}
+                                        className="px-3 py-2 bg-gray-700 rounded text-sm text-gray-300"
+                                    >
+                                        Alta demanda
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsTestMode(true);
+                                            setTestHora(21);
+                                            setIsActive(true);
+                                            setHasSetPrediction(false);
+                                        }}
+                                        className="px-3 py-2 bg-gray-700 rounded text-sm text-gray-300"
+                                    >
+                                        Predicción 21:00
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsTestMode(true);
+                                            setTestHora(22);
+                                            setTestProductos(100);
+                                            setIsActive(true);
+                                            setHasSetPrediction(true);
+                                        }}
+                                        className="px-3 py-2 bg-gray-700 rounded text-sm text-gray-300"
+                                    >
+                                        Post predicción
+                                    </button>
+                                </div>
+
+                                {/* Estado actual */}
+                                <div className="mt-4 p-3 bg-gray-900 rounded-lg text-xs text-gray-400 font-mono">
+                                    <div>isActive: {isActive.toString()}</div>
+                                    <div>hasSetPrediction: {hasSetPrediction.toString()}</div>
+                                    <div>hora: {testHora}:00</div>
+                                    <div>productos: {testProductos}</div>
+                                    <div>factor: {currentFactor}</div>
+                                    <div>estrategia: {activeStrategy}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
