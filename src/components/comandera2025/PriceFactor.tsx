@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFirestore, doc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/configureStore';
 import DynamicPricingGraph from './DynamicPricingGraph';
@@ -25,6 +25,12 @@ const PriceFactor = () => {
     const [isTestMode, setIsTestMode] = useState(false);
     const [testProductos, setTestProductos] = useState(0);
     const [testHora, setTestHora] = useState(20);
+    const [activeStrategy, setActiveStrategy] = useState('balanced');
+    const [pricingStrategies, setPricingStrategies] = useState({
+        conservative: { power: 1.0, maxIncrease: 0.08 },
+        balanced: { power: 0.8, maxIncrease: 0.11 },
+        aggressive: { power: 0.6, maxIncrease: 0.15 }
+    });
 
     // 2. useSelector después de todos los useState
     const totalProductosVendidos = useSelector((state: RootState) => state.data.totalProductosVendidos ?? 0);
@@ -35,9 +41,34 @@ const PriceFactor = () => {
     // 4. Funciones
     const calcularFactor = (ventas: number) => {
         const porcentajeAvance = ventas / VENTAS_MAXIMAS;
-        const factorIncremento = Math.pow(porcentajeAvance, 0.8) * 0.11;
+        const currentStrategy = pricingStrategies[activeStrategy];
+        const factorIncremento = Math.pow(porcentajeAvance, currentStrategy.power) * currentStrategy.maxIncrease;
         return Math.ceil((1 + factorIncremento) * 100) / 100;
     };
+
+    const loadStrategiesFromFirestore = async () => {
+        try {
+            const firestore = getFirestore();
+            const docRef = doc(firestore, 'constantes', 'altaDemanda');
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.pricingStrategies) {
+                    setPricingStrategies(data.pricingStrategies);
+                }
+                if (data.activeStrategy) {
+                    setActiveStrategy(data.activeStrategy);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading strategies:', error);
+        }
+    };
+
+    useEffect(() => {
+        loadStrategiesFromFirestore();
+    }, []);
 
     const predecirFactor = (productosEnPrimeraHora: number) => {
         if (productosEnPrimeraHora >= 25) return 1.11;
@@ -107,7 +138,7 @@ const PriceFactor = () => {
             updateFirebaseFactor(nuevoFactor);
             setCurrentFactor(nuevoFactor);
         }
-    }, [productosActuales, isActive, testHora, isTestMode, hasSetPrediction, currentFactor]);
+    }, [productosActuales, isActive, testHora, isTestMode, hasSetPrediction, currentFactor, activeStrategy, pricingStrategies]);
 
     return (
         <div className="bg-black flex flex-col justify-center items-center rounded-3xl pb-4 pt-4">
@@ -144,7 +175,10 @@ const PriceFactor = () => {
                     </div>
                 </div>
             )}
-            <DynamicPricingGraph />
+            <DynamicPricingGraph
+                activeStrategy={activeStrategy}
+                setActiveStrategy={setActiveStrategy}
+            />
         </div>
     );
 };
