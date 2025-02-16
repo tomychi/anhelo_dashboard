@@ -102,14 +102,12 @@ const PriceFactor = () => {
 
         // Modificamos los thresholds basándonos en el total acumulado
         let porcentajeDelMax;
-        if (productosEnPrimeraHora >= 50) {
+        if (productosEnPrimeraHora >= 25) {
             porcentajeDelMax = 1; // 100% del maxIncrease
-        } else if (productosEnPrimeraHora >= 30) {
+        } else if (productosEnPrimeraHora >= 15) {
             porcentajeDelMax = 0.8; // 80% del maxIncrease
-        } else if (productosEnPrimeraHora >= 20) {
+        } else if (productosEnPrimeraHora >= 10) {
             porcentajeDelMax = 0.6; // 60% del maxIncrease
-        } else {
-            porcentajeDelMax = 0.5; // 50% del maxIncrease
         }
 
         const incremento = currentStrategy.maxIncrease * porcentajeDelMax;
