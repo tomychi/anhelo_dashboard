@@ -179,29 +179,21 @@ const PriceFactor = () => {
     };
 
     const predecirFactor = (productosEnPrimeraHora: number) => {
-        // console.log('\n🎯 Prediciendo factor:');
-        // console.log(`- Productos acumulados: ${productosEnPrimeraHora}`);
-        // console.log(`- Estrategia activa: ${activeStrategy}`);
-
         const currentStrategy = pricingStrategies[activeStrategy];
-        console.log(`- MaxIncrease: ${currentStrategy.maxIncrease}`);
 
-        // Modificamos los thresholds basándonos en el total acumulado
-        let porcentajeDelMax;
+        let porcentajeDelMaxIncrease;
         if (productosEnPrimeraHora >= 25) {
-            porcentajeDelMax = 1; // 100% del maxIncrease
+            porcentajeDelMaxIncrease = 1; // 100% del maxIncrease
         } else if (productosEnPrimeraHora >= 15) {
-            porcentajeDelMax = 0.8; // 80% del maxIncrease
+            porcentajeDelMaxIncrease = 0.8; // 80% del maxIncrease
         } else if (productosEnPrimeraHora >= 10) {
-            porcentajeDelMax = 0.6; // 60% del maxIncrease
+            porcentajeDelMaxIncrease = 0.6; // 60% del maxIncrease
+        } else {
+            porcentajeDelMaxIncrease = 0; // Sin incremento
         }
 
-        const incremento = currentStrategy.maxIncrease * porcentajeDelMax;
-        const factorFinal = Math.ceil((1 + incremento) * 100) / 100;
-
-        // console.log(`- Porcentaje del máximo: ${(porcentajeDelMax * 100).toFixed(0)}%`);
-        // console.log(`- Incremento calculado: ${(incremento * 100).toFixed(1)}%`);
-        // console.log(`- Factor final: ${factorFinal} (+${((factorFinal - 1) * 100).toFixed(1)}%)`);
+        const incremento = currentStrategy.maxIncrease * porcentajeDelMaxIncrease;
+        const factorFinal = 1 + incremento;
 
         return factorFinal;
     };
