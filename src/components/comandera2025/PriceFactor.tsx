@@ -131,27 +131,24 @@ const PriceFactor = () => {
             Object.entries(ventasPorDia).forEach(([fecha, total]) => {
                 console.log(`${fecha}: ${total} productos`);
             });
-
             const maxVenta = Object.entries(ventasPorDia).reduce((max, actual) =>
                 actual[1] > max[1] ? actual : max
             );
 
-            console.log('\nDía con más ventas:', maxVenta[0], 'con', maxVenta[1], 'productos');
-
-            // Leer el valor actual de maxDailySales antes de actualizar
+            // Leer el valor actual de maxDailySales antes de actualizar (para logging)
             const firestore = getFirestore();
             const docRef = doc(firestore, 'constantes', 'altaDemanda');
             const docSnap = await getDoc(docRef);
             const currentMax = docSnap.data()?.maxDailySales?.amount || 0;
 
-            // Solo actualizar si el nuevo máximo es mayor que el histórico
-            if (maxVenta[1] > currentMax) {
-                await updateMaxDailySales(maxVenta[0], maxVenta[1]);
-                console.log('Nuevo récord histórico!');
-            } else {
-                console.log('Máximo histórico actual:', currentMax, 'productos');
-            }
+            // Actualizar siempre con el máximo de los últimos 14 días
+            await updateMaxDailySales(maxVenta[0], maxVenta[1]);
 
+            if (maxVenta[1] !== currentMax) {
+                console.log('Máximo de ventas diarias actualizado:', maxVenta[1], 'productos');
+            } else {
+                console.log('Máximo de ventas diarias sin cambios:', currentMax, 'productos');
+            }
         } catch (error) {
             console.error('Error obteniendo datos históricos:', error);
         }
