@@ -85,9 +85,8 @@ const PriceFactor = () => {
                 }
                 // Leemos el máximo histórico y lo usamos como base para ventasMaximas
                 if (data.maxDailySales?.amount) {
-                    const nuevoMaximo = Math.ceil(data.maxDailySales.amount * 1.1); // 10% más que el máximo histórico
-                    setVentasMaximas(nuevoMaximo);
-                    console.log('Ventas máximas actualizadas:', nuevoMaximo);
+                    setVentasMaximas(data.maxDailySales.amount);
+                    console.log('Ventas máximas actualizadas:', data.maxDailySales.amount);
                 }
             }
         } catch (error) {
