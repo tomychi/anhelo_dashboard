@@ -8,7 +8,6 @@ export const Notificaciones: React.FC = () => {
     const [pedidosConReclamo, setPedidosConReclamo] = useState<PedidoProps[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Función para formatear fecha y hora
     const formatearFechaHora = (fecha: string, hora: string) => {
         const [dia, mes, anio] = fecha.split("/");
         const meses = [
@@ -16,7 +15,7 @@ export const Notificaciones: React.FC = () => {
             "jul", "ago", "sep", "oct", "nov", "dic"
         ];
         const mesTexto = meses[parseInt(mes, 10) - 1];
-        return `${parseInt(dia, 10)} ${mesTexto} •  ${hora}`;
+        return `${parseInt(dia, 10)} ${mesTexto} • ${hora}`;
     };
 
     useEffect(() => {
@@ -92,7 +91,14 @@ export const Notificaciones: React.FC = () => {
         }
     };
 
-    const handleResolverClick = async (pedidoId: string, fecha: string, total: number, alias: string | undefined, descripcion: string | undefined) => {
+    const handleResolverClick = async (
+        pedidoId: string,
+        fecha: string,
+        total: number,
+        alias: string | undefined,
+        descripcion: string | undefined,
+        resuelto: boolean | undefined
+    ) => {
         const textoParaCopiar = `Total: ${currencyFormat(total)}\nAlias: ${alias || "Desconocido"}\nDescripción: ${descripcion || "Sin descripción"}`;
 
         try {
@@ -102,7 +108,10 @@ export const Notificaciones: React.FC = () => {
             console.error("Error al copiar al portapapeles:", error);
         }
 
-        await marcarReclamoComoResuelto(pedidoId, fecha);
+        // Solo marcamos como resuelto en la DB si no está ya resuelto
+        if (!resuelto) {
+            await marcarReclamoComoResuelto(pedidoId, fecha);
+        }
     };
 
     return (
@@ -132,18 +141,18 @@ export const Notificaciones: React.FC = () => {
                                     </div>
                                     <div className="ml-4">
                                         <button
-                                            onClick={!pedido.reclamo?.resuelto ? () => handleResolverClick(
+                                            onClick={() => handleResolverClick(
                                                 pedido.id,
                                                 pedido.fecha,
                                                 pedido.total,
                                                 pedido.reclamo?.alias,
-                                                pedido.reclamo?.descripcion
-                                            ) : undefined}
+                                                pedido.reclamo?.descripcion,
+                                                pedido.reclamo?.resuelto
+                                            )}
                                             className={`px-3 h-10 rounded-full flex flex-row gap-2 items-center ${pedido.reclamo?.resuelto
-                                                ? 'bg-green-200 text-green-800 cursor-default'
-                                                : 'bg-gray-500 text-black'
+                                                    ? 'bg-green-200 text-green-800'
+                                                    : 'bg-gray-500 text-black'
                                                 }`}
-                                            disabled={pedido.reclamo?.resuelto}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4">
                                                 <path fill-rule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clip-rule="evenodd" />
