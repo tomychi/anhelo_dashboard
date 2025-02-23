@@ -110,7 +110,7 @@ export const Notificaciones: React.FC = () => {
                                 <div className="flex flex-row px-4 pb-2 justify-between items-center">
                                     {/* izquierda */}
                                     <div className="flex flex-col">
-                                        <p className="text-xl font-bold">${pedido.total}</p>
+                                        <p className="text-2xl font-bold">${pedido.total}</p>
                                         {/* body */}
                                         <div className="flex flex-col">
                                             <p className="text-xs font-light text-gray-400">
