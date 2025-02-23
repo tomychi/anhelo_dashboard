@@ -112,13 +112,14 @@ export const Notificaciones: React.FC = () => {
                                     <div className="flex flex-col">
                                         <p className="text-2xl font-bold">${pedido.total}</p>
                                         {/* body */}
-                                        <div className="">
-                                            <p className="text-sm font-light">
+                                        <div className="flex flex-col">
+                                            <p className="text-sm font-light text-gray-400">
                                                 {pedido.reclamo?.alias || "Desconocido"}:{" "}
                                                 {pedido.reclamo?.descripcion || "Sin descripción"}.{" "}
-                                                <span className="text-sm ml-2 font-light text-gray-400">
-                                                    {formatearFechaHora(pedido.fecha, pedido.hora)}
-                                                </span>
+
+                                            </p>
+                                            <p className="text-sm font-light text-gray-400">
+                                                {formatearFechaHora(pedido.fecha, pedido.hora)}
                                             </p>
                                         </div>
                                     </div>
