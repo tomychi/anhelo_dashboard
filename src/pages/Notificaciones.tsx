@@ -97,12 +97,12 @@ export const Notificaciones: React.FC = () => {
                             className=""
                         >
                             <div className="flex flex-col space-y-2">
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-baseline">
+                                    <p className="text-2xl">${pedido.total}</p>
                                     <span className="text-sm text-gray-500">
                                         {pedido.fecha} - {pedido.hora}
                                     </span>
                                 </div>
-                                <p>${pedido.total}</p>
                                 <div className="border-t pt-2">
                                     <p>
                                         {pedido.reclamo?.alias || "Desconocido"}:{" "}
