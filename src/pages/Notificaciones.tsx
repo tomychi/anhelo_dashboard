@@ -118,7 +118,7 @@ export const Notificaciones: React.FC = () => {
                                         {!pedido.reclamo?.resuelto && (
                                             <button
                                                 onClick={() => marcarReclamoComoResuelto(pedido.id, pedido.fecha)}
-                                                className=" bg-gray-400  px-3 h-10 rounded-full flex flex-row gap-2 items-center "
+                                                className=" bg-gray-300  px-3 h-10 rounded-full flex flex-row gap-2 items-center "
                                             >
 
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 text-black">
