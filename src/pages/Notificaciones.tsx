@@ -85,18 +85,18 @@ export const Notificaciones: React.FC = () => {
 
     return (
         <div className="min-h-screen font-coolvetica bg-gray-100 ">
-            <h1 className="font-bold mb-6 p-4">Ultimos 3 dias</h1>
+            <h1 className="font-bold px-4 pt-6">Ultimos 3 dias</h1>
 
             {loading ? (
                 <p className="text-xs p-4">Cargando pedidos con reclamos...</p>
             ) : pedidosConReclamo.length > 0 ? (
-                <ul className="space-y-2">
+                <ul >
                     {pedidosConReclamo.map((pedido) => (
                         <li
                             key={pedido.id}
                             className=""
                         >
-                            <div className="flex flex-row px-4 border-b border-black pb-4 justify-between items-center">
+                            <div className="flex flex-row px-4 border-b border-gray-300 py-4 justify-between items-center">
                                 {/* izquierda */}
                                 <div className="flex flex-col">
                                     <p className="text-4xl font-bold">${pedido.total}</p>
