@@ -103,9 +103,9 @@ export const Notificaciones: React.FC = () => {
                                     {!pedido.reclamo?.resuelto && (
                                         <button
                                             onClick={() => marcarReclamoComoResuelto(pedido.id, pedido.fecha)}
-                                            className=" bg-green-500 text-gray-100 px-3 h-10 rounded-lg "
+                                            className=" bg-black text-gray-100 px-3 h-10 rounded-lg "
                                         >
-                                            Resuelto
+                                            Resolver
                                         </button>
                                     )}
                                 </div>
