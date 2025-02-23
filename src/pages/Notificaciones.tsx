@@ -115,7 +115,7 @@ export const Notificaciones: React.FC = () => {
                                             onClick={() => marcarReclamoComoResuelto(pedido.id, pedido.fecha)}
                                             className="mt-2 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition duration-200"
                                         >
-                                            Marcar como resuelto
+                                            Resuelto
                                         </button>
                                     )}
                                 </div>
