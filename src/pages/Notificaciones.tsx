@@ -63,11 +63,9 @@ export const Notificaciones: React.FC = () => {
                                 </p>
                                 <div className="border-t pt-2">
                                     <p>
-                                        <strong>Descripcion:</strong> {pedido.reclamo?.descripcion || "Sin descripción"}
+                                        {pedido.reclamo?.alias || "Desconocido"}: {pedido.reclamo?.descripcion || "Sin descripción"}
                                     </p>
-                                    <p>
-                                        <strong>Alias:</strong> {pedido.reclamo?.alias || "Desconocido"}
-                                    </p>
+
 
                                     <p>
                                         <strong>Resuelto:</strong>{" "}
