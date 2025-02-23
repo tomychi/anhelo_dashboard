@@ -150,8 +150,8 @@ export const Notificaciones: React.FC = () => {
                                                 pedido.reclamo?.resuelto
                                             )}
                                             className={`px-3 h-10 rounded-full flex flex-row gap-2 items-center ${pedido.reclamo?.resuelto
-                                                    ? 'bg-green-200 text-green-800'
-                                                    : 'bg-gray-500 text-black'
+                                                ? 'bg-green-200 text-green-800'
+                                                : 'bg-gray-300 text-black'
                                                 }`}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4">
