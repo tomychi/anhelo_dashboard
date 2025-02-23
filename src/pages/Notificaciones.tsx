@@ -114,7 +114,6 @@ export const Notificaciones: React.FC = () => {
 
                                     {/* derecha */}
                                     <div className="ml-4">
-
                                         {/* Botón para marcar como resuelto */}
                                         {!pedido.reclamo?.resuelto && (
                                             <button
