@@ -99,7 +99,7 @@ export const Notificaciones: React.FC = () => {
                             <div className="flex flex-col ">
                                 <div className="flex justify-between items-baseline">
                                     <p className="text-3xl font-bold">${pedido.total}</p>
-                                    <span className="text-xs text-gray-400">
+                                    <span className="text-xs font-light text-gray-400">
                                         {pedido.fecha} - {pedido.hora}
                                     </span>
                                 </div>
