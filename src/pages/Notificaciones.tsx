@@ -99,14 +99,14 @@ export const Notificaciones: React.FC = () => {
                             <div className="flex flex-col ">
                                 <div className="flex justify-between items-baseline">
                                     <p className="text-3xl font-bold">${pedido.total}</p>
-                                    <span className="text-xs font-light text-gray-400">
-                                        {pedido.fecha} - {pedido.hora}
-                                    </span>
+
                                 </div>
                                 <div className=" pt-2">
                                     <p className="text-sm font-light">
                                         {pedido.reclamo?.alias || "Desconocido"}:{" "}
-                                        {pedido.reclamo?.descripcion || "Sin descripción"}
+                                        {pedido.reclamo?.descripcion || "Sin descripción"}. <span className="text-sm ml-2 font-light text-gray-400">
+                                            {pedido.fecha} - {pedido.hora}
+                                        </span>
                                     </p>
 
                                     {/* Botón para marcar como resuelto */}
