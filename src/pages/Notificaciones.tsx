@@ -85,7 +85,9 @@ export const Notificaciones: React.FC = () => {
 
     return (
         <div className="min-h-screen font-coolvetica bg-gray-100 ">
-            <h1 className="font-bold px-4 pt-6">Ultimos 3 dias</h1>
+            <h2 className="font-bold text-3xl px-4 pt-6 ">Notificaciones</h2>
+
+            <h2 className="font-bold px-4 pt-4 pb-4">Compensaciones</h2>
 
             {loading ? (
                 <p className="text-xs p-4">Cargando pedidos con reclamos...</p>
@@ -96,10 +98,10 @@ export const Notificaciones: React.FC = () => {
                             key={pedido.id}
                             className=""
                         >
-                            <div className="flex flex-row px-4 border-b border-gray-300 py-4 justify-between items-center">
+                            <div className="flex flex-row px-4 border-b border-gray-300 py-2 justify-between items-center">
                                 {/* izquierda */}
                                 <div className="flex flex-col">
-                                    <p className="text-4xl font-bold">${pedido.total}</p>
+                                    <p className="text-2xl font-bold">${pedido.total}</p>
                                     {/* body */}
                                     <div className=" ">
                                         <p className="text-sm font-light">
