@@ -59,7 +59,7 @@ export const Notificaciones: React.FC = () => {
                                     </span>
                                 </div>
                                 <p>
-                                    <strong>Total:</strong> ${pedido.total}
+                                    ${pedido.total}
                                 </p>
                                 <div className="border-t pt-2">
                                     <p>
