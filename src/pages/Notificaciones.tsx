@@ -149,7 +149,7 @@ export const Notificaciones: React.FC = () => {
                                 </div>
 
                                 {/* border */}
-                                <div className="flex justify-end ">
+                                <div className="flex justify-end mt-1 ">
                                     <div className="h-[1px] w-4/5 bg-gray-300" />
                                 </div>
                             </div>
