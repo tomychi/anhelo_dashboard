@@ -43,7 +43,7 @@ export const Notificaciones: React.FC = () => {
             <h1 className=" font-bold mb-6">Ultimos 3 dias</h1>
 
             {loading ? (
-                <p className="text-lg">Cargando pedidos con reclamos...</p>
+                <p className="text-xs">Cargando pedidos con reclamos...</p>
             ) : pedidosConReclamo.length > 0 ? (
                 <ul className="space-y-4">
                     {pedidosConReclamo.map((pedido) => (
