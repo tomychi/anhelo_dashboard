@@ -15,7 +15,7 @@ export const Notificaciones: React.FC = () => {
             "jul", "ago", "sep", "oct", "nov", "dic"
         ];
         const mesTexto = meses[parseInt(mes, 10) - 1]; // Convierte el mes numérico a texto
-        return `${parseInt(dia, 10)} ${mesTexto} - ${hora} hs`; // Quita ceros iniciales del día y agrega "hs"
+        return `${parseInt(dia, 10)} ${mesTexto} - ${hora}`; // Quita ceros iniciales del día y agrega "hs"
     };
 
     // useEffect para obtener los pedidos con reclamo de los últimos 3 días
@@ -95,7 +95,7 @@ export const Notificaciones: React.FC = () => {
 
     return (
         <div className="min-h-screen font-coolvetica bg-gray-100 ">
-            <h2 className="font-bold text-3xl px-4 pt-6 ">Notificaciones</h2>
+            <h2 className="font-bold text-3xl  px-4 pt-6 ">Notificaciones</h2>
 
             <h2 className="font-bold px-4 pt-4 pb-2">Compensaciones</h2>
 
@@ -110,15 +110,15 @@ export const Notificaciones: React.FC = () => {
                                 <div className="flex flex-row px-4 pb-2 justify-between items-center">
                                     {/* izquierda */}
                                     <div className="flex flex-col">
-                                        <p className="text-2xl font-bold">${pedido.total}</p>
+                                        <p className="text-3xl font-bold">${pedido.total}</p>
                                         {/* body */}
                                         <div className="flex flex-col">
-                                            <p className="text-sm font-light text-gray-400">
+                                            <p className="text-xs font-light text-gray-400">
                                                 {pedido.reclamo?.alias || "Desconocido"}:{" "}
                                                 {pedido.reclamo?.descripcion || "Sin descripción"}.{" "}
 
                                             </p>
-                                            <p className="text-sm font-light text-gray-400">
+                                            <p className="text-xs font-light text-gray-400">
                                                 {formatearFechaHora(pedido.fecha, pedido.hora)}
                                             </p>
                                         </div>
