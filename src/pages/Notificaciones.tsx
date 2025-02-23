@@ -140,8 +140,8 @@ export const Notificaciones: React.FC = () => {
                                                 pedido.reclamo?.descripcion
                                             ) : undefined}
                                             className={`px-3 h-10 rounded-full flex flex-row gap-2 items-center ${pedido.reclamo?.resuelto
-                                                    ? 'bg-green-100 text-green-800 cursor-default'
-                                                    : 'bg-gray-300 text-black'
+                                                ? 'bg-green-200 text-green-800 cursor-default'
+                                                : 'bg-gray-500 text-black'
                                                 }`}
                                             disabled={pedido.reclamo?.resuelto}
                                         >
