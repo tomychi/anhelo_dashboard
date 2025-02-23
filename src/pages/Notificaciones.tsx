@@ -16,7 +16,7 @@ export const Notificaciones: React.FC = () => {
             "jul", "ago", "sep", "oct", "nov", "dic"
         ];
         const mesTexto = meses[parseInt(mes, 10) - 1]; // Convierte el mes numérico a texto
-        return `${parseInt(dia, 10)} ${mesTexto} - ${hora}`; // Quita ceros iniciales del día y agrega "hs"
+        return `${parseInt(dia, 10)} ${mesTexto} •  ${hora}`; // Quita ceros iniciales del día y agrega "hs"
     };
 
     // useEffect para obtener los pedidos con reclamo de los últimos 3 días
