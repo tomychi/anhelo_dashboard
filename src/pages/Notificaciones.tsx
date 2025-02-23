@@ -94,7 +94,7 @@ export const Notificaciones: React.FC = () => {
                     {pedidosConReclamo.map((pedido) => (
                         <li
                             key={pedido.id}
-                            className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
+                            className=""
                         >
                             <div className="flex flex-col space-y-2">
                                 <div className="flex justify-between items-center">
@@ -108,10 +108,7 @@ export const Notificaciones: React.FC = () => {
                                         {pedido.reclamo?.alias || "Desconocido"}:{" "}
                                         {pedido.reclamo?.descripcion || "Sin descripción"}
                                     </p>
-                                    <p>
-                                        <strong>Resuelto:</strong>{" "}
-                                        {pedido.reclamo?.resuelto ? "Sí" : "No"}
-                                    </p>
+
                                     {/* Botón para marcar como resuelto */}
                                     {!pedido.reclamo?.resuelto && (
                                         <button
