@@ -40,7 +40,7 @@ export const Notificaciones: React.FC = () => {
 
     return (
         <div className="min-h-screen font-coolvetica bg-gray-100 p-4">
-            <h1 className="text-3xl font-bold mb-6">Notificaciones</h1>
+            <h1 className=" font-bold mb-6">Ultimos 3 dias</h1>
 
             {loading ? (
                 <p className="text-lg">Cargando pedidos con reclamos...</p>
