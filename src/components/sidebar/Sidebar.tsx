@@ -40,16 +40,18 @@ export const Sidebar = () => {
 				};
 
 				const pedidos = await ReadDataForDateRange<PedidoProps>("pedidos", dateRange);
-				const pedidosConReclamo = pedidos.filter(order => 'reclamo' in order);
+				const pedidosConReclamoNoResuelto = pedidos.filter(
+					(order) => 'reclamo' in order && order.reclamo?.resuelto === false
+				);
 
-				// Actualizamos el estado con la cantidad de reclamos
-				setHasReclamos(pedidosConReclamo.length > 0);
-				setReclamosCount(pedidosConReclamo.length);
+				// Actualizamos el estado con la cantidad de reclamos no resueltos
+				setHasReclamos(pedidosConReclamoNoResuelto.length > 0);
+				setReclamosCount(pedidosConReclamoNoResuelto.length);
 
-				if (pedidosConReclamo.length > 0) {
+				if (pedidosConReclamoNoResuelto.length > 0) {
 					console.log(
-						"Pedidos con reclamo de los últimos 3 días desde Sidebar:",
-						pedidosConReclamo.map(order => ({
+						"Pedidos con reclamo NO resuelto de los últimos 3 días desde Sidebar:",
+						pedidosConReclamoNoResuelto.map((order) => ({
 							id: order.id,
 							fecha: order.fecha,
 							hora: order.hora,
@@ -59,12 +61,12 @@ export const Sidebar = () => {
 								descripcion: order.reclamo?.descripcion,
 								fecha: order.reclamo?.fecha,
 								resuelto: order.reclamo?.resuelto,
-								gift: order.reclamo?.gift || []
-							}
+								gift: order.reclamo?.gift || [],
+							},
 						}))
 					);
 				} else {
-					console.log("No hay pedidos con reclamo en los últimos 3 días en Sidebar.");
+					console.log("No hay pedidos con reclamo NO resuelto en los últimos 3 días en Sidebar.");
 				}
 			} catch (error) {
 				console.error("Error al obtener pedidos con reclamo:", error);
