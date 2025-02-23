@@ -99,19 +99,21 @@ export const Notificaciones: React.FC = () => {
         descripcion: string | undefined,
         resuelto: boolean | undefined
     ) => {
-        const textoParaCopiar = `Total: ${currencyFormat(total)}\nAlias: ${alias || "Desconocido"}\nDescripción: ${descripcion || "Sin descripción"}`;
+        // Crear el texto del mensaje
+        const textoMensaje = `Total: ${currencyFormat(total)}\nAlias: ${alias || "Desconocido"}\nDescripción: ${descripcion || "Sin descripción"}`;
 
-        try {
-            await navigator.clipboard.writeText(textoParaCopiar);
-            console.log("Texto copiado al portapapeles:", textoParaCopiar);
-        } catch (error) {
-            console.error("Error al copiar al portapapeles:", error);
-        }
-
-        // Solo marcamos como resuelto en la DB si no está ya resuelto
+        // Solo marcamos como resuelto si no lo está ya
         if (!resuelto) {
             await marcarReclamoComoResuelto(pedidoId, fecha);
         }
+
+        // Codificar el texto para la URL de WhatsApp
+        const textoCodificado = encodeURIComponent(textoMensaje);
+        const numeroWhatsApp = "+5493584127742";
+        const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${textoCodificado}`;
+
+        // Redireccionar a WhatsApp
+        window.location.href = urlWhatsApp;
     };
 
     return (
