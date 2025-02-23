@@ -15,9 +15,10 @@ export const Sidebar = () => {
 	const [currentTranslate, setCurrentTranslate] = useState(0);
 	const [menuTranslate, setMenuTranslate] = useState(0);
 	const [dragStart, setDragStart] = useState<number | null>(null);
-	const [hasReclamos, setHasReclamos] = useState(false);
 	const [menuDragStart, setMenuDragStart] = useState<number | null>(null);
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+	const [hasReclamos, setHasReclamos] = useState(false);
+	const [reclamosCount, setReclamosCount] = useState(0); // Nuevo estado para contar reclamos
 	const modalRef = useRef<HTMLDivElement>(null);
 	const menuModalRef = useRef<HTMLDivElement>(null);
 
@@ -25,6 +26,55 @@ export const Sidebar = () => {
 		(state: RootState) => state.auth?.user?.email
 	);
 	const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+
+	useEffect(() => {
+		const fetchPedidosConReclamo = async () => {
+			try {
+				const today = new Date();
+				const threeDaysAgo = new Date();
+				threeDaysAgo.setDate(today.getDate() - 3);
+
+				const dateRange = {
+					startDate: threeDaysAgo.toISOString().split("T")[0],
+					endDate: today.toISOString().split("T")[0],
+				};
+
+				const pedidos = await ReadDataForDateRange<PedidoProps>("pedidos", dateRange);
+				const pedidosConReclamo = pedidos.filter(order => 'reclamo' in order);
+
+				// Actualizamos el estado con la cantidad de reclamos
+				setHasReclamos(pedidosConReclamo.length > 0);
+				setReclamosCount(pedidosConReclamo.length);
+
+				if (pedidosConReclamo.length > 0) {
+					console.log(
+						"Pedidos con reclamo de los últimos 3 días desde Sidebar:",
+						pedidosConReclamo.map(order => ({
+							id: order.id,
+							fecha: order.fecha,
+							hora: order.hora,
+							total: order.total,
+							reclamo: {
+								alias: order.reclamo?.alias,
+								descripcion: order.reclamo?.descripcion,
+								fecha: order.reclamo?.fecha,
+								resuelto: order.reclamo?.resuelto,
+								gift: order.reclamo?.gift || []
+							}
+						}))
+					);
+				} else {
+					console.log("No hay pedidos con reclamo en los últimos 3 días en Sidebar.");
+				}
+			} catch (error) {
+				console.error("Error al obtener pedidos con reclamo:", error);
+				setHasReclamos(false);
+				setReclamosCount(0);
+			}
+		};
+
+		fetchPedidosConReclamo();
+	}, []);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -78,7 +128,6 @@ export const Sidebar = () => {
 		setDragStart(null);
 	};
 
-	// Menu drag handlers
 	const handleMenuTouchStart = (e: React.TouchEvent) => {
 		setMenuDragStart(e.touches[0].clientY);
 	};
@@ -185,7 +234,7 @@ export const Sidebar = () => {
 		},
 		{
 			to: "/notificaciones",
-			text: "Notificaciones",
+			text: hasReclamos ? `Notificaciones (${reclamosCount})` : "Notificaciones", // Mostrar conteo si hay reclamos
 			icon: (
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -291,7 +340,6 @@ export const Sidebar = () => {
 					</NavLink>
 				</div>
 			</div>
-			{/* Profile Menu Items */}
 			<div className="mt-4">
 				{profileMenuItems.map((item, index) => (
 					<NavLink
@@ -304,7 +352,6 @@ export const Sidebar = () => {
 					</NavLink>
 				))}
 			</div>
-			{/* Logout Button */}
 			<div className="mr-8">
 				<button
 					onClick={handleLogout}
@@ -326,17 +373,15 @@ export const Sidebar = () => {
 				}}
 				onClick={() => setIsProfileOpen(false)}
 			/>
-
 			<div
 				ref={modalRef}
-				className="relative bg-gray-100 w-full rounded-b-lg  pt-10 transition-transform duration-300 touch-none"
+				className="relative bg-gray-100 w-full rounded-b-lg pt-10 transition-transform duration-300 touch-none"
 				style={{
 					transform: `translateY(${-currentTranslate}px)`,
 					maxHeight: "90vh",
 					overflowY: "auto",
 				}}
 			>
-				{/* Drag Handle */}
 				<div
 					className="absolute bottom-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
 					onTouchStart={handleTouchStart}
@@ -348,8 +393,6 @@ export const Sidebar = () => {
 						<div className="w-12 h-1 bg-gray-300 rounded-full" />
 					</div>
 				</div>
-
-				{/* Profile Content */}
 				<div className="px-4 pb-4 flex justify-center flex-col items-center">
 					<div className="text-2xl font-bold">
 						{isMarketingUser ? "Lucho Castillo" : "Tobías Azcurra"}
@@ -358,8 +401,6 @@ export const Sidebar = () => {
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
 					</div>
 				</div>
-
-				{/* Principales acciones */}
 				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 border-b border-black border-opacity-10">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
 						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
@@ -415,8 +456,6 @@ export const Sidebar = () => {
 						</div>
 					</NavLink>
 				</div>
-
-				{/* Menu Items */}
 				<div className="flex flex-col pt-4">
 					{profileMenuItems.map((item, index) => (
 						<NavLink
@@ -430,8 +469,6 @@ export const Sidebar = () => {
 						</NavLink>
 					))}
 				</div>
-
-				{/* Logout Button */}
 				<div className="mx-4">
 					<button
 						onClick={handleLogout}
@@ -443,55 +480,6 @@ export const Sidebar = () => {
 			</div>
 		</div>
 	);
-
-	// useEffect para verificar pedidos con reclamo en los últimos 3 días
-	useEffect(() => {
-		const fetchPedidosConReclamo = async () => {
-			try {
-				const today = new Date();
-				const threeDaysAgo = new Date();
-				threeDaysAgo.setDate(today.getDate() - 3);
-
-				const dateRange = {
-					startDate: threeDaysAgo.toISOString().split("T")[0],
-					endDate: today.toISOString().split("T")[0],
-				};
-
-				const pedidos = await ReadDataForDateRange<PedidoProps>("pedidos", dateRange);
-				const pedidosConReclamo = pedidos.filter(order => 'reclamo' in order);
-
-				// Actualizamos el estado según si hay reclamos
-				setHasReclamos(pedidosConReclamo.length > 0);
-
-				if (pedidosConReclamo.length > 0) {
-					console.log(
-						"Pedidos con reclamo de los últimos 3 días desde Sidebar:",
-						pedidosConReclamo.map(order => ({
-							id: order.id,
-							fecha: order.fecha,
-							hora: order.hora,
-							total: order.total,
-							reclamo: {
-								alias: order.reclamo?.alias,
-								descripcion: order.reclamo?.descripcion,
-								fecha: order.reclamo?.fecha,
-								resuelto: order.reclamo?.resuelto,
-								gift: order.reclamo?.gift || []
-							}
-						}))
-					);
-				} else {
-					console.log("No hay pedidos con reclamo en los últimos 3 días en Sidebar.");
-				}
-			} catch (error) {
-				console.error("Error al obtener pedidos con reclamo:", error);
-				setHasReclamos(false); // En caso de error, asumimos que no hay reclamos
-			}
-		};
-
-		fetchPedidosConReclamo();
-	}, []);
-
 
 	return (
 		<>
@@ -521,27 +509,21 @@ export const Sidebar = () => {
 							</svg>
 						</div>
 					</button>
-
 					<div className="relative">
 						<button
 							onClick={toggleProfile}
 							className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer"
 						>
 							{isMarketingUser ? "LC" : "TA"}
-							{/* Punto rojo condicionado por hasReclamos */}
 							{hasReclamos && (
 								<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
 							)}
 						</button>
-
-						{/* Render appropriate profile menu based on screen size */}
 						{isProfileOpen &&
 							(isMobile ? renderMobileProfile() : renderDesktopProfile())}
 					</div>
 				</div>
 			</div>
-
-			{/* Menu Modal */}
 			{isMenuOpen && (
 				<div className="fixed inset-0 z-50 flex items-start justify-center">
 					<div
@@ -552,7 +534,6 @@ export const Sidebar = () => {
 						}}
 						onClick={() => setIsMenuOpen(false)}
 					/>
-
 					<div
 						ref={menuModalRef}
 						className="relative bg-gray-100 rounded-b-lg w-full pb-12 transition-transform duration-300 touch-none pt-8"
@@ -561,7 +542,6 @@ export const Sidebar = () => {
 							overflowY: "auto",
 						}}
 					>
-						{/* Drag handle for menu */}
 						{isMobile && (
 							<div
 								className="absolute bottom-0 left-0 right-0 h-6 cursor-grab active:cursor-grabbing"
@@ -575,7 +555,6 @@ export const Sidebar = () => {
 								</div>
 							</div>
 						)}
-
 						<nav className="px-4 h-full overflow-y-auto">
 							<ul className="flex flex-col gap-4">
 								{menuItems.map((item, index) => (
