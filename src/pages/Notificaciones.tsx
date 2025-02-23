@@ -99,16 +99,6 @@ export const Notificaciones: React.FC = () => {
                             <div className="flex flex-col ">
                                 <div className="flex justify-between items-baseline">
                                     <p className="text-3xl font-bold">${pedido.total}</p>
-
-                                </div>
-                                <div className=" pt-2">
-                                    <p className="text-sm font-light">
-                                        {pedido.reclamo?.alias || "Desconocido"}:{" "}
-                                        {pedido.reclamo?.descripcion || "Sin descripción"}. <span className="text-sm ml-2 font-light text-gray-400">
-                                            {pedido.fecha} - {pedido.hora}
-                                        </span>
-                                    </p>
-
                                     {/* Botón para marcar como resuelto */}
                                     {!pedido.reclamo?.resuelto && (
                                         <button
@@ -118,6 +108,16 @@ export const Notificaciones: React.FC = () => {
                                             Resuelto
                                         </button>
                                     )}
+                                </div>
+                                <div className=" pt-2">
+                                    <p className="text-sm font-light">
+                                        {pedido.reclamo?.alias || "Desconocido"}:{" "}
+                                        {pedido.reclamo?.descripcion || "Sin descripción"}. <span className="text-sm ml-2 font-light text-gray-400">
+                                            {pedido.fecha} - {pedido.hora}
+                                        </span>
+                                    </p>
+
+
                                 </div>
                             </div>
                         </li>
