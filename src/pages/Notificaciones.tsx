@@ -7,6 +7,17 @@ export const Notificaciones: React.FC = () => {
     const [pedidosConReclamo, setPedidosConReclamo] = useState<PedidoProps[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Función para formatear fecha y hora
+    const formatearFechaHora = (fecha: string, hora: string) => {
+        const [dia, mes, anio] = fecha.split("/"); // Divide la fecha en día, mes y año
+        const meses = [
+            "ene", "feb", "mar", "abr", "may", "jun",
+            "jul", "ago", "sep", "oct", "nov", "dic"
+        ];
+        const mesTexto = meses[parseInt(mes, 10) - 1]; // Convierte el mes numérico a texto
+        return `${parseInt(dia, 10)} ${mesTexto} - ${hora} hs`; // Quita ceros iniciales del día y agrega "hs"
+    };
+
     // useEffect para obtener los pedidos con reclamo de los últimos 3 días
     useEffect(() => {
         const fetchPedidosConReclamo = async () => {
@@ -56,7 +67,7 @@ export const Notificaciones: React.FC = () => {
                             ...pedido,
                             reclamo: {
                                 ...pedido.reclamo,
-                                resuelto: true, // Cambiamos resuelto a true
+                                resuelto: true,
                             },
                         };
                     }
@@ -69,7 +80,6 @@ export const Notificaciones: React.FC = () => {
                 });
             });
 
-            // Actualizamos el estado local para reflejar el cambio inmediatamente
             setPedidosConReclamo(prevPedidos =>
                 prevPedidos.map(pedido =>
                     pedido.id === pedidoId && pedido.reclamo
@@ -92,26 +102,22 @@ export const Notificaciones: React.FC = () => {
             {loading ? (
                 <p className="text-xs p-4">Cargando pedidos con reclamos...</p>
             ) : pedidosConReclamo.length > 0 ? (
-                <ul >
+                <ul>
                     {pedidosConReclamo.map((pedido) => (
-                        <li
-                            key={pedido.id}
-                            className=""
-                        >
-                            <div className=" flex flex-col  pt-2 ">
-
+                        <li key={pedido.id} className="">
+                            <div className="flex flex-col pt-2">
                                 {/* contenido */}
                                 <div className="flex flex-row px-4 pb-2 justify-between items-center">
-
                                     {/* izquierda */}
                                     <div className="flex flex-col">
                                         <p className="text-2xl font-bold">${pedido.total}</p>
                                         {/* body */}
-                                        <div className=" ">
+                                        <div className="">
                                             <p className="text-sm font-light">
                                                 {pedido.reclamo?.alias || "Desconocido"}:{" "}
-                                                {pedido.reclamo?.descripcion || "Sin descripción"}. <span className="text-sm ml-2 font-light text-gray-400">
-                                                    {pedido.fecha} - {pedido.hora}
+                                                {pedido.reclamo?.descripcion || "Sin descripción"}.{" "}
+                                                <span className="text-sm ml-2 font-light text-gray-400">
+                                                    {formatearFechaHora(pedido.fecha, pedido.hora)}
                                                 </span>
                                             </p>
                                         </div>
