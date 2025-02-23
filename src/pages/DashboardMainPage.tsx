@@ -19,7 +19,7 @@ import {
 	ComanderaAutomatizada,
 } from "../pages";
 import { MonthData } from "./MonthData";
-import RegistroHorario from "./RegistroHorario";
+import RegistroHorario from "./Notificaciones";
 import { Stock } from "./Stock";
 import RegistroEmpleado from "./Empleados";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
@@ -52,6 +52,7 @@ export const DashboardMainPage = () => {
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
 						<Route path="seguidores" element={<Seguidores />} />
+						<Route path="notificaciones" element={<RegistroHorario />} />
 						<Route path="campañaDetalle/:titulo" element={<CampañaDetalle />} />
 						<Route path="clientes" element={<Clientes />} />
 						<Route path="productosVendidos" element={<ProductosVendidos />} />

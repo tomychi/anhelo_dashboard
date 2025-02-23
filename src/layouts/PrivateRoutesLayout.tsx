@@ -4,7 +4,7 @@ import { Comandera, ComanderaAutomatizada, Dashboard, Equipo } from "../pages";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
-import RegistroHorario from "../pages/RegistroHorario";
+import RegistroHorario from "../pages/Notificaciones";
 
 export const PrivateRoutesLayout = () => {
 	const location = useLocation();

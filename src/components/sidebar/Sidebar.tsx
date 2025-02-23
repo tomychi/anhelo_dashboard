@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { logoutSuccess } from "../../redux/auth/authAction";
 import Absolute from "../../assets/absoluteIsologo.avif";
+import { ReadDataForDateRange } from "../../firebase/ReadData";
+import { PedidoProps } from "../../types/types";
 
 export const Sidebar = () => {
 	const navigate = useNavigate();
@@ -13,6 +15,7 @@ export const Sidebar = () => {
 	const [currentTranslate, setCurrentTranslate] = useState(0);
 	const [menuTranslate, setMenuTranslate] = useState(0);
 	const [dragStart, setDragStart] = useState<number | null>(null);
+	const [hasReclamos, setHasReclamos] = useState(false);
 	const [menuDragStart, setMenuDragStart] = useState<number | null>(null);
 	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -441,6 +444,55 @@ export const Sidebar = () => {
 		</div>
 	);
 
+	// useEffect para verificar pedidos con reclamo en los últimos 3 días
+	useEffect(() => {
+		const fetchPedidosConReclamo = async () => {
+			try {
+				const today = new Date();
+				const threeDaysAgo = new Date();
+				threeDaysAgo.setDate(today.getDate() - 3);
+
+				const dateRange = {
+					startDate: threeDaysAgo.toISOString().split("T")[0],
+					endDate: today.toISOString().split("T")[0],
+				};
+
+				const pedidos = await ReadDataForDateRange<PedidoProps>("pedidos", dateRange);
+				const pedidosConReclamo = pedidos.filter(order => 'reclamo' in order);
+
+				// Actualizamos el estado según si hay reclamos
+				setHasReclamos(pedidosConReclamo.length > 0);
+
+				if (pedidosConReclamo.length > 0) {
+					console.log(
+						"Pedidos con reclamo de los últimos 3 días desde Sidebar:",
+						pedidosConReclamo.map(order => ({
+							id: order.id,
+							fecha: order.fecha,
+							hora: order.hora,
+							total: order.total,
+							reclamo: {
+								alias: order.reclamo?.alias,
+								descripcion: order.reclamo?.descripcion,
+								fecha: order.reclamo?.fecha,
+								resuelto: order.reclamo?.resuelto,
+								gift: order.reclamo?.gift || []
+							}
+						}))
+					);
+				} else {
+					console.log("No hay pedidos con reclamo en los últimos 3 días en Sidebar.");
+				}
+			} catch (error) {
+				console.error("Error al obtener pedidos con reclamo:", error);
+				setHasReclamos(false); // En caso de error, asumimos que no hay reclamos
+			}
+		};
+
+		fetchPedidosConReclamo();
+	}, []);
+
+
 	return (
 		<>
 			<div className="flex font-coolvetica flex-row bg-black w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 ">
@@ -476,7 +528,10 @@ export const Sidebar = () => {
 							className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer"
 						>
 							{isMarketingUser ? "LC" : "TA"}
-							<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
+							{/* Punto rojo condicionado por hasReclamos */}
+							{hasReclamos && (
+								<div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
+							)}
 						</button>
 
 						{/* Render appropriate profile menu based on screen size */}
