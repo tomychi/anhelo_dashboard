@@ -53,9 +53,7 @@ export const Notificaciones: React.FC = () => {
                         >
                             <div className="flex flex-col space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-lg font-semibold">
-                                        Pedido #{pedido.id.slice(0, 8)}...
-                                    </span>
+
                                     <span className="text-sm text-gray-500">
                                         {pedido.fecha} - {pedido.hora}
                                     </span>
@@ -65,25 +63,17 @@ export const Notificaciones: React.FC = () => {
                                 </p>
                                 <div className="border-t pt-2">
                                     <p>
-                                        <strong>Reclamo:</strong> {pedido.reclamo?.descripcion || "Sin descripción"}
+                                        <strong>Descripcion:</strong> {pedido.reclamo?.descripcion || "Sin descripción"}
                                     </p>
                                     <p>
-                                        <strong>Usuario:</strong> {pedido.reclamo?.alias || "Desconocido"}
+                                        <strong>Alias:</strong> {pedido.reclamo?.alias || "Desconocido"}
                                     </p>
-                                    <p>
-                                        <strong>Fecha del reclamo:</strong>{" "}
-                                        {new Date(pedido.reclamo?.fecha || "").toLocaleString() || "No disponible"}
-                                    </p>
+
                                     <p>
                                         <strong>Resuelto:</strong>{" "}
                                         {pedido.reclamo?.resuelto ? "Sí" : "No"}
                                     </p>
-                                    {pedido.reclamo?.gift && pedido.reclamo.gift.length > 0 && (
-                                        <p>
-                                            <strong>Códigos de regalo:</strong>{" "}
-                                            {pedido.reclamo.gift.join(", ")}
-                                        </p>
-                                    )}
+
                                 </div>
                             </div>
                         </li>
