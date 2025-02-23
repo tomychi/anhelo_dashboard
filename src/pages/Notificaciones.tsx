@@ -97,18 +97,20 @@ export const Notificaciones: React.FC = () => {
                             className=""
                         >
                             <div className="flex flex-col ">
-                                <div className="flex justify-between items-baseline">
-                                    <p className="text-3xl font-bold">${pedido.total}</p>
+                                <div className="flex flex-row justify-between ">
+                                    <p className="text-4xl font-bold">${pedido.total}</p>
                                     {/* Botón para marcar como resuelto */}
                                     {!pedido.reclamo?.resuelto && (
                                         <button
                                             onClick={() => marcarReclamoComoResuelto(pedido.id, pedido.fecha)}
-                                            className="mt-2 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition duration-200"
+                                            className=" bg-green-500 text-gray-100 px-3 h-10 rounded-lg "
                                         >
                                             Resuelto
                                         </button>
                                     )}
                                 </div>
+
+                                {/* body */}
                                 <div className=" pt-2">
                                     <p className="text-sm font-light">
                                         {pedido.reclamo?.alias || "Desconocido"}:{" "}
