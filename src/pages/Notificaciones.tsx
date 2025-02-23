@@ -112,8 +112,8 @@ export const Notificaciones: React.FC = () => {
         const numeroWhatsApp = "+5493584127742";
         const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${textoCodificado}`;
 
-        // Redireccionar a WhatsApp
-        window.location.href = urlWhatsApp;
+        // Abrir WhatsApp en una nueva pestaña
+        window.open(urlWhatsApp, '_blank');
     };
 
     return (
