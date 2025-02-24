@@ -258,7 +258,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                             <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-75"></div>
                                             <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-150"></div>
                                         </div>
-                                    ) : order.metodoPago === 'mercadoPago' ? 'Pasar a Efectivo' : 'Marcar como Pagado'}
+                                    ) : order.metodoPago === 'mercadoPago' ? 'Pagado' : 'Efectivo'}
                                 </button>
                             </div>
                             {!order.elaborado && (
