@@ -113,20 +113,23 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     };
 
     const handleMarkAsPaid = async (pedido: Order) => {
-        if (pedido.metodoPago === 'mercadoPago') return;
-
         setLoadingPaid((prev) => ({ ...prev, [pedido.id]: true }));
         try {
-            await updateOrderPaymentMethod(pedido.fecha, pedido.id, 'mercadoPago');
+            const nuevoMetodoPago = pedido.metodoPago === 'mercadoPago' ? 'efectivo' : 'mercadoPago';
+            await updateOrderPaymentMethod(pedido.fecha, pedido.id, nuevoMetodoPago);
             setSearchResults((prev) =>
                 prev.map((order) =>
                     order.id === pedido.id
-                        ? { ...order, metodoPago: 'mercadoPago', seFacturo: false }
+                        ? {
+                            ...order,
+                            metodoPago: nuevoMetodoPago,
+                            ...(nuevoMetodoPago === 'efectivo' ? { seFacturo: undefined } : { seFacturo: false })
+                        }
                         : order
                 )
             );
         } catch (error) {
-            console.error('Error al marcar como pagado:', error);
+            console.error('Error al modificar el método de pago:', error);
             throw error;
         } finally {
             setLoadingPaid((prev) => ({ ...prev, [pedido.id]: false }));
@@ -243,9 +246,9 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                 </button>
                                 <button
                                     onClick={() => handleMarkAsPaid(order)}
-                                    disabled={loadingPaid[order.id] || order.metodoPago === 'mercadoPago'}
+                                    disabled={loadingPaid[order.id]} // Quitamos la condición de deshabilitar por 'mercadoPago'
                                     className={`text-xs px-2 py-1 rounded transition-colors ${order.metodoPago === 'mercadoPago'
-                                        ? 'bg-green-100 text-green-800 cursor-not-allowed'
+                                        ? 'bg-green-100 text-green-800 hover:bg-green-200' // Permitimos hover
                                         : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
                                         }`}
                                 >
@@ -255,7 +258,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                             <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-75"></div>
                                             <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-150"></div>
                                         </div>
-                                    ) : order.metodoPago === 'mercadoPago' ? 'Pagado' : 'Efectivo'}
+                                    ) : order.metodoPago === 'mercadoPago' ? 'Pasar a Efectivo' : 'Marcar como Pagado'}
                                 </button>
                             </div>
                             {!order.elaborado && (

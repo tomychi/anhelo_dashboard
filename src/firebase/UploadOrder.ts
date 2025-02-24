@@ -620,11 +620,13 @@ export const updateOrderPaymentMethod = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return {
-            ...pedido,
-            metodoPago: nuevoMetodoPago,
-            seFacturo: false // Agregar la nueva propiedad
-          };
+          const updatedPedido = { ...pedido, metodoPago: nuevoMetodoPago };
+          if (nuevoMetodoPago === 'efectivo') {
+            delete updatedPedido.seFacturo; // Elimina la propiedad seFacturo
+          } else if (nuevoMetodoPago === 'mercadoPago') {
+            updatedPedido.seFacturo = false; // Establece seFacturo en false
+          }
+          return updatedPedido;
         }
         return pedido;
       });
@@ -634,11 +636,7 @@ export const updateOrderPaymentMethod = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
