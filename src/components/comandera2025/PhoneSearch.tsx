@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { updateOrderPaymentMethod } from '../../firebase/UploadOrder';
 import { updateOrderCookNow } from '../../firebase/UploadOrder';
 import currencyFormat from "../../helpers/currencyFormat";
 import { CardComanda } from "../comandera/Card/CardComanda";
@@ -18,6 +19,8 @@ type Order = {
         burger: string;
     }>;
     fecha: string;
+    metodoPago: string;
+    seFacturo?: boolean; // Añadimos seFacturo como opcional
 };
 
 type PhoneSearchProps = {
@@ -29,11 +32,11 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
     const [searchResults, setSearchResults] = useState<Order[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loadingCook, setLoadingCook] = useState<Record<string, boolean>>({});
+    const [loadingPaid, setLoadingPaid] = useState<Record<string, boolean>>({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // Debounce search input
     const debouncedSearchTerm = useMemo(
         () => _.debounce((term: string) => setSearchTerm(term), 300),
         []
@@ -41,91 +44,55 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
 
     const cleanAddressForSearch = (fullAddress: string): string => {
         if (!fullAddress) return '';
-
-        // 1. Convertir a minúsculas y normalizar
         let address = fullAddress.toLowerCase()
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-
-        // 2. Remover códigos postales (X seguido de números)
-        address = address.replace(/x\d+/g, '');
-
-        // 3. Remover partes comunes de la dirección
-        const partsToRemove = [
-            'rio cuarto',
-            'cordoba',
-            'argentina',
-            ', x'  // Para casos donde quedó una coma seguida de x
-        ];
-
-        partsToRemove.forEach(part => {
-            address = address.replace(new RegExp(part, 'gi'), '');
-        });
-
-        // 4. Limpiar comas y espacios múltiples
-        address = address.replace(/\s+/g, ' ')
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/x\d+/g, '')
+            .replace(/rio cuarto|cordoba|argentina|, x/gi, '')
+            .replace(/\s+/g, ' ')
             .replace(/,+/g, ',')
             .replace(/\s*,\s*/g, ',')
             .trim();
-
         return address;
     };
 
     const filteredOrders = useMemo(() => {
-        if (!orders || !searchTerm.trim()) {
-            return [];
-        }
-
+        if (!orders || !searchTerm.trim()) return [];
         const isNumericSearch = /\d/.test(searchTerm);
-
         return orders.filter(order => {
             if (isNumericSearch) {
-                // Para búsqueda numérica, solo buscar en teléfono
                 const cleanPhone = (order.telefono || '').replace(/\D/g, '');
                 const cleanSearch = searchTerm.replace(/\D/g, '');
                 return cleanPhone.includes(cleanSearch);
             } else {
-                // Para búsqueda de texto, buscar en la dirección limpia
                 const cleanedAddress = cleanAddressForSearch(order.direccion);
                 const normalizedSearch = searchTerm.toLowerCase()
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
                     .trim();
-
-                // Dividir la búsqueda en palabras para buscar cada una
                 const searchWords = normalizedSearch.split(/\s+/);
-
-                // Retornar true solo si todas las palabras de búsqueda están en la dirección
                 return searchWords.every(word => cleanedAddress.includes(word));
             }
         });
     }, [searchTerm, orders]);
 
-    // Update search results
     useEffect(() => {
         setSearchResults(filteredOrders);
         setShowResults(filteredOrders.length > 0);
     }, [filteredOrders]);
 
-    // Click outside handler
     useEffect(() => {
         if (!showResults) return;
-
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
                 setShowResults(false);
             }
         };
-
         const handleScroll = _.throttle(() => {
-            if (showResults) {
-                setShowResults(false);
-            }
+            if (showResults) setShowResults(false);
         }, 100);
-
         document.addEventListener('mousedown', handleClickOutside);
         window.addEventListener('scroll', handleScroll, { passive: true });
-
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('scroll', handleScroll);
@@ -145,26 +112,40 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
         }
     };
 
-    const getCookButtonText = (pedido: Order): string => {
-        if (pedido.elaborado) {
-            return "Ya cocinado";
+    const handleMarkAsPaid = async (pedido: Order) => {
+        if (pedido.metodoPago === 'mercadoPago') return;
+
+        setLoadingPaid((prev) => ({ ...prev, [pedido.id]: true }));
+        try {
+            await updateOrderPaymentMethod(pedido.fecha, pedido.id, 'mercadoPago');
+            setSearchResults((prev) =>
+                prev.map((order) =>
+                    order.id === pedido.id
+                        ? { ...order, metodoPago: 'mercadoPago', seFacturo: false }
+                        : order
+                )
+            );
+        } catch (error) {
+            console.error('Error al marcar como pagado:', error);
+            throw error;
+        } finally {
+            setLoadingPaid((prev) => ({ ...prev, [pedido.id]: false }));
         }
+    };
+
+    const getCookButtonText = (pedido: Order): string => {
+        if (pedido.elaborado) return "Ya cocinado";
         return pedido.cookNow ? "No priorizar" : "Cocinar ya";
     };
 
-    // Highlight matching text with improved normalization
     const highlightMatch = (text: string, searchTerm: string) => {
         if (!searchTerm.trim() || !text) return text;
-
         const isNumericSearch = /\d/.test(searchTerm);
-
         if (isNumericSearch) {
             const cleanText = text.replace(/\D/g, '');
             const cleanSearch = searchTerm.replace(/\D/g, '');
             const index = cleanText.indexOf(cleanSearch);
-
             if (index === -1) return text;
-
             return (
                 <>
                     {text.slice(0, index)}
@@ -175,7 +156,6 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                 </>
             );
         } else {
-            // Para texto, solo buscar en la parte principal
             const mainText = text.split(',')[0];
             const normalizedText = mainText.toLowerCase()
                 .normalize("NFD")
@@ -183,11 +163,8 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
             const normalizedSearchTerm = searchTerm.toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "");
-
             const index = normalizedText.indexOf(normalizedSearchTerm);
-
             if (index === -1) return text;
-
             return (
                 <>
                     {mainText.slice(0, index)}
@@ -235,20 +212,18 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                 <div className="absolute z-50 w-full mt-2 max-h-96 overflow-y-auto bg-white shadow-lg rounded-lg border border-gray-200">
                     {searchResults.map((order) => (
                         <div key={order.id} className="px-4 pb-4 pt-2 border-b hover:bg-gray-50">
-                            <div className="flex  justify-between items-start">
-                                <div className='w-full '>
+                            <div className="flex justify-between items-start">
+                                <div className='w-full'>
                                     <p className="font-bold text-xl">
                                         {highlightMatch(order.telefono, searchTerm)}
                                     </p>
                                     <p className="text-xs text-gray-600">
                                         {highlightMatch(order.direccion, searchTerm)}
                                     </p>
-
                                 </div>
                                 <div className="text-right">
                                     <p className="font-bold text-xl">{currencyFormat(order.total)}</p>
                                     <p className="text-xs text-gray-600">{order.hora}</p>
-
                                 </div>
                             </div>
                             <div className="flex gap-2 mt-1">
@@ -260,12 +235,27 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                 <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
                                     {order.cadete === "NO ASIGNADO" ? "Sin cadete" : order.cadete}
                                 </span>
-
                                 <button
                                     onClick={() => handleViewOrder(order)}
                                     className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
                                 >
-                                    Ver pedido
+                                    Ver
+                                </button>
+                                <button
+                                    onClick={() => handleMarkAsPaid(order)}
+                                    disabled={loadingPaid[order.id] || order.metodoPago === 'mercadoPago'}
+                                    className={`text-xs px-2 py-1 rounded transition-colors ${order.metodoPago === 'mercadoPago'
+                                        ? 'bg-green-100 text-green-800 cursor-not-allowed'
+                                        : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                                        }`}
+                                >
+                                    {loadingPaid[order.id] ? (
+                                        <div className="flex items-center justify-center gap-1">
+                                            <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse"></div>
+                                            <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-75"></div>
+                                            <div className="w-1 h-1 bg-purple-800 rounded-full animate-pulse delay-150"></div>
+                                        </div>
+                                    ) : order.metodoPago === 'mercadoPago' ? 'Pagado' : 'Efectivo'}
                                 </button>
                             </div>
                             {!order.elaborado && (
@@ -275,13 +265,7 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                         handleSendToCook(order);
                                     }}
                                     disabled={loadingCook[order.id]}
-
-
-
-
-                                    className={`mt-4 bg-black w-full h-[64px]  text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica${order.cookNow
-                                        ? 'bg-gray-300 text-red-main '
-                                        : 'bg-black text-gray-100'
+                                    className={`mt-4 bg-black w-full h-[64px] text-gray-100 rounded-lg flex justify-center font-bold items-center text-3xl font-coolvetica ${order.cookNow ? 'bg-gray-300 text-red-main' : 'bg-black text-gray-100'
                                         } transition-colors whitespace-nowrap`}
                                 >
                                     {loadingCook[order.id] ? (
@@ -295,12 +279,10 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                                     )}
                                 </button>
                             )}
-
                         </div>
                     ))}
                 </div>
             )}
-            {/* Modal para mostrar CardComanda */}
             {modalIsOpen && selectedOrder && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-y-auto">
                     <div className="relative bg-white w-full h-full flex flex-col">
@@ -319,7 +301,6 @@ const PhoneSearch: React.FC<PhoneSearchProps> = ({ orders }) => {
                 </div>
             )}
         </div>
-
     );
 };
 

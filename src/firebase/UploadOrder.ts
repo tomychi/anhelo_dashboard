@@ -10,7 +10,6 @@ import { obtenerFechaActual } from '../helpers/dateToday';
 import { v4 as uuidv4 } from 'uuid';
 import { PedidoProps } from '../types/types';
 import { cleanPhoneNumber } from '../helpers/orderByweeks';
-// Agregar orderDetail a la colección 'pedidos'
 
 interface OrderDetailProps {
   envio: number;
@@ -25,6 +24,7 @@ interface OrderDetailProps {
   hora: string;
   cerca?: boolean;
 }
+
 export const UploadOrder = async (
   orderDetail: OrderDetailProps
 ): Promise<string> => {
@@ -508,10 +508,6 @@ export async function obtenerClientesInactivos() {
   return clientesInactivos;
 }
 
-// Uso después de obtener las últimas fechas de pedido
-
-// En el archivo de Firebase (por ejemplo, UploadOrder.ts)
-
 export const updateOrderCookNow = (
   fechaPedido: string,
   pedidoId: string,
@@ -595,6 +591,53 @@ export const updateMultipleOrders = async (
       })
       .catch((error) => {
         console.error('Error en actualización múltiple:', error);
+        reject(error);
+      });
+  });
+};
+
+export const updateOrderPaymentMethod = (
+  fechaPedido: string,
+  pedidoId: string,
+  nuevoMetodoPago: string
+): Promise<void> => {
+  const firestore = getFirestore();
+
+  return new Promise((resolve, reject) => {
+    const [dia, mes, anio] = fechaPedido.split('/');
+    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const pedidoDocRef = doc(pedidosCollectionRef, dia);
+
+    runTransaction(firestore, async (transaction) => {
+      const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+      if (!pedidoDocSnapshot.exists()) {
+        reject(new Error('El pedido no existe para la fecha especificada.'));
+        return;
+      }
+
+      const existingData = pedidoDocSnapshot.data();
+      const pedidosDelDia = existingData.pedidos || [];
+
+      const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
+        if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
+          return {
+            ...pedido,
+            metodoPago: nuevoMetodoPago,
+            seFacturo: false // Agregar la nueva propiedad
+          };
+        }
+        return pedido;
+      });
+
+      transaction.set(pedidoDocRef, {
+        ...existingData,
+        pedidos: pedidosActualizados,
+      });
+    })
+      .then(() => {
+        resolve();
+      })
+      .catch((error) => {
         reject(error);
       });
   });
