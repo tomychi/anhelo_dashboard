@@ -208,9 +208,9 @@ export const Sidebar = () => {
 			{ to: "/comanderaAutomatizada", text: "Operaciones" },
 			{ to: "/gastos", text: "Gastos" },
 			{ to: "/deudaManager", text: "Deuda " },
-			{ to: "/whatsappFeatures", text: "Reactivar clientes" },
+			// { to: "/whatsappFeatures", text: "Reactivar clientes" },
 			{ to: "/vouchers", text: "Campañas de vouchers" },
-			{ to: "/equipo", text: "Equipo" },
+			{ to: "/facturacion", text: "Facturacion" },
 			{ to: "/clientes", text: "Comportamiento de clientes" },
 			{ to: "/settings", text: "Configuración" },
 		];
