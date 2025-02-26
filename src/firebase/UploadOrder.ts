@@ -661,23 +661,23 @@ export const listenToUninvoicedOrders = (callback: (pedidos: any[]) => void, onE
       }
 
       const data = docSnapshot.data();
-      console.log('Datos crudos del documento:', data);
+      // console.log('Datos crudos del documento:', data);
 
       const pedidosArray = data.pedidos || [];
-      console.log('Array de pedidos (total):', pedidosArray.length, pedidosArray);
+      // console.log('Array de pedidos (total):', pedidosArray.length, pedidosArray);
 
       const pedidos = pedidosArray
         .filter((pedido) => {
           const tieneSeFacturo = typeof pedido.seFacturo !== 'undefined';
           const noFacturado = pedido.seFacturo === false;
-          console.log(`Pedido ID: ${pedido.id}, seFacturo: ${pedido.seFacturo}, Pasa filtro: ${tieneSeFacturo && noFacturado}`);
+          // console.log(`Pedido ID: ${pedido.id}, seFacturo: ${pedido.seFacturo}, Pasa filtro: ${tieneSeFacturo && noFacturado}`);
           return tieneSeFacturo && noFacturado;
         })
         .map((pedido) => {
           const total = pedido.total || 0;
           const trib = pedido.envio || 0;
           const neto = total - (total * 0.21); // Nuevo cálculo de importeNeto
-          console.log(`Pedido ID: ${pedido.id}, total: ${total}, trib: ${trib}, neto: ${neto}`);
+          // console.log(`Pedido ID: ${pedido.id}, total: ${total}, trib: ${trib}, neto: ${neto}`);
           return {
             id: pedido.id,
             importeNeto: neto.toFixed(2),
@@ -688,7 +688,7 @@ export const listenToUninvoicedOrders = (callback: (pedidos: any[]) => void, onE
           };
         });
 
-      console.log('Pedidos filtrados y mapeados:', pedidos);
+      // console.log('Pedidos filtrados y mapeados:', pedidos);
       callback(pedidos);
     },
     (err) => {
