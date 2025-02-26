@@ -17,12 +17,7 @@ const FacturaForm = ({ backendStatus }) => {
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
-    const formatDate = (date) => {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
+
 
     useEffect(() => {
         const unsubscribe = listenToUninvoicedOrders(
@@ -72,7 +67,6 @@ const FacturaForm = ({ backendStatus }) => {
         const totalNumero = parseFloat(total) || 0;
         const tribNumero = parseFloat(trib) || 0;
         const neto = (totalNumero - tribNumero) / 1.21; // Neto = (Total - Tributos) / (1 + IVA)
-        const iva = neto * 0.21; // IVA = Neto * 21%
         setFormData(prev => ({
             ...prev,
             importeNeto: neto.toFixed(2),
