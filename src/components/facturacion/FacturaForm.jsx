@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
 import { getFirestore, doc, runTransaction } from 'firebase/firestore';
+import LoadingPoints from '../LoadingPoints';
 
 const FacturaForm = ({ backendStatus }) => {
     const [respuesta, setRespuesta] = useState(null);
@@ -328,7 +329,7 @@ const FacturaForm = ({ backendStatus }) => {
                             {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
                         </p>
                         <p className="text-gray-100 font-bold text-3xl">
-                            {isLoadingSubmit ? 'Enviando...' : 'Enviar'}
+                            {isLoadingSubmit ? <LoadingPoints /> : 'Enviar'}
                         </p>
                     </button>
                 </div>
@@ -407,8 +408,8 @@ const FacturaForm = ({ backendStatus }) => {
                 )}
 
                 {error && (
-                    <div className="mt-6 rounded-lg p-4 border-l-4 border-red-500/50">
-                        <p className="text-red-400 text-sm">{error}</p>
+                    <div className="mt-8 w-full ml-8 p-4 border-l-4 border-red-500">
+                        <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
                 {respuesta && (
@@ -444,7 +445,7 @@ const FacturaForm = ({ backendStatus }) => {
                                     <p>Vencimiento: <span className="text-black ">{resp.caeFchVto || 'N/A'}</span></p>
                                     <p>Comprobante numero: <span className="text-black ">{resp.cbteDesde}</span></p>
                                     {resp.errores && (
-                                        <p className="text-red-400">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
+                                        <p className="text-red-main">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
                                     )}
                                 </div>
                             ))
