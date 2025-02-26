@@ -270,8 +270,9 @@ const FacturaForm = ({ backendStatus }) => {
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
             <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
-                    <div className='flex flex-col'>
 
+                    {/* titulo */}
+                    <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturacion</h2>
                         {/* conectado */}
                         <div className="flex flex-row items-center gap-1">
@@ -302,10 +303,6 @@ const FacturaForm = ({ backendStatus }) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-2.5 text-green-500">
                                     <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                 </svg>
-
-
-
-
                                 <p className="font-bold text-gray-400 text-xs">
                                     Estas al dia con tus facturas
                                 </p>
@@ -325,6 +322,7 @@ const FacturaForm = ({ backendStatus }) => {
                             {showIndividualForm ? 'Ocultar' : ' Individual'}
                         </p>
                     </button>
+
                 </div>
 
 
