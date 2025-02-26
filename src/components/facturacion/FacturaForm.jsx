@@ -171,7 +171,10 @@ const FacturaForm = ({ backendStatus }) => {
 
             {/* aca pongo el pt6 porque por alguna razon no toma el h del navbar */}
             <div className="h-full pt-6 min-h-screen font-coolvetica min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
-                <div className="px-4 my-auto">
+
+
+                {/* conectado */}
+                <div className=" pt-16  my-auto">
                     <div className="flex flex-row justify-center items-center gap-2">
                         {tokenStatus?.valid ? (
                             <span className="relative flex h-3 w-3">
@@ -195,7 +198,7 @@ const FacturaForm = ({ backendStatus }) => {
                             )}
                         </h2>
                     </div>
-                    <p className="text-gray-400 text-center text-xs pb-2">{backendStatus}.</p>
+                    <p className="text-gray-400 text-center text-xs ">{backendStatus}.</p>
                 </div>
 
                 <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
