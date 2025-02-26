@@ -421,7 +421,7 @@ const FacturaForm = ({ backendStatus }) => {
                             disabled={!tokenStatus?.valid}
                             className="w-full bg-black h-20 mb-8 mt-4 rounded-3xl"
                         >
-                            <p className="text-gray-100 font-bold text-3xl">Factura individual</p>
+                            <p className="text-gray-100 font-bold text-3xl">Enviar</p>
                         </button>
                     </form>
                 )}
