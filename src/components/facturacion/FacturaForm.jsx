@@ -217,6 +217,7 @@ const FacturaForm = ({ backendStatus }) => {
                     </button>
                 </div>
 
+                {/* form */}
                 <form onSubmit={handleSubmitSingle} className="px-4 mt-8 w-full max-w-md">
                     <select
                         name="tipoFactura"
