@@ -74,7 +74,7 @@ const FacturaForm = ({ backendStatus }) => {
         const totalNumero = parseFloat(total) || 0;
         const tribNumero = parseFloat(trib) || 0;
         const neto = totalNumero - (totalNumero * 0.21); // Nuevo cálculo de importeNeto
-        console.log(`Calculando en form: total: ${totalNumero}, trib: ${tribNumero}, neto: ${neto}`);
+        // console.log(`Calculando en form: total: ${totalNumero}, trib: ${tribNumero}, neto: ${neto}`);
         setFormData(prev => ({
             ...prev,
             importeNeto: neto.toFixed(2),
