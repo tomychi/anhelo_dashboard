@@ -356,7 +356,7 @@ const FacturaForm = ({ backendStatus }) => {
                 </div>
 
                 {showIndividualForm && (
-                    <form onSubmit={handleSubmitSingle} className="px-4 mt-8 w-full max-w-md">
+                    <form onSubmit={handleSubmitSingle} className="px-4  w-full">
                         <select
                             name="tipoFactura"
                             value={formData.tipoFactura}
@@ -374,7 +374,7 @@ const FacturaForm = ({ backendStatus }) => {
                             name="cuit"
                             value={formData.cuit}
                             onChange={handleChange}
-                            className="w-full text-black bg-transparent text-xs border-gray-300 h-10 px-4 border-x border-t transition-all"
+                            className="w-full text-black bg-transparent rounded-none text-xs border-gray-300 h-10 px-4 border-x border-t transition-all"
                             readOnly
                             placeholder="CUIT Emisor"
                         />
@@ -383,7 +383,7 @@ const FacturaForm = ({ backendStatus }) => {
                             name="puntoVenta"
                             value={formData.puntoVenta}
                             onChange={handleChange}
-                            className="w-full text-black text-xs bg-transparent h-10 border-gray-300 px-4 border-x border-t transition-all"
+                            className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-300 px-4 border-x border-t transition-all"
                             required
                             placeholder="Punto de Venta"
                         />
@@ -392,7 +392,7 @@ const FacturaForm = ({ backendStatus }) => {
                             name="importeTrib"
                             value={formData.importeTrib}
                             onChange={handleChange}
-                            className="w-full text-black h-10 px-4 bg-transparent text-xs border-x border-t border-gray-300 transition-all"
+                            className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-300 transition-all"
                             step="0.01"
                             min="0"
                             placeholder="Tasa Municipal"
@@ -402,7 +402,7 @@ const FacturaForm = ({ backendStatus }) => {
                             name="importeTotal"
                             value={formData.importeTotal}
                             onChange={handleChange}
-                            className="w-full border-gray-300 bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
+                            className="w-full border-gray-300 rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
                             step="0.01"
                             min="0"
                             required
