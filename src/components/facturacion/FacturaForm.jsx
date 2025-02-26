@@ -10,12 +10,18 @@ const FacturaForm = ({ backendStatus }) => {
     const [isLoadingToken, setIsLoadingToken] = useState(false);
     const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
     const [formData, setFormData] = useState({
-        cuit: '',
-        puntoVenta: '',
-        tipoFactura: '',
-        importeNeto: '',
-        importeTrib: '',
-        importeTotal: ''
+        // cuit: '',
+        // puntoVenta: '',
+        // tipoFactura: '',
+        // importeNeto: '',
+        // importeTrib: '',
+        // importeTotal: ''
+        cuit: '33718835289',
+        puntoVenta: '2',
+        tipoFactura: 'B',
+        importeNeto: '0.00',
+        importeTrib: '0.00',
+        importeTotal: '0.00'
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 

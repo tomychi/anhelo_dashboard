@@ -675,7 +675,7 @@ export const listenToUninvoicedOrders = (callback: (pedidos: any[]) => void, onE
         })
         .map((pedido) => {
           const total = pedido.total || 0;
-          const trib = pedido.envio || 0;
+          const trib = 0;
           const neto = total - (total * 0.21); // Nuevo cálculo de importeNeto
           // console.log(`Pedido ID: ${pedido.id}, total: ${total}, trib: ${trib}, neto: ${neto}`);
           return {
