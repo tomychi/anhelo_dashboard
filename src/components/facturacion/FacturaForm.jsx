@@ -186,7 +186,7 @@ const FacturaForm = ({ backendStatus }) => {
                                 <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
                             </span>
                         )}
-                        <h2 className="text-5xl font-bold text-black text-center">
+                        <h2 className="text-3xl font-bold text-black text-center">
                             {tokenStatus?.valid ? 'Conectado' : (
                                 <button
                                     onClick={handleGenerateToken}
