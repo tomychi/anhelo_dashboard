@@ -220,7 +220,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="tipoFactura"
                         value={formData.tipoFactura}
                         onChange={handleChange}
-                        className="w-full text-black text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+                        className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
                         required
                     >
                         <option value="" disabled selected>Tipo de Factura</option>
@@ -233,7 +233,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="cuit"
                         value={formData.cuit}
                         onChange={handleChange}
-                        className="w-full text-black text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+                        className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
                         readOnly
                         placeholder="CUIT Emisor"
                     />
@@ -242,7 +242,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="puntoVenta"
                         value={formData.puntoVenta}
                         onChange={handleChange}
-                        className="w-full text-black text-xs h-10 border-gray-200 px-4 border-x border-t transition-all"
+                        className="w-full text-black text-xs bg-transparent h-10 border-gray-200 px-4 border-x border-t transition-all"
                         required
                         placeholder="Punto de Venta"
                     />
@@ -251,7 +251,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="importeTrib"
                         value={formData.importeTrib}
                         onChange={handleChange}
-                        className="w-full text-black h-10 px-4 text-xs border-x border-t border-gray-200 transition-all"
+                        className="w-full text-black h-10 px-4 bg-transparent text-xs border-x border-t border-gray-200 transition-all"
                         step="0.01"
                         min="0"
                         placeholder="Tasa Municipal"
@@ -261,7 +261,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="importeTotal"
                         value={formData.importeTotal}
                         onChange={handleChange}
-                        className="w-full border-gray-200 text-black text-xs border-x border-t h-10 px-4 transition-all"
+                        className="w-full border-gray-200 bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
                         step="0.01"
                         min="0"
                         required
@@ -271,7 +271,7 @@ const FacturaForm = ({ backendStatus }) => {
                         type="number"
                         name="importeNeto"
                         value={formData.importeNeto}
-                        className="w-full border-gray-200 text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
+                        className="w-full border-gray-200 bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
                         readOnly
                         placeholder="Importe Neto"
                     />
