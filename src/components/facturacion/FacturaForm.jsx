@@ -269,77 +269,82 @@ const FacturaForm = ({ backendStatus }) => {
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
             <div className="font-coolvetica flex flex-col items-center justify-center w-full bg-gray-50">
-                <div className="py-8 flex flex-row justify-between px-4 w-full items-center">
+                <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
+                    <div className='flex flex-col'>
 
-                    {/* conectado */}
-                    <div className="flex flex-row items-center gap-2">
-                        {tokenStatus?.valid ? (
-                            <span className="relative flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                            </span>
-                        ) : (
-                            <span className="relative flex h-3 w-3">
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
-                            </span>
-                        )}
-                        <h2 className="text-3xl font-bold text-black ">
-                            {tokenStatus?.valid ? 'Conectado' : (
-                                <button
-                                    onClick={handleGenerateToken}
-                                    disabled={isLoadingToken}
-                                    className="text-5xl font-bold text-black "
-                                >
-                                    {isLoadingToken ? 'Conectando' : 'Conectar'}
-                                </button>
+                        <h2 className='text-3xl font-bold'>Facturacion</h2>
+                        {/* conectado */}
+                        <div className="flex flex-row items-center gap-1">
+                            {tokenStatus?.valid ? (
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                            ) : (
+                                <span className="relative flex h-2 w-2">
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
+                                </span>
                             )}
-                        </h2>
+                            <h2 className="text-xs  font-bold text-gray-400 ">
+                                {tokenStatus?.valid ? 'Conectado' : (
+                                    <button
+                                        onClick={handleGenerateToken}
+                                        disabled={isLoadingToken}
+                                        className=" font-bold "
+                                    >
+                                        {isLoadingToken ? 'Conectando' : 'Conectar'}
+                                    </button>
+                                )}
+                            </h2>
+                        </div>
+                        {ventasSinFacturar.length === 0 ? (
+                            <p className="font-bold text-gray-400 text-xs">
+                                No hay facturas por hacer
+                            </p>
+                        ) : null}
                     </div>
-                    {/* <p className="text-gray-400  text-xs ">{backendStatus}.</p> */}
-
-
                     {/* individual */}
                     <button
                         onClick={toggleIndividualForm}
                         className="bg-gray-300 gap-2 text-black rounded-full flex items-center py-4 pl-3 pr-4 h-10"
-
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6">
-                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
+                            <path fillRule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clipRule="evenodd" />
                             <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
                         </svg>
-
                         <p>
-
                             {showIndividualForm ? 'Ocultar' : ' Individual'}
                         </p>
                     </button>
                 </div>
 
 
-                <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
-
                 <div className='w-full px-4'>
-                    <button
-                        onClick={handleSubmitMultiple}
-                        disabled={!tokenStatus?.valid || isLoadingSubmit}
-                        className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
-                    >
+                    {ventasSinFacturar.length > 0 ? (
+                        <div className='flex flex-col'>
+                            <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
 
-                        <p className="text-gray-100 font-bold text-3xl">
-                            {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
-                                <div className='flex flex-row items-center justify-center gap-2'>
-                                    <p className='text-center  flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center flex'>
-                                        {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
-                                    </p>
-                                    Enviar
-                                </div>
-                            }
-                        </p>
-                    </button>
+                            <button
+                                onClick={handleSubmitMultiple}
+                                disabled={!tokenStatus?.valid || isLoadingSubmit}
+                                className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
+                            >
+                                <p className="text-gray-100 font-bold text-3xl">
+                                    {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
+                                        <div className='flex flex-row items-center justify-center gap-2'>
+                                            <p className='text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center'>
+                                                {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
+                                            </p>
+                                            Enviar
+                                        </div>
+                                    }
+                                </p>
+                            </button>
+                        </div>
+                    ) : (
+                        null
+                    )}
                 </div>
-
-
 
                 {showIndividualForm && (
                     <form onSubmit={handleSubmitSingle} className="px-4 mt-8 w-full max-w-md">
@@ -418,24 +423,19 @@ const FacturaForm = ({ backendStatus }) => {
                     </div>
                 )}
                 {respuesta && (
-                    <div className="mt-8 p-4 border-l-4  w-full ml-8 border-black ">
+                    <div className="mt-8 p-4 border-l-4 w-full ml-8 border-black">
                         <div className='w-full flex flex-row justify-between pr-4 pb-6 items-center'>
-
-                            <h3 className="text-black text-xl font-bold ">Resultados</h3>
+                            <h3 className="text-black text-xl font-bold">Resultados</h3>
                             <button
                                 onClick={copyResultsToClipboard}
                                 className="bg-gray-300 gap-2 text-black rounded-full flex items-center py-4 pl-3 pr-4 h-10"
-
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6">
-                                    <path fill-rule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clip-rule="evenodd" />
+                                    <path fillRule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clipRule="evenodd" />
                                     <path d="M3 8.625c0-1.036.84-1.875 1.875-1.875h.375A3.75 3.75 0 0 1 9 10.5v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 16.5 18v2.625c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625v-12Z" />
                                     <path d="M10.5 10.5a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963 5.23 5.23 0 0 0-3.434-1.279h-1.875a.375.375 0 0 1-.375-.375V10.5Z" />
                                 </svg>
-
-
                                 <p>
-
                                     Copiar
                                 </p>
                             </button>
@@ -443,12 +443,10 @@ const FacturaForm = ({ backendStatus }) => {
                         {Array.isArray(respuesta) ? (
                             respuesta.map((resp, index) => (
                                 <div key={index} className="space-y-1 mb-4 text-gray-700 text-sm">
-                                    <p className='text-center  items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100 '> {index + 1}</p>
-
-
-                                    <p>CAE: <span className="text-black ">{resp.cae || 'No generado'}</span></p>
-                                    <p>Vencimiento: <span className="text-black ">{resp.caeFchVto || 'N/A'}</span></p>
-                                    <p>Comprobante numero: <span className="text-black ">{resp.cbteDesde}</span></p>
+                                    <p className='text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100'>{index + 1}</p>
+                                    <p>CAE: <span className="text-black">{resp.cae || 'No generado'}</span></p>
+                                    <p>Vencimiento: <span className="text-black">{resp.caeFchVto || 'N/A'}</span></p>
+                                    <p>Comprobante numero: <span className="text-black">{resp.cbteDesde}</span></p>
                                     {resp.errores && (
                                         <p className="text-red-main">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
                                     )}
@@ -456,9 +454,9 @@ const FacturaForm = ({ backendStatus }) => {
                             ))
                         ) : (
                             <div className="space-y-1 text-gray-700 text-sm">
-                                <p>CAE: <span className="text-black ">{respuesta.cae}</span></p>
-                                <p>Vencimiento: <span className="text-black ">{respuesta.caeFchVto}</span></p>
-                                <p>Número: <span className="text-black ">{respuesta.cbteDesde}</span></p>
+                                <p>CAE: <span className="text-black">{respuesta.cae}</span></p>
+                                <p>Vencimiento: <span className="text-black">{respuesta.caeFchVto}</span></p>
+                                <p>Número: <span className="text-black">{respuesta.cbteDesde}</span></p>
                             </div>
                         )}
                     </div>
