@@ -285,15 +285,16 @@ class AfipService {
 
   generarXMLFactura(datos) {
     const fecha = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const importeTotal = parseFloat(datos.importeTotal) || 0;
     const importeTrib = parseFloat(datos.importeTrib) || 0;
-    const importeTotal = parseFloat(datos.importeTotal); // Total recibido
-    const importeNeto = parseFloat(datos.importeNeto);   // Neto recibido
-    const iva = importeNeto * 0.21;                      // IVA calculado desde el neto
+    const netoGravado = (importeTotal - importeTrib) / 1.21; // Neto = (Total - Tributos) / (1 + IVA)
+    const iva = netoGravado * 0.21; // IVA = Neto * 21%
     const cbteTipo = datos.cbteTipo || 11;
 
-    // Verificación: importeTotal debe ser igual a importeNeto + iva + importeTrib
-    if (Math.abs(importeTotal - (importeNeto + iva + importeTrib)) > 0.01) {
-      console.warn('Advertencia: importeTotal no coincide con la suma de neto + IVA + tributos');
+    // Verificación de consistencia
+    const sumaComponentes = netoGravado + iva + importeTrib;
+    if (Math.abs(importeTotal - sumaComponentes) > 0.01) {
+      console.warn('Advertencia: La suma de componentes no coincide con ImpTotal por redondeo');
     }
 
     return `<?xml version="1.0" encoding="UTF-8"?>
@@ -323,7 +324,7 @@ class AfipService {
                <ar:CbteFch>${fecha}</ar:CbteFch>
                <ar:ImpTotal>${importeTotal.toFixed(2)}</ar:ImpTotal>
                <ar:ImpTotConc>0</ar:ImpTotConc>
-               <ar:ImpNeto>${importeNeto.toFixed(2)}</ar:ImpNeto>
+               <ar:ImpNeto>${netoGravado.toFixed(2)}</ar:ImpNeto>
                <ar:ImpOpEx>0</ar:ImpOpEx>
                <ar:ImpTrib>${importeTrib.toFixed(2)}</ar:ImpTrib>
                <ar:ImpIVA>${iva.toFixed(2)}</ar:ImpIVA>
@@ -332,7 +333,7 @@ class AfipService {
                <ar:Iva>
                  <ar:AlicIva>
                    <ar:Id>5</ar:Id>
-                   <ar:BaseImp>${importeNeto.toFixed(2)}</ar:BaseImp>
+                   <ar:BaseImp>${netoGravado.toFixed(2)}</ar:BaseImp>
                    <ar:Importe>${iva.toFixed(2)}</ar:Importe>
                  </ar:AlicIva>
                </ar:Iva>
@@ -341,8 +342,8 @@ class AfipService {
                  <ar:Tributo>
                    <ar:Id>99</ar:Id>
                    <ar:Desc>Tasa Municipal Río Cuarto</ar:Desc>
-                   <ar:BaseImp>${importeNeto.toFixed(2)}</ar:BaseImp>
-                   <ar:Alic>${((importeTrib / importeNeto) * 100).toFixed(2)}</ar:Alic>
+                   <ar:BaseImp>${netoGravado.toFixed(2)}</ar:BaseImp>
+                   <ar:Alic>${((importeTrib / netoGravado) * 100).toFixed(2)}</ar:Alic>
                    <ar:Importe>${importeTrib.toFixed(2)}</ar:Importe>
                  </ar:Tributo>
                </ar:Tributos>` : ''}

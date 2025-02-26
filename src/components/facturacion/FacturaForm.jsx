@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
 
-
 const FacturaForm = ({ backendStatus }) => {
     const [respuesta, setRespuesta] = useState(null);
     const [error, setError] = useState(null);
@@ -30,7 +29,6 @@ const FacturaForm = ({ backendStatus }) => {
             (pedidos) => setVentasSinFacturar(pedidos),
             (errMsg) => setError(errMsg)
         );
-
         return () => unsubscribe();
     }, []);
 
@@ -73,8 +71,8 @@ const FacturaForm = ({ backendStatus }) => {
     const calcularImportes = (total, trib) => {
         const totalNumero = parseFloat(total) || 0;
         const tribNumero = parseFloat(trib) || 0;
-        const neto = totalNumero - (totalNumero * 0.21); // Nuevo cálculo de importeNeto
-        // console.log(`Calculando en form: total: ${totalNumero}, trib: ${tribNumero}, neto: ${neto}`);
+        const neto = (totalNumero - tribNumero) / 1.21; // Neto = (Total - Tributos) / (1 + IVA)
+        const iva = neto * 0.21; // IVA = Neto * 21%
         setFormData(prev => ({
             ...prev,
             importeNeto: neto.toFixed(2),
@@ -142,7 +140,6 @@ const FacturaForm = ({ backendStatus }) => {
                 importeTotal: venta.importeTotal
             }));
             console.log('Ventas a facturar:', multipleFacturas);
-            // Comentamos el fetch para no facturar todavía
             const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -168,13 +165,8 @@ const FacturaForm = ({ backendStatus }) => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-
-            {/* aca pongo el pt6 porque por alguna razon no toma el h del navbar */}
             <div className="font-coolvetica flex flex-col items-center justify-center w-full bg-gray-50">
-
-
-                {/* conectado */}
-                <div className=" py-6  my-auto">
+                <div className="py-6 my-auto">
                     <div className="flex flex-row justify-center items-center gap-2">
                         {tokenStatus?.valid ? (
                             <span className="relative flex h-3 w-3">
@@ -198,12 +190,11 @@ const FacturaForm = ({ backendStatus }) => {
                             )}
                         </h2>
                     </div>
-                    <p className="text-gray-400 text-center text-xs ">{backendStatus}.</p>
+                    <p className="text-gray-400 text-center text-xs">{backendStatus}.</p>
                 </div>
 
                 <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
 
-                {/* boton */}
                 <div className='w-full px-4'>
                     <button
                         onClick={handleSubmitMultiple}
@@ -217,7 +208,6 @@ const FacturaForm = ({ backendStatus }) => {
                     </button>
                 </div>
 
-                {/* form */}
                 <form onSubmit={handleSubmitSingle} className="px-4 mt-8 w-full max-w-md">
                     <select
                         name="tipoFactura"
@@ -254,7 +244,7 @@ const FacturaForm = ({ backendStatus }) => {
                         name="importeTrib"
                         value={formData.importeTrib}
                         onChange={handleChange}
-                        className="w-full text-black h-10 px-4 bg-transparent text-xs border-x border-t border-gray-300transition-all"
+                        className="w-full text-black h-10 px-4 bg-transparent text-xs border-x border-t border-gray-300 transition-all"
                         step="0.01"
                         min="0"
                         placeholder="Tasa Municipal"
