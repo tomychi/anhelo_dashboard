@@ -1,19 +1,15 @@
 import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
+import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 
 const FacturaForm = ({ backendStatus }) => {
     const [respuesta, setRespuesta] = useState(null);
     const [error, setError] = useState(null);
     const [tokenStatus, setTokenStatus] = useState(null);
     const [isLoadingToken, setIsLoadingToken] = useState(false);
+    const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
     const [formData, setFormData] = useState({
-        // cuit: '33718835289',
-        // puntoVenta: '2',
-        // tipoFactura: 'B',
-        // importeNeto: '0.00',
-        // importeTrib: '0.00',
-        // importeTotal: '0.00' 
         cuit: '',
         puntoVenta: '',
         tipoFactura: '',
@@ -70,7 +66,7 @@ const FacturaForm = ({ backendStatus }) => {
     const calcularImportes = (total, trib) => {
         const totalNumero = parseFloat(total) || 0;
         const tribNumero = parseFloat(trib) || 0;
-        const neto = (totalNumero - tribNumero) / 1.21; // Neto = (Total - Tributos) / (1 + IVA)
+        const neto = (totalNumero - tribNumero) / 1.21;
         setFormData(prev => ({
             ...prev,
             importeNeto: neto.toFixed(2),
@@ -119,16 +115,57 @@ const FacturaForm = ({ backendStatus }) => {
         }
     };
 
+    const updateSeFacturoInFirestore = async (pedidosToUpdate) => {
+        const firestore = getFirestore();
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const docSnapshot = await transaction.get(docRef);
+                if (!docSnapshot.exists()) {
+                    throw new Error('El documento de pedidos no existe para hoy');
+                }
+
+                const existingData = docSnapshot.data();
+                const pedidosDelDia = existingData.pedidos || [];
+
+                const pedidosActualizados = pedidosDelDia.map((pedido) => {
+                    const shouldUpdate = pedidosToUpdate.some(p => p.id === pedido.id);
+                    if (shouldUpdate) {
+                        return { ...pedido, seFacturo: true };
+                    }
+                    return pedido;
+                });
+
+                transaction.set(docRef, {
+                    ...existingData,
+                    pedidos: pedidosActualizados,
+                });
+            });
+            console.log('Pedidos marcados como facturados en Firestore');
+        } catch (error) {
+            throw new Error('Error al actualizar seFacturo en Firestore: ' + error.message);
+        }
+    };
+
     const handleSubmitMultiple = async (e) => {
         e.preventDefault();
         setError(null);
         setRespuesta(null);
+        setIsLoadingSubmit(true);
+
         try {
             const ventasAFacturar = ventasSinFacturar.filter(venta => venta.quiereFacturarla);
             if (ventasAFacturar.length === 0) {
                 setError('No hay ventas seleccionadas para facturar');
                 return;
             }
+
+            // Paso 1: Preparar y enviar al backend
             const multipleFacturas = ventasAFacturar.map(venta => ({
                 cuit: formData.cuit,
                 puntoVenta: formData.puntoVenta,
@@ -138,19 +175,40 @@ const FacturaForm = ({ backendStatus }) => {
                 importeTotal: venta.importeTotal
             }));
             console.log('Ventas a facturar:', multipleFacturas);
+
             const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ facturas: multipleFacturas })
             });
             const data = await response.json();
+
             if (data.success) {
+                // Paso 2: Identificar facturas exitosas y actualizar Firestore solo para ellas
+                const facturasGeneradas = Array.isArray(data.data) ? data.data : [];
+                const pedidosExitosos = ventasAFacturar.filter((venta, index) =>
+                    facturasGeneradas[index]?.cae && facturasGeneradas[index].cae !== 'No generado'
+                );
+
+                if (pedidosExitosos.length > 0) {
+                    await updateSeFacturoInFirestore(pedidosExitosos);
+                }
+
+                // Mostrar resultados (éxitos y fallos)
                 setRespuesta(data.data);
+
+                // Si hay fallos, mostrar mensaje
+                const facturasFallidas = facturasGeneradas.filter(f => !f.cae || f.cae === 'No generado');
+                if (facturasFallidas.length > 0) {
+                    setError('Algunas facturas no se generaron correctamente');
+                }
             } else {
-                setError(data.message);
+                setError(data.message || 'Error al procesar las facturas en el backend');
             }
         } catch (error) {
-            setError('Error de conexión con el servidor');
+            setError(error.message || 'Error de conexión con el servidor');
+        } finally {
+            setIsLoadingSubmit(false);
         }
     };
 
@@ -196,13 +254,15 @@ const FacturaForm = ({ backendStatus }) => {
                 <div className='w-full px-4'>
                     <button
                         onClick={handleSubmitMultiple}
-                        disabled={!tokenStatus?.valid}
+                        disabled={!tokenStatus?.valid || isLoadingSubmit}
                         className="w-full bg-black h-20 mt-4 flex flex-row items-center justify-center gap-2 rounded-3xl"
                     >
                         <p className='text-center items-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold'>
                             {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
                         </p>
-                        <p className="text-gray-100 font-bold text-3xl">Enviar</p>
+                        <p className="text-gray-100 font-bold text-3xl">
+                            {isLoadingSubmit ? 'Enviando...' : 'Enviar'}
+                        </p>
                     </button>
                 </div>
 
