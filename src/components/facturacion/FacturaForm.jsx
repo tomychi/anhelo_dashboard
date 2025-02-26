@@ -4,7 +4,7 @@ import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
 import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 import LoadingPoints from '../LoadingPoints';
 
-const FacturaForm = ({ backendStatus }) => {
+const FacturaForm = () => {
     const [respuesta, setRespuesta] = useState(null);
     const [error, setError] = useState(null);
     const [tokenStatus, setTokenStatus] = useState(null);
