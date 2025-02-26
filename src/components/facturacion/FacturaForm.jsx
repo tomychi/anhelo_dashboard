@@ -323,13 +323,18 @@ const FacturaForm = ({ backendStatus }) => {
                     <button
                         onClick={handleSubmitMultiple}
                         disabled={!tokenStatus?.valid || isLoadingSubmit}
-                        className="w-full bg-black h-20 mt-4 flex flex-row items-center justify-center gap-2 rounded-3xl"
+                        className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
                     >
-                        <p className='text-center items-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold'>
-                            {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
-                        </p>
+
                         <p className="text-gray-100 font-bold text-3xl">
-                            {isLoadingSubmit ? <LoadingPoints /> : 'Enviar'}
+                            {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
+                                <div className='flex flex-row items-center justify-center gap-2'>
+                                    <p className='text-center  flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center flex'>
+                                        {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
+                                    </p>
+                                    Enviar
+                                </div>
+                            }
                         </p>
                     </button>
                 </div>
