@@ -269,8 +269,9 @@ const FacturaForm = ({ backendStatus }) => {
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
             <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
-                <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
 
+                {/* header */}
+                <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     {/* titulo */}
                     <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturacion</h2>
@@ -322,7 +323,6 @@ const FacturaForm = ({ backendStatus }) => {
                             {showIndividualForm ? 'Ocultar' : ' Individual'}
                         </p>
                     </button>
-
                 </div>
 
                 {/* Facturacion multiple */}
@@ -470,6 +470,7 @@ const FacturaForm = ({ backendStatus }) => {
                         )}
                     </div>
                 )}
+
             </div>
         </>
     );
