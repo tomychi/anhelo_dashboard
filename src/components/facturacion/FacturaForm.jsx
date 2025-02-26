@@ -385,9 +385,9 @@ const FacturaForm = ({ backendStatus }) => {
                                     <p className='text-center  items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100 '> {index + 1}</p>
 
 
-                                    <p>CAE: <span className="text-black font-mono">{resp.cae || 'No generado'}</span></p>
-                                    <p>Vencimiento: <span className="text-black font-mono">{resp.caeFchVto || 'N/A'}</span></p>
-                                    <p>Comprobante numero: <span className="text-black font-mono">{resp.cbteDesde}</span></p>
+                                    <p>CAE: <span className="text-black ">{resp.cae || 'No generado'}</span></p>
+                                    <p>Vencimiento: <span className="text-black ">{resp.caeFchVto || 'N/A'}</span></p>
+                                    <p>Comprobante numero: <span className="text-black ">{resp.cbteDesde}</span></p>
                                     {resp.errores && (
                                         <p className="text-red-400">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
                                     )}
@@ -395,9 +395,9 @@ const FacturaForm = ({ backendStatus }) => {
                             ))
                         ) : (
                             <div className="space-y-1 text-gray-700 text-sm">
-                                <p>CAE: <span className="text-black font-mono">{respuesta.cae}</span></p>
-                                <p>Vencimiento: <span className="text-black font-mono">{respuesta.caeFchVto}</span></p>
-                                <p>Número: <span className="text-black font-mono">{respuesta.cbteDesde}</span></p>
+                                <p>CAE: <span className="text-black ">{respuesta.cae}</span></p>
+                                <p>Vencimiento: <span className="text-black ">{respuesta.caeFchVto}</span></p>
+                                <p>Número: <span className="text-black ">{respuesta.cbteDesde}</span></p>
                             </div>
                         )}
                     </div>
