@@ -168,7 +168,7 @@ const FacturaForm = ({ backendStatus }) => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-            <div className="h-full min-h-screen min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
+            <div className="h-full min-h-screen font-coolvetica min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
                 <div className="pt-12 w-full">
                     <div className="flex flex-col w-full">
                         <div className="px-4 my-auto">
