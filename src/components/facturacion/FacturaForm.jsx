@@ -233,35 +233,33 @@ const FacturaForm = ({ backendStatus }) => {
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
             <div className="font-coolvetica flex flex-col items-center justify-center w-full bg-gray-50">
-                <div className="py-6 flex flex-row justify-between px-4 items-center">
+                <div className="py-8 flex flex-row justify-between px-4 w-full items-center">
 
                     {/* conectado */}
-                    <div className='flex flex-col pr-4'>
-                        <div className="flex flex-row items-center gap-2">
-                            {tokenStatus?.valid ? (
-                                <span className="relative flex h-3 w-3">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                                </span>
-                            ) : (
-                                <span className="relative flex h-3 w-3">
-                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
-                                </span>
+                    <div className="flex flex-row items-center gap-2">
+                        {tokenStatus?.valid ? (
+                            <span className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                        ) : (
+                            <span className="relative flex h-3 w-3">
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
+                            </span>
+                        )}
+                        <h2 className="text-3xl font-bold text-black ">
+                            {tokenStatus?.valid ? 'Conectado' : (
+                                <button
+                                    onClick={handleGenerateToken}
+                                    disabled={isLoadingToken}
+                                    className="text-5xl font-bold text-black "
+                                >
+                                    {isLoadingToken ? 'Conectando' : 'Conectar'}
+                                </button>
                             )}
-                            <h2 className="text-3xl font-bold text-black ">
-                                {tokenStatus?.valid ? 'Conectado' : (
-                                    <button
-                                        onClick={handleGenerateToken}
-                                        disabled={isLoadingToken}
-                                        className="text-5xl font-bold text-black "
-                                    >
-                                        {isLoadingToken ? 'Conectando' : 'Conectar'}
-                                    </button>
-                                )}
-                            </h2>
-                        </div>
-                        <p className="text-gray-400  text-xs ">{backendStatus}.</p>
+                        </h2>
                     </div>
+                    {/* <p className="text-gray-400  text-xs ">{backendStatus}.</p> */}
 
 
                     {/* individual */}
