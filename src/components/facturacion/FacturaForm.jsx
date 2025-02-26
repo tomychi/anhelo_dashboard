@@ -170,11 +170,11 @@ const FacturaForm = ({ backendStatus }) => {
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
 
             {/* aca pongo el pt6 porque por alguna razon no toma el h del navbar */}
-            <div className="h-full pt-6 min-h-screen font-coolvetica min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
+            <div className="font-coolvetica flex flex-col items-center justify-center w-full bg-gray-50">
 
 
                 {/* conectado */}
-                <div className=" pt-16  my-auto">
+                <div className=" py-6  my-auto">
                     <div className="flex flex-row justify-center items-center gap-2">
                         {tokenStatus?.valid ? (
                             <span className="relative flex h-3 w-3">

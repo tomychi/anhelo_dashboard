@@ -7,7 +7,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
     );
 
     return (
-        <div className="w-full mt-10">
+        <div className="w-full ">
             {/* title */}
             <div className='flex flex-row items-baseline px-4 mb-2'>
                 <h2 className="font-bold text-xs">
