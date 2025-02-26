@@ -7,7 +7,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
     );
 
     return (
-        <div className="w-full ">
+        <div className="w-full font-coolvetica">
             {/* title */}
             <div className='flex flex-row items-baseline px-4 mb-2'>
                 <h2 className="font-bold text-xs">
@@ -29,7 +29,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
                     >
 
 
-                        <div className={`text-center flex flex-row gap-0.5 w-full bg-gray-200 items-center flex justify-center ${venta.quiereFacturarla ? 'text-green-500' : 'text-red-500'}  rounded-t-xl text-xs py-1 font-bold`}>
+                        <div className={`text-center flex flex-row gap-0.5 w-full bg-gray-300 items-center flex justify-center ${venta.quiereFacturarla ? 'text-green-500' : 'text-red-500'}  rounded-t-xl text-xs py-1 font-bold`}>
 
                             {venta.quiereFacturarla ? (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3">
                                 <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
