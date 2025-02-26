@@ -168,36 +168,34 @@ const FacturaForm = ({ backendStatus }) => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-            <div className="h-full min-h-screen font-coolvetica min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
-                <div className="pt-32 w-full">
-                    <div className="flex flex-col w-full">
-                        <div className="px-4 my-auto">
-                            <div className="flex flex-row justify-center items-center gap-2">
-                                {tokenStatus?.valid ? (
-                                    <span className="relative flex h-3 w-3">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                                    </span>
-                                ) : (
-                                    <span className="relative flex h-3 w-3">
-                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
-                                    </span>
-                                )}
-                                <h2 className="text-5xl font-bold text-black text-center">
-                                    {tokenStatus?.valid ? 'Conectado' : (
-                                        <button
-                                            onClick={handleGenerateToken}
-                                            disabled={isLoadingToken}
-                                            className="text-5xl font-bold text-black text-center"
-                                        >
-                                            {isLoadingToken ? 'Conectando' : 'Conectar'}
-                                        </button>
-                                    )}
-                                </h2>
-                            </div>
-                            <p className="text-gray-400 text-center text-xs pb-2">{backendStatus}.</p>
-                        </div>
+
+            {/* aca pongo el pt6 porque por alguna razon no toma el h del navbar */}
+            <div className="h-full pt-6 min-h-screen font-coolvetica min-w-screen flex flex-col items-center justify-center w-full bg-gray-50">
+                <div className="px-4 my-auto">
+                    <div className="flex flex-row justify-center items-center gap-2">
+                        {tokenStatus?.valid ? (
+                            <span className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                        ) : (
+                            <span className="relative flex h-3 w-3">
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
+                            </span>
+                        )}
+                        <h2 className="text-5xl font-bold text-black text-center">
+                            {tokenStatus?.valid ? 'Conectado' : (
+                                <button
+                                    onClick={handleGenerateToken}
+                                    disabled={isLoadingToken}
+                                    className="text-5xl font-bold text-black text-center"
+                                >
+                                    {isLoadingToken ? 'Conectando' : 'Conectar'}
+                                </button>
+                            )}
+                        </h2>
                     </div>
+                    <p className="text-gray-400 text-center text-xs pb-2">{backendStatus}.</p>
                 </div>
 
                 <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />

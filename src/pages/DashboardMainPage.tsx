@@ -50,7 +50,7 @@ export const DashboardMainPage = ({ backendStatus }) => {
 						<Route path="nuevaCompra" element={<NuevaCompra />} />
 						<Route path="vouchers" element={<GenerateVouchersForm />} />
 						<Route path="whatsappFeatures" element={<WhatsappFeatures />} />
-						<Route path="facturacion" element={<FacturaForm />} />
+						<Route path="facturacion" element={<FacturaForm backendStatus={backendStatus} />} />
 						<Route path="stock" element={<Stock />} />
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
