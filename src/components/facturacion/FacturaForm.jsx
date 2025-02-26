@@ -8,16 +8,20 @@ const FacturaForm = ({ backendStatus }) => {
     const [tokenStatus, setTokenStatus] = useState(null);
     const [isLoadingToken, setIsLoadingToken] = useState(false);
     const [formData, setFormData] = useState({
-        cuit: '33718835289',
-        puntoVenta: '2',
-        tipoFactura: 'B',
-        importeNeto: '0.00',
-        importeTrib: '0.00',
-        importeTotal: '0.00'
+        // cuit: '33718835289',
+        // puntoVenta: '2',
+        // tipoFactura: 'B',
+        // importeNeto: '0.00',
+        // importeTrib: '0.00',
+        // importeTotal: '0.00' 
+        cuit: '',
+        puntoVenta: '',
+        tipoFactura: '',
+        importeNeto: '',
+        importeTrib: '',
+        importeTotal: ''
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
-
-
 
     useEffect(() => {
         const unsubscribe = listenToUninvoicedOrders(
