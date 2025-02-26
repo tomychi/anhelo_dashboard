@@ -442,7 +442,7 @@ const FacturaForm = ({ backendStatus }) => {
                         </div>
                         {Array.isArray(respuesta) ? (
                             respuesta.map((resp, index) => (
-                                <div key={index} className="space-y-1 text-gray-700 text-sm">
+                                <div key={index} className="space-y-1 mb-4 text-gray-700 text-sm">
                                     <p className='text-center  items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100 '> {index + 1}</p>
 
 
