@@ -3,7 +3,7 @@ import { Authentication, Error } from '../pages';
 import { PrivateRoutesLayout } from '../layouts/PrivateRoutesLayout';
 import { DashboardMainPage } from '../pages/DashboardMainPage';
 
-export const Navigation = () => {
+export const Navigation = ({ backendStatus }) => {
   return (
     <Router>
       <div className="h-screen  overflow-x-hidden">
@@ -13,7 +13,7 @@ export const Navigation = () => {
 
           {/* Rutas para el dashboard */}
           <Route element={<PrivateRoutesLayout />}>
-            <Route path="/*" element={<DashboardMainPage />} />
+            <Route path="/*" element={<DashboardMainPage backendStatus={backendStatus} />} />
           </Route>
 
           {/* Manejo de cualquier ruta no encontrada */}

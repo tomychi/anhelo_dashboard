@@ -4,6 +4,7 @@ import {
   doc,
   runTransaction,
   getDocs,
+  onSnapshot,
 } from 'firebase/firestore';
 import { DetallePedidoProps } from '../pages/DynamicForm';
 import { obtenerFechaActual } from '../helpers/dateToday';
@@ -639,4 +640,62 @@ export const updateOrderPaymentMethod = (
       .then(() => resolve())
       .catch((error) => reject(error));
   });
+};
+
+export const listenToUninvoicedOrders = (callback: (pedidos: any[]) => void, onError: (error: string) => void) => {
+  const firestore = getFirestore();
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
+
+  const unsubscribe = onSnapshot(
+    docRef,
+    (docSnapshot) => {
+      if (!docSnapshot.exists()) {
+        console.log('El documento no existe');
+        callback([]);
+        onError('El documento no existe en Firestore');
+        return;
+      }
+
+      const data = docSnapshot.data();
+      console.log('Datos crudos del documento:', data);
+
+      const pedidosArray = data.pedidos || [];
+      console.log('Array de pedidos (total):', pedidosArray.length, pedidosArray);
+
+      const pedidos = pedidosArray
+        .filter((pedido) => {
+          const tieneSeFacturo = typeof pedido.seFacturo !== 'undefined';
+          const noFacturado = pedido.seFacturo === false;
+          console.log(`Pedido ID: ${pedido.id}, seFacturo: ${pedido.seFacturo}, Pasa filtro: ${tieneSeFacturo && noFacturado}`);
+          return tieneSeFacturo && noFacturado;
+        })
+        .map((pedido) => {
+          const total = pedido.total || 0;
+          const trib = pedido.envio || 0;
+          const neto = total - (total * 0.21); // Nuevo cálculo de importeNeto
+          console.log(`Pedido ID: ${pedido.id}, total: ${total}, trib: ${trib}, neto: ${neto}`);
+          return {
+            id: pedido.id,
+            importeNeto: neto.toFixed(2),
+            importeTrib: trib.toFixed(2),
+            importeTotal: total.toFixed(2),
+            facturado: pedido.seFacturo,
+            quiereFacturarla: true,
+          };
+        });
+
+      console.log('Pedidos filtrados y mapeados:', pedidos);
+      callback(pedidos);
+    },
+    (err) => {
+      console.error('Error al escuchar pedidos:', err);
+      onError('Error al cargar pedidos en tiempo real: ' + err.message);
+    }
+  );
+
+  return unsubscribe;
 };

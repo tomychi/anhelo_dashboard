@@ -26,8 +26,10 @@ import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersFor
 import { NuevaCompra } from "./NuevaCompra";
 import CampañaDetalle from "./CampañaDetalle";
 import { DeudaManager } from "./DeudaManager";
+import FacturaForm from "../components/facturacion/FacturaForm";
 
-export const DashboardMainPage = () => {
+
+export const DashboardMainPage = ({ backendStatus }) => {
 	return (
 		<div className="flex h-screen flex-col bg-gray-100 overflow-x-hidden">
 			<Sidebar />
@@ -48,6 +50,7 @@ export const DashboardMainPage = () => {
 						<Route path="nuevaCompra" element={<NuevaCompra />} />
 						<Route path="vouchers" element={<GenerateVouchersForm />} />
 						<Route path="whatsappFeatures" element={<WhatsappFeatures />} />
+						<Route path="facturacion" element={<FacturaForm />} />
 						<Route path="stock" element={<Stock />} />
 						<Route path="neto" element={<Neto />} />
 						<Route path="bruto" element={<Bruto />} />
