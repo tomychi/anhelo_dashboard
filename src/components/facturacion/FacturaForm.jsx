@@ -229,6 +229,41 @@ const FacturaForm = ({ backendStatus }) => {
         setShowIndividualForm(!showIndividualForm);
     };
 
+    const copyResultsToClipboard = () => {
+        let textToCopy = '';
+
+        if (Array.isArray(respuesta)) {
+            // Si es un array de resultados (múltiples facturas)
+            textToCopy = respuesta.map((resp, index) => {
+                return `FACTURA ${index + 1}:\n` +
+                    `CAE: ${resp.cae || 'No generado'}\n` +
+                    `Vencimiento: ${resp.caeFchVto || 'N/A'}\n` +
+                    `Comprobante número: ${resp.cbteDesde}\n` +
+                    (resp.errores ? `Error: ${Array.isArray(resp.errores) ?
+                        resp.errores.map(e => e.Msg).join(', ') :
+                        resp.errores.Msg}\n` : '') +
+                    '------------------------\n';
+            }).join('\n');
+        } else {
+            // Si es un solo resultado (factura individual)
+            textToCopy = `CAE: ${respuesta.cae}\n` +
+                `Vencimiento: ${respuesta.fechaVencimiento || respuesta.caeFchVto}\n` +
+                `Número: ${respuesta.cbteDesde}`;
+        }
+
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                // Opcional: mostrar feedback de éxito
+                alert('Resultados copiados al portapapeles');
+            })
+            .catch(err => {
+                console.error('Error al copiar: ', err);
+                // Feedback alternativo si falla
+                alert('No se pudo copiar al portapapeles. Error: ' + err);
+            });
+    };
+
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
@@ -382,7 +417,7 @@ const FacturaForm = ({ backendStatus }) => {
 
                             <h3 className="text-black text-xl font-bold ">Resultados</h3>
                             <button
-                                onClick
+                                onClick={copyResultsToClipboard}
                                 className="bg-gray-300 gap-2 text-black rounded-full flex items-center py-4 pl-3 pr-4 h-10"
 
                             >
