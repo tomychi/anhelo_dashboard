@@ -382,10 +382,12 @@ const FacturaForm = ({ backendStatus }) => {
                         {Array.isArray(respuesta) ? (
                             respuesta.map((resp, index) => (
                                 <div key={index} className="space-y-1 text-gray-700 text-sm">
-                                    <p>Factura {index + 1}</p>
+                                    <p className='text-center  items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100 '> {index + 1}</p>
+
+
                                     <p>CAE: <span className="text-black font-mono">{resp.cae || 'No generado'}</span></p>
                                     <p>Vencimiento: <span className="text-black font-mono">{resp.caeFchVto || 'N/A'}</span></p>
-                                    <p>Cbte. Nro: <span className="text-black font-mono">{resp.cbteDesde}</span></p>
+                                    <p>Comprobante numero: <span className="text-black font-mono">{resp.cbteDesde}</span></p>
                                     {resp.errores && (
                                         <p className="text-red-400">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
                                     )}
