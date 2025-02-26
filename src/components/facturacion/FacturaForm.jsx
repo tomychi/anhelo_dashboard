@@ -143,17 +143,17 @@ const FacturaForm = ({ backendStatus }) => {
             }));
             console.log('Ventas a facturar:', multipleFacturas);
             // Comentamos el fetch para no facturar todavía
-            // const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ facturas: multipleFacturas })
-            // });
-            // const data = await response.json();
-            // if (data.success) {
-            //     setRespuesta(data.data);
-            // } else {
-            //     setError(data.message);
-            // }
+            const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ facturas: multipleFacturas })
+            });
+            const data = await response.json();
+            if (data.success) {
+                setRespuesta(data.data);
+            } else {
+                setError(data.message);
+            }
         } catch (error) {
             setError('Error de conexión con el servidor');
         }
