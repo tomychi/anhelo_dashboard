@@ -325,7 +325,7 @@ const FacturaForm = ({ backendStatus }) => {
 
                 </div>
 
-
+                {/* Facturacion multiple */}
                 <div className='w-full px-4'>
                     {ventasSinFacturar.length > 0 ? (
                         <div className='flex flex-col'>
@@ -353,6 +353,7 @@ const FacturaForm = ({ backendStatus }) => {
                     )}
                 </div>
 
+                {/* Facturacion individual */}
                 {showIndividualForm && (
                     <form onSubmit={handleSubmitSingle} className="px-4  w-full">
                         <select
@@ -424,6 +425,7 @@ const FacturaForm = ({ backendStatus }) => {
                     </form>
                 )}
 
+                {/* Errores y respuestas */}
                 {error && (
                     <div className="mt-8 w-full ml-8 p-4 border-l-4 border-red-500">
                         <p className="text-red-500 text-sm">{error}</p>
