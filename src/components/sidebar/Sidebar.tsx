@@ -204,7 +204,7 @@ export const Sidebar = () => {
 		]
 		: [
 			{ to: "/", text: "Dashboard" },
-			{ to: "/comandas", text: "Comandas y Grupos" },
+			// { to: "/comandas", text: "Comandas y Grupos" },
 			{ to: "/comanderaAutomatizada", text: "Operaciones" },
 			{ to: "/gastos", text: "Gastos" },
 			{ to: "/deudaManager", text: "Deuda " },
