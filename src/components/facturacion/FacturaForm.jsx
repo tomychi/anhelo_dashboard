@@ -327,7 +327,7 @@ const FacturaForm = () => {
 
                 {/* Facturacion individual */}
                 {showIndividualForm && (
-                    <form onSubmit={handleSubmitSingle} className="px-4  w-full">
+                    <form onSubmit={handleSubmitSingle} className="px-4 w-full">
                         <select
                             name="tipoFactura"
                             value={formData.tipoFactura}
