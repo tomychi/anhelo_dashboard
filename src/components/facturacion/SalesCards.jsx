@@ -10,10 +10,10 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
         <div className="w-full  font-coolvetica">
             {/* title */}
             <div className='flex px-4 flex-row items-baseline  mb-2'>
-                <h2 className="font-bold text-xs">
+                <h2 className="font-bold  text-xs">
                     Total a facturar:
                 </h2>
-                <p className='text- font-bold ml-2'>
+                <p className=' font-bold ml-2'>
                     ${totalVentas}
                 </p>
             </div>
