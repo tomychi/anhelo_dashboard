@@ -328,10 +328,10 @@ const FacturaForm = () => {
                 {/* Facturacion multiple */}
                 <div className='w-full '>
                     {ventasSinFacturar.length > 0 ? (
-                        <div className='flex flex-col pl-4'>
+                        <div className='flex flex-col '>
                             <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
 
-                            <div className='pr-4'>
+                            <div className='px-4'>
 
                                 <button
                                     onClick={handleSubmitMultiple}

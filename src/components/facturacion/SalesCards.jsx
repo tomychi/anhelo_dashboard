@@ -9,7 +9,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
     return (
         <div className="w-full  font-coolvetica">
             {/* title */}
-            <div className='flex flex-row items-baseline  mb-2'>
+            <div className='flex px-4 flex-row items-baseline  mb-2'>
                 <h2 className="font-bold text-xs">
                     Total a facturar:
                 </h2>
@@ -18,7 +18,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
                 </p>
             </div>
             {/* cards */}
-            <div className="flex flex-row gap-2 overflow-x-auto">
+            <div className="flex flex-row px-4 gap-2 overflow-x-auto">
                 {ventas.map((venta) => (
                     <button
                         key={venta.id}
