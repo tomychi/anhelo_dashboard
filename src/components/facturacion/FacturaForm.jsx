@@ -325,37 +325,6 @@ const FacturaForm = () => {
                     </button>
                 </div>
 
-                {/* Facturacion multiple */}
-                <div className='w-full '>
-                    {ventasSinFacturar.length > 0 ? (
-                        <div className='flex flex-col mb-8 '>
-                            <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
-
-                            <div className='px-4'>
-
-                                <button
-                                    onClick={handleSubmitMultiple}
-                                    disabled={!tokenStatus?.valid || isLoadingSubmit}
-                                    className="w-full bg-black h-20 mt-4  flex items-center justify-center rounded-3xl"
-                                >
-                                    <p className="text-gray-100 font-bold  text-3xl">
-                                        {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
-                                            <div className='flex flex-row items-center justify-center gap-2'>
-                                                <p className='text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center'>
-                                                    {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
-                                                </p>
-                                                Enviar
-                                            </div>
-                                        }
-                                    </p>
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        null
-                    )}
-                </div>
-
                 {/* Facturacion individual */}
                 {showIndividualForm && (
                     <form onSubmit={handleSubmitSingle} className="px-4  w-full">
@@ -427,6 +396,39 @@ const FacturaForm = () => {
                         </button>
                     </form>
                 )}
+
+                {/* Facturacion multiple */}
+                <div className='w-full '>
+                    {ventasSinFacturar.length > 0 ? (
+                        <div className='flex flex-col mb-8 '>
+                            <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
+
+                            <div className='px-4'>
+
+                                <button
+                                    onClick={handleSubmitMultiple}
+                                    disabled={!tokenStatus?.valid || isLoadingSubmit}
+                                    className="w-full bg-black h-20 mt-4  flex items-center justify-center rounded-3xl"
+                                >
+                                    <p className="text-gray-100 font-bold  text-3xl">
+                                        {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
+                                            <div className='flex flex-row items-center justify-center gap-2'>
+                                                <p className='text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center'>
+                                                    {ventasSinFacturar.filter(venta => venta.quiereFacturarla).length}
+                                                </p>
+                                                Enviar
+                                            </div>
+                                        }
+                                    </p>
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        null
+                    )}
+                </div>
+
+
 
                 {/* Errores y respuestas */}
                 {error && (
