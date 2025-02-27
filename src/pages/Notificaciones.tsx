@@ -175,7 +175,7 @@ export const Notificaciones: React.FC = () => {
                     ))}
                 </ul>
             ) : (
-                <p className="text-lg text-gray-600">
+                <p className="text-xs px-4 text-gray-400">
                     No hay pedidos con reclamos en los últimos 3 días.
                 </p>
             )}
