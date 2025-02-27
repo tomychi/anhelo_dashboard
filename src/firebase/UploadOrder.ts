@@ -89,12 +89,8 @@ export const updateCadeteForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -133,12 +129,8 @@ export const updateDislikeForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -166,11 +158,7 @@ export const updateTotalForOrder = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          // Actualizar el total con el nuevo valor proporcionado
-          return {
-            ...pedido,
-            total: nuevoTotal, // Actualizar el total
-          };
+          return { ...pedido, total: nuevoTotal };
         } else {
           return pedido;
         }
@@ -181,12 +169,8 @@ export const updateTotalForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -215,13 +199,12 @@ export const updateCompesasionForOrder = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          // Calcular el nuevo total restando la compensación y la bonificación
           const nuevoTotal = pedido.total - compensasion - bonificacion;
           return {
             ...pedido,
             compensacionPorError: compensasion,
             bonificacion: bonificacion,
-            total: nuevoTotal, // Actualizar el total
+            total: nuevoTotal,
           };
         } else {
           return pedido;
@@ -233,12 +216,8 @@ export const updateCompesasionForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -266,10 +245,7 @@ export const updateTiempoEntregaForOrder = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return {
-            ...pedido,
-            tiempoEntregado: nuevoTiempoEntrega, // Actualizar el tiempo de entrega
-          };
+          return { ...pedido, tiempoEntregado: nuevoTiempoEntrega };
         } else {
           return pedido;
         }
@@ -280,12 +256,8 @@ export const updateTiempoEntregaForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -313,10 +285,7 @@ export const updateTiempoElaboradoForOrder = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          return {
-            ...pedido,
-            tiempoElaborado: nuevoTiempoElaborado, // Actualizar el tiempo de entrega
-          };
+          return { ...pedido, tiempoElaborado: nuevoTiempoElaborado };
         } else {
           return pedido;
         }
@@ -327,12 +296,8 @@ export const updateTiempoElaboradoForOrder = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -374,12 +339,8 @@ export const updateOrderFields = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -407,7 +368,6 @@ export const updateOrderTime = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          // Actualiza solo el campo 'hora'
           return { ...pedido, hora: nuevaHora };
         } else {
           return pedido;
@@ -419,12 +379,8 @@ export const updateOrderTime = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -441,30 +397,18 @@ export const obtenerUltimaFechaPedido = async (): Promise<
 
   const fechaActual = new Date();
   const anioActual = fechaActual.getFullYear();
-  const mesActual = fechaActual.getMonth() + 1; // Los meses en JS son 0-indexed
+  const mesActual = fechaActual.getMonth() + 1;
 
-  // Itera desde febrero 2024 hasta el mes actual
   for (let anio = 2024; anio <= anioActual; anio++) {
-    const mesInicio = anio === 2024 ? 2 : 1; // Empezamos desde febrero para el año 2024
+    const mesInicio = anio === 2024 ? 2 : 1;
     const mesFin = anio === anioActual ? mesActual : 12;
 
     for (let mes = mesInicio; mes <= mesFin; mes++) {
-      const mesString = mes.toString().padStart(2, '0'); // Formato "MM"
-
-      // Referencia a la colección del mes actual
-      const pedidosMensualesRef = collection(
-        firestore,
-        'pedidos',
-        anio.toString(),
-        mesString
-      );
-
-      // Obtener cada día de pedidos de este mes
+      const mesString = mes.toString().padStart(2, '0');
+      const pedidosMensualesRef = collection(firestore, 'pedidos', anio.toString(), mesString);
       const diasSnapshot = await getDocs(pedidosMensualesRef);
       for (const diaDoc of diasSnapshot.docs) {
         const pedidosDelDia: Pedido[] = diaDoc.data().pedidos || [];
-
-        // Verifica la última fecha de pedido para cada número de teléfono
         pedidosDelDia.forEach((pedido) => {
           let { telefono } = pedido;
           const { fecha } = pedido;
@@ -487,8 +431,6 @@ export async function ejecutarObtenerUltimaFechaPedido() {
   try {
     const ultimasFechas = await obtenerUltimaFechaPedido();
     console.log('Última fecha de pedido por teléfono:', ultimasFechas);
-    // Aquí puedes hacer algo adicional con las fechas obtenidas, como filtrar clientes
-    // que no han hecho pedidos en más de un mes
   } catch (error) {
     console.error('Error al obtener la última fecha de pedido:', error);
   }
@@ -544,12 +486,8 @@ export const updateOrderCookNow = (
         pedidos: pedidosActualizados,
       });
     })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(() => resolve())
+      .catch((error) => reject(error));
   });
 };
 
@@ -623,9 +561,9 @@ export const updateOrderPaymentMethod = (
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
           const updatedPedido = { ...pedido, metodoPago: nuevoMetodoPago };
           if (nuevoMetodoPago === 'efectivo') {
-            delete updatedPedido.seFacturo; // Elimina la propiedad seFacturo
+            delete updatedPedido.seFacturo;
           } else if (nuevoMetodoPago === 'mercadoPago') {
-            updatedPedido.seFacturo = false; // Establece seFacturo en false
+            updatedPedido.seFacturo = false;
           }
           return updatedPedido;
         }
@@ -654,45 +592,26 @@ export const listenToUninvoicedOrders = (callback: (pedidos: any[]) => void, onE
     docRef,
     (docSnapshot) => {
       if (!docSnapshot.exists()) {
-        console.log('El documento no existe');
         callback([]);
-        onError('El documento no existe en Firestore');
         return;
       }
 
       const data = docSnapshot.data();
-      // console.log('Datos crudos del documento:', data);
-
       const pedidosArray = data.pedidos || [];
-      // console.log('Array de pedidos (total):', pedidosArray.length, pedidosArray);
-
       const pedidos = pedidosArray
-        .filter((pedido) => {
-          const tieneSeFacturo = typeof pedido.seFacturo !== 'undefined';
-          const noFacturado = pedido.seFacturo === false;
-          // console.log(`Pedido ID: ${pedido.id}, seFacturo: ${pedido.seFacturo}, Pasa filtro: ${tieneSeFacturo && noFacturado}`);
-          return tieneSeFacturo && noFacturado;
-        })
-        .map((pedido) => {
-          const total = pedido.total || 0;
-          const trib = 0;
-          const neto = total - (total * 0.21); // Nuevo cálculo de importeNeto
-          // console.log(`Pedido ID: ${pedido.id}, total: ${total}, trib: ${trib}, neto: ${neto}`);
-          return {
-            id: pedido.id,
-            importeNeto: neto.toFixed(2),
-            importeTrib: trib.toFixed(2),
-            importeTotal: total.toFixed(2),
-            facturado: pedido.seFacturo,
-            quiereFacturarla: true,
-          };
-        });
+        .filter(pedido => typeof pedido.seFacturo === 'boolean' && !pedido.seFacturo)
+        .map(pedido => ({
+          id: pedido.id,
+          importeNeto: pedido.importeNeto || ((pedido.total || 0) - ((pedido.total || 0) * 0.21)).toFixed(2),
+          importeTrib: pedido.importeTrib || '0.00',
+          importeTotal: pedido.importeTotal || pedido.total?.toFixed(2) || '0.00',
+          facturado: pedido.seFacturo,
+          quiereFacturarla: true
+        }));
 
-      // console.log('Pedidos filtrados y mapeados:', pedidos);
       callback(pedidos);
     },
     (err) => {
-      console.error('Error al escuchar pedidos:', err);
       onError('Error al cargar pedidos en tiempo real: ' + err.message);
     }
   );

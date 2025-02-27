@@ -3,6 +3,7 @@ import SalesCards from './SalesCards';
 import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
 import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 import LoadingPoints from '../LoadingPoints';
+import { v4 as uuidv4 } from 'uuid';
 
 const FacturaForm = () => {
     const [respuesta, setRespuesta] = useState(null);
@@ -12,9 +13,6 @@ const FacturaForm = () => {
     const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
     const [showIndividualForm, setShowIndividualForm] = useState(false);
     const [formData, setFormData] = useState({
-        // cuit: '',
-        // puntoVenta: '',
-        // tipoFactura: '',
         cuit: '33718835289',
         puntoVenta: '2',
         tipoFactura: 'B',
@@ -91,6 +89,50 @@ const FacturaForm = () => {
         }
     };
 
+    const saveFacturaDataToFirestore = async (pedidoId, facturaData) => {
+        const firestore = getFirestore();
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const docSnapshot = await transaction.get(docRef);
+                const existingData = docSnapshot.exists() ? docSnapshot.data() : { pedidos: [] };
+                const pedidosDelDia = existingData.pedidos || [];
+
+                const pedidoIndex = pedidosDelDia.findIndex(p => p.id === pedidoId);
+                if (pedidoIndex >= 0) {
+                    pedidosDelDia[pedidoIndex] = {
+                        ...pedidosDelDia[pedidoIndex],
+                        facturacionDatos: facturaData,
+                        seFacturo: true
+                    };
+                } else {
+                    pedidosDelDia.push({
+                        id: pedidoId,
+                        facturacionDatos: facturaData,
+                        seFacturo: true,
+                        importeNeto: formData.importeNeto,
+                        importeTrib: formData.importeTrib,
+                        importeTotal: formData.importeTotal
+                    });
+                }
+
+                transaction.set(docRef, {
+                    ...existingData,
+                    pedidos: pedidosDelDia
+                });
+            });
+            console.log('Datos de facturación guardados en Firestore bajo facturacionDatos');
+        } catch (error) {
+            console.error('Error al guardar datos de facturación:', error);
+            throw error;
+        }
+    };
+
     const handleSubmitSingle = async (e) => {
         e.preventDefault();
         setError(null);
@@ -109,6 +151,19 @@ const FacturaForm = () => {
                     cbteDesde: data.data.cbteDesde,
                     cbteHasta: data.data.cbteHasta
                 });
+
+                const facturaData = {
+                    cae: data.data.cae,
+                    fechaEmision: new Date().toISOString(),
+                    fechaVencimiento: data.data.caeFchVto,
+                    tipoFactura: formData.tipoFactura,
+                    numeroFactura: data.data.cbteDesde,
+                    cuit: formData.cuit, // Agregar CUIT
+                    importeTotal: formData.importeTotal // Agregar importeTotal
+                };
+
+                const pedidoId = uuidv4();
+                await saveFacturaDataToFirestore(pedidoId, facturaData);
             } else {
                 const errorMsg = Array.isArray(data.data?.errores)
                     ? data.data.errores.map(err => err.Msg).join(', ')
@@ -117,43 +172,6 @@ const FacturaForm = () => {
             }
         } catch (error) {
             setError('Error de conexión con el servidor');
-        }
-    };
-
-    const updateSeFacturoInFirestore = async (pedidosToUpdate) => {
-        const firestore = getFirestore();
-        const today = new Date();
-        const day = String(today.getDate()).padStart(2, '0');
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const year = today.getFullYear();
-        const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
-
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const docSnapshot = await transaction.get(docRef);
-                if (!docSnapshot.exists()) {
-                    throw new Error('El documento de pedidos no existe para hoy');
-                }
-
-                const existingData = docSnapshot.data();
-                const pedidosDelDia = existingData.pedidos || [];
-
-                const pedidosActualizados = pedidosDelDia.map((pedido) => {
-                    const shouldUpdate = pedidosToUpdate.some(p => p.id === pedido.id);
-                    if (shouldUpdate) {
-                        return { ...pedido, seFacturo: true };
-                    }
-                    return pedido;
-                });
-
-                transaction.set(docRef, {
-                    ...existingData,
-                    pedidos: pedidosActualizados,
-                });
-            });
-            console.log('Pedidos marcados como facturados en Firestore');
-        } catch (error) {
-            throw new Error('Error al actualizar seFacturo en Firestore: ' + error.message);
         }
     };
 
@@ -170,7 +188,6 @@ const FacturaForm = () => {
                 return;
             }
 
-            // Paso 1: Preparar y enviar al backend
             const multipleFacturas = ventasAFacturar.map(venta => ({
                 cuit: formData.cuit,
                 puntoVenta: formData.puntoVenta,
@@ -179,7 +196,6 @@ const FacturaForm = () => {
                 importeTrib: venta.importeTrib,
                 importeTotal: venta.importeTotal
             }));
-            console.log('Ventas a facturar:', multipleFacturas);
 
             const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
                 method: 'POST',
@@ -189,20 +205,28 @@ const FacturaForm = () => {
             const data = await response.json();
 
             if (data.success) {
-                // Paso 2: Identificar facturas exitosas y actualizar Firestore solo para ellas
                 const facturasGeneradas = Array.isArray(data.data) ? data.data : [];
                 const pedidosExitosos = ventasAFacturar.filter((venta, index) =>
                     facturasGeneradas[index]?.cae && facturasGeneradas[index].cae !== 'No generado'
                 );
 
-                if (pedidosExitosos.length > 0) {
-                    await updateSeFacturoInFirestore(pedidosExitosos);
+                for (let i = 0; i < pedidosExitosos.length; i++) {
+                    const factura = facturasGeneradas[i];
+                    const pedido = pedidosExitosos[i];
+                    const facturaData = {
+                        cae: factura.cae,
+                        fechaEmision: new Date().toISOString(),
+                        fechaVencimiento: factura.caeFchVto,
+                        tipoFactura: formData.tipoFactura,
+                        numeroFactura: factura.cbteDesde,
+                        cuit: formData.cuit, // Agregar CUIT
+                        importeTotal: pedido.importeTotal // Agregar importeTotal del pedido
+                    };
+                    await saveFacturaDataToFirestore(pedido.id, facturaData);
                 }
 
-                // Mostrar resultados (éxitos y fallos)
                 setRespuesta(data.data);
 
-                // Si hay fallos, mostrar mensaje
                 const facturasFallidas = facturasGeneradas.filter(f => !f.cae || f.cae === 'No generado');
                 if (facturasFallidas.length > 0) {
                     setError('Algunas facturas no se generaron correctamente');
@@ -229,9 +253,7 @@ const FacturaForm = () => {
 
     const copyResultsToClipboard = () => {
         let textToCopy = '';
-
         if (Array.isArray(respuesta)) {
-            // Si es un array de resultados (múltiples facturas)
             textToCopy = respuesta.map((resp, index) => {
                 return `FACTURA ${index + 1}:\n` +
                     `CAE: ${resp.cae || 'No generado'}\n` +
@@ -243,21 +265,15 @@ const FacturaForm = () => {
                     '------------------------\n';
             }).join('\n');
         } else {
-            // Si es un solo resultado (factura individual)
             textToCopy = `CAE: ${respuesta.cae}\n` +
                 `Vencimiento: ${respuesta.fechaVencimiento || respuesta.caeFchVto}\n` +
                 `Número: ${respuesta.cbteDesde}`;
         }
 
-        // Copiar al portapapeles
         navigator.clipboard.writeText(textToCopy)
-            .then(() => {
-                // Opcional: mostrar feedback de éxito
-                alert('Resultados copiados al portapapeles');
-            })
+            .then(() => alert('Resultados copiados al portapapeles'))
             .catch(err => {
                 console.error('Error al copiar: ', err);
-                // Feedback alternativo si falla
                 alert('No se pudo copiar al portapapeles. Error: ' + err);
             });
     };
@@ -265,14 +281,10 @@ const FacturaForm = () => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-
             <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
-                {/* header */}
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
-                    {/* titulo */}
                     <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturacion</h2>
-                        {/* conectado */}
                         <div className="flex flex-row items-center gap-1">
                             {tokenStatus?.valid ? (
                                 <span className="relative flex h-2 w-2">
@@ -284,12 +296,12 @@ const FacturaForm = () => {
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
                                 </span>
                             )}
-                            <h2 className="text-xs  font-bold text-gray-400 ">
+                            <h2 className="text-xs font-bold text-gray-400 ">
                                 {tokenStatus?.valid ? 'Conectado' : (
                                     <button
                                         onClick={handleGenerateToken}
                                         disabled={isLoadingToken}
-                                        className=" font-bold "
+                                        className="font-bold"
                                     >
                                         {isLoadingToken ? 'Conectando' : 'Conectar'}
                                     </button>
@@ -297,7 +309,7 @@ const FacturaForm = () => {
                             </h2>
                         </div>
                         {ventasSinFacturar.length === 0 ? (
-                            <div className='flex flex-row gap-1 -ml-[1.2px]  items-center '>
+                            <div className='flex flex-row gap-1 -ml-[1.2px] items-center'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-2.5 text-green-500">
                                     <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                 </svg>
@@ -307,7 +319,6 @@ const FacturaForm = () => {
                             </div>
                         ) : null}
                     </div>
-                    {/* individual */}
                     <button
                         onClick={toggleIndividualForm}
                         className="bg-gray-300 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
@@ -316,13 +327,10 @@ const FacturaForm = () => {
                             <path fillRule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clipRule="evenodd" />
                             <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
                         </svg>
-                        <p>
-                            {showIndividualForm ? 'Ocultar' : ' Individual'}
-                        </p>
+                        <p>{showIndividualForm ? 'Ocultar' : ' Individual'}</p>
                     </button>
                 </div>
 
-                {/* Facturacion individual */}
                 {showIndividualForm && (
                     <form onSubmit={handleSubmitSingle} className="px-4 w-full">
                         <select
@@ -394,20 +402,17 @@ const FacturaForm = () => {
                     </form>
                 )}
 
-                {/* Facturacion multiple */}
-                <div className='w-full '>
+                <div className='w-full'>
                     {ventasSinFacturar.length > 0 ? (
-                        <div className='flex flex-col mb-8 '>
+                        <div className='flex flex-col mb-8'>
                             <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
-
                             <div className='px-4'>
-
                                 <button
                                     onClick={handleSubmitMultiple}
                                     disabled={!tokenStatus?.valid || isLoadingSubmit}
-                                    className="w-full bg-black h-20 mt-4  flex items-center justify-center rounded-3xl"
+                                    className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
                                 >
-                                    <p className="text-gray-100 font-bold  text-3xl">
+                                    <p className="text-gray-100 font-bold text-3xl">
                                         {isLoadingSubmit ? <LoadingPoints color="text-gray-100" /> :
                                             <div className='flex flex-row items-center justify-center gap-2'>
                                                 <p className='text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center'>
@@ -420,12 +425,9 @@ const FacturaForm = () => {
                                 </button>
                             </div>
                         </div>
-                    ) : (
-                        null
-                    )}
+                    ) : null}
                 </div>
 
-                {/* Errores y respuestas */}
                 {error && (
                     <div className="mt-8 w-full ml-8 p-4 border-l-4 border-red-500">
                         <p className="text-red-500 text-sm">{error}</p>
@@ -444,9 +446,7 @@ const FacturaForm = () => {
                                     <path d="M3 8.625c0-1.036.84-1.875 1.875-1.875h.375A3.75 3.75 0 0 1 9 10.5v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 16.5 18v2.625c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625v-12Z" />
                                     <path d="M10.5 10.5a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963 5.23 5.23 0 0 0-3.434-1.279h-1.875a.375.375 0 0 1-.375-.375V10.5Z" />
                                 </svg>
-                                <p className='font-bold'>
-                                    Copiar
-                                </p>
+                                <p className='font-bold'>Copiar</p>
                             </button>
                         </div>
                         {Array.isArray(respuesta) ? (
