@@ -328,7 +328,7 @@ const FacturaForm = () => {
                 {/* Facturacion multiple */}
                 <div className='w-full '>
                     {ventasSinFacturar.length > 0 ? (
-                        <div className='flex flex-col '>
+                        <div className='flex flex-col mb-8 '>
                             <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
 
                             <div className='px-4'>
