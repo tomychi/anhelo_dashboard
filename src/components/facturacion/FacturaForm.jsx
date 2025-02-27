@@ -97,9 +97,10 @@ const FacturaForm = () => {
         const year = today.getFullYear();
         const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
 
-        // Agregar valores por defecto para docTipo y docNro
+        // Agregar valores por defecto y puntoVenta a los datos de facturación
         const facturaDataCompleta = {
             ...facturaData,
+            puntoVenta: formData.puntoVenta, // Tomar puntoVenta de formData
             docTipo: '99', // Valor fijo: 99 - Doc. (otro)
             docNro: '0'    // Valor fijo: 0
         };
