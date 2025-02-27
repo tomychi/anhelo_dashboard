@@ -15,15 +15,12 @@ const FacturaForm = () => {
         // cuit: '',
         // puntoVenta: '',
         // tipoFactura: '',
-        // importeNeto: '',
-        // importeTrib: '',
-        // importeTotal: ''
         cuit: '33718835289',
         puntoVenta: '2',
         tipoFactura: 'B',
-        importeNeto: '0.00',
-        importeTrib: '0.00',
-        importeTotal: '0.00'
+        importeNeto: '',
+        importeTrib: '',
+        importeTotal: ''
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
