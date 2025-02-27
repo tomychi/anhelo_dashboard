@@ -268,8 +268,8 @@ const FacturaForm = () => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-            <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
 
+            <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
                 {/* header */}
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     {/* titulo */}
@@ -428,8 +428,6 @@ const FacturaForm = () => {
                     )}
                 </div>
 
-
-
                 {/* Errores y respuestas */}
                 {error && (
                     <div className="mt-8 w-full ml-8 p-4 border-l-4 border-red-500">
@@ -475,7 +473,6 @@ const FacturaForm = () => {
                         )}
                     </div>
                 )}
-
             </div>
         </>
     );
