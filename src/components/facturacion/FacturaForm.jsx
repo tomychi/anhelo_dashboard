@@ -97,6 +97,13 @@ const FacturaForm = () => {
         const year = today.getFullYear();
         const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
 
+        // Agregar valores por defecto para docTipo y docNro
+        const facturaDataCompleta = {
+            ...facturaData,
+            docTipo: '99', // Valor fijo: 99 - Doc. (otro)
+            docNro: '0'    // Valor fijo: 0
+        };
+
         try {
             await runTransaction(firestore, async (transaction) => {
                 const docSnapshot = await transaction.get(docRef);
@@ -107,13 +114,13 @@ const FacturaForm = () => {
                 if (pedidoIndex >= 0) {
                     pedidosDelDia[pedidoIndex] = {
                         ...pedidosDelDia[pedidoIndex],
-                        facturacionDatos: facturaData,
+                        facturacionDatos: facturaDataCompleta,
                         seFacturo: true
                     };
                 } else {
                     pedidosDelDia.push({
                         id: pedidoId,
-                        facturacionDatos: facturaData,
+                        facturacionDatos: facturaDataCompleta,
                         seFacturo: true,
                         importeNeto: formData.importeNeto,
                         importeTrib: formData.importeTrib,
@@ -158,8 +165,8 @@ const FacturaForm = () => {
                     fechaVencimiento: data.data.caeFchVto,
                     tipoFactura: formData.tipoFactura,
                     numeroFactura: data.data.cbteDesde,
-                    cuit: formData.cuit, // Agregar CUIT
-                    importeTotal: formData.importeTotal // Agregar importeTotal
+                    cuit: formData.cuit,
+                    importeTotal: formData.importeTotal
                 };
 
                 const pedidoId = uuidv4();
@@ -219,8 +226,8 @@ const FacturaForm = () => {
                         fechaVencimiento: factura.caeFchVto,
                         tipoFactura: formData.tipoFactura,
                         numeroFactura: factura.cbteDesde,
-                        cuit: formData.cuit, // Agregar CUIT
-                        importeTotal: pedido.importeTotal // Agregar importeTotal del pedido
+                        cuit: formData.cuit,
+                        importeTotal: pedido.importeTotal
                     };
                     await saveFacturaDataToFirestore(pedido.id, facturaData);
                 }
