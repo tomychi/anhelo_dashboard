@@ -5,8 +5,8 @@ import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 import LoadingPoints from '../LoadingPoints';
 import { v4 as uuidv4 } from 'uuid';
 
-// URL del backend en AWS Elastic Beanstalk
-const BASE_URL = 'http://absolute-backend-env.eba-k7wwmj4p.us-east-2.elasticbeanstalk.com';
+// URL del backend en AWS EC2
+const BASE_URL = 'http://3.140.191.246:3000';
 
 const FacturaForm = () => {
     const [respuesta, setRespuesta] = useState(null);
