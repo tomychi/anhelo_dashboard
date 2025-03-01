@@ -26,11 +26,21 @@ const FacturaForm = () => {
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
     useEffect(() => {
+        console.log('Iniciando listener para pedidos sin facturar...');
         const unsubscribe = listenToUninvoicedOrders(
-            (pedidos) => setVentasSinFacturar(pedidos),
-            (errMsg) => setError(errMsg)
+            (pedidos) => {
+                console.log('Pedidos recibidos:', pedidos);
+                setVentasSinFacturar(pedidos);
+            },
+            (errMsg) => {
+                console.error('Error al cargar pedidos:', errMsg);
+                setError(errMsg);
+            }
         );
-        return () => unsubscribe();
+        return () => {
+            console.log('Desuscribiendo listener...');
+            unsubscribe();
+        };
     }, []);
 
     const checkTokenStatus = async () => {
@@ -157,6 +167,11 @@ const FacturaForm = () => {
                 body: JSON.stringify(formData)
             });
             const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(`${data.message || 'Error al procesar la factura'}${data.errorDetails ? `: ${data.errorDetails}` : ''}`);
+            }
+
             if (data.success && data.data.resultado === 'A') {
                 setRespuesta({
                     cae: data.data.cae,
@@ -178,13 +193,14 @@ const FacturaForm = () => {
                 const pedidoId = uuidv4();
                 await saveFacturaDataToFirestore(pedidoId, facturaData);
             } else {
-                const errorMsg = Array.isArray(data.data?.errores)
-                    ? data.data.errores.map(err => err.Msg).join(', ')
-                    : data.data?.errores?.Msg || data.data?.observaciones?.Msg || data.message || 'Error desconocido';
+                const errorMsg = data.errorDetails ||
+                    (Array.isArray(data.data?.errores) ? data.data.errores.map(err => err.Msg).join(', ') :
+                        data.data?.errores?.Msg || data.data?.observaciones?.Msg || data.message || 'Error desconocido');
                 setError(errorMsg);
             }
         } catch (error) {
-            setError('Error de conexión con el servidor');
+            setError(error.message || 'Error de conexión con el servidor');
+            console.error('Error en handleSubmitSingle:', error);
         }
     };
 
@@ -210,12 +226,18 @@ const FacturaForm = () => {
                 importeTotal: venta.importeTotal
             }));
 
+            console.log('Datos enviados a /factura/multiple:', { facturas: multipleFacturas });
+
             const response = await fetch(`${BASE_URL}/api/afip/factura/multiple`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ facturas: multipleFacturas })
             });
             const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(`${data.message || 'Error al procesar las facturas'}${data.errorDetails ? `: ${data.errorDetails}` : ''}`);
+            }
 
             if (data.success) {
                 const facturasGeneradas = Array.isArray(data.data) ? data.data : [];
@@ -238,17 +260,21 @@ const FacturaForm = () => {
                     await saveFacturaDataToFirestore(pedido.id, facturaData);
                 }
 
-                setRespuesta(data.data);
+                // Guardar todas las respuestas (éxitos y errores) para mostrarlas
+                setRespuesta(facturasGeneradas);
 
-                const facturasFallidas = facturasGeneradas.filter(f => !f.cae || f.cae === 'No generado');
-                if (facturasFallidas.length > 0) {
+                const facturasFallidas = facturasGeneradas.filter(f => f.error || (!f.cae || f.cae === 'No generado'));
+                if (facturasFallidas.length > 0 && facturasFallidas.length === facturasGeneradas.length) {
+                    setError('No se generó ninguna factura correctamente');
+                } else if (facturasFallidas.length > 0) {
                     setError('Algunas facturas no se generaron correctamente');
                 }
             } else {
-                setError(data.message || 'Error al procesar las facturas en el backend');
+                setError(data.errorDetails || data.message || 'Error al procesar las facturas en el backend');
             }
         } catch (error) {
             setError(error.message || 'Error de conexión con el servidor');
+            console.error('Error en handleSubmitMultiple:', error);
         } finally {
             setIsLoadingSubmit(false);
         }
@@ -269,12 +295,9 @@ const FacturaForm = () => {
         if (Array.isArray(respuesta)) {
             textToCopy = respuesta.map((resp, index) => {
                 return `FACTURA ${index + 1}:\n` +
-                    `CAE: ${resp.cae || 'No generado'}\n` +
-                    `Vencimiento: ${resp.caeFchVto || 'N/A'}\n` +
-                    `Comprobante número: ${resp.cbteDesde}\n` +
-                    (resp.errores ? `Error: ${Array.isArray(resp.errores) ?
-                        resp.errores.map(e => e.Msg).join(', ') :
-                        resp.errores.Msg}\n` : '') +
+                    (resp.cae ?
+                        `CAE: ${resp.cae}\nVencimiento: ${resp.caeFchVto || 'N/A'}\nComprobante número: ${resp.cbteDesde}\n` :
+                        `Error: ${resp.error || 'No generado'}\n`) +
                     '------------------------\n';
             }).join('\n');
         } else {
@@ -294,7 +317,7 @@ const FacturaForm = () => {
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
-            <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
+            <div className="font-coolvetica flex flex-col items-center justify-center w-full">
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturación</h2>
@@ -309,7 +332,7 @@ const FacturaForm = () => {
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
                                 </span>
                             )}
-                            <h2 className="text-xs font-bold text-gray-400 ">
+                            <h2 className="text-xs font-bold text-gray-400">
                                 {tokenStatus?.valid ? 'Conectado al servidor' : (
                                     <button
                                         onClick={handleGenerateToken}
@@ -466,11 +489,17 @@ const FacturaForm = () => {
                             respuesta.map((resp, index) => (
                                 <div key={index} className="space-y-1 mb-4 text-gray-700 text-sm">
                                     <p className='text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100'>{index + 1}</p>
-                                    <p>CAE: <span className="text-black">{resp.cae || 'No generado'}</span></p>
-                                    <p>Vencimiento: <span className="text-black">{resp.caeFchVto || 'N/A'}</span></p>
-                                    <p>Comprobante número: <span className="text-black">{resp.cbteDesde}</span></p>
-                                    {resp.errores && (
-                                        <p className="text-red-main">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
+                                    {resp.cae ? (
+                                        <>
+                                            <p>CAE: <span className="text-black">{resp.cae}</span></p>
+                                            <p>Vencimiento: <span className="text-black">{resp.caeFchVto || 'N/A'}</span></p>
+                                            <p>Comprobante número: <span className="text-black">{resp.cbteDesde}</span></p>
+                                        </>
+                                    ) : (
+                                        <p className="text-red-500">
+                                            Error: {resp.error || resp.errores?.Msg || (Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : 'No generado')}
+                                            {resp.details && <span> - {resp.details}</span>}
+                                        </p>
                                     )}
                                 </div>
                             ))
