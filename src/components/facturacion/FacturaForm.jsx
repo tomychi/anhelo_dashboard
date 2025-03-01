@@ -5,6 +5,9 @@ import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 import LoadingPoints from '../LoadingPoints';
 import { v4 as uuidv4 } from 'uuid';
 
+// URL del backend en AWS Elastic Beanstalk
+const BASE_URL = 'http://absolute-backend-env.eba-k7wwmj4p.us-east-2.elasticbeanstalk.com';
+
 const FacturaForm = () => {
     const [respuesta, setRespuesta] = useState(null);
     const [error, setError] = useState(null);
@@ -32,19 +35,22 @@ const FacturaForm = () => {
 
     const checkTokenStatus = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/afip/token/status');
+            const response = await fetch(`${BASE_URL}/api/afip/token/status`);
             const data = await response.json();
             if (data.success) {
                 setTokenStatus(data.data);
+            } else {
+                setTokenStatus({ valid: false });
             }
         } catch (error) {
             console.error('Error al verificar token:', error);
+            setTokenStatus({ valid: false });
         }
     };
 
     useEffect(() => {
         checkTokenStatus();
-        const interval = setInterval(checkTokenStatus, 300000);
+        const interval = setInterval(checkTokenStatus, 300000); // Verifica cada 5 minutos
         return () => clearInterval(interval);
     }, []);
 
@@ -52,7 +58,7 @@ const FacturaForm = () => {
         setIsLoadingToken(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:3000/api/afip/token/generate', { method: 'POST' });
+            const response = await fetch(`${BASE_URL}/api/afip/token/generate`, { method: 'POST' });
             const data = await response.json();
             if (data.success) {
                 await checkTokenStatus();
@@ -97,12 +103,11 @@ const FacturaForm = () => {
         const year = today.getFullYear();
         const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
 
-        // Agregar valores por defecto y puntoVenta a los datos de facturación
         const facturaDataCompleta = {
             ...facturaData,
-            puntoVenta: formData.puntoVenta, // Tomar puntoVenta de formData
-            docTipo: '99', // Valor fijo: 99 - Doc. (otro)
-            docNro: '0'    // Valor fijo: 0
+            puntoVenta: formData.puntoVenta,
+            docTipo: '99',
+            docNro: '0'
         };
 
         try {
@@ -134,7 +139,7 @@ const FacturaForm = () => {
                     pedidos: pedidosDelDia
                 });
             });
-            console.log('Datos de facturación guardados en Firestore bajo facturacionDatos');
+            console.log('Datos de facturación guardados en Firestore');
         } catch (error) {
             console.error('Error al guardar datos de facturación:', error);
             throw error;
@@ -146,7 +151,7 @@ const FacturaForm = () => {
         setError(null);
         setRespuesta(null);
         try {
-            const response = await fetch('http://localhost:3000/api/afip/factura', {
+            const response = await fetch(`${BASE_URL}/api/afip/factura`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -205,7 +210,7 @@ const FacturaForm = () => {
                 importeTotal: venta.importeTotal
             }));
 
-            const response = await fetch('http://localhost:3000/api/afip/factura/multiple', {
+            const response = await fetch(`${BASE_URL}/api/afip/factura/multiple`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ facturas: multipleFacturas })
@@ -292,7 +297,7 @@ const FacturaForm = () => {
             <div className="font-coolvetica flex flex-col items-center justify-center w-full ">
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     <div className='flex flex-col'>
-                        <h2 className='text-3xl font-bold'>Facturacion</h2>
+                        <h2 className='text-3xl font-bold'>Facturación</h2>
                         <div className="flex flex-row items-center gap-1">
                             {tokenStatus?.valid ? (
                                 <span className="relative flex h-2 w-2">
@@ -305,7 +310,7 @@ const FacturaForm = () => {
                                 </span>
                             )}
                             <h2 className="text-xs font-bold text-gray-400 ">
-                                {tokenStatus?.valid ? 'Conectado' : (
+                                {tokenStatus?.valid ? 'Conectado al servidor' : (
                                     <button
                                         onClick={handleGenerateToken}
                                         disabled={isLoadingToken}
@@ -322,7 +327,7 @@ const FacturaForm = () => {
                                     <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                 </svg>
                                 <p className="font-bold text-gray-400 text-xs">
-                                    Estas al dia con tus facturas
+                                    Estás al día con tus facturas
                                 </p>
                             </div>
                         ) : null}
@@ -335,7 +340,7 @@ const FacturaForm = () => {
                             <path fillRule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clipRule="evenodd" />
                             <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
                         </svg>
-                        <p>{showIndividualForm ? 'Ocultar' : ' Individual'}</p>
+                        <p>{showIndividualForm ? 'Ocultar' : 'Individual'}</p>
                     </button>
                 </div>
 
@@ -463,7 +468,7 @@ const FacturaForm = () => {
                                     <p className='text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100'>{index + 1}</p>
                                     <p>CAE: <span className="text-black">{resp.cae || 'No generado'}</span></p>
                                     <p>Vencimiento: <span className="text-black">{resp.caeFchVto || 'N/A'}</span></p>
-                                    <p>Comprobante numero: <span className="text-black">{resp.cbteDesde}</span></p>
+                                    <p>Comprobante número: <span className="text-black">{resp.cbteDesde}</span></p>
                                     {resp.errores && (
                                         <p className="text-red-main">Error: {Array.isArray(resp.errores) ? resp.errores.map(e => e.Msg).join(', ') : resp.errores.Msg}</p>
                                     )}
