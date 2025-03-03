@@ -192,6 +192,9 @@ export const ComanderaAutomatizada: React.FC = () => {
 
 	const calcularTiempoEspera = (horaPedido: string): number => {
 		try {
+			// Check if horaPedido is undefined or null
+			if (!horaPedido) return 0;
+
 			const [horas, minutos] = horaPedido.split(":").map(Number);
 			const fechaPedido = new Date(tiempoActual);
 			fechaPedido.setHours(horas, minutos, 0, 0);
@@ -235,8 +238,16 @@ export const ComanderaAutomatizada: React.FC = () => {
 			.filter((o) => !o.canceled) // Filtramos los pedidos que no están cancelados
 			.filter((o) => !selectedCadete || o.cadete === selectedCadete)
 			.sort((a, b) => {
-				const [horaA, minutosA] = a.hora.split(":").map(Number);
-				const [horaB, minutosB] = b.hora.split(":").map(Number);
+				// Default time value if hora is missing (e.g., "00:00")
+				const defaultTime = "00:00";
+
+				// Use the hora property if it exists, otherwise use the default
+				const timeA = a.hora || defaultTime;
+				const timeB = b.hora || defaultTime;
+
+				// Now safely split the time strings
+				const [horaA, minutosA] = timeA.split(":").map(Number);
+				const [horaB, minutosB] = timeB.split(":").map(Number);
 				return horaA * 60 + minutosA - (horaB * 60 + minutosB);
 			});
 	}, [orders, selectedCadete]);
