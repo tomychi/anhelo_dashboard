@@ -337,16 +337,25 @@ export const Dashboard: React.FC = () => {
 
 	const canceledOrders = orders.filter(order => order.canceled);
 	const canceledOrdersTotal = canceledOrders.reduce((acc, order) => acc + order.total, 0);
+
+	// CORRECCIÓN: Verificar que detallePedido existe y es un array
 	const canceledProducts = orders
 		.filter(order => order.canceled)
 		.reduce((total, order) => {
+			if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+				return total;
+			}
 			return total + order.detallePedido.reduce((accumulator, detail) => {
-				const additionalQuantity = detail.burger.includes("2x1") ? detail.quantity : 0;
+				const additionalQuantity = detail.burger && detail.burger.includes("2x1") ? detail.quantity : 0;
 				return accumulator + detail.quantity + additionalQuantity;
 			}, 0);
 		}, 0);
 
+	// CORRECCIÓN: Verificar que detallePedido existe y es un array
 	const canceledCostTotal = canceledOrders.reduce((total, order) => {
+		if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+			return total;
+		}
 		return total + order.detallePedido.reduce((subtotal, pedido) => {
 			return subtotal + (pedido.costoBurger || 0);
 		}, 0);
@@ -362,11 +371,17 @@ export const Dashboard: React.FC = () => {
 		order => order.deliveryMethod === "takeaway"
 	);
 
+	// CORRECCIÓN: Verificar que detallePedido existe y es un array
 	const ordersWithExtra = orders.filter((order) =>
+		order.detallePedido && Array.isArray(order.detallePedido) &&
 		order.detallePedido.some((detalle) => detalle.extra === true)
 	);
 
+	// CORRECCIÓN: Verificar que detallePedido existe y es un array
 	const extraProductsCount = orders.reduce((total, order) => {
+		if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+			return total;
+		}
 		return (
 			total +
 			order.detallePedido.reduce((subTotal, producto) => {
@@ -375,24 +390,25 @@ export const Dashboard: React.FC = () => {
 		);
 	}, 0);
 
+	// CORRECCIÓN: Verificar que detallePedido existe y es un array
 	const extraOrdersDetails = ordersWithExtra.map((order) => ({
 		id: order.id,
 		fecha: order.fecha,
 		hora: order.hora,
 		total: order.total,
-		detalle: order.detallePedido
-			.filter((detalle) => detalle.extra === true)
-			.map((detalle) => ({
-				burger: detalle.burger,
-				price: detalle.priceBurger,
-				quantity: detalle.quantity,
-				subTotal: detalle.subTotal,
-			})),
+		detalle: order.detallePedido && Array.isArray(order.detallePedido)
+			? order.detallePedido
+				.filter((detalle) => detalle.extra === true)
+				.map((detalle) => ({
+					burger: detalle.burger,
+					price: detalle.priceBurger,
+					quantity: detalle.quantity,
+					subTotal: detalle.subTotal,
+				}))
+			: [],
 	}));
 
 	const allCards = [
-
-
 		<CardInfo
 			key="bruto"
 			info={currencyFormat(Math.ceil(facturacionTotal))}
@@ -442,8 +458,6 @@ export const Dashboard: React.FC = () => {
 				const totalOriginalAmount = facturacionTotal - extraAmount;
 				const originalPercentage = (totalOriginalAmount * 100 / facturacionTotal);
 
-
-
 				return currencyFormat(Math.ceil(extraAmount));
 			})()}
 			title={"Extra por Dynamic price"}
@@ -479,6 +493,9 @@ export const Dashboard: React.FC = () => {
 			key="extraFacturacion"
 			info={currencyFormat(
 				orders.reduce((total, order) => {
+					if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+						return total;
+					}
 					return (
 						total +
 						order.detallePedido
@@ -614,8 +631,6 @@ export const Dashboard: React.FC = () => {
 			return total;
 		}, 0);
 	};
-
-
 
 	return (
 		<div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
