@@ -82,32 +82,31 @@ const dataReducer = (state = initialState, action: DataAction) => {
 
     case 'READ_ORDERS': {
       const orders = action.payload?.orders;
-      if (!orders) return state;
+      if (!orders) {
+        return state;
+      }
 
-      // console.log("1. Total de órdenes recibidas:", orders.length);
+      // Filtrar pedidos no cancelados y corregir estructuras problemáticas
+      const activeOrders = orders.filter(order => {
+        // Verificar si está cancelado
+        const isCanceled = order.canceled;
 
-      // Filtrar pedidos no cancelados
-      const activeOrders = orders.filter(order => !order.canceled);
-      // console.log("2. Órdenes activas (no canceladas):", activeOrders.length);
-      // console.log("3. Órdenes canceladas:", orders.length - activeOrders.length);
+        // Asegurar que detallePedido sea siempre un array
+        if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+          order.detallePedido = [];
+        }
+
+        return !isCanceled;
+      });
 
       // Calcular totales basados solo en órdenes activas
       const { facturacionTotal, totalProductosVendidos, productosPedidos } =
         calcularTotales(activeOrders);
 
-      // console.log("4. Facturación total de órdenes activas:", facturacionTotal);
-
       // Calcular costo total solo de órdenes activas
       const totalCostoBurger = activeOrders.reduce((total, order) => {
-        // console.log("\n5. Procesando orden:", order.id);
-        // console.log("   Total de la orden:", order.total);
-
         const costoBurgerOrden = order.detallePedido.reduce(
           (subtotal, pedido) => {
-            // console.log(`   Hamburguesa: ${pedido.burger}`);
-            // console.log(`   Cantidad: ${pedido.quantity}`);
-            // console.log(`   Costo unitario: ${pedido.costoBurger}`);
-
             if (pedido.costoBurger) {
               return subtotal + pedido.costoBurger;
             }
@@ -117,10 +116,6 @@ const dataReducer = (state = initialState, action: DataAction) => {
         );
         return total + costoBurgerOrden;
       }, 0);
-
-      // console.log("\n6. Costo total de todas las hamburguesas:", totalCostoBurger);
-      // console.log("7. Facturación total:", facturacionTotal);
-      // console.log("8. Neto calculado:", facturacionTotal - totalCostoBurger);
 
       // Obtener todos los toppings solo de órdenes activas
       const allToppings = activeOrders
@@ -148,7 +143,7 @@ const dataReducer = (state = initialState, action: DataAction) => {
         })
       );
 
-      const returnValue = {
+      return {
         ...state,
         orders,
         toppingsData,
@@ -157,13 +152,6 @@ const dataReducer = (state = initialState, action: DataAction) => {
         totalProductosVendidos,
         productosPedidos,
       };
-
-      console.log("\n9. Valores finales:");
-      console.log("   Facturación total:", returnValue.facturacionTotal);
-      console.log("   Neto:", returnValue.neto);
-      console.log("   Total productos vendidos:", returnValue.totalProductosVendidos);
-
-      return returnValue;
     }
 
     case 'READ_EXPENSES': {
