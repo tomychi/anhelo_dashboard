@@ -480,7 +480,7 @@ const FacturaForm = () => {
 
                 {/* Calendar component for date selection */}
                 <div className="w-full px-4 mb-4">
-                    <h3 className="text-xl font-bold mb-2">Historial de Facturas</h3>
+                    <h3 className="text- font-bold mb-2">Historial</h3>
                     <Calendar />
                     <div className="flex items-center w-full h-10 gap-1 mt-2 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
                         <svg
@@ -508,7 +508,7 @@ const FacturaForm = () => {
                 </div>
 
                 {/* Display list of facturas */}
-                <div className="w-full px-4 mb-8">
+                <div className="w-full  mb-8">
                     {isLoadingFacturas ? (
                         <div className="flex justify-center items-center py-8">
                             <LoadingPoints color="text-black" />
