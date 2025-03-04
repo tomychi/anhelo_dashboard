@@ -814,9 +814,9 @@ const FacturaForm = () => {
                                 <button
                                     type="submit"
                                     disabled={!tokenStatus?.valid}
-                                    className="w-full bg-black h-20 mb-4 mt-4 rounded-3xl"
+                                    className="w-full bg-black h-20  mt-4 rounded-3xl"
                                 >
-                                    <p className="text-gray-100 font-bold text-4xl">Crear</p>
+                                    <p className="text-gray-100 font-bold text-4xl">Enviar</p>
                                 </button>
                             </form>
                         </div>
