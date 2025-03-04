@@ -59,6 +59,36 @@ const FacturaForm = () => {
         return () => clearInterval(interval);
     }, []);
 
+
+
+    useEffect(() => {
+        const fetchPedidosSinFacturar = async () => {
+            try {
+                const pedidosSinFacturar = await ReadLastThreeDaysOrders();
+                console.log("Pedidos sin facturar de los últimos 3 días:", pedidosSinFacturar);
+                console.log("Cantidad de pedidos sin facturar:", pedidosSinFacturar.length);
+
+                // Transforma los pedidos al formato que necesita ventasSinFacturar
+                const ventasFormateadas = pedidosSinFacturar.map(pedido => ({
+                    id: pedido.id,
+                    fecha: pedido.fecha,
+                    hora: pedido.hora,
+                    importeTotal: pedido.total.toString(),
+                    importeNeto: (pedido.total / 1.21).toFixed(2),
+                    importeTrib: "0.00",
+                    quiereFacturarla: true // Por defecto marcamos que queremos facturarla
+                }));
+
+                // Actualiza el estado
+                setVentasSinFacturar(ventasFormateadas);
+            } catch (error) {
+                console.error("Error al obtener los pedidos sin facturar:", error);
+            }
+        };
+
+        fetchPedidosSinFacturar();
+    }, []);
+
     const handleGenerateToken = async () => {
         setIsLoadingToken(true);
         setError(null);
