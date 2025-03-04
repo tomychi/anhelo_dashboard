@@ -345,8 +345,9 @@ const FacturaForm = () => {
                                             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                         </span>
                                         <h2 className="text-xs font-bold text-gray-400">
-                                            Conectado al servidor hasta {new Date(tokenStatus.expirationTime).toLocaleTimeString()}
+                                            Conectado hasta las {new Date(tokenStatus.expirationTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} hs
                                         </h2>
+
                                     </div>
                                 ) : (
                                     <div className='flex flex-row items-center gap-1'>
