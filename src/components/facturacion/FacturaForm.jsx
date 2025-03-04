@@ -723,7 +723,7 @@ const FacturaForm = () => {
                 {showIndividualForm && (
                     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
                         <div
-                            className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+                            className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
                                 }`}
                             style={{
                                 opacity: Math.max(0, 1 - currentTranslate / 400),
