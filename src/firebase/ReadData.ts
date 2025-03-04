@@ -675,7 +675,7 @@ export const ReadLastThreeDaysOrders = async () => {
 
 	// Fecha de tres días atrás
 	const threeDaysAgoDate = new Date();
-	threeDaysAgoDate.setDate(currentDate.getDate() - 3);
+	threeDaysAgoDate.setDate(currentDate.getDate() - 1);
 
 	try {
 		const pedidosData = []; // Acumulará todos los pedidos

@@ -152,6 +152,9 @@ const FacturaForm = () => {
             });
             const data = await response.json();
 
+            // Console log de la respuesta completa
+            console.log('Respuesta completa del backend (factura individual):', data);
+
             if (!response.ok) {
                 throw new Error(`${data.message || 'Error al procesar la factura'}${data.errorDetails ? `: ${data.errorDetails}` : ''}`);
             }
@@ -217,6 +220,9 @@ const FacturaForm = () => {
             });
             const data = await response.json();
 
+            // Console log de la respuesta completa
+            console.log('Respuesta completa del backend (facturas múltiples):', data);
+
             if (!response.ok) {
                 throw new Error(`${data.message || 'Error al procesar las facturas'}${data.errorDetails ? `: ${data.errorDetails}` : ''}`);
             }
@@ -240,6 +246,8 @@ const FacturaForm = () => {
                         importeTotal: pedido.importeTotal
                     };
                 }
+
+
 
                 // Guardar todas las respuestas (éxitos y errores) para mostrarlas
                 setRespuesta(facturasGeneradas);
