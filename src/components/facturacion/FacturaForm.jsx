@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import LoadingPoints from '../LoadingPoints';
-import { v4 as uuidv4 } from 'uuid';
+import { ReadLastThreeDaysOrders } from '../../firebase/ReadData'
 
 // URL del backend en AWS EC2
 const BASE_URL = 'https://backend.onlyanhelo.com';
@@ -24,7 +24,18 @@ const FacturaForm = () => {
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
+    useEffect(() => {
+        const fetchLastThreeDaysOrders = async () => {
+            try {
+                const orders = await ReadLastThreeDaysOrders();
+                console.log("Pedidos de los últimos 3 días:", orders);
+            } catch (error) {
+                console.error("Error al obtener los pedidos de los últimos 3 días:", error);
+            }
+        };
 
+        fetchLastThreeDaysOrders();
+    }, []);
 
 
     const checkTokenStatus = async () => {

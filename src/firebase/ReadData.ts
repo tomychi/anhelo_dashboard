@@ -666,3 +666,67 @@ export const ReadMaterials = async () => {
 		throw error;
 	}
 };
+
+export const ReadLastThreeDaysOrders = async () => {
+	const firestore = getFirestore();
+
+	// Fecha actual
+	const currentDate = new Date();
+
+	// Fecha de tres días atrás
+	const threeDaysAgoDate = new Date();
+	threeDaysAgoDate.setDate(currentDate.getDate() - 3);
+
+	try {
+		const pedidosData = []; // Acumulará todos los pedidos
+
+		// Función auxiliar para formatear las fechas en el formato correcto
+		const formatDate = (date) => {
+			const year = date.getFullYear().toString();
+			const month = (date.getMonth() + 1).toString().padStart(2, "0");
+			const day = date.getDate().toString().padStart(2, "0");
+			return { year, month, day };
+		};
+
+		// Recorrer desde el día de hace tres días hasta el día actual
+		let tempDate = new Date(threeDaysAgoDate);
+		while (tempDate <= currentDate) {
+			const { year, month, day } = formatDate(tempDate);
+
+			// Referencia al documento del día
+			const dayDocRef = doc(firestore, "pedidos", year, month, day);
+			const daySnapshot = await getDoc(dayDocRef);
+
+			if (daySnapshot.exists()) {
+				const dayData = daySnapshot.data();
+				const pedidosArray = dayData.pedidos || [];
+
+				// Filtrar solo los pedidos que NO han sido facturados (seFacturo === false)
+				const pedidosSinFacturar = pedidosArray.filter(
+					(pedido) => pedido.seFacturo === false
+				);
+
+				pedidosData.push(...pedidosSinFacturar);
+			}
+
+			// Avanzar al siguiente día
+			tempDate.setDate(tempDate.getDate() + 1);
+		}
+
+		// Ordenar los pedidos por fecha y hora de más reciente a más antiguo
+		const pedidosOrdenados = pedidosData.sort((a, b) => {
+			const dateA = new Date(
+				a.fecha.split("/").reverse().join("-") + "T" + a.hora
+			);
+			const dateB = new Date(
+				b.fecha.split("/").reverse().join("-") + "T" + b.hora
+			);
+			return dateB.getTime() - dateA.getTime();
+		});
+
+		return pedidosOrdenados;
+	} catch (error) {
+		console.error("Error al leer los pedidos sin facturar:", error);
+		throw error;
+	}
+};
