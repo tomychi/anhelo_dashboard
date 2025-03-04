@@ -368,7 +368,7 @@ export const Sidebar = () => {
 	const renderMobileProfile = () => (
 		<div className="fixed inset-0 z-50 flex items-start justify-center">
 			<div
-				className="absolute inset-0 bg-black transition-opacity duration-300"
+				className="absolute inset-0 bg-black backdrop-blur-sm transition-opacity duration-300"
 				style={{
 					opacity: Math.max(0, 1 - currentTranslate / 400),
 					backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -529,7 +529,7 @@ export const Sidebar = () => {
 			{isMenuOpen && (
 				<div className="fixed inset-0 z-50 flex items-start justify-center">
 					<div
-						className="absolute inset-0 bg-black transition-opacity duration-300"
+						className="absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300"
 						style={{
 							opacity: Math.max(0, 1 - menuTranslate / 400),
 							backgroundColor: "rgba(0, 0, 0, 0.5)",
