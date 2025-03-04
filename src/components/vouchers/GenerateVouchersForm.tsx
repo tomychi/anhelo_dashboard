@@ -129,9 +129,8 @@ export const GenerateVouchersForm = () => {
 				{showForm && (
 					<div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
 						<div
-							className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-								isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-							}`}
+							className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+								}`}
 							style={{
 								opacity: Math.max(0, 1 - currentTranslate / 400),
 							}}
@@ -140,9 +139,8 @@ export const GenerateVouchersForm = () => {
 
 						<div
 							ref={modalRef}
-							className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
-								isAnimating ? "translate-y-0" : "translate-y-full"
-							}`}
+							className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${isAnimating ? "translate-y-0" : "translate-y-full"
+								}`}
 							style={{
 								transform: `translateY(${currentTranslate}px)`,
 							}}
