@@ -432,21 +432,22 @@ const FacturaForm = () => {
                 const notification = document.createElement('div');
                 notification.style.position = 'fixed';
                 notification.style.bottom = '20px';
-                notification.style.padding = '10px 20px';
+                notification.style.padding = '0 20px';
                 notification.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
                 notification.style.color = 'white';
                 notification.style.borderRadius = '9999px';
                 notification.style.left = '0';
                 notification.style.right = '0';
-                notification.style.marginLeft = '1rem'; // mx-4 (16px)
-                notification.style.marginRight = '1rem'; // mx-4 (16px)
+                notification.style.marginLeft = '1rem';
+                notification.style.marginRight = '1rem';
                 notification.style.width = 'calc(100% - 2rem)';
+                notification.style.height = '40px';
                 notification.style.zIndex = '1000';
                 notification.style.textAlign = 'center';
                 notification.style.fontFamily = 'Coolvetica, sans-serif';
                 notification.style.fontWeight = 'bold';
                 notification.style.backdropFilter = 'blur(8px)';
-                notification.style.WebkitBackdropFilter = 'blur(8px)'; // Para Safari
+                notification.style.WebkitBackdropFilter = 'blur(8px)';
                 notification.style.display = 'flex';
                 notification.style.alignItems = 'center';
                 notification.style.justifyContent = 'center';
@@ -456,8 +457,9 @@ const FacturaForm = () => {
                 const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 svgIcon.setAttribute('viewBox', '0 0 24 24');
                 svgIcon.setAttribute('fill', 'currentColor');
-                svgIcon.style.width = '24px';
-                svgIcon.style.height = '24px';
+                svgIcon.style.width = '24px';  // h-6 equivale a 24px
+                svgIcon.style.height = '24px'; // h-6 equivale a 24px
+                svgIcon.style.flexShrink = '0';
 
                 // Crear el path dentro del SVG
                 const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
