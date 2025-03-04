@@ -418,6 +418,53 @@ const FacturaForm = () => {
         factura.numeroFactura.toString().includes(searchTerm)
     );
 
+    const copyFacturaToClipboard = (factura) => {
+        const textToCopy = `FACTURA ${factura.tipoFactura} N° ${factura.numeroFactura}\n` +
+            `Fecha: ${factura.fechaEmision}\n` +
+            `CAE: ${factura.cae}\n` +
+            `Cliente: ${factura.cliente}\n` +
+            `Teléfono: ${factura.telefono}\n` +
+            `Total: $${factura.total.toLocaleString()}`;
+
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                // Mostrar una notificación temporal
+                const notification = document.createElement('div');
+                notification.textContent = 'Factura copiada al portapapeles';
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.padding = '10px 20px';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                notification.style.color = 'white';
+                notification.style.borderRadius = '9999px'; notification.style.left = '0';
+                notification.style.right = '0';
+                notification.style.marginLeft = '1rem'; // mx-4 (16px)
+                notification.style.marginRight = '1rem'; // mx-4 (16px)
+                notification.style.width = 'calc(100% - 2rem)'
+                notification.style.zIndex = '1000';
+                notification.style.textAlign = 'center';
+                notification.style.fontFamily = 'Coolvetica, sans-serif';
+                notification.style.backdropFilter = 'blur(8px)';
+                notification.style.WebkitBackdropFilter = 'blur(8px)'
+
+
+                document.body.appendChild(notification);
+
+                // Desaparecer la notificación después de 2 segundos
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 500);
+                }, 2000);
+            })
+            .catch(err => {
+                console.error('Error al copiar factura: ', err);
+                alert('No se pudo copiar la factura al portapapeles. Error: ' + err);
+            });
+    };
+
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
@@ -542,11 +589,18 @@ const FacturaForm = () => {
                                             <td className="pl-4 font-light"> {factura.numeroFactura}</td>
                                             <td className="pl-4 font-light">${factura.total.toLocaleString()}</td>
                                             <td className="pl-4 font-light">99 0</td>
-                                            <td className="pl-4 font-light pr-4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6">
-                                                <path fill-rule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clip-rule="evenodd" />
-                                                <path d="M3 8.625c0-1.036.84-1.875 1.875-1.875h.375A3.75 3.75 0 0 1 9 10.5v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 16.5 18v2.625c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625v-12Z" />
-                                                <path d="M10.5 10.5a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963 5.23 5.23 0 0 0-3.434-1.279h-1.875a.375.375 0 0 1-.375-.375V10.5Z" />
-                                            </svg>
+                                            <td className="pl-4 font-light pr-4">
+                                                <button
+                                                    onClick={() => copyFacturaToClipboard(factura)}
+                                                    className="cursor-pointer hover:opacity-75 transition-opacity"
+                                                    title="Copiar datos de factura"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6">
+                                                        <path fillRule="evenodd" d="M17.663 3.118c.225.015.45.032.673.05C19.876 3.298 21 4.604 21 6.109v9.642a3 3 0 0 1-3 3V16.5c0-5.922-4.576-10.775-10.384-11.217.324-1.132 1.3-2.01 2.548-2.114.224-.019.448-.036.673-.051A3 3 0 0 1 13.5 1.5H15a3 3 0 0 1 2.663 1.618ZM12 4.5A1.5 1.5 0 0 1 13.5 3H15a1.5 1.5 0 0 1 1.5 1.5H12Z" clipRule="evenodd" />
+                                                        <path d="M3 8.625c0-1.036.84-1.875 1.875-1.875h.375A3.75 3.75 0 0 1 9 10.5v1.875c0 1.036.84 1.875 1.875 1.875h1.875A3.75 3.75 0 0 1 16.5 18v2.625c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625v-12Z" />
+                                                        <path d="M10.5 10.5a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963 5.23 5.23 0 0 0-3.434-1.279h-1.875a.375.375 0 0 1-.375-.375V10.5Z" />
+                                                    </svg>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
