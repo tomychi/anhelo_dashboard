@@ -1,3 +1,6 @@
+import currencyFormat from "../../helpers/currencyFormat";
+
+
 const SalesCards = ({ ventas, onToggleFacturar }) => {
 
     const totalVentas = Math.round(
@@ -14,7 +17,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
                     Total a facturar:
                 </h2>
                 <p className=' font-bold ml-2'>
-                    ${totalVentas}
+                    {currencyFormat(totalVentas)}
                 </p>
             </div>
             {/* cards */}
@@ -43,7 +46,8 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
                             {venta.quiereFacturarla ? 'Facturar' : 'No facturar'}
                         </div>
                         <p className="text-xl py-2 font-bold my-auto px-4">
-                            ${Math.round(parseFloat(venta.importeTotal))}
+                            {currencyFormat(Math.round(parseFloat(venta.importeTotal)))}
+
                         </p>
                     </button>
                 ))}

@@ -4,6 +4,8 @@ import LoadingPoints from '../LoadingPoints';
 import { ReadLastThreeDaysOrders, marcarPedidoComoFacturado, ReadDataForDateRange } from '../../firebase/ReadData'
 import { useSelector } from 'react-redux';
 import Calendar from '../Calendar'
+import currencyFormat from "../../helpers/currencyFormat";
+
 
 // URL del backend en AWS EC2
 const BASE_URL = 'https://backend.onlyanhelo.com';
@@ -715,7 +717,12 @@ const FacturaForm = () => {
                                             <td className="pl-4 font-light">{factura.tipoFactura}</td>
                                             <td className="pl-4 font-light">2</td>
                                             <td className="pl-4 font-light"> {factura.numeroFactura}</td>
-                                            <td className="pl-4 font-light">${factura.total.toLocaleString()}</td>
+                                            <td className="pl-4 font-light">
+
+                                                {currencyFormat(factura.total)}
+
+
+                                            </td>
                                             <td className="pl-4 font-light">99 0</td>
                                             <td className="pl-4 font-light pr-4">
                                                 <button
