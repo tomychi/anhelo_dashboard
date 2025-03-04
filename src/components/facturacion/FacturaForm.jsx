@@ -430,23 +430,51 @@ const FacturaForm = () => {
             .then(() => {
                 // Mostrar una notificación temporal
                 const notification = document.createElement('div');
-                notification.textContent = 'Factura copiada al portapapeles';
                 notification.style.position = 'fixed';
                 notification.style.bottom = '20px';
                 notification.style.padding = '10px 20px';
-                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                notification.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
                 notification.style.color = 'white';
-                notification.style.borderRadius = '9999px'; notification.style.left = '0';
+                notification.style.borderRadius = '9999px';
+                notification.style.left = '0';
                 notification.style.right = '0';
                 notification.style.marginLeft = '1rem'; // mx-4 (16px)
                 notification.style.marginRight = '1rem'; // mx-4 (16px)
-                notification.style.width = 'calc(100% - 2rem)'
+                notification.style.width = 'calc(100% - 2rem)';
                 notification.style.zIndex = '1000';
                 notification.style.textAlign = 'center';
                 notification.style.fontFamily = 'Coolvetica, sans-serif';
+                notification.style.fontWeight = 'bold';
                 notification.style.backdropFilter = 'blur(8px)';
-                notification.style.WebkitBackdropFilter = 'blur(8px)'
+                notification.style.WebkitBackdropFilter = 'blur(8px)'; // Para Safari
+                notification.style.display = 'flex';
+                notification.style.alignItems = 'center';
+                notification.style.justifyContent = 'center';
+                notification.style.gap = '8px';
 
+                // Crear el SVG
+                const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgIcon.setAttribute('viewBox', '0 0 24 24');
+                svgIcon.setAttribute('fill', 'currentColor');
+                svgIcon.style.width = '24px';
+                svgIcon.style.height = '24px';
+
+                // Crear el path dentro del SVG
+                const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                svgPath.setAttribute('fill-rule', 'evenodd');
+                svgPath.setAttribute('clip-rule', 'evenodd');
+                svgPath.setAttribute('d', 'M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z');
+
+                // Añadir el path al SVG
+                svgIcon.appendChild(svgPath);
+
+                // Crear un span para el texto
+                const textSpan = document.createElement('span');
+                textSpan.textContent = 'Factura copiada al portapapeles';
+
+                // Añadir el SVG y el texto a la notificación
+                notification.appendChild(svgIcon);
+                notification.appendChild(textSpan);
 
                 document.body.appendChild(notification);
 
