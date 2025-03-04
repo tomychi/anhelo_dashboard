@@ -25,6 +25,7 @@ const FacturaForm = () => {
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
+
     useEffect(() => {
         console.log('Iniciando listener para pedidos sin facturar...');
         const unsubscribe = listenToUninvoicedOrders(
@@ -58,20 +59,32 @@ const FacturaForm = () => {
         }
     };
 
+    // Ejecutar checkTokenStatus cuando se monta el componente y cada 5 minutos
     useEffect(() => {
         checkTokenStatus();
         const interval = setInterval(checkTokenStatus, 300000); // Verifica cada 5 minutos
         return () => clearInterval(interval);
     }, []);
 
+    // Función para generar un nuevo token SOLO si el actual ha expirado
     const handleGenerateToken = async () => {
         setIsLoadingToken(true);
         setError(null);
+
+        // Verificar si el token sigue siendo válido antes de generarlo
+        await checkTokenStatus();
+
+        if (tokenStatus?.valid) {
+            setIsLoadingToken(false);
+            console.log("El token sigue siendo válido, no se necesita generar uno nuevo.");
+            return;  // Salir sin hacer la petición
+        }
+
         try {
             const response = await fetch(`${BASE_URL}/api/afip/token/generate`, { method: 'POST' });
             const data = await response.json();
             if (data.success) {
-                await checkTokenStatus();
+                setTokenStatus(data.data); // Actualizar el estado con el nuevo token
             } else {
                 setError('Error al generar token: ' + data.message);
             }
@@ -322,25 +335,31 @@ const FacturaForm = () => {
                     <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturación</h2>
                         <div className="flex flex-row items-center gap-1">
-                            {tokenStatus?.valid ? (
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                            ) : (
-                                <span className="relative flex h-2 w-2">
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
-                                </span>
-                            )}
+
                             <h2 className="text-xs font-bold text-gray-400">
-                                {tokenStatus?.valid ? 'Conectado al servidor' : (
-                                    <button
-                                        onClick={handleGenerateToken}
-                                        disabled={isLoadingToken}
-                                        className="font-bold"
-                                    >
-                                        {isLoadingToken ? 'Conectando' : 'Conectar'}
-                                    </button>
+                                {tokenStatus?.valid ? (
+                                    <div className='flex flex-row items-center gap-1'>
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                        </span>
+                                        <h2 className="text-xs font-bold text-gray-400">
+                                            Conectado al servidor hasta {new Date(tokenStatus.expirationTime).toLocaleTimeString()}
+                                        </h2>
+                                    </div>
+                                ) : (
+                                    <div className='flex flex-row items-center gap-1'>
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
+                                        </span>
+                                        <button
+                                            onClick={handleGenerateToken}
+                                            disabled={isLoadingToken}
+                                            className="font-bold text-xs text-gray-400"
+                                        >
+                                            {isLoadingToken ? 'Conectando...' : 'Conectar'}
+                                        </button>
+                                    </div >
                                 )}
                             </h2>
                         </div>
