@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import LoadingPoints from '../LoadingPoints';
-import { ReadLastThreeDaysOrders, marcarPedidoComoFacturado } from '../../firebase/ReadData'
+import { ReadLastThreeDaysOrders, marcarPedidoComoFacturado, ReadDataForDateRange } from '../../firebase/ReadData'
+import { useSelector } from 'react-redux';
+import Calendar from '../Calendar'
 
 // URL del backend en AWS EC2
 const BASE_URL = 'https://backend.onlyanhelo.com';
@@ -23,6 +25,10 @@ const FacturaForm = () => {
         importeTotal: ''
     });
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
+    const [facturasEmitidas, setFacturasEmitidas] = useState([]);
+    const [isLoadingFacturas, setIsLoadingFacturas] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const { valueDate } = useSelector((state) => state.data);
 
     useEffect(() => {
         const fetchLastThreeDaysOrders = async () => {
@@ -88,6 +94,46 @@ const FacturaForm = () => {
 
         fetchPedidosSinFacturar();
     }, []);
+
+    useEffect(() => {
+        const fetchPedidosFacturados = async () => {
+            if (!valueDate) return;
+
+            setIsLoadingFacturas(true);
+            try {
+                // Use ReadDataForDateRange to get all orders for the date range
+                const allOrders = await ReadDataForDateRange('pedidos', valueDate);
+
+                // Filter only those with datosFacturacion
+                const orderosFacturados = allOrders.filter(
+                    (pedido) => pedido.datosFacturacion
+                );
+
+                // Format the data for display
+                const facturasFormateadas = orderosFacturados.map(pedido => ({
+                    id: pedido.id,
+                    fecha: pedido.fecha,
+                    hora: pedido.hora,
+                    cliente: pedido.nombreCliente || 'Cliente',
+                    telefono: pedido.telefonoCliente || 'N/A',
+                    total: pedido.total,
+                    cae: pedido.datosFacturacion.cae,
+                    numeroFactura: pedido.datosFacturacion.numeroComprobante || pedido.datosFacturacion.numeroFactura,
+                    tipoFactura: pedido.datosFacturacion.tipoComprobante || pedido.datosFacturacion.tipoFactura,
+                    fechaEmision: new Date(pedido.datosFacturacion.fechaEmision).toLocaleDateString(),
+                }));
+
+                setFacturasEmitidas(facturasFormateadas);
+            } catch (error) {
+                console.error("Error al obtener los pedidos facturados:", error);
+                setError("Error al cargar facturas emitidas");
+            } finally {
+                setIsLoadingFacturas(false);
+            }
+        };
+
+        fetchPedidosFacturados();
+    }, [valueDate]);
 
     const handleGenerateToken = async () => {
         setIsLoadingToken(true);
@@ -366,6 +412,12 @@ const FacturaForm = () => {
             });
     };
 
+    const filteredFacturas = facturasEmitidas.filter(factura =>
+        factura.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factura.cae.includes(searchTerm) ||
+        factura.numeroFactura.toString().includes(searchTerm)
+    );
+
     return (
         <>
             <style>{`select:invalid { color: #9CA3AF; }`}</style>
@@ -397,7 +449,7 @@ const FacturaForm = () => {
                                             disabled={isLoadingToken}
                                             className="font-bold text-xs text-gray-400"
                                         >
-                                            {isLoadingToken ? 'Conectando...' : 'Conectar'}
+                                            {isLoadingToken ? 'Conectando...' : 'Conectar'} --
                                         </button>
                                     </div >
                                 )}
@@ -424,6 +476,80 @@ const FacturaForm = () => {
                         </svg>
                         <p>{showIndividualForm ? 'Ocultar' : 'Individual'}</p>
                     </button>
+                </div>
+
+                {/* Calendar component for date selection */}
+                <div className="w-full px-4 mb-4">
+                    <h3 className="text-xl font-bold mb-2">Historial de Facturas</h3>
+                    <Calendar />
+                    <div className="flex items-center w-full h-10 gap-1 mt-2 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="h-6 ml-1.5 mb-0.5"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                            />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Buscar por cliente, CAE o número de factura"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-transparent outline-none"
+                        />
+                    </div>
+                </div>
+
+                {/* Display list of facturas */}
+                <div className="w-full px-4 mb-8">
+                    {isLoadingFacturas ? (
+                        <div className="flex justify-center items-center py-8">
+                            <LoadingPoints color="text-black" />
+                        </div>
+                    ) : filteredFacturas.length > 0 ? (
+                        <div className="w-full">
+                            <table className="w-full text-xs text-left text-black">
+                                <thead className="text-black border-b h-10">
+                                    <tr>
+                                        <th scope="col" className="pl-4">Fecha</th>
+                                        <th scope="col" className="pl-4">Cliente</th>
+                                        <th scope="col" className="pl-4">Factura</th>
+                                        <th scope="col" className="pl-4">CAE</th>
+                                        <th scope="col" className="pl-4">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredFacturas.map((factura) => (
+                                        <tr
+                                            key={factura.id}
+                                            className="text-black border font-light h-10 border-black border-opacity-20"
+                                        >
+                                            <td className="pl-4 font-light">{factura.fechaEmision}</td>
+                                            <td className="pl-4 font-light">99 0</td>
+                                            <td className="pl-4 font-light">{factura.tipoFactura} {factura.numeroFactura}</td>
+                                            <td className="pl-4 font-light">{factura.cae}</td>
+                                            <td className="pl-4 font-light">${factura.total.toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : valueDate ? (
+                        <div className="text-center py-8 text-gray-500">
+                            No hay facturas emitidas en el período seleccionado
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            Selecciona un rango de fechas para ver las facturas emitidas
+                        </div>
+                    )}
                 </div>
 
                 {showIndividualForm && (
