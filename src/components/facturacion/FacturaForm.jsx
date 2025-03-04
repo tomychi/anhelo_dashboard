@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
-import { listenToUninvoicedOrders } from '../../firebase/UploadOrder';
-import { getFirestore, doc, runTransaction } from 'firebase/firestore';
 import LoadingPoints from '../LoadingPoints';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,23 +25,7 @@ const FacturaForm = () => {
     const [ventasSinFacturar, setVentasSinFacturar] = useState([]);
 
 
-    useEffect(() => {
-        console.log('Iniciando listener para pedidos sin facturar...');
-        const unsubscribe = listenToUninvoicedOrders(
-            (pedidos) => {
-                console.log('Pedidos recibidos:', pedidos);
-                setVentasSinFacturar(pedidos);
-            },
-            (errMsg) => {
-                console.error('Error al cargar pedidos:', errMsg);
-                setError(errMsg);
-            }
-        );
-        return () => {
-            console.log('Desuscribiendo listener...');
-            unsubscribe();
-        };
-    }, []);
+
 
     const checkTokenStatus = async () => {
         try {
@@ -60,14 +42,12 @@ const FacturaForm = () => {
         }
     };
 
-    // Ejecutar checkTokenStatus cuando se monta el componente y cada 5 minutos
     useEffect(() => {
         checkTokenStatus();
         const interval = setInterval(checkTokenStatus, 300000); // Verifica cada 5 minutos
         return () => clearInterval(interval);
     }, []);
 
-    // Función para generar un nuevo token SOLO si el actual ha expirado
     const handleGenerateToken = async () => {
         setIsLoadingToken(true);
         setError(null);
@@ -119,57 +99,6 @@ const FacturaForm = () => {
         }
     };
 
-    const saveFacturaDataToFirestore = async (pedidoId, facturaData) => {
-        const firestore = getFirestore();
-        const today = new Date();
-        const day = String(today.getDate()).padStart(2, '0');
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const year = today.getFullYear();
-        const docRef = doc(firestore, `pedidos/${year}/${month}/${day}`);
-
-        const facturaDataCompleta = {
-            ...facturaData,
-            puntoVenta: formData.puntoVenta,
-            docTipo: '99',
-            docNro: '0'
-        };
-
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const docSnapshot = await transaction.get(docRef);
-                const existingData = docSnapshot.exists() ? docSnapshot.data() : { pedidos: [] };
-                const pedidosDelDia = existingData.pedidos || [];
-
-                const pedidoIndex = pedidosDelDia.findIndex(p => p.id === pedidoId);
-                if (pedidoIndex >= 0) {
-                    pedidosDelDia[pedidoIndex] = {
-                        ...pedidosDelDia[pedidoIndex],
-                        facturacionDatos: facturaDataCompleta,
-                        seFacturo: true
-                    };
-                } else {
-                    pedidosDelDia.push({
-                        id: pedidoId,
-                        facturacionDatos: facturaDataCompleta,
-                        seFacturo: true,
-                        importeNeto: formData.importeNeto,
-                        importeTrib: formData.importeTrib,
-                        importeTotal: formData.importeTotal
-                    });
-                }
-
-                transaction.set(docRef, {
-                    ...existingData,
-                    pedidos: pedidosDelDia
-                });
-            });
-            console.log('Datos de facturación guardados en Firestore');
-        } catch (error) {
-            console.error('Error al guardar datos de facturación:', error);
-            throw error;
-        }
-    };
-
     const handleSubmitSingle = async (e) => {
         e.preventDefault();
         setError(null);
@@ -204,8 +133,6 @@ const FacturaForm = () => {
                     importeTotal: formData.importeTotal
                 };
 
-                const pedidoId = uuidv4();
-                await saveFacturaDataToFirestore(pedidoId, facturaData);
             } else {
                 const errorMsg = data.errorDetails ||
                     (Array.isArray(data.data?.errores) ? data.data.errores.map(err => err.Msg).join(', ') :
@@ -271,7 +198,6 @@ const FacturaForm = () => {
                         cuit: formData.cuit,
                         importeTotal: pedido.importeTotal
                     };
-                    await saveFacturaDataToFirestore(pedido.id, facturaData);
                 }
 
                 // Guardar todas las respuestas (éxitos y errores) para mostrarlas
