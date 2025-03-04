@@ -183,9 +183,8 @@ const InversionModal: React.FC<InversionModalProps> = ({
 	return (
 		<div className="fixed inset-0 z-50 flex items-end justify-center">
 			<div
-				className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-					isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-				}`}
+				className={`absolute inset-0 bg-black transition-opacity backdrop-blur-sm duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+					}`}
 				style={{
 					opacity: Math.max(0, 1 - currentTranslate / 400),
 				}}
@@ -193,9 +192,8 @@ const InversionModal: React.FC<InversionModalProps> = ({
 			/>
 			<div
 				ref={modalRef}
-				className={`relative bg-white w-full max-w-lg rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
-					isAnimating ? "translate-y-0" : "translate-y-full"
-				}`}
+				className={`relative bg-white w-full max-w-lg rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${isAnimating ? "translate-y-0" : "translate-y-full"
+					}`}
 				style={{
 					transform: `translateY(${currentTranslate}px)`,
 				}}
@@ -220,22 +218,20 @@ const InversionModal: React.FC<InversionModalProps> = ({
 									<div className="mt-2 flex gap-2">
 										<button
 											type="button"
-											className={` h-10 rounded-md font-bold flex-1 ${
-												isNewInvestor
+											className={` h-10 rounded-md font-bold flex-1 ${isNewInvestor
 													? "bg-black text-white"
 													: "bg-gray-300 text-black"
-											}`}
+												}`}
 											onClick={() => setIsNewInvestor(true)}
 										>
 											Nuevo
 										</button>
 										<button
 											type="button"
-											className={` h-10 rounded-md font-bold flex-1 ${
-												!isNewInvestor
+											className={` h-10 rounded-md font-bold flex-1 ${!isNewInvestor
 													? "bg-black text-white"
 													: "bg-gray-300 text-black"
-											}`}
+												}`}
 											onClick={() => setIsNewInvestor(false)}
 										>
 											Existente
@@ -313,15 +309,13 @@ const InversionModal: React.FC<InversionModalProps> = ({
 						<div className="flex items-center justify-between mb-4">
 							<p className="font-bold text-sm">Pagado?</p>
 							<div
-								className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-									isPaid ? "bg-black" : "bg-gray-300"
-								}`}
+								className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${isPaid ? "bg-black" : "bg-gray-300"
+									}`}
 								onClick={handleTogglePaid}
 							>
 								<div
-									className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-										isPaid ? "translate-x-6" : ""
-									}`}
+									className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${isPaid ? "translate-x-6" : ""
+										}`}
 								/>
 							</div>
 						</div>
