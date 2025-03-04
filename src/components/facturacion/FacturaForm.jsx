@@ -709,7 +709,7 @@ const FacturaForm = () => {
                             </table>
                         </div>
                     ) : valueDate ? (
-                        <div className="text-center py-8 text-xs px-4 text-gray-400">
+                        <div className="text-center pt-6 text-xs px-4 text-gray-400">
                             No hay facturas emitidas en el período seleccionado
                         </div>
                     ) : (
