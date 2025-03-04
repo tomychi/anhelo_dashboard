@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SalesCards from './SalesCards';
 import LoadingPoints from '../LoadingPoints';
 import { ReadLastThreeDaysOrders, marcarPedidoComoFacturado, ReadDataForDateRange } from '../../firebase/ReadData'
@@ -29,6 +29,67 @@ const FacturaForm = () => {
     const [isLoadingFacturas, setIsLoadingFacturas] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const { valueDate } = useSelector((state) => state.data);
+
+    // Modal drag states
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [dragStart, setDragStart] = useState(null);
+    const [currentTranslate, setCurrentTranslate] = useState(0);
+    const modalRef = useRef(null);
+
+    useEffect(() => {
+        if (showIndividualForm) {
+            setIsAnimating(true);
+            setCurrentTranslate(0);
+        }
+    }, [showIndividualForm]);
+
+    const handleTouchStart = (e) => {
+        setDragStart(e.touches[0].clientY);
+    };
+
+    const handleMouseDown = (e) => {
+        setDragStart(e.clientY);
+    };
+
+    const handleTouchMove = (e) => {
+        if (dragStart === null) return;
+        const currentPosition = e.touches[0].clientY;
+        const difference = currentPosition - dragStart;
+        if (difference < 0) return;
+        setCurrentTranslate(difference);
+    };
+
+    const handleMouseMove = (e) => {
+        if (dragStart === null) return;
+        const difference = e.clientY - dragStart;
+        if (difference < 0) return;
+        setCurrentTranslate(difference);
+    };
+
+    const handleDragEnd = () => {
+        if (currentTranslate > 200) {
+            handleCloseForm();
+        } else {
+            setCurrentTranslate(0);
+        }
+        setDragStart(null);
+    };
+
+    useEffect(() => {
+        const handleMouseUp = () => {
+            if (dragStart !== null) {
+                handleDragEnd();
+            }
+        };
+
+        window.addEventListener("mouseup", handleMouseUp);
+        window.addEventListener("touchend", handleDragEnd);
+
+        return () => {
+            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener("touchend", handleDragEnd);
+        };
+    }, [dragStart, currentTranslate]);
 
     useEffect(() => {
         const fetchLastThreeDaysOrders = async () => {
@@ -64,8 +125,6 @@ const FacturaForm = () => {
         const interval = setInterval(checkTokenStatus, 300000); // Verifica cada 5 minutos
         return () => clearInterval(interval);
     }, []);
-
-
 
     useEffect(() => {
         const fetchPedidosSinFacturar = async () => {
@@ -378,6 +437,7 @@ const FacturaForm = () => {
             setIsLoadingSubmit(false);
         }
     };
+
     const handleToggleFacturar = (ventaId) => {
         setVentasSinFacturar(prevVentas => prevVentas.map(venta =>
             venta.id === ventaId ? { ...venta, quiereFacturarla: !venta.quiereFacturarla } : venta
@@ -386,6 +446,11 @@ const FacturaForm = () => {
 
     const toggleIndividualForm = () => {
         setShowIndividualForm(!showIndividualForm);
+    };
+
+    const handleCloseForm = () => {
+        setShowIndividualForm(false);
+        setIsAnimating(false);
     };
 
     const copyResultsToClipboard = () => {
@@ -499,7 +564,12 @@ const FacturaForm = () => {
 
     return (
         <>
-            <style>{`select:invalid { color: #9CA3AF; }`}</style>
+            <style>{`
+                select:invalid { color: #9CA3AF; }
+                input[type="date"]::-webkit-calendar-picker-indicator {
+                    filter: invert(100%);
+                }
+            `}</style>
             <div className="font-coolvetica flex flex-col items-center justify-center w-full">
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     <div className='flex flex-col'>
@@ -537,7 +607,7 @@ const FacturaForm = () => {
                         {ventasSinFacturar.length === 0 ? (
                             <div className='flex flex-row gap-1 -ml-[1.2px] items-center'>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-2.5 text-green-500">
-                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
                                 </svg>
                                 <p className="font-bold text-gray-400 text-xs">
                                     Estás al día con tus facturas
@@ -553,7 +623,7 @@ const FacturaForm = () => {
                             <path fillRule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clipRule="evenodd" />
                             <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
                         </svg>
-                        <p>{showIndividualForm ? 'Ocultar' : 'Individual'}</p>
+                        <p>Individual</p>
                     </button>
                 </div>
 
@@ -587,7 +657,7 @@ const FacturaForm = () => {
                 </div>
 
                 {/* Display list of facturas */}
-                <div className="w-full  mb-8">
+                <div className="w-full mb-8">
                     {isLoadingFacturas ? (
                         <div className="flex justify-center items-center py-8">
                             <LoadingPoints color="text-black" />
@@ -595,7 +665,7 @@ const FacturaForm = () => {
                     ) : filteredFacturas.length > 0 ? (
                         <div className="w-full">
                             <table className="w-full text-xs text-left text-black">
-                                <thead className="text-black border-b  h-10">
+                                <thead className="text-black border-b h-10">
                                     <tr>
                                         <th scope="col" className="pl-4">CAE</th>
                                         <th scope="col" className="pl-4">Fecha</th>
@@ -617,7 +687,6 @@ const FacturaForm = () => {
                                             <td className="pl-4 font-light">{factura.fechaEmision}</td>
                                             <td className="pl-4 font-light">{factura.tipoFactura}</td>
                                             <td className="pl-4 font-light">2</td>
-
                                             <td className="pl-4 font-light"> {factura.numeroFactura}</td>
                                             <td className="pl-4 font-light">${factura.total.toLocaleString()}</td>
                                             <td className="pl-4 font-light">99 0</td>
@@ -640,7 +709,7 @@ const FacturaForm = () => {
                             </table>
                         </div>
                     ) : valueDate ? (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-xs px-4 text-gray-400">
                             No hay facturas emitidas en el período seleccionado
                         </div>
                     ) : (
@@ -650,75 +719,108 @@ const FacturaForm = () => {
                     )}
                 </div>
 
+                {/* Modal para formulario individual */}
                 {showIndividualForm && (
-                    <form onSubmit={handleSubmitSingle} className="px-4 w-full">
-                        <select
-                            name="tipoFactura"
-                            value={formData.tipoFactura}
-                            onChange={handleChange}
-                            className="w-full text-black bg-transparent text-xs border-gray-300 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
-                            required
+                    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+                        <div
+                            className={`absolute inset-0 bg-black transition-opacity duration-300 ${isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+                                }`}
+                            style={{
+                                opacity: Math.max(0, 1 - currentTranslate / 400),
+                            }}
+                            onClick={handleCloseForm}
+                        />
+
+                        <div
+                            ref={modalRef}
+                            className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${isAnimating ? "translate-y-0" : "translate-y-full"
+                                }`}
+                            style={{
+                                transform: `translateY(${currentTranslate}px)`,
+                            }}
                         >
-                            <option value="" disabled selected>Tipo de Factura</option>
-                            <option value="A">Factura A</option>
-                            <option value="B">Factura B</option>
-                            <option value="C">Factura C</option>
-                        </select>
-                        <input
-                            type="text"
-                            name="cuit"
-                            value={formData.cuit}
-                            onChange={handleChange}
-                            className="w-full text-black bg-transparent rounded-none text-xs border-gray-300 h-10 px-4 border-x border-t transition-all"
-                            readOnly
-                            placeholder="CUIT Emisor"
-                        />
-                        <input
-                            type="number"
-                            name="puntoVenta"
-                            value={formData.puntoVenta}
-                            onChange={handleChange}
-                            className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-300 px-4 border-x border-t transition-all"
-                            required
-                            placeholder="Punto de Venta"
-                        />
-                        <input
-                            type="number"
-                            name="importeTrib"
-                            value={formData.importeTrib}
-                            onChange={handleChange}
-                            className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-300 transition-all"
-                            step="0.01"
-                            min="0"
-                            placeholder="Tasa Municipal"
-                        />
-                        <input
-                            type="number"
-                            name="importeTotal"
-                            value={formData.importeTotal}
-                            onChange={handleChange}
-                            className="w-full border-gray-300 rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
-                            step="0.01"
-                            min="0"
-                            required
-                            placeholder="Importe Total"
-                        />
-                        <input
-                            type="number"
-                            name="importeNeto"
-                            value={formData.importeNeto}
-                            className="w-full border-gray-300 bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
-                            readOnly
-                            placeholder="Importe Neto"
-                        />
-                        <button
-                            type="submit"
-                            disabled={!tokenStatus?.valid}
-                            className="w-full bg-black h-20 mb-8 mt-4 rounded-3xl"
-                        >
-                            <p className="text-gray-100 font-bold text-3xl">Enviar</p>
-                        </button>
-                    </form>
+                            <div
+                                className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                            >
+                                <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+                                    <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSubmitSingle} className="mt-4">
+                                <select
+                                    name="tipoFactura"
+                                    value={formData.tipoFactura}
+                                    onChange={handleChange}
+                                    className="w-full text-black bg-transparent text-xs border-gray-300 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+                                    required
+                                >
+                                    <option value="" disabled>Tipo de Factura</option>
+                                    <option value="A">Factura A</option>
+                                    <option value="B">Factura B</option>
+                                    <option value="C">Factura C</option>
+                                </select>
+                                <input
+                                    type="text"
+                                    name="cuit"
+                                    value={formData.cuit}
+                                    onChange={handleChange}
+                                    className="w-full text-black bg-transparent rounded-none text-xs border-gray-300 h-10 px-4 border-x border-t transition-all"
+                                    readOnly
+                                    placeholder="CUIT Emisor"
+                                />
+                                <input
+                                    type="number"
+                                    name="puntoVenta"
+                                    value={formData.puntoVenta}
+                                    onChange={handleChange}
+                                    className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-300 px-4 border-x border-t transition-all"
+                                    required
+                                    placeholder="Punto de Venta"
+                                />
+                                <input
+                                    type="number"
+                                    name="importeTrib"
+                                    value={formData.importeTrib}
+                                    onChange={handleChange}
+                                    className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-300 transition-all"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="Tasa Municipal"
+                                />
+                                <input
+                                    type="number"
+                                    name="importeTotal"
+                                    value={formData.importeTotal}
+                                    onChange={handleChange}
+                                    className="w-full border-gray-300 rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
+                                    step="0.01"
+                                    min="0"
+                                    required
+                                    placeholder="Importe Total"
+                                />
+                                <input
+                                    type="number"
+                                    name="importeNeto"
+                                    value={formData.importeNeto}
+                                    className="w-full border-gray-300 bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
+                                    readOnly
+                                    placeholder="Importe Neto"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!tokenStatus?.valid}
+                                    className="w-full bg-black h-20 mb-4 mt-4 rounded-3xl"
+                                >
+                                    <p className="text-gray-100 font-bold text-4xl">Crear</p>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 )}
 
                 <div className='w-full'>
