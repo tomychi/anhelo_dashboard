@@ -6,7 +6,8 @@ import LoadingPoints from '../LoadingPoints';
 import { v4 as uuidv4 } from 'uuid';
 
 // URL del backend en AWS EC2
-const BASE_URL = 'http://3.140.191.246:3000';
+const BASE_URL = 'https://backend.onlyanhelo.com';
+
 
 const FacturaForm = () => {
     const [respuesta, setRespuesta] = useState(null);
