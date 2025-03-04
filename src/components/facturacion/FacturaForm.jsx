@@ -516,13 +516,16 @@ const FacturaForm = () => {
                     ) : filteredFacturas.length > 0 ? (
                         <div className="w-full">
                             <table className="w-full text-xs text-left text-black">
-                                <thead className="text-black border-b h-10">
+                                <thead className="text-black border-b  h-10">
                                     <tr>
-                                        <th scope="col" className="pl-4">Fecha</th>
-                                        <th scope="col" className="pl-4">Cliente</th>
-                                        <th scope="col" className="pl-4">Factura</th>
                                         <th scope="col" className="pl-4">CAE</th>
+                                        <th scope="col" className="pl-4">Fecha</th>
+                                        <th scope="col" className="pl-4">Tipo</th>
+                                        <th scope="col" className="pl-4">PDV</th>
+                                        <th scope="col" className="pl-4">Nro</th>
                                         <th scope="col" className="pl-4">Total</th>
+                                        <th scope="col" className="pl-4">Cliente</th>
+                                        <th scope="col" className="pl-4">Accion</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -531,11 +534,15 @@ const FacturaForm = () => {
                                             key={factura.id}
                                             className="text-black border font-light h-10 border-black border-opacity-20"
                                         >
+                                            <td className="pl-4 font-light">{factura.cae ? `${factura.cae.substring(0, 4)}...` : ''}</td>
                                             <td className="pl-4 font-light">{factura.fechaEmision}</td>
-                                            <td className="pl-4 font-light">99 0</td>
-                                            <td className="pl-4 font-light">{factura.tipoFactura} {factura.numeroFactura}</td>
-                                            <td className="pl-4 font-light">{factura.cae}</td>
+                                            <td className="pl-4 font-light">{factura.tipoFactura}</td>
+                                            <td className="pl-4 font-light">2</td>
+
+                                            <td className="pl-4 font-light"> {factura.numeroFactura}</td>
                                             <td className="pl-4 font-light">${factura.total.toLocaleString()}</td>
+                                            <td className="pl-4 font-light">99 0</td>
+                                            <td className="pl-4 font-light">99 0</td>
                                         </tr>
                                     ))}
                                 </tbody>
