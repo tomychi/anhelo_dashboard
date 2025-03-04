@@ -730,3 +730,46 @@ export const ReadLastThreeDaysOrders = async () => {
 		throw error;
 	}
 };
+
+export const marcarPedidoComoFacturado = async (pedidoId, fecha, datosFacturacion) => {
+	const [dia, mes, anio] = fecha.split("/");
+
+	try {
+		const firestore = getFirestore();
+		const pedidoDocRef = doc(firestore, "pedidos", anio, mes, dia);
+
+		await runTransaction(firestore, async (transaction) => {
+			const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
+
+			if (!pedidoDocSnapshot.exists()) {
+				console.error("No se encontró el documento del día en Firestore");
+				return;
+			}
+
+			const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
+			const index = pedidosDelDia.findIndex(
+				(pedido) => pedido.id === pedidoId
+			);
+
+			if (index !== -1) {
+				// Actualizar el estado de facturación
+				pedidosDelDia[index].seFacturo = true;
+
+				// Agregar los datos de facturación
+				pedidosDelDia[index].datosFacturacion = datosFacturacion;
+
+				transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
+				console.log("Pedido marcado como facturado en Firestore con datos de facturación");
+			} else {
+				console.error(
+					"El pedido no fue encontrado en el arreglo de pedidos del día"
+				);
+			}
+		});
+
+		return true; // Retorna true si la operación fue exitosa
+	} catch (error) {
+		console.error("Error al marcar pedido como facturado en Firestore:", error);
+		return false; // Retorna false si hubo algún error
+	}
+};

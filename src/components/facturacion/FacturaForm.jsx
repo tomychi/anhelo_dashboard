@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SalesCards from './SalesCards';
 import LoadingPoints from '../LoadingPoints';
-import { ReadLastThreeDaysOrders } from '../../firebase/ReadData'
+import { ReadLastThreeDaysOrders, marcarPedidoComoFacturado } from '../../firebase/ReadData'
 
 // URL del backend en AWS EC2
 const BASE_URL = 'https://backend.onlyanhelo.com';
@@ -177,6 +177,12 @@ const FacturaForm = () => {
                     importeTotal: formData.importeTotal
                 };
 
+                // Si este formulario individual se está usando para facturar un pedido específico
+                // (debería haber alguna referencia al ID del pedido en formData o en algún estado)
+                if (formData.pedidoId && formData.fechaPedido) {
+                    await marcarPedidoComoFacturado(formData.pedidoId, formData.fechaPedido);
+                }
+
             } else {
                 const errorMsg = data.errorDetails ||
                     (Array.isArray(data.data?.errores) ? data.data.errores.map(err => err.Msg).join(', ') :
@@ -199,76 +205,133 @@ const FacturaForm = () => {
             const ventasAFacturar = ventasSinFacturar.filter(venta => venta.quiereFacturarla);
             if (ventasAFacturar.length === 0) {
                 setError('No hay ventas seleccionadas para facturar');
+                setIsLoadingSubmit(false);
                 return;
             }
 
-            const multipleFacturas = ventasAFacturar.map(venta => ({
-                cuit: formData.cuit,
-                puntoVenta: formData.puntoVenta,
-                tipoFactura: formData.tipoFactura,
-                importeNeto: venta.importeNeto,
-                importeTrib: venta.importeTrib,
-                importeTotal: venta.importeTotal
-            }));
+            // Array para almacenar todas las respuestas
+            const todasLasRespuestas = [];
 
-            console.log('Datos enviados a /factura/multiple:', { facturas: multipleFacturas });
+            // Procesar las facturas una por una
+            for (let i = 0; i < ventasAFacturar.length; i++) {
+                const venta = ventasAFacturar[i];
 
-            const response = await fetch(`${BASE_URL}/api/afip/factura/multiple`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ facturas: multipleFacturas })
-            });
-            const data = await response.json();
+                // Datos de facturación para el pedido actual
+                const facturaData = {
+                    cuit: formData.cuit,
+                    puntoVenta: formData.puntoVenta,
+                    tipoFactura: formData.tipoFactura,
+                    importeNeto: venta.importeNeto,
+                    importeTrib: venta.importeTrib,
+                    importeTotal: venta.importeTotal
+                };
 
-            // Console log de la respuesta completa
-            console.log('Respuesta completa del backend (facturas múltiples):', data);
+                console.log(`Procesando factura ${i + 1}/${ventasAFacturar.length} para pedido ID: ${venta.id}`);
 
-            if (!response.ok) {
-                throw new Error(`${data.message || 'Error al procesar las facturas'}${data.errorDetails ? `: ${data.errorDetails}` : ''}`);
+                try {
+                    // Enviar solicitud para una sola factura
+                    const response = await fetch(`${BASE_URL}/api/afip/factura`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(facturaData)
+                    });
+
+                    const data = await response.json();
+                    console.log(`Respuesta de factura ${i + 1}:`, data);
+
+                    // Preparar la respuesta para mostrar al usuario
+                    let respuestaFactura;
+
+                    if (response.ok && data.success && data.data.resultado === 'A') {
+                        // Factura generada con éxito
+                        respuestaFactura = {
+                            cae: data.data.cae,
+                            caeFchVto: data.data.caeFchVto,
+                            cbteDesde: data.data.cbteDesde,
+                            cbteHasta: data.data.cbteHasta
+                        };
+
+                        // Crear objeto con datos de facturación para almacenar en Firebase
+                        const datosFacturacion = {
+                            cuit: formData.cuit,
+                            cae: data.data.cae,
+                            fechaEmision: new Date().toISOString(),
+                            tipoComprobante: formData.tipoFactura,
+                            puntoVenta: formData.puntoVenta,
+                            numeroComprobante: data.data.cbteDesde,
+                            documentoReceptor: 99,  // Siempre 99
+                            numeroReceptor: 0      // Siempre 0
+                        };
+
+                        // Actualizar el estado en Firebase
+                        await marcarPedidoComoFacturado(venta.id, venta.fecha, datosFacturacion);
+
+                        console.log(`Factura ${i + 1} procesada con éxito. CAE: ${data.data.cae}`);
+                    } else {
+                        // Error al generar la factura
+                        const errorMsg = data.errorDetails ||
+                            (Array.isArray(data.data?.errores) ? data.data.errores.map(err => err.Msg).join(', ') :
+                                data.data?.errores?.Msg || data.data?.observaciones?.Msg || data.message || 'Error desconocido');
+
+                        respuestaFactura = {
+                            error: errorMsg,
+                            cae: 'No generado'
+                        };
+
+                        console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
+                    }
+
+                    // Agregar esta respuesta al array de todas las respuestas
+                    todasLasRespuestas.push(respuestaFactura);
+
+                } catch (error) {
+                    // Error de red o en la solicitud
+                    console.error(`Error al procesar factura ${i + 1}:`, error);
+                    todasLasRespuestas.push({
+                        error: error.message || 'Error de conexión con el servidor',
+                        cae: 'No generado'
+                    });
+                }
             }
 
-            if (data.success) {
-                const facturasGeneradas = Array.isArray(data.data) ? data.data : [];
-                const pedidosExitosos = ventasAFacturar.filter((venta, index) =>
-                    facturasGeneradas[index]?.cae && facturasGeneradas[index].cae !== 'No generado'
-                );
+            // Mostrar todas las respuestas al usuario
+            setRespuesta(todasLasRespuestas);
 
-                for (let i = 0; i < pedidosExitosos.length; i++) {
-                    const factura = facturasGeneradas[i];
-                    const pedido = pedidosExitosos[i];
-                    const facturaData = {
-                        cae: factura.cae,
-                        fechaEmision: new Date().toISOString(),
-                        fechaVencimiento: factura.caeFchVto,
-                        tipoFactura: formData.tipoFactura,
-                        numeroFactura: factura.cbteDesde,
-                        cuit: formData.cuit,
-                        importeTotal: pedido.importeTotal
-                    };
-                }
-
-
-
-                // Guardar todas las respuestas (éxitos y errores) para mostrarlas
-                setRespuesta(facturasGeneradas);
-
-                const facturasFallidas = facturasGeneradas.filter(f => f.error || (!f.cae || f.cae === 'No generado'));
-                if (facturasFallidas.length > 0 && facturasFallidas.length === facturasGeneradas.length) {
-                    setError('No se generó ninguna factura correctamente');
-                } else if (facturasFallidas.length > 0) {
-                    setError('Algunas facturas no se generaron correctamente');
-                }
-            } else {
-                setError(data.errorDetails || data.message || 'Error al procesar las facturas en el backend');
+            // Determinar si hubo algún error
+            const facturasFallidas = todasLasRespuestas.filter(f => f.error || (!f.cae || f.cae === 'No generado'));
+            if (facturasFallidas.length > 0 && facturasFallidas.length === todasLasRespuestas.length) {
+                setError('No se generó ninguna factura correctamente');
+            } else if (facturasFallidas.length > 0) {
+                setError('Algunas facturas no se generaron correctamente');
             }
+
+            // Refrescar la lista de ventas sin facturar
+            if (facturasFallidas.length < todasLasRespuestas.length) {
+                // Hay al menos una factura exitosa, refrescar la lista
+                try {
+                    const pedidosActualizados = await ReadLastThreeDaysOrders();
+                    const ventasFormateadas = pedidosActualizados.map(pedido => ({
+                        id: pedido.id,
+                        fecha: pedido.fecha,
+                        hora: pedido.hora,
+                        importeTotal: pedido.total.toString(),
+                        importeNeto: (pedido.total / 1.21).toFixed(2),
+                        importeTrib: "0.00",
+                        quiereFacturarla: true
+                    }));
+                    setVentasSinFacturar(ventasFormateadas);
+                } catch (error) {
+                    console.error("Error al actualizar la lista de ventas sin facturar:", error);
+                }
+            }
+
         } catch (error) {
-            setError(error.message || 'Error de conexión con el servidor');
+            setError(error.message || 'Error general en el proceso de facturación');
             console.error('Error en handleSubmitMultiple:', error);
         } finally {
             setIsLoadingSubmit(false);
         }
     };
-
     const handleToggleFacturar = (ventaId) => {
         setVentasSinFacturar(prevVentas => prevVentas.map(venta =>
             venta.id === ventaId ? { ...venta, quiereFacturarla: !venta.quiereFacturarla } : venta
