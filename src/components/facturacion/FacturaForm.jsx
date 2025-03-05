@@ -663,12 +663,12 @@ const FacturaForm = () => {
                 )}
                 {respuesta && (
                     <div className="mt-8 p-4 border-l-4 w-full ml-8 border-black">
-                        <h3 className="text-black text-xl font-bold mb-8">Resultados</h3>
+                        <h3 className="text-black text-xl font-bold mb-6">Resultados</h3>
 
                         {Array.isArray(respuesta) ? (
                             respuesta.map((resp, index) => (
-                                <div key={index} className="space-y-1 mb-4 text-gray-700 text-sm">
-                                    <p className='text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] font-bold text-gray-100'>{index + 1}</p>
+                                <div key={index} className=" mb-4 text-gray-400 text-sm">
+                                    <p className='text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] mb-1 font-bold text-gray-100'>{index + 1}</p>
                                     {resp.cae ? (
                                         <>
                                             <p>CAE: <span className="text-black">{resp.cae}</span></p>
