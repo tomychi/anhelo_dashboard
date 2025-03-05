@@ -657,12 +657,12 @@ const FacturaForm = () => {
                 </div>
 
                 {error && (
-                    <div className="mt-8 w-full ml-8 p-4 border-l-4 border-red-500">
+                    <div className="mb-8 w-full ml-8 p-4 border-l-4 border-red-500">
                         <p className="text-red-500 text-sm">{error}</p>
                     </div>
                 )}
                 {respuesta && (
-                    <div className=" p-4 border-l-4 w-full ml-8 border-black">
+                    <div className=" p-4 border-l-4 w-full ml-8 mb-8 border-black">
                         <h3 className="text-black text-xl font-bold mb-6">Resultados</h3>
 
                         {Array.isArray(respuesta) ? (
@@ -692,7 +692,7 @@ const FacturaForm = () => {
                 )}
 
                 {/* Calendar component for date selection */}
-                <div className="w-full px-4 mt-8 mb-4">
+                <div className="w-full px-4  mb-4">
                     <h3 className="text- font-bold mb-2">Historial</h3>
                     <Calendar />
                     <div className="flex items-center w-full h-10 gap-1 mt-2 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
