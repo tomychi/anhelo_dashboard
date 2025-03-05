@@ -632,7 +632,7 @@ const FacturaForm = () => {
 
                 <div className='w-full'>
                     {ventasSinFacturar.length > 0 ? (
-                        <div className='flex flex-col '>
+                        <div className='flex flex-col mb-8 '>
                             <SalesCards ventas={ventasSinFacturar} onToggleFacturar={handleToggleFacturar} />
                             <div className='px-4'>
                                 <button
@@ -662,7 +662,7 @@ const FacturaForm = () => {
                     </div>
                 )}
                 {respuesta && (
-                    <div className="mt-8 p-4 border-l-4 w-full ml-8 border-black">
+                    <div className=" p-4 border-l-4 w-full ml-8 border-black">
                         <h3 className="text-black text-xl font-bold mb-6">Resultados</h3>
 
                         {Array.isArray(respuesta) ? (
