@@ -573,7 +573,7 @@ const FacturaForm = () => {
                     filter: invert(100%);
                 }
             `}</style>
-            <div className="font-coolvetica flex flex-col items-center justify-center w-full">
+            <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
                 <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
                     <div className='flex flex-col'>
                         <h2 className='text-3xl font-bold'>Facturación</h2>
