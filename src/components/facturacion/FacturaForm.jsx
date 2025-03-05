@@ -731,21 +731,21 @@ const FacturaForm = () => {
                             <table className="w-full text-xs text-left text-black">
                                 <thead className="text-black border-b h-10">
                                     <tr>
-                                        <th scope="col" className="pl-4">CAE</th>
-                                        <th scope="col" className="pl-4">Fecha</th>
-                                        <th scope="col" className="pl-4">Tipo</th>
-                                        <th scope="col" className="pl-4">PDV</th>
-                                        <th scope="col" className="pl-4">Nro</th>
-                                        <th scope="col" className="pl-4">Total</th>
-                                        <th scope="col" className="pl-4">Cliente</th>
-                                        <th scope="col" className="pl-4"></th>
+                                        <th scope="col" className="pl-4 py-2">CAE</th>
+                                        <th scope="col" className="pl-4 py-2">Fecha</th>
+                                        <th scope="col" className="pl-4 py-2">Tipo</th>
+                                        <th scope="col" className="pl-4 py-2">PDV</th>
+                                        <th scope="col" className="pl-4 py-2">Nro</th>
+                                        <th scope="col" className="pl-4 py-2">Total</th>
+                                        <th scope="col" className="pl-4 py-2">Cliente</th>
+                                        <th scope="col" className="pl-4 py-2"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredFacturas.map((factura) => (
                                         <tr
                                             key={factura.id}
-                                            className="text-black border font-light h-10 border-black border-opacity-20"
+                                            className="text-black border-y font-light h-10 border-gray-300"
                                         >
                                             <td className="pl-4 font-light">{factura.cae ? `${factura.cae.substring(0, 4)}...` : ''}</td>
                                             <td className="pl-4 font-light">{factura.fechaEmision}</td>
