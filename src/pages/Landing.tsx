@@ -353,7 +353,7 @@ export const Landing: React.FC = () => {
         Nuestros clientes utilizan estas soluciones en su día a día. Cada
         producto está adaptado a la gestión particular de cada negocio y nacen
         de entender que necesita cada tarea. <br />
-        Si te recomendaron Absolute es porque somos muy buenos en lo que
+        Si te recomendaron Absolute, es porque somos muy buenos en lo que
         hacemos.
       </p>
     </div>
