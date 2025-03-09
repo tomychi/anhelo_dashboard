@@ -217,10 +217,11 @@ export const Landing: React.FC = () => {
           </div>
         ))}
       </div>
-      <p className="px-4 text-left text-xs pb-4 pt-4  text-black ">
-        Estos son los productos que utilizan nuestros clientes, pero tambien en
-        base a conversaciones crearemos las soluciones tecnologicas que tu
-        empresa necesite.
+      <p className="px-4 text-left font-lightgfsd text-xs  pt-4  text-black ">
+        Estos productos que utilizan actualmente nuestros clientes, pero tambien
+        en base a conversaciones crearemos las soluciones tecnologicas que tu
+        empresa necesite. <br />
+        Gran parte de nuestros productos nacieron asi.
       </p>
     </div>
   );
