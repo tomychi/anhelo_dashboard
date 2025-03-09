@@ -244,7 +244,7 @@ export const Landing: React.FC = () => {
   }, []);
 
   return (
-    <div className="font-coolvetica pb-20">
+    <div className="font-coolvetica pb-32">
       <style>
         {`
 			body {
@@ -352,7 +352,9 @@ export const Landing: React.FC = () => {
       <p className="px-8 text-center text-xs pt-4 pb-8 text-black">
         Nuestros clientes utilizan estas soluciones en su día a día. Cada
         producto está adaptado a la gestión particular de cada negocio y nacen
-        de entender que necesita cada tarea.
+        de entender que necesita cada tarea. <br />
+        Si te recomendaron Absolute es porque somos muy buenos en lo que
+        hacemos.
       </p>
     </div>
   );
