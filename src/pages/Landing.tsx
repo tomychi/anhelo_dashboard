@@ -43,9 +43,9 @@ const products = [
     ),
   },
   {
-    title: "Metricas",
+    title: "Operaciones",
     description:
-      "Recolecta tus datos y crea reportes en tiempo real. Informacion necesaria para que tomes decisiones con la mayor precision posible.",
+      "Automatizamos la logica de tus operaciones de la forma mas eficiente posible. <br/> No hay forma de que gastes menos para correr tu empresa.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
