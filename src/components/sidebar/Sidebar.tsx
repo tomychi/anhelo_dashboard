@@ -601,7 +601,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
                   </li>
                 ))}
                 <p className="font-medium text-xs opacity-30 text-center mt-4">
-                  Ⓡ 2024, Absolute Business Solutions.
+                  Ⓡ 2023, Absolute Business Solutions.
                 </p>
               </ul>
             </nav>
