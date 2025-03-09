@@ -23,10 +23,26 @@ export const Landing: React.FC = () => {
         {/* info */}
         <div className="flex  flex-col ">
           <p className=" text-xl text-left ">Facturacion automatica</p>
-          <p className="text-xs pt-2 ">
+          <p className="text-xs pt-2 pr-2 ">
             Altamente personalizable. En su version con menos intervenciones,
             podes que cada vez que entre una venta se genere la factura.
           </p>
+
+          <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 tect-center flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-6"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <p>Ver demostracion</p>
+          </div>
         </div>
 
         {/* imagen */}
