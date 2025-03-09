@@ -1,7 +1,7 @@
 
 export const Landing: React.FC = () => {
 	return (
-		<div className="font-coolvetica">
+		<div className="font-coolvetica pb-4">
 			<div className=" py-20 bg-black">
 			<p className="text-4xl text-gray-100 text-center  mb-6 text-black font-bold">
 			    Facturacion y mucho <br /> mas.
@@ -16,7 +16,15 @@ export const Landing: React.FC = () => {
 			<p className="px-4 text-3xl py-6">
 				Productos 
 			</p>
-			<div className="bg-gray-300 mx-4 rounded-3xl h-40"> hola</div>
+			<div className="bg-gray-300 mx-4 rounded-3xl h-40"> 
+				
+				<p className="px-4 text-xl py-4">
+				Facturacion automatica
+				</p>
+				<p className=" px-4">
+					Altamente personalizable. Lo mas simple, podes que cada vez que entre una venta se genere la factura.
+				</p>
+				</div>
 		</div>
 		
 	);
