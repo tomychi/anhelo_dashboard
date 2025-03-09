@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 const products = [
   {
     title: "Facturación automática",
@@ -162,12 +160,6 @@ const products = [
 ];
 
 export const Landing: React.FC = () => {
-  const [visibleProducts, setVisibleProducts] = useState(2); // Estado para controlar productos visibles
-
-  const handleShowMore = () => {
-    setVisibleProducts(products.length); // Mostrar todos los productos
-  };
-
   return (
     <div className="font-coolvetica pb-4">
       {/* titulo */}
@@ -178,7 +170,7 @@ export const Landing: React.FC = () => {
         <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-2xl rounded-full">
           PROBAR GRATIS
         </div>
-        <p className="text-center text-gray-100 text-xs mt-3 mx-8">
+        <p className="text-center text-gray-100 font-light text-xs mt-3 mx-8">
           Soluciones empresariales a traves de software. Maximizamos y
           eficientizamos tus resultados.
         </p>
@@ -188,10 +180,10 @@ export const Landing: React.FC = () => {
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
       {/* cards */}
       <div className="flex flex-col mx-4 gap-2">
-        {products.slice(0, visibleProducts).map((product, index) => (
+        {products.map((product, index) => (
           <div
             key={index}
-            className="bg-gray-200 px-4 min-h-[200px] gap-4 flex justify-between items-center rounded-2xl"
+            className="bg-gray-200 px-4 min-h-[200px] gap-4 flex justify-between items-center rounded-2xl "
           >
             {/* info */}
             <div className="flex flex-col">
@@ -225,28 +217,12 @@ export const Landing: React.FC = () => {
           </div>
         ))}
       </div>
-
-      {/* Botón Ver más */}
-      {visibleProducts < products.length && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleShowMore}
-            className="bg-gray-100 text-black rounded-full px-6 py-2 font-medium hover:bg-gray-300 transition-colors"
-          >
-            Ver más
-          </button>
-        </div>
-      )}
-
-      {/* Párrafo final - solo visible cuando se muestran todos los productos */}
-      {visibleProducts === products.length && (
-        <p className="px-4 text-center text-xs py-8 text-black">
-          Estos productos que utilizan actualmente nuestros clientes, pero
-          también en base a conversaciones crearemos las soluciones tecnológicas
-          que tu empresa necesite. <br />
-          Gran parte de nuestros productos nacieron así.
-        </p>
-      )}
+      <p className="px-4 text-center  text-xs  py-8  text-black ">
+        Estos productos que utilizan actualmente nuestros clientes, pero tambien
+        en base a conversaciones crearemos las soluciones tecnologicas que tu
+        empresa necesite. <br />
+        Gran parte de nuestros productos nacieron asi.
+      </p>
     </div>
   );
 };
