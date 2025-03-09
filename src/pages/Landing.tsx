@@ -2,7 +2,7 @@ const products = [
   {
     title: "Facturación automática",
     description:
-      "Altamente personalizable. En su versión con menos intervecion humana, cada vez que entre una venta se genera la factura.",
+      "Altamente personalizable. En su versión con menos intervecion humana, cada vez que entre una venta se genera la factura. Olvida gastar horas generando facturas.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
