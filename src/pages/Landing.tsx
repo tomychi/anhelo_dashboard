@@ -215,7 +215,7 @@ export const Landing: React.FC = () => {
         <p className="text-6xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
         </p>
-        <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-full">
+        <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-3xl">
           Empeza gratis
         </div>
         <p className="text-center text-gray-100 font-light text-xs mt-7 mx-8">
@@ -238,7 +238,7 @@ export const Landing: React.FC = () => {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full"
+              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-3xl shrink-0 w-full"
             >
               {/* info */}
               <div className="flex flex-col flex-1">
@@ -295,7 +295,7 @@ export const Landing: React.FC = () => {
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full"
+              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-3xl shrink-0 w-full"
             >
               {/* info */}
               <div className="flex flex-col flex-1">
