@@ -36,7 +36,10 @@ export const DashboardMainPage = ({ backendStatus }) => {
   return (
     <div className="flex h-screen flex-col bg-gray-100 overflow-x-hidden">
       <Sidebar scrollContainerRef={scrollContainerRef} />
-      <div ref={scrollContainerRef} className="flex-grow overflow-y-auto">
+      <div
+        ref={scrollContainerRef}
+        className="flex-grow overflow-y-auto pt-[72px]"
+      >
         <Routes>
           {/* Agrega un comodín '*' a la ruta principal */}
           <Route path="/*">

@@ -30,7 +30,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
     const handleScroll = () => {
       console.log("Scroll position:", scrollContainer.scrollTop);
-      if (scrollContainer.scrollTop > 10) {
+      if (scrollContainer.scrollTop > 72) {
         setIsScrolled(true);
         console.log("Scrolled state: true");
       } else {
@@ -514,10 +514,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
   return (
     <>
       <div
-        className={`flex font-coolvetica flex-row w-full pt-4 pb-4 gap-2 justify-between px-4 relative z-30 transition-all duration-300 ${
-          isScrolled
-            ? "bg-gray-100 bg-opacity-80 backdrop-blur-md text-black"
-            : "bg-black"
+        className={`fixed top-0 left-0 right-0 flex font-coolvetica flex-row w-full pt-4 pb-4 gap-2 justify-between px-4 z-30 transition-all duration-300 ${
+          isScrolled ? "bg-black bg-opacity-75 backdrop-blur-md" : "bg-black"
         }`}
       >
         <NavLink to={"/"} className="ml-[-3px] items-center">
