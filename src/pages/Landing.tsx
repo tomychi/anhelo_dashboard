@@ -216,7 +216,7 @@ export const Landing: React.FC = () => {
           Absolute
         </p>
         <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-full">
-          EMPEZA GRATIS
+          Empeza gratis
         </div>
         <p className="text-center text-gray-100 font-light text-xs mt-7 mx-8">
           Soluciones empresariales a traves de software. Maximizamos y
@@ -226,7 +226,7 @@ export const Landing: React.FC = () => {
 
       {/* productos */}
       <p className="px-8 text-3xl pb-4 pt-10 text-black font-bold text-center">
-        Productos
+        Productos actuales
       </p>
 
       {/* Contenedor con scroll horizontal */}
