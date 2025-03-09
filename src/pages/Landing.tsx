@@ -1,3 +1,5 @@
+import React, { useEffect, useRef } from "react";
+
 const products = [
   {
     title: "Facturación automática",
@@ -160,13 +162,50 @@ const products = [
 ];
 
 export const Landing: React.FC = () => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let scrollAmount = 0;
+    const cardWidth = container.scrollWidth / products.length; // Ancho aproximado de cada card
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    const scrollInterval = setInterval(() => {
+      scrollAmount += cardWidth;
+
+      // Si llegamos al final, volvemos al inicio
+      if (scrollAmount >= maxScroll) {
+        scrollAmount = 0;
+      }
+
+      // Animación suave usando scrollTo con behavior: 'smooth'
+      container.scrollTo({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }, 2000); // Cada 2 segundos
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(scrollInterval);
+  }, []);
+
   return (
     <div className="font-coolvetica pb-4">
-      {/* Desactivar scroll en el body */}
       <style>
         {`
 			body {
 			  overflow-y: hidden;
+			}
+			/* Asegurar scroll suave en el contenedor */
+			.smooth-scroll {
+			  scroll-behavior: smooth;
+			  scrollbar-width: none; /* Firefox */
+			  -ms-overflow-style: none; /* IE and Edge */
+			}
+			.smooth-scroll::-webkit-scrollbar {
+			  display: none; /* Chrome, Safari, Opera */
 			}
 		  `}
       </style>
@@ -189,8 +228,11 @@ export const Landing: React.FC = () => {
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
 
       {/* Contenedor con scroll horizontal */}
-      <div className="px-4  overflow-x-auto">
-        <div className="flex flex-row  gap-2">
+      <div
+        ref={scrollContainerRef}
+        className="px-4 overflow-x-auto smooth-scroll"
+      >
+        <div className="flex flex-row gap-2">
           {products.map((product, index) => (
             <div
               key={index}
