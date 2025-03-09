@@ -311,7 +311,7 @@ export const Landing: React.FC = () => {
       </p>
 
       {/* Empresas que trabajan con nosotros */}
-      <p className="px-8 text-3xl pb-4 pt-10 text-center text-black font-bold">
+      {/* <p className="px-8 text-3xl pb-4 pt-10 text-center text-black font-bold">
         Empresas que trabajan con nosotros
       </p>
       <div
@@ -324,7 +324,6 @@ export const Landing: React.FC = () => {
               key={index}
               className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-3xl shrink-0 w-full"
             >
-              {/* info */}
               <div className="flex flex-col flex-1">
                 <p className="text-xl font-medium text-left whitespace-nowrap">
                   {product.title}
@@ -334,7 +333,6 @@ export const Landing: React.FC = () => {
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
 
-                {/* demostración */}
                 <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center w-fit px-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -351,12 +349,11 @@ export const Landing: React.FC = () => {
                   <p className="font-medium">Ver demostración</p>
                 </div>
               </div>
-              {/* imagen */}
               <div className="w-20 flex justify-center">{product.icon}</div>
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
