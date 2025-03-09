@@ -227,7 +227,7 @@ export const Landing: React.FC = () => {
         <p className="text-6xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
         </p>
-        <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-3xl">
+        <div className="bg-indigo-800 text-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-3xl">
           Empeza gratis
         </div>
         <p className="text-center text-gray-100 font-light text-xs mt-9 mx-8">
