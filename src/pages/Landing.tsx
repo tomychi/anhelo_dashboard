@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { motion } from "framer-motion"; // Importamos Framer Motion
 
 const products = [
   {
@@ -182,44 +183,62 @@ const products = [
   },
 ];
 
+const buttonVariants = {
+  initial: {
+    scale: 1,
+    backgroundColor: "#4f46e5", // Color inicial (índigo)
+    boxShadow: "0 0 0 0 rgba(99, 102, 241, 0)",
+  },
+  hover: {
+    scale: 1.05,
+    backgroundColor: "#6366f1", // Color más claro al hover
+    boxShadow: "0 0 0 15px rgba(99, 102, 241, 0.1)",
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  tap: {
+    scale: 0.95,
+    backgroundColor: "#4338ca", // Color más oscuro al hacer clic
+    transition: {
+      duration: 0.2,
+      ease: "easeIn",
+    },
+  },
+};
+
 export const Landing: React.FC = () => {
-  // Referencias separadas para cada contenedor
   const productsScrollContainerRef = useRef<HTMLDivElement>(null);
   const companiesScrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Función para manejar el desplazamiento automático
+  // Función para manejar el desplazamiento automático (se mantiene igual)
   const setupAutoScroll = (containerRef: React.RefObject<HTMLDivElement>) => {
     const container = containerRef.current;
     if (!container) return;
 
     let scrollAmount = 0;
-    const cardWidth = container.scrollWidth / products.length; // Ancho aproximado de cada card
+    const cardWidth = container.scrollWidth / products.length;
     const maxScroll = container.scrollWidth - container.clientWidth;
 
     const scrollInterval = setInterval(() => {
       scrollAmount += cardWidth;
-
-      // Si llegamos al final, volvemos al inicio
       if (scrollAmount >= maxScroll) {
         scrollAmount = 0;
       }
-
-      // Animación suave usando scrollTo con behavior: 'smooth'
       container.scrollTo({
         left: scrollAmount,
         behavior: "smooth",
       });
-    }, 2000); // Cada 2 segundos
+    }, 2000);
 
     return () => clearInterval(scrollInterval);
   };
 
-  // useEffect para el contenedor de productos
   useEffect(() => {
     return setupAutoScroll(productsScrollContainerRef);
   }, []);
 
-  // useEffect para el contenedor de empresas
   useEffect(() => {
     return setupAutoScroll(companiesScrollContainerRef);
   }, []);
@@ -228,36 +247,65 @@ export const Landing: React.FC = () => {
     <div className="font-coolvetica pb-4">
       <style>
         {`
-          body {
-            overflow-y: hidden;
-          }
-          /* Asegurar scroll suave en el contenedor */
-          .smooth-scroll {
-            scroll-behavior: smooth;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE and Edge */
-          }
-          .smooth-scroll::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-          }
-        `}
+			body {
+			  overflow-y: hidden;
+			}
+			.smooth-scroll {
+			  scroll-behavior: smooth;
+			  scrollbar-width: none;
+			  -ms-overflow-style: none;
+			}
+			.smooth-scroll::-webkit-scrollbar {
+			  display: none;
+			}
+			/* Efectos adicionales para el botón */
+			.apple-button {
+			  position: relative;
+			  overflow: hidden;
+			  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+			.apple-button::before {
+			  content: '';
+			  position: absolute;
+			  top: 0;
+			  left: -100%;
+			  width: 100%;
+			  height: 100%;
+			  background: linear-gradient(
+				90deg,
+				transparent,
+				rgba(255, 255, 255, 0.2),
+				transparent
+			  );
+			  transition: all 0.5s ease;
+			}
+			.apple-button:hover::before {
+			  left: 100%;
+			}
+		  `}
       </style>
 
       {/* Título */}
       <div className="py-20 bg-black">
-        <p className="text-6xl text-gray-100 text-center mb-4 text-black font-bold">
+        <p className="text-5xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
         </p>
-        <div className="bg-indigo-800 text-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-xl rounded-3xl">
+        <motion.div
+          className="text-gray-100 text-black mx-8 h-20 flex items-center text-center justify-center text-xl rounded-3xl apple-button cursor-pointer"
+          variants={buttonVariants}
+          initial="initial"
+          whileHover="hover"
+          whileTap="tap"
+        >
           Empeza gratis
-        </div>
+        </motion.div>
         <p className="text-center text-gray-100 font-light text-xs mt-9 mx-8">
-          Soluciones empresariales a traves de software. Maximizamos y
-          eficientizamos tus resultados.
+          Soluciones empresariales a través de software. Creamos todo lo que
+          necesites para manejar tu negocio.
         </p>
       </div>
 
-      {/* Productos actuales */}
+      {/* Resto del componente se mantiene igual */}
       <p className="px-8 text-3xl pb-4 pt-10 text-black font-bold text-center">
         Productos actuales
       </p>
@@ -271,7 +319,6 @@ export const Landing: React.FC = () => {
               key={index}
               className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-3xl shrink-0 w-full"
             >
-              {/* info */}
               <div className="flex flex-col flex-1">
                 <p className="text-xl font-medium text-left whitespace-nowrap">
                   {product.title}
@@ -280,8 +327,6 @@ export const Landing: React.FC = () => {
                   className="text-xs font-light pr-2"
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
-
-                {/* demostración */}
                 <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center w-fit px-4">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -298,7 +343,6 @@ export const Landing: React.FC = () => {
                   <p className="font-medium">Ver demostración</p>
                 </div>
               </div>
-              {/* imagen */}
               <div className="w-20 flex justify-center">{product.icon}</div>
             </div>
           ))}
@@ -306,55 +350,11 @@ export const Landing: React.FC = () => {
       </div>
 
       <p className="px-8 text-center text-xs pt-4 pb-8 text-black">
-        Estos productos utilizan actualmente nuestros clientes. También creamos
-        las soluciones tecnológicas que tu empresa necesite, <br />
-        todos nuestros productos nacieron así.
+        Estos productos utilizan nuestros clientes en su dia a dia. Fueron
+        creados a medida para cada uno de ellos, adaptado a su gestion
+        particular. <br />
+        Todos nuestros productos nacen de esta forma.
       </p>
-
-      {/* Empresas que trabajan con nosotros */}
-      {/* <p className="px-8 text-3xl pb-4 pt-10 text-center text-black font-bold">
-        Empresas que trabajan con nosotros
-      </p>
-      <div
-        ref={companiesScrollContainerRef}
-        className="px-4 overflow-x-auto smooth-scroll"
-      >
-        <div className="flex flex-row gap-2">
-          {products.map((product, index) => (
-            <div
-              key={index}
-              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-3xl shrink-0 w-full"
-            >
-              <div className="flex flex-col flex-1">
-                <p className="text-xl font-medium text-left whitespace-nowrap">
-                  {product.title}
-                </p>
-                <p
-                  className="text-xs font-light pr-2"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
-
-                <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center w-fit px-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-6"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <p className="font-medium">Ver demostración</p>
-                </div>
-              </div>
-              <div className="w-20 flex justify-center">{product.icon}</div>
-            </div>
-          ))}
-        </div>
-      </div> */}
     </div>
   );
 };
