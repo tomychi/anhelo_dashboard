@@ -64,7 +64,7 @@ const products = [
   {
     title: "Empleados",
     description:
-      "Control de presencismo, automatizacion de pago de salarios y gestion de tareas.",
+      "Control de presencismo y tareas, automatizacion de pago de salarios, etc.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
