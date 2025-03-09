@@ -82,7 +82,7 @@ const products = [
   {
     title: "Inversores",
     description:
-      "Managment de deuda. <br/> Levanta la cantidad de inversion que tu proyecto significa.",
+      "Managment de deuda. <br/> Levanta la cantidad de inversion que tu proyecto significa para acelerar su crecimiento.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
