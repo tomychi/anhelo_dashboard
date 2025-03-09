@@ -87,9 +87,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
             }))
           );
         } else {
-          console.log(
-            "No hay pedidos con reclamo NO resuelto en los últimos 3 días en Sidebar."
-          );
+          // console.log(
+          //   "No hay pedidos con reclamo NO resuelto en los últimos 3 días en Sidebar."
+          // );
         }
       } catch (error) {
         console.error("Error al obtener pedidos con reclamo:", error);
