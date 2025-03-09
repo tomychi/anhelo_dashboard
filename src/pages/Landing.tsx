@@ -141,7 +141,8 @@ const products = [
   },
   {
     title: "Precios dinamicos",
-    description: "Maximiza ganancias y soluciona cuellos de botella.",
+    description:
+      "Maximiza ganancias sin perjudicar la demanda y soluciona cuellos de botella.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
