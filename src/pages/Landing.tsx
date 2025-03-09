@@ -305,9 +305,9 @@ export const Landing: React.FC = () => {
       </div>
 
       <p className="px-8 text-center text-xs pt-4 pb-8 text-black">
-        Estos productos utilizan actualmente nuestros clientes pero también
-        crearemos las soluciones tecnológicas que tu empresa necesite. <br />
-        Todos nuestros productos nacieron así.
+        Estos productos utilizan actualmente nuestros clientes. También creamos
+        las soluciones tecnológicas que tu empresa necesite, <br />
+        todos nuestros productos nacieron así.
       </p>
 
       {/* Empresas que trabajan con nosotros */}
