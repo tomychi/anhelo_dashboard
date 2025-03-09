@@ -27,6 +27,7 @@ import { NuevaCompra } from "./NuevaCompra";
 import CampañaDetalle from "./CampañaDetalle";
 import { DeudaManager } from "./DeudaManager";
 import FacturaForm from "../components/facturacion/FacturaForm";
+import Landing from "./Landing";
 
 
 export const DashboardMainPage = ({ backendStatus }) => {
@@ -37,6 +38,8 @@ export const DashboardMainPage = ({ backendStatus }) => {
 				<Routes>
 					{/* Agrega un comodín '*' a la ruta principal */}
 					<Route path="/*">
+					<Route path="landing" element={<Landing />} />
+
 						<Route index element={<Dashboard />} />
 						<Route path="pedidos" element={<DynamicForm />} />
 						<Route path="comandas" element={<Comandera />} />
