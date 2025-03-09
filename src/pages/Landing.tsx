@@ -2,7 +2,7 @@ const products = [
   {
     title: "Facturación automática",
     description:
-      "Altamente personalizable. En su versión con menos intervecion humana, cada vez que entre una venta se genera la factura. Olvida gastar horas generando facturas.",
+      "Altamente personalizable. Olvida gastar horas generando facturas<br /> En su versión con menos intervención humana, cada vez que entre una venta se genera la factura. .",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,10 @@ export const Landing: React.FC = () => {
               <p className="text-xl font-medium text-left whitespace-nowrap">
                 {product.title}
               </p>
-              <p className="text-xs font-light pr-2">{product.description}</p>
+              <p
+                className="text-xs font-light pr-2"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              />
 
               {/* demostración */}
               <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center">
