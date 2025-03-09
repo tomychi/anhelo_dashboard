@@ -403,7 +403,7 @@ export const Sidebar = () => {
 						{isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
 					</div>
 				</div>
-				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 border-b border-black border-opacity-10">
+				<div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
 					<NavLink to="/ayuda" className="flex flex-col items-center">
 						<div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
 							<svg
