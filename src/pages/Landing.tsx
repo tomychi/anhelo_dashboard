@@ -297,7 +297,7 @@ export const Landing: React.FC = () => {
           whileHover="hover"
           whileTap="tap"
         >
-          Empeza gratis
+          Prueba gratuita
         </motion.div>
         <p className="text-center text-gray-100 font-light text-xs mt-9 mx-8">
           Soluciones empresariales a través de software. Creamos todo lo que
