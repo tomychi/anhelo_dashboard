@@ -225,7 +225,9 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* productos */}
-      <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
+      <p className="px-8 text-3xl pb-4 pt-10 text-black font-bold text-center">
+        Productos
+      </p>
 
       {/* Contenedor con scroll horizontal */}
       <div
@@ -272,12 +274,62 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      <p className="px-4 text-left text-xs pt-4 pb-8 text-black">
+      <p className="px-8  text-center text-xs pt-4 pb-8 text-black">
         Estos productos que utilizan actualmente nuestros clientes, pero también
         en base a conversaciones crearemos las soluciones tecnológicas que tu
         empresa necesite. <br />
         Gran parte de nuestros productos nacieron así.
       </p>
+
+      {/* productos */}
+      <p className="px-8 text-3xl pb-4 pt-10 text-center text-black font-bold">
+        Empresas que trabajan con nosotros
+      </p>
+
+      {/* Contenedor con scroll horizontal */}
+      <div
+        ref={scrollContainerRef}
+        className="px-4 overflow-x-auto smooth-scroll"
+      >
+        <div className="flex flex-row gap-2">
+          {products.map((product, index) => (
+            <div
+              key={index}
+              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full"
+            >
+              {/* info */}
+              <div className="flex flex-col flex-1">
+                <p className="text-xl font-medium text-left whitespace-nowrap">
+                  {product.title}
+                </p>
+                <p
+                  className="text-xs font-light pr-2"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+
+                {/* demostración */}
+                <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center w-fit px-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="font-medium">Ver demostración</p>
+                </div>
+              </div>
+              {/* imagen */}
+              <div className="w-20 flex justify-center">{product.icon}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
