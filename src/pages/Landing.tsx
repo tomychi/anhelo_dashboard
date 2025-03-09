@@ -4,7 +4,7 @@ const products = [
   {
     title: "Facturación automática",
     description:
-      "Altamente personalizable. Olvida gastar horas generando facturas.<br /> En su versión con menos intervención humana, cada vez que entre una venta se genera la factura. .",
+      "Altamente personalizable. Olvida gastar horas generando facturas.<br /> En su versión con menos intervención humana, cada vez que entre una venta se genera la factura.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -37,9 +37,9 @@ const products = [
         className="h-20 text-black"
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       </svg>
     ),
@@ -56,9 +56,9 @@ const products = [
         className="h-20 text-black"
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       </svg>
     ),
@@ -75,9 +75,9 @@ const products = [
         className="h-20 text-black"
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       </svg>
     ),
@@ -94,9 +94,9 @@ const products = [
         className="h-20 text-black"
       >
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       </svg>
     ),
@@ -132,9 +132,9 @@ const products = [
       >
         <path d="M10.5 18.75a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" />
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M8.625.75A3.375 3.375 0 0 0 5.25 4.125v15.75a3.375 3.375 0 0 0 3.375 3.375h6.75a3.375 3.375 0 0 0 3.375-3.375V4.125A3.375 3.375 0 0 0 15.375.75h-6.75ZM7.5 4.125C7.5 3.504 8.004 3 8.625 3H9.75v.375c0 .621.504 1.125 1.125 1.125h2.25c.621 0 1.125-.504 1.125-1.125V3h1.125c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-6.75A1.125 1.125 0 0 1 7.5 19.875V4.125Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
       </svg>
     ),
@@ -151,9 +151,9 @@ const products = [
       >
         <path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
         <path
-          fill-rule="evenodd"
+          fillRule="evenodd"
           d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 14.625v-9.75ZM8.25 9.75a3.75 3.75 0 1 1 7.5 0 3.75 3.75 0 0 1-7.5 0ZM18.75 9a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V9.75a.75.75 0 0 0-.75-.75h-.008ZM4.5 9.75A.75.75 0 0 1 5.25 9h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75V9.75Z"
-          clip-rule="evenodd"
+          clipRule="evenodd"
         />
         <path d="M2.25 18a.75.75 0 0 0 0 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 0 0-.75-.75H2.25Z" />
       </svg>
@@ -162,10 +162,13 @@ const products = [
 ];
 
 export const Landing: React.FC = () => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Referencias separadas para cada contenedor
+  const productsScrollContainerRef = useRef<HTMLDivElement>(null);
+  const companiesScrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const container = scrollContainerRef.current;
+  // Función para manejar el desplazamiento automático
+  const setupAutoScroll = (containerRef: React.RefObject<HTMLDivElement>) => {
+    const container = containerRef.current;
     if (!container) return;
 
     let scrollAmount = 0;
@@ -187,30 +190,39 @@ export const Landing: React.FC = () => {
       });
     }, 2000); // Cada 2 segundos
 
-    // Limpiar el intervalo cuando el componente se desmonte
     return () => clearInterval(scrollInterval);
+  };
+
+  // useEffect para el contenedor de productos
+  useEffect(() => {
+    return setupAutoScroll(productsScrollContainerRef);
+  }, []);
+
+  // useEffect para el contenedor de empresas
+  useEffect(() => {
+    return setupAutoScroll(companiesScrollContainerRef);
   }, []);
 
   return (
     <div className="font-coolvetica pb-4">
       <style>
         {`
-			body {
-			  overflow-y: hidden;
-			}
-			/* Asegurar scroll suave en el contenedor */
-			.smooth-scroll {
-			  scroll-behavior: smooth;
-			  scrollbar-width: none; /* Firefox */
-			  -ms-overflow-style: none; /* IE and Edge */
-			}
-			.smooth-scroll::-webkit-scrollbar {
-			  display: none; /* Chrome, Safari, Opera */
-			}
-		  `}
+          body {
+            overflow-y: hidden;
+          }
+          /* Asegurar scroll suave en el contenedor */
+          .smooth-scroll {
+            scroll-behavior: smooth;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+          }
+          .smooth-scroll::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+          }
+        `}
       </style>
 
-      {/* titulo */}
+      {/* Título */}
       <div className="py-20 bg-black">
         <p className="text-6xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
@@ -224,14 +236,12 @@ export const Landing: React.FC = () => {
         </p>
       </div>
 
-      {/* productos */}
+      {/* Productos actuales */}
       <p className="px-8 text-3xl pb-4 pt-10 text-black font-bold text-center">
         Productos actuales
       </p>
-
-      {/* Contenedor con scroll horizontal */}
       <div
-        ref={scrollContainerRef}
+        ref={productsScrollContainerRef}
         className="px-4 overflow-x-auto smooth-scroll"
       >
         <div className="flex flex-row gap-2">
@@ -274,21 +284,19 @@ export const Landing: React.FC = () => {
         </div>
       </div>
 
-      <p className="px-8  text-center text-xs pt-4 pb-8 text-black">
+      <p className="px-8 text-center text-xs pt-4 pb-8 text-black">
         Estos productos utilizan actualmente nuestros clientes pero también en
         base a conversaciones crearemos las soluciones tecnológicas que tu
         empresa necesite. <br />
         Gran parte de nuestros productos nacieron así.
       </p>
 
-      {/* productos */}
+      {/* Empresas que trabajan con nosotros */}
       <p className="px-8 text-3xl pb-4 pt-10 text-center text-black font-bold">
         Empresas que trabajan con nosotros
       </p>
-
-      {/* Contenedor con scroll horizontal */}
       <div
-        ref={scrollContainerRef}
+        ref={companiesScrollContainerRef}
         className="px-4 overflow-x-auto smooth-scroll"
       >
         <div className="flex flex-row gap-2">
