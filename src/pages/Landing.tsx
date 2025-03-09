@@ -5,7 +5,7 @@ const products = [
   {
     title: "Facturación automática",
     description:
-      "Altamente personalizable. Olvida gastar horas generando facturas.<br /> En su versión con menos intervención humana, cada vez que entre una venta se genera la factura.",
+      "Ahorra horas de trabajo con facturas generadas al instante tras cada venta. Sistema personalizable que reduce errores y garantiza cumplimiento fiscal.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -27,9 +27,9 @@ const products = [
     ),
   },
   {
-    title: "Metricas",
+    title: "Métricas",
     description:
-      "Recolecta tus datos y muestra un dashboard en tiempo real. <br />  Informacion necesaria para que tomes decisiones con la mayor precision posible.",
+      "Visualiza el rendimiento de tu negocio en tiempo real. Analiza ventas y comportamiento de clientes para tomar decisiones estratégicas basadas en datos concretos.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ const products = [
   {
     title: "Operaciones",
     description:
-      "Automatizamos la logica de tus operaciones para correrla de la forma mas eficiente y eficaz. <br/> El mejor resultado posible, con el gasto minimo.",
+      "Optimizamos tus procesos clave para maximizar eficiencia y reducir costos. Automatizamos cada paso para que puedas enfocarte en hacer crecer tu negocio.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ const products = [
   {
     title: "Empleados",
     description:
-      "Control de presencismo y tareas, automatizacion de pago de salarios, etc.",
+      "Gestiona asistencia, tareas y nóminas en una sola plataforma. Aumenta la productividad mientras reduces la carga administrativa de tu equipo de recursos humanos.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@ const products = [
   {
     title: "Inversores",
     description:
-      "Managment de deuda. <br/> Levanta la cantidad de inversion que tu proyecto significa para acelerar su crecimiento.",
+      "Gestión profesional para captar capital y optimizar relaciones con inversores. Acelera el crecimiento de tu negocio con las estrategias financieras adecuadas.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +105,7 @@ const products = [
   {
     title: "Finanzas",
     description:
-      "Con tus compras calculamos los costos exactos para que veas la ganancia que estas generando.<br/> Estructura de costos en tiempo real para entender tus finanzas.",
+      "Conoce la rentabilidad exacta de cada producto. Calcula automáticamente márgenes y estructura de costos para tomar decisiones financieras informadas.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -121,9 +121,9 @@ const products = [
     ),
   },
   {
-    title: "Pagina de ventas",
+    title: "Página de ventas",
     description:
-      "Creamos una pagina para que recibas pedidos y la gestiones a traves de Absolute.",
+      "Multiplica tus ventas con una tienda online integrada a nuestro sistema. Recibe pedidos 24/7 y ofrece una experiencia de compra excepcional.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -141,9 +141,9 @@ const products = [
     ),
   },
   {
-    title: "Precios dinamicos",
+    title: "Precios dinámicos",
     description:
-      "Maximiza ganancias sin perjudicar la demanda y soluciona cuellos de botella.",
+      "Incrementa ingresos ajustando precios según demanda e inventario. Nuestra IA sugiere el precio óptimo equilibrando volumen de ventas y margen de beneficio.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -162,9 +162,9 @@ const products = [
     ),
   },
   {
-    title: "Whatsapp Marketing",
+    title: "WhatsApp Marketing",
     description:
-      "Recolectamos el comportamiento de tus clientes para revivir los que abandonaron tu empresa y maximizar la ganancia de los actuales a traves de mensajes en masa.",
+      "Reconecta con clientes inactivos mediante campañas personalizadas de alto impacto. Segmenta audiencias y envía ofertas con la mayor tasa de conversión.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
