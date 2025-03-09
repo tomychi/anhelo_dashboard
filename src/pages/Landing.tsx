@@ -244,7 +244,7 @@ export const Landing: React.FC = () => {
   }, []);
 
   return (
-    <div className="font-coolvetica pb-4">
+    <div className="font-coolvetica pb-20">
       <style>
         {`
 			body {
@@ -300,8 +300,8 @@ export const Landing: React.FC = () => {
           Prueba gratuita
         </motion.div>
         <p className="text-center text-gray-100 font-light text-xs mt-9 mx-8">
-          Soluciones empresariales a través de software. Creamos todo lo que
-          necesites para manejar tu negocio.
+          Soluciones empresariales a través de software. Creamos lo que
+          necesites para operar de la mejor manera posible <br /> tu negocio.
         </p>
       </div>
 
