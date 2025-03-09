@@ -26,7 +26,7 @@ const products = [
   {
     title: "Metricas",
     description:
-      "Altamente personalizable. En su versión con menos intervenciones, podés configurar que cada vez que entre una venta se genere la factura.",
+      "Desde que empezas a trabajar con Absolute, recolecta tus datos y automaticamente crea reportes en tiempo real.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
