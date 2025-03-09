@@ -1,15 +1,66 @@
+const products = [
+  {
+    title: "Facturación automática",
+    description:
+      "Altamente personalizable. En su versión con menos intervecion humana, cada vez que entre una venta se genera la factura.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="w-full text-black"
+      >
+        <path
+          fillRule="evenodd"
+          d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z"
+          clipRule="evenodd"
+        />
+        <path
+          fillRule="evenodd"
+          d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375ZM6 12a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V12Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 15a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V15Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 18a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V18Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z"
+          clipRule="evenodd"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Metricas",
+    description:
+      "Altamente personalizable. En su versión con menos intervenciones, podés configurar que cada vez que entre una venta se genere la factura.",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="w-full text-black"
+      >
+        <path
+          fillRule="evenodd"
+          d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z"
+          clipRule="evenodd"
+        />
+        <path
+          fillRule="evenodd"
+          d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375ZM6 12a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V12Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 15a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V15Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 18a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V18Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z"
+          clipRule="evenodd"
+        />
+      </svg>
+    ),
+  },
+];
+
 export const Landing: React.FC = () => {
   return (
     <div className="font-coolvetica pb-4">
       {/* titulo */}
-      <div className=" py-20 bg-black">
-        <p className="text-4xl text-gray-100 text-center  mb-6 text-black font-bold">
-          Facturacion y mucho <br /> mas.
+      <div className="py-20 bg-black">
+        <p className="text-4xl text-gray-100 text-center mb-6 text-black font-bold">
+          Facturación y mucho <br /> más.
         </p>
-        <div className="bg-gray-100 text-black mx-4 h-20  flex items-center text-center justify-center text-2xl rounded-full ">
+        <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-2xl rounded-full">
           PROBAR GRATIS
         </div>
-        <p className="text-center text-gray-100 text-xs  mt-4 mx-12">
+        <p className="text-center text-gray-100 text-xs mt-4 mx-12">
           Software a medida con todo lo que necesitas para manejar tu empresa.
           En cualquier momento, desde cualquier lugar.
         </p>
@@ -19,106 +70,39 @@ export const Landing: React.FC = () => {
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
       {/* cards */}
       <div className="flex flex-col mx-4 gap-2">
-        {/* facturacion */}
-        <div className="bg-gray-200  px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
-          {/* info */}
-          <div className="flex  flex-col ">
-            <p className=" text-xl font-medium text-left ">
-              Facturacion automatica
-            </p>
-            <p className="text-xs font-light pr-2 ">
-              Altamente personalizable. En su version con menos intervenciones,
-              podes que cada vez que entre una venta se genere la factura.
-            </p>
+        {products.map((product, index) => (
+          <div
+            key={index}
+            className="bg-gray-200 px-4 gap-4 flex justify-between items-center rounded-2xl py-4"
+          >
+            {/* info */}
+            <div className="flex flex-col">
+              <p className="text-xl font-medium text-left whitespace-nowrap">
+                {product.title}
+              </p>
+              <p className="text-xs font-light pr-2">{product.description}</p>
 
-            {/* demostracion */}
-            <div className="bg-gray-100  gap-2 text-black rounded-full mt-4 h-10 tect-center flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-6"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p className="font-medium">Ver demostracion</p>
+              {/* demostración */}
+              <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="h-6"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="font-medium">Ver demostración</p>
+              </div>
             </div>
+            {/* imagen */}
+            <div className="w-30">{product.icon}</div>
           </div>
-          {/* imagen */}
-          <div className="w-30">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-full text-black"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z"
-                clip-rule="evenodd"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375ZM6 12a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V12Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 15a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V15Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 18a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V18Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-        </div>{" "}
-        {/* facturacion */}
-        <div className="bg-gray-200  px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
-          {/* info */}
-          <div className="flex  flex-col ">
-            <p className=" text-xl font-medium text-left ">
-              Facturacion automatica
-            </p>
-            <p className="text-xs font-light pr-2 ">
-              Altamente personalizable. En su version con menos intervenciones,
-              podes que cada vez que entre una venta se genere la factura.
-            </p>
-
-            {/* demostracion */}
-            <div className="bg-gray-100  gap-2 text-black rounded-full mt-4 h-10 tect-center flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-6"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p className="font-medium">Ver demostracion</p>
-            </div>
-          </div>
-          {/* imagen */}
-          <div className="w-30">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-full text-black"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z"
-                clip-rule="evenodd"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375ZM6 12a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V12Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 15a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V15Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 18a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V18Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
