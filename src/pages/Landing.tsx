@@ -350,10 +350,9 @@ export const Landing: React.FC = () => {
       </div>
 
       <p className="px-8 text-center text-xs pt-4 pb-8 text-black">
-        Estos productos utilizan nuestros clientes en su dia a dia. Fueron
-        creados a medida para cada uno de ellos, adaptado a su gestion
-        particular. <br />
-        Todos nuestros productos nacen de esta forma.
+        Nuestros clientes utilizan estas soluciones en su día a día. Cada
+        producto está adaptado a la gestión particular de cada negocio y nacen
+        de entender que necesita cada tarea.
       </p>
     </div>
   );
