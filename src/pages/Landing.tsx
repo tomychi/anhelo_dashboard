@@ -164,15 +164,15 @@ export const Landing: React.FC = () => {
     <div className="font-coolvetica pb-4">
       {/* titulo */}
       <div className="py-20 bg-black">
-        <p className="text-4xl text-gray-100 text-center mb-6 text-black font-bold">
-          Facturación y mucho <br /> más.
+        <p className="text-4xl text-gray-100 text-center mb-8 text-black font-bold">
+          Absolute
         </p>
         <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-2xl rounded-full">
           PROBAR GRATIS
         </div>
-        <p className="text-center text-gray-100 text-xs mt-4 mx-12">
-          Software a medida con todo lo que necesitas para manejar tu empresa.
-          En cualquier momento, desde cualquier lugar.
+        <p className="text-center text-gray-100 text-xs mt-4 mx-8">
+          Soluciones empresariales a traves de software. Maximizamos y
+          eficientizamos tus resultados.
         </p>
       </div>
 
