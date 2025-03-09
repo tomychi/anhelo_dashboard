@@ -162,7 +162,7 @@ const products = [
   {
     title: "Whatsapp Marketing",
     description:
-      "Recolectamos el comportamiento de tus clientes para revivir los que abandonaron tu empresa y maximizar la ganancia de los actuales.",
+      "Recolectamos el comportamiento de tus clientes para revivir los que abandonaron tu empresa y maximizar la ganancia de los actuales a traves de mensajes en masa.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
