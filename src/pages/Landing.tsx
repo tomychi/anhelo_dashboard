@@ -19,13 +19,13 @@ export const Landing: React.FC = () => {
       <p className="px-4 text-3xl pb-4 pt-10 font-bold">Productos</p>
 
       {/* card */}
-      <div className="bg-gray-300 mx-4 px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
+      <div className="bg-gray-200 mx-4 px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
         {/* info */}
         <div className="flex  flex-col ">
           <p className=" text-xl font-medium text-left ">
             Facturacion automatica
           </p>
-          <p className="text-xs font-light pt-2 pr-2 ">
+          <p className="text-xs font-light pr-2 ">
             Altamente personalizable. En su version con menos intervenciones,
             podes que cada vez que entre una venta se genere la factura.
           </p>
