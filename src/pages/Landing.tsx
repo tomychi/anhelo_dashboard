@@ -179,7 +179,7 @@ export const Landing: React.FC = () => {
       {/* productos */}
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
       {/* cards */}
-      <div className="flex flex-col mx-4 gap-2">
+      <div className="flex flex-row mx-4 gap-2">
         {products.map((product, index) => (
           <div
             key={index}
@@ -217,7 +217,7 @@ export const Landing: React.FC = () => {
           </div>
         ))}
       </div>
-      <p className="px-4 text-center  text-xs  py-8  text-black ">
+      <p className="px-4 text-left  text-xs  pt-4 pb-8  text-black ">
         Estos productos que utilizan actualmente nuestros clientes, pero tambien
         en base a conversaciones crearemos las soluciones tecnologicas que tu
         empresa necesite. <br />
