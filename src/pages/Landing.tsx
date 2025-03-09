@@ -238,12 +238,15 @@ export const Landing: React.FC = () => {
         </div>
       )}
 
-      <p className="px-4 text-center text-xs py-8 text-black">
-        Estos productos que utilizan actualmente nuestros clientes, pero también
-        en base a conversaciones crearemos las soluciones tecnológicas que tu
-        empresa necesite. <br />
-        Gran parte de nuestros productos nacieron así.
-      </p>
+      {/* Párrafo final - solo visible cuando se muestran todos los productos */}
+      {visibleProducts === products.length && (
+        <p className="px-4 text-center text-xs py-8 text-black">
+          Estos productos que utilizan actualmente nuestros clientes, pero
+          también en base a conversaciones crearemos las soluciones tecnológicas
+          que tu empresa necesite. <br />
+          Gran parte de nuestros productos nacieron así.
+        </p>
+      )}
     </div>
   );
 };
