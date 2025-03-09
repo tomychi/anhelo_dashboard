@@ -13,8 +13,8 @@ export const Landing: React.FC = () => {
 					Software a medida con todo lo que necesitas para manejar tu empresa. En cualquier momento, desde cualquier lugar.
 				</p>
 			</div>
-			<p className="px-4 text-2xl py-6">
-				Productos actuales
+			<p className="px-4 text-3xl py-6">
+				Productos 
 			</p>
 			<div className="bg-gray-300 mx-4 rounded-3xl h-40"> hola</div>
 		</div>
