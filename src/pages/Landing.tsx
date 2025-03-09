@@ -1,6 +1,7 @@
 export const Landing: React.FC = () => {
   return (
     <div className="font-coolvetica pb-4">
+      {/* titulo */}
       <div className=" py-20 bg-black">
         <p className="text-4xl text-gray-100 text-center  mb-6 text-black font-bold">
           Facturacion y mucho <br /> mas.
@@ -13,21 +14,28 @@ export const Landing: React.FC = () => {
           En cualquier momento, desde cualquier lugar.
         </p>
       </div>
+
+      {/* productos */}
       <p className="px-4 text-3xl py-6">Productos</p>
-      <div className="bg-gray-300 mx-4 flex items-center rounded-3xl py-4">
-        <div className="px-4   gap-4 flex justify-between">
-          <div className="flex  flex-col just">
-            <p className=" text-xl text-left ">Facturacion automatica</p>
-            <p className="text-xs pt-2 ">
-              Altamente personalizable. Lo mas simple, podes que cada vez que
-              entre una venta se genere la factura.
-            </p>
-          </div>
+
+      {/* card */}
+      <div className="bg-gray-300 mx-4 px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
+        {/* info */}
+        <div className="flex  flex-col ">
+          <p className=" text-xl text-left ">Facturacion automatica</p>
+          <p className="text-xs pt-2 ">
+            Altamente personalizable. En su version con menos intervenciones,
+            podes que cada vez que entre una venta se genere la factura.
+          </p>
+        </div>
+
+        {/* imagen */}
+        <div className="w-30">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-36"
+            className="w-full"
           >
             <path
               fill-rule="evenodd"
