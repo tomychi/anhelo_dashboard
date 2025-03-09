@@ -16,7 +16,7 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* productos */}
-      <p className="px-4 text-3xl pb-4 pt-10 font-bold">Productos</p>
+      <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
 
       {/* card */}
       <div className="bg-gray-200 mx-4 px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
@@ -53,7 +53,7 @@ export const Landing: React.FC = () => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-full"
+            className="w-full text-black"
           >
             <path
               fill-rule="evenodd"
