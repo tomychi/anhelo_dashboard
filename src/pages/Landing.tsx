@@ -26,7 +26,7 @@ const products = [
   {
     title: "Metricas",
     description:
-      "Desde que empezas a trabajar con Absolute, recolecta tus datos y automaticamente crea reportes en tiempo real.",
+      "Recolecta tus datos y crea reportes en tiempo real. Informacion necesaria para que tomes decisiones con la mayor precision posible.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
