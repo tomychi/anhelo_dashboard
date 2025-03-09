@@ -30,7 +30,8 @@ export const Landing: React.FC = () => {
             podes que cada vez que entre una venta se genere la factura.
           </p>
 
-          <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 tect-center flex items-center justify-center">
+          {/* demostracion */}
+          <div className="bg-gray-100  gap-2 text-black rounded-full mt-4 h-10 tect-center flex items-center justify-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -46,7 +47,6 @@ export const Landing: React.FC = () => {
             <p className="font-medium">Ver demostracion</p>
           </div>
         </div>
-
         {/* imagen */}
         <div className="w-30">
           <svg
