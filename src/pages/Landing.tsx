@@ -170,7 +170,7 @@ export const Landing: React.FC = () => {
         <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-2xl rounded-full">
           PROBAR GRATIS
         </div>
-        <p className="text-center text-gray-100 text-xs mt-3 mx-8">
+        <p className="text-center text-gray-100 font-light text-xs mt-3 mx-8">
           Soluciones empresariales a traves de software. Maximizamos y
           eficientizamos tus resultados.
         </p>
