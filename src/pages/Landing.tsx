@@ -102,7 +102,7 @@ const products = [
   {
     title: "Finanzas",
     description:
-      "Cargando tus compras calculamos tus costos exactos para que veas la ganancia que esta generando<br/> tu empresa. <br/> Estructura de costos en tiempo real para entender tus finanzas.",
+      "Con tus compras calculamos los costos exactos para que veas la ganancia que estas generando.<br/> Estructura de costos en tiempo real para entender tus finanzas.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
