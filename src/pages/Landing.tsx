@@ -183,7 +183,7 @@ export const Landing: React.FC = () => {
         {products.map((product, index) => (
           <div
             key={index}
-            className="bg-gray-200 px-4 gap-4 flex justify-between items-center rounded-2xl py-4"
+            className="bg-gray-200 px-4 min-h-[200px] gap-4 flex justify-between items-center rounded-2xl "
           >
             {/* info */}
             <div className="flex flex-col">
