@@ -162,6 +162,15 @@ const products = [
 export const Landing: React.FC = () => {
   return (
     <div className="font-coolvetica pb-4">
+      {/* Desactivar scroll en el body */}
+      <style>
+        {`
+			body {
+			  overflow-y: hidden;
+			}
+		  `}
+      </style>
+
       {/* titulo */}
       <div className="py-20 bg-black">
         <p className="text-4xl text-gray-100 text-center mb-8 text-black font-bold">
@@ -178,50 +187,54 @@ export const Landing: React.FC = () => {
 
       {/* productos */}
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
-      {/* cards */}
-      <div className="flex flex-row mx-4 gap-2">
-        {products.map((product, index) => (
-          <div
-            key={index}
-            className="bg-gray-200 px-4 min-h-[200px] gap-4 flex justify-between items-center rounded-2xl "
-          >
-            {/* info */}
-            <div className="flex flex-col">
-              <p className="text-xl font-medium text-left whitespace-nowrap">
-                {product.title}
-              </p>
-              <p
-                className="text-xs font-light pr-2"
-                dangerouslySetInnerHTML={{ __html: product.description }}
-              />
 
-              {/* demostración */}
-              <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p className="font-medium">Ver demostración</p>
+      {/* Contenedor con scroll horizontal */}
+      <div className="mx-4 overflow-x-auto">
+        <div className="flex flex-row gap-2">
+          {products.map((product, index) => (
+            <div
+              key={index}
+              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full sm:w-[300px] md:w-[400px]"
+            >
+              {/* info */}
+              <div className="flex flex-col flex-1">
+                <p className="text-xl font-medium text-left whitespace-nowrap">
+                  {product.title}
+                </p>
+                <p
+                  className="text-xs font-light pr-2"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+
+                {/* demostración */}
+                <div className="bg-gray-100 gap-2 text-black rounded-full mt-4 h-10 flex items-center justify-center w-fit px-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="font-medium">Ver demostración</p>
+                </div>
               </div>
+              {/* imagen */}
+              <div className="w-20 flex justify-center">{product.icon}</div>
             </div>
-            {/* imagen */}
-            <div className="w-30">{product.icon}</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-      <p className="px-4 text-left  text-xs  pt-4 pb-8  text-black ">
-        Estos productos que utilizan actualmente nuestros clientes, pero tambien
-        en base a conversaciones crearemos las soluciones tecnologicas que tu
+
+      <p className="px-4 text-left text-xs pt-4 pb-8 text-black">
+        Estos productos que utilizan actualmente nuestros clientes, pero también
+        en base a conversaciones crearemos las soluciones tecnológicas que tu
         empresa necesite. <br />
-        Gran parte de nuestros productos nacieron asi.
+        Gran parte de nuestros productos nacieron así.
       </p>
     </div>
   );
