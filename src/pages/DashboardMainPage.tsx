@@ -43,7 +43,10 @@ export const DashboardMainPage = ({ backendStatus }) => {
         <Routes>
           {/* Agrega un comodín '*' a la ruta principal */}
           <Route path="/*">
-            <Route path="landing" element={<Landing />} />
+            <Route
+              path="landing"
+              element={<Landing scrollContainerRef={scrollContainerRef} />}
+            />
 
             <Route index element={<Dashboard />} />
             <Route path="pedidos" element={<DynamicForm />} />

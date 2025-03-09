@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion"; // Importamos Framer Motion
 
 const products = [
@@ -208,9 +208,52 @@ const buttonVariants = {
   },
 };
 
-export const Landing: React.FC = () => {
+export const Landing: React.FC<{
+  scrollContainerRef?: React.RefObject<HTMLDivElement>;
+}> = ({ scrollContainerRef }) => {
   const productsScrollContainerRef = useRef<HTMLDivElement>(null);
   const companiesScrollContainerRef = useRef<HTMLDivElement>(null);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [userScrolled, setUserScrolled] = useState(false);
+
+  // Función para detectar el scroll del usuario
+  const handleUserScroll = (e: Event) => {
+    // Obtenemos el elemento que está haciendo scroll
+    const container = e.target as HTMLDivElement;
+    const currentScrollY = container.scrollTop;
+    const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+
+    console.log(`Scroll detectado - scrollTop: ${currentScrollY}`);
+
+    // Detectar si el usuario ha scrolleado al menos 10px
+    if (scrollDifference >= 10) {
+      console.log(
+        `¡Usuario scrolleó! - Diferencia: ${scrollDifference}px, Dirección: ${
+          currentScrollY > lastScrollY ? "abajo" : "arriba"
+        }`
+      );
+      setUserScrolled(true);
+
+      // Actualizar el último scroll conocido
+      setLastScrollY(currentScrollY);
+    }
+  };
+
+  // Useeffect para agregar el listener de scroll
+  useEffect(() => {
+    console.log("Configurando event listener para scroll");
+
+    // Usar el scrollContainerRef que viene del DashboardMainPage
+    const container = scrollContainerRef?.current;
+    if (container) {
+      container.addEventListener("scroll", handleUserScroll);
+
+      return () => {
+        console.log("Limpiando event listener de scroll");
+        container.removeEventListener("scroll", handleUserScroll);
+      };
+    }
+  }, [scrollContainerRef]); // Dependencia en scrollContainerRef
 
   // Función para manejar el desplazamiento automático (se mantiene igual)
   const setupAutoScroll = (containerRef: React.RefObject<HTMLDivElement>) => {
