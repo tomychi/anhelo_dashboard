@@ -16,7 +16,7 @@ export const Landing: React.FC = () => {
       </div>
 
       {/* productos */}
-      <p className="px-4 text-3xl py-6">Productos</p>
+      <p className="px-4 text-3xl pb-4 pt-10">Productos</p>
 
       {/* card */}
       <div className="bg-gray-300 mx-4 px-4 gap-4 flex justify-between flex items-center rounded-2xl py-4">
