@@ -217,7 +217,7 @@ export const Landing: React.FC = () => {
           </div>
         ))}
       </div>
-      <p className="px-4 text-left font-lightgfsd text-xs  pt-4  text-black ">
+      <p className="px-4 text-left  text-xs  pt-4  text-black ">
         Estos productos que utilizan actualmente nuestros clientes, pero tambien
         en base a conversaciones crearemos las soluciones tecnologicas que tu
         empresa necesite. <br />
