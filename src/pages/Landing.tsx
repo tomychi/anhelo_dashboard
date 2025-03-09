@@ -332,7 +332,7 @@ export const Landing: React.FC = () => {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="h-6"
+                    className="h-6 text-indigo-600"
                   >
                     <path
                       fillRule="evenodd"
@@ -340,7 +340,9 @@ export const Landing: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <p className="font-medium">Ver demostración</p>
+                  <p className="font-medium text-indigo-600">
+                    Ver demostración
+                  </p>
                 </div>
               </div>
               <div className="w-20 flex justify-center">{product.icon}</div>
