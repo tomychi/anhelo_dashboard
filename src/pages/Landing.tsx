@@ -189,12 +189,12 @@ export const Landing: React.FC = () => {
       <p className="px-4 text-3xl pb-4 pt-10 text-black font-bold">Productos</p>
 
       {/* Contenedor con scroll horizontal */}
-      <div className="mx-4 overflow-x-auto">
-        <div className="flex flex-row gap-2">
+      <div className="px-4  overflow-x-auto">
+        <div className="flex flex-row  gap-2">
           {products.map((product, index) => (
             <div
               key={index}
-              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full sm:w-[300px] md:w-[400px]"
+              className="bg-gray-200 px-4 min-h-[200px] flex justify-between items-center rounded-2xl shrink-0 w-full"
             >
               {/* info */}
               <div className="flex flex-col flex-1">
