@@ -212,13 +212,13 @@ export const Landing: React.FC = () => {
 
       {/* titulo */}
       <div className="py-20 bg-black">
-        <p className="text-4xl text-gray-100 text-center mb-8 text-black font-bold">
+        <p className="text-6xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
         </p>
         <div className="bg-gray-100 text-black mx-4 h-20 flex items-center text-center justify-center text-2xl rounded-full">
-          PROBAR GRATIS
+          EMPEZAR
         </div>
-        <p className="text-center text-gray-100 font-light text-xs mt-3 mx-8">
+        <p className="text-center text-gray-100 font-light text-xs mt-7 mx-8">
           Soluciones empresariales a traves de software. Maximizamos y
           eficientizamos tus resultados.
         </p>
@@ -275,8 +275,8 @@ export const Landing: React.FC = () => {
       </div>
 
       <p className="px-8  text-center text-xs pt-4 pb-8 text-black">
-        Estos productos que utilizan actualmente nuestros clientes, pero también
-        en base a conversaciones crearemos las soluciones tecnológicas que tu
+        Estos productos utilizan actualmente nuestros clientes pero también en
+        base a conversaciones crearemos las soluciones tecnológicas que tu
         empresa necesite. <br />
         Gran parte de nuestros productos nacieron así.
       </p>
