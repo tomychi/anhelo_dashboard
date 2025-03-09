@@ -32,10 +32,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
       console.log("Scroll position:", scrollContainer.scrollTop);
       if (scrollContainer.scrollTop > 72) {
         setIsScrolled(true);
-        console.log("Scrolled state: true");
       } else {
         setIsScrolled(false);
-        console.log("Scrolled state: false");
       }
     };
 
