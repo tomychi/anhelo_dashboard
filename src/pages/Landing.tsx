@@ -208,6 +208,31 @@ const buttonVariants = {
   },
 };
 
+const floatingButtonVariants = {
+  initial: {
+    scale: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.7)", // Índigo con transparencia
+    backdropFilter: "blur(5px)",
+    WebkitBackdropFilter: "blur(5px)",
+  },
+  hover: {
+    scale: 1.05,
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  tap: {
+    scale: 0.95,
+    transition: {
+      duration: 0.2,
+      ease: "easeIn",
+    },
+  },
+};
+
 export const Landing: React.FC<{
   scrollContainerRef?: React.RefObject<HTMLDivElement>;
 }> = ({ scrollContainerRef }) => {
@@ -215,6 +240,7 @@ export const Landing: React.FC<{
   const companiesScrollContainerRef = useRef<HTMLDivElement>(null);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [userScrolled, setUserScrolled] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   // Función para detectar el scroll del usuario
   const handleUserScroll = (e: Event) => {
@@ -223,15 +249,15 @@ export const Landing: React.FC<{
     const currentScrollY = container.scrollTop;
     const scrollDifference = Math.abs(currentScrollY - lastScrollY);
 
-    console.log(`Scroll detectado - scrollTop: ${currentScrollY}`);
+    // Mostrar botón cuando el scroll supere los 50px
+    if (currentScrollY > 100) {
+      setShowScrollButton(true);
+    } else {
+      setShowScrollButton(false);
+    }
 
     // Detectar si el usuario ha scrolleado al menos 10px
     if (scrollDifference >= 10) {
-      console.log(
-        `¡Usuario scrolleó! - Diferencia: ${scrollDifference}px, Dirección: ${
-          currentScrollY > lastScrollY ? "abajo" : "arriba"
-        }`
-      );
       setUserScrolled(true);
 
       // Actualizar el último scroll conocido
@@ -241,15 +267,12 @@ export const Landing: React.FC<{
 
   // Useeffect para agregar el listener de scroll
   useEffect(() => {
-    console.log("Configurando event listener para scroll");
-
     // Usar el scrollContainerRef que viene del DashboardMainPage
     const container = scrollContainerRef?.current;
     if (container) {
       container.addEventListener("scroll", handleUserScroll);
 
       return () => {
-        console.log("Limpiando event listener de scroll");
         container.removeEventListener("scroll", handleUserScroll);
       };
     }
@@ -401,6 +424,35 @@ export const Landing: React.FC<{
         Si te recomendaron Absolute, es porque somos muy buenos en lo que
         hacemos.
       </p>
+      {showScrollButton && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed bottom-8 left-0 right-0 flex justify-center z-50"
+        >
+          <motion.button
+            className="text-indigo-600 px-8 gap-2  h-10 rounded-3xl shadow-lg flex items-center justify-center "
+            variants={floatingButtonVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="h-6"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Prueba gratuita
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 };
