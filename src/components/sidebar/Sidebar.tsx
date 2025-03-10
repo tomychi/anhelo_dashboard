@@ -238,6 +238,39 @@ export const Sidebar = ({ scrollContainerRef }) => {
         { to: "/settings", text: "Configuración" },
       ];
 
+  const renderMenuItems = () => {
+    return menuItems.map((item, index) => {
+      const isLocked =
+        userNotLogged &&
+        ["/", "/comanderaAutomatizada", "/facturacion"].includes(item.to);
+
+      return (
+        <li key={index}>
+          <NavLink
+            to={item.to}
+            className={`block text-2xl font-coolvetica font-bold flex items-center ${isLocked ? "text-gray-400" : ""}`}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {isLocked && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="mr-2 w-6 h-6 text-gray-400"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
+            {item.text}
+          </NavLink>
+        </li>
+      );
+    });
+  };
   const profileMenuItems = [
     {
       to: "/perfil",
@@ -508,6 +541,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
+  const userNotLogged = true;
+
   return (
     <>
       <div
@@ -588,17 +623,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             )}
             <nav className="px-4 h-full overflow-y-auto">
               <ul className="flex flex-col gap-4">
-                {menuItems.map((item, index) => (
-                  <li key={index}>
-                    <NavLink
-                      to={item.to}
-                      className="block text-2xl font-coolvetica font-bold"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.text}
-                    </NavLink>
-                  </li>
-                ))}
+                {renderMenuItems()}
                 <p className="font-medium text-xs opacity-30 text-center mt-4">
                   Ⓡ 2023, Absolute Business Solutions.
                 </p>
