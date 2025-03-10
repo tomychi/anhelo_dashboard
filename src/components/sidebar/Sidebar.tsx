@@ -223,7 +223,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
     ? [
         { to: "/", text: "Dashboard" },
         { to: "/nuevaCompra", text: "Gastos" },
-        { to: "/vouchers", text: "Campañas de vouchers" },
+        { to: "/vouchers", text: "Campañas de marketing" },
       ]
     : [
         { to: "/", text: "Dashboard" },
@@ -232,7 +232,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         { to: "/gastos", text: "Gastos" },
         { to: "/deudaManager", text: "Deuda " },
         // { to: "/whatsappFeatures", text: "Reactivar clientes" },
-        { to: "/vouchers", text: "Campañas de vouchers" },
+        { to: "/vouchers", text: "Campañas de marketing" },
         { to: "/facturacion", text: "Facturacion" },
         { to: "/clientes", text: "Comportamiento de clientes" },
         { to: "/settings", text: "Configuración" },
