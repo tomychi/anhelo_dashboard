@@ -240,16 +240,20 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
   const renderMenuItems = () => {
     return menuItems.map((item, index) => {
-      const isLocked =
-        userNotLogged &&
-        ["/", "/comanderaAutomatizada", "/facturacion"].includes(item.to);
+      const isLocked = userNotLogged;
 
       return (
         <li key={index}>
           <NavLink
-            to={item.to}
+            to={isLocked ? "#" : item.to}
             className={`block text-2xl font-coolvetica font-bold flex items-center ${isLocked ? "text-gray-400" : ""}`}
-            onClick={() => setIsMenuOpen(false)}
+            onClick={(e) => {
+              if (isLocked) {
+                e.preventDefault();
+              } else {
+                setIsMenuOpen(false);
+              }
+            }}
           >
             {isLocked && (
               <svg
@@ -271,6 +275,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       );
     });
   };
+
   const profileMenuItems = [
     {
       to: "/perfil",
