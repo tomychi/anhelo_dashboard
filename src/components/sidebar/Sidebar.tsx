@@ -546,7 +546,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
-  const userNotLogged = true;
+  const userNotLogged = false;
 
   return (
     <>
