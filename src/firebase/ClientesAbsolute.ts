@@ -42,7 +42,7 @@ export const crearEmpresa = async (
 ): Promise<string> => {
   const firestore = getFirestore();
   const empresaId = uuidv4();
-  const empresaRef = doc(firestore, "clientesAbsolute", empresaId);
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
   const fechaActual = new Date();
 
@@ -74,24 +74,38 @@ export const verificarCredenciales = async (
   contraseña: string
 ): Promise<EmpresaProps | null> => {
   const firestore = getFirestore();
-  const clientesRef = collection(firestore, "clientesAbsolute");
+  const clientesRef = collection(firestore, "absoluteClientes");
 
-  // Desafortunadamente, Firestore no permite consultar subdocumentos directamente
-  // Así que necesitamos obtener todos los documentos y filtrar manualmente
-  const querySnapshot = await getDocs(clientesRef);
+  try {
+    // Desafortunadamente, Firestore no permite consultar subdocumentos directamente
+    // Así que necesitamos obtener todos los documentos y filtrar manualmente
+    const querySnapshot = await getDocs(clientesRef);
 
-  for (const doc of querySnapshot.docs) {
-    const empresaData = doc.data() as EmpresaProps;
+    for (const doc of querySnapshot.docs) {
+      const empresaData = doc.data();
 
-    if (
-      empresaData.datosUsuario.telefono === telefono &&
-      empresaData.datosUsuario.contraseña === contraseña
-    ) {
-      return { ...empresaData, id: doc.id };
+      // Verificamos que el documento tenga la estructura esperada
+      if (
+        empresaData &&
+        empresaData.datosUsuario &&
+        typeof empresaData.datosUsuario === "object" &&
+        empresaData.datosUsuario.telefono &&
+        empresaData.datosUsuario.contraseña
+      ) {
+        if (
+          empresaData.datosUsuario.telefono === telefono &&
+          empresaData.datosUsuario.contraseña === contraseña
+        ) {
+          return { ...empresaData, id: doc.id } as EmpresaProps;
+        }
+      }
     }
-  }
 
-  return null; // No se encontró ninguna coincidencia
+    return null; // No se encontró ninguna coincidencia
+  } catch (error) {
+    console.error("Error al verificar credenciales:", error);
+    return null;
+  }
 };
 
 // Función para obtener empresa por ID
@@ -99,7 +113,7 @@ export const obtenerEmpresaPorId = async (
   empresaId: string
 ): Promise<EmpresaProps | null> => {
   const firestore = getFirestore();
-  const empresaRef = doc(firestore, "clientesAbsolute", empresaId);
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
   const docSnap = await getDoc(empresaRef);
 
@@ -116,7 +130,7 @@ export const actualizarEmpresa = async (
   datosActualizados: Partial<EmpresaProps>
 ): Promise<void> => {
   const firestore = getFirestore();
-  const empresaRef = doc(firestore, "clientesAbsolute", empresaId);
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
   // Asegurarse de actualizar la fecha de última actualización
   const actualizacion = {
@@ -133,7 +147,7 @@ export const actualizarEstadoEmpresa = async (
   nuevoEstado: string
 ): Promise<void> => {
   const firestore = getFirestore();
-  const empresaRef = doc(firestore, "clientesAbsolute", empresaId);
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
   await updateDoc(empresaRef, {
     estado: nuevoEstado,
@@ -146,18 +160,31 @@ export const verificarTelefonoExistente = async (
   telefono: string
 ): Promise<boolean> => {
   const firestore = getFirestore();
-  const clientesRef = collection(firestore, "clientesAbsolute");
+  const clientesRef = collection(firestore, "absoluteClientes");
 
-  // Similar a verificarCredenciales, necesitamos buscar manualmente
-  const querySnapshot = await getDocs(clientesRef);
+  try {
+    // Similar a verificarCredenciales, necesitamos buscar manualmente
+    const querySnapshot = await getDocs(clientesRef);
 
-  for (const doc of querySnapshot.docs) {
-    const empresaData = doc.data() as EmpresaProps;
+    for (const doc of querySnapshot.docs) {
+      const empresaData = doc.data();
 
-    if (empresaData.datosUsuario.telefono === telefono) {
-      return true; // Ya existe un usuario con este teléfono
+      // Verificamos que el documento tenga la estructura esperada
+      if (
+        empresaData &&
+        empresaData.datosUsuario &&
+        typeof empresaData.datosUsuario === "object" &&
+        empresaData.datosUsuario.telefono
+      ) {
+        if (empresaData.datosUsuario.telefono === telefono) {
+          return true; // Ya existe un usuario con este teléfono
+        }
+      }
     }
-  }
 
-  return false; // El teléfono no está registrado
+    return false; // El teléfono no está registrado
+  } catch (error) {
+    console.error("Error al verificar teléfono existente:", error);
+    return false; // En caso de error, permitimos continuar
+  }
 };

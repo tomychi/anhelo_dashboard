@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+// Asegúrate de que el nombre del archivo y la ruta son correctos
 import {
   crearEmpresa,
   verificarTelefonoExistente,
@@ -209,6 +210,12 @@ export const CrearEmpresa: React.FC<{}> = () => {
           >
             {loading ? "Creando empresa..." : "Comenzar"}
           </div>
+          {/* Mostrar mensaje de error si existe */}
+          {error && (
+            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex bg-red-100 border-red-main mx-4 ">
+              {error}
+            </div>
+          )}
         </>
       )}
     </div>
