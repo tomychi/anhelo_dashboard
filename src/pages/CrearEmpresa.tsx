@@ -82,7 +82,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
       console.log("Empresa creada con ID:", empresaId);
 
       // Redirigir a la página principal
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error al crear empresa:", error);
       setError("Error al crear la empresa. Intenta nuevamente.");
