@@ -1,18 +1,21 @@
-import { EmpresaProps } from "../../firebase/ClientesAbsolute";
+import { EmpresaProps, EmpleadoProps } from "../../firebase/ClientesAbsolute";
 
 export interface UserState {
-  empresa: EmpresaProps | null;
+  usuario: EmpresaProps | EmpleadoProps | null;
   isAuth: boolean;
+  tipoUsuario: "empresa" | "empleado" | null;
 }
 
 interface AuthAction {
   type: string;
-  payload?: EmpresaProps;
+  payload?: any;
+  tipoUsuario?: "empresa" | "empleado";
 }
 
 const initialState: UserState = {
-  empresa: null,
+  usuario: null,
   isAuth: false,
+  tipoUsuario: null,
 };
 
 const authReducer = (state = initialState, action: AuthAction) => {
@@ -20,10 +23,12 @@ const authReducer = (state = initialState, action: AuthAction) => {
     case "LOGIN_SUCCESS":
       console.log("🔵 Login Success - Estado anterior:", state);
       console.log("🔵 Login Success - Payload recibido:", action.payload);
+      console.log("🔵 Login Success - Tipo usuario:", action.tipoUsuario);
       const loginState = {
         ...state,
         isAuth: true,
-        empresa: action.payload,
+        usuario: action.payload,
+        tipoUsuario: action.tipoUsuario,
       };
       console.log("🔵 Login Success - Nuevo estado:", loginState);
       return loginState;

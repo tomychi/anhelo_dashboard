@@ -1,9 +1,13 @@
-import { EmpresaProps } from "../../firebase/ClientesAbsolute";
+import { EmpresaProps, EmpleadoProps } from "../../firebase/ClientesAbsolute";
 
-export const loginSuccess = (empresa: EmpresaProps) => {
+export const loginSuccess = (
+  usuario: EmpresaProps | EmpleadoProps,
+  tipoUsuario: "empresa" | "empleado"
+) => {
   return {
     type: "LOGIN_SUCCESS",
-    payload: empresa,
+    payload: usuario,
+    tipoUsuario: tipoUsuario,
   };
 };
 

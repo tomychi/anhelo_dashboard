@@ -1,5 +1,5 @@
 import { useState } from "react";
-import empresaLogin from "../../auth/empresaLogin";
+import useUnifiedLogin from "../auth/unifiedLogin";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/auth/authAction";
@@ -19,16 +19,16 @@ export const Login = () => {
 
   const from = location.state?.from?.pathname || "/dashboard";
 
-  const { error, loading, login } = empresaLogin();
+  const { error, loading, login } = useUnifiedLogin();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setShowError(false);
 
-    const empresa = await login(telefono, password);
+    const resultado = await login(telefono, password);
 
-    if (!error && empresa) {
-      dispatch(loginSuccess(empresa));
+    if (!error && resultado) {
+      dispatch(loginSuccess(resultado.usuario, resultado.tipoUsuario));
       navigate(from, { replace: true });
       setTelefono("");
       setPassword("");
