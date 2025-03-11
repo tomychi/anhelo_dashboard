@@ -12,6 +12,8 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showError, setShowError] = useState(false);
+  const [telefonoFocused, setTelefonoFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,26 +46,30 @@ export const Login = () => {
   const inputStyle = {
     backgroundColor: "#f3f4f6",
     color: "black",
+    transition: "opacity 300ms ease",
   };
 
-  const inputClass = `
-		 px-4 h-10 w-full rounded-lg  
-		appearance-none focus:outline-none focus:ring-0 peer
-		
-		bg-gray-100 text-black font-light 
-		autofill:bg-gray-100 autofill:text-black
-		focus:bg-gray-100 focus:text-black
-		hover:bg-gray-100 hover:text-black
-	`;
+  const getInputClass = (isFocused: boolean) => `
+    px-4 h-10 w-full rounded-lg  
+    appearance-none focus:outline-none focus:ring-0 peer
+    text-xs 
+    bg-gray-100 text-black font-light 
+    autofill:bg-gray-100 autofill:text-black
+    focus:bg-gray-100 focus:text-black
+    hover:bg-gray-100 hover:text-black
+    ${isFocused ? "opacity-100" : "opacity-50"}
+    transition-opacity duration-300
+  `;
 
   return (
-    <div className=" bg-black w-full h-full flex items-center ">
+    <div className="bg-black w-full h-full flex items-center">
       <form
-        className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col  text-gray-100"
+        className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col text-gray-100"
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
+        autoComplete="off"
       >
         {/* Logo */}
-        <div className="flex flex-col mx-auto w-3/4 ">
+        <div className="flex flex-col mx-auto w-3/4">
           <img
             src={Sticker}
             className="w-full mb-4 mx-auto"
@@ -86,25 +92,31 @@ export const Login = () => {
         {/* Input del teléfono (antes era correo) */}
         <div className="mb-2 w-full mt-6">
           <input
-            className={inputClass}
+            className={getInputClass(telefonoFocused || telefono.length > 0)}
             style={inputStyle}
             required
             placeholder="Ingresa tu número de teléfono"
             type="tel"
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
+            onFocus={() => setTelefonoFocused(true)}
+            onBlur={() => setTelefonoFocused(false)}
+            autoComplete="off"
           />
         </div>
         {/* Input de la contraseña */}
         <div className="w-full">
           <input
-            className={inputClass}
+            className={getInputClass(passwordFocused || password.length > 0)}
             style={inputStyle}
             required
             type="password"
             placeholder="Ingresa tu contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => setPasswordFocused(true)}
+            onBlur={() => setPasswordFocused(false)}
+            autoComplete="off"
           />
         </div>
 
@@ -123,11 +135,11 @@ export const Login = () => {
 
         {/* Enlace para crear una empresa */}
         <div className="mt-8 text-center mx-auto flex flex-row gap-2">
-          <p className="text-gray-400 text-xs ">No tenes una cuenta?</p>
+          <p className="text-gray-400 text-xs">No tenes una cuenta?</p>
           <button
             type="button"
             onClick={() => navigate("/crearEmpresa")}
-            className="text-gray-100 text-xs  underline"
+            className="text-gray-100 text-xs underline"
           >
             Registra tu empresa
           </button>
@@ -135,7 +147,7 @@ export const Login = () => {
 
         {/* Mensaje de error */}
         {showError && (
-          <div className="  text-red-main h-10 text-xs  mt-8 border-l-4 border-red-main items-center flex px-2">
+          <div className="text-red-main h-10 text-xs mt-8 border-l-4 border-red-main items-center flex px-2">
             <p>{errorMessage}</p>
           </div>
         )}
