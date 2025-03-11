@@ -1,14 +1,14 @@
-import { User } from "./authReducer";
+import { EmpresaProps } from "../../firebase/ClientesAbsolute";
 
-export const loginSuccess = (user: User) => {
-	return {
-		type: "LOGIN_SUCCESS",
-		payload: user,
-	};
+export const loginSuccess = (empresa: EmpresaProps) => {
+  return {
+    type: "LOGIN_SUCCESS",
+    payload: empresa,
+  };
 };
 
 export const logoutSuccess = () => {
-	return {
-		type: "LOGOUT_SUCCESS",
-	};
+  return {
+    type: "LOGOUT_SUCCESS",
+  };
 };

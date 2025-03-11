@@ -1,20 +1,19 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Authentication, Error } from '../pages';
-import { PrivateRoutesLayout } from '../layouts/PrivateRoutesLayout';
-import { DashboardMainPage } from '../pages/DashboardMainPage';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Authentication, Error } from "../pages";
+import { DashboardMainPage } from "../pages/DashboardMainPage";
+import CrearEmpresa from "../pages/CrearEmpresa";
 
 export const Navigation = ({ backendStatus }) => {
   return (
     <Router>
-      <div className="h-screen  overflow-x-hidden">
+      <div className="h-screen overflow-x-hidden">
         <Routes>
-          {/* Rutas para el cliente */}
           <Route path="/authentication" element={<Authentication />} />
 
-          {/* Rutas para el dashboard */}
-          <Route element={<PrivateRoutesLayout />}>
-            <Route path="/*" element={<DashboardMainPage backendStatus={backendStatus} />} />
-          </Route>
+          <Route
+            path="/*"
+            element={<DashboardMainPage backendStatus={backendStatus} />}
+          />
 
           {/* Manejo de cualquier ruta no encontrada */}
           <Route path="*" element={<Error />} />

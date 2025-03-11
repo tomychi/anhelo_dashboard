@@ -40,13 +40,21 @@ export const Sidebar = ({ scrollContainerRef }) => {
     return () => scrollContainer.removeEventListener("scroll", handleScroll);
   }, [scrollContainerRef]);
 
+  const auth = useSelector((state: RootState) => state.auth);
+  const isAuth = auth?.isAuth || false;
+
+  // Obtener datos del usuario o empresa
   const currentUserEmail = useSelector(
-    (state: RootState) => state.auth?.user?.email
+    (state: RootState) =>
+      state.auth?.user?.email ||
+      state.auth?.empresa?.datosUsuario?.nombreUsuario
   );
   const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
   useEffect(() => {
     const fetchPedidosConReclamo = async () => {
+      // Solo fetch reclamos si el usuario está autenticado
+      if (!isAuth) return;
       try {
         const today = new Date();
         const threeDaysAgo = new Date();
@@ -99,7 +107,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
     };
 
     fetchPedidosConReclamo();
-  }, []);
+  }, [isAuth]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -116,7 +124,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setIsProfileOpen(false);
-      navigate("/authentication");
+      navigate("/");
     } catch (error) {
       console.error("Error durante el cierre de sesión:", error);
     }
@@ -240,7 +248,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
   const renderMenuItems = () => {
     return menuItems.map((item, index) => {
-      const isLocked = userNotLogged;
+      const isLocked = !isAuth;
 
       return (
         <li key={index}>
@@ -546,7 +554,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
-  const userNotLogged = true;
+  const nombreUsuario = auth?.empresa?.datosUsuario?.nombreUsuario || "";
+  const inicialUsuario = nombreUsuario.charAt(0).toUpperCase();
 
   return (
     <>
@@ -580,8 +589,11 @@ export const Sidebar = ({ scrollContainerRef }) => {
               </svg>
             </div>
           </button>
-          {userNotLogged ? (
-            <div className="bg-gray-100 rounded-full px-4 h-10 items-center flex ">
+          {!isAuth ? (
+            <div
+              className="bg-gray-100 rounded-full px-4 h-10 items-center flex cursor-pointer"
+              onClick={() => navigate("/authentication")}
+            >
               Iniciar sesion
             </div>
           ) : (
@@ -590,9 +602,10 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 onClick={toggleProfile}
                 className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 ml-2 cursor-pointer"
               >
-                {isMarketingUser ? "LC" : "TA"}
+                {inicialUsuario}
+
                 {hasReclamos && (
-                  <div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full  animate-pulse"></div>
+                  <div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
                 )}
               </button>
               {isProfileOpen &&

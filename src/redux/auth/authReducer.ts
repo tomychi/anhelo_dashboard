@@ -1,49 +1,43 @@
-export interface User {
-	uid: string;
-	email: string;
-}
+import { EmpresaProps } from "../../firebase/ClientesAbsolute";
 
 export interface UserState {
-	user: User;
-	isAuth: boolean;
+  empresa: EmpresaProps | null;
+  isAuth: boolean;
 }
 
 interface AuthAction {
-	type: string;
-	payload?: UserState;
+  type: string;
+  payload?: EmpresaProps;
 }
 
-const initialState = {
-	user: {
-		uid: "",
-		email: "",
-	},
-	isAuth: false,
+const initialState: UserState = {
+  empresa: null,
+  isAuth: false,
 };
 
 const authReducer = (state = initialState, action: AuthAction) => {
-	switch (action.type) {
-		case "LOGIN_SUCCESS":
-			console.log("🔵 Login Success - Estado anterior:", state);
-			console.log("🔵 Login Success - Payload recibido:", action.payload);
-			const loginState = {
-				...state,
-				isAuth: true,
-				user: action.payload,
-			};
-			console.log("🔵 Login Success - Nuevo estado:", loginState);
-			return loginState;
+  switch (action.type) {
+    case "LOGIN_SUCCESS":
+      console.log("🔵 Login Success - Estado anterior:", state);
+      console.log("🔵 Login Success - Payload recibido:", action.payload);
+      const loginState = {
+        ...state,
+        isAuth: true,
+        empresa: action.payload,
+      };
+      console.log("🔵 Login Success - Nuevo estado:", loginState);
+      return loginState;
 
-		case "LOGOUT_SUCCESS":
-			console.log("🔴 Logout Success - Estado anterior:", state);
-			console.log("🔴 Logout Success - Volviendo a estado inicial");
-			return {
-				...initialState,
-			};
+    case "LOGOUT_SUCCESS":
+      console.log("🔴 Logout Success - Estado anterior:", state);
+      console.log("🔴 Logout Success - Volviendo a estado inicial");
+      return {
+        ...initialState,
+      };
 
-		default:
-			return state;
-	}
+    default:
+      return state;
+  }
 };
 
 export default authReducer;
