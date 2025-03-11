@@ -348,8 +348,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
       {/* Profile Header */}
       <div className="border-b border-gray-200">
         <div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
-          <div className="text-2xl font-bold">
-            {isMarketingUser ? "Lucho Castillo" : "Tobías Azcurra"}
+          <div className="text-3xl font-bold">
+            {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
           </div>
           <div className="text-xs text-gray-500">
             {isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
@@ -428,7 +428,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       <div className="mr-8">
         <button
           onClick={handleLogout}
-          className="w-full text-base text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-300"
+          className="w-full text-xl text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-300"
         >
           Cerrar sesión
         </button>
@@ -467,8 +467,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
           </div>
         </div>
         <div className="px-4 pb-4 flex justify-center flex-col items-center">
-          <div className="text-2xl font-bold">
-            {isMarketingUser ? "Lucho Castillo" : "Tobías Azcurra"}
+          <div className="text-3xl font-bold">
+            {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
           </div>
           <div className="text-xs text-gray-500 ">
             {isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
@@ -545,7 +545,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         <div className="mx-4">
           <button
             onClick={handleLogout}
-            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-center bg-gray-300"
+            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-xl text-center bg-gray-300"
           >
             Cerrar sesión
           </button>
