@@ -229,12 +229,12 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
   const menuItems = isMarketingUser
     ? [
-        { to: "/", text: "Dashboard" },
+        { to: "/dashboard", text: "Dashboard" },
         { to: "/nuevaCompra", text: "Gastos" },
         { to: "/vouchers", text: "Campañas de marketing" },
       ]
     : [
-        { to: "/", text: "Dashboard" },
+        { to: "/dashboard", text: "Dashboard" },
         // { to: "/comandas", text: "Comandas y Grupos" },
         { to: "/comanderaAutomatizada", text: "Operaciones" },
         { to: "/gastos", text: "Gastos" },
