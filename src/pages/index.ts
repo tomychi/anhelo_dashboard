@@ -10,7 +10,6 @@ export { ProductosVendidos } from "./ProductosVendidos";
 
 export { Error } from "./Error";
 
-export { Authentication } from "./Authentication";
 export { Settings } from "./Settings";
 
 export { Dashboard } from "./Dashboard";

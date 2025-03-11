@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Authentication, Error } from "../pages";
 import { DashboardMainPage } from "../pages/DashboardMainPage";
 import CrearEmpresa from "../pages/CrearEmpresa";
+import { Login } from "../components/auth/Login";
 
 export const Navigation = ({ backendStatus }) => {
   return (
     <Router>
       <div className="h-screen overflow-x-hidden">
         <Routes>
-          <Route path="/authentication" element={<Authentication />} />
+          <Route path="/authentication" element={<Login />} />
 
           <Route
             path="/*"
