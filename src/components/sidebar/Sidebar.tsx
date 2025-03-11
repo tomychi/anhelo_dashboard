@@ -6,6 +6,11 @@ import { logoutSuccess } from "../../redux/auth/authAction";
 import Absolute from "../../assets/absoluteIsologo.avif";
 import { ReadDataForDateRange } from "../../firebase/ReadData";
 import { PedidoProps } from "../../types/types";
+import {
+  obtenerNombreEmpresa,
+  EmpresaProps,
+  EmpleadoProps,
+} from "../../firebase/ClientesAbsolute";
 
 export const Sidebar = ({ scrollContainerRef }) => {
   const navigate = useNavigate();
@@ -19,7 +24,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [menuDragStart, setMenuDragStart] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [hasReclamos, setHasReclamos] = useState(false);
-  const [reclamosCount, setReclamosCount] = useState(0); // Nuevo estado para contar reclamos
+  const [reclamosCount, setReclamosCount] = useState(0);
+  const [empresaNombre, setEmpresaNombre] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
   const menuModalRef = useRef<HTMLDivElement>(null);
 
@@ -42,14 +48,53 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
   const auth = useSelector((state: RootState) => state.auth);
   const isAuth = auth?.isAuth || false;
+  const tipoUsuario = auth?.tipoUsuario;
 
-  // Obtener datos del usuario o empresa
-  const currentUserEmail = useSelector(
-    (state: RootState) =>
-      state.auth?.user?.email ||
-      state.auth?.empresa?.datosUsuario?.nombreUsuario
-  );
-  const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+  // Obtener la información según el tipo de usuario
+  let nombreUsuario = "";
+  let rolUsuario = "";
+  let nombreEmpresaDirecto = "";
+
+  if (tipoUsuario === "empresa" && auth?.usuario) {
+    nombreUsuario =
+      (auth.usuario as EmpresaProps).datosUsuario?.nombreUsuario || "";
+    rolUsuario = (auth.usuario as EmpresaProps).datosUsuario?.rolUsuario || "";
+    nombreEmpresaDirecto =
+      (auth.usuario as EmpresaProps).datosGenerales?.nombre || "";
+  } else if (tipoUsuario === "empleado" && auth?.usuario) {
+    nombreUsuario = (auth.usuario as EmpleadoProps).datos?.nombre || "";
+    rolUsuario = (auth.usuario as EmpleadoProps).datos?.rol || "";
+  }
+
+  // Obtener el nombre de la empresa para empleados
+  useEffect(() => {
+    const cargarNombreEmpresa = async () => {
+      if (tipoUsuario === "empleado" && auth?.usuario) {
+        const id = (auth.usuario as EmpleadoProps).empresaId;
+        if (id) {
+          try {
+            const nombre = await obtenerNombreEmpresa(id);
+            setEmpresaNombre(nombre);
+          } catch (error) {
+            console.error("Error al obtener nombre de empresa:", error);
+          }
+        }
+      }
+    };
+
+    cargarNombreEmpresa();
+  }, [tipoUsuario, auth?.usuario]);
+
+  // Nombre de empresa a mostrar
+  const displayEmpresa =
+    tipoUsuario === "empresa"
+      ? nombreEmpresaDirecto
+      : tipoUsuario === "empleado"
+        ? empresaNombre
+        : "NaN";
+
+  // Determinar si es usuario de marketing
+  const isMarketingUser = nombreUsuario === "marketing@anhelo.com";
 
   useEffect(() => {
     const fetchPedidosConReclamo = async () => {
@@ -94,10 +139,6 @@ export const Sidebar = ({ scrollContainerRef }) => {
               },
             }))
           );
-        } else {
-          // console.log(
-          //   "No hay pedidos con reclamo NO resuelto en los últimos 3 días en Sidebar."
-          // );
         }
       } catch (error) {
         console.error("Error al obtener pedidos con reclamo:", error);
@@ -348,12 +389,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
       {/* Profile Header */}
       <div className="border-b border-gray-200">
         <div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
-          <div className="text-3xl font-bold">
-            {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
-          </div>
+          <div className="text-3xl font-bold">{nombreUsuario || "NaN"}</div>
           <div className="text-xs text-gray-500">
-            {auth?.empresa?.datosUsuario?.rolUsuario || "NaN"} en{" "}
-            {auth?.empresa?.datosGenerales?.nombre || "NaN"}
+            {rolUsuario || "NaN"} en {displayEmpresa}
           </div>
         </div>
 
@@ -468,12 +506,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
           </div>
         </div>
         <div className="px-4 pb-4 flex justify-center flex-col items-center">
-          <div className="text-3xl font-bold">
-            {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
-          </div>
+          <div className="text-3xl font-bold">{nombreUsuario || "NaN"}</div>
           <div className="text-xs text-gray-500 ">
-            {auth?.empresa?.datosUsuario?.rolUsuario || "NaN"} en{" "}
-            {auth?.empresa?.datosGenerales?.nombre || "NaN"}
+            {rolUsuario || "NaN"} en {displayEmpresa}
           </div>
         </div>
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
@@ -556,7 +591,6 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
-  const nombreUsuario = auth?.empresa?.datosUsuario?.nombreUsuario || "";
   const inicialUsuario = nombreUsuario.charAt(0).toUpperCase();
 
   return (

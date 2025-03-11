@@ -408,3 +408,19 @@ export const eliminarEmpleado = async (
     "datos.ultimaActualizacion": new Date(),
   });
 };
+
+export const obtenerNombreEmpresa = async (
+  empresaId: string
+): Promise<string> => {
+  if (!empresaId) return "";
+
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+  const docSnap = await getDoc(empresaRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data().datosGenerales?.nombre || "";
+  } else {
+    return "";
+  }
+};
