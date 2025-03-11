@@ -14,8 +14,6 @@ export { Settings } from "./Settings";
 
 export { Dashboard } from "./Dashboard";
 
-export { Comandera } from "./Comandera";
 export { ComanderaAutomatizada } from "./ComanderaAutomatizada";
-export { Delivery } from "./Delivery";
 export { DynamicForm } from "./DynamicForm";
 export { Equipo } from "./Equipo";

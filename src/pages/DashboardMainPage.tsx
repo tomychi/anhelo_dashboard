@@ -2,8 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { Sidebar } from "../components/sidebar";
 import {
   DynamicForm,
-  Comandera,
-  Delivery,
   Settings,
   Dashboard,
   Gastos,
@@ -12,8 +10,6 @@ import {
   Seguidores,
   ProductosVendidos,
   Clientes,
-  AnheloRiders,
-  AnheloRidersStats,
   Equipo,
   WhatsappFeatures,
   ComanderaAutomatizada,
@@ -51,12 +47,10 @@ export const DashboardMainPage = ({ backendStatus }) => {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="pedidos" element={<DynamicForm />} />
             <Route path="crearEmpresa" element={<CrearEmpresa />} />
-            <Route path="comandas" element={<Comandera />} />
             <Route
               path="comanderaAutomatizada"
               element={<ComanderaAutomatizada />}
             />
-            <Route path="delivery" element={<Delivery />} />
             <Route path="settings" element={<Settings />} />
             <Route path="gastos" element={<Gastos />} />
             <Route path="nuevaCompra" element={<NuevaCompra />} />
@@ -74,14 +68,12 @@ export const DashboardMainPage = ({ backendStatus }) => {
             <Route path="campañaDetalle/:titulo" element={<CampañaDetalle />} />
             <Route path="clientes" element={<Clientes />} />
             <Route path="productosVendidos" element={<ProductosVendidos />} />
-            <Route path="ventas" element={<Comandera />} />
+            <Route path="ventas" element={<ComanderaAutomatizada />} />
             <Route path="registroHorario" element={<RegistroHorario />} />
             <Route path="monthdata" element={<MonthData />} />
             <Route path="empleados" element={<RegistroEmpleado />} />
             <Route path="equipo" element={<Equipo />} />
             <Route path="deudaManager" element={<DeudaManager />} />
-            <Route path="AnheloRiders" element={<AnheloRiders />} />
-            <Route path="anheloriders_stats" element={<AnheloRidersStats />} />
           </Route>
         </Routes>
       </div>

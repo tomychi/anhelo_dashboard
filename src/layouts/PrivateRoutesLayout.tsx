@@ -1,6 +1,6 @@
 import { Outlet, useLocation, Navigate, Route, Routes } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
-import { Comandera, ComanderaAutomatizada, Dashboard, Equipo } from "../pages";
+import { ComanderaAutomatizada, Dashboard, Equipo } from "../pages";
 import { Sidebar } from "../components/sidebar";
 import { NuevaCompra } from "../pages/NuevaCompra";
 import { useRef } from "react";
@@ -58,7 +58,6 @@ export const PrivateRoutesLayout = () => {
   if (currentUserEmail && limitedAccessEmails.includes(currentUserEmail)) {
     return (
       <Routes>
-        <Route path="/comandas" element={<Comandera />} />
         <Route
           path="/comanderaAutomatizada"
           element={<ComanderaAutomatizada />}
@@ -71,7 +70,6 @@ export const PrivateRoutesLayout = () => {
   // Para cualquier otro caso (acceso predeterminado)
   return (
     <Routes>
-      <Route path="/comandas" element={<Comandera />} />
       <Route
         path="/comanderaAutomatizada"
         element={<ComanderaAutomatizada />}
