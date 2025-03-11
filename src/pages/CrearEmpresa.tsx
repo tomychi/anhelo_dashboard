@@ -166,7 +166,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
             onClick={!loading ? handleContinue : undefined}
           >
-            {loading ? <LoadingPoints color="text-black" /> : "Continuar"}
+            {loading ? <LoadingPoints color="text-gray-100" /> : "Continuar"}
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
@@ -215,7 +215,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
             onClick={!loading ? handleStart : undefined}
           >
-            {loading ? <LoadingPoints color="text-black" /> : "Comenzar"}
+            {loading ? <LoadingPoints color="text-gray-100" /> : "Comenzar"}
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
