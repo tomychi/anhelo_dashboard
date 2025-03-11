@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useUnifiedLogin from "../auth/unifiedLogin";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -10,7 +10,7 @@ import LoadingPoints from "../LoadingPoints";
 export const Login = () => {
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [showError, setShowError] = useState(false);
   const [telefonoFocused, setTelefonoFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
@@ -23,7 +23,14 @@ export const Login = () => {
 
   const { error, loading, login } = useUnifiedLogin();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Limpiar inputs cuando el componente se monta
+  useEffect(() => {
+    // Reset input values on component mount
+    setTelefono("");
+    setPassword("");
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setShowError(false);
 
@@ -49,7 +56,7 @@ export const Login = () => {
     transition: "opacity 300ms ease",
   };
 
-  const getInputClass = (isFocused: boolean) => `
+  const getInputClass = (isFocused) => `
     px-4 h-10 w-full rounded-lg  
     appearance-none focus:outline-none focus:ring-0 peer
     text-xs 
@@ -65,8 +72,9 @@ export const Login = () => {
     <div className="bg-black w-full h-full flex items-center">
       <form
         className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col text-gray-100"
-        onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
-        autoComplete="off"
+        onSubmit={handleLogin}
+        autoComplete="new-password" // Este valor evita el autocompletado
+        spellCheck="false"
       >
         {/* Logo */}
         <div className="flex flex-col mx-auto w-3/4">
@@ -97,13 +105,17 @@ export const Login = () => {
             required
             placeholder="Ingresa tu número de teléfono"
             type="tel"
+            name="phone" // Nombre único
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
             onFocus={() => setTelefonoFocused(true)}
             onBlur={() => setTelefonoFocused(false)}
-            autoComplete="off"
+            autoComplete="new-password" // Valor no estándar para evitar autocompletado
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         </div>
+
         {/* Input de la contraseña */}
         <div className="w-full">
           <input
@@ -111,12 +123,15 @@ export const Login = () => {
             style={inputStyle}
             required
             type="password"
+            name="new-password" // Nombre único
             placeholder="Ingresa tu contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onFocus={() => setPasswordFocused(true)}
             onBlur={() => setPasswordFocused(false)}
-            autoComplete="off"
+            autoComplete="new-password" // Valor no estándar para evitar autocompletado
+            autoCorrect="off"
+            autoCapitalize="off"
           />
         </div>
 
