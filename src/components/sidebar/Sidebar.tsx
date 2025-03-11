@@ -602,7 +602,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
           </button>
           {!isAuth ? (
             <div
-              className="bg-gray-100 rounded-full px-4 h-10 items-center flex cursor-pointer"
+              className="bg-gray-100 ml-2 rounded-full px-4 h-10 items-center flex cursor-pointer"
               onClick={() => navigate("/authentication")}
             >
               Iniciar sesion
