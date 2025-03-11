@@ -601,11 +601,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
         }`}
       >
         {!isAuth ? (
-          <img
-            src={Absolute}
-            className="h-10 filter brightness-[400] saturate-0"
-            alt="Absolute Logo"
-          />
+          <NavLink to={"/"} className="ml-[-3px] items-center">
+            <img
+              src={Absolute}
+              className="h-10 filter brightness-[400] saturate-0"
+              alt="Absolute Logo"
+            />
+          </NavLink>
         ) : (
           <NavLink to={"/dashboard"} className="ml-[-3px] items-center">
             <img
