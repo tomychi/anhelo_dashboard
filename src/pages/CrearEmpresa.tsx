@@ -224,6 +224,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">Registrate</h2>
+
           <div className="mx-4 pt-14 flex flex-col gap-2">
             <input
               type="text"
@@ -277,6 +278,16 @@ export const CrearEmpresa: React.FC<{}> = () => {
           <h2 className="text-3xl mx-4 mt-2 text-center">
             Introduci los datos de tu empresa
           </h2>
+          <div
+            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center cursor-pointer"
+            onClick={handlePrevious}
+          >
+            <img
+              src={arrowIcon}
+              className="transform rotate-180 h-2 opacity-50"
+            />
+            Volver
+          </div>
           <div className="mx-4 pt-14 flex flex-col gap-2">
             <input
               type="text"
@@ -320,20 +331,11 @@ export const CrearEmpresa: React.FC<{}> = () => {
             />
           </div>
 
-          <div className="flex flex-col mx-4 gap-3 mt-4">
-            <div
-              className={`text-gray-100 bg-black h-14 rounded-3xl text-2xl justify-center flex items-center ${loading ? "opacity-70" : "cursor-pointer"}`}
-              onClick={!loading ? handleNextToDatosEmpresa : undefined}
-            >
-              {loading ? <LoadingPoints color="text-gray-100" /> : "Continuar"}
-            </div>
-
-            <div
-              className="text-black bg-transparent border border-black h-14 rounded-3xl text-xl justify-center flex items-center cursor-pointer"
-              onClick={handlePrevious}
-            >
-              Volver atrás
-            </div>
+          <div
+            className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
+            onClick={!loading ? handleNextToDatosEmpresa : undefined}
+          >
+            {loading ? <LoadingPoints color="text-gray-100" /> : "Continuar"}
           </div>
 
           {/* Mostrar mensaje de error si existe */}
@@ -406,19 +408,11 @@ export const CrearEmpresa: React.FC<{}> = () => {
             ))}
           </div>
 
-          <div className="flex flex-col mx-4 gap-3 mt-6">
-            <div
-              className={`text-gray-100 bg-black h-14 rounded-3xl text-xl justify-center flex items-center ${
-                loading ? "opacity-70" : "cursor-pointer"
-              }`}
-              onClick={!loading ? handleStart : undefined}
-            >
-              {loading ? (
-                <LoadingPoints color="text-gray-100" />
-              ) : (
-                "Completar registro"
-              )}
-            </div>
+          <div
+            className={`text-gray-100 mb-8 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
+            onClick={!loading ? handleStart : undefined}
+          >
+            {loading ? <LoadingPoints color="text-gray-100" /> : "Comenzar"}
           </div>
 
           {/* Mostrar mensaje de error si existe */}
