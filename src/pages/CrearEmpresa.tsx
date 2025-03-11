@@ -554,7 +554,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             Volver
           </div>
 
-          <div className="mx-4 pt-14 flex flex-col gap-3">
+          <div className="mx-4 pt-14 flex flex-col gap-2">
             {products.map((product) => (
               <div
                 key={product.title}
