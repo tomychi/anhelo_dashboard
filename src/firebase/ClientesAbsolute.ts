@@ -6,6 +6,8 @@ import {
   getDoc,
   updateDoc,
   getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
@@ -74,34 +76,31 @@ export const verificarCredenciales = async (
   contraseña: string
 ): Promise<EmpresaProps | null> => {
   const firestore = getFirestore();
-  const clientesRef = collection(firestore, "absoluteClientes");
 
   try {
-    // Desafortunadamente, Firestore no permite consultar subdocumentos directamente
-    // Así que necesitamos obtener todos los documentos y filtrar manualmente
-    const querySnapshot = await getDocs(clientesRef);
+    // Crear una consulta que busque específicamente por el número de teléfono
+    const q = query(
+      collection(firestore, "absoluteClientes"),
+      where("datosUsuario.telefono", "==", telefono)
+    );
 
-    for (const doc of querySnapshot.docs) {
-      const empresaData = doc.data();
+    const querySnapshot = await getDocs(q);
 
-      // Verificamos que el documento tenga la estructura esperada
-      if (
-        empresaData &&
-        empresaData.datosUsuario &&
-        typeof empresaData.datosUsuario === "object" &&
-        empresaData.datosUsuario.telefono &&
-        empresaData.datosUsuario.contraseña
-      ) {
-        if (
-          empresaData.datosUsuario.telefono === telefono &&
-          empresaData.datosUsuario.contraseña === contraseña
-        ) {
-          return { ...empresaData, id: doc.id } as EmpresaProps;
-        }
-      }
+    if (querySnapshot.empty) {
+      return null; // No se encontró ningún usuario con ese teléfono
     }
 
-    return null; // No se encontró ninguna coincidencia
+    // Solo verificamos el primer documento que coincide (debería ser único)
+    const doc = querySnapshot.docs[0];
+    const empresaData = doc.data();
+
+    // Verificar la contraseña
+    // Nota: Idealmente deberías usar bcrypt u otro método de hashing seguro
+    if (empresaData.datosUsuario.contraseña === contraseña) {
+      return { ...empresaData, id: doc.id } as EmpresaProps;
+    }
+
+    return null; // La contraseña no coincide
   } catch (error) {
     console.error("Error al verificar credenciales:", error);
     return null;
