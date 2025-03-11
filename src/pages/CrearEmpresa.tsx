@@ -375,24 +375,23 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <div
                 key={feature.id}
                 onClick={() => toggleFeature(feature.id)}
-                className={`w-full p-4 rounded-lg border border-gray-300 flex items-start gap-3 cursor-pointer transition-colors ${
+                className={`w-full p-4 rounded-3xl border border-gray-200 items-center flex flex-row gap-2 cursor-pointer transition-colors ${
                   selectedFeatures.includes(feature.id)
                     ? "bg-black text-white"
                     : "bg-gray-100"
                 }`}
               >
+                {/* izqueirda*/}
                 <div
-                  className={`w-6 h-6 flex-shrink-0 rounded-md border ${
+                  className={`w-6 h-6 items-center flex flex-shrink-0 rounded-md border ${
                     selectedFeatures.includes(feature.id)
                       ? "bg-white border-white"
                       : "border-gray-400"
                   } flex items-center justify-center mt-0.5`}
-                >
-                  {selectedFeatures.includes(feature.id) && (
-                    <div className="w-3 h-3 bg-black rounded-sm"></div>
-                  )}
-                </div>
-                <div>
+                ></div>
+
+                {/* derecha */}
+                <div className="">
                   <h3 className="font-medium text-lg">{feature.name}</h3>
                   <p
                     className={`text-sm ${
