@@ -19,7 +19,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path
           fillRule="evenodd"
@@ -43,7 +43,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path
           fillRule="evenodd"
@@ -62,7 +62,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path
           fillRule="evenodd"
@@ -81,7 +81,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path
           fillRule="evenodd"
@@ -100,7 +100,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path
           fillRule="evenodd"
@@ -119,7 +119,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
         <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
@@ -137,7 +137,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path d="M10.5 18.75a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" />
         <path
@@ -157,7 +157,7 @@ const products = [
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6"
+        className="h-6 px-2"
       >
         <path d="M12 7.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
         <path
@@ -176,7 +176,7 @@ const products = [
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6"
+        className="h-6 px-2"
         viewBox="0 0 24 24"
         fill="none"
       >
@@ -559,7 +559,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <div
                 key={product.title}
                 onClick={() => toggleFeature(product.title)}
-                className={`w-full p-4 h-20 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
+                className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
                   selectedFeatures.includes(product.title)
                     ? "bg-black text-white"
                     : "bg-gray-100"
