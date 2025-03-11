@@ -462,7 +462,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             Introduci los datos de tu empresa
           </h2>
           <div
-            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center cursor-pointer"
+            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center font-light  cursor-pointer"
             onClick={handlePrevious}
           >
             <img
@@ -543,7 +543,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             Selecciona los features que vas a utilizar
           </h2>
           <div
-            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center cursor-pointer"
+            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
             onClick={handlePrevious}
           >
             <img
@@ -579,10 +579,10 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 <div className="flex flex-col">
                   <h3 className="font-medium text-lg">{product.title}</h3>
                   <p
-                    className={`text-xs ${
+                    className={`text-xs font-light ${
                       selectedFeatures.includes(product.title)
                         ? "text-gray-200"
-                        : "text-gray-600"
+                        : "text-gray-400"
                     }`}
                   >
                     {product.description}
