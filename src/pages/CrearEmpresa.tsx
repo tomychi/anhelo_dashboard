@@ -28,7 +28,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
 
   const handleContinue = async () => {
     // Validar campos
-    if (!nombreUsuario || !telefono || !contraseña || !confirmarContraseña) {
+    if (!telefono || !contraseña || !confirmarContraseña) {
       setError("Por favor, completa todos los campos.");
       return;
     }
@@ -62,7 +62,12 @@ export const CrearEmpresa: React.FC<{}> = () => {
 
   const handleStart = async () => {
     // Validar campos
-    if (!nombreEmpresa || !cantidadEmpleados || !formaJuridica) {
+    if (
+      !nombreEmpresa ||
+      !nombreUsuario ||
+      !cantidadEmpleados ||
+      !formaJuridica
+    ) {
       setError("Por favor, completa todos los datos de la empresa");
       return;
     }
@@ -114,7 +119,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
   };
 
   return (
-    <div className="font-coolvetica pt-12">
+    <div className="font-coolvetica pt-6">
       {/* Add animation styles */}
       <style>
         {`
@@ -144,21 +149,13 @@ export const CrearEmpresa: React.FC<{}> = () => {
 
       {showFirstSection ? (
         <>
-          <div className="flex flex-row mx-4 gap-2 justify-start">
+          <div className="flex flex-row mx-4 gap-2 justify-center">
             {/* First bar animated, second bar static */}
             <div className="w-1/4 h-2 rounded-full animated-loading"></div>
             <div className="w-1/4 border-gray-400 border h-2 rounded-full"></div>
           </div>
-          <h2 className="text-3xl mx-4 mt-2">Registrate</h2>
-          <div className="mx-4 pt-10 flex flex-col gap-2">
-            <input
-              type="text"
-              placeholder="Tu nombre"
-              value={nombreUsuario}
-              onChange={(e) => setNombreUsuario(e.target.value)}
-              autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-            />
+          <h2 className="text-3xl mx-4 mt-2 text-center">Registrate</h2>
+          <div className="mx-4 pt-14 flex flex-col gap-2">
             <input
               type="text"
               placeholder="Tu numero de telefono"
@@ -200,18 +197,18 @@ export const CrearEmpresa: React.FC<{}> = () => {
         </>
       ) : (
         <>
-          <div className="flex flex-row mx-4 gap-2 justify-start">
+          <div className="flex flex-row mx-4 gap-2 justify-center">
             {/* Both bars animated in second section */}
             <div className="w-1/4 h-2 rounded-full bg-black"></div>
             <div className="w-1/4 h-2 rounded-full animated-loading"></div>
           </div>
-          <h2 className="text-3xl mx-4 mt-2">
-            Introduci los datos de <br /> tu empresa
+          <h2 className="text-3xl mx-4 mt-2 text-center">
+            Introduci los datos de tu empresa
           </h2>
-          <div className="mx-4 pt-10 flex flex-col gap-2">
+          <div className="mx-4 pt-14 flex flex-col gap-2">
             <input
               type="text"
-              placeholder="Nombre o razon social"
+              placeholder="Nombre de la empresa o razon social"
               value={nombreEmpresa}
               onChange={(e) => setNombreEmpresa(e.target.value)}
               autoComplete="off"
@@ -233,6 +230,22 @@ export const CrearEmpresa: React.FC<{}> = () => {
               autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
+            <input
+              type="text"
+              placeholder="Tu nombre"
+              value={nombreUsuario}
+              onChange={(e) => setNombreUsuario(e.target.value)}
+              autoComplete="off"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+            />
+            <input
+              type="text"
+              placeholder="Tu rol"
+              value={nombreUsuario}
+              onChange={(e) => setNombreUsuario(e.target.value)}
+              autoComplete="off"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+            />
           </div>
           <div
             className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
@@ -242,7 +255,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
-            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex bg-red-100 border-red-main mx-4 ">
+            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex text-xs border-red-main mx-4 ">
               {error}
             </div>
           )}
