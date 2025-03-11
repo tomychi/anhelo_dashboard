@@ -17,7 +17,7 @@ export const Login = () => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const { error, loading, login } = empresaLogin();
 
