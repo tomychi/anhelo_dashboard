@@ -35,7 +35,7 @@ const products = [
     ),
   },
   {
-    title: "Métricas",
+    title: "Dashboard",
     description:
       "Visualiza el rendimiento de tu negocio en tiempo real. Analiza ventas y comportamiento de clientes para tomar decisiones estratégicas basadas en datos concretos.",
     icon: (
@@ -353,6 +353,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           rolUsuario: rolUsuario,
         },
         features: selectedFeatures,
+        featuresIniciales: selectedFeatures, // Añadimos la nueva propiedad
         estado: "activo",
         ultimaActualizacion: new Date(),
       };

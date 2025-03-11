@@ -30,6 +30,7 @@ export interface EmpresaProps {
   id?: string;
   datosGenerales: DatosGeneralesEmpresa;
   datosUsuario: DatosUsuario;
+  featuresIniciales: string[]; // Nueva propiedad para almacenar los features seleccionados
   estado: string;
   ultimaActualizacion: Date;
 }
@@ -58,7 +59,8 @@ export const crearEmpresa = async (
   nombreEmpresa: string,
   cantidadEmpleados: number,
   formaJuridica: string,
-  rolUsuario: string // Add the role parameter
+  rolUsuario: string,
+  featuresSeleccionados: string[] // Añadimos el parámetro para los features seleccionados
 ): Promise<string> => {
   const firestore = getFirestore();
   const empresaId = uuidv4();
@@ -78,8 +80,9 @@ export const crearEmpresa = async (
       nombreUsuario: nombreUsuario,
       telefono: telefono,
       contraseña: contraseña,
-      rolUsuario: rolUsuario, // Store the role in the user data
+      rolUsuario: rolUsuario,
     },
+    featuresIniciales: featuresSeleccionados, // Añadimos la nueva propiedad
     estado: "activo",
     ultimaActualizacion: fechaActual,
   };
