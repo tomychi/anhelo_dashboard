@@ -284,7 +284,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           >
             <img
               src={arrowIcon}
-              className="transform rotate-180 h-2 opacity-50"
+              className="transform rotate-180 h-2 opacity-30"
             />
             Volver
           </div>
@@ -365,7 +365,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           >
             <img
               src={arrowIcon}
-              className="transform rotate-180 h-2 opacity-50"
+              className="transform rotate-180 h-2 opacity-30"
             />
             Volver
           </div>
