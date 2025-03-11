@@ -564,13 +564,22 @@ export const Sidebar = ({ scrollContainerRef }) => {
           isScrolled ? "bg-black bg-opacity-75 backdrop-blur-md" : "bg-black"
         }`}
       >
-        <NavLink to={"/"} className="ml-[-3px] items-center">
+        {!isAuth ? (
           <img
             src={Absolute}
             className="h-10 filter brightness-[400] saturate-0"
             alt="Absolute Logo"
           />
-        </NavLink>
+        ) : (
+          <NavLink to={"/dashboard"} className="ml-[-3px] items-center">
+            <img
+              src={Absolute}
+              className="h-10 filter brightness-[400] saturate-0"
+              alt="Absolute Logo"
+            />
+          </NavLink>
+        )}
+
         <div className="flex flex-row items-center">
           <button
             onClick={toggleMenu}
