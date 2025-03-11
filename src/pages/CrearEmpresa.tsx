@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// Asegúrate de que el nombre del archivo y la ruta son correctos
 import {
   crearEmpresa,
   verificarTelefonoExistente,
 } from "../firebase/ClientesAbsolute";
+import LoadingPoints from "../components/LoadingPoints";
 
 export const CrearEmpresa: React.FC<{}> = () => {
   const [showFirstSection, setShowFirstSection] = useState(true);
@@ -133,6 +133,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Tu nombre"
               value={nombreUsuario}
               onChange={(e) => setNombreUsuario(e.target.value)}
+              autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
@@ -140,6 +141,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Tu numero de telefono"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
+              autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
@@ -147,6 +149,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Una contraseña"
               value={contraseña}
               onChange={(e) => setContraseña(e.target.value)}
+              autoComplete="new-password"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
@@ -154,6 +157,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Repeti la contraseña"
               value={confirmarContraseña}
               onChange={(e) => setConfirmarContraseña(e.target.value)}
+              autoComplete="new-password"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
@@ -162,7 +166,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
             onClick={!loading ? handleContinue : undefined}
           >
-            {loading ? "Procesando..." : "Continuar"}
+            {loading ? <LoadingPoints color="text-black" /> : "Continuar"}
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
@@ -187,6 +191,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Nombre o razon social"
               value={nombreEmpresa}
               onChange={(e) => setNombreEmpresa(e.target.value)}
+              autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
@@ -194,6 +199,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Cantidad de empleados"
               value={cantidadEmpleados}
               onChange={(e) => setCantidadEmpleados(e.target.value)}
+              autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
@@ -201,6 +207,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               placeholder="Forma juridica"
               value={formaJuridica}
               onChange={(e) => setFormaJuridica(e.target.value)}
+              autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
@@ -208,7 +215,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
             onClick={!loading ? handleStart : undefined}
           >
-            {loading ? "Creando empresa..." : "Comenzar"}
+            {loading ? <LoadingPoints color="text-black" /> : "Comenzar"}
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
