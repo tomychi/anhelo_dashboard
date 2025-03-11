@@ -23,6 +23,7 @@ export interface DatosUsuario {
   nombreUsuario: string;
   telefono: string;
   contraseña: string;
+  rolUsuario: string; // Add the role field
 }
 
 export interface EmpresaProps {
@@ -40,7 +41,8 @@ export const crearEmpresa = async (
   contraseña: string,
   nombreEmpresa: string,
   cantidadEmpleados: number,
-  formaJuridica: string
+  formaJuridica: string,
+  rolUsuario: string // Add the role parameter
 ): Promise<string> => {
   const firestore = getFirestore();
   const empresaId = uuidv4();
@@ -60,6 +62,7 @@ export const crearEmpresa = async (
       nombreUsuario: nombreUsuario,
       telefono: telefono,
       contraseña: contraseña,
+      rolUsuario: rolUsuario, // Store the role in the user data
     },
     estado: "activo",
     ultimaActualizacion: fechaActual,

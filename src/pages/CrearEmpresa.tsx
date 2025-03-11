@@ -17,7 +17,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [telefono, setTelefono] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [confirmarContraseña, setConfirmarContraseña] = useState("");
-
+  const [rolUsuario, setRolUsuario] = useState("");
   const [nombreEmpresa, setNombreEmpresa] = useState("");
   const [cantidadEmpleados, setCantidadEmpleados] = useState("");
   const [formaJuridica, setFormaJuridica] = useState("");
@@ -66,7 +66,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
       !nombreEmpresa ||
       !nombreUsuario ||
       !cantidadEmpleados ||
-      !formaJuridica
+      !formaJuridica ||
+      !rolUsuario // Add validation for the role
     ) {
       setError("Por favor, completa todos los datos de la empresa");
       return;
@@ -83,7 +84,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
         contraseña,
         nombreEmpresa,
         parseInt(cantidadEmpleados), // Convertir a número
-        formaJuridica
+        formaJuridica,
+        rolUsuario // Add the role parameter
       );
 
       console.log("Empresa creada con ID:", empresaId);
@@ -101,6 +103,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           nombreUsuario: nombreUsuario,
           telefono: telefono,
           contraseña: contraseña,
+          rolUsuario: rolUsuario, // Add the role to the user data
         },
         estado: "activo",
         ultimaActualizacion: new Date(),
@@ -241,8 +244,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
             <input
               type="text"
               placeholder="Tu rol"
-              value={nombreUsuario}
-              onChange={(e) => setNombreUsuario(e.target.value)}
+              value={rolUsuario}
+              onChange={(e) => setRolUsuario(e.target.value)}
               autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
