@@ -357,7 +357,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             Selecciona los features que vas a utilizar
           </h2>
 
-          <div className="mx-4 pt-6 flex flex-col gap-3">
+          <div className="mx-4 pt-14 flex flex-col gap-3">
             {features.map((feature) => (
               <div
                 key={feature.id}
