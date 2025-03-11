@@ -193,7 +193,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
-            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex bg-red-100 border-red-main mx-4 ">
+            <div className=" mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex  border-red-main mx-4 ">
               {error}
             </div>
           )}
