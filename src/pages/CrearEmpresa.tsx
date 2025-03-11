@@ -1,18 +1,22 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export const CrearEmpresa: React.FC<{}> = () => {
-  // State to track which section to show
   const [showFirstSection, setShowFirstSection] = useState(true);
+  const navigate = useNavigate(); // Initialize navigate hook
 
-  // Handler for the Continuar button
   const handleContinue = () => {
     setShowFirstSection(false);
+  };
+
+  // Handler for the Comenzar button
+  const handleStart = () => {
+    navigate("/"); // Redirect to home page
   };
 
   return (
     <div className="font-coolvetica pt-12">
       {showFirstSection ? (
-        // First section (original uncommented part)
         <>
           <div className="flex flex-row mx-4 gap-2 justify-start">
             <div className="w-1/4 bg-black h-2 rounded-full"></div>
@@ -44,7 +48,6 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
         </>
       ) : (
-        // Second section (previously commented part)
         <>
           <div className="flex flex-row mx-4 gap-2 justify-start">
             <div className="w-1/4 bg-black h-2 rounded-full"></div>
@@ -70,7 +73,10 @@ export const CrearEmpresa: React.FC<{}> = () => {
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
-          <div className="text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4">
+          <div
+            className="text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 cursor-pointer"
+            onClick={handleStart} // Add click handler for Comenzar
+          >
             Comenzar
           </div>
         </>
