@@ -29,6 +29,7 @@ import CampañaDetalle from "./CampañaDetalle";
 import { DeudaManager } from "./DeudaManager";
 import FacturaForm from "../components/facturacion/FacturaForm";
 import Landing from "./Landing";
+import CrearEmpresa from "./CrearEmpresa";
 
 export const DashboardMainPage = ({ backendStatus }) => {
   const scrollContainerRef = useRef(null);
@@ -50,6 +51,7 @@ export const DashboardMainPage = ({ backendStatus }) => {
 
             <Route index element={<Dashboard />} />
             <Route path="pedidos" element={<DynamicForm />} />
+            <Route path="crearEmpresa" element={<CrearEmpresa />} />
             <Route path="comandas" element={<Comandera />} />
             <Route
               path="comanderaAutomatizada"
