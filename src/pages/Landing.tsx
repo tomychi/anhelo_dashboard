@@ -359,7 +359,7 @@ export const Landing: React.FC<{
       </style>
 
       {/* Título */}
-      <div className="py-20 bg-black">
+      <div className="pb-12 pt-12 bg-black">
         <p className="text-5xl text-gray-100 text-center mb-4 text-black font-bold">
           Absolute
         </p>

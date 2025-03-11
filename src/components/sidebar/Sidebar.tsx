@@ -546,7 +546,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
-  const userNotLogged = false;
+  const userNotLogged = true;
 
   return (
     <>
@@ -565,7 +565,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         <div className="flex flex-row items-center">
           <button
             onClick={toggleMenu}
-            className="flex items-center mr-2 h-10 w-10 justify-center"
+            className="flex items-center h-10 w-10 justify-center"
           >
             <div className="hover:bg-white hover:bg-opacity-10 text-gray-100 h-10 w-10 flex items-center justify-center rounded-full focus:outline-none transition duration-300 ease-in-out">
               <svg
@@ -580,19 +580,23 @@ export const Sidebar = ({ scrollContainerRef }) => {
               </svg>
             </div>
           </button>
-          <div className="relative">
-            <button
-              onClick={toggleProfile}
-              className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 cursor-pointer"
-            >
-              {isMarketingUser ? "LC" : "TA"}
-              {hasReclamos && (
-                <div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full animate-pulse"></div>
-              )}
-            </button>
-            {isProfileOpen &&
-              (isMobile ? renderMobileProfile() : renderDesktopProfile())}
-          </div>
+          {userNotLogged ? (
+            <></>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={toggleProfile}
+                className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 ml-2 cursor-pointer"
+              >
+                {isMarketingUser ? "LC" : "TA"}
+                {hasReclamos && (
+                  <div className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full  animate-pulse"></div>
+                )}
+              </button>
+              {isProfileOpen &&
+                (isMobile ? renderMobileProfile() : renderDesktopProfile())}
+            </div>
+          )}
         </div>
       </div>
       {isMenuOpen && (
