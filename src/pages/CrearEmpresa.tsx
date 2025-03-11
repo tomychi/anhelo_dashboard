@@ -9,9 +9,11 @@ import { loginSuccess } from "../redux/auth/authAction";
 import LoadingPoints from "../components/LoadingPoints";
 
 export const CrearEmpresa: React.FC<{}> = () => {
-  const [showFirstSection, setShowFirstSection] = useState(true);
+  // Estado para controlar los pasos (1: telefono, 2: datos empresa, 3: features)
+  const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   // Estados para los campos del formulario
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -21,10 +23,53 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [nombreEmpresa, setNombreEmpresa] = useState("");
   const [cantidadEmpleados, setCantidadEmpleados] = useState("");
   const [formaJuridica, setFormaJuridica] = useState("");
+  const [selectedFeatures, setSelectedFeatures] = useState([]);
 
   // Estado para errores
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Features disponibles
+  const features = [
+    {
+      id: "feature_dashboard",
+      name: "Dashboard",
+      description: "Visualiza todas tus métricas en un solo lugar",
+    },
+    {
+      id: "feature_empleados",
+      name: "Gestión de empleados",
+      description: "Administra la información de tu equipo",
+    },
+    {
+      id: "feature_ventas",
+      name: "Registro de ventas",
+      description: "Controla tus ingresos y transacciones",
+    },
+    {
+      id: "feature_inventario",
+      name: "Control de inventario",
+      description: "Maneja tu stock y productos",
+    },
+    {
+      id: "feature_finanzas",
+      name: "Finanzas",
+      description: "Administra tus gastos e ingresos",
+    },
+    {
+      id: "feature_reportes",
+      name: "Reportes",
+      description: "Análisis detallado de tu negocio",
+    },
+  ];
+
+  const toggleFeature = (featureId) => {
+    if (selectedFeatures.includes(featureId)) {
+      setSelectedFeatures(selectedFeatures.filter((id) => id !== featureId));
+    } else {
+      setSelectedFeatures([...selectedFeatures, featureId]);
+    }
+  };
 
   const handleContinue = async () => {
     // Validar campos
@@ -51,7 +96,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
       }
 
       // Todo bien, continuar al siguiente paso
-      setShowFirstSection(false);
+      setCurrentStep(2);
       setLoading(false);
     } catch (error) {
       console.error("Error al verificar teléfono:", error);
@@ -60,16 +105,33 @@ export const CrearEmpresa: React.FC<{}> = () => {
     }
   };
 
-  const handleStart = async () => {
+  const handleNextToDatosEmpresa = async () => {
     // Validar campos
     if (
       !nombreEmpresa ||
       !nombreUsuario ||
       !cantidadEmpleados ||
       !formaJuridica ||
-      !rolUsuario // Add validation for the role
+      !rolUsuario
     ) {
       setError("Por favor, completa todos los datos de la empresa");
+      return;
+    }
+
+    setError("");
+    // Avanzar al tercer paso
+    setCurrentStep(3);
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep(currentStep - 1);
+    setError("");
+  };
+
+  const handleStart = async () => {
+    // Verificar que se haya seleccionado al menos un feature
+    if (selectedFeatures.length === 0) {
+      setError("Por favor, selecciona al menos un feature");
       return;
     }
 
@@ -85,7 +147,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
         nombreEmpresa,
         parseInt(cantidadEmpleados), // Convertir a número
         formaJuridica,
-        rolUsuario // Add the role parameter
+        rolUsuario,
+        selectedFeatures // Agregar los features seleccionados
       );
 
       console.log("Empresa creada con ID:", empresaId);
@@ -103,8 +166,9 @@ export const CrearEmpresa: React.FC<{}> = () => {
           nombreUsuario: nombreUsuario,
           telefono: telefono,
           contraseña: contraseña,
-          rolUsuario: rolUsuario, // Add the role to the user data
+          rolUsuario: rolUsuario,
         },
+        features: selectedFeatures,
         estado: "activo",
         ultimaActualizacion: new Date(),
       };
@@ -150,12 +214,13 @@ export const CrearEmpresa: React.FC<{}> = () => {
         `}
       </style>
 
-      {showFirstSection ? (
+      {currentStep === 1 && (
         <>
           <div className="flex flex-row mx-4 gap-2 justify-center">
-            {/* First bar animated, second bar static */}
-            <div className="w-1/4 h-2 rounded-full animated-loading"></div>
-            <div className="w-1/4 border-gray-400 border h-2 rounded-full"></div>
+            {/* First bar animated, others static */}
+            <div className="w-1/6 h-2 rounded-full animated-loading"></div>
+            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">Registrate</h2>
           <div className="mx-4 pt-14 flex flex-col gap-2">
@@ -198,12 +263,15 @@ export const CrearEmpresa: React.FC<{}> = () => {
             </div>
           )}
         </>
-      ) : (
+      )}
+
+      {currentStep === 2 && (
         <>
           <div className="flex flex-row mx-4 gap-2 justify-center">
-            {/* Both bars animated in second section */}
-            <div className="w-1/4 h-2 rounded-full bg-black"></div>
-            <div className="w-1/4 h-2 rounded-full animated-loading"></div>
+            {/* Second bar animated, first complete, third static */}
+            <div className="w-1/6 h-2 rounded-full bg-black"></div>
+            <div className="w-1/6 h-2 rounded-full animated-loading"></div>
+            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">
             Introduci los datos de tu empresa
@@ -250,15 +318,108 @@ export const CrearEmpresa: React.FC<{}> = () => {
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
-          <div
-            className={`text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 ${loading ? "opacity-70" : "cursor-pointer"}`}
-            onClick={!loading ? handleStart : undefined}
-          >
-            {loading ? <LoadingPoints color="text-gray-100" /> : "Comenzar"}
+
+          <div className="flex flex-col mx-4 gap-3 mt-4">
+            <div
+              className={`text-gray-100 bg-black h-14 rounded-3xl text-2xl justify-center flex items-center ${loading ? "opacity-70" : "cursor-pointer"}`}
+              onClick={!loading ? handleNextToDatosEmpresa : undefined}
+            >
+              {loading ? <LoadingPoints color="text-gray-100" /> : "Continuar"}
+            </div>
+
+            <div
+              className="text-black bg-transparent border border-black h-14 rounded-3xl text-xl justify-center flex items-center cursor-pointer"
+              onClick={handlePrevious}
+            >
+              Volver atrás
+            </div>
           </div>
+
           {/* Mostrar mensaje de error si existe */}
           {error && (
             <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex text-xs border-red-main mx-4 ">
+              {error}
+            </div>
+          )}
+        </>
+      )}
+
+      {currentStep === 3 && (
+        <>
+          <div className="flex flex-row mx-4 gap-2 justify-center">
+            {/* First two bars complete, third animated */}
+            <div className="w-1/6 h-2 rounded-full bg-black"></div>
+            <div className="w-1/6 h-2 rounded-full bg-black"></div>
+            <div className="w-1/6 h-2 rounded-full animated-loading"></div>
+          </div>
+
+          <h2 className="text-3xl mx-4 mt-2 text-center">
+            Selecciona los features que vas a utilizar
+          </h2>
+
+          <div className="mx-4 pt-6 flex flex-col gap-3">
+            {features.map((feature) => (
+              <div
+                key={feature.id}
+                onClick={() => toggleFeature(feature.id)}
+                className={`w-full p-4 rounded-lg border border-gray-300 flex items-start gap-3 cursor-pointer transition-colors ${
+                  selectedFeatures.includes(feature.id)
+                    ? "bg-black text-white"
+                    : "bg-gray-100"
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 flex-shrink-0 rounded-md border ${
+                    selectedFeatures.includes(feature.id)
+                      ? "bg-white border-white"
+                      : "border-gray-400"
+                  } flex items-center justify-center mt-0.5`}
+                >
+                  {selectedFeatures.includes(feature.id) && (
+                    <div className="w-3 h-3 bg-black rounded-sm"></div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg">{feature.name}</h3>
+                  <p
+                    className={`text-sm ${
+                      selectedFeatures.includes(feature.id)
+                        ? "text-gray-200"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col mx-4 gap-3 mt-6">
+            <div
+              className={`text-gray-100 bg-black h-14 rounded-3xl text-xl justify-center flex items-center ${
+                loading ? "opacity-70" : "cursor-pointer"
+              }`}
+              onClick={!loading ? handleStart : undefined}
+            >
+              {loading ? (
+                <LoadingPoints color="text-gray-100" />
+              ) : (
+                "Completar registro"
+              )}
+            </div>
+
+            <div
+              className="text-black bg-transparent border border-black h-14 rounded-3xl text-xl justify-center flex items-center cursor-pointer"
+              onClick={handlePrevious}
+            >
+              Volver atrás
+            </div>
+          </div>
+
+          {/* Mostrar mensaje de error si existe */}
+          {error && (
+            <div className="mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex border-red-main mx-4">
               {error}
             </div>
           )}
