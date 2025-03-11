@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion"; // Importamos Framer Motion
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -240,6 +241,7 @@ export const Landing: React.FC<{
   const companiesScrollContainerRef = useRef<HTMLDivElement>(null);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [userScrolled, setUserScrolled] = useState(false);
+  const navigate = useNavigate();
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   // Función para detectar el scroll del usuario
@@ -263,6 +265,11 @@ export const Landing: React.FC<{
       // Actualizar el último scroll conocido
       setLastScrollY(currentScrollY);
     }
+  };
+
+  // Handle redirection to /crearEmpresa
+  const handleFreeTrialClick = () => {
+    navigate("/crearEmpresa");
   };
 
   // Useeffect para agregar el listener de scroll
@@ -362,6 +369,7 @@ export const Landing: React.FC<{
           initial="initial"
           whileHover="hover"
           whileTap="tap"
+          onClick={handleFreeTrialClick}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -448,6 +456,7 @@ export const Landing: React.FC<{
             initial="initial"
             whileHover="hover"
             whileTap="tap"
+            onClick={handleFreeTrialClick}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
