@@ -581,7 +581,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
             </div>
           </button>
           {userNotLogged ? (
-            <></>
+            <div className="bg-gray-100 rounded-full px-4 h-10 items-center flex ">
+              Iniciar sesion
+            </div>
           ) : (
             <div className="relative">
               <button
