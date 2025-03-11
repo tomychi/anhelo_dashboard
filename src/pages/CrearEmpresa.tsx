@@ -561,7 +561,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 onClick={() => toggleFeature(product.title)}
                 className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
                   selectedFeatures.includes(product.title)
-                    ? "bg-black text-white"
+                    ? "bg-black text-gray-100"
                     : "bg-gray-100"
                 }`}
               >
@@ -569,7 +569,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 <div
                   className={`${
                     selectedFeatures.includes(product.title)
-                      ? "text-white"
+                      ? "text-gray-100"
                       : "text-black"
                   }`}
                 >
