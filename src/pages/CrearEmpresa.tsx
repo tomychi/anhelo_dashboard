@@ -404,8 +404,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
           <div className="flex flex-row mx-4 gap-2 justify-center">
             {/* First bar animated, others static */}
             <div className="w-1/6 h-2 rounded-full animated-loading"></div>
-            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
-            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">Registrate</h2>
 
@@ -416,7 +416,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="password"
@@ -424,7 +424,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={contraseña}
               onChange={(e) => setContraseña(e.target.value)}
               autoComplete="new-password"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="password"
@@ -432,7 +432,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={confirmarContraseña}
               onChange={(e) => setConfirmarContraseña(e.target.value)}
               autoComplete="new-password"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -457,7 +457,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             {/* Second bar animated, first complete, third static */}
             <div className="w-1/6 h-2 rounded-full bg-black"></div>
             <div className="w-1/6 h-2 rounded-full animated-loading"></div>
-            <div className="w-1/6 border-gray-400 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">
             Introduci los datos de tu empresa
@@ -479,7 +479,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={nombreEmpresa}
               onChange={(e) => setNombreEmpresa(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="number"
@@ -487,7 +487,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={cantidadEmpleados}
               onChange={(e) => setCantidadEmpleados(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="text"
@@ -495,7 +495,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={formaJuridica}
               onChange={(e) => setFormaJuridica(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="text"
@@ -503,7 +503,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={nombreUsuario}
               onChange={(e) => setNombreUsuario(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
             <input
               type="text"
@@ -511,7 +511,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               value={rolUsuario}
               onChange={(e) => setRolUsuario(e.target.value)}
               autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
           </div>
 
