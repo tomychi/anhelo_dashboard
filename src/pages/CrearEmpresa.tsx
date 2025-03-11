@@ -10,7 +10,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
   };
 
   const handleStart = () => {
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
