@@ -26,6 +26,11 @@ export const CrearEmpresa: React.FC<{}> = () => {
           <div className="mx-4 pt-10 flex flex-col gap-2">
             <input
               type="text"
+              placeholder="Tu nombre"
+              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+            />
+            <input
+              type="text"
               placeholder="Tu numero de telefono"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
