@@ -11,6 +11,7 @@ export const Login = () => {
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showError, setShowError] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -22,6 +23,7 @@ export const Login = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setShowError(false);
 
     const empresa = await login(telefono, password);
 
@@ -32,7 +34,10 @@ export const Login = () => {
       setPassword("");
       return;
     } else {
-      setErrorMessage(error);
+      setErrorMessage(
+        error || "Datos inválidos. Por favor, inténtalo de nuevo."
+      );
+      setShowError(true);
     }
   };
 
@@ -42,7 +47,7 @@ export const Login = () => {
   };
 
   const inputClass = `
-		 px-4 h-10 w-full  rounded-lg  
+		 px-4 h-10 w-full rounded-lg  
 		appearance-none focus:outline-none focus:ring-0 peer
 		
 		bg-gray-100 text-black font-light 
@@ -53,11 +58,11 @@ export const Login = () => {
 
   return (
     <form
-      className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col items-center text-gray-100 "
+      className="font-coolvetica w-full p-4 md:p-0 md:w-1/3 mx-auto flex flex-col  text-gray-100"
       onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleLogin(e)}
     >
       {/* Logo */}
-      <div className="flex flex-col w-3/4 ">
+      <div className="flex flex-col mx-auto w-3/4 ">
         <img
           src={Sticker}
           className="w-full mb-4 mx-auto"
@@ -76,8 +81,9 @@ export const Login = () => {
           </div>
         </div>
       </div>
+
       {/* Input del teléfono (antes era correo) */}
-      <div className="mb-2 w-full  mt-12">
+      <div className="mb-2 w-full mt-6">
         <input
           className={inputClass}
           style={inputStyle}
@@ -89,7 +95,7 @@ export const Login = () => {
         />
       </div>
       {/* Input de la contraseña */}
-      <div className=" w-full">
+      <div className="w-full">
         <input
           className={inputClass}
           style={inputStyle}
@@ -100,11 +106,11 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      {error && <p className="text-red-500 mt-2">{errorMessage}</p>}
+
       {/* Ingresar */}
       <button
         type="submit"
-        className="text-black w-full mt-4 h-20 rounded-lg bg-gray-100 font-bold outline-none"
+        className="text-black w-full mt-4 h-20 rounded-3xl bg-gray-100 font-bold outline-none"
         disabled={loading}
       >
         {loading ? (
@@ -115,7 +121,7 @@ export const Login = () => {
       </button>
 
       {/* Enlace para crear una empresa */}
-      <div className="mt-8 text-center flex flex-row gap-2">
+      <div className="mt-8 text-center mx-auto flex flex-row gap-2">
         <p className="text-gray-400 text-xs ">No tenes una cuenta?</p>
         <button
           type="button"
@@ -125,6 +131,13 @@ export const Login = () => {
           Registra tu empresa
         </button>
       </div>
+
+      {/* Mensaje de error */}
+      {showError && (
+        <div className="  text-red-main h-10 text-xs  mt-8 border-l-4 border-red-main items-center flex px-2">
+          <p>{errorMessage}</p>
+        </div>
+      )}
     </form>
   );
 };

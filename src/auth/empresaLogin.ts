@@ -17,9 +17,7 @@ const empresaLogin = () => {
       setLoading(false);
 
       if (!empresa) {
-        setError(
-          "Credenciales incorrectas. Verifica tu número de teléfono y contraseña."
-        );
+        setError("Datos inválidos. Por favor, inténtalo de nuevo.");
         return null;
       }
 
