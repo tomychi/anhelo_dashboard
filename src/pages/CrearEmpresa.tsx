@@ -1,25 +1,52 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export const CrearEmpresa: React.FC<{}> = () => {
   const [showFirstSection, setShowFirstSection] = useState(true);
-  const navigate = useNavigate(); // Initialize navigate hook
+  const navigate = useNavigate();
 
   const handleContinue = () => {
     setShowFirstSection(false);
   };
 
-  // Handler for the Comenzar button
   const handleStart = () => {
-    navigate("/"); // Redirect to home page
+    navigate("/");
   };
 
   return (
     <div className="font-coolvetica pt-12">
+      {/* Add animation styles */}
+      <style>
+        {`
+          @keyframes loadingBar {
+            0% {
+              background-position: -200px 0;
+            }
+            100% {
+              background-position: 200px 0;
+            }
+          }
+
+          .animated-loading {
+            background: linear-gradient(
+              to right,
+              #000 0%,
+              #000 40%,
+              #555 100%,
+              #000 60%,
+              #000 100%
+            );
+            background-size: 400% 100%;
+            animation: loadingBar 5s linear infinite;
+          }
+        `}
+      </style>
+
       {showFirstSection ? (
         <>
           <div className="flex flex-row mx-4 gap-2 justify-start">
-            <div className="w-1/4 bg-black h-2 rounded-full"></div>
+            {/* First bar animated, second bar static */}
+            <div className="w-1/4 h-2 rounded-full animated-loading"></div>
             <div className="w-1/4 border-gray-400 border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2">Registrate</h2>
@@ -55,8 +82,9 @@ export const CrearEmpresa: React.FC<{}> = () => {
       ) : (
         <>
           <div className="flex flex-row mx-4 gap-2 justify-start">
-            <div className="w-1/4 bg-black h-2 rounded-full"></div>
-            <div className="w-1/4 bg-black h-2 rounded-full"></div>
+            {/* Both bars animated in second section */}
+            <div className="w-1/4 h-2 rounded-full bg-black"></div>
+            <div className="w-1/4 h-2 rounded-full animated-loading"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2">
             Introduci los datos de <br /> tu empresa
@@ -80,7 +108,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
           <div
             className="text-gray-100 bg-black mx-4 h-20 rounded-3xl text-3xl justify-center flex items-center mt-4 cursor-pointer"
-            onClick={handleStart} // Add click handler for Comenzar
+            onClick={handleStart}
           >
             Comenzar
           </div>
