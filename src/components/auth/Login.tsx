@@ -70,7 +70,7 @@ export const Login = () => {
           style={{ filter: "invert(100%)", WebkitFilter: "invert(100%)" }}
         />
         <div className="flex flex-row justify-end mt-[-13px]">
-          <p className="text-gray-100 text-xs font-bold">powered by</p>
+          <p className="text-gray-100 text-xs mr-[-5px]">impulsado por</p>
           <div className="flex flex-row gap-1 items-center">
             <img
               src={absoluteLogo}
