@@ -352,7 +352,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
           </div>
           <div className="text-xs text-gray-500">
-            {isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
+            {auth?.empresa?.datosUsuario?.rolUsuario || "NaN"}
           </div>
         </div>
 
@@ -471,7 +471,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             {auth?.empresa?.datosUsuario?.nombreUsuario || "NaN"}
           </div>
           <div className="text-xs text-gray-500 ">
-            {isMarketingUser ? "Jefe en contenido y ventas" : "Fundador y CEO"}
+            {auth?.empresa?.datosUsuario?.rolUsuario || "NaN"}
           </div>
         </div>
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
