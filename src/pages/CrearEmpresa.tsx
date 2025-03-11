@@ -356,6 +356,12 @@ export const CrearEmpresa: React.FC<{}> = () => {
           <h2 className="text-3xl mx-4 mt-2 text-center">
             Selecciona los features que vas a utilizar
           </h2>
+          <div
+            className="text-gray-400 mt-2    text-xs justify-center flex items-center cursor-pointer"
+            onClick={handlePrevious}
+          >
+            Volver
+          </div>
 
           <div className="mx-4 pt-14 flex flex-col gap-3">
             {features.map((feature) => (
@@ -407,13 +413,6 @@ export const CrearEmpresa: React.FC<{}> = () => {
               ) : (
                 "Completar registro"
               )}
-            </div>
-
-            <div
-              className="text-black bg-transparent border border-black h-14 rounded-3xl text-xl justify-center flex items-center cursor-pointer"
-              onClick={handlePrevious}
-            >
-              Volver atrás
             </div>
           </div>
 
