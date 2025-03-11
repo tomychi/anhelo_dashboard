@@ -23,7 +23,7 @@ export const PrivateRoutesLayout = () => {
 
   if (!projectAuth.currentUser) {
     // Si no hay usuario autenticado, redirige al login
-    return <Navigate to="/authentication" state={{ from: location }} replace />;
+    return <Navigate to="/landing" state={{ from: location }} replace />;
   }
 
   // Acceso completo para tomas.arcostanzo5@gmail.com
