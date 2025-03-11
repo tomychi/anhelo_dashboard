@@ -7,6 +7,7 @@ import {
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/auth/authAction";
 import LoadingPoints from "../components/LoadingPoints";
+import arrowIcon from "../assets/arrowIcon.png";
 
 export const CrearEmpresa: React.FC<{}> = () => {
   // Estado para controlar los pasos (1: telefono, 2: datos empresa, 3: features)
@@ -357,9 +358,13 @@ export const CrearEmpresa: React.FC<{}> = () => {
             Selecciona los features que vas a utilizar
           </h2>
           <div
-            className="text-gray-400 mt-2    text-xs justify-center flex items-center cursor-pointer"
+            className="text-gray-400 mt-2   flex-row gap-1 text-xs justify-center flex items-center cursor-pointer"
             onClick={handlePrevious}
           >
+            <img
+              src={arrowIcon}
+              className="transform rotate-180 h-2 opacity-50"
+            />
             Volver
           </div>
 
