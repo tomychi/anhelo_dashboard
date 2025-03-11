@@ -26,11 +26,6 @@ export const CrearEmpresa: React.FC<{}> = () => {
           placeholder="Forma juridica"
           className=" w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
         />{" "}
-        <input
-          type="text"
-          placeholder="Pagina web"
-          className=" w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-        />
       </div>
     </div>
   );
