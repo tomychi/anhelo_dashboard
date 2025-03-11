@@ -4,12 +4,14 @@ import {
   crearEmpresa,
   verificarTelefonoExistente,
 } from "../firebase/ClientesAbsolute";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/auth/authAction";
 import LoadingPoints from "../components/LoadingPoints";
 
 export const CrearEmpresa: React.FC<{}> = () => {
   const [showFirstSection, setShowFirstSection] = useState(true);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   // Estados para los campos del formulario
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -80,6 +82,27 @@ export const CrearEmpresa: React.FC<{}> = () => {
       );
 
       console.log("Empresa creada con ID:", empresaId);
+
+      // Crear objeto de empresa para el login
+      const empresaData = {
+        id: empresaId,
+        datosGenerales: {
+          nombre: nombreEmpresa,
+          cantidadEmpleados: parseInt(cantidadEmpleados),
+          formaJuridica: formaJuridica,
+          fechaCreacion: new Date(),
+        },
+        datosUsuario: {
+          nombreUsuario: nombreUsuario,
+          telefono: telefono,
+          contraseña: contraseña,
+        },
+        estado: "activo",
+        ultimaActualizacion: new Date(),
+      };
+
+      // Iniciar sesión automáticamente
+      dispatch(loginSuccess(empresaData));
 
       // Redirigir a la página principal
       navigate("/dashboard");
