@@ -815,7 +815,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             <nav className="px-4 h-full overflow-y-auto">
               <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
               <div className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica  text-2xl mt-12 rounded-3xl">
-                Agregar funcionalidades
+                Mas funcionalidades
               </div>
               <p className="font-medium text-xs opacity-30 font-coolvetica text-center  mt-4">
                 Ⓡ 2023. Absolute, Soluciones Empresariales.
