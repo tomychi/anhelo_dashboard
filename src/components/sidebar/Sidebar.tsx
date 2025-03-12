@@ -12,6 +12,22 @@ import {
   EmpleadoProps,
 } from "../../firebase/ClientesAbsolute";
 
+// Map for converting feature names to route paths
+const featureToRouteMap: Record<string, string> = {
+  Dashboard: "/dashboard",
+  "Facturación automática": "/facturacion",
+  Operaciones: "/comanderaAutomatizada",
+  Empleados: "/empleados",
+  Inversores: "/inversores",
+  Finanzas: "/finanzas",
+  "Página de ventas": "/ventas",
+  "Precios dinámicos": "/precios",
+  "WhatsApp Marketing": "/vouchers",
+  Gastos: "/gastos",
+  Deuda: "/deudaManager",
+  "Comportamiento de clientes": "/clientes",
+};
+
 export const Sidebar = ({ scrollContainerRef }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,8 +42,20 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [hasReclamos, setHasReclamos] = useState(false);
   const [reclamosCount, setReclamosCount] = useState(0);
   const [empresaNombre, setEmpresaNombre] = useState("");
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
   const menuModalRef = useRef<HTMLDivElement>(null);
+
+  // Define these at the component level so they can be used throughout
+  const [nombreUsuario, setNombreUsuario] = useState("");
+  const [rolUsuario, setRolUsuario] = useState("");
+  const [nombreEmpresaDirecto, setNombreEmpresaDirecto] = useState("");
+  const [featuresIniciales, setFeaturesIniciales] = useState<string[]>([]);
+
+  interface MenuItem {
+    to: string;
+    text: string;
+  }
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef?.current;
@@ -51,26 +79,33 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const tipoUsuario = auth?.tipoUsuario;
 
   // Obtener la información según el tipo de usuario
+  useEffect(() => {
+    if (tipoUsuario === "empresa" && auth?.usuario) {
+      setNombreUsuario(
+        (auth.usuario as EmpresaProps).datosUsuario?.nombreUsuario || ""
+      );
+      setRolUsuario(
+        (auth.usuario as EmpresaProps).datosUsuario?.rolUsuario || ""
+      );
+      setNombreEmpresaDirecto(
+        (auth.usuario as EmpresaProps).datosGenerales?.nombre || ""
+      );
+      setFeaturesIniciales(
+        (auth.usuario as EmpresaProps).featuresIniciales || []
+      );
+    } else if (tipoUsuario === "empleado" && auth?.usuario) {
+      setNombreUsuario((auth.usuario as EmpleadoProps).datos?.nombre || "");
+      setRolUsuario((auth.usuario as EmpleadoProps).datos?.rol || "");
+    }
+  }, [tipoUsuario, auth?.usuario]);
 
-  console.log("AUTH STATE:", auth);
-  console.log("IS AUTH:", isAuth);
-  console.log("TIPO USUARIO:", tipoUsuario);
-  console.log("USUARIO OBJECT:", auth?.usuario);
-
-  let nombreUsuario = "";
-  let rolUsuario = "";
-  let nombreEmpresaDirecto = "";
-
-  if (tipoUsuario === "empresa" && auth?.usuario) {
-    nombreUsuario =
-      (auth.usuario as EmpresaProps).datosUsuario?.nombreUsuario || "";
-    rolUsuario = (auth.usuario as EmpresaProps).datosUsuario?.rolUsuario || "";
-    nombreEmpresaDirecto =
-      (auth.usuario as EmpresaProps).datosGenerales?.nombre || "";
-  } else if (tipoUsuario === "empleado" && auth?.usuario) {
-    nombreUsuario = (auth.usuario as EmpleadoProps).datos?.nombre || "";
-    rolUsuario = (auth.usuario as EmpleadoProps).datos?.rol || "";
-  }
+  // Nombre de empresa a mostrar
+  const displayEmpresa =
+    tipoUsuario === "empresa"
+      ? nombreEmpresaDirecto || "Sin nombre"
+      : tipoUsuario === "empleado"
+        ? empresaNombre || "Sin nombre"
+        : "Sin nombre";
 
   // Obtener el nombre de la empresa para empleados
   useEffect(() => {
@@ -90,17 +125,6 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
     cargarNombreEmpresa();
   }, [tipoUsuario, auth?.usuario]);
-
-  // Nombre de empresa a mostrar
-  const displayEmpresa =
-    tipoUsuario === "empresa"
-      ? nombreEmpresaDirecto || "Sin nombre"
-      : tipoUsuario === "empleado"
-        ? empresaNombre || "Sin nombre"
-        : "Sin nombre";
-
-  // Determinar si es usuario de marketing
-  const isMarketingUser = nombreUsuario === "marketing@anhelo.com";
 
   useEffect(() => {
     const fetchPedidosConReclamo = async () => {
@@ -164,6 +188,38 @@ export const Sidebar = ({ scrollContainerRef }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Build menu items from featuresIniciales
+  useEffect(() => {
+    if (featuresIniciales && featuresIniciales.length > 0) {
+      // Convert features to menu items
+      const items: MenuItem[] = featuresIniciales.map((feature) => {
+        return {
+          to:
+            featureToRouteMap[feature] ||
+            `/${feature.toLowerCase().replace(/\s+/g, "")}`,
+          text: feature,
+        };
+      });
+
+      // Always add settings/configuration
+      items.push({ to: "/settings", text: "Configuración" });
+
+      setMenuItems(items);
+    } else {
+      // Fallback to default menu if featuresIniciales is empty
+      setMenuItems([
+        { to: "/dashboard", text: "Dashboard" },
+        { to: "/comanderaAutomatizada", text: "Operaciones" },
+        { to: "/gastos", text: "Gastos" },
+        { to: "/deudaManager", text: "Deuda" },
+        { to: "/vouchers", text: "Campañas de marketing" },
+        { to: "/facturacion", text: "Facturación" },
+        { to: "/clientes", text: "Comportamiento de clientes" },
+        { to: "/settings", text: "Configuración" },
+      ]);
+    }
+  }, [featuresIniciales]);
 
   const handleLogout = () => {
     try {
@@ -273,25 +329,6 @@ export const Sidebar = ({ scrollContainerRef }) => {
     }
     setIsProfileOpen(!isProfileOpen);
   };
-
-  const menuItems = isMarketingUser
-    ? [
-        { to: "/dashboard", text: "Dashboard" },
-        { to: "/nuevaCompra", text: "Gastos" },
-        { to: "/vouchers", text: "Campañas de marketing" },
-      ]
-    : [
-        { to: "/dashboard", text: "Dashboard" },
-        // { to: "/comandas", text: "Comandas y Grupos" },
-        { to: "/comanderaAutomatizada", text: "Operaciones" },
-        { to: "/gastos", text: "Gastos" },
-        { to: "/deudaManager", text: "Deuda " },
-        // { to: "/whatsappFeatures", text: "Reactivar clientes" },
-        { to: "/vouchers", text: "Campañas de marketing" },
-        { to: "/facturacion", text: "Facturacion" },
-        { to: "/clientes", text: "Comportamiento de clientes" },
-        { to: "/settings", text: "Configuración" },
-      ];
 
   const renderMenuItems = () => {
     return menuItems.map((item, index) => {
