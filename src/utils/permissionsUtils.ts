@@ -34,15 +34,11 @@ export const featureToRouteMap: PermissionMappings = {
   "Facturación automática": "/facturacion",
   Operaciones: "/comanderaAutomatizada",
   Empleados: "/empleados",
-  Inversores: "/inversores",
-  Finanzas: "/finanzas",
-  "Página de ventas": "/ventas",
-  "Precios dinámicos": "/precios",
-  "WhatsApp Marketing": "/vouchers",
-  Gastos: "/gastos",
   Deuda: "/deudaManager",
+  Finanzas: "/gastos",
+  "Precios dinámicos": "/preciosDinamicos",
+  "WhatsApp Marketing": "/vouchers",
   "Comportamiento de clientes": "/clientes",
-  Ventas: "/ventas",
 };
 
 // Mapeo de rutas especiales que requieren un tipo de usuario específico
