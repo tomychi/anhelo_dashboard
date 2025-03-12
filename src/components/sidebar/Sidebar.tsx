@@ -859,9 +859,16 @@ export const Sidebar = ({ scrollContainerRef }) => {
               <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
               <div
                 className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-2xl mt-12 rounded-3xl cursor-pointer"
-                onClick={() => setIsFeatureModalOpen(true)}
+                onClick={() => {
+                  if (isAuth) {
+                    setIsFeatureModalOpen(true);
+                  } else {
+                    setIsMenuOpen(false); // Cerrar el menú antes de navegar
+                    navigate("/crearEmpresa");
+                  }
+                }}
               >
-                Más funcionalidades
+                {isAuth ? "Más funcionalidades" : "Prueba gratuita"}
               </div>
 
               <p className="font-medium text-xs opacity-30 font-coolvetica text-center  mt-4">
