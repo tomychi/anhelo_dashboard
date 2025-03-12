@@ -76,7 +76,7 @@ export const featureToRouteMap: PermissionMappings = {
   Operaciones: ["/comanderaAutomatizada"],
   Empleados: ["/empleados"],
   Inversores: ["/deudaManager"],
-  Finanzas: ["/gastos", "/neto"], // Ahora Finanzas da acceso a dos rutas
+  Finanzas: ["/gastos", "/neto", "/nuevaCompra"], // Ahora Finanzas da acceso a tres rutas
   "Página de ventas": ["/paginaDeVentas"],
   "Precios dinámicos": ["/preciosDinamicos"],
   "WhatsApp Marketing": ["/vouchers"],

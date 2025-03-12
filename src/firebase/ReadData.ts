@@ -13,6 +13,7 @@ import { obtenerFechaActual, obtenerHoraActual } from "../helpers/dateToday";
 import { ExpenseProps } from "./UploadGasto";
 import { DateValueType } from "react-tailwindcss-datepicker";
 import { Unsubscribe } from "redux";
+import store from "../redux/configureStore";
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -285,18 +286,62 @@ export const marcarPedidoComoEmbalado = async (
   }
 };
 
-// Función para eliminar un pedido de la base de datos en Firestore
+// Función para eliminar un documento de la base de datos
 export const eliminarDocumento = async (
   dbName: string,
   documentoId: string,
   fecha: string
-) => {
+): Promise<void> => {
   try {
     // Obtener el año, mes y día de la fecha proporcionada
     const [dia, mes, anio] = fecha.split("/");
 
-    // Obtener referencia al documento del día dentro de la colección en Firestore
-    const docRef = doc(getFirestore(), dbName, anio, mes, dia);
+    // Obtener el estado de autenticación del store de Redux
+    const auth = store.getState().auth;
+    const tipoUsuario = auth?.tipoUsuario;
+
+    // Determinar el ID de la empresa
+    const empresaId =
+      tipoUsuario === "empresa"
+        ? auth.usuario?.id
+        : tipoUsuario === "empleado"
+          ? auth.usuario?.empresaId
+          : undefined;
+
+    // Obtener el nombre de la empresa para identificar si es ANHELO
+    let empresaNombre = "";
+    if (tipoUsuario === "empresa" && auth.usuario?.datosGenerales) {
+      empresaNombre = auth.usuario.datosGenerales.nombre || "";
+    }
+
+    // Determinar si es ANHELO basado en el nombre de la empresa
+    const isAnhelo = empresaNombre === "ANHELO";
+
+    console.log(
+      `Eliminando documento. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
+    );
+
+    // Obtener referencia al documento con la ruta correcta
+    let docRef;
+    if (isAnhelo) {
+      // Ruta original para ANHELO
+      docRef = doc(getFirestore(), dbName, anio, mes, dia);
+      console.log(`Eliminando de ruta legacy: ${dbName}/${anio}/${mes}/${dia}`);
+    } else {
+      // Ruta para otras empresas en absoluteClientes
+      docRef = doc(
+        getFirestore(),
+        "absoluteClientes",
+        empresaId,
+        dbName,
+        anio,
+        mes,
+        dia
+      );
+      console.log(
+        `Eliminando de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${anio}/${mes}/${dia}`
+      );
+    }
 
     runTransaction(getFirestore(), async (transaction) => {
       const docSnapshot = await transaction.get(docRef);
@@ -311,15 +356,26 @@ export const eliminarDocumento = async (
       // Si el documento existe, obtener el arreglo de pedidos o gastos
       const data = docSnapshot.data()?.[dbName] || [];
 
+      // Para gastos, los datos pueden estar en 'gastos' en lugar de 'dbName'
+      const dataArray =
+        dbName === "gastos" ? docSnapshot.data()?.gastos || data : data;
+
       // Filtrar el arreglo para excluir el documento que se va a eliminar
-      const dataActualizado = data.filter(
+      const dataActualizado = dataArray.filter(
         (item: ExpenseProps | PedidoProps) => item.id !== documentoId
       );
 
       // Actualizar el documento del día con el arreglo actualizado
-      transaction.set(docRef, {
-        [dbName]: dataActualizado,
-      });
+      // Para gastos, usamos la clave 'gastos'; para otros, usamos dbName
+      if (dbName === "gastos") {
+        transaction.set(docRef, {
+          gastos: dataActualizado,
+        });
+      } else {
+        transaction.set(docRef, {
+          [dbName]: dataActualizado,
+        });
+      }
     })
       .then(() => {
         console.log(`${dbName} eliminado de Firestore`);
@@ -346,6 +402,31 @@ export const ReadDataForDateRange = <T>(
       const { startDate, endDate } = valueDate;
       const firestore = getFirestore();
 
+      // Obtener el estado de autenticación del store de Redux
+      const auth = store.getState().auth;
+      const tipoUsuario = auth?.tipoUsuario;
+
+      // Determinar el ID de la empresa
+      const empresaId =
+        tipoUsuario === "empresa"
+          ? auth.usuario?.id
+          : tipoUsuario === "empleado"
+            ? auth.usuario?.empresaId
+            : undefined;
+
+      // Obtener el nombre de la empresa para identificar si es ANHELO
+      let empresaNombre = "";
+      if (tipoUsuario === "empresa" && auth.usuario?.datosGenerales) {
+        empresaNombre = auth.usuario.datosGenerales.nombre || "";
+      }
+
+      // Determinar si es ANHELO basado en el nombre de la empresa
+      const isAnhelo = empresaNombre === "ANHELO";
+
+      console.log(
+        `Leyendo datos de ${dbName}. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
+      );
+
       const allData: { [key: string]: T[] } = {};
 
       const getDataForDate = async (date: Date) => {
@@ -355,20 +436,50 @@ export const ReadDataForDateRange = <T>(
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const day = date.getDate().toString().padStart(2, "0");
 
-        const docRef = doc(firestore, dbName, year, month, day);
+        // Construir la ruta correcta basada en la empresa
+        let docRef;
+        if (isAnhelo) {
+          // Ruta original para ANHELO
+          docRef = doc(firestore, dbName, year, month, day);
+          console.log(
+            `Leyendo de ruta legacy: ${dbName}/${year}/${month}/${day}`
+          );
+        } else {
+          // Ruta para otras empresas en absoluteClientes
+          docRef = doc(
+            firestore,
+            "absoluteClientes",
+            empresaId,
+            dbName,
+            year,
+            month,
+            day
+          );
+          console.log(
+            `Leyendo de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${year}/${month}/${day}`
+          );
+        }
 
         try {
           const docSnapshot = await getDoc(docRef);
           if (docSnapshot.exists()) {
-            const data = docSnapshot.data()?.[dbName] || [];
-            allData[`${year}-${month}-${day}`] = data;
+            const data = docSnapshot.data();
+
+            // Adaptar según la colección
+            if (dbName === "gastos") {
+              allData[`${year}-${month}-${day}`] = data.gastos || [];
+            } else {
+              allData[`${year}-${month}-${day}`] = data[dbName] || [];
+            }
           } else {
             allData[`${year}-${month}-${day}`] = [];
           }
         } catch (error) {
-          throw new Error(
-            `Error al obtener los datos para la fecha ${year}-${month}-${day}: ${error}`
+          console.error(
+            `Error al obtener los datos para la fecha ${year}-${month}-${day}:`,
+            error
           );
+          allData[`${year}-${month}-${day}`] = [];
         }
       };
 
@@ -389,12 +500,9 @@ export const ReadDataForDateRange = <T>(
             (merged, data) => [...merged, ...data],
             []
           );
-          // console.log(
-          // 	"Número total de solicitudes a la base de datos:",
-          // 	requestCounter
-          // );
-          // Imprimir el número total de solicitudes
-
+          console.log(
+            `Número total de solicitudes a la base de datos: ${requestCounter}`
+          );
           resolve(mergedData);
         })
         .catch((error) => {
@@ -405,6 +513,7 @@ export const ReadDataForDateRange = <T>(
     }
   });
 };
+
 export const readTelefonosFromFirebase = async () => {
   const firestore = getFirestore();
   const collectionRef = collection(firestore, "telefonos");
@@ -438,6 +547,21 @@ export const ReadGastosSinceTwoMonthsAgo = async () => {
   const twoMonthsAgoDate = new Date();
   twoMonthsAgoDate.setMonth(currentDate.getMonth() - 2);
 
+  // Obtener el estado de autenticación del store de Redux
+  const auth = store.getState().auth;
+  const tipoUsuario = auth?.tipoUsuario;
+
+  // Determinar el ID de la empresa
+  const empresaId =
+    tipoUsuario === "empresa"
+      ? auth.usuario?.id
+      : tipoUsuario === "empleado"
+        ? auth.usuario?.empresaId
+        : undefined;
+
+  // Determinar si es ANHELO (empresa especial) o no tiene ID (caso legacy)
+  const isAnhelo = !empresaId || empresaId === "anhelo";
+
   try {
     const gastosData: any[] = []; // Acumulará todos los gastos
 
@@ -453,25 +577,60 @@ export const ReadGastosSinceTwoMonthsAgo = async () => {
     while (tempDate <= currentDate) {
       const { year, month } = formatDate(tempDate);
 
-      // Referencia al documento del año
-      const yearDocRef = doc(firestore, "gastos", year);
-      const monthCollectionRef = collection(yearDocRef, month);
+      // Determinar la ruta correcta basada en la empresa
+      let yearDocRef;
+      let monthCollectionRef;
+
+      if (isAnhelo) {
+        // Ruta original para ANHELO
+        yearDocRef = doc(firestore, "gastos", year);
+        monthCollectionRef = collection(yearDocRef, month);
+      } else {
+        // Ruta para otras empresas en absoluteClientes
+        yearDocRef = doc(
+          firestore,
+          "absoluteClientes",
+          empresaId,
+          "gastos",
+          year
+        );
+        monthCollectionRef = collection(yearDocRef, month);
+      }
 
       // Consultar los días dentro del mes
-      const daysSnapshot = await getDocs(monthCollectionRef);
+      try {
+        const daysSnapshot = await getDocs(monthCollectionRef);
 
-      if (!daysSnapshot.empty) {
-        // Iterar sobre los días del mes
-        for (const dayDoc of daysSnapshot.docs) {
-          const dayDocRef = doc(firestore, "gastos", year, month, dayDoc.id);
-          const daySnapshot = await getDoc(dayDocRef);
+        if (!daysSnapshot.empty) {
+          // Iterar sobre los días del mes
+          for (const dayDoc of daysSnapshot.docs) {
+            let dayDocRef;
 
-          if (daySnapshot.exists()) {
-            const dayData = daySnapshot.data();
-            const gastosArray = dayData.gastos || [];
-            gastosData.push(...gastosArray); // Acumular todos los gastos del día
+            if (isAnhelo) {
+              dayDocRef = doc(firestore, "gastos", year, month, dayDoc.id);
+            } else {
+              dayDocRef = doc(
+                firestore,
+                "absoluteClientes",
+                empresaId,
+                "gastos",
+                year,
+                month,
+                dayDoc.id
+              );
+            }
+
+            const daySnapshot = await getDoc(dayDocRef);
+
+            if (daySnapshot.exists()) {
+              const dayData = daySnapshot.data();
+              const gastosArray = dayData.gastos || [];
+              gastosData.push(...gastosArray); // Acumular todos los gastos del día
+            }
           }
         }
+      } catch (error) {
+        console.error(`Error al leer el mes ${year}-${month}:`, error);
       }
 
       // Avanzar al siguiente mes

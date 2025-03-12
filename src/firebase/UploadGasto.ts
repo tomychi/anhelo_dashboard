@@ -6,11 +6,10 @@ import {
   getDoc,
   DocumentReference,
   updateDoc,
-} from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid';
-import { CategoriaType, UnidadType } from '../constants/expenses';
-
-
+} from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
+import { CategoriaType, UnidadType } from "../constants/expenses";
+import store from "../redux/configureStore";
 
 export interface ExpenseProps {
   description: string;
@@ -31,44 +30,113 @@ export const UploadExpense = async (
 ): Promise<DocumentReference[]> => {
   const firestore = getFirestore();
 
+  // Obtener el estado de autenticación del store de Redux
+  const auth = store.getState().auth;
+  const tipoUsuario = auth?.tipoUsuario;
+
+  // Determinar el ID de la empresa
+  const empresaId =
+    tipoUsuario === "empresa"
+      ? auth.usuario?.id
+      : tipoUsuario === "empleado"
+        ? auth.usuario?.empresaId
+        : undefined;
+
+  // Obtener el nombre de la empresa para identificar si es ANHELO
+  let empresaNombre = "";
+  if (tipoUsuario === "empresa" && auth.usuario?.datosGenerales) {
+    empresaNombre = auth.usuario.datosGenerales.nombre || "";
+  } else if (tipoUsuario === "empleado" && empresaId) {
+    // Para empleados, podríamos obtener el nombre de la empresa por su ID si fuera necesario
+    // pero por ahora asumimos que no es ANHELO para simplicidad
+  }
+
+  // Determinar si es ANHELO basado en el nombre de la empresa
+  const isAnhelo = empresaNombre === "ANHELO";
+
   if (fechaInicio && fechaFin) {
-    console.log('Input fechas:', { fechaInicio, fechaFin });
+    console.log("Input fechas:", { fechaInicio, fechaFin });
 
-    const startDate = new Date(fechaInicio + 'T00:00:00');
-    const endDate = new Date(fechaFin + 'T23:59:59');
+    const startDate = new Date(fechaInicio + "T00:00:00");
+    const endDate = new Date(fechaFin + "T23:59:59");
 
-    console.log('Dates before loop:', {
+    console.log("Dates before loop:", {
       startDate: startDate.toLocaleString(),
-      endDate: endDate.toLocaleString()
+      endDate: endDate.toLocaleString(),
     });
 
     const documentRefs: DocumentReference[] = [];
 
-    for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-      const dia = date.getDate().toString().padStart(2, '0');
-      const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+    for (
+      let date = new Date(startDate);
+      date <= endDate;
+      date.setDate(date.getDate() + 1)
+    ) {
+      const dia = date.getDate().toString().padStart(2, "0");
+      const mes = (date.getMonth() + 1).toString().padStart(2, "0");
       const anio = date.getFullYear().toString();
 
       const formattedDate = `${dia}/${mes}/${anio}`;
-      console.log('Processing date:', {
+      console.log("Processing date:", {
         currentDate: date.toLocaleString(),
         formattedDate,
         dia,
         mes,
-        anio
+        anio,
       });
 
       const gastoId = uuidv4();
-      const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
-      const gastoDocRef = doc(gastosCollectionRef, dia);
 
-      console.log('Firebase save:', {
-        path: `gastos/${anio}/${mes}/${dia}`,
+      // Determinar la ruta según la empresa
+      let gastosCollectionRef;
+      let gastoDocRef;
+
+      if (isAnhelo) {
+        // Ruta original para ANHELO
+        gastosCollectionRef = collection(firestore, "gastos", anio, mes);
+        gastoDocRef = doc(gastosCollectionRef, dia);
+
+        console.log(
+          "ANHELO detectado, guardando en ruta legacy: gastos/" +
+            anio +
+            "/" +
+            mes +
+            "/" +
+            dia
+        );
+      } else {
+        // Ruta para otras empresas en absoluteClientes
+        gastosCollectionRef = collection(
+          firestore,
+          "absoluteClientes",
+          empresaId,
+          "gastos",
+          anio,
+          mes
+        );
+        gastoDocRef = doc(gastosCollectionRef, dia);
+
+        console.log(
+          "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+            empresaId +
+            "/gastos/" +
+            anio +
+            "/" +
+            mes +
+            "/" +
+            dia
+        );
+      }
+
+      console.log("Firebase save:", {
+        path: isAnhelo
+          ? `gastos/${anio}/${mes}/${dia}`
+          : `absoluteClientes/${empresaId}/gastos/${anio}/${mes}/${dia}`,
         expense: {
           ...expenseDetail,
           id: gastoId,
-          fecha: formattedDate
-        }
+          fecha: formattedDate,
+        },
       });
 
       const docSnap = await getDoc(gastoDocRef);
@@ -78,7 +146,7 @@ export const UploadExpense = async (
       gastosDelDia.push({
         ...expenseDetail,
         id: gastoId,
-        fecha: formattedDate
+        fecha: formattedDate,
       });
 
       await setDoc(gastoDocRef, {
@@ -92,9 +160,48 @@ export const UploadExpense = async (
     return documentRefs;
   } else {
     const gastoId = uuidv4();
-    const [dia, mes, anio] = expenseDetail.fecha.split('/');
-    const gastosCollectionRef = collection(firestore, 'gastos', anio, mes);
-    const gastoDocRef = doc(gastosCollectionRef, dia);
+    const [dia, mes, anio] = expenseDetail.fecha.split("/");
+
+    // Determinar la ruta según la empresa
+    let gastosCollectionRef;
+    let gastoDocRef;
+
+    if (isAnhelo) {
+      // Ruta original para ANHELO
+      gastosCollectionRef = collection(firestore, "gastos", anio, mes);
+      gastoDocRef = doc(gastosCollectionRef, dia);
+
+      console.log(
+        "ANHELO detectado, guardando en ruta legacy: gastos/" +
+          anio +
+          "/" +
+          mes +
+          "/" +
+          dia
+      );
+    } else {
+      // Ruta para otras empresas en absoluteClientes
+      gastosCollectionRef = collection(
+        firestore,
+        "absoluteClientes",
+        empresaId,
+        "gastos",
+        anio,
+        mes
+      );
+      gastoDocRef = doc(gastosCollectionRef, dia);
+
+      console.log(
+        "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+          empresaId +
+          "/gastos/" +
+          anio +
+          "/" +
+          mes +
+          "/" +
+          dia
+      );
+    }
 
     const docSnap = await getDoc(gastoDocRef);
     const existingData = docSnap.exists() ? docSnap.data() : {};
@@ -112,18 +219,55 @@ export const UploadExpense = async (
 };
 
 // Función para actualizar el estado del gasto
-export const UpdateExpenseStatus = (
+export const UpdateExpenseStatus = async (
   expenseId: string,
-  newStatus: 'pendiente' | 'pagado',
+  newStatus: "pendiente" | "pagado",
   fecha: string
 ): Promise<void> => {
   const firestore = getFirestore();
 
-  // Separar la fecha en día, mes y año
-  const [dia, mes, anio] = fecha.split('/');
+  // Obtener el estado de autenticación del store de Redux
+  const auth = store.getState().auth;
+  const tipoUsuario = auth?.tipoUsuario;
 
-  // Crear la referencia a la colección con tres segmentos: gastos/año/mes
-  const gastosCollectionRef = doc(firestore, 'gastos', anio, mes, dia);
+  // Determinar el ID de la empresa
+  const empresaId =
+    tipoUsuario === "empresa"
+      ? auth.usuario?.id
+      : tipoUsuario === "empleado"
+        ? auth.usuario?.empresaId
+        : undefined;
+
+  // Obtener el nombre de la empresa para identificar si es ANHELO
+  let empresaNombre = "";
+  if (tipoUsuario === "empresa" && auth.usuario?.datosGenerales) {
+    empresaNombre = auth.usuario.datosGenerales.nombre || "";
+  }
+
+  // Determinar si es ANHELO basado en el nombre de la empresa
+  const isAnhelo = empresaNombre === "ANHELO";
+
+  // Separar la fecha en día, mes y año
+  const [dia, mes, anio] = fecha.split("/");
+
+  // Crear la referencia a la colección con la ruta correcta
+  let gastosCollectionRef;
+
+  if (isAnhelo) {
+    // Ruta original para ANHELO
+    gastosCollectionRef = doc(firestore, "gastos", anio, mes, dia);
+  } else {
+    // Ruta para otras empresas en absoluteClientes
+    gastosCollectionRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "gastos",
+      anio,
+      mes,
+      dia
+    );
+  }
 
   // Retorna una promesa
   return new Promise((resolve, reject) => {
@@ -157,10 +301,10 @@ export const UpdateExpenseStatus = (
                 reject(error); // Rechaza la promesa con el error
               });
           } else {
-            reject(new Error('Gasto no encontrado')); // Rechaza la promesa si el gasto no se encuentra
+            reject(new Error("Gasto no encontrado")); // Rechaza la promesa si el gasto no se encuentra
           }
         } else {
-          reject(new Error('Documento no encontrado')); // Rechaza la promesa si el documento no existe
+          reject(new Error("Documento no encontrado")); // Rechaza la promesa si el documento no existe
         }
       })
       .catch((error) => {
