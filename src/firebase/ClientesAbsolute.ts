@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 // Interfaces
 export interface DatosGeneralesEmpresa {
   nombre: string;
-  cantidadEmpleados: number;
+  cantidadEmpleados: string;
   formaJuridica: string;
   fechaCreacion: Date;
 }
@@ -57,7 +57,7 @@ export const crearEmpresa = async (
   telefono: string,
   contraseña: string,
   nombreEmpresa: string,
-  cantidadEmpleados: number,
+  cantidadEmpleados: string,
   formaJuridica: string,
   rolUsuario: string,
   featuresSeleccionados: string[] // Añadimos el parámetro para los features seleccionados

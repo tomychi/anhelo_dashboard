@@ -329,7 +329,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
         telefono,
         contraseña,
         nombreEmpresa,
-        parseInt(cantidadEmpleados), // Convertir a número
+        cantidadEmpleados,
         formaJuridica,
         rolUsuario,
         selectedFeatures // Agregar los features seleccionados
@@ -342,7 +342,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
         id: empresaId,
         datosGenerales: {
           nombre: nombreEmpresa,
-          cantidadEmpleados: parseInt(cantidadEmpleados),
+          cantidadEmpleados: cantidadEmpleados,
           formaJuridica: formaJuridica,
           fechaCreacion: new Date(),
         },
@@ -481,22 +481,62 @@ export const CrearEmpresa: React.FC<{}> = () => {
               autoComplete="off"
               className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
             />
-            <input
-              type="number"
-              placeholder="Cantidad de empleados"
-              value={cantidadEmpleados}
-              onChange={(e) => setCantidadEmpleados(e.target.value)}
-              autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-            />
-            <input
-              type="text"
-              placeholder="Forma juridica"
-              value={formaJuridica}
-              onChange={(e) => setFormaJuridica(e.target.value)}
-              autoComplete="off"
-              className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-            />
+            <div className="relative">
+              <select
+                value={cantidadEmpleados}
+                onChange={(e) => setCantidadEmpleados(e.target.value)}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${cantidadEmpleados === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                required
+              >
+                <option value="" disabled>
+                  Selecciona cantidad de empleados
+                </option>
+                <option value="1-9">1-9 empleados</option>
+                <option value="10-29">10-29 empleados</option>
+                <option value="30-49">30-49 empleados</option>
+                <option value="50-99">50-99 empleados</option>
+                <option value="100-199">100-199 empleados</option>
+                <option value="200+">200+ empleados</option>
+              </select>
+              <div className="pointer-events-none absolute z-50 inset-y-0 right-4 flex items-center  text-black">
+                <img
+                  src={arrowIcon}
+                  className="transform h-2 rotate-90"
+                  alt=""
+                />
+              </div>
+            </div>
+            <div className="relative">
+              <select
+                value={formaJuridica}
+                onChange={(e) => setFormaJuridica(e.target.value)}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${formaJuridica === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                required
+              >
+                <option value="" disabled>
+                  Selecciona forma jurídica
+                </option>
+                <option value="SAS">
+                  Sociedad por Acciones Simplificada (SAS)
+                </option>
+                <option value="SRL">
+                  Sociedad de Responsabilidad Limitada (SRL)
+                </option>
+                <option value="SA">Sociedad Anónima (SA)</option>
+                <option value="Monotributista">Monotributista</option>
+                <option value="Autónomo">Autónomo</option>
+                <option value="Sociedad de Hecho">Sociedad de Hecho</option>
+                <option value="Sociedad Colectiva">Sociedad Colectiva</option>
+                <option value="Otros">Otros</option>
+              </select>
+              <div className="pointer-events-none absolute z-50 inset-y-0 right-4 flex items-center  text-black">
+                <img
+                  src={arrowIcon}
+                  className="transform h-2 rotate-90"
+                  alt=""
+                />
+              </div>
+            </div>
             <input
               type="text"
               placeholder="Tu nombre"
