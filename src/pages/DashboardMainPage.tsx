@@ -26,8 +26,9 @@ import { DeudaManager } from "./DeudaManager";
 import FacturaForm from "../components/facturacion/FacturaForm";
 import Landing from "./Landing";
 import CrearEmpresa from "./CrearEmpresa";
+import PrivateRoutesLayout from "../layouts/PrivateRoutesLayout";
 
-export const DashboardMainPage = ({ backendStatus }) => {
+export const DashboardMainPage = () => {
   const scrollContainerRef = useRef(null);
 
   return (
@@ -44,36 +45,191 @@ export const DashboardMainPage = ({ backendStatus }) => {
               index
               element={<Landing scrollContainerRef={scrollContainerRef} />}
             />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="pedidos" element={<DynamicForm />} />
+            <Route
+              path="dashboard"
+              element={
+                <PrivateRoutesLayout>
+                  <Dashboard />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="pedidos"
+              element={
+                <PrivateRoutesLayout>
+                  <DynamicForm />
+                </PrivateRoutesLayout>
+              }
+            />
             <Route path="crearEmpresa" element={<CrearEmpresa />} />
             <Route
               path="comanderaAutomatizada"
-              element={<ComanderaAutomatizada />}
+              element={
+                <PrivateRoutesLayout>
+                  <ComanderaAutomatizada />
+                </PrivateRoutesLayout>
+              }
             />
-            <Route path="settings" element={<Settings />} />
-            <Route path="gastos" element={<Gastos />} />
-            <Route path="nuevaCompra" element={<NuevaCompra />} />
-            <Route path="vouchers" element={<GenerateVouchersForm />} />
-            <Route path="whatsappFeatures" element={<WhatsappFeatures />} />
+            <Route
+              path="settings"
+              element={
+                <PrivateRoutesLayout>
+                  <Settings />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="gastos"
+              element={
+                <PrivateRoutesLayout>
+                  <Gastos />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="nuevaCompra"
+              element={
+                <PrivateRoutesLayout>
+                  <NuevaCompra />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="vouchers"
+              element={
+                <PrivateRoutesLayout>
+                  <GenerateVouchersForm />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="whatsappFeatures"
+              element={
+                <PrivateRoutesLayout>
+                  <WhatsappFeatures />
+                </PrivateRoutesLayout>
+              }
+            />
             <Route
               path="facturacion"
-              element={<FacturaForm backendStatus={backendStatus} />}
+              element={
+                <PrivateRoutesLayout>
+                  <FacturaForm />
+                </PrivateRoutesLayout>
+              }
             />
-            <Route path="stock" element={<Stock />} />
-            <Route path="neto" element={<Neto />} />
-            <Route path="bruto" element={<Bruto />} />
-            <Route path="seguidores" element={<Seguidores />} />
-            <Route path="notificaciones" element={<RegistroHorario />} />
-            <Route path="campañaDetalle/:titulo" element={<CampañaDetalle />} />
-            <Route path="clientes" element={<Clientes />} />
-            <Route path="productosVendidos" element={<ProductosVendidos />} />
-            <Route path="ventas" element={<ComanderaAutomatizada />} />
-            <Route path="registroHorario" element={<RegistroHorario />} />
-            <Route path="monthdata" element={<MonthData />} />
-            <Route path="empleados" element={<RegistroEmpleado />} />
-            <Route path="equipo" element={<Equipo />} />
-            <Route path="deudaManager" element={<DeudaManager />} />
+            <Route
+              path="stock"
+              element={
+                <PrivateRoutesLayout>
+                  <Stock />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="neto"
+              element={
+                <PrivateRoutesLayout>
+                  <Neto />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="bruto"
+              element={
+                <PrivateRoutesLayout>
+                  <Bruto />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="seguidores"
+              element={
+                <PrivateRoutesLayout>
+                  <Seguidores />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="notificaciones"
+              element={
+                <PrivateRoutesLayout>
+                  <RegistroHorario />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="campañaDetalle/:titulo"
+              element={
+                <PrivateRoutesLayout>
+                  <CampañaDetalle />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="clientes"
+              element={
+                <PrivateRoutesLayout>
+                  <Clientes />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="productosVendidos"
+              element={
+                <PrivateRoutesLayout>
+                  <ProductosVendidos />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="ventas"
+              element={
+                <PrivateRoutesLayout>
+                  <ComanderaAutomatizada />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="registroHorario"
+              element={
+                <PrivateRoutesLayout>
+                  <RegistroHorario />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="monthdata"
+              element={
+                <PrivateRoutesLayout>
+                  <MonthData />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="empleados"
+              element={
+                <PrivateRoutesLayout>
+                  <RegistroEmpleado />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="equipo"
+              element={
+                <PrivateRoutesLayout>
+                  <Equipo />
+                </PrivateRoutesLayout>
+              }
+            />
+            <Route
+              path="deudaManager"
+              element={
+                <PrivateRoutesLayout>
+                  <DeudaManager />
+                </PrivateRoutesLayout>
+              }
+            />
           </Route>
         </Routes>
       </div>

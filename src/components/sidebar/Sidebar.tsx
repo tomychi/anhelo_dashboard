@@ -11,37 +11,12 @@ import {
   EmpresaProps,
   EmpleadoProps,
 } from "../../firebase/ClientesAbsolute";
-
-// Map for converting feature names to route paths
-const featureToRouteMap: Record<string, string> = {
-  Dashboard: "/dashboard",
-  "Facturación automática": "/facturacion",
-  Operaciones: "/comanderaAutomatizada",
-  Empleados: "/empleados",
-  Inversores: "/inversores",
-  Finanzas: "/finanzas",
-  "Página de ventas": "/ventas",
-  "Precios dinámicos": "/precios",
-  "WhatsApp Marketing": "/vouchers",
-  Gastos: "/gastos",
-  Deuda: "/deudaManager",
-  "Comportamiento de clientes": "/clientes",
-};
-
-const permissionToDisplayName: Record<string, string> = {
-  dashboard: "Dashboard",
-  ventas: "Ventas",
-  facturacion: "Facturación",
-  operaciones: "Operaciones",
-  empleados: "Empleados",
-  inversores: "Inversores",
-  finanzas: "Finanzas",
-  precios: "Precios",
-  marketing: "Marketing",
-  gastos: "Gastos",
-  deuda: "Deuda",
-  clientes: "Clientes",
-};
+// Importar las utilidades de permisos
+import {
+  featureToRouteMap,
+  permissionToDisplayName,
+  getUserPermissions,
+} from "../../utils/permissionsUtils";
 
 interface MenuItem {
   to: string;
@@ -64,6 +39,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [reclamosCount, setReclamosCount] = useState(0);
   const [empresaNombre, setEmpresaNombre] = useState("");
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [noPermissions, setNoPermissions] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const menuModalRef = useRef<HTMLDivElement>(null);
 
@@ -230,6 +206,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       items.push({ to: "/settings", text: "Configuración" });
 
       setMenuItems(items);
+      setNoPermissions(false);
     } else if (tipoUsuario === "empleado" && empleadoPermisos.length > 0) {
       // Para empleados, usar sus permisos específicos
       const items: MenuItem[] = empleadoPermisos.map((permiso) => {
@@ -242,20 +219,17 @@ export const Sidebar = ({ scrollContainerRef }) => {
       });
 
       setMenuItems(items);
+      setNoPermissions(false);
+    } else if (isAuth) {
+      // El usuario está autenticado pero no tiene permisos
+      setMenuItems([]);
+      setNoPermissions(true);
     } else {
-      // Fallback a default menu if no permissions/features
-      setMenuItems([
-        { to: "/dashboard", text: "Dashboard" },
-        { to: "/comanderaAutomatizada", text: "Operaciones" },
-        { to: "/gastos", text: "Gastos" },
-        { to: "/deudaManager", text: "Deuda" },
-        { to: "/vouchers", text: "Campañas de marketing" },
-        { to: "/facturacion", text: "Facturación" },
-        { to: "/clientes", text: "Comportamiento de clientes" },
-        { to: "/settings", text: "Configuración" },
-      ]);
+      // Usuario no autenticado - no establecemos noPermissions
+      setMenuItems([]);
+      setNoPermissions(false);
     }
-  }, [featuresIniciales]);
+  }, [featuresIniciales, empleadoPermisos, tipoUsuario, isAuth]);
 
   const handleLogout = () => {
     try {
@@ -367,41 +341,81 @@ export const Sidebar = ({ scrollContainerRef }) => {
   };
 
   const renderMenuItems = () => {
-    return menuItems.map((item, index) => {
-      const isLocked = !isAuth;
+    if (!isAuth) {
+      // Si no está autenticado, mostrar todos los features con candado
+      const defaultFeatures = [
+        { to: "/dashboard", text: "Dashboard" },
+        { to: "/comanderaAutomatizada", text: "Operaciones" },
+        { to: "/gastos", text: "Gastos" },
+        { to: "/deudaManager", text: "Deuda" },
+        { to: "/vouchers", text: "Campañas de marketing" },
+        { to: "/facturacion", text: "Facturación" },
+        { to: "/clientes", text: "Comportamiento de clientes" },
+        { to: "/settings", text: "Configuración" },
+      ];
 
-      return (
+      return defaultFeatures.map((item, index) => (
         <li key={index}>
           <NavLink
-            to={isLocked ? "#" : item.to}
-            className={`block text-2xl font-coolvetica font-bold flex items-center ${isLocked ? "text-gray-400" : ""}`}
-            onClick={(e) => {
-              if (isLocked) {
-                e.preventDefault();
-              } else {
-                setIsMenuOpen(false);
-              }
-            }}
+            to="#"
+            className="block text-2xl font-coolvetica font-bold flex items-center text-gray-400"
+            onClick={(e) => e.preventDefault()}
           >
-            {isLocked && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="mr-2 w-6 h-6 text-gray-400"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="mr-2 w-6 h-6 text-gray-400"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
+                clipRule="evenodd"
+              />
+            </svg>
             {item.text}
           </NavLink>
         </li>
+      ));
+    } else if (noPermissions) {
+      // Si está autenticado pero no tiene permisos, mostrar mensaje
+      return (
+        <div className="flex flex-col items-center justify-center p-6 text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-16 h-16 text-gray-400 mb-4"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <h3 className="text-xl font-bold mb-2">
+            Aún no tienes permisos asignados
+          </h3>
+          <p className="text-sm text-gray-500">
+            Contacta con el administrador para solicitar acceso a las
+            funcionalidades del sistema.
+          </p>
+        </div>
       );
-    });
+    }
+
+    // Si está autenticado y tiene permisos, mostrar sus menús
+    return menuItems.map((item, index) => (
+      <li key={index}>
+        <NavLink
+          to={item.to}
+          className="block text-2xl font-coolvetica font-bold flex items-center"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          {item.text}
+        </NavLink>
+      </li>
+    ));
   };
 
   const profileMenuItems = [
@@ -616,7 +630,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
               >
                 <path
                   fillRule="evenodd"
-                  d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+                  d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25a1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
                   clipRule="evenodd"
                 />
               </svg>
