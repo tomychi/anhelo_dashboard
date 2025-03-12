@@ -205,7 +205,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [nombreEmpresa, setNombreEmpresa] = useState("");
   const [cantidadEmpleados, setCantidadEmpleados] = useState("");
   const [formaJuridica, setFormaJuridica] = useState("");
-  const [selectedFeatures, setSelectedFeatures] = useState([]);
+  const [selectedFeatures, setSelectedFeatures] = useState(["Dashboard"]);
   const [isEmpleadosOpen, setIsEmpleadosOpen] = useState(false);
   const [isFormaJuridicaOpen, setIsFormaJuridicaOpen] = useState(false);
 
@@ -248,6 +248,88 @@ export const CrearEmpresa: React.FC<{}> = () => {
   ];
 
   const toggleFeature = (productTitle) => {
+    // Si intenta deseleccionar Dashboard, mostrar notificación y no hacer nada
+    if (
+      productTitle === "Dashboard" &&
+      selectedFeatures.includes(productTitle)
+    ) {
+      // Crear notificación temporal
+      const notification = document.createElement("div");
+      notification.style.position = "fixed";
+      notification.style.bottom = "20px";
+      notification.style.padding = "0 20px";
+      notification.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+      notification.style.color = "white";
+      notification.style.borderRadius = "9999px";
+      notification.style.marginRight = "1rem";
+      notification.style.paddingLeft = "1rem"; // px-4 (16px) de padding horizontal
+      notification.style.paddingRight = "1rem"; // px-4 (16px) de padding horizontal
+      notification.style.height = "40px";
+      notification.style.zIndex = "1000";
+      notification.style.transform = "translateX(-50%)";
+      notification.style.left = "50%";
+      notification.style.textAlign = "center";
+      notification.style.fontFamily = "Coolvetica, sans-serif";
+      notification.style.fontWeight = "300"; //font light
+      notification.style.backdropFilter = "blur(8px)";
+      notification.style.WebkitBackdropFilter = "blur(8px)";
+      notification.style.whiteSpace = "nowrap"; // Asegura una sola línea
+      notification.style.display = "flex";
+      notification.style.fontSize = "13px"; //text xs
+      notification.style.alignItems = "center";
+      notification.style.justifyContent = "center";
+      notification.style.gap = "8px";
+
+      // Crear el SVG (usando un ícono de información)
+      const svgIcon = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      svgIcon.setAttribute("viewBox", "0 0 24 24");
+      svgIcon.setAttribute("fill", "currentColor");
+      svgIcon.style.width = "24px";
+      svgIcon.style.height = "24px";
+      svgIcon.style.flexShrink = "0";
+
+      // Crear el path dentro del SVG (un ícono de información)
+      const svgPath = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      svgPath.setAttribute("fill-rule", "evenodd");
+      svgPath.setAttribute("clip-rule", "evenodd");
+      svgPath.setAttribute(
+        "d",
+        "M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+      );
+
+      // Añadir el path al SVG
+      svgIcon.appendChild(svgPath);
+
+      // Crear un span para el texto
+      const textSpan = document.createElement("span");
+      textSpan.textContent = "Esta opción no se puede deseleccionar";
+      textSpan.style.fontWeight = "light"; // Asegurando que el texto tenga font-light
+
+      // Añadir el SVG y el texto a la notificación
+      notification.appendChild(svgIcon);
+      notification.appendChild(textSpan);
+
+      document.body.appendChild(notification);
+
+      // Desaparecer la notificación después de 2 segundos
+      setTimeout(() => {
+        notification.style.opacity = "0";
+        notification.style.transition = "opacity 0.5s ease";
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 500);
+      }, 2000);
+
+      return; // Salir de la función sin modificar selectedFeatures
+    }
+
+    // Comportamiento normal para otras funcionalidades
     if (selectedFeatures.includes(productTitle)) {
       setSelectedFeatures(
         selectedFeatures.filter((title) => title !== productTitle)
