@@ -43,6 +43,11 @@ const permissionToDisplayName: Record<string, string> = {
   clientes: "Clientes",
 };
 
+interface MenuItem {
+  to: string;
+  text: string;
+}
+
 export const Sidebar = ({ scrollContainerRef }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -67,11 +72,6 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [rolUsuario, setRolUsuario] = useState("");
   const [nombreEmpresaDirecto, setNombreEmpresaDirecto] = useState("");
   const [featuresIniciales, setFeaturesIniciales] = useState<string[]>([]);
-
-  interface MenuItem {
-    to: string;
-    text: string;
-  }
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef?.current;
@@ -586,7 +586,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         </div>
         <div className="px-4 pb-4 flex justify-center flex-col items-center">
           <div className="text-3xl font-bold">{nombreUsuario || "NaN"}</div>
-          <div className="text-xs text-gray-500 ">
+          <div className="text-xs text-gray-400 ">
             {rolUsuario || "NaN"} en {displayEmpresa}
           </div>
         </div>
