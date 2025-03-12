@@ -469,8 +469,12 @@ export const Sidebar = ({ scrollContainerRef }) => {
       <div className="border-b border-gray-200">
         <div className="px-4 pb-8 flex justify-center flex-col items-center pt-6">
           <div className="text-3xl font-bold">{nombreUsuario || "NaN"}</div>
-          <div className="text-xs text-gray-500">
-            {rolUsuario || "NaN"} en {displayEmpresa}
+          <div className="text-xs text-gray-400 ">
+            {(rolUsuario || "NaN").toLowerCase().charAt(0).toUpperCase() +
+              (rolUsuario || "NaN").toLowerCase().slice(1)}{" "}
+            en{" "}
+            {displayEmpresa.toLowerCase().charAt(0).toUpperCase() +
+              displayEmpresa.toLowerCase().slice(1)}
           </div>
         </div>
 
