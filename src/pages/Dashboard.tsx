@@ -655,7 +655,15 @@ export const Dashboard: React.FC = () => {
         ? (auth?.usuario as EmpleadoProps)?.datos?.nombre || ""
         : "";
 
-  const greetingName = nombreUsuario;
+  let greetingName;
+
+  if (nombreUsuario.includes(" ")) {
+    // Si tiene espacios (más de una palabra), tomar solo la primera
+    greetingName = nombreUsuario.split(" ")[0];
+  } else {
+    // Si es una sola palabra, dejarlo como está
+    greetingName = nombreUsuario;
+  }
 
   const calculateTotalDirecciones = (vueltas: Cadete[] | undefined): number => {
     if (!vueltas) return 0;
