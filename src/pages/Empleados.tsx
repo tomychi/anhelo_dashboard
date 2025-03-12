@@ -251,8 +251,6 @@ export const Empleados = () => {
   };
 
   const handleUpdateEmpleado = async () => {
-    console.log("Iniciando actualización de empleado");
-
     if (!selectedEmpleado || !empresaId) {
       setError("No se puede actualizar el empleado");
       return;
@@ -274,7 +272,6 @@ export const Empleados = () => {
     const permisosSeleccionados = Object.keys(editPermisosToggles).filter(
       (key) => editPermisosToggles[key]
     );
-    console.log("Permisos seleccionados:", permisosSeleccionados);
 
     if (permisosSeleccionados.length === 0) {
       setError("Selecciona al menos un permiso");
@@ -297,15 +294,9 @@ export const Empleados = () => {
       // Solo actualizar el salario si está definido
       if (salario !== undefined) {
         datosActualizados.datos.salario = salario;
-        console.log("Actualizando salario a:", salario);
       }
 
       // Verificar y actualizar contraseña y teléfono
-      console.log(
-        "Contraseña ingresada:",
-        contraseña ? "Sí (no se muestra por seguridad)" : "No"
-      );
-      console.log("Teléfono ingresado:", telefono);
 
       // Solo actualizar la contraseña si se ingresó una nueva
       if (contraseña) {
@@ -315,32 +306,21 @@ export const Empleados = () => {
 
         // Solo actualizar el teléfono si se modificó
         if (telefono) {
-          console.log("Añadiendo teléfono a actualización:", telefono);
           datosActualizados.iniciarSesion.telefono = telefono;
         }
       } else if (telefono) {
         // Si no hay contraseña nueva pero sí teléfono nuevo
-        console.log(
-          "Añadiendo solo teléfono (sin contraseña nueva):",
-          telefono
-        );
+
         datosActualizados.iniciarSesion = {
           telefono,
         };
       }
-
-      console.log(
-        "Datos a actualizar completos:",
-        JSON.stringify(datosActualizados, null, 2)
-      );
 
       await actualizarEmpleado(
         empresaId,
         selectedEmpleado.id,
         datosActualizados
       );
-
-      console.log("Empleado actualizado correctamente");
 
       // Limpiar el formulario y cerrar
       handleCloseEditForm();
@@ -373,7 +353,6 @@ export const Empleados = () => {
   };
 
   const handleEditEmpleado = (empleado) => {
-    console.log("Inicializando edición del empleado:", empleado);
     setSelectedEmpleado(empleado);
 
     // Cargar datos del empleado
@@ -383,7 +362,7 @@ export const Empleados = () => {
     setSalario(empleado.datos?.salario);
 
     // Log especial para el teléfono
-    console.log("Teléfono del empleado:", empleado.iniciarSesion?.telefono);
+
     setTelefono(empleado.iniciarSesion?.telefono || "");
 
     // Resetear contraseñas
@@ -399,7 +378,6 @@ export const Empleados = () => {
 
     // Marcar como true los permisos que tiene el empleado
     if (empleado.datos?.permisos) {
-      console.log("Permisos existentes:", empleado.datos.permisos);
       empleado.datos.permisos.forEach((permiso) => {
         editToggles[permiso] = true;
       });
