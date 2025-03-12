@@ -813,3 +813,90 @@ export const consultarDocumentos = async (
     ...doc.data(),
   }));
 };
+
+// Función para añadir nuevas funcionalidades a una empresa existente
+export const anadirFuncionalidadesEmpresa = async (
+  empresaId: string,
+  nuevasFuncionalidades: string[]
+): Promise<void> => {
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+
+  // Primero obtenemos la empresa actual para conocer sus funcionalidades existentes
+  const empresaDoc = await getDoc(empresaRef);
+
+  if (!empresaDoc.exists()) {
+    throw new Error("No se encontró la empresa");
+  }
+
+  const empresaData = empresaDoc.data();
+  const featuresExistentes = empresaData.featuresIniciales || [];
+  const configActual = empresaData.config || {};
+
+  // Combinar funcionalidades existentes con las nuevas (evitar duplicados)
+  const funcionalidadesActualizadas = Array.from(
+    new Set([...featuresExistentes, ...nuevasFuncionalidades])
+  );
+
+  // Inicializar las nuevas colecciones para las nuevas funcionalidades
+  const coleccionesExistentes = configActual.coleccionesDisponibles || [];
+  const nuevasColecciones = await inicializarColeccionesAdicionales(
+    empresaId,
+    nuevasFuncionalidades,
+    coleccionesExistentes
+  );
+
+  // Actualizar la empresa con las nuevas funcionalidades y colecciones
+  await updateDoc(empresaRef, {
+    featuresIniciales: funcionalidadesActualizadas,
+    "config.featuresActivos": funcionalidadesActualizadas,
+    "config.coleccionesDisponibles": nuevasColecciones,
+    "config.ultimaActualizacion": new Date(),
+    ultimaActualizacion: new Date(),
+  });
+};
+
+// Función para inicializar solo las colecciones necesarias para las nuevas funcionalidades
+const inicializarColeccionesAdicionales = async (
+  empresaId: string,
+  nuevasFuncionalidades: string[],
+  coleccionesExistentes: string[]
+): Promise<string[]> => {
+  const firestore = getFirestore();
+
+  // Conjunto para almacenar colecciones únicas (incluidas las existentes)
+  const coleccionesUnicas = new Set<string>(coleccionesExistentes);
+
+  // Añadir colecciones basadas en los nuevos features
+  nuevasFuncionalidades.forEach((feature) => {
+    const colecciones = FEATURE_A_COLECCIONES[feature] || [];
+    colecciones.forEach((col) => coleccionesUnicas.add(col));
+  });
+
+  // Determinar qué colecciones son nuevas
+  const coleccionesNuevas = Array.from(coleccionesUnicas).filter(
+    (col) => !coleccionesExistentes.includes(col)
+  );
+
+  // Crear cada colección nueva
+  for (const nombreColeccion of coleccionesNuevas) {
+    // Creamos un documento inicial para que la colección exista
+    const docRef = doc(
+      firestore,
+      `absoluteClientes/${empresaId}/${nombreColeccion}/inicial`
+    );
+
+    // Documento simple que indica la creación de la colección
+    await setDoc(docRef, {
+      creado: new Date(),
+      descripcion: `Documento inicial para la colección ${nombreColeccion}`,
+      _esDocumentoSistema: true,
+    });
+
+    console.log(
+      `Colección ${nombreColeccion} inicializada para empresa ${empresaId}`
+    );
+  }
+
+  return Array.from(coleccionesUnicas);
+};

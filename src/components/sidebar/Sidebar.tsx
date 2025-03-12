@@ -10,6 +10,8 @@ import {
   obtenerNombreEmpresa,
   EmpresaProps,
   EmpleadoProps,
+  obtenerEmpresaPorId,
+  anadirFuncionalidadesEmpresa,
 } from "../../firebase/ClientesAbsolute";
 // Importar las utilidades de permisos
 import {
@@ -17,6 +19,8 @@ import {
   permissionToDisplayName,
   getUserPermissions,
 } from "../../utils/permissionsUtils";
+import MoreFeaturesModal from "./MoreFeaturesModal";
+import { updateEmpresa } from "../../redux/auth/authAction";
 
 interface MenuItem {
   to: string;
@@ -27,6 +31,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [isFeatureLoading, setIsFeatureLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [currentTranslate, setCurrentTranslate] = useState(0);
@@ -42,12 +48,43 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [noPermissions, setNoPermissions] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const menuModalRef = useRef<HTMLDivElement>(null);
-
-  // Define these at the component level so they can be used throughout
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [rolUsuario, setRolUsuario] = useState("");
   const [nombreEmpresaDirecto, setNombreEmpresaDirecto] = useState("");
   const [featuresIniciales, setFeaturesIniciales] = useState<string[]>([]);
+
+  const handleAddFeatures = async (nuevasFuncionalidades) => {
+    if (!empresaId || nuevasFuncionalidades.length === 0) return;
+
+    setIsFeatureLoading(true);
+
+    try {
+      await anadirFuncionalidadesEmpresa(empresaId, nuevasFuncionalidades);
+
+      // Actualizar el estado local y global
+      const empresaActualizada = await obtenerEmpresaPorId(empresaId);
+
+      if (empresaActualizada) {
+        // Actualizar Redux
+        dispatch(updateEmpresa(empresaActualizada));
+
+        // Actualizar estado local
+        setFeaturesIniciales(empresaActualizada.featuresIniciales || []);
+      }
+
+      setIsFeatureModalOpen(false);
+
+      // Mostrar notificación de éxito
+      alert("Funcionalidades añadidas correctamente");
+    } catch (error) {
+      console.error("Error al añadir funcionalidades:", error);
+      alert(
+        "Ocurrió un error al añadir las funcionalidades. Intenta nuevamente."
+      );
+    } finally {
+      setIsFeatureLoading(false);
+    }
+  };
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef?.current;
@@ -69,6 +106,12 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const auth = useSelector((state: RootState) => state.auth);
   const isAuth = auth?.isAuth || false;
   const tipoUsuario = auth?.tipoUsuario;
+  const empresaId =
+    tipoUsuario === "empresa"
+      ? (auth.usuario as EmpresaProps)?.id
+      : tipoUsuario === "empleado"
+        ? (auth.usuario as EmpleadoProps)?.empresaId
+        : undefined;
 
   // Obtener la información según el tipo de usuario
   useEffect(() => {
@@ -814,13 +857,26 @@ export const Sidebar = ({ scrollContainerRef }) => {
             )}
             <nav className="px-4 h-full overflow-y-auto">
               <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
-              <div className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica  text-2xl mt-12 rounded-3xl">
-                Mas funcionalidades
+              <div
+                className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-2xl mt-12 rounded-3xl cursor-pointer"
+                onClick={() => setIsFeatureModalOpen(true)}
+              >
+                Más funcionalidades
               </div>
+
               <p className="font-medium text-xs opacity-30 font-coolvetica text-center  mt-4">
                 Ⓡ 2023. Absolute, Soluciones Empresariales.
               </p>
             </nav>
+            {isFeatureModalOpen && (
+              <MoreFeaturesModal
+                isOpen={isFeatureModalOpen}
+                onClose={() => setIsFeatureModalOpen(false)}
+                currentFeatures={featuresIniciales}
+                onAddFeatures={handleAddFeatures}
+                loading={isFeatureLoading}
+              />
+            )}
           </div>
         </div>
       )}
