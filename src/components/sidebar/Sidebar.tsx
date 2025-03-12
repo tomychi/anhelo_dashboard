@@ -597,12 +597,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
             {(rolUsuario || "NaN").toLowerCase().charAt(0).toUpperCase() +
               (rolUsuario || "NaN").toLowerCase().slice(1)}{" "}
             en{" "}
-            {displayEmpresa
-              .split(" ")
-              .map(
-                (palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1)
-              )
-              .join(" ")}
+            {displayEmpresa.toLowerCase().charAt(0).toUpperCase() +
+              displayEmpresa.toLowerCase().slice(1)}
           </div>
         </div>
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
