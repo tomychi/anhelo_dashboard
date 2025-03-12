@@ -118,7 +118,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+    <div className="fixed inset-0 z-50 bg-gray-100 flex items-end font-coolvetica justify-center">
       <div
         className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
           isAnimating ? "bg-opacity-50" : "bg-opacity-0"
@@ -166,7 +166,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
             <h3 className="text-lg font-bold mb-2">
               Funcionalidades disponibles
             </h3>
-            <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
+            <div className="bg-gray-200  rounded-lg max-h-60 overflow-y-auto">
               {SYSTEM_FEATURES.map((feature) => {
                 const isActive = currentFeatures.includes(feature.id);
                 return (
@@ -181,7 +181,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
                       </p>
                     </div>
                     <div
-                      className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+                      className={`w-14 h-8 ml-12 flex items-center rounded-full p-1 cursor-pointer ${
                         featureToggles[feature.id] ? "bg-black" : "bg-gray-300"
                       } ${isActive ? "opacity-50" : ""}`}
                       onClick={() => handleToggleFeature(feature.id)}
@@ -220,7 +220,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
               </div>
             </div>
           ) : (
-            "Activar funcionalidades"
+            "Agregar"
           )}
         </button>
       </div>
