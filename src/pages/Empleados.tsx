@@ -8,7 +8,9 @@ import {
   eliminarEmpleado,
   EmpleadoProps,
 } from "../firebase/ClientesAbsolute";
-import { PERMISOS_SISTEMA } from "../utils/permissionsUtils";
+import { SYSTEM_FEATURES } from "../utils/permissionsUtils";
+
+const PERMISOS_SISTEMA = SYSTEM_FEATURES.map((feature) => feature.id);
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
@@ -93,8 +95,8 @@ export const Empleados = () => {
 
   useEffect(() => {
     const initialToggles = {};
-    PERMISOS_SISTEMA.forEach((permiso) => {
-      initialToggles[permiso] = false;
+    SYSTEM_FEATURES.forEach((feature) => {
+      initialToggles[feature.id] = false;
     });
     setPermisosToggles(initialToggles);
   }, []);
@@ -372,8 +374,8 @@ export const Empleados = () => {
     // Inicializar toggles de permisos
     const editToggles = {};
     // Añadir todos los permisos del sistema como falsas por defecto
-    PERMISOS_SISTEMA.forEach((permiso) => {
-      editToggles[permiso] = false;
+    SYSTEM_FEATURES.forEach((feature) => {
+      editToggles[feature.id] = false;
     });
 
     // Marcar como true los permisos que tiene el empleado
@@ -697,12 +699,12 @@ export const Empleados = () => {
               <div className="mt-6">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
                 <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
-                  {PERMISOS_SISTEMA.map((permiso) => (
+                  {SYSTEM_FEATURES.map((feature) => (
                     <TogglePermiso
-                      key={permiso}
-                      label={permiso}
-                      isOn={permisosToggles[permiso] || false}
-                      onToggle={() => handleTogglePermiso(permiso)}
+                      key={feature.id}
+                      label={feature.title}
+                      isOn={permisosToggles[feature.id] || false}
+                      onToggle={() => handleTogglePermiso(feature.id)}
                     />
                   ))}
                 </div>
@@ -847,12 +849,12 @@ export const Empleados = () => {
               <div className="mt-6">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
                 <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
-                  {PERMISOS_SISTEMA.map((permiso) => (
+                  {SYSTEM_FEATURES.map((feature) => (
                     <TogglePermiso
-                      key={permiso}
-                      label={permiso}
-                      isOn={editPermisosToggles[permiso] || false}
-                      onToggle={() => handleToggleEditPermiso(permiso)}
+                      key={feature.id}
+                      label={feature.title}
+                      isOn={editPermisosToggles[feature.id] || false}
+                      onToggle={() => handleToggleEditPermiso(feature.id)}
                     />
                   ))}
                 </div>

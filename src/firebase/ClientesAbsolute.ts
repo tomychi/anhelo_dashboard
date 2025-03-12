@@ -67,12 +67,13 @@ export interface EmpleadoProps {
 // Mapeo de features a las colecciones necesarias
 const FEATURE_A_COLECCIONES = {
   Dashboard: ["pedidos"], //siempre tenemos esto porque en el form no dejamos deseleccionarlo
-  Empleados: ["empleados"], //lo unico que necesitamos para manejar los empleados
-  Operaciones: [], //esto solo necesita la coleccion pedidos que ya esta creada
   "Facturación automática": [], //esto solo necesita la coleccion pedidos que ya esta creada
+  Operaciones: [], //esto solo necesita la coleccion pedidos que ya esta creada
+  Empleados: ["empleados"], //lo unico que necesitamos para manejar los empleados
+  Inversores: ["inversion"], //lo unico que necesitamos para manejar los inversores
   Finanzas: ["gastos", "materiales"], //gastos para almacenar las compras y materiales para tener el valor de la materia prima y poder calcular el neto
-  "Página de ventas": [], //si selecciona solo la pagina le basta con tener la coleccion pedidos que ya esta creada, despues otros features como ej campañas de vouchers y demas se agrega si marca esos features, no es necesidad crearlos aca.
-  "Precios dinámicos": [], //esto solo necesita la coleccion pedidos que ya esta creada
+  "Página de ventas": ["productos"], //si selecciona solo la pagina le basta con tener la coleccion pedidos que ya esta creada + la de productos, despues otros features como ej campañas de vouchers y demas se agrega si marca esos features, no es necesidad crearlos aca.
+  "Precios dinámicos": ["constantes"], //esto solo necesita la coleccion pedidos que ya esta creada + constantes
   "WhatsApp Marketing": ["vouchers"], //esto necesita la coleccion pedidos (que ya esta creada) + vouchers que es lo que le enviamos a los clientes
 };
 

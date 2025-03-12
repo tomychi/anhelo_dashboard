@@ -194,10 +194,15 @@ export const Sidebar = ({ scrollContainerRef }) => {
     if (tipoUsuario === "empresa" && featuresIniciales.length > 0) {
       // Para empresas, usar featuresIniciales
       const items: MenuItem[] = featuresIniciales.map((feature) => {
+        // Usamos la primera ruta del array como la ruta principal para el menú
+        const routes = featureToRouteMap[feature] || [];
+        const mainRoute =
+          routes.length > 0
+            ? routes[0]
+            : `/${feature.toLowerCase().replace(/\s+/g, "")}`;
+
         return {
-          to:
-            featureToRouteMap[feature] ||
-            `/${feature.toLowerCase().replace(/\s+/g, "")}`,
+          to: mainRoute,
           text: feature,
         };
       });
@@ -210,10 +215,15 @@ export const Sidebar = ({ scrollContainerRef }) => {
     } else if (tipoUsuario === "empleado" && empleadoPermisos.length > 0) {
       // Para empleados, usar sus permisos específicos
       const items: MenuItem[] = empleadoPermisos.map((permiso) => {
+        // Usamos la primera ruta del array como la ruta principal para el menú
+        const routes = featureToRouteMap[permiso] || [];
+        const mainRoute =
+          routes.length > 0
+            ? routes[0]
+            : `/${permiso.toLowerCase().replace(/\s+/g, "")}`;
+
         return {
-          to:
-            featureToRouteMap[permiso] ||
-            `/${permiso.toLowerCase().replace(/\s+/g, "")}`,
+          to: mainRoute,
           text: permissionToDisplayName[permiso] || permiso, // Usar nombre legible
         };
       });
