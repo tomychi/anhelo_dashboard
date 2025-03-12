@@ -1,9 +1,9 @@
-import { FormEvent, useState } from 'react';
-import { DetallePedidoProps, FormDataProps } from '../../pages/DynamicForm';
-import { RootState } from '../../redux/configureStore';
-import { useSelector } from 'react-redux';
-import { ProductStateProps } from '../../redux/products/productReducer';
-import { obtenerHoraActual } from '../../helpers/dateToday';
+import { FormEvent, useState } from "react";
+import { DetallePedidoProps, FormDataProps } from "../../pages/DynamicForm";
+import { RootState } from "../../redux/configureStore";
+import { useSelector } from "react-redux";
+import { ProductStateProps } from "../../redux/products/productReducer";
+import { obtenerHoraActual } from "../../helpers/dateToday";
 
 const procesarToppings = (bloque: string) => {
   // Buscar los toppings usando una expresión regular
@@ -16,10 +16,10 @@ const procesarToppings = (bloque: string) => {
     const toppingCompleto = match[1];
 
     // Limpiar el topping
-    const toppingLimpio = toppingCompleto.replace(/:\s*\$.*/, '');
+    const toppingLimpio = toppingCompleto.replace(/:\s*\$.*/, "");
 
     // Dividir el topping en varios elementos del arreglo si hay varios toppings en una cadena
-    const toppingsIndividuales = toppingLimpio.split(' - ');
+    const toppingsIndividuales = toppingLimpio.split(" - ");
 
     // Agregar cada topping individual al arreglo
     toppings.push(...toppingsIndividuales.map((t) => t.trim()));
@@ -44,7 +44,7 @@ const procesarDetallePedido = (
 
         // Aquí puedes usar quantity, burger y priceBurger...
         // Remover la parte de 'Toppings:' si está presente en el nombre de la hamburguesa
-        const toppingsIndex = burger.indexOf(' Toppings:');
+        const toppingsIndex = burger.indexOf(" Toppings:");
         if (toppingsIndex !== -1) {
           burger = burger.substring(0, toppingsIndex);
         }
@@ -84,18 +84,18 @@ const procesarDetallePedido = (
       } else {
         // Si no se encuentra ninguna coincidencia para la expresión regular
         console.log(
-          'No se encontró ninguna coincidencia para la expresión regular.'
+          "No se encontró ninguna coincidencia para la expresión regular."
         );
       }
     });
   } else {
-    console.log('No se encontraron bloques en el detalle del pedido.');
+    console.log("No se encontraron bloques en el detalle del pedido.");
   }
 };
 
 const ajustarHoraReserva = (horaReserva: string): string => {
   // Crear un objeto Date con la hora de reserva
-  const [horas, minutos] = horaReserva.split(':').map(Number);
+  const [horas, minutos] = horaReserva.split(":").map(Number);
   const fechaReserva = new Date();
   fechaReserva.setHours(horas, minutos, 0, 0); // Asignar hora de reserva
 
@@ -106,10 +106,10 @@ const ajustarHoraReserva = (horaReserva: string): string => {
   const nuevaHora = fechaReserva
     .toLocaleTimeString([], {
       hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     })
-    .padStart(5, '0');
+    .padStart(5, "0");
 
   return nuevaHora;
 };
@@ -123,7 +123,7 @@ const parsearMensajePedido = (
   // Extraer cupón
   const cuponRegex = /Cupón:\s*(.*?)(?:\s*-|$)/;
   const cuponMatch = cuponRegex.exec(mensaje);
-  const cupon = cuponMatch ? cuponMatch[1].trim() : '';
+  const cupon = cuponMatch ? cuponMatch[1].trim() : "";
 
   // Expresión regular para los datos principales (sin los montos)
   const datosVendedorRegex =
@@ -134,14 +134,14 @@ const parsearMensajePedido = (
 
   // Si no se encuentran los datos principales, retornar null
   if (!datosVendedorMatch) {
-    console.error('No se encontraron los datos principales del vendedor.');
+    console.error("No se encontraron los datos principales del vendedor.");
     return null;
   }
 
   // Extraer datos del vendedor y detalle del pedido
   const datosVendedor = datosVendedorMatch
     .slice(1)
-    .map((value) => value?.trim() || '');
+    .map((value) => value?.trim() || "");
 
   // Buscar montos en efectivo y transferencia de forma separada
   const efectivoRegex = /Monto en efectivo:\s*\$([\d.,]+)/;
@@ -152,11 +152,11 @@ const parsearMensajePedido = (
 
   // Asignar las variables de montos con valores por defecto si no se encuentran
   const efectivoCantidad = efectivoMatch
-    ? efectivoMatch[1].replace(',', '.')
-    : '';
+    ? efectivoMatch[1].replace(",", ".")
+    : "";
   const mercadopagoCantidad = transferenciaMatch
-    ? transferenciaMatch[1].replace(',', '.')
-    : '';
+    ? transferenciaMatch[1].replace(",", ".")
+    : "";
 
   // Si el dato del vendedor es [0], ajustamos la hora
   const horaAjustada = datosVendedor[0]
@@ -187,15 +187,15 @@ const parsearMensajePedido = (
       metodoPago,
       ubicacion,
       referencias,
-      aclaraciones: '',
+      aclaraciones: "",
       efectivoCantidad,
       mercadopagoCantidad,
-      envio: '',
+      envio: "",
       hora,
-      cadete: 'NO ASIGNADO',
+      cadete: "NO ASIGNADO",
     };
   } else {
-    console.error('No se pudo encontrar el detalle del pedido.');
+    console.error("No se pudo encontrar el detalle del pedido.");
     return null;
   }
 };
@@ -210,7 +210,7 @@ export const PedidosWeb = ({
   handleFormClient,
   setSeccionActiva,
 }: PedidosWebProps) => {
-  const [mensaje, setMensaje] = useState<string>('');
+  const [mensaje, setMensaje] = useState<string>("");
   const { toppings } = useSelector((state: RootState) => state.product);
   const { burgers, drinks, fries } = useSelector(
     (state: RootState) => state.product
@@ -231,25 +231,25 @@ export const PedidosWeb = ({
     if (infoClient) {
       handleFormClient(infoClient);
 
-      setSeccionActiva('elaborar');
+      setSeccionActiva("elaborar");
     } else {
-      console.error('No se pudo obtener la información del cliente.');
+      console.error("No se pudo obtener la información del cliente.");
     }
   };
 
   const inputClass = `
-		block px-4 h-12 w-full border-4 border-black rounded-lg  bg-gray-300
+		block px-4 h-12 w-full border-4 border-black rounded-lg  bg-gray-200
 		appearance-none focus:outline-none focus:ring-0 peer
 		placeholder-gray-400 placeholder-opacity-100
 		 text-black font-light 
-		autofill:bg-gray-300 autofill:text-black
-		focus:bg-gray-300 focus:text-black
-		hover:bg-gray-300 hover:text-black
+		autofill:bg-gray-200 autofill:text-black
+		focus:bg-gray-200 focus:text-black
+		hover:bg-gray-200 hover:text-black
 	`;
 
   const inputStyle = {
-    backgroundColor: 'rgb(209 213 219)', // Equivalente a bg-gray-300
-    color: 'black',
+    backgroundColor: "rgb(209 213 219)", // Equivalente a bg-gray-200
+    color: "black",
   };
 
   return (

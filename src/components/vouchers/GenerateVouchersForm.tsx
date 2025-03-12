@@ -6,7 +6,7 @@ import { VoucherList } from "./VoucherList";
 const Toggle = ({ isOn, onToggle }) => (
   <div
     className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-      isOn ? "bg-black" : "bg-gray-300"
+      isOn ? "bg-black" : "bg-gray-200"
     }`}
     onClick={onToggle}
   >
@@ -125,7 +125,7 @@ export const GenerateVouchersForm = () => {
           <p className="text-black font-bold text-4xl mt-1">Vouchers</p>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+            className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +173,7 @@ export const GenerateVouchersForm = () => {
                 onMouseMove={handleMouseMove}
               >
                 <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                  <div className="w-12 h-1 bg-gray-200 rounded-full" />
                 </div>
               </div>
 
@@ -183,14 +183,14 @@ export const GenerateVouchersForm = () => {
                   placeholder="Título de la nueva campaña"
                   value={titulo}
                   onChange={(e) => setTitulo(e.target.value)}
-                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
                 />
                 <input
                   type="date"
                   placeholder="Fecha del voucher"
                   value={fecha}
                   onChange={(e) => setFecha(e.target.value)}
-                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
                 />
                 <input
                   type="number"
@@ -200,7 +200,7 @@ export const GenerateVouchersForm = () => {
                     const value = e.target.value;
                     setCantidad(value === "" ? 0 : parseInt(value, 10));
                   }}
-                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
                 />
 
                 {/* Toggle para Gratis */}

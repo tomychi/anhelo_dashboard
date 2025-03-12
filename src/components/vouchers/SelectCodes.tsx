@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Codigo,
   moverCodigosARango,
   obtenerCodigosOrdenados,
   VoucherTituloConFecha,
-} from '../../firebase/voucher';
+} from "../../firebase/voucher";
 
 export const SelectCodes = ({
   voucherTitles,
@@ -12,10 +12,10 @@ export const SelectCodes = ({
   voucherTitles: VoucherTituloConFecha[];
 }) => {
   const [codigos, setCodigos] = useState<Codigo[]>([]);
-  const [minCodigo, setMinCodigo] = useState<number | ''>('');
-  const [maxCodigo, setMaxCodigo] = useState<number | ''>('');
+  const [minCodigo, setMinCodigo] = useState<number | "">("");
+  const [maxCodigo, setMaxCodigo] = useState<number | "">("");
   const [selectedCodes, setSelectedCodes] = useState<Codigo[]>([]);
-  const [selectedTitle, setSelectedTitle] = useState<string>('');
+  const [selectedTitle, setSelectedTitle] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const SelectCodes = ({
         const codigosOrdenados = await obtenerCodigosOrdenados();
         setCodigos(codigosOrdenados);
       } catch (error) {
-        console.error('Error al obtener los códigos:', error);
+        console.error("Error al obtener los códigos:", error);
       } finally {
         setLoading(false);
       }
@@ -35,13 +35,13 @@ export const SelectCodes = ({
   }, []);
 
   const handleSelectRange = async () => {
-    if (minCodigo === '' || maxCodigo === '') {
-      alert('Por favor, ingrese ambos valores de rango.');
+    if (minCodigo === "" || maxCodigo === "") {
+      alert("Por favor, ingrese ambos valores de rango.");
       return;
     }
 
     if (!selectedTitle) {
-      alert('Por favor, seleccione un título.');
+      alert("Por favor, seleccione un título.");
       return;
     }
 
@@ -55,9 +55,9 @@ export const SelectCodes = ({
 
     try {
       await moverCodigosARango(selectedTitle, seleccionados);
-      alert('Códigos movidos correctamente');
+      alert("Códigos movidos correctamente");
     } catch (error) {
-      alert('Error al mover códigos');
+      alert("Error al mover códigos");
     }
   };
 
@@ -67,7 +67,7 @@ export const SelectCodes = ({
       <select
         value={selectedTitle}
         onChange={(e) => setSelectedTitle(e.target.value)}
-        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
       >
         <option value="">Seleccionar Título</option>
         {voucherTitles.map((title) => (
@@ -80,31 +80,31 @@ export const SelectCodes = ({
       <input
         type="number"
         placeholder="Código mínimo"
-        value={minCodigo || ''}
+        value={minCodigo || ""}
         onChange={(e) =>
           setMinCodigo(
-            e.target.value === '' ? '' : parseInt(e.target.value, 10)
+            e.target.value === "" ? "" : parseInt(e.target.value, 10)
           )
         }
-        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
       />
       <input
         type="number"
         placeholder="Código máximo"
-        value={maxCodigo || ''}
+        value={maxCodigo || ""}
         onChange={(e) =>
           setMaxCodigo(
-            e.target.value === '' ? '' : parseInt(e.target.value, 10)
+            e.target.value === "" ? "" : parseInt(e.target.value, 10)
           )
         }
-        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-300 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+        className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
       />
       <button
         onClick={handleSelectRange}
         disabled={loading}
         className="text-gray-100 w-full h-10 px-4 bg-black font-medium rounded-md outline-none"
       >
-        {loading ? 'Cargando...' : 'Seleccionar Rango'}
+        {loading ? "Cargando..." : "Seleccionar Rango"}
       </button>
     </div>
   );

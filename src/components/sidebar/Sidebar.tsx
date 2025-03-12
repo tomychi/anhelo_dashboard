@@ -652,7 +652,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
           onMouseMove={handleMouseMove}
         >
           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-12 h-1 bg-gray-300 rounded-full" />
+            <div className="w-12 h-1 bg-gray-200 rounded-full" />
           </div>
         </div>
         <div className="px-4 pb-4 flex justify-center flex-col items-center">
@@ -851,7 +851,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 onMouseMove={handleMenuMouseMove}
               >
                 <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                  <div className="w-12 h-1 bg-gray-200 rounded-full" />
                 </div>
               </div>
             )}

@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { CartShop, MenuGallery, PedidosWeb } from '../components/menuShop';
-import { UploadOrder } from '../firebase/UploadOrder';
-import Swal from 'sweetalert2';
-import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/configureStore';
-import { addTelefonoFirebase } from '../firebase/Telefonos';
-import { canjearVoucher } from '../firebase/voucher';
-import currencyFormat from '../helpers/currencyFormat';
+import React, { useState, useEffect, useCallback } from "react";
+import { CartShop, MenuGallery, PedidosWeb } from "../components/menuShop";
+import { UploadOrder } from "../firebase/UploadOrder";
+import Swal from "sweetalert2";
+import { obtenerFechaActual, obtenerHoraActual } from "../helpers/dateToday";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/configureStore";
+import { addTelefonoFirebase } from "../firebase/Telefonos";
+import { canjearVoucher } from "../firebase/voucher";
+import currencyFormat from "../helpers/currencyFormat";
 
 export interface FormDataProps {
   cupon: string;
@@ -55,19 +55,19 @@ export const DynamicForm: React.FC = () => {
   const [editableTotal, setEditableTotal] = useState(0);
   const [detallePedido, setDetallePedido] = useState<DetallePedidoProps[]>([]);
   const [formData, setFormData] = useState<FormDataProps>({
-    cupon: '',
-    aclaraciones: '',
-    metodoPago: '',
-    direccion: '',
+    cupon: "",
+    aclaraciones: "",
+    metodoPago: "",
+    direccion: "",
     map: [0, 0],
-    telefono: '',
-    envio: '2000',
+    telefono: "",
+    envio: "2000",
     hora: obtenerHoraActual(),
-    ubicacion: '',
-    referencias: '',
-    cadete: 'NO ASIGNADO',
-    efectivoCantidad: '',
-    mercadopagoCantidad: '',
+    ubicacion: "",
+    referencias: "",
+    cadete: "NO ASIGNADO",
+    efectivoCantidad: "",
+    mercadopagoCantidad: "",
   });
 
   const { materiales } = useSelector((state: RootState) => state.materials);
@@ -97,7 +97,7 @@ export const DynamicForm: React.FC = () => {
   const handleFormClient = (clienteInfo: FormDataProps) => {
     const clienteInfoConEnvio = {
       ...clienteInfo,
-      envio: '2000',
+      envio: "2000",
     };
     setFormData((prevState) => ({
       ...prevState,
@@ -114,18 +114,18 @@ export const DynamicForm: React.FC = () => {
   };
 
   const inputClass = `
-    block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full bg-gray-300
+    block px-4 h-12 border-t border-1 border-black border-opacity-20 w-full bg-gray-200
     appearance-none focus:outline-none focus:ring-0 peer
     placeholder-gray-400 placeholder-opacity-100
     text-black font-light
-    autofill:bg-gray-300 autofill:text-black
-    focus:bg-gray-300 focus:text-black
-    hover:bg-gray-300 hover:text-black
+    autofill:bg-gray-200 autofill:text-black
+    focus:bg-gray-200 focus:text-black
+    hover:bg-gray-200 hover:text-black
   `;
 
   const inputStyle = {
-    backgroundColor: 'rgb(209 213 219)',
-    color: 'black',
+    backgroundColor: "rgb(209 213 219)",
+    color: "black",
   };
 
   const FormInput: React.FC<{
@@ -136,14 +136,14 @@ export const DynamicForm: React.FC = () => {
   }> = ({ name, type, placeholder, required }) => {
     // Siempre usa un string en el estado local
     const [localValue, setLocalValue] = useState<string>(
-      typeof formData[name] === 'object'
+      typeof formData[name] === "object"
         ? JSON.stringify(formData[name]) // Convertimos la tupla a string
         : String(formData[name]) // Convertimos números o cadenas a string
     );
 
     useEffect(() => {
       setLocalValue(
-        typeof formData[name] === 'object'
+        typeof formData[name] === "object"
           ? JSON.stringify(formData[name]) // Convertimos la tupla a string
           : String(formData[name]) // Convertimos números o cadenas a string
       );
@@ -155,12 +155,12 @@ export const DynamicForm: React.FC = () => {
     const handleBlur = () => {
       let valueToStore: string | number | [number, number] = localValue;
 
-      if (localValue.startsWith('[') && localValue.endsWith(']')) {
+      if (localValue.startsWith("[") && localValue.endsWith("]")) {
         try {
           // Convertimos de vuelta a tupla si es un JSON válido
           valueToStore = JSON.parse(localValue);
         } catch (error) {
-          console.error('Error parsing value to tuple:', error);
+          console.error("Error parsing value to tuple:", error);
         }
       } else if (!isNaN(Number(localValue))) {
         // Si es un número, lo convertimos a número
@@ -172,10 +172,10 @@ export const DynamicForm: React.FC = () => {
     return (
       <div className="relative w-full">
         <input
-          className={`${inputClass} ${name === 'cupon' ? 'rounded-t-lg' : ''} ${
-            name === 'efectivoCantidad' ? 'rounded-bl-lg border w-1/2' : ''
+          className={`${inputClass} ${name === "cupon" ? "rounded-t-lg" : ""} ${
+            name === "efectivoCantidad" ? "rounded-bl-lg border w-1/2" : ""
           }${
-            name === 'mercadopagoCantidad' ? 'rounded-br-lg border w-1/2' : ''
+            name === "mercadopagoCantidad" ? "rounded-br-lg border w-1/2" : ""
           }`}
           style={inputStyle}
           type={type}
@@ -192,8 +192,8 @@ export const DynamicForm: React.FC = () => {
             type="button"
             className="absolute right-4 font-medium top-1/2 transform -translate-y-1/2 rounded-full bg-black text-gray-100 text-xs h-4 w-4 flex items-center text-center justify-center"
             onClick={() => {
-              setLocalValue('');
-              handleFormChange({ [name]: '' });
+              setLocalValue("");
+              handleFormChange({ [name]: "" });
             }}
           >
             X
@@ -219,18 +219,18 @@ export const DynamicForm: React.FC = () => {
 
     if (detallePedido.length === 0) {
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Por favor, agrega al menos una hamburguesa.',
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor, agrega al menos una hamburguesa.",
       });
       return;
     }
 
     if (!formData.metodoPago || !formData.direccion) {
       Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Por favor, completa los campos requeridos.',
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor, completa los campos requeridos.",
       });
       return;
     }
@@ -242,7 +242,7 @@ export const DynamicForm: React.FC = () => {
     // Verificamos si hay cupones y los procesamos
     if (formData.cupon) {
       // Dividimos los cupones por comas y eliminamos espacios en blanco alrededor
-      const cupones = formData.cupon.split(',').map((cupon) => cupon.trim());
+      const cupones = formData.cupon.split(",").map((cupon) => cupon.trim());
 
       // Usamos Promise.all para validar todos los cupones
       const validacionCupones = await Promise.all(
@@ -262,9 +262,9 @@ export const DynamicForm: React.FC = () => {
       // Si ningún cupón es válido, mostrar alerta de error
       if (!cuponValido) {
         Swal.fire({
-          icon: 'error',
-          title: 'Cupones inválidos',
-          text: 'Ninguno de los cupones ingresados es válido o ya ha sido canjeado.',
+          icon: "error",
+          title: "Cupones inválidos",
+          text: "Ninguno de los cupones ingresados es válido o ya ha sido canjeado.",
         });
       }
     }
@@ -328,8 +328,8 @@ export const DynamicForm: React.FC = () => {
 
       // Mostrar el nuevo total con el descuento aplicado
       Swal.fire({
-        icon: 'success',
-        title: 'DESCUENTO',
+        icon: "success",
+        title: "DESCUENTO",
         text: `El total es ${currencyFormat(
           subTotal + parseInt(formData.envio)
         )}`,
@@ -351,13 +351,13 @@ export const DynamicForm: React.FC = () => {
 
     // Si el método de pago es "efectivo", asigna todo el editableTotal a efectivoCantidad
     const efectivoCantidad =
-      formData.metodoPago === 'efectivo'
+      formData.metodoPago === "efectivo"
         ? subTotal + envio
         : parseInt(formData.efectivoCantidad) || 0;
 
     // Si el método de pago es "mercadopago", asigna todo el editableTotal a mercadopagoCantidad
     const mercadopagoCantidad =
-      formData.metodoPago === 'mercadopago'
+      formData.metodoPago === "mercadopago"
         ? subTotal + envio
         : parseInt(formData.mercadopagoCantidad) || 0;
 
@@ -382,15 +382,15 @@ export const DynamicForm: React.FC = () => {
       .then((result) => {
         console.log(result);
         Swal.fire({
-          icon: 'success',
-          title: 'Pedido guardado',
-          text: 'El pedido ha sido guardado exitosamente.',
+          icon: "success",
+          title: "Pedido guardado",
+          text: "El pedido ha sido guardado exitosamente.",
         });
       })
       .catch((error) => {
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
+          icon: "error",
+          title: "Error",
           text: `Hubo un error al cargar el pedido: ${error}`,
         });
       });
@@ -398,25 +398,25 @@ export const DynamicForm: React.FC = () => {
     addTelefonoFirebase(info.telefono, info.fecha);
 
     setFormData({
-      cupon: '',
-      aclaraciones: '',
-      metodoPago: '',
-      direccion: '',
+      cupon: "",
+      aclaraciones: "",
+      metodoPago: "",
+      direccion: "",
       map: [0, 0],
-      envio: '2000',
+      envio: "2000",
       hora: obtenerHoraActual(),
-      telefono: '',
-      referencias: '',
-      ubicacion: '',
-      cadete: 'NO ASIGNADO',
-      efectivoCantidad: '',
-      mercadopagoCantidad: '',
+      telefono: "",
+      referencias: "",
+      ubicacion: "",
+      cadete: "NO ASIGNADO",
+      efectivoCantidad: "",
+      mercadopagoCantidad: "",
     });
 
     setDetallePedido([]);
   };
 
-  const [seccionActiva, setSeccionActiva] = useState('elaborar');
+  const [seccionActiva, setSeccionActiva] = useState("elaborar");
 
   const handleFormBurger = (values: DetallePedidoProps) => {
     const quantity = values.quantity !== undefined ? values.quantity : 0;
@@ -482,33 +482,33 @@ export const DynamicForm: React.FC = () => {
           </div>
 
           <div className="md:w-1/3 flex flex-col font-coolvetica font-black">
-            <p className="bg-gray-300 rounded-t-lg  border-b border-1 border-black border-opacity-20 text-center font-medium text-2xl pt-6 pb-4">
+            <p className="bg-gray-200 rounded-t-lg  border-b border-1 border-black border-opacity-20 text-center font-medium text-2xl pt-6 pb-4">
               Toma pedidos
             </p>
-            <div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-300 ">
+            <div className="flex flex-row gap-4 w-full justify-center px-4 pt-4 bg-gray-200 ">
               <button
                 className={`w-1/2 font-bold py-2 rounded-lg ${
-                  seccionActiva === 'elaborar'
-                    ? 'bg-black text-gray-200'
-                    : 'bg-gray-300 text-black border-black border-1 border border-opacity-20'
+                  seccionActiva === "elaborar"
+                    ? "bg-black text-gray-200"
+                    : "bg-gray-200 text-black border-black border-1 border border-opacity-20"
                 } text-black`}
-                onClick={() => setSeccionActiva('elaborar')}
+                onClick={() => setSeccionActiva("elaborar")}
               >
                 Manualmente
               </button>
               <button
                 className={`w-1/2 font-bold py-2 rounded-lg ${
-                  seccionActiva === 'elaborar'
-                    ? 'bg-gray-300 text-black border-black border-1 border border-opacity-20'
-                    : 'bg-black text-gray-200'
+                  seccionActiva === "elaborar"
+                    ? "bg-gray-200 text-black border-black border-1 border border-opacity-20"
+                    : "bg-black text-gray-200"
                 }`}
-                onClick={() => setSeccionActiva('hechos')}
+                onClick={() => setSeccionActiva("hechos")}
               >
                 Analizar
               </button>
             </div>
-            <div className="bg-gray-300 rounded-b-lg shadow-lg">
-              {seccionActiva === 'elaborar' ? (
+            <div className="bg-gray-200 rounded-b-lg shadow-lg">
+              {seccionActiva === "elaborar" ? (
                 <div className="flex flex-col items-center justify-center p-4">
                   <form
                     onSubmit={handleSubmit}
@@ -566,13 +566,13 @@ export const DynamicForm: React.FC = () => {
                           <option value="mercadopago">Mercadopago</option>
                           <option value="ambos">Ambos</option>
                         </select>
-                        {(formData.metodoPago === 'mercadopago' ||
-                          formData.metodoPago === 'ambos') && (
+                        {(formData.metodoPago === "mercadopago" ||
+                          formData.metodoPago === "ambos") && (
                           <button
                             className={`w-1/5 text-gray-100 h-12 flex text-center justify-center items-center font-medium bg-black ${
-                              formData.metodoPago === 'mercadopago'
-                                ? 'rounded-br-lg'
-                                : ''
+                              formData.metodoPago === "mercadopago"
+                                ? "rounded-br-lg"
+                                : ""
                             }`}
                             type="button"
                             onClick={() => {
@@ -581,13 +581,13 @@ export const DynamicForm: React.FC = () => {
                                 .writeText(mensaje)
                                 .then(() => {
                                   console.log(
-                                    'Mensaje copiado al portapapeles:',
+                                    "Mensaje copiado al portapapeles:",
                                     mensaje
                                   );
                                 })
                                 .catch((error) => {
                                   console.error(
-                                    'Error al copiar el mensaje al portapapeles:',
+                                    "Error al copiar el mensaje al portapapeles:",
                                     error
                                   );
                                 });
@@ -597,7 +597,7 @@ export const DynamicForm: React.FC = () => {
                           </button>
                         )}
                       </div>
-                      {formData.metodoPago === 'ambos' && (
+                      {formData.metodoPago === "ambos" && (
                         <div className="flex flex-row">
                           <FormInput
                             name="efectivoCantidad"

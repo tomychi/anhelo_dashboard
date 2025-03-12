@@ -135,7 +135,7 @@ export const Gastos: React.FC = () => {
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
         <p className="text-black font-bold text-4xl mt-1">Gastos</p>
         <NavLink
-          className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+          className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
           onClick={toggleModal}
           to={"/nuevaCompra"}
         >
@@ -278,7 +278,7 @@ export const Gastos: React.FC = () => {
                   <td className="pl-4 w-1/7 font-bold">
                     <div className="select-wrapper ">
                       <select
-                        className="bg-gray-300  py-1 pl-2   rounded-full"
+                        className="bg-gray-200  py-1 pl-2   rounded-full"
                         value={estado}
                         onChange={(e) =>
                           handleStatusChange(

@@ -18,7 +18,7 @@ const TogglePermiso = ({ isOn, onToggle, label }) => (
     <p className="text-sm">{label}</p>
     <div
       className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
-        isOn ? "bg-black" : "bg-gray-300"
+        isOn ? "bg-black" : "bg-gray-200"
       }`}
       onClick={onToggle}
     >
@@ -457,7 +457,7 @@ export const Empleados = () => {
         <p className="text-black font-bold text-4xl mt-1">Empleados</p>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-gray-300 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
+          className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -637,7 +637,7 @@ export const Empleados = () => {
               onMouseMove={handleMouseMove}
             >
               <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                <div className="w-12 h-1 bg-gray-200 rounded-full" />
               </div>
             </div>
 
@@ -771,7 +771,7 @@ export const Empleados = () => {
               onMouseMove={handleMouseMove}
             >
               <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-1 bg-gray-300 rounded-full" />
+                <div className="w-12 h-1 bg-gray-200 rounded-full" />
               </div>
             </div>
 

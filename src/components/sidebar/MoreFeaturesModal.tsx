@@ -149,7 +149,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
           onMouseMove={handleMouseMove}
         >
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-12 h-1 bg-gray-300 rounded-full" />
+            <div className="w-12 h-1 bg-gray-200 rounded-full" />
           </div>
         </div>
 
@@ -182,7 +182,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
                     </div>
                     <div
                       className={`w-14 h-8 ml-12 flex items-center rounded-full p-1 cursor-pointer ${
-                        featureToggles[feature.id] ? "bg-black" : "bg-gray-300"
+                        featureToggles[feature.id] ? "bg-black" : "bg-gray-200"
                       } ${isActive ? "opacity-50" : ""}`}
                       onClick={() => handleToggleFeature(feature.id)}
                     >
