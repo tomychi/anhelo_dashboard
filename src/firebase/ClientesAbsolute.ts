@@ -8,6 +8,12 @@ import {
   getDocs,
   query,
   where,
+  onSnapshot,
+  deleteDoc,
+  CollectionReference,
+  DocumentReference,
+  Query,
+  DocumentData,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,14 +29,21 @@ export interface DatosUsuario {
   nombreUsuario: string;
   telefono: string;
   contraseña: string;
-  rolUsuario: string; // Add the role field
+  rolUsuario: string;
+}
+
+export interface ConfigEmpresa {
+  coleccionesDisponibles: string[];
+  featuresActivos: string[];
+  ultimaActualizacion: Date;
 }
 
 export interface EmpresaProps {
   id?: string;
   datosGenerales: DatosGeneralesEmpresa;
   datosUsuario: DatosUsuario;
-  featuresIniciales: string[]; // Nueva propiedad para almacenar los features seleccionados
+  featuresIniciales: string[];
+  config?: ConfigEmpresa;
   estado: string;
   ultimaActualizacion: Date;
 }
@@ -51,6 +64,67 @@ export interface EmpleadoProps {
   };
 }
 
+// Mapeo de features a las colecciones necesarias
+const FEATURE_A_COLECCIONES = {
+  Dashboard: ["registros"],
+  Empleados: ["empleados", "registros"],
+  Operaciones: ["materiales", "registros"],
+  "Facturación automática": ["comprobantes", "registros", "afip"],
+  Finanzas: ["gastos", "inversion", "registros", "comprobantes"],
+  "Página de ventas": [
+    "pedidos",
+    "materiales",
+    "vouchers",
+    "users",
+    "telefonos",
+  ],
+  "Precios dinámicos": ["materiales", "registros"],
+  "WhatsApp Marketing": ["telefonos", "registros"],
+};
+
+// Función para inicializar la estructura de colecciones según los features seleccionados
+const inicializarColeccionesCliente = async (
+  empresaId: string,
+  featuresSeleccionados: string[]
+): Promise<string[]> => {
+  const firestore = getFirestore();
+
+  // Conjunto para almacenar colecciones únicas (evitar duplicados)
+  const coleccionesUnicas = new Set<string>();
+
+  // Siempre añadir algunas colecciones básicas que son necesarias independientemente de los features
+  const coleccionesBasicas = ["registros", "users"];
+  coleccionesBasicas.forEach((col) => coleccionesUnicas.add(col));
+
+  // Añadir colecciones basadas en los features seleccionados
+  featuresSeleccionados.forEach((feature) => {
+    const colecciones = FEATURE_A_COLECCIONES[feature] || [];
+    colecciones.forEach((col) => coleccionesUnicas.add(col));
+  });
+
+  // Crear cada colección única
+  for (const nombreColeccion of coleccionesUnicas) {
+    // Creamos un documento inicial para que la colección exista
+    const docRef = doc(
+      firestore,
+      `absoluteClientes/${empresaId}/${nombreColeccion}/inicial`
+    );
+
+    // Documento simple que indica la creación de la colección
+    await setDoc(docRef, {
+      creado: new Date(),
+      descripcion: `Documento inicial para la colección ${nombreColeccion}`,
+      _esDocumentoSistema: true,
+    });
+
+    console.log(
+      `Colección ${nombreColeccion} inicializada para empresa ${empresaId}`
+    );
+  }
+
+  return Array.from(coleccionesUnicas);
+};
+
 // Función para crear una nueva empresa
 export const crearEmpresa = async (
   nombreUsuario: string,
@@ -60,13 +134,19 @@ export const crearEmpresa = async (
   cantidadEmpleados: string,
   formaJuridica: string,
   rolUsuario: string,
-  featuresSeleccionados: string[] // Añadimos el parámetro para los features seleccionados
+  featuresSeleccionados: string[]
 ): Promise<string> => {
   const firestore = getFirestore();
   const empresaId = uuidv4();
   const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
   const fechaActual = new Date();
+
+  // Inicializar las colecciones según los features seleccionados y obtener la lista
+  const coleccionesCreadas = await inicializarColeccionesCliente(
+    empresaId,
+    featuresSeleccionados
+  );
 
   const datosEmpresa: EmpresaProps = {
     id: empresaId,
@@ -82,11 +162,18 @@ export const crearEmpresa = async (
       contraseña: contraseña,
       rolUsuario: rolUsuario,
     },
-    featuresIniciales: featuresSeleccionados, // Añadimos la nueva propiedad
+    featuresIniciales: featuresSeleccionados,
+    // Almacenar la configuración directamente en el documento de la empresa
+    config: {
+      coleccionesDisponibles: coleccionesCreadas,
+      featuresActivos: featuresSeleccionados,
+      ultimaActualizacion: fechaActual,
+    },
     estado: "activo",
     ultimaActualizacion: fechaActual,
   };
 
+  // Crear el documento principal de la empresa
   await setDoc(empresaRef, datosEmpresa);
 
   return empresaId;
@@ -233,6 +320,38 @@ export const actualizarEstadoEmpresa = async (
   });
 };
 
+// Función para actualizar la configuración de la empresa
+export const actualizarConfiguracionEmpresa = async (
+  empresaId: string,
+  nuevaConfig: Partial<ConfigEmpresa>
+): Promise<void> => {
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+
+  // Primero obtenemos la configuración actual
+  const docSnap = await getDoc(empresaRef);
+
+  if (!docSnap.exists()) {
+    throw new Error("La empresa no existe");
+  }
+
+  const empresaData = docSnap.data();
+  const configActual = empresaData.config || {};
+
+  // Mezclamos la configuración actual con la nueva
+  const configActualizada = {
+    ...configActual,
+    ...nuevaConfig,
+    ultimaActualizacion: new Date(),
+  };
+
+  // Actualizamos solo el campo config
+  await updateDoc(empresaRef, {
+    config: configActualizada,
+    ultimaActualizacion: new Date(),
+  });
+};
+
 // Función para verificar si ya existe un usuario con ese teléfono
 export const verificarTelefonoExistente = async (
   telefono: string
@@ -329,6 +448,7 @@ export const crearEmpleado = async (
 
   return empleadoId;
 };
+
 // Función para obtener todos los empleados de una empresa
 export const obtenerEmpleadosDeEmpresa = async (
   empresaId: string
@@ -425,4 +545,276 @@ export const obtenerNombreEmpresa = async (
   } else {
     return "";
   }
+};
+
+/**
+ * Obtiene las colecciones disponibles para una empresa específica
+ * @param empresaId ID de la empresa
+ * @returns Array con los nombres de las colecciones disponibles
+ */
+export const obtenerColeccionesDisponibles = async (
+  empresaId: string
+): Promise<string[]> => {
+  if (!empresaId) return [];
+
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+  const docSnap = await getDoc(empresaRef);
+
+  if (docSnap.exists() && docSnap.data().config?.coleccionesDisponibles) {
+    return docSnap.data().config.coleccionesDisponibles;
+  } else {
+    // Si no hay configuración, devolvemos un conjunto mínimo de colecciones básicas
+    return ["registros", "users"];
+  }
+};
+
+/**
+ * Verifica si una empresa tiene acceso a una colección específica
+ * @param empresaId ID de la empresa
+ * @param nombreColeccion Nombre de la colección a verificar
+ * @returns Booleano indicando si la empresa tiene acceso
+ */
+export const tieneAccesoAColeccion = async (
+  empresaId: string,
+  nombreColeccion: string
+): Promise<boolean> => {
+  if (!empresaId) return false;
+
+  const coleccionesDisponibles = await obtenerColeccionesDisponibles(empresaId);
+  return coleccionesDisponibles.includes(nombreColeccion);
+};
+
+/**
+ * Obtiene los features activos de una empresa
+ * @param empresaId ID de la empresa
+ * @returns Array con los nombres de los features activos
+ */
+export const obtenerFeaturesActivos = async (
+  empresaId: string
+): Promise<string[]> => {
+  if (!empresaId) return [];
+
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+  const docSnap = await getDoc(empresaRef);
+
+  if (docSnap.exists()) {
+    // Intentamos obtener primero de config.featuresActivos y si no existe, de featuresIniciales
+    const empresa = docSnap.data();
+    return empresa.config?.featuresActivos || empresa.featuresIniciales || [];
+  } else {
+    return [];
+  }
+};
+
+// Funciones auxiliares para interactuar con colecciones
+
+/**
+ * Determina la ruta correcta para acceder a una colección según el modo de operación
+ * @param coleccionNombre Nombre de la colección a acceder
+ * @param clienteId ID del cliente (si es undefined, se accede a la colección principal)
+ * @returns Referencia a la colección correspondiente
+ */
+export const obtenerColeccion = (
+  coleccionNombre: string,
+  clienteId?: string
+): CollectionReference<DocumentData> => {
+  const db = getFirestore();
+
+  if (clienteId) {
+    // Modo cliente: acceder a la colección dentro del documento del cliente
+    return collection(db, `absoluteClientes/${clienteId}/${coleccionNombre}`);
+  } else {
+    // Modo principal: acceder a la colección en la raíz
+    return collection(db, coleccionNombre);
+  }
+};
+
+/**
+ * Determina la ruta correcta para acceder a un documento específico
+ * @param coleccionNombre Nombre de la colección que contiene el documento
+ * @param documentoId ID del documento a acceder
+ * @param clienteId ID del cliente (si es undefined, se accede al documento en la colección principal)
+ * @returns Referencia al documento correspondiente
+ */
+export const obtenerDocumento = (
+  coleccionNombre: string,
+  documentoId: string,
+  clienteId?: string
+): DocumentReference<DocumentData> => {
+  const db = getFirestore();
+
+  if (clienteId) {
+    // Modo cliente: documento dentro de la colección del cliente
+    return doc(
+      db,
+      `absoluteClientes/${clienteId}/${coleccionNombre}`,
+      documentoId
+    );
+  } else {
+    // Modo principal: documento en la colección principal
+    return doc(db, coleccionNombre, documentoId);
+  }
+};
+
+/**
+ * Crear un documento en la colección correcta según el modo de operación
+ * @param coleccionNombre Nombre de la colección donde crear el documento
+ * @param documentoId ID del documento a crear (si es undefined, Firestore generará uno)
+ * @param datos Datos a guardar en el documento
+ * @param clienteId ID del cliente (si es undefined, se crea en la colección principal)
+ * @returns ID del documento creado
+ */
+export const crearDocumento = async (
+  coleccionNombre: string,
+  datos: any,
+  documentoId?: string,
+  clienteId?: string
+): Promise<string> => {
+  const db = getFirestore();
+  let docRef: DocumentReference;
+
+  if (documentoId) {
+    // Usar el ID proporcionado
+    docRef = obtenerDocumento(coleccionNombre, documentoId, clienteId);
+  } else {
+    // Generar un nuevo ID
+    if (clienteId) {
+      const coleccionRef = collection(
+        db,
+        `absoluteClientes/${clienteId}/${coleccionNombre}`
+      );
+      docRef = doc(coleccionRef);
+    } else {
+      const coleccionRef = collection(db, coleccionNombre);
+      docRef = doc(coleccionRef);
+    }
+  }
+
+  // Añadir timestamps
+  const datosConTimestamp = {
+    ...datos,
+    creado: new Date(),
+    actualizado: new Date(),
+  };
+
+  await setDoc(docRef, datosConTimestamp);
+  return docRef.id;
+};
+
+/**
+ * Actualizar un documento existente
+ * @param coleccionNombre Nombre de la colección que contiene el documento
+ * @param documentoId ID del documento a actualizar
+ * @param datos Datos a actualizar
+ * @param clienteId ID del cliente (si es undefined, se actualiza en la colección principal)
+ */
+export const actualizarDocumento = async (
+  coleccionNombre: string,
+  documentoId: string,
+  datos: any,
+  clienteId?: string
+): Promise<void> => {
+  const docRef = obtenerDocumento(coleccionNombre, documentoId, clienteId);
+
+  // Añadir timestamp de actualización
+  const datosConTimestamp = {
+    ...datos,
+    actualizado: new Date(),
+  };
+
+  await updateDoc(docRef, datosConTimestamp);
+};
+
+/**
+ * Eliminar un documento
+ * @param coleccionNombre Nombre de la colección que contiene el documento
+ * @param documentoId ID del documento a eliminar
+ * @param clienteId ID del cliente (si es undefined, se elimina de la colección principal)
+ */
+export const eliminarDocumento = async (
+  coleccionNombre: string,
+  documentoId: string,
+  clienteId?: string
+): Promise<void> => {
+  const docRef = obtenerDocumento(coleccionNombre, documentoId, clienteId);
+  await deleteDoc(docRef);
+};
+
+/**
+ * Obtener todos los documentos de una colección
+ * @param coleccionNombre Nombre de la colección
+ * @param clienteId ID del cliente (si es undefined, se obtiene de la colección principal)
+ * @returns Array de documentos
+ */
+export const obtenerTodosDocumentos = async (
+  coleccionNombre: string,
+  clienteId?: string
+): Promise<DocumentData[]> => {
+  const coleccionRef = obtenerColeccion(coleccionNombre, clienteId);
+  const snapshot = await getDocs(coleccionRef);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
+/**
+ * Suscribirse a los cambios en una colección
+ * @param coleccionNombre Nombre de la colección
+ * @param callback Función a ejecutar cuando hay cambios
+ * @param clienteId ID del cliente (si es undefined, se suscribe a la colección principal)
+ * @returns Función para cancelar la suscripción
+ */
+export const suscribirseAColeccion = (
+  coleccionNombre: string,
+  callback: (datos: DocumentData[]) => void,
+  clienteId?: string
+): (() => void) => {
+  const coleccionRef = obtenerColeccion(coleccionNombre, clienteId);
+
+  const unsubscribe = onSnapshot(coleccionRef, (snapshot) => {
+    const datos = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    callback(datos);
+  });
+
+  return unsubscribe;
+};
+
+/**
+ * Consultar documentos con filtros
+ * @param coleccionNombre Nombre de la colección
+ * @param filtros Array de objetos {campo, operador, valor}
+ * @param clienteId ID del cliente (si es undefined, se consulta en la colección principal)
+ * @returns Array de documentos que cumplen los filtros
+ */
+export const consultarDocumentos = async (
+  coleccionNombre: string,
+  filtros: { campo: string; operador: string; valor: any }[],
+  clienteId?: string
+): Promise<DocumentData[]> => {
+  const coleccionRef = obtenerColeccion(coleccionNombre, clienteId);
+
+  // Construir la consulta con los filtros
+  let consulta: Query = coleccionRef;
+
+  filtros.forEach((filtro) => {
+    consulta = query(
+      consulta,
+      where(filtro.campo, filtro.operador as any, filtro.valor)
+    );
+  });
+
+  const snapshot = await getDocs(consulta);
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 };
