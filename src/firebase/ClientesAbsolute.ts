@@ -66,20 +66,14 @@ export interface EmpleadoProps {
 
 // Mapeo de features a las colecciones necesarias
 const FEATURE_A_COLECCIONES = {
-  Dashboard: ["registros"],
-  Empleados: ["empleados", "registros"],
-  Operaciones: ["materiales", "registros"],
-  "Facturación automática": ["comprobantes", "registros", "afip"],
-  Finanzas: ["gastos", "inversion", "registros", "comprobantes"],
-  "Página de ventas": [
-    "pedidos",
-    "materiales",
-    "vouchers",
-    "users",
-    "telefonos",
-  ],
-  "Precios dinámicos": ["materiales", "registros"],
-  "WhatsApp Marketing": ["telefonos", "registros"],
+  Dashboard: ["pedidos"], //siempre tenemos esto porque en el form no dejamos deseleccionarlo
+  Empleados: ["empleados"], //lo unico que necesitamos para manejar los empleados
+  Operaciones: [], //esto solo necesita la coleccion pedidos que ya esta creada
+  "Facturación automática": [], //esto solo necesita la coleccion pedidos que ya esta creada
+  Finanzas: ["gastos", "materiales"], //gastos para almacenar las compras y materiales para tener el valor de la materia prima y poder calcular el neto
+  "Página de ventas": [], //si selecciona solo la pagina le basta con tener la coleccion pedidos que ya esta creada, despues otros features como ej campañas de vouchers y demas se agrega si marca esos features, no es necesidad crearlos aca.
+  "Precios dinámicos": [], //esto solo necesita la coleccion pedidos que ya esta creada
+  "WhatsApp Marketing": ["vouchers"], //esto necesita la coleccion pedidos (que ya esta creada) + vouchers que es lo que le enviamos a los clientes
 };
 
 // Función para inicializar la estructura de colecciones según los features seleccionados
@@ -93,7 +87,7 @@ const inicializarColeccionesCliente = async (
   const coleccionesUnicas = new Set<string>();
 
   // Siempre añadir algunas colecciones básicas que son necesarias independientemente de los features
-  const coleccionesBasicas = ["registros", "users"];
+  const coleccionesBasicas = ["pedidos"];
   coleccionesBasicas.forEach((col) => coleccionesUnicas.add(col));
 
   // Añadir colecciones basadas en los features seleccionados
