@@ -152,7 +152,7 @@ export const verificarCredencialesEmpleado = async (
       );
       const q = query(
         empleadosRef,
-        where("iniciarSesion.telefono", "==", parseInt(telefono, 10)),
+        where("iniciarSesion.telefono", "==", telefono), // Cambiado: ya no convierte a entero
         where("iniciarSesion.contraseña", "==", contraseña)
       );
 
@@ -320,7 +320,7 @@ export const crearEmpleado = async (
       ultimoAcceso: null,
     },
     iniciarSesion: {
-      telefono: parseInt(telefono, 10),
+      telefono: telefono,
       contraseña: contraseña,
     },
   };
@@ -329,7 +329,6 @@ export const crearEmpleado = async (
 
   return empleadoId;
 };
-
 // Función para obtener todos los empleados de una empresa
 export const obtenerEmpleadosDeEmpresa = async (
   empresaId: string
