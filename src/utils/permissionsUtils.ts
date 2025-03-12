@@ -7,14 +7,11 @@ export interface PermissionMappings {
   [key: string]: string;
 }
 
-export interface RoutePermissions {
-  [key: string]: string[];
-}
-
 export interface DisplayNames {
   [key: string]: string;
 }
 
+// Lista completa de todos los permisos posibles del sistema
 export const PERMISOS_SISTEMA = [
   "Dashboard",
   "Ventas",
@@ -31,7 +28,7 @@ export const PERMISOS_SISTEMA = [
   "Comportamiento de clientes",
 ];
 
-// Mapeo de características/permisos a rutas (para el Sidebar)
+// Mapeo de características/permisos a rutas (relación 1:1)
 export const featureToRouteMap: PermissionMappings = {
   Dashboard: "/dashboard",
   "Facturación automática": "/facturacion",
@@ -46,21 +43,6 @@ export const featureToRouteMap: PermissionMappings = {
   Deuda: "/deudaManager",
   "Comportamiento de clientes": "/clientes",
   Ventas: "/ventas",
-};
-
-// Mapeo de permisos a rutas permitidas
-export const permissionToRoutesMap: Record<string, string[]> = {
-  Dashboard: ["/dashboard", "/monthdata"],
-  Ventas: ["/ventas", "/comanderaAutomatizada", "/productosVendidos"],
-  Gastos: ["/gastos", "/nuevaCompra"],
-  "Facturación automática": ["/facturacion"],
-  Operaciones: ["/comanderaAutomatizada", "/pedidos"],
-  Empleados: ["/empleados", "/equipo", "/registroHorario"],
-  Inversores: ["/inversores"],
-  Finanzas: ["/finanzas", "/neto", "/bruto"],
-  "WhatsApp Marketing": ["/vouchers", "/whatsappFeatures", "/campañaDetalle"],
-  Deuda: ["/deudaManager"],
-  "Comportamiento de clientes": ["/clientes", "/seguidores"],
 };
 
 // Mapeo de rutas especiales que requieren un tipo de usuario específico
@@ -116,14 +98,15 @@ export const hasPermissionForRoute = (
     }
   }
 
-  // Obtener todas las rutas permitidas para los permisos del usuario
-  const permittedRoutes: string[] = userPermissions.flatMap(
-    (permission) => permissionToRoutesMap[permission] || []
-  );
-
-  // Verificar si la ruta actual está permitida
-  for (const route of permittedRoutes) {
-    if (currentPath === route || currentPath.startsWith(`${route}/`)) {
+  // Comprobar permisos basados en la ruta actual
+  // Primero, intentamos encontrar un permiso cuya ruta coincida exactamente con la ruta actual
+  for (const permiso of userPermissions) {
+    const rutaPermitida = featureToRouteMap[permiso];
+    if (
+      rutaPermitida &&
+      (currentPath === rutaPermitida ||
+        currentPath.startsWith(`${rutaPermitida}/`))
+    ) {
       return true;
     }
   }
@@ -134,9 +117,9 @@ export const hasPermissionForRoute = (
 
 // Obtener todas las rutas permitidas para un usuario
 export const getPermittedRoutes = (userPermissions: string[]): string[] => {
-  return userPermissions.flatMap(
-    (permission) => permissionToRoutesMap[permission] || []
-  );
+  return userPermissions
+    .map((permission) => featureToRouteMap[permission])
+    .filter((route): route is string => route !== undefined);
 };
 
 // Nombres legibles para menús
