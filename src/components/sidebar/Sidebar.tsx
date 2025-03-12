@@ -51,6 +51,12 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const tipoUsuario = auth?.tipoUsuario;
 
   // Obtener la información según el tipo de usuario
+
+  console.log("AUTH STATE:", auth);
+  console.log("IS AUTH:", isAuth);
+  console.log("TIPO USUARIO:", tipoUsuario);
+  console.log("USUARIO OBJECT:", auth?.usuario);
+
   let nombreUsuario = "";
   let rolUsuario = "";
   let nombreEmpresaDirecto = "";
@@ -88,10 +94,10 @@ export const Sidebar = ({ scrollContainerRef }) => {
   // Nombre de empresa a mostrar
   const displayEmpresa =
     tipoUsuario === "empresa"
-      ? nombreEmpresaDirecto
+      ? nombreEmpresaDirecto || "Sin nombre"
       : tipoUsuario === "empleado"
-        ? empresaNombre
-        : "NaN";
+        ? empresaNombre || "Sin nombre"
+        : "Sin nombre";
 
   // Determinar si es usuario de marketing
   const isMarketingUser = nombreUsuario === "marketing@anhelo.com";
@@ -591,7 +597,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
     </div>
   );
 
-  const inicialUsuario = nombreUsuario.charAt(0).toUpperCase();
+  const inicialUsuario = nombreUsuario
+    ? nombreUsuario.charAt(0).toUpperCase()
+    : "?";
 
   return (
     <>

@@ -21,6 +21,7 @@ import { ProductStateProps } from "../redux/products/productReducer";
 import Swal from "sweetalert2";
 import { Cadete, PedidoProps } from "../types/types"; // Importa PedidoProps
 import KPILineChart from "../components/dashboard/KPILineChart";
+import { EmpresaProps, EmpleadoProps } from "../firebase/ClientesAbsolute";
 
 interface RatingInfo {
   average: string;
@@ -646,7 +647,14 @@ export const Dashboard: React.FC = () => {
     : [...allCards, ...ratingCards];
 
   const auth = useSelector((state: RootState) => state.auth);
-  const nombreUsuario = auth?.empresa?.datosUsuario?.nombreUsuario || "";
+  const tipoUsuario = auth?.tipoUsuario;
+  const nombreUsuario =
+    tipoUsuario === "empresa"
+      ? (auth?.usuario as EmpresaProps)?.datosUsuario?.nombreUsuario || ""
+      : tipoUsuario === "empleado"
+        ? (auth?.usuario as EmpleadoProps)?.datos?.nombre || ""
+        : "";
+
   const greetingName = nombreUsuario;
 
   const calculateTotalDirecciones = (vueltas: Cadete[] | undefined): number => {

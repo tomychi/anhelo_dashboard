@@ -361,7 +361,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
       };
 
       // Iniciar sesión automáticamente
-      dispatch(loginSuccess(empresaData));
+      dispatch(loginSuccess(empresaData, "empresa"));
 
       // Redirigir a la página principal
       navigate("/dashboard");
