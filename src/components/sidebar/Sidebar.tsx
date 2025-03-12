@@ -477,7 +477,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         {/* Principales acciones */}
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4">
           <NavLink to="/ayuda" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -494,7 +494,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             </div>
           </NavLink>
           <NavLink to="/billetera" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -512,7 +512,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             </div>
           </NavLink>
           <NavLink to="/actividad" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -536,7 +536,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
           <NavLink
             key={index}
             to={item.to}
-            className="px-4 h-10 flex items-center text-xs hover:bg-gray-300"
+            className="px-4 h-10 flex items-center text-xs hover:bg-gray-200"
           >
             <span className="mr-2">{item.icon}</span>
             {item.text}
@@ -546,7 +546,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       <div className="mr-8">
         <button
           onClick={handleLogout}
-          className="w-full text-xl text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-300"
+          className="w-full text-xl text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
         >
           Cerrar sesión
         </button>
@@ -592,7 +592,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         </div>
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
           <NavLink to="/ayuda" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -609,7 +609,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             </div>
           </NavLink>
           <NavLink to="/billetera" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -627,7 +627,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             </div>
           </NavLink>
           <NavLink to="/actividad" className="flex flex-col items-center">
-            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-300">
+            <div className="flex items-center flex-col justify-center w-full h-20 rounded-xl bg-gray-200">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -661,7 +661,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         <div className="mx-4">
           <button
             onClick={handleLogout}
-            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-xl text-center bg-gray-300"
+            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-xl text-center bg-gray-200"
           >
             Cerrar sesión
           </button>
@@ -728,7 +728,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             <div className="relative">
               <button
                 onClick={toggleProfile}
-                className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 ml-2 cursor-pointer"
+                className="relative bg-gray-100 h-9 w-9 rounded-full justify-center items-center flex font-coolvetica font-bold focus:outline-none transition duration-300 ease-in-out hover:bg-gray-200 ml-2 cursor-pointer"
               >
                 {inicialUsuario}
 
