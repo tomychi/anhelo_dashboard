@@ -683,42 +683,85 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
 
           <div className="mx-4 pt-14 flex flex-col gap-2">
-            {products.map((product) => (
-              <div
-                key={product.title}
-                onClick={() => toggleFeature(product.title)}
-                className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
-                  selectedFeatures.includes(product.title)
-                    ? "bg-black text-gray-100"
-                    : "bg-gray-100"
-                }`}
-              >
-                {/* Izquierda - Mostrando el SVG del producto */}
+            {/* Primero renderizar el Dashboard */}
+            {products
+              .filter((product) => product.title === "Dashboard")
+              .map((product) => (
                 <div
-                  className={`${
+                  key={product.title}
+                  onClick={() => toggleFeature(product.title)}
+                  className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
                     selectedFeatures.includes(product.title)
-                      ? "text-gray-100"
-                      : "text-black"
+                      ? "bg-black text-gray-100"
+                      : "bg-gray-100"
                   }`}
                 >
-                  {product.icon}
-                </div>
-
-                {/* Derecha */}
-                <div className="flex flex-col">
-                  <h3 className="font-medium text-lg">{product.title}</h3>
-                  <p
-                    className={`text-xs font-light ${
+                  {/* Izquierda - Mostrando el SVG del producto */}
+                  <div
+                    className={`${
                       selectedFeatures.includes(product.title)
-                        ? "text-gray-200"
-                        : "text-gray-400"
+                        ? "text-gray-100"
+                        : "text-black"
                     }`}
                   >
-                    {product.description}
-                  </p>
+                    {product.icon}
+                  </div>
+
+                  {/* Derecha */}
+                  <div className="flex flex-col">
+                    <h3 className="font-medium text-lg">{product.title}</h3>
+                    <p
+                      className={`text-xs font-light ${
+                        selectedFeatures.includes(product.title)
+                          ? "text-gray-200"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {product.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+
+            {/* Luego renderizar el resto de productos */}
+            {products
+              .filter((product) => product.title !== "Dashboard")
+              .map((product) => (
+                <div
+                  key={product.title}
+                  onClick={() => toggleFeature(product.title)}
+                  className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
+                    selectedFeatures.includes(product.title)
+                      ? "bg-black text-gray-100"
+                      : "bg-gray-100"
+                  }`}
+                >
+                  {/* Izquierda - Mostrando el SVG del producto */}
+                  <div
+                    className={`${
+                      selectedFeatures.includes(product.title)
+                        ? "text-gray-100"
+                        : "text-black"
+                    }`}
+                  >
+                    {product.icon}
+                  </div>
+
+                  {/* Derecha */}
+                  <div className="flex flex-col">
+                    <h3 className="font-medium text-lg">{product.title}</h3>
+                    <p
+                      className={`text-xs font-light ${
+                        selectedFeatures.includes(product.title)
+                          ? "text-gray-200"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {product.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
           </div>
 
           <div
