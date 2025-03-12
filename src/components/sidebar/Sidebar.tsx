@@ -28,6 +28,21 @@ const featureToRouteMap: Record<string, string> = {
   "Comportamiento de clientes": "/clientes",
 };
 
+const permissionToDisplayName: Record<string, string> = {
+  dashboard: "Dashboard",
+  ventas: "Ventas",
+  facturacion: "Facturación",
+  operaciones: "Operaciones",
+  empleados: "Empleados",
+  inversores: "Inversores",
+  finanzas: "Finanzas",
+  precios: "Precios",
+  marketing: "Marketing",
+  gastos: "Gastos",
+  deuda: "Deuda",
+  clientes: "Clientes",
+};
+
 export const Sidebar = ({ scrollContainerRef }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +54,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [menuDragStart, setMenuDragStart] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [empleadoPermisos, setEmpleadoPermisos] = useState<string[]>([]);
   const [hasReclamos, setHasReclamos] = useState(false);
   const [reclamosCount, setReclamosCount] = useState(0);
   const [empresaNombre, setEmpresaNombre] = useState("");
@@ -93,9 +109,17 @@ export const Sidebar = ({ scrollContainerRef }) => {
       setFeaturesIniciales(
         (auth.usuario as EmpresaProps).featuresIniciales || []
       );
+      // Resetear permisos de empleado
+      setEmpleadoPermisos([]);
     } else if (tipoUsuario === "empleado" && auth?.usuario) {
       setNombreUsuario((auth.usuario as EmpleadoProps).datos?.nombre || "");
       setRolUsuario((auth.usuario as EmpleadoProps).datos?.rol || "");
+      // Guardar los permisos del empleado
+      setEmpleadoPermisos(
+        (auth.usuario as EmpleadoProps).datos?.permisos || []
+      );
+      // Resetear featuresIniciales
+      setFeaturesIniciales([]);
     }
   }, [tipoUsuario, auth?.usuario]);
 
@@ -191,8 +215,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
   // Build menu items from featuresIniciales
   useEffect(() => {
-    if (featuresIniciales && featuresIniciales.length > 0) {
-      // Convert features to menu items
+    if (tipoUsuario === "empresa" && featuresIniciales.length > 0) {
+      // Para empresas, usar featuresIniciales
       const items: MenuItem[] = featuresIniciales.map((feature) => {
         return {
           to:
@@ -202,12 +226,24 @@ export const Sidebar = ({ scrollContainerRef }) => {
         };
       });
 
-      // Always add settings/configuration
+      // Build menu items based on user type
       items.push({ to: "/settings", text: "Configuración" });
 
       setMenuItems(items);
+    } else if (tipoUsuario === "empleado" && empleadoPermisos.length > 0) {
+      // Para empleados, usar sus permisos específicos
+      const items: MenuItem[] = empleadoPermisos.map((permiso) => {
+        return {
+          to:
+            featureToRouteMap[permiso] ||
+            `/${permiso.toLowerCase().replace(/\s+/g, "")}`,
+          text: permissionToDisplayName[permiso] || permiso, // Usar nombre legible
+        };
+      });
+
+      setMenuItems(items);
     } else {
-      // Fallback to default menu if featuresIniciales is empty
+      // Fallback a default menu if no permissions/features
       setMenuItems([
         { to: "/dashboard", text: "Dashboard" },
         { to: "/comanderaAutomatizada", text: "Operaciones" },
