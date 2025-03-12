@@ -206,6 +206,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [cantidadEmpleados, setCantidadEmpleados] = useState("");
   const [formaJuridica, setFormaJuridica] = useState("");
   const [selectedFeatures, setSelectedFeatures] = useState([]);
+  const [isEmpleadosOpen, setIsEmpleadosOpen] = useState(false);
+  const [isFormaJuridicaOpen, setIsFormaJuridicaOpen] = useState(false);
 
   // Estado para errores
   const [error, setError] = useState("");
@@ -485,6 +487,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <select
                 value={cantidadEmpleados}
                 onChange={(e) => setCantidadEmpleados(e.target.value)}
+                onFocus={() => setIsEmpleadosOpen(true)}
+                onBlur={() => setIsEmpleadosOpen(false)}
                 className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${cantidadEmpleados === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
                 required
               >
@@ -501,7 +505,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <div className="pointer-events-none absolute z-50 inset-y-0 right-4 flex items-center  text-black">
                 <img
                   src={arrowIcon}
-                  className="transform h-2 rotate-90"
+                  className={`transform h-2 ${isEmpleadosOpen ? "-rotate-90" : "rotate-90"} transition-transform duration-300`}
                   alt=""
                 />
               </div>
@@ -510,6 +514,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <select
                 value={formaJuridica}
                 onChange={(e) => setFormaJuridica(e.target.value)}
+                onFocus={() => setIsFormaJuridicaOpen(true)}
+                onBlur={() => setIsFormaJuridicaOpen(false)}
                 className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${formaJuridica === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
                 required
               >
@@ -532,7 +538,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
               <div className="pointer-events-none absolute z-50 inset-y-0 right-4 flex items-center  text-black">
                 <img
                   src={arrowIcon}
-                  className="transform h-2 rotate-90"
+                  className={`transform h-2 ${isFormaJuridicaOpen ? "-rotate-90" : "rotate-90"} transition-transform duration-300`}
                   alt=""
                 />
               </div>
