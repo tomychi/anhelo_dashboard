@@ -793,7 +793,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
           />
           <div
             ref={menuModalRef}
-            className="relative bg-gray-100 rounded-b-lg w-full pb-12 transition-transform duration-300 touch-none pt-8"
+            className="relative bg-gray-100 rounded-b-lg w-full pb-7 transition-transform duration-300 touch-none pt-8"
             style={{
               transform: `translateY(${-menuTranslate}px)`,
               overflowY: "auto",
@@ -813,15 +813,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
               </div>
             )}
             <nav className="px-4 h-full overflow-y-auto">
-              <ul className="flex flex-col gap-4">
-                {renderMenuItems()}
-                <div className="w-full h-20 bg-indigo-500 font-bold font-coolvetica  text-2xl rounded-3xl">
-                  Agregar funcionalidades
-                </div>
-                <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4">
-                  Ⓡ 2023, Absolute Business Solutions.
-                </p>
-              </ul>
+              <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
+              <div className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica  text-2xl mt-12 rounded-3xl">
+                Agregar funcionalidades
+              </div>
+              <p className="font-medium text-xs opacity-30 font-coolvetica text-center  mt-4">
+                Ⓡ 2023. Absolute, Soluciones Empresariales.
+              </p>
             </nav>
           </div>
         </div>
