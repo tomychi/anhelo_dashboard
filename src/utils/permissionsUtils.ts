@@ -72,17 +72,7 @@ export const hasPermissionForRoute = (
   tipoUsuario: string | undefined
 ): boolean => {
   // Rutas públicas que siempre son accesibles
-  const publicRoutes = [
-    "/",
-    "/authentication",
-    "/crearEmpresa",
-    "/perfil",
-    "/notificaciones",
-    "/preferencias",
-    "/ayuda",
-    "/billetera",
-    "/actividad",
-  ];
+  const publicRoutes = ["/", "/authentication", "/crearEmpresa"];
 
   // Si es una ruta pública, permitir acceso
   for (const route of publicRoutes) {
