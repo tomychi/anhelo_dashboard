@@ -488,8 +488,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
           <div className="flex flex-row mx-4 gap-2 justify-center">
             {/* First bar animated, others static */}
             <div className="w-1/6 h-2 rounded-full animated-loading"></div>
-            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
-            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-200  border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-200  border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">Registrate</h2>
 
@@ -541,7 +541,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
             {/* Second bar animated, first complete, third static */}
             <div className="w-1/6 h-2 rounded-full bg-black"></div>
             <div className="w-1/6 h-2 rounded-full animated-loading"></div>
-            <div className="w-1/6 border-gray-300 border h-2 rounded-full"></div>
+            <div className="w-1/6 border-gray-200  border h-2 rounded-full"></div>
           </div>
           <h2 className="text-3xl mx-4 mt-2 text-center">
             Introduci los datos de tu empresa

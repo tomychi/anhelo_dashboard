@@ -2160,7 +2160,7 @@ export const ComanderaAutomatizada: React.FC = () => {
                                   xmlns="http://www.w3.org/2000/svg"
                                   viewBox="0 0 24 24"
                                   fill="currentColor"
-                                  className={`h-4 pr-4 cursor-pointer text-gray-300 ${
+                                  className={`h-4 pr-4 cursor-pointer text-gray-200  ${
                                     unlocking[index] ? "unlocking" : ""
                                   }`}
                                   onMouseEnter={() =>

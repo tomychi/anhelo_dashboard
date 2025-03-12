@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
-import qrcode from 'qrcode-generator';
+import qrcode from "qrcode-generator";
 import { readEmpleados } from "../firebase/registroEmpleados";
 import Calendar from "../components/Calendar";
 import { RootState } from "../redux/configureStore";
@@ -22,8 +22,6 @@ interface Empleado {
   endTime?: string;
 }
 
-
-
 export const Equipo: React.FC = () => {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,7 +29,7 @@ export const Equipo: React.FC = () => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { totalProductosVendidos, vueltas } = useSelector(
-    (state: RootState) => state.data,
+    (state: RootState) => state.data
   );
   const [isPaying, setIsPaying] = useState(false);
 
@@ -40,7 +38,7 @@ export const Equipo: React.FC = () => {
       const empleadosData = await readEmpleados();
       const filteredEmpleados = empleadosData.filter(
         (empleado) =>
-          empleado.name !== "NO ASIGNADO" && empleado.name !== "test",
+          empleado.name !== "NO ASIGNADO" && empleado.name !== "test"
       );
       setEmpleados(filteredEmpleados);
     } catch (error) {
@@ -53,7 +51,7 @@ export const Equipo: React.FC = () => {
     fetchEmpleados();
     const unsubscribe = onSnapshot(
       collection(firestore, "empleados"),
-      fetchEmpleados,
+      fetchEmpleados
     );
     return () => unsubscribe();
   }, []);
@@ -74,8 +72,6 @@ export const Equipo: React.FC = () => {
     };
   }, []);
 
-
-
   const uniqueCategories = [
     "Todos",
     ...new Set(empleados.map((empleado) => empleado.depto)),
@@ -88,21 +84,15 @@ export const Equipo: React.FC = () => {
   const filteredEmpleados = empleados.filter(
     (emp) =>
       (selectedCategory === "Todos" || emp.depto === selectedCategory) &&
-      emp.name.toLowerCase().includes(searchTerm),
+      emp.name.toLowerCase().includes(searchTerm)
   );
 
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
-
-
-
-
   return (
     <div className="flex flex-col">
-
-
       <style>
         {`
          .arrow-down {
@@ -114,15 +104,13 @@ export const Equipo: React.FC = () => {
          }
        `}
       </style>
-      <div className="flex justify-center border-b border-gray-300 items-center gap-2 flex-col pb-6 mt-8 ">
-
+      <div className="flex justify-center border-b border-gray-200  items-center gap-2 flex-col pb-6 mt-8 ">
         <QRGlobal />
         <p className="font-bold font-coolvetica">Registro horario</p>
       </div>
 
       <div className="flex flex-row justify-between items-center pt-6 mx-4 mb-4">
         <p className="text-black font-bold text-4xl ">Equipo</p>
-
       </div>
 
       <div className="px-4 pb-8">
@@ -167,7 +155,7 @@ export const Equipo: React.FC = () => {
               onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
             />
             {showCategoryDropdown && (
-              <div className="absolute top-full left-0 w-full bg-gray-100 border border-gray-300 rounded-md shadow-lg z-10">
+              <div className="absolute top-full left-0 w-full bg-gray-100 border border-gray-200  rounded-md shadow-lg z-10">
                 {uniqueCategories.map((category) => (
                   <div
                     key={category}
@@ -209,12 +197,12 @@ export const Equipo: React.FC = () => {
         </div>
       </div>
 
-
       <div className="font-coolvetica">
         <table className="w-full text-xs text-left text-black">
           <thead className="text-black bor h-10">
             <tr>
-              <th scope="col" className="pl-4 w-2/5">Nombre
+              <th scope="col" className="pl-4 w-2/5">
+                Nombre
               </th>
               {/* <th scope="col" className="pl-4 w-1/6">
                 Sueldo
@@ -231,7 +219,7 @@ export const Equipo: React.FC = () => {
             {filteredEmpleados.map((empleado) => (
               <tr
                 key={empleado.name}
-                className="text-black border-y font-light h-10 border-gray-300"
+                className="text-black border-y font-light h-10 border-gray-200 "
               >
                 <th scope="row" className="pl-4 w-1/5 font-light">
                   {capitalizeFirstLetter(empleado.name)}
@@ -250,12 +238,14 @@ export const Equipo: React.FC = () => {
                   {capitalizeFirstLetter(empleado.puesto)}
                 </td>
                 <td className="pl-4 w-1/7 font-light ">
-                  <span className={`${empleado.isWorking ? "text-green-500" : "text-red-500"}`}>
-                    {empleado.isWorking ? (
-                      ` ${empleado.startTime}`
-                    ) : empleado.endTime ? (
-                      ` ${empleado.endTime}`
-                    ) : "✗"}
+                  <span
+                    className={`${empleado.isWorking ? "text-green-500" : "text-red-500"}`}
+                  >
+                    {empleado.isWorking
+                      ? ` ${empleado.startTime}`
+                      : empleado.endTime
+                        ? ` ${empleado.endTime}`
+                        : "✗"}
                   </span>
                 </td>
               </tr>

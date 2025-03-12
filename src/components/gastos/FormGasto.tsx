@@ -76,7 +76,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 
   return (
     <div
-      className="w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer"
+      className="w-full h-64 border-2 border-dashed border-gray-200  rounded-lg flex flex-col items-center justify-center cursor-pointer"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onClick={() => document.getElementById("fileInput")?.click()}

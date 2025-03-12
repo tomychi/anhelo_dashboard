@@ -193,7 +193,7 @@ export const Gastos: React.FC = () => {
               onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
             />
             {showCategoryDropdown && (
-              <div className="absolute top-full left-0 w-full bg-gray-100 border border-gray-300 rounded-md shadow-lg z-10">
+              <div className="absolute top-full left-0 w-full bg-gray-100 border border-gray-200  rounded-md shadow-lg z-10">
                 {uniqueCategories.map((category) => (
                   <div
                     key={category}

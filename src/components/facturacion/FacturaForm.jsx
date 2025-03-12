@@ -879,7 +879,7 @@ const FacturaForm = () => {
                   {filteredFacturas.map((factura) => (
                     <tr
                       key={factura.id}
-                      className="text-black border-y font-light h-10 border-gray-300"
+                      className="text-black border-y font-light h-10 border-gray-200 "
                     >
                       <td className="pl-4 font-light">
                         {factura.cae ? `${factura.cae.substring(0, 4)}...` : ""}
@@ -974,7 +974,7 @@ const FacturaForm = () => {
                   name="tipoFactura"
                   value={formData.tipoFactura}
                   onChange={handleChange}
-                  className="w-full text-black bg-transparent text-xs border-gray-300 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+                  className="w-full text-black bg-transparent text-xs border-gray-200  h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
                   required
                 >
                   <option value="" disabled>
@@ -989,7 +989,7 @@ const FacturaForm = () => {
                   name="cuit"
                   value={formData.cuit}
                   onChange={handleChange}
-                  className="w-full text-black bg-transparent rounded-none text-xs border-gray-300 h-10 px-4 border-x border-t transition-all"
+                  className="w-full text-black bg-transparent rounded-none text-xs border-gray-200  h-10 px-4 border-x border-t transition-all"
                   readOnly
                   placeholder="CUIT Emisor"
                 />
@@ -998,7 +998,7 @@ const FacturaForm = () => {
                   name="puntoVenta"
                   value={formData.puntoVenta}
                   onChange={handleChange}
-                  className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-300 px-4 border-x border-t transition-all"
+                  className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-200  px-4 border-x border-t transition-all"
                   required
                   placeholder="Punto de Venta"
                 />
@@ -1007,7 +1007,7 @@ const FacturaForm = () => {
                   name="importeTrib"
                   value={formData.importeTrib}
                   onChange={handleChange}
-                  className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-300 transition-all"
+                  className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-200  transition-all"
                   step="0.01"
                   min="0"
                   placeholder="Tasa Municipal"
@@ -1017,7 +1017,7 @@ const FacturaForm = () => {
                   name="importeTotal"
                   value={formData.importeTotal}
                   onChange={handleChange}
-                  className="w-full border-gray-300 rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
+                  className="w-full border-gray-200  rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
                   step="0.01"
                   min="0"
                   required
@@ -1027,7 +1027,7 @@ const FacturaForm = () => {
                   type="number"
                   name="importeNeto"
                   value={formData.importeNeto}
-                  className="w-full border-gray-300 bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
+                  className="w-full border-gray-200  bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
                   readOnly
                   placeholder="Importe Neto"
                 />

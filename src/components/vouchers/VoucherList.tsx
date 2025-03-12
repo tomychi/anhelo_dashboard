@@ -250,7 +250,7 @@ const VoucherModal = ({
             <div className="w-3/5">
               <canvas
                 ref={canvasRef}
-                className="w-full rounded-lg shadow-lg shadow-gray-300"
+                className="w-full rounded-lg shadow-lg shadow-gray-200 "
                 onClick={handleCanvasClick}
               />
             </div>
