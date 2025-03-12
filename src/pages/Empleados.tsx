@@ -4,8 +4,11 @@ import { RootState } from "../redux/configureStore";
 import {
   crearEmpleado,
   obtenerEmpleadosDeEmpresa,
+  actualizarEmpleado,
+  eliminarEmpleado,
   EmpleadoProps,
 } from "../firebase/ClientesAbsolute";
+import { PERMISOS_SISTEMA } from "../utils/permissionsUtils";
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
@@ -51,6 +54,7 @@ const TableLoadingRow = () => {
 
 export const Empleados = () => {
   const [showForm, setShowForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [contraseña, setContraseña] = useState("");
@@ -61,12 +65,17 @@ export const Empleados = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [empleados, setEmpleados] = useState<EmpleadoProps[]>([]);
+  const [selectedEmpleado, setSelectedEmpleado] =
+    useState<EmpleadoProps | null>(null);
+  const [estado, setEstado] = useState("activo");
 
   // Modal drag states
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isEditAnimating, setIsEditAnimating] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const modalRef = useRef(null);
+  const editModalRef = useRef(null);
 
   // Obtener datos de la empresa del estado de redux
   const auth = useSelector((state: RootState) => state.auth);
@@ -80,16 +89,15 @@ export const Empleados = () => {
 
   // Inicializar los toggles de permisos
   const [permisosToggles, setPermisosToggles] = useState({});
+  const [editPermisosToggles, setEditPermisosToggles] = useState({});
 
   useEffect(() => {
-    if (featuresDisponibles.length > 0) {
-      const initialToggles = {};
-      featuresDisponibles.forEach((feature) => {
-        initialToggles[feature] = false;
-      });
-      setPermisosToggles(initialToggles);
-    }
-  }, [featuresDisponibles]);
+    const initialToggles = {};
+    PERMISOS_SISTEMA.forEach((permiso) => {
+      initialToggles[permiso] = false;
+    });
+    setPermisosToggles(initialToggles);
+  }, []);
 
   // Efecto para cargar empleados al montar el componente
   useEffect(() => {
@@ -118,6 +126,13 @@ export const Empleados = () => {
     }
   }, [showForm]);
 
+  useEffect(() => {
+    if (showEditForm) {
+      setIsEditAnimating(true);
+      setCurrentTranslate(0);
+    }
+  }, [showEditForm]);
+
   const handleTouchStart = (e) => {
     setDragStart(e.touches[0].clientY);
   };
@@ -143,7 +158,8 @@ export const Empleados = () => {
 
   const handleDragEnd = () => {
     if (currentTranslate > 200) {
-      handleCloseForm();
+      if (showForm) handleCloseForm();
+      if (showEditForm) handleCloseEditForm();
     } else {
       setCurrentTranslate(0);
     }
@@ -168,6 +184,13 @@ export const Empleados = () => {
 
   const handleTogglePermiso = (permiso) => {
     setPermisosToggles((prev) => ({
+      ...prev,
+      [permiso]: !prev[permiso],
+    }));
+  };
+
+  const handleToggleEditPermiso = (permiso) => {
+    setEditPermisosToggles((prev) => ({
       ...prev,
       [permiso]: !prev[permiso],
     }));
@@ -227,6 +250,165 @@ export const Empleados = () => {
     }
   };
 
+  const handleUpdateEmpleado = async () => {
+    console.log("Iniciando actualización de empleado");
+
+    if (!selectedEmpleado || !empresaId) {
+      setError("No se puede actualizar el empleado");
+      return;
+    }
+
+    // Validar campos
+    if (!nombre || !rol) {
+      setError("Por favor, completa todos los campos obligatorios");
+      return;
+    }
+
+    // Si se cambió la contraseña, verificar que coincidan
+    if (contraseña && contraseña !== confirmarContraseña) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    // Obtener los permisos seleccionados
+    const permisosSeleccionados = Object.keys(editPermisosToggles).filter(
+      (key) => editPermisosToggles[key]
+    );
+    console.log("Permisos seleccionados:", permisosSeleccionados);
+
+    if (permisosSeleccionados.length === 0) {
+      setError("Selecciona al menos un permiso");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const datosActualizados: any = {
+        datos: {
+          nombre,
+          rol,
+          estado,
+          permisos: permisosSeleccionados,
+        },
+      };
+
+      // Solo actualizar el salario si está definido
+      if (salario !== undefined) {
+        datosActualizados.datos.salario = salario;
+        console.log("Actualizando salario a:", salario);
+      }
+
+      // Verificar y actualizar contraseña y teléfono
+      console.log(
+        "Contraseña ingresada:",
+        contraseña ? "Sí (no se muestra por seguridad)" : "No"
+      );
+      console.log("Teléfono ingresado:", telefono);
+
+      // Solo actualizar la contraseña si se ingresó una nueva
+      if (contraseña) {
+        datosActualizados.iniciarSesion = {
+          contraseña,
+        };
+
+        // Solo actualizar el teléfono si se modificó
+        if (telefono) {
+          console.log("Añadiendo teléfono a actualización:", telefono);
+          datosActualizados.iniciarSesion.telefono = telefono;
+        }
+      } else if (telefono) {
+        // Si no hay contraseña nueva pero sí teléfono nuevo
+        console.log(
+          "Añadiendo solo teléfono (sin contraseña nueva):",
+          telefono
+        );
+        datosActualizados.iniciarSesion = {
+          telefono,
+        };
+      }
+
+      console.log(
+        "Datos a actualizar completos:",
+        JSON.stringify(datosActualizados, null, 2)
+      );
+
+      await actualizarEmpleado(
+        empresaId,
+        selectedEmpleado.id,
+        datosActualizados
+      );
+
+      console.log("Empleado actualizado correctamente");
+
+      // Limpiar el formulario y cerrar
+      handleCloseEditForm();
+
+      // Recargar la lista de empleados
+      fetchEmpleados();
+    } catch (error) {
+      console.error("Error al actualizar empleado:", error);
+      setError("Error al actualizar el empleado. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteEmpleado = async (empleadoId) => {
+    if (!empresaId || !empleadoId) return;
+
+    if (window.confirm("¿Estás seguro de querer desactivar este empleado?")) {
+      setLoading(true);
+      try {
+        await eliminarEmpleado(empresaId, empleadoId);
+        fetchEmpleados();
+      } catch (error) {
+        console.error("Error al eliminar empleado:", error);
+        alert("No se pudo eliminar el empleado. Intente nuevamente.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleEditEmpleado = (empleado) => {
+    console.log("Inicializando edición del empleado:", empleado);
+    setSelectedEmpleado(empleado);
+
+    // Cargar datos del empleado
+    setNombre(empleado.datos?.nombre || "");
+    setRol(empleado.datos?.rol || "");
+    setEstado(empleado.datos?.estado || "activo");
+    setSalario(empleado.datos?.salario);
+
+    // Log especial para el teléfono
+    console.log("Teléfono del empleado:", empleado.iniciarSesion?.telefono);
+    setTelefono(empleado.iniciarSesion?.telefono || "");
+
+    // Resetear contraseñas
+    setContraseña("");
+    setConfirmarContraseña("");
+
+    // Inicializar toggles de permisos
+    const editToggles = {};
+    // Añadir todos los permisos del sistema como falsas por defecto
+    PERMISOS_SISTEMA.forEach((permiso) => {
+      editToggles[permiso] = false;
+    });
+
+    // Marcar como true los permisos que tiene el empleado
+    if (empleado.datos?.permisos) {
+      console.log("Permisos existentes:", empleado.datos.permisos);
+      empleado.datos.permisos.forEach((permiso) => {
+        editToggles[permiso] = true;
+      });
+    }
+
+    setEditPermisosToggles(editToggles);
+    setShowEditForm(true);
+  };
+
   const handleCloseForm = () => {
     setShowForm(false);
     setNombre("");
@@ -246,6 +428,22 @@ export const Empleados = () => {
     setError("");
     setCurrentTranslate(0);
     setIsAnimating(false);
+  };
+
+  const handleCloseEditForm = () => {
+    setShowEditForm(false);
+    setSelectedEmpleado(null);
+    setNombre("");
+    setTelefono("");
+    setContraseña("");
+    setConfirmarContraseña("");
+    setRol("");
+    setSalario(undefined);
+    setEstado("activo");
+
+    setError("");
+    setCurrentTranslate(0);
+    setIsEditAnimating(false);
   };
 
   // Formatear fecha más legible
@@ -349,7 +547,10 @@ export const Empleados = () => {
                     {formatearFecha(empleado.datos?.ultimoAcceso) || "-"}
                   </td>
                   <td className="w-2/12 pl-4 pr-4 flex justify-end">
-                    <button className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 mr-2">
+                    <button
+                      className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 mr-2"
+                      onClick={() => handleEditEmpleado(empleado)}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -359,7 +560,10 @@ export const Empleados = () => {
                         <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
                       </svg>
                     </button>
-                    <button className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200">
+                    <button
+                      className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200"
+                      onClick={() => handleDeleteEmpleado(empleado.id)}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -515,31 +719,14 @@ export const Empleados = () => {
               <div className="mt-6">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
                 <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
-                  {featuresDisponibles.map((feature) => (
+                  {PERMISOS_SISTEMA.map((permiso) => (
                     <TogglePermiso
-                      key={feature}
-                      label={feature}
-                      isOn={permisosToggles[feature] || false}
-                      onToggle={() => handleTogglePermiso(feature)}
+                      key={permiso}
+                      label={permiso}
+                      isOn={permisosToggles[permiso] || false}
+                      onToggle={() => handleTogglePermiso(permiso)}
                     />
                   ))}
-
-                  {/* Permisos adicionales */}
-                  <TogglePermiso
-                    label="Dashboard"
-                    isOn={permisosToggles["Dashboard"] || false}
-                    onToggle={() => handleTogglePermiso("Dashboard")}
-                  />
-                  <TogglePermiso
-                    label="Ventas"
-                    isOn={permisosToggles["Ventas"] || false}
-                    onToggle={() => handleTogglePermiso("Ventas")}
-                  />
-                  <TogglePermiso
-                    label="Gastos"
-                    isOn={permisosToggles["Gastos"] || false}
-                    onToggle={() => handleTogglePermiso("Gastos")}
-                  />
                 </div>
               </div>
 
@@ -566,6 +753,156 @@ export const Empleados = () => {
                 </div>
               ) : (
                 "Crear empleado"
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar empleado */}
+      {showEditForm && selectedEmpleado && (
+        <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+          <div
+            className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
+              isEditAnimating ? "bg-opacity-50" : "bg-opacity-0"
+            }`}
+            style={{
+              opacity: Math.max(0, 1 - currentTranslate / 400),
+            }}
+            onClick={handleCloseEditForm}
+          />
+
+          <div
+            ref={editModalRef}
+            className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+              isEditAnimating ? "translate-y-0" : "translate-y-full"
+            }`}
+            style={{
+              transform: `translateY(${currentTranslate}px)`,
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+            >
+              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+                <div className="w-12 h-1 bg-gray-300 rounded-full" />
+              </div>
+            </div>
+
+            <div className="mt-4 flex-col space-y-2 w-full">
+              <h2 className="text-2xl font-bold mb-4">Editar empleado</h2>
+
+              <input
+                type="text"
+                placeholder="Nombre y apellido"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              <input
+                type="tel"
+                placeholder="Número de teléfono (dejar vacío para no cambiar)"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              <input
+                type="password"
+                placeholder="Nueva contraseña (dejar vacío para no cambiar)"
+                value={contraseña}
+                onChange={(e) => setContraseña(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              <input
+                type="password"
+                placeholder="Confirmar nueva contraseña"
+                value={confirmarContraseña}
+                onChange={(e) => setConfirmarContraseña(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              <input
+                type="text"
+                placeholder="Rol o puesto"
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              <input
+                type="number"
+                placeholder="Salario"
+                value={salario || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSalario(value === "" ? undefined : parseInt(value, 10));
+                }}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              />
+
+              {/* Selector de estado */}
+              <div className="w-full">
+                <label className="block text-xs mb-1">
+                  Estado del empleado
+                </label>
+                <select
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value)}
+                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                >
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                  <option value="suspendido">Suspendido</option>
+                </select>
+              </div>
+
+              {/* Sección de permisos */}
+              <div className="mt-6">
+                <h3 className="text-lg font-bold mb-2">Permisos</h3>
+                <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
+                  {PERMISOS_SISTEMA.map((permiso) => (
+                    <TogglePermiso
+                      key={permiso}
+                      label={permiso}
+                      isOn={editPermisosToggles[permiso] || false}
+                      onToggle={() => handleToggleEditPermiso(permiso)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Mensaje de error */}
+              {error && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+                  <p className="text-red-500 text-xs">{error}</p>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={handleUpdateEmpleado}
+              disabled={loading}
+              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+            >
+              {loading ? (
+                <div className="flex justify-center w-full items-center">
+                  <div className="flex flex-row gap-1">
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              ) : (
+                "Actualizar empleado"
               )}
             </button>
           </div>

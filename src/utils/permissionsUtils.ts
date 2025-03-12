@@ -1,6 +1,5 @@
 // utils/permissionsUtils.ts
 
-import { RootState } from "../redux/configureStore";
 import { EmpresaProps, EmpleadoProps } from "../firebase/ClientesAbsolute";
 
 // Definición de tipos
@@ -15,6 +14,22 @@ export interface RoutePermissions {
 export interface DisplayNames {
   [key: string]: string;
 }
+
+export const PERMISOS_SISTEMA = [
+  "Dashboard",
+  "Ventas",
+  "Gastos",
+  "Facturación automática",
+  "Operaciones",
+  "Empleados",
+  "Inversores",
+  "Finanzas",
+  "Página de ventas",
+  "Precios dinámicos",
+  "WhatsApp Marketing",
+  "Deuda",
+  "Comportamiento de clientes",
+];
 
 // Mapeo de características/permisos a rutas (para el Sidebar)
 export const featureToRouteMap: PermissionMappings = {
