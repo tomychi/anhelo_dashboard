@@ -26,6 +26,7 @@ import {
   EmpleadoProps,
   getKpiConfig,
   hasKpiPermission,
+  subscribeToKpiConfig,
 } from "../firebase/ClientesAbsolute";
 
 interface RatingInfo {
@@ -91,29 +92,39 @@ export const Dashboard: React.FC = () => {
 
   // Cargar configuración de KPIs
   useEffect(() => {
-    const fetchKpiConfig = async () => {
-      if (!auth?.usuario) return;
+    if (!auth?.usuario) return;
 
-      // Para empleados, necesitamos obtener el ID de la empresa a la que pertenecen
-      const empresaId =
-        tipoUsuario === "empresa"
-          ? auth.usuario.id || ""
-          : tipoUsuario === "empleado"
-            ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
-            : "";
+    // Para empleados, necesitamos obtener el ID de la empresa a la que pertenecen
+    const empresaId =
+      tipoUsuario === "empresa"
+        ? auth.usuario.id || ""
+        : tipoUsuario === "empleado"
+          ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
+          : "";
 
-      if (empresaId) {
+    if (empresaId) {
+      // Cargar configuración inicial
+      const fetchInitialConfig = async () => {
         const config = await getKpiConfig(empresaId);
         setKpiConfig(config);
         setKpiConfigLoaded(true);
-
-        // Verificar si el dashboard ya ha sido configurado
-        // Si el objeto config existe pero está vacío, o si no existe, consideramos que no está configurado
         setIsDashboardConfigured(Object.keys(config).length > 0);
-      }
-    };
+      };
 
-    fetchKpiConfig();
+      fetchInitialConfig();
+
+      // Establecer el listener para actualizaciones en tiempo real
+      const unsubscribe = subscribeToKpiConfig(empresaId, (newConfig) => {
+        setKpiConfig(newConfig);
+        setKpiConfigLoaded(true);
+        setIsDashboardConfigured(Object.keys(newConfig).length > 0);
+      });
+
+      // Limpieza del efecto para cancelar la suscripción cuando se desmonte el componente
+      return () => {
+        unsubscribe();
+      };
+    }
   }, [auth, tipoUsuario]);
 
   useEffect(() => {

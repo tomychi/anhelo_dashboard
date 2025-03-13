@@ -1188,3 +1188,39 @@ export const getEmpleadoKpis = async (
     return [];
   }
 };
+
+/**
+ * Suscribirse a los cambios en la configuración de KPIs en tiempo real
+ * @param empresaId ID de la empresa
+ * @param callback Función a ejecutar cuando hay cambios en la configuración
+ * @returns Función para cancelar la suscripción
+ */
+export const subscribeToKpiConfig = (
+  empresaId: string,
+  callback: (kpiConfig: { [kpiKey: string]: string[] }) => void
+): (() => void) => {
+  if (!empresaId) return () => {};
+
+  const firestore = getFirestore();
+  const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+
+  // Establecer el listener de onSnapshot
+  const unsubscribe = onSnapshot(
+    empresaRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const kpiConfig = data?.config?.dashboard || {};
+        callback(kpiConfig);
+      } else {
+        callback({});
+      }
+    },
+    (error) => {
+      console.error("Error al escuchar cambios en KPI config:", error);
+      callback({});
+    }
+  );
+
+  return unsubscribe;
+};
