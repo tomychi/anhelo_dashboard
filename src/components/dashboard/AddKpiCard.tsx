@@ -34,7 +34,7 @@ const AddKpiCard = ({ className = "" }) => {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="h-6 text-gray-100"
+        className="h-4 text-gray-100"
       >
         <path
           fill-rule="evenodd"
@@ -43,7 +43,7 @@ const AddKpiCard = ({ className = "" }) => {
         />
       </svg>
 
-      <p className="text-center  text-gray-100">¿Querés agregar otro KPI?</p>
+      <p className="text-center text-2xl text-gray-100">Agregar KPI</p>
 
       {/* Modal para seleccionar KPI */}
       {showModal && (
