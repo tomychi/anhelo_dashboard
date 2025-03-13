@@ -21,9 +21,12 @@ import { ProductStateProps } from "../redux/products/productReducer";
 import Swal from "sweetalert2";
 import { Cadete, PedidoProps } from "../types/types"; // Importa PedidoProps
 import KPILineChart from "../components/dashboard/KPILineChart";
-import { EmpresaProps, EmpleadoProps } from "../firebase/ClientesAbsolute";
-import { shouldShowKpi } from "../components/dashboard/dashboardKpiMapping";
-import { getUserPermissions } from "../utils/permissionsUtils";
+import {
+  EmpresaProps,
+  EmpleadoProps,
+  getKpiConfig,
+  hasKpiPermission,
+} from "../firebase/ClientesAbsolute";
 
 interface RatingInfo {
   average: string;
@@ -41,6 +44,12 @@ interface AverageRatings {
 
 export const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
+
+  // Estado para almacenar la configuración de KPIs
+  const [kpiConfig, setKpiConfig] = useState<{ [kpiKey: string]: string[] }>(
+    {}
+  );
+  const [kpiConfigLoaded, setKpiConfigLoaded] = useState(false);
 
   const [totalPaga, setTotalPaga] = useState(0);
   const [totalDirecciones, setTotalDirecciones] = useState(0);
@@ -63,6 +72,41 @@ export const Dashboard: React.FC = () => {
   const takeawayCount = orders.filter(
     (order) => order.deliveryMethod === "takeaway" && !order.canceled
   ).length;
+
+  // Obtener información del usuario autenticado
+  const auth = useSelector((state: RootState) => state.auth);
+  const tipoUsuario = auth?.tipoUsuario;
+
+  // Obtener el ID del usuario actual
+  const usuarioId =
+    tipoUsuario === "empresa"
+      ? (auth?.usuario as EmpresaProps)?.id || ""
+      : tipoUsuario === "empleado"
+        ? (auth?.usuario as EmpleadoProps)?.id || ""
+        : "";
+
+  // Cargar configuración de KPIs
+  useEffect(() => {
+    const fetchKpiConfig = async () => {
+      if (!auth?.usuario) return;
+
+      // Para empleados, necesitamos obtener el ID de la empresa a la que pertenecen
+      const empresaId =
+        tipoUsuario === "empresa"
+          ? auth.usuario.id || ""
+          : tipoUsuario === "empleado"
+            ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
+            : "";
+
+      if (empresaId) {
+        const config = await getKpiConfig(empresaId);
+        setKpiConfig(config);
+        setKpiConfigLoaded(true);
+      }
+    };
+
+    fetchKpiConfig();
+  }, [auth, tipoUsuario]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -336,13 +380,6 @@ export const Dashboard: React.FC = () => {
         : [],
   }));
 
-  // Obtener los permisos del usuario para filtrar los KPIs
-  const auth = useSelector((state: RootState) => state.auth);
-  const userPermissions = getUserPermissions(auth);
-  const tipoUsuario = auth?.tipoUsuario;
-
-  console.log("Permisos del usuario:", userPermissions);
-
   const allCards = [
     <CardInfo
       key="bruto"
@@ -607,11 +644,16 @@ export const Dashboard: React.FC = () => {
     />,
   ];
 
-  // Filtrar los cards según los permisos del usuario
+  // Filtrar los cards según los permisos del usuario con el nuevo sistema de KPIs
   const cardsToRender = allCards.filter((card) => {
-    // Obtener la key del card (que usamos para mapear a los features)
     const cardKey = card.key as string;
-    return shouldShowKpi(cardKey, userPermissions);
+
+    // Si la configuración de KPIs no se ha cargado aún, no mostrar nada
+    if (!kpiConfigLoaded) {
+      return false;
+    }
+
+    return hasKpiPermission(cardKey, kpiConfig, usuarioId);
   });
 
   const nombreUsuario =
@@ -656,7 +698,11 @@ export const Dashboard: React.FC = () => {
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
-          {cardsToRender.length > 0 ? (
+          {!kpiConfigLoaded ? (
+            <div className="bg-white p-8 text-center rounded-lg">
+              <p className="text-gray-500">Cargando dashboard...</p>
+            </div>
+          ) : cardsToRender.length > 0 ? (
             cardsToRender.map((card, index) =>
               React.cloneElement(card, {
                 key: index,

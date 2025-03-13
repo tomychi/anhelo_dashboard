@@ -900,3 +900,283 @@ const inicializarColeccionesAdicionales = async (
 
   return Array.from(coleccionesUnicas);
 };
+
+/**
+ * Obtiene la configuración de KPIs para una empresa específica
+ * @param empresaId ID de la empresa
+ * @returns Objeto con la configuración de KPIs donde las claves son los IDs de KPI y los valores son arrays con IDs de empleados
+ */
+export const getKpiConfig = async (
+  empresaId: string
+): Promise<{ [kpiKey: string]: string[] }> => {
+  if (!empresaId) return {};
+
+  const firestore = getFirestore();
+  try {
+    // Referencia al documento principal de la empresa
+    const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+    const empresaDoc = await getDoc(empresaRef);
+
+    // Si existe y tiene el campo config.dashboard.kpis, lo devolvemos
+    if (empresaDoc.exists() && empresaDoc.data()?.config?.dashboard) {
+      return empresaDoc.data().config.dashboard;
+    }
+
+    // Si no existe, devolvemos un objeto vacío
+    return {};
+  } catch (error) {
+    console.error("Error al obtener configuración de KPIs:", error);
+    return {};
+  }
+};
+/**
+ * Verifica si un usuario tiene permiso para ver un KPI específico
+ * @param kpiKey Clave del KPI a verificar
+ * @param kpiConfig Configuración de KPIs
+ * @param usuarioId ID del usuario actual
+ * @returns true si tiene permiso, false si no
+ */
+export const hasKpiPermission = (
+  kpiKey: string,
+  kpiConfig: { [kpiKey: string]: string[] },
+  usuarioId: string
+): boolean => {
+  // Si no hay configuración para este KPI, no mostrarlo
+  if (!kpiConfig[kpiKey]) {
+    return false;
+  }
+
+  // Verificar si el ID del usuario está en la lista de acceso
+  return kpiConfig[kpiKey].includes(usuarioId);
+};
+
+/**
+ * Inicializa la configuración del dashboard para una nueva empresa
+ * @param empresaId ID de la empresa
+ * @param adminId ID del administrador/dueño de la empresa
+ */
+export const initDashboardConfig = async (
+  empresaId: string,
+  adminId: string
+): Promise<void> => {
+  if (!empresaId || !adminId) return;
+
+  const firestore = getFirestore();
+  try {
+    // Referencia al documento de configuración
+    const configRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "config",
+      "dashboard"
+    );
+
+    // Verificar si ya existe configuración
+    const configDoc = await getDoc(configRef);
+    if (configDoc.exists()) {
+      console.log("La configuración de dashboard ya existe para esta empresa");
+      return;
+    }
+
+    // KPIs básicos que serán visibles para el administrador por defecto
+    const defaultKpis = {
+      bruto: [adminId],
+      neto: [adminId],
+      productos: [adminId],
+      delivery: [adminId],
+      takeaway: [adminId],
+      ticket: [adminId],
+      general: [adminId],
+    };
+
+    // Crear la configuración inicial
+    await setDoc(configRef, {
+      kpis: defaultKpis,
+      ultimaActualizacion: new Date(),
+    });
+
+    console.log("Configuración de dashboard inicializada correctamente");
+  } catch (error) {
+    console.error("Error al inicializar configuración de dashboard:", error);
+  }
+};
+
+/**
+ * Configura el acceso a KPIs para un empleado
+ * @param empresaId ID de la empresa
+ * @param empleadoId ID del empleado
+ * @param kpiKeys Array con las claves de los KPIs a los que tendrá acceso
+ */
+export const configureKpisForEmpleado = async (
+  empresaId: string,
+  empleadoId: string,
+  kpiKeys: string[]
+): Promise<void> => {
+  if (!empresaId || !empleadoId) return;
+
+  const firestore = getFirestore();
+  try {
+    // Referencia al documento de configuración
+    const configRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "config",
+      "dashboard"
+    );
+
+    // Obtener configuración actual
+    const configDoc = await getDoc(configRef);
+    let kpiConfig: { [kpiKey: string]: string[] } = {};
+
+    if (configDoc.exists() && configDoc.data()?.kpis) {
+      kpiConfig = configDoc.data().kpis;
+    }
+
+    // Actualizar la configuración
+    kpiKeys.forEach((kpiKey) => {
+      if (!kpiConfig[kpiKey]) {
+        kpiConfig[kpiKey] = [];
+      }
+
+      if (!kpiConfig[kpiKey].includes(empleadoId)) {
+        kpiConfig[kpiKey].push(empleadoId);
+      }
+    });
+
+    // Guardar cambios
+    if (configDoc.exists()) {
+      await updateDoc(configRef, {
+        kpis: kpiConfig,
+        ultimaActualizacion: new Date(),
+      });
+    } else {
+      await setDoc(configRef, {
+        kpis: kpiConfig,
+        ultimaActualizacion: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Error al configurar KPIs para empleado:", error);
+  }
+};
+
+/**
+ * Actualiza la configuración completa de KPIs para una empresa
+ * @param empresaId ID de la empresa
+ * @param kpiConfig Nueva configuración de KPIs
+ */
+export const updateKpiConfig = async (
+  empresaId: string,
+  kpiConfig: { [kpiKey: string]: string[] }
+): Promise<void> => {
+  if (!empresaId) return;
+
+  const firestore = getFirestore();
+  try {
+    const configRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "config",
+      "dashboard"
+    );
+
+    // Actualizar o crear el documento
+    const configDoc = await getDoc(configRef);
+
+    if (configDoc.exists()) {
+      await updateDoc(configRef, {
+        kpis: kpiConfig,
+        ultimaActualizacion: new Date(),
+      });
+    } else {
+      await setDoc(configRef, {
+        kpis: kpiConfig,
+        ultimaActualizacion: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Error al actualizar configuración de KPIs:", error);
+    throw error;
+  }
+};
+
+/**
+ * Elimina el acceso de un empleado a todos los KPIs
+ * @param empresaId ID de la empresa
+ * @param empleadoId ID del empleado
+ */
+export const removeEmpleadoFromAllKpis = async (
+  empresaId: string,
+  empleadoId: string
+): Promise<void> => {
+  if (!empresaId || !empleadoId) return;
+
+  const firestore = getFirestore();
+  try {
+    const configRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "config",
+      "dashboard"
+    );
+    const configDoc = await getDoc(configRef);
+
+    if (!configDoc.exists() || !configDoc.data()?.kpis) {
+      return;
+    }
+
+    const kpiConfig = configDoc.data().kpis;
+    let updated = false;
+
+    // Eliminar al empleado de todas las listas de acceso
+    Object.keys(kpiConfig).forEach((kpiKey) => {
+      if (kpiConfig[kpiKey].includes(empleadoId)) {
+        kpiConfig[kpiKey] = kpiConfig[kpiKey].filter((id) => id !== empleadoId);
+        updated = true;
+      }
+    });
+
+    // Solo actualizar si hubo cambios
+    if (updated) {
+      await updateDoc(configRef, {
+        kpis: kpiConfig,
+        ultimaActualizacion: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Error al eliminar empleado de KPIs:", error);
+  }
+};
+
+/**
+ * Obtiene los IDs de KPIs disponibles para un empleado
+ * @param empresaId ID de la empresa
+ * @param empleadoId ID del empleado
+ * @returns Array con las claves de los KPIs a los que tiene acceso
+ */
+export const getEmpleadoKpis = async (
+  empresaId: string,
+  empleadoId: string
+): Promise<string[]> => {
+  if (!empresaId || !empleadoId) return [];
+
+  try {
+    const kpiConfig = await getKpiConfig(empresaId);
+    const empleadoKpis: string[] = [];
+
+    Object.entries(kpiConfig).forEach(([kpiKey, empleados]) => {
+      if (empleados.includes(empleadoId)) {
+        empleadoKpis.push(kpiKey);
+      }
+    });
+
+    return empleadoKpis;
+  } catch (error) {
+    console.error("Error al obtener KPIs del empleado:", error);
+    return [];
+  }
+};
