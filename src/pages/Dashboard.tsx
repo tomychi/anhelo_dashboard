@@ -4,7 +4,6 @@ import { RootState } from "../redux/configureStore";
 import currencyFormat from "../helpers/currencyFormat";
 import Calendar from "../components/Calendar";
 import { CardInfo } from "../components/dashboard";
-import { projectAuth } from "../firebase/config";
 import { getCustomers } from "../helpers/orderByweeks";
 import { calculateKMS } from "../helpers";
 import {
