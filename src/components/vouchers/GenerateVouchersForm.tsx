@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { crearVoucher } from "../../firebase/voucher";
-import { VoucherList } from "./VoucherList";
+import VoucherList from "./VoucherList";
 import { crearVoucherMixto } from "../../firebase/voucher"; // Importamos la nueva función
 
 // Componente Toggle reutilizable

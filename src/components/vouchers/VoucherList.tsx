@@ -7,9 +7,10 @@ import {
 } from "../../firebase/voucher";
 import { jsPDF } from "jspdf";
 import { projectAuth } from "../../firebase/config";
-import voucherImg from "../../assets/Voucher2x1 x5.jpg";
+import voucherImg from "../../assets/voucher.png";
 import arrow from "../../assets/arrowIcon.png";
 import { NavLink } from "react-router-dom";
+import VoucherModal from "./VoucherModal";
 
 const TableLoadingRow = () => {
   return (
@@ -33,288 +34,6 @@ const TableLoadingRow = () => {
   );
 };
 
-const VoucherModal = ({
-  isOpen,
-  onClose,
-  canvasRef,
-  handleCanvasClick,
-  clickPositions,
-  generateVoucherPDF,
-  loading,
-  numCodes,
-  setNumCodes,
-}) => {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [dragStart, setDragStart] = useState(null);
-  const [currentTranslate, setCurrentTranslate] = useState(0);
-  const modalRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsAnimating(true);
-      setCurrentTranslate(0);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-
-    if (!canvas || !ctx) return;
-
-    const image = new Image();
-    image.src = voucherImg;
-
-    const handleResize = () => {
-      if (!canvas) return;
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetWidth / (image.width / image.height);
-      drawImage();
-    };
-
-    const drawImage = () => {
-      if (!canvas || !ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-      clickPositions.forEach((pos, index) => {
-        drawClickPosition(ctx, pos, index + 1);
-      });
-    };
-
-    const drawClickPosition = (ctx, pos, number) => {
-      ctx.save();
-
-      const rectWidth = 70;
-      const rectHeight = 24;
-      const borderRadius = 6;
-
-      const centerX = pos.x;
-      const centerY = pos.y;
-
-      const rectX = centerX - rectWidth / 2;
-      const rectY = centerY - rectHeight / 2;
-
-      ctx.beginPath();
-      ctx.moveTo(rectX + borderRadius, rectY);
-      ctx.lineTo(rectX + rectWidth - borderRadius, rectY);
-      ctx.quadraticCurveTo(
-        rectX + rectWidth,
-        rectY,
-        rectX + rectWidth,
-        rectY + borderRadius
-      );
-      ctx.lineTo(rectX + rectWidth, rectY + rectHeight - borderRadius);
-      ctx.quadraticCurveTo(
-        rectX + rectWidth,
-        rectY + rectHeight,
-        rectX + rectWidth - borderRadius,
-        rectY + rectHeight
-      );
-      ctx.lineTo(rectX + borderRadius, rectY + rectHeight);
-      ctx.quadraticCurveTo(
-        rectX,
-        rectY + rectHeight,
-        rectX,
-        rectY + rectHeight - borderRadius
-      );
-      ctx.lineTo(rectX, rectY + borderRadius);
-      ctx.quadraticCurveTo(rectX, rectY, rectX + borderRadius, rectY);
-      ctx.closePath();
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-      ctx.fill();
-
-      ctx.fillStyle = "white";
-      ctx.font = "medium 10px Coolvetica";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`Preview ${number}`, centerX, centerY);
-
-      ctx.restore();
-    };
-
-    image.onload = () => {
-      handleResize();
-      window.addEventListener("resize", handleResize);
-    };
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [isOpen, clickPositions]);
-
-  const handleTouchStart = (e) => {
-    setDragStart(e.touches[0].clientY);
-  };
-
-  const handleMouseDown = (e) => {
-    setDragStart(e.clientY);
-  };
-
-  const handleTouchMove = (e) => {
-    if (dragStart === null) return;
-    const currentPosition = e.touches[0].clientY;
-    const difference = currentPosition - dragStart;
-    if (difference < 0) return;
-    setCurrentTranslate(difference);
-  };
-
-  const handleMouseMove = (e) => {
-    if (dragStart === null) return;
-    const difference = e.clientY - dragStart;
-    if (difference < 0) return;
-    setCurrentTranslate(difference);
-  };
-
-  const handleDragEnd = () => {
-    if (currentTranslate > 200) {
-      onClose();
-    } else {
-      setCurrentTranslate(0);
-    }
-    setDragStart(null);
-  };
-
-  useEffect(() => {
-    const handleMouseUp = () => {
-      if (dragStart !== null) {
-        handleDragEnd();
-      }
-    };
-
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("touchend", handleDragEnd);
-
-    return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchend", handleDragEnd);
-    };
-  }, [dragStart, currentTranslate]);
-
-  const handleNumCodesChange = (e) => {
-    const value = parseInt(e.target.value);
-    if (value > 0 && value <= 10) {
-      setNumCodes(value);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-          isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-        }`}
-        style={{
-          opacity: Math.max(0, 1 - currentTranslate / 400),
-        }}
-        onClick={onClose}
-      />
-
-      <div
-        ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-12 transition-transform duration-300 touch-none ${
-          isAnimating ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{
-          transform: `translateY(${currentTranslate}px)`,
-        }}
-      >
-        <div
-          className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-        >
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-12 h-1 bg-gray-200 rounded-full" />
-          </div>
-        </div>
-
-        <div className="flex flex-col">
-          <div className="mb-4">
-            <input
-              type="number"
-              placeholder="Cantidad de codigos por voucher"
-              onChange={handleNumCodesChange}
-              className="w-full h-10 bg-gray-200 px-4 text-center font-coolvetica rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-row gap-4 items-center">
-            <div className="w-3/5">
-              <canvas
-                ref={canvasRef}
-                className="w-full rounded-lg shadow-lg shadow-gray-200 "
-                onClick={handleCanvasClick}
-              />
-            </div>
-            <div className="w-2/5">
-              <h2 className="text-xs">
-                {clickPositions.length < numCodes
-                  ? `Haz clic en la imagen para elegir la ubicación del código ${
-                      clickPositions.length + 1
-                    } de ${numCodes}`
-                  : "Todas las posiciones seleccionadas. Haz clic de nuevo para cambiarlas."}
-              </h2>
-              {clickPositions.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-xs text-opacity-40 text-black">
-                    Posiciones seleccionadas: {clickPositions.length}/{numCodes}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <button
-            onClick={generateVoucherPDF}
-            disabled={clickPositions.length !== numCodes || loading}
-            className={`font-bold rounded-lg text-center h-20 mt-4 text-xl text-gray-100 ${
-              clickPositions.length === numCodes
-                ? "bg-black hover:bg-gray-800"
-                : "bg-gray-400"
-            } w-full transition-colors`}
-          >
-            {loading ? (
-              <div className="flex justify-center w-full items-center">
-                <div className="flex flex-row gap-1">
-                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-                </div>
-              </div>
-            ) : clickPositions.length === numCodes ? (
-              "Descargar PDF"
-            ) : (
-              <div className="flex flex-row justify-center items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <p className="text-2xl">Falta posicionar</p>
-              </div>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const VoucherList = () => {
   const [voucherTitles, setVoucherTitles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -323,6 +42,9 @@ export const VoucherList = () => {
   const [showModal, setShowModal] = useState(false);
   const [numCodes, setNumCodes] = useState(1);
   const canvasRef = useRef(null);
+
+  // Nuevo estado para controlar si es una campaña mixta
+  const [isMixedCampaign, setIsMixedCampaign] = useState(false);
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -370,108 +92,300 @@ export const VoucherList = () => {
     const x = (event.clientX - rect.left) * scaleX;
     const y = (event.clientY - rect.top) * scaleY;
 
+    // Actualizado para incluir rotación predeterminada en 0
     setClickPositions((prev) => {
-      if (prev.length >= numCodes) {
-        return [{ x, y }];
+      const currentRotation = 0; // Rotación predeterminada
+      if (prev.length >= (isMixedCampaign ? 6 : numCodes)) {
+        return [{ x, y, rotation: currentRotation }];
       }
-      return [...prev, { x, y }];
+      return [...prev, { x, y, rotation: currentRotation }];
     });
   };
 
-  const handleVoucherSelect = (titulo) => {
+  const handleVoucherSelect = async (titulo) => {
     setSelectedVoucher(titulo);
-    setShowModal(true);
     setClickPositions([]);
+
+    // Verificar si la campaña tiene códigos mixtos
+    try {
+      const codigos = await obtenerCodigosCampana(titulo);
+      const hasFreeCodes = codigos.some((c) => c.gratis === true);
+      const hasNormalCodes = codigos.some((c) => c.gratis === undefined);
+
+      // Es una campaña mixta si tiene ambos tipos de códigos
+      const esMixta = hasFreeCodes && hasNormalCodes;
+      setIsMixedCampaign(esMixta);
+
+      // Si es mixta, no necesitamos el numCodes, siempre serán 6 (1 gratis + 5 normales)
+      if (!esMixta) {
+        setNumCodes(1); // Por defecto para campañas no mixtas
+      }
+    } catch (error) {
+      console.error("Error al verificar tipo de campaña:", error);
+      setIsMixedCampaign(false);
+    }
+
+    setShowModal(true);
   };
 
+  // Función actualizada para generar PDF con rotación de códigos
   const generateVoucherPDF = async () => {
-    if (selectedVoucher && clickPositions.length === numCodes) {
-      setLoading(true);
-      try {
-        const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
+    if (isMixedCampaign) {
+      // Si es una campaña mixta, necesitamos 6 posiciones (1 gratis + 5 normales)
+      if (selectedVoucher && clickPositions.length === 6) {
+        setLoading(true);
+        try {
+          const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
 
-        if (codigosCampana.length === 0) {
-          alert("No se encontraron códigos para el voucher seleccionado.");
-          return;
-        }
-
-        const doc = new jsPDF({
-          orientation: "landscape",
-          unit: "mm",
-          format: [320, 450],
-        });
-
-        const numVouchersPerPage = 36;
-        const voucherWidth = 50;
-        const voucherHeight = 80;
-        const margin = 0;
-        const numColumns = 9;
-        const numRows = 4;
-
-        let voucherIndex = 0;
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const pdfToCanvasScaleX = voucherWidth / canvas.width;
-        const pdfToCanvasScaleY = voucherHeight / canvas.height;
-
-        // Group codes by voucher
-        for (let i = 0; i < codigosCampana.length; i += numCodes) {
-          const codesForThisVoucher = codigosCampana.slice(i, i + numCodes);
-
-          if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
-            doc.addPage();
+          if (codigosCampana.length === 0) {
+            alert("No se encontraron códigos para el voucher seleccionado.");
+            return;
           }
 
-          const x = (voucherIndex % numColumns) * (voucherWidth + margin);
-          const y =
-            (Math.floor(voucherIndex / numColumns) % numRows) *
-            (voucherHeight + margin);
+          // Separar códigos gratuitos y normales
+          const codigosGratis = codigosCampana.filter((c) => c.gratis === true);
+          const codigosNormales = codigosCampana.filter(
+            (c) => c.gratis === undefined
+          );
 
-          // Add the voucher image
-          doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
+          // Verificar que tenemos suficientes códigos de cada tipo
+          if (codigosGratis.length === 0) {
+            alert("Esta campaña no tiene códigos gratuitos.");
+            return;
+          }
 
-          // Add voucher number
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(6);
-          doc.setTextColor(255, 255, 255);
-          // Calculate the correct voucher number based on the group index
-          const voucherNumber = Math.floor(i / numCodes) + 1;
-          doc.text(`${voucherNumber}`, x + voucherWidth - 2, y + 3, {
-            align: "right",
+          if (codigosNormales.length === 0) {
+            alert("Esta campaña no tiene códigos normales.");
+            return;
+          }
+
+          // Calcular cuántos vouchers podemos crear
+          const maxVouchers = Math.min(
+            codigosGratis.length,
+            Math.floor(codigosNormales.length / 5)
+          );
+
+          if (maxVouchers === 0) {
+            alert(
+              "No hay suficientes códigos para crear vouchers. Necesitas al menos 1 código gratis y 5 códigos normales."
+            );
+            return;
+          }
+
+          const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: [320, 450],
           });
 
-          // Add each code at its corresponding position
-          codesForThisVoucher.forEach((codigoData, index) => {
-            if (index < clickPositions.length) {
-              const position = clickPositions[index];
-              const pdfX = position.x * pdfToCanvasScaleX;
-              const pdfY = position.y * pdfToCanvasScaleY;
+          const numVouchersPerPage = 36;
+          const voucherWidth = 50;
+          const voucherHeight = 80;
+          const margin = 0;
+          const numColumns = 9;
+          const numRows = 4;
 
-              doc.setFontSize(8);
-              doc.setTextColor(0, 0, 0);
-              doc.text(`${codigoData.codigo}`, x + pdfX, y + pdfY, {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+
+          const pdfToCanvasScaleX = voucherWidth / canvas.width;
+          const pdfToCanvasScaleY = voucherHeight / canvas.height;
+
+          // Posiciones definidas por el usuario con sus rotaciones
+          const gratisPosition = clickPositions[0]; // La primera posición es para el código gratis
+          const normalesPositions = clickPositions.slice(1); // El resto son para códigos normales
+
+          // Para cada voucher
+          for (let i = 0; i < maxVouchers; i++) {
+            if (i > 0 && i % numVouchersPerPage === 0) {
+              doc.addPage();
+            }
+
+            const x = (i % numColumns) * (voucherWidth + margin);
+            const y =
+              (Math.floor(i / numColumns) % numRows) * (voucherHeight + margin);
+
+            // Añadir la imagen del voucher
+            doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
+
+            // Añadir número de voucher
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(6);
+            doc.setTextColor(255, 255, 255);
+            doc.text(`${i + 1}`, x + voucherWidth - 2, y + 3, {
+              align: "right",
+            });
+
+            // 1. Añadir el código gratis con rotación
+            const codigoGratis = codigosGratis[i];
+            const gratisPdfX = x + gratisPosition.x * pdfToCanvasScaleX;
+            const gratisPdfY = y + gratisPosition.y * pdfToCanvasScaleY;
+            const gratisRotation = gratisPosition.rotation || 0;
+
+            doc.setFontSize(8);
+            doc.setTextColor(0, 0, 0);
+
+            // Aplicar rotación si es necesario
+            if (gratisRotation !== 0) {
+              // Usar directamente la opción 'angle' del método text
+              doc.text(codigoGratis.codigo, gratisPdfX, gratisPdfY, {
+                angle: gratisRotation,
+                align: "center",
+                baseline: "middle",
+              });
+            } else {
+              doc.text(codigoGratis.codigo, gratisPdfX, gratisPdfY, {
                 align: "center",
                 baseline: "middle",
               });
             }
-          });
 
-          voucherIndex++;
+            // 2. Añadir los 5 códigos normales con sus rotaciones
+            for (let j = 0; j < 5; j++) {
+              const codigoNormal = codigosNormales[i * 5 + j];
+              const normalPosition = normalesPositions[j];
+
+              const normalPdfX = x + normalPosition.x * pdfToCanvasScaleX;
+              const normalPdfY = y + normalPosition.y * pdfToCanvasScaleY;
+              const normalRotation = normalPosition.rotation || 0;
+
+              doc.setFontSize(8);
+              doc.setTextColor(0, 0, 0);
+
+              // Aplicar rotación si es necesario
+              if (normalRotation !== 0) {
+                // Usar directamente la opción 'angle' del método text
+                doc.text(codigoNormal.codigo, normalPdfX, normalPdfY, {
+                  angle: normalRotation,
+                  align: "center",
+                  baseline: "middle",
+                });
+              } else {
+                doc.text(codigoNormal.codigo, normalPdfX, normalPdfY, {
+                  align: "center",
+                  baseline: "middle",
+                });
+              }
+            }
+          }
+
+          doc.save(`vouchers_mixtos_${selectedVoucher}.pdf`);
+          alert(
+            `Se han generado ${maxVouchers} vouchers mixtos (1 gratis + 5 normales por voucher).`
+          );
+        } catch (error) {
+          console.error("Error al generar el PDF:", error);
+          alert("Hubo un error al generar el PDF: " + error.message);
+        } finally {
+          setLoading(false);
         }
-
-        doc.save(`vouchers_${selectedVoucher}.pdf`);
-      } catch (error) {
-        console.error("Error al generar el PDF:", error);
-        alert("Hubo un error al generar el PDF. Por favor, intente de nuevo.");
-      } finally {
-        setLoading(false);
+      } else {
+        alert(
+          "Por favor, seleccione un voucher y posicione todos los códigos (1 gratis + 5 normales)."
+        );
       }
     } else {
-      alert(
-        "Por favor, seleccione un voucher y todas las posiciones de los códigos antes de generar el PDF."
-      );
+      // Versión original para campañas normales
+      if (selectedVoucher && clickPositions.length === numCodes) {
+        setLoading(true);
+        try {
+          const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
+
+          if (codigosCampana.length === 0) {
+            alert("No se encontraron códigos para el voucher seleccionado.");
+            return;
+          }
+
+          const doc = new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: [320, 450],
+          });
+
+          const numVouchersPerPage = 36;
+          const voucherWidth = 50;
+          const voucherHeight = 80;
+          const margin = 0;
+          const numColumns = 9;
+          const numRows = 4;
+
+          let voucherIndex = 0;
+
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+
+          const pdfToCanvasScaleX = voucherWidth / canvas.width;
+          const pdfToCanvasScaleY = voucherHeight / canvas.height;
+
+          // Group codes by voucher
+          for (let i = 0; i < codigosCampana.length; i += numCodes) {
+            const codesForThisVoucher = codigosCampana.slice(i, i + numCodes);
+
+            if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
+              doc.addPage();
+            }
+
+            const x = (voucherIndex % numColumns) * (voucherWidth + margin);
+            const y =
+              (Math.floor(voucherIndex / numColumns) % numRows) *
+              (voucherHeight + margin);
+
+            // Add the voucher image
+            doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
+
+            // Add voucher number
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(6);
+            doc.setTextColor(255, 255, 255);
+            const voucherNumber = Math.floor(i / numCodes) + 1;
+            doc.text(`${voucherNumber}`, x + voucherWidth - 2, y + 3, {
+              align: "right",
+            });
+
+            // Add each code at its corresponding position with rotation
+            codesForThisVoucher.forEach((codigoData, index) => {
+              if (index < clickPositions.length) {
+                const position = clickPositions[index];
+                const pdfX = x + position.x * pdfToCanvasScaleX;
+                const pdfY = y + position.y * pdfToCanvasScaleY;
+                const rotation = position.rotation || 0;
+
+                doc.setFontSize(8);
+                doc.setTextColor(0, 0, 0);
+
+                // Aplicar rotación si es necesario
+                if (rotation !== 0) {
+                  doc.text(codigoData.codigo, pdfX, pdfY, {
+                    angle: rotation,
+                    align: "left", // Cambiar de "center" a "left"
+                    baseline: "middle",
+                  });
+                } else {
+                  doc.text(codigoData.codigo, pdfX, pdfY, {
+                    align: "center",
+                    baseline: "middle",
+                  });
+                }
+              }
+            });
+
+            voucherIndex++;
+          }
+
+          doc.save(`vouchers_${selectedVoucher}.pdf`);
+        } catch (error) {
+          console.error("Error al generar el PDF:", error);
+          alert(
+            "Hubo un error al generar el PDF. Por favor, intente de nuevo."
+          );
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        alert(
+          "Por favor, seleccione un voucher y todas las posiciones de los códigos antes de generar el PDF."
+        );
+      }
     }
   };
 
@@ -513,172 +427,8 @@ export const VoucherList = () => {
     }
   };
 
+  const currentUserEmail = projectAuth.currentUser?.email;
   const isMarketingUser = true;
-
-  const generateMixedVoucherPDF = async () => {
-    if (selectedVoucher && clickPositions.length === numCodes) {
-      setLoading(true);
-      try {
-        const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
-
-        if (codigosCampana.length === 0) {
-          alert("No se encontraron códigos para el voucher seleccionado.");
-          return;
-        }
-
-        // Separar códigos gratuitos y normales
-        const codigosGratis = codigosCampana.filter((c) => c.gratis === true);
-        const codigosNormales = codigosCampana.filter(
-          (c) => c.gratis === undefined
-        );
-
-        // Verificar que tenemos suficientes códigos
-        if (codigosGratis.length === 0 || codigosNormales.length === 0) {
-          alert(
-            "Esta campaña no tiene códigos de ambos tipos (gratis y normales)."
-          );
-          return;
-        }
-
-        const doc = new jsPDF({
-          orientation: "landscape",
-          unit: "mm",
-          format: [320, 450],
-        });
-
-        const numVouchersPerPage = 36;
-        const voucherWidth = 50;
-        const voucherHeight = 80;
-        const margin = 0;
-        const numColumns = 9;
-        const numRows = 4;
-
-        let voucherIndex = 0;
-
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const pdfToCanvasScaleX = voucherWidth / canvas.width;
-        const pdfToCanvasScaleY = voucherHeight / canvas.height;
-
-        // Determinar cuántos vouchers podemos generar
-        // Cada voucher necesita 1 código gratis y 5 normales según el requerimiento
-        const numVouchers = Math.min(
-          codigosGratis.length, // Cuántos vouchers podemos hacer con los códigos gratis
-          Math.floor(codigosNormales.length / 5) // Cuántos vouchers podemos hacer con los códigos normales
-        );
-
-        if (numVouchers === 0) {
-          alert(
-            "No hay suficientes códigos para crear vouchers mixtos (1 gratis + 5 normales)."
-          );
-          return;
-        }
-
-        // Para cada voucher, necesitamos 1 código gratis y 5 códigos normales
-        for (let i = 0; i < numVouchers; i++) {
-          const codigoGratis = codigosGratis[i];
-          const codigosNormalesParaEsteVoucher = codigosNormales.slice(
-            i * 5,
-            (i + 1) * 5
-          );
-
-          if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
-            doc.addPage();
-          }
-
-          const x = (voucherIndex % numColumns) * (voucherWidth + margin);
-          const y =
-            (Math.floor(voucherIndex / numColumns) % numRows) *
-            (voucherHeight + margin);
-
-          // Añadir la imagen del voucher
-          doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
-
-          // Añadir número de voucher
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(6);
-          doc.setTextColor(255, 255, 255);
-          doc.text(`${i + 1}`, x + voucherWidth - 2, y + 3, { align: "right" });
-
-          // Distribuir las posiciones de los códigos
-          // Posiciones por defecto en caso de que falten posiciones definidas por el usuario
-          const defaultPositions = [
-            { x: canvas.width * 0.3, y: canvas.height * 0.3 }, // Para código gratis
-            { x: canvas.width * 0.3, y: canvas.height * 0.5 }, // Para código normal 1
-            { x: canvas.width * 0.3, y: canvas.height * 0.6 }, // Para código normal 2
-            { x: canvas.width * 0.7, y: canvas.height * 0.3 }, // Para código normal 3
-            { x: canvas.width * 0.7, y: canvas.height * 0.5 }, // Para código normal 4
-            { x: canvas.width * 0.7, y: canvas.height * 0.6 }, // Para código normal 5
-          ];
-
-          // Si el usuario definió menos posiciones que las necesarias, usamos las predeterminadas
-          const positionsToUse =
-            clickPositions.length >= 6
-              ? clickPositions.slice(0, 6)
-              : [
-                  ...clickPositions,
-                  ...defaultPositions.slice(clickPositions.length),
-                ];
-
-          // Añadir el código gratis con un indicador visual
-          const gratisPosition = positionsToUse[0];
-          const gratisPdfX = gratisPosition.x * pdfToCanvasScaleX;
-          const gratisPdfY = gratisPosition.y * pdfToCanvasScaleY;
-
-          // Añadir un círculo de fondo para el código gratis
-          doc.setFillColor(255, 0, 0); // Rojo para destacar que es gratis
-          doc.circle(x + gratisPdfX, y + gratisPdfY, 5, "F");
-
-          doc.setFontSize(8);
-          doc.setTextColor(255, 255, 255); // Texto blanco sobre fondo rojo
-          doc.text(`${codigoGratis.codigo}`, x + gratisPdfX, y + gratisPdfY, {
-            align: "center",
-            baseline: "middle",
-          });
-
-          // Añadir indicador de que es código gratis
-          doc.setFontSize(5);
-          doc.text("GRATIS", x + gratisPdfX, y + gratisPdfY - 6, {
-            align: "center",
-          });
-
-          // Añadir los códigos normales
-          codigosNormalesParaEsteVoucher.forEach((codigoNormal, index) => {
-            if (index + 1 < positionsToUse.length) {
-              const position = positionsToUse[index + 1];
-              const pdfX = position.x * pdfToCanvasScaleX;
-              const pdfY = position.y * pdfToCanvasScaleY;
-
-              doc.setFontSize(8);
-              doc.setTextColor(0, 0, 0); // Texto negro para códigos normales
-              doc.text(`${codigoNormal.codigo}`, x + pdfX, y + pdfY, {
-                align: "center",
-                baseline: "middle",
-              });
-            }
-          });
-
-          voucherIndex++;
-        }
-
-        doc.save(`vouchers_mixtos_${selectedVoucher}.pdf`);
-
-        alert(
-          `Se han generado ${numVouchers} vouchers mixtos (1 código gratis + 5 códigos normales cada uno).`
-        );
-      } catch (error) {
-        console.error("Error al generar el PDF:", error);
-        alert("Hubo un error al generar el PDF. Por favor, intente de nuevo.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      alert(
-        "Por favor, seleccione un voucher y las posiciones de los códigos antes de generar el PDF."
-      );
-    }
-  };
 
   return (
     <div className="font-coolvetica">
@@ -859,10 +609,10 @@ export const VoucherList = () => {
         canvasRef={canvasRef}
         handleCanvasClick={handleCanvasClick}
         clickPositions={clickPositions}
+        setClickPositions={setClickPositions}
         generateVoucherPDF={generateVoucherPDF}
         loading={loading}
-        numCodes={numCodes}
-        setNumCodes={setNumCodes}
+        isMixedCampaign={isMixedCampaign}
       />
     </div>
   );
