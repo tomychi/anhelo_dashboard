@@ -86,7 +86,7 @@ const UserCircle: React.FC<UserCircleProps> = ({
 
   return (
     <div
-      className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-medium"
+      className="w-4 h-4 rounded-full flex items-center justify-center text-gray-100 text-[10px] font-medium"
       style={{ backgroundColor: color }}
       title={nombre}
     >
@@ -321,11 +321,29 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 
   const CardContent = () => (
     <div
-      className="flex flex-col w-full"
+      className="flex flex-row justify-between items-center w-full"
       {...(isEmpresario && kpiKey ? longPressEvent : {})}
     >
-      <div className="flex flex-row items-center justify-between w-full">
-        <div className="flex flex-col gap-1">
+      {/* letras */}
+      <div className="flex flex-col ">
+        <div className="flex flex-col ">
+          {/* Círculos de usuarios con acceso */}
+          {!isLoading && accessUsers.length > 0 && (
+            <div className="flex flex-row gap-1">
+              {accessUsers.slice(0, 6).map((usuario, index) => (
+                <UserCircle
+                  key={usuario.id}
+                  nombre={usuario.nombre}
+                  color={getUserColor(usuario.id)}
+                />
+              ))}
+              {accessUsers.length > 6 && (
+                <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                  +{accessUsers.length - 6}
+                </div>
+              )}
+            </div>
+          )}
           {isLoading ? (
             <LoadingElement className="h-4" width={titleWidth} />
           ) : (
@@ -342,6 +360,10 @@ export const CardInfo: React.FC<CardInfoProps> = ({
               <img src={arrow} className="h-2 w-1.5" alt="" />
             ))}
         </div>
+      </div>
+
+      {/* numero */}
+      <div>
         {isLoading ? (
           <LoadingElement className="h-8" width={infoWidth} />
         ) : (
@@ -350,32 +372,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           </p>
         )}
       </div>
-
-      {/* Círculos de usuarios con acceso */}
-      {!isLoading && accessUsers.length > 0 && (
-        <div className="flex flex-row mt-2 space-x-1">
-          {accessUsers.slice(0, 6).map((usuario, index) => (
-            <UserCircle
-              key={usuario.id}
-              nombre={usuario.nombre}
-              color={getUserColor(usuario.id)}
-            />
-          ))}
-          {accessUsers.length > 6 && (
-            <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
-              +{accessUsers.length - 6}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Indicador visual sutil durante la pulsación larga */}
-      {isEmpresario && kpiKey && (
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 bg-black bg-opacity-10 transition-opacity duration-1000 rounded-lg"
-          style={{ opacity: showAccessModal ? 0.2 : 0 }}
-        />
-      )}
     </div>
   );
 

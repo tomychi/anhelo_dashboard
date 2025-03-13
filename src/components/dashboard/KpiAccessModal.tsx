@@ -269,7 +269,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         </div>
 
         <div className="mt-4 flex-col space-y-2 w-full">
-          <h2 className="text-2xl font-bold mb-4">Acceso a "{kpiTitle}"</h2>
+          <h2 className="text-2xl font-bold mb-4">Acceso a {kpiTitle}</h2>
 
           {/* Sección para el dueño/empresario */}
           {usuarioId && (
