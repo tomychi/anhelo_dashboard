@@ -1,6 +1,7 @@
 export { WhatsappFeatures } from "./WhatsappFeatures";
 
 export { Clientes } from "./Clientes";
+export { FormMaterial } from "./FormMaterial";
 
 export { Gastos } from "./Gastos";
 export { Neto } from "./Neto";

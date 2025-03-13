@@ -13,6 +13,7 @@ import {
   Equipo,
   WhatsappFeatures,
   ComanderaAutomatizada,
+  FormMaterial,
 } from "../pages";
 import { useRef } from "react";
 import { MonthData } from "./MonthData";
@@ -58,6 +59,14 @@ export const DashboardMainPage = () => {
               element={
                 <PrivateRoutesLayout>
                   <DynamicForm />
+                </PrivateRoutesLayout>
+              }
+            />{" "}
+            <Route
+              path="paginaDeVentas"
+              element={
+                <PrivateRoutesLayout>
+                  <FormMaterial />
                 </PrivateRoutesLayout>
               }
             />
