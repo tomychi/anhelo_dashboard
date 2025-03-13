@@ -342,6 +342,23 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
             "Actualizar"
           )}
         </button>
+        <button
+          onClick={handleSaveAccess}
+          disabled={loading}
+          className="text-red-main w-full mt-2 text-4xl h-20 px-4 bg-gray-200 font-bold rounded-lg outline-none"
+        >
+          {loading ? (
+            <div className="flex justify-center w-full items-center">
+              <div className="flex flex-row gap-1">
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+              </div>
+            </div>
+          ) : (
+            "Eliminar"
+          )}
+        </button>
       </div>
     </div>
   );
