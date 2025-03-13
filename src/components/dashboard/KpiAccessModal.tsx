@@ -268,13 +268,15 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           </div>
         </div>
 
-        <div className="mt-4 flex-col space-y-2 w-full">
-          <h2 className="text-2xl font-bold mb-4">Acceso a {kpiTitle}</h2>
+        <div className="flex-col space-y-2 w-full">
+          <h2 className="text-xl text-center font-bold mb-4">
+            Visibilidad de <br /> {kpiTitle}
+          </h2>
 
           {/* Sección para el dueño/empresario */}
           {usuarioId && (
             <div className="mb-4">
-              <h3 className="text-lg font-bold mb-2">Dueño/Administrador</h3>
+              <h3 className=" font-bold mb-2">Dueño/Administrador</h3>
               <div className="bg-gray-100 p-4 rounded-lg">
                 <TogglePermiso
                   label={
@@ -290,7 +292,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
           {/* Sección de empleados */}
           <div className="mt-4">
-            <h3 className="text-lg font-bold mb-2">Empleados</h3>
+            <h3 className=" font-bold mb-2">Empleados</h3>
 
             {loading ? (
               <div className="bg-gray-100 p-4 rounded-lg flex justify-center items-center h-40">
@@ -340,7 +342,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
               </div>
             </div>
           ) : (
-            "Guardar cambios"
+            "Actualizar"
           )}
         </button>
       </div>
