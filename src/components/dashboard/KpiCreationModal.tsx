@@ -6,6 +6,7 @@ import {
 } from "../../firebase/ClientesAbsolute";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import arrowIcon from "../../assets/arrowIcon.png"; // Make sure to import the arrow icon
 
 interface KpiCreationModalProps {
   isOpen: boolean;
@@ -84,6 +85,11 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const modalRef = useRef(null);
 
+  // Estados para el scroll
+  const [isScrollNeeded, setIsScrollNeeded] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
+  const kpiScrollContainerRef = useRef(null);
+
   // Obtener información del usuario para añadirlo automáticamente
   const auth = useSelector((state: RootState) => state.auth);
   const tipoUsuario = auth?.tipoUsuario;
@@ -99,6 +105,38 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
     );
     setFilteredKpis(filtered);
   }, [searchTerm, existingKpis]);
+
+  // Efecto para detectar si se necesita scroll en la lista de KPIs
+  useEffect(() => {
+    if (isOpen && kpiScrollContainerRef.current) {
+      const checkIfScrollNeeded = () => {
+        const container = kpiScrollContainerRef.current;
+        if (container) {
+          setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+        }
+      };
+
+      checkIfScrollNeeded();
+      window.addEventListener("resize", checkIfScrollNeeded);
+
+      return () => {
+        window.removeEventListener("resize", checkIfScrollNeeded);
+      };
+    } else {
+      setIsScrollNeeded(false);
+      setIsNearBottom(false);
+    }
+  }, [isOpen, filteredKpis]);
+
+  // Función para manejar el evento de scroll
+  const handleKpiScroll = () => {
+    const container = kpiScrollContainerRef.current;
+    if (container) {
+      const scrollBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      setIsNearBottom(scrollBottom < 20);
+    }
+  };
 
   useEffect(() => {
     // Cargar empleados de la empresa y KPIs existentes
@@ -243,7 +281,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+    <div className="fixed inset-0 z-50  flex items-end font-coolvetica justify-center">
       <div
         className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
           isAnimating ? "bg-opacity-50" : "bg-opacity-0"
@@ -256,7 +294,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
 
       <div
         ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+        className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
           isAnimating ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -276,6 +314,9 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
             <div className="w-12 h-1 bg-gray-200 rounded-full" />
           </div>
         </div>
+        <p className="text-2xl text-center">
+          Selecciona las metricas importantes
+        </p>
 
         <div className="mt-4 flex-col space-y-2 w-full">
           {/* Buscador de KPIs */}
@@ -284,7 +325,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none text-center focus:outline-none focus:ring-0"
               placeholder="Buscar por nombre..."
             />
           </div>
@@ -299,33 +340,48 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
               </div>
             </div>
           ) : (
-            <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto mb-4">
-              {filteredKpis.length === 0 ? (
-                <p className="text-center text-gray-500 py-2">
-                  No se encontraron KPIs disponibles
-                </p>
-              ) : (
-                filteredKpis.map((kpi) => (
-                  <div
-                    key={kpi.key}
-                    className={`flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer ${
-                      selectedKpiKey === kpi.key ? "bg-gray-200" : ""
-                    }`}
-                    onClick={() => setSelectedKpiKey(kpi.key)}
-                  >
-                    <input
-                      type="radio"
-                      name="kpi"
-                      checked={selectedKpiKey === kpi.key}
-                      onChange={() => setSelectedKpiKey(kpi.key)}
-                      className="mr-2"
-                    />
-                    <span className="font-medium">{kpi.title}</span>
-                    <span className="text-xs text-gray-500 ml-2">
-                      ({kpi.key})
-                    </span>
+            <div className="relative">
+              <div
+                ref={kpiScrollContainerRef}
+                className=" max-h-60 overflow-y-auto mb-4 "
+                onScroll={handleKpiScroll}
+              >
+                {filteredKpis.length === 0 ? (
+                  <p className="text-center text-gray-500 py-2">
+                    No se encontraron KPIs disponibles
+                  </p>
+                ) : (
+                  filteredKpis.map((kpi) => (
+                    <div
+                      key={kpi.key}
+                      className={`flex items-center flex justify-center items-center p-2 hover:bg-gray-50 rounded cursor-pointer ${
+                        selectedKpiKey === kpi.key
+                          ? "bg-black text-gray-100"
+                          : ""
+                      }`}
+                      onClick={() => setSelectedKpiKey(kpi.key)}
+                    >
+                      <span className="font-medium text-center">
+                        {kpi.title}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Indicador de scroll - solo visible cuando hay suficiente contenido para scrollear y no estamos cerca del final */}
+              {isScrollNeeded && !isNearBottom && (
+                <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+                  <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                    <div className="animate-bounce">
+                      <img
+                        src={arrowIcon}
+                        className="h-2 transform rotate-90 opacity-30"
+                        alt="Desplazar para ver más"
+                      />
+                    </div>
                   </div>
-                ))
+                </div>
               )}
             </div>
           )}
