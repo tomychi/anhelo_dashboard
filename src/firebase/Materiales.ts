@@ -11,13 +11,16 @@ import {
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
-export interface MaterialProps {
+export interface SimpleMaterialProps {
   nombre: string;
-  categoria: string;
   costo: number;
-  stock: number;
-  unidadPorPrecio: number;
   unit: string;
+}
+
+export interface MaterialProps extends SimpleMaterialProps {
+  categoria?: string;
+  stock?: number;
+  unidadPorPrecio?: number;
   id?: string;
 }
 
@@ -29,7 +32,7 @@ export interface MaterialProps {
  * @returns Una promesa que se resuelve cuando el material ha sido creado
  */
 export const CreateMaterial = async (
-  materialData: Omit<MaterialProps, "id">,
+  materialData: SimpleMaterialProps,
   isAnhelo: boolean,
   empresaId?: string
 ) => {
@@ -74,7 +77,7 @@ export const CreateMaterial = async (
   // Crear el material
   await setDoc(materialRef, {
     ...materialData,
-    id: materialId,
+    // No incluimos el id aquí ya que sería redundante con el ID del documento
   });
 
   return materialRef;

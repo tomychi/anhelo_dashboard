@@ -4,16 +4,11 @@ import { projectAuth } from "../firebase/config";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import { CreateMaterial } from "../firebase/Materiales";
-import { CATEGORIAS } from "../constants/expenses";
 
-export interface MaterialProps {
+export interface SimpleMaterialProps {
   nombre: string;
-  categoria: string;
   costo: number;
-  stock: number;
-  unidadPorPrecio: number;
   unit: string;
-  id?: string;
 }
 
 export const FormMaterial: React.FC = () => {
@@ -21,12 +16,9 @@ export const FormMaterial: React.FC = () => {
   const currentUserEmail = projectAuth.currentUser?.email;
 
   // Estado inicial del formulario
-  const [formData, setFormData] = useState<Omit<MaterialProps, "id">>({
+  const [formData, setFormData] = useState<SimpleMaterialProps>({
     nombre: "",
-    categoria: "ingredientes",
     costo: 0,
-    stock: 0,
-    unidadPorPrecio: 1,
     unit: "unidad",
   });
 
@@ -36,7 +28,7 @@ export const FormMaterial: React.FC = () => {
   ) => {
     const { name, value } = e.target;
 
-    if (name === "costo" || name === "stock" || name === "unidadPorPrecio") {
+    if (name === "costo") {
       const numericValue = parseFloat(value);
       setFormData((prev) => ({
         ...prev,
@@ -83,10 +75,7 @@ export const FormMaterial: React.FC = () => {
       // Reiniciar el formulario
       setFormData({
         nombre: "",
-        categoria: "ingredientes",
         costo: 0,
-        stock: 0,
-        unidadPorPrecio: 1,
         unit: "unidad",
       });
     } catch (error) {
@@ -109,24 +98,6 @@ export const FormMaterial: React.FC = () => {
       </div>
 
       <div className="item-section w-full flex flex-col gap-2">
-        <div className="section w-full relative mb-2 z-0">
-          <select
-            id="categoria"
-            name="categoria"
-            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.categoria}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccionar categoría</option>
-            {CATEGORIAS.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div className="section relative z-0">
           <input
             type="text"
@@ -149,20 +120,7 @@ export const FormMaterial: React.FC = () => {
             className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
             value={formData.costo || ""}
             onChange={handleChange}
-            placeholder="Costo unitario inicial"
-            required
-          />
-        </div>
-
-        <div className="section relative z-0">
-          <input
-            type="number"
-            id="stock"
-            name="stock"
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.stock || ""}
-            onChange={handleChange}
-            placeholder="Stock inicial"
+            placeholder="Costo unitario"
             required
           />
         </div>
@@ -182,19 +140,6 @@ export const FormMaterial: React.FC = () => {
             <option value="l">l</option>
             <option value="ml">ml</option>
           </select>
-        </div>
-
-        <div className="section relative z-0">
-          <input
-            type="number"
-            id="unidadPorPrecio"
-            name="unidadPorPrecio"
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.unidadPorPrecio || ""}
-            onChange={handleChange}
-            placeholder="Unidad por precio"
-            required
-          />
         </div>
 
         <button
