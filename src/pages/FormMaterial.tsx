@@ -119,13 +119,11 @@ export const FormMaterial: React.FC = () => {
             required
           >
             <option value="">Seleccionar categoría</option>
-            {CATEGORIAS.filter((cat) => cat === "ingredientes").map(
-              (category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              )
-            )}
+            {CATEGORIAS.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -151,7 +149,7 @@ export const FormMaterial: React.FC = () => {
             className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
             value={formData.costo || ""}
             onChange={handleChange}
-            placeholder="Costo unitario"
+            placeholder="Costo unitario inicial"
             required
           />
         </div>
