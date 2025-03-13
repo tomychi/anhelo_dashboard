@@ -34,7 +34,6 @@ interface LoadingElementProps {
 
 interface UserCircleProps {
   nombre: string;
-  color?: string;
 }
 
 // Función para detectar pulsación larga
@@ -78,16 +77,12 @@ function useLongPress(callback = () => {}, ms = 500) {
 }
 
 // Componente para mostrar una inicial del usuario en un círculo
-const UserCircle: React.FC<UserCircleProps> = ({
-  nombre,
-  color = "#6366F1",
-}) => {
+const UserCircle: React.FC<UserCircleProps> = ({ nombre }) => {
   const inicial = nombre ? nombre.charAt(0).toUpperCase() : "?";
 
   return (
     <div
-      className="w-4 h-4 rounded-full flex items-center justify-center text-gray-100 text-[10px] font-medium"
-      style={{ backgroundColor: color }}
+      className="w-4 h-4 rounded-full flex items-center justify-center text-gray-100 text-[10px] font-medium bg-black"
       title={nombre}
     >
       {inicial}
@@ -269,25 +264,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     return showAsRatings ? `(${value} ratings)` : `(${value}%)`;
   };
 
-  // Colores predefinidos para los círculos de usuarios
-  const userColors = [
-    "#6366F1", // Indigo
-    "#8B5CF6", // Violet
-    "#EC4899", // Pink
-    "#EF4444", // Red
-    "#F59E0B", // Amber
-    "#10B981", // Emerald
-    "#3B82F6", // Blue
-  ];
-
-  // Generar color basado en el ID del usuario (para que sea consistente)
-  const getUserColor = (userId: string): string => {
-    const index =
-      userId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-      userColors.length;
-    return userColors[index];
-  };
-
   // Manejar la actualización de acceso desde el modal
   const handleUpdateAccess = async (newAccessIds: string[]) => {
     if (!empresaId || !kpiKey) return;
@@ -358,14 +334,10 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           {!isLoading && accessUsers.length > 0 && (
             <div className="flex flex-row gap-1">
               {accessUsers.slice(0, 6).map((usuario, index) => (
-                <UserCircle
-                  key={usuario.id}
-                  nombre={usuario.nombre}
-                  color={getUserColor(usuario.id)}
-                />
+                <UserCircle key={usuario.id} nombre={usuario.nombre} />
               ))}
               {accessUsers.length > 6 && (
-                <div className="w-5 h-5 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center text-xs text-gray-100 font-medium">
                   +{accessUsers.length - 6}
                 </div>
               )}
