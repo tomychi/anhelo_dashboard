@@ -20,6 +20,7 @@ import { ProductStateProps } from "../redux/products/productReducer";
 import Swal from "sweetalert2";
 import { Cadete, PedidoProps } from "../types/types"; // Importa PedidoProps
 import KPILineChart from "../components/dashboard/KPILineChart";
+import AddKpiCard from "../components/dashboard/AddKpiCard";
 import {
   EmpresaProps,
   EmpleadoProps,
@@ -83,6 +84,8 @@ export const Dashboard: React.FC = () => {
       : tipoUsuario === "empleado"
         ? (auth?.usuario as EmpleadoProps)?.id || ""
         : "";
+
+  const isEmpresario = tipoUsuario === "empresa";
 
   // Cargar configuración de KPIs
   useEffect(() => {
@@ -710,21 +713,37 @@ export const Dashboard: React.FC = () => {
               <p className="text-gray-500">Cargando dashboard...</p>
             </div>
           ) : cardsToRender.length > 0 ? (
-            cardsToRender.map((card, index) =>
-              React.cloneElement(card, {
-                key: index,
-                className: `
-                  ${index === 0 ? "rounded-t-lg" : ""}
-                  ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
-                `,
-                isLoading: isLoading,
-              })
-            )
+            <>
+              {/* Renderizar los KPIs existentes */}
+              {cardsToRender.map((card, index) =>
+                React.cloneElement(card, {
+                  key: index,
+                  className: `
+                    ${index === 0 ? "rounded-t-lg" : ""}
+                    ${
+                      index === cardsToRender.length - 1 && !isEmpresario
+                        ? "rounded-b-lg"
+                        : ""
+                    }
+                  `,
+                  isLoading: isLoading,
+                })
+              )}
+
+              {/* Botón para añadir nuevo KPI (solo para empresarios) */}
+              {isEmpresario && <AddKpiCard className={`rounded-b-lg`} />}
+            </>
           ) : (
-            <div className="bg-white p-8 text-center rounded-lg">
-              <p className="text-gray-500">
-                No hay KPIs disponibles para mostrar con tus permisos actuales.
-              </p>
+            <div className="flex flex-col rounded-lg">
+              <div className="bg-white p-8 text-center rounded-t-lg">
+                <p className="text-gray-500">
+                  No hay KPIs disponibles para mostrar con tus permisos
+                  actuales.
+                </p>
+              </div>
+
+              {/* Mostrar el botón de agregar KPI incluso si no hay KPIs actuales */}
+              {isEmpresario && <AddKpiCard className="rounded-b-lg" />}
             </div>
           )}
         </div>
