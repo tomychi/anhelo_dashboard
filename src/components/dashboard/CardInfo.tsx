@@ -183,32 +183,56 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 
   // Procesar los IDs de usuario para obtener nombres
   useEffect(() => {
-    if (!accessUserIds.length) return;
+    // Función para cargar y mostrar todos los usuarios con acceso
+    const loadAccessUsers = async () => {
+      if (!accessUserIds || accessUserIds.length === 0 || !empresaId) return;
 
-    // Filtrar empleados que tienen acceso a este KPI
-    const empleadosConAcceso = allEmpleados
-      .filter((emp) => accessUserIds.includes(emp.id))
-      .map((emp) => ({
-        id: emp.id,
-        nombre: emp.datos?.nombre || "Usuario",
-      }));
+      try {
+        // Importar funciones necesarias
+        const { obtenerEmpleadosDeEmpresa, obtenerEmpresaPorId } = await import(
+          "../../firebase/ClientesAbsolute"
+        );
 
-    // Verificar si el empresario está en la lista
-    if (
-      auth?.usuario?.id &&
-      accessUserIds.includes(auth.usuario.id) &&
-      tipoUsuario === "empresa"
-    ) {
-      empleadosConAcceso.push({
-        id: auth.usuario.id,
-        nombre:
-          (auth.usuario as EmpresaProps)?.datosUsuario?.nombreUsuario ||
-          "Dueño",
-      });
-    }
+        // Obtener todos los empleados de la empresa
+        const todosEmpleados = await obtenerEmpleadosDeEmpresa(empresaId);
 
-    setAccessUsers(empleadosConAcceso);
-  }, [accessUserIds, allEmpleados, auth?.usuario?.id, tipoUsuario]);
+        // Obtener datos de la empresa
+        const empresaData = await obtenerEmpresaPorId(empresaId);
+
+        // Array para almacenar usuarios con acceso
+        const usuariosConAcceso = [];
+
+        // Procesar cada ID de acceso
+        for (const userId of accessUserIds) {
+          // Caso 1: El ID es de un empleado
+          const empleado = todosEmpleados.find((emp) => emp.id === userId);
+          if (empleado) {
+            usuariosConAcceso.push({
+              id: empleado.id,
+              nombre: empleado.datos?.nombre || "Empleado",
+            });
+            continue;
+          }
+
+          // Caso 2: El ID corresponde al empresario/dueño
+          if (empresaData && empresaData.id === userId) {
+            usuariosConAcceso.push({
+              id: empresaData.id,
+              nombre: empresaData.datosUsuario?.nombreUsuario || "Dueño",
+            });
+          }
+        }
+
+        // Actualizar el estado
+        setAccessUsers(usuariosConAcceso);
+      } catch (error) {
+        console.error("Error al cargar usuarios con acceso:", error);
+      }
+    };
+
+    // Ejecutar la función
+    loadAccessUsers();
+  }, [accessUserIds, empresaId]);
 
   useEffect(() => {
     // Verificar si el usuario es de marketing
@@ -287,31 +311,34 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       // Guardar la configuración actualizada en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
 
-      // Actualizar la visualización local inmediatamente
-      const newAccessUsers = [
-        // Empleados con acceso
-        ...allEmpleados
-          .filter((emp) => newAccessIds.includes(emp.id))
-          .map((emp) => ({
-            id: emp.id,
-            nombre: emp.datos?.nombre || "Usuario",
-          })),
-        // Añadir el empresario si tiene acceso
-        ...(auth?.usuario?.id &&
-        newAccessIds.includes(auth.usuario.id) &&
-        tipoUsuario === "empresa"
-          ? [
-              {
-                id: auth.usuario.id,
-                nombre:
-                  (auth.usuario as EmpresaProps)?.datosUsuario?.nombreUsuario ||
-                  "Dueño",
-              },
-            ]
-          : []),
-      ];
+      // Volver a cargar los usuarios con acceso para reflejar los cambios
+      const { obtenerEmpleadosDeEmpresa, obtenerEmpresaPorId } = await import(
+        "../../firebase/ClientesAbsolute"
+      );
 
-      // Actualizar el estado local
+      const todosEmpleados = await obtenerEmpleadosDeEmpresa(empresaId);
+      const empresaData = await obtenerEmpresaPorId(empresaId);
+
+      const newAccessUsers = [];
+
+      for (const userId of newAccessIds) {
+        const empleado = todosEmpleados.find((emp) => emp.id === userId);
+        if (empleado) {
+          newAccessUsers.push({
+            id: empleado.id,
+            nombre: empleado.datos?.nombre || "Empleado",
+          });
+          continue;
+        }
+
+        if (empresaData && empresaData.id === userId) {
+          newAccessUsers.push({
+            id: empresaData.id,
+            nombre: empresaData.datosUsuario?.nombreUsuario || "Dueño",
+          });
+        }
+      }
+
       setAccessUsers(newAccessUsers);
     } catch (error) {
       console.error("Error al actualizar permisos de KPI:", error);
