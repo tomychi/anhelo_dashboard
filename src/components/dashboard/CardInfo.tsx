@@ -82,7 +82,7 @@ const UserCircle: React.FC<UserCircleProps> = ({ nombre }) => {
 
   return (
     <div
-      className="w-4 h-4 rounded-full flex items-center justify-center text-gray-100 text-[10px] font-medium bg-black"
+      className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-medium bg-gray-200 text-black"
       title={nombre}
     >
       {inicial}
