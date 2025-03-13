@@ -865,7 +865,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
                       <div className=" animate-bounce ">
                         <img
                           src={arrowIcon}
-                          className="h-2 transform rotate-90"
+                          className="h-2 transform rotate-90 opacity-30"
                           alt="Desplazar para ver más"
                         />
                       </div>
