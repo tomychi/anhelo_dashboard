@@ -378,7 +378,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   if (isMarketingUser || !link) {
     return (
       <div
-        className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 cursor-default ${className} relative`}
+        className={`flex-1 bg-gray-100 text-black font-coolvetica border-b    border-gray-200   border-b  px-4 pt-2 pb-3 cursor-default ${className} relative`}
       >
         <CardContent />
 
@@ -402,7 +402,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   return (
     <NavLink
       to={`/${link}`}
-      className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${className} relative`}
+      className={`flex-1 bg-gray-100 text-black font-coolvetica border-b    border-gray-200   border-b  px-4 pt-2 pb-3 ${className} relative`}
       onClick={(e) => {
         // Evitar navegación si se está usando longpress
         if (showAccessModal) {
