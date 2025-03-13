@@ -15,7 +15,7 @@ const TogglePermiso = ({ isOn, onToggle, label, disabled = false }) => (
     <p className="text-xs">{label}</p>
     <div
       className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-        isOn ? (disabled ? "bg-gray-900" : "bg-black") : "bg-gray-200"
+        isOn ? (disabled ? "bg-gray-400" : "bg-black") : "bg-gray-200"
       } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       onClick={!disabled ? onToggle : undefined}
     >
@@ -87,7 +87,6 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
   // Cargar empleados activos
   const fetchEmpleados = async () => {
-    setLoading(true);
     try {
       const empleadosData = await obtenerEmpleadosDeEmpresa(empresaId);
       // Filtrar solo empleados activos
@@ -100,8 +99,6 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       console.error("Error al obtener empleados:", error);
       setError("No se pudieron cargar los empleados.");
       return [];
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -205,6 +202,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
   // Guardar cambios en Firestore
   const handleSaveAccess = async () => {
+    // Solo activar loading para el botón, no para la sección de empleados
     setLoading(true);
 
     try {
@@ -301,15 +299,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
           {/* Sección de empleados */}
           <div className="mt-4">
-            {loading ? (
-              <div className="bg-gray-100 p-4 rounded-lg flex justify-center items-center h-40">
-                <div className="flex flex-row gap-2">
-                  <div className="w-3 h-3 bg-black rounded-full animate-pulse"></div>
-                  <div className="w-3 h-3 bg-black rounded-full animate-pulse delay-100"></div>
-                  <div className="w-3 h-3 bg-black rounded-full animate-pulse delay-200"></div>
-                </div>
-              </div>
-            ) : empleados.length > 0 ? (
+            {empleados.length > 0 ? (
               <div className="rounded-lg max-h-60 overflow-y-auto">
                 {empleados.map((empleado) => (
                   <TogglePermiso
