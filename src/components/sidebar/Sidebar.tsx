@@ -6,6 +6,7 @@ import { logoutSuccess } from "../../redux/auth/authAction";
 import Absolute from "../../assets/absoluteIsologo.avif";
 import { ReadDataForDateRange } from "../../firebase/ReadData";
 import { PedidoProps } from "../../types/types";
+import arrowIcon from "../../assets/arrowIcon.png";
 import {
   obtenerNombreEmpresa,
   EmpresaProps,
@@ -836,45 +837,63 @@ export const Sidebar = ({ scrollContainerRef }) => {
           />
           <div
             ref={menuModalRef}
-            className="relative bg-gray-100 rounded-b-lg w-full pb-7 transition-transform duration-300 touch-none pt-8"
+            className="relative bg-gray-100 rounded-b-lg w-full transition-transform duration-300 touch-none pt-8"
             style={{
               transform: `translateY(${-menuTranslate}px)`,
-              overflowY: "auto",
+              maxHeight: isMobile ? "70vh" : "auto", // Control de altura
             }}
           >
-            {isMobile && (
-              <div
-                className="absolute bottom-0 left-0 right-0 h-6 cursor-grab active:cursor-grabbing"
-                onTouchStart={handleMenuTouchStart}
-                onTouchMove={handleMenuTouchMove}
-                onMouseDown={handleMenuMouseDown}
-                onMouseMove={handleMenuMouseMove}
-              >
-                <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-1 bg-gray-200 rounded-full" />
-                </div>
-              </div>
-            )}
-            <nav className="px-4 h-full overflow-y-auto">
-              <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
-              <div
-                className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-2xl mt-12 rounded-3xl cursor-pointer"
-                onClick={() => {
-                  if (isAuth) {
-                    setIsFeatureModalOpen(true);
-                  } else {
-                    setIsMenuOpen(false); // Cerrar el menú antes de navegar
-                    navigate("/crearEmpresa");
+            <nav className="px-4 h-full">
+              {/* Área de menús con scroll */}
+              <div className="relative">
+                <div
+                  className={
+                    isMobile
+                      ? "max-h-48 overflow-y-auto pb-4 pr-2 menu-scroll-container"
+                      : ""
                   }
-                }}
-              >
-                {isAuth ? "Más funcionalidades" : "Prueba gratuita"}
+                >
+                  <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
+                </div>
+
+                {/* Indicador de scroll */}
+                {isMobile && (
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                      <div className=" animate-bounce ">
+                        <img
+                          src={arrowIcon}
+                          className="h-2 transform rotate-90"
+                          alt="Desplazar para ver más"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <p className="font-medium text-xs opacity-30 font-coolvetica text-center  mt-4">
-                Ⓡ 2023. Absolute, Soluciones Empresariales.
-              </p>
+              {/* Botón de acción principal y footer siempre visibles */}
+              <div className="mt-6">
+                <div
+                  className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-2xl rounded-3xl cursor-pointer"
+                  onClick={() => {
+                    if (isAuth) {
+                      setIsFeatureModalOpen(true);
+                    } else {
+                      setIsMenuOpen(false);
+                      navigate("/crearEmpresa");
+                    }
+                  }}
+                >
+                  {isAuth ? "Más funcionalidades" : "Prueba gratuita"}
+                </div>
+
+                <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4 mb-8">
+                  Ⓡ 2023. Absolute, Soluciones Empresariales.
+                </p>
+              </div>
             </nav>
+
             {isFeatureModalOpen && (
               <MoreFeaturesModal
                 isOpen={isFeatureModalOpen}
@@ -883,6 +902,20 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 onAddFeatures={handleAddFeatures}
                 loading={isFeatureLoading}
               />
+            )}
+
+            {isMobile && (
+              <div
+                className="absolute bottom-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+                onTouchStart={handleMenuTouchStart}
+                onTouchMove={handleMenuTouchMove}
+                onMouseDown={handleMenuMouseDown}
+                onMouseMove={handleMenuMouseMove}
+              >
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2">
+                  <div className="w-12 h-1 bg-gray-200 rounded-full" />
+                </div>
+              </div>
             )}
           </div>
         </div>
