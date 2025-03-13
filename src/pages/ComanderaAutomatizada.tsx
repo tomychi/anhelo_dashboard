@@ -1034,29 +1034,6 @@ export const ComanderaAutomatizada: React.FC = () => {
     }
   }, [empleados, gruposListos]);
 
-  // Restricción de acceso basada en el rol del usuario
-  if (
-    user.email === "cocina@anhelo.com" ||
-    user.email === "cadetes@anhelo.com"
-  ) {
-    return (
-      <div>
-        <NavButtons
-          seccionActiva={seccionActiva}
-          setSeccionActiva={setSeccionActiva}
-        />
-        <OrderList
-          seccionActiva={seccionActiva}
-          pedidosPorHacer={pedidosPorHacer}
-          pedidosCerca={pedidosCerca}
-          pedidosHechos={pedidosHechos}
-          pedidosEntregados={seccionActiva !== "mapa" ? pedidosEntregados : []}
-          cadetes={cadetes}
-        />
-      </div>
-    );
-  }
-
   const togglePedidoPrioritario = (pedido: PedidoProps) => {
     setPedidosPrioritarios((prevPrioritarios) => {
       const isPrioritario = prevPrioritarios.some((p) => p.id === pedido.id);
