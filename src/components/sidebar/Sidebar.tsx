@@ -837,10 +837,10 @@ export const Sidebar = ({ scrollContainerRef }) => {
           />
           <div
             ref={menuModalRef}
-            className="relative bg-gray-100 rounded-b-lg w-full transition-transform duration-300 touch-none pt-8"
+            className="relative bg-gray-100 rounded-b-lg w-full transition-transform duration-300 touch-none "
             style={{
               transform: `translateY(${-menuTranslate}px)`,
-              maxHeight: isMobile ? "70vh" : "auto", // Control de altura
+              maxHeight: isMobile ? "80vh" : "auto", // Control de altura
             }}
           >
             <nav className="px-4 h-full">
@@ -849,11 +849,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 <div
                   className={
                     isMobile
-                      ? "max-h-48 overflow-y-auto pb-4 pr-2 menu-scroll-container"
+                      ? "max-h-80 overflow-y-auto pb-4 pr-2 menu-scroll-container"
                       : ""
                   }
                 >
-                  <ul className="flex flex-col gap-4">{renderMenuItems()}</ul>
+                  <ul className="flex pt-8 flex-col gap-4">
+                    {renderMenuItems()}
+                  </ul>
                 </div>
 
                 {/* Indicador de scroll */}
