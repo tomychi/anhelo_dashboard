@@ -715,13 +715,13 @@ export const Neto = () => {
                   >
                     <div className="flex flex-col">
                       <span className="font-medium">{expense.name}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-400 ">
                         {expense.quantity} {expense.unit} - {expense.fecha}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
                       <span>${expense.total.toFixed(0)}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-400 ">
                         {expense.estado}
                       </span>
                     </div>
@@ -759,13 +759,13 @@ export const Neto = () => {
                   >
                     <div className="flex flex-col">
                       <span className="font-medium">{item.name}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-400 ">
                         {item.fecha}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
                       <span>${item.total.toFixed(0)}</span>
-                      <span className="text-gray-500">
+                      <span className="text-gray-400 ">
                         {calculatePercentage(item.total)}
                       </span>
                       <span

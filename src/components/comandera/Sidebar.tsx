@@ -198,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 disabled={selectedDelay === 0}
                 className={`px-4 w-full flex flex-row items-center gap-1 h-10 rounded-full font-medium ${
                   selectedDelay === 0
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    ? "bg-gray-200 text-gray-400  cursor-not-allowed"
                     : "bg-black text-white hover:bg-gray-800"
                 }`}
               >

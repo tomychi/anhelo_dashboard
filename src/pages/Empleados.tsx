@@ -447,7 +447,7 @@ export const Empleados = () => {
       case "suspendido":
         return "bg-yellow-500";
       default:
-        return "bg-gray-500";
+        return "bg-gray-400 ";
     }
   };
 
@@ -566,7 +566,7 @@ export const Empleados = () => {
                   colSpan={5}
                   className="text-center py-8 bg-gray-100 rounded-lg"
                 >
-                  <p className="text-gray-500">No hay empleados registrados</p>
+                  <p className="text-gray-400 ">No hay empleados registrados</p>
                 </td>
               </tr>
             )}

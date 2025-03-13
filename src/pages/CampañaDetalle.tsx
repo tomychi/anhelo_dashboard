@@ -268,17 +268,17 @@ export const CampañaDetalle: React.FC = () => {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-500">Título de la Campaña</p>
+            <p className="text-sm text-gray-400 ">Título de la Campaña</p>
             <p className="text-lg font-medium">{campaignData.titulo}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Fecha</p>
+            <p className="text-sm text-gray-400 ">Fecha</p>
             <p className="text-lg font-medium">
               {formatearFecha(campaignData.fecha)}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Estado de Uso</p>
+            <p className="text-sm text-gray-400 ">Estado de Uso</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-lg font-medium">
                 {campaignData.usados} de {campaignData.creados}
@@ -298,19 +298,19 @@ export const CampañaDetalle: React.FC = () => {
           <h2 className="text-xl font-bold mb-4">Estadísticas de Uso</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Total pedidos con cupón de la campaña
               </p>
               <p className="text-lg font-medium">{estadisticas.totalPedidos}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Cupones canjeados en pedidos
               </p>
               <p className="text-lg font-medium">{estadisticas.totalCupones}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Cupones sin pedido encontrado
               </p>
               <p className="text-lg font-medium text-red-500">
@@ -328,7 +328,7 @@ export const CampañaDetalle: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Promedio cupones por pedido
               </p>
               <p className="text-lg font-medium">
@@ -338,7 +338,7 @@ export const CampañaDetalle: React.FC = () => {
 
             {/* Nuevas categorías de clientes */}
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Total clientes únicos con cupón
               </p>
               <p className="text-lg font-medium">
@@ -346,13 +346,13 @@ export const CampañaDetalle: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Solo compraron con cupón</p>
+              <p className="text-sm text-gray-400 ">Solo compraron con cupón</p>
               <p className="text-lg font-medium">
                 {estadisticas.estadisticasClientes.soloUsaronCupon}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Ya eran clientes y no volvieron
               </p>
               <p className="text-lg font-medium">
@@ -360,7 +360,7 @@ export const CampañaDetalle: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400 ">
                 Ya eran clientes y volvieron
               </p>
               <p className="text-lg font-medium">
@@ -368,7 +368,7 @@ export const CampañaDetalle: React.FC = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Eran nuevos y volvieron</p>
+              <p className="text-sm text-gray-400 ">Eran nuevos y volvieron</p>
               <p className="text-lg font-medium">
                 {estadisticas.estadisticasClientes.nuevosVolvieron}
               </p>

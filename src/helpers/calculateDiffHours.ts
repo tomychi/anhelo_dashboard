@@ -1,10 +1,10 @@
 // funcion para calcular la diferencia de minutos entre la hora de entradad del pedido y la hora actual, para asignarle un color al pedido
 
 export const colorsPedido = {
-  green: '#00FF00',
-  yellow: '#FFD700',
-  red: '#FF0000',
-  gray: '#D3D3D3',
+  green: "#00FF00",
+  yellow: "#FFD700",
+  red: "#FF0000",
+  gray: "#D3D3D3",
 };
 
 export const obtenerDiferenciaHorariaWithColor = (hora: string): string => {
@@ -12,7 +12,7 @@ export const obtenerDiferenciaHorariaWithColor = (hora: string): string => {
   const ahora = new Date();
 
   // Dividir la hora en horas y minutos
-  const [horas, minutos] = hora.split(':').map(Number);
+  const [horas, minutos] = hora.split(":").map(Number);
 
   // Establecer la hora actual
   ahora.setHours(horas);
@@ -55,11 +55,11 @@ export const obtenerDiferenciaHorariaWithColor = (hora: string): string => {
 };
 
 const coloresTailwind: { [key: string]: string } = {
-  [colorsPedido.green]: 'bg-green-500',
-  [colorsPedido.yellow]: 'bg-yellow-500',
-  [colorsPedido.red]: 'bg-custom-red',
-  [colorsPedido.gray]: 'bg-gray-500',
+  [colorsPedido.green]: "bg-green-500",
+  [colorsPedido.yellow]: "bg-yellow-500",
+  [colorsPedido.red]: "bg-custom-red",
+  [colorsPedido.gray]: "bg-gray-400 ",
 };
 export const obtenerColorTailwind = (colorHexadecimal: string) => {
-  return coloresTailwind[colorHexadecimal] || 'custom'; // Si el color no está en la lista, se utiliza un nombre de color personalizado
+  return coloresTailwind[colorHexadecimal] || "custom"; // Si el color no está en la lista, se utiliza un nombre de color personalizado
 };

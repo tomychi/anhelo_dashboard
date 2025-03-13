@@ -460,7 +460,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
                   onScroll={handleKpiScroll}
                 >
                   {filteredKpis.length === 0 ? (
-                    <p className="text-center text-gray-500 py-2">
+                    <p className="text-center text-gray-400  py-2">
                       No se encontraron KPIs disponibles
                     </p>
                   ) : (

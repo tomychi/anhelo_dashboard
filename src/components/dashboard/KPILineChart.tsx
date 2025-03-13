@@ -333,7 +333,7 @@ const KPILineChart = ({ orders }) => {
   if (!kpiConfigLoaded) {
     return (
       <div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2 h-[250px] flex items-center justify-center">
-        <p className="text-gray-500">Cargando gráficos...</p>
+        <p className="text-gray-400 ">Cargando gráficos...</p>
       </div>
     );
   }
@@ -342,7 +342,7 @@ const KPILineChart = ({ orders }) => {
   if (availableKPIs.length === 0) {
     return (
       <div className="bg-white mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2 h-[250px] flex items-center justify-center">
-        <p className="text-gray-500 px-8 text-center">
+        <p className="text-gray-400  px-8 text-center">
           No hay gráficos disponibles con tus permisos actuales.
         </p>
       </div>

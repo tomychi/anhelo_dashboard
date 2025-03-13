@@ -11,16 +11,16 @@ import {
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label, disabled = false }) => (
-  <div className="flex items-center justify-between w-full py-2 border-b border-gray-200">
-    <p className="text-sm">{label}</p>
+  <div className="flex items-center justify-between w-full  ">
+    <p className="text-xs">{label}</p>
     <div
-      className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+      className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
         isOn ? "bg-black" : "bg-gray-200"
       } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       onClick={!disabled ? onToggle : undefined}
     >
       <div
-        className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+        className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
           isOn ? "translate-x-6" : ""
         }`}
       />
@@ -269,31 +269,24 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         </div>
 
         <div className="flex-col space-y-2 w-full">
-          <h2 className="text-xl text-center font-bold mb-4">
-            Visibilidad de <br /> {kpiTitle}
+          <h2 className="text-2xl mx-8  text-center font-bold mb-4">
+            Visibilidad de {kpiTitle.toLocaleLowerCase()}
           </h2>
 
           {/* Sección para el dueño/empresario */}
           {usuarioId && (
-            <div className="mb-4">
-              <h3 className=" font-bold mb-2">Dueño/Administrador</h3>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <TogglePermiso
-                  label={
-                    (empresa as EmpresaProps)?.datosUsuario?.nombreUsuario ||
-                    "Dueño"
-                  }
-                  isOn={accessToggles[usuarioId] || false}
-                  onToggle={() => handleToggleAccess(usuarioId)}
-                />
-              </div>
-            </div>
+            <TogglePermiso
+              label={
+                (empresa as EmpresaProps)?.datosUsuario?.nombreUsuario ||
+                "Dueño"
+              }
+              isOn={accessToggles[usuarioId] || false}
+              onToggle={() => handleToggleAccess(usuarioId)}
+            />
           )}
 
           {/* Sección de empleados */}
           <div className="mt-4">
-            <h3 className=" font-bold mb-2">Empleados</h3>
-
             {loading ? (
               <div className="bg-gray-100 p-4 rounded-lg flex justify-center items-center h-40">
                 <div className="flex flex-row gap-2">
@@ -303,7 +296,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                 </div>
               </div>
             ) : empleados.length > 0 ? (
-              <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
+              <div className="rounded-lg max-h-60 overflow-y-auto">
                 {empleados.map((empleado) => (
                   <TogglePermiso
                     key={empleado.id}
@@ -314,7 +307,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
+              <div className=" p-4 rounded-lg text-center text-gray-400 text-xs">
                 No hay empleados activos
               </div>
             )}

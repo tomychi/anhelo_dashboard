@@ -156,7 +156,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
         <div className="mt-4 flex-col space-y-2 w-full">
           <h2 className="text-2xl font-bold mb-4">Añadir funcionalidades</h2>
 
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-400  mb-4">
             Selecciona las funcionalidades adicionales que deseas activar para
             tu empresa.
           </p>
@@ -176,7 +176,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
                   >
                     <div className="flex flex-col">
                       <p className="text-sm font-medium">{feature.title}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400 ">
                         {feature.description}
                       </p>
                     </div>

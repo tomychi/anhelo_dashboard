@@ -596,7 +596,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 onChange={(e) => setCantidadEmpleados(e.target.value)}
                 onFocus={() => setIsEmpleadosOpen(true)}
                 onBlur={() => setIsEmpleadosOpen(false)}
-                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${cantidadEmpleados === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${cantidadEmpleados === "" ? "text-opacity-50 text-gray-400 " : "text-black"}`}
                 required
               >
                 <option value="" disabled>
@@ -623,7 +623,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 onChange={(e) => setRubro(e.target.value)}
                 onFocus={() => setIsRubroOpen(true)}
                 onBlur={() => setIsRubroOpen(false)}
-                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${rubro === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${rubro === "" ? "text-opacity-50 text-gray-400 " : "text-black"}`}
                 required
               >
                 <option value="" disabled>
@@ -649,7 +649,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
                 onChange={(e) => setFormaJuridica(e.target.value)}
                 onFocus={() => setIsFormaJuridicaOpen(true)}
                 onBlur={() => setIsFormaJuridicaOpen(false)}
-                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${formaJuridica === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${formaJuridica === "" ? "text-opacity-50 text-gray-400 " : "text-black"}`}
                 required
               >
                 <option value="" disabled>

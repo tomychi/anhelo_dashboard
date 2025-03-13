@@ -727,7 +727,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
           {!kpiConfigLoaded ? (
             <div className="bg-white p-8 text-center rounded-lg">
-              <p className="text-gray-500">Cargando dashboard...</p>
+              <p className="text-gray-400 ">Cargando dashboard...</p>
             </div>
           ) : cardsToRender.length > 0 ? (
             <>
@@ -755,13 +755,13 @@ export const Dashboard: React.FC = () => {
               <div className="bg-white p-8 text-center rounded-t-lg">
                 {isDashboardConfigured === false && isEmpresario ? (
                   <>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-gray-400  mb-4">
                       Bienvenido! Configura tu dashboard para comenzar a
                       visualizar las métricas de negocio.
                     </p>
                   </>
                 ) : (
-                  <p className="text-gray-500">
+                  <p className="text-gray-400 ">
                     No hay KPIs disponibles para mostrar con tus permisos
                     actuales.
                   </p>

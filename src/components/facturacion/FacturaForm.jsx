@@ -668,7 +668,7 @@ const FacturaForm = () => {
                 ) : (
                   <div className="flex flex-row items-center gap-1">
                     <span className="relative flex h-2 w-2">
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-400 "></span>
                     </span>
                     <button
                       onClick={handleGenerateToken}
@@ -929,7 +929,7 @@ const FacturaForm = () => {
               No hay facturas emitidas en el período seleccionado
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-400 ">
               Selecciona un rango de fechas para ver las facturas emitidas
             </div>
           )}

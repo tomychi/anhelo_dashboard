@@ -324,7 +324,7 @@ const PriceFactor = () => {
               style={{ width: `${(productosActuales / ventasMaximas) * 100}%` }}
             >
               <div className="absolute right-[5px] w-[4px] h-[4px] bg-black z-50 rounded-full"></div>
-              <div className="absolute right-0 -top-[5px] w-3.5 h-3.5 bg-gray-500 rounded-full"></div>
+              <div className="absolute right-0 -top-[5px] w-3.5 h-3.5 bg-gray-400  rounded-full"></div>
             </div>
           </div>
         </div>

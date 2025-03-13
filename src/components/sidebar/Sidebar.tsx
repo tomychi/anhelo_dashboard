@@ -495,7 +495,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
           <h3 className="text-xl font-bold mb-2">
             Aún no tienes permisos asignados
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400 ">
             Contacta con el administrador para solicitar acceso a las
             funcionalidades del sistema.
           </p>
