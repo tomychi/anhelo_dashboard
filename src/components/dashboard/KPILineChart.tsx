@@ -266,32 +266,32 @@ const KPILineChart = ({ orders }) => {
     {
       id: "facturacionBrutaActiva",
       name: "Facturación bruta",
-      color: "#32CD32",
+      color: "#4F46E5", // Indigo-600 principal
     },
-    { id: "facturacionNetaActiva", name: "Facturación neta", color: "#228B22" },
+    { id: "facturacionNetaActiva", name: "Facturación neta", color: "#818CF8" }, // Indigo-400
     {
       id: "facturacionBrutaCancelada",
       name: "Facturación bruta cancelada",
-      color: "#FF4500",
+      color: "#C7D2FE", // Indigo-200
     },
     {
       id: "facturacionNetaCancelada",
       name: "Facturación neta cancelada",
-      color: "#DC143C",
+      color: "#312E81", // Indigo-900
     },
-    { id: "productosVendidos", name: "Productos vendidos", color: "#FFD700" },
-    { id: "ventasDelivery", name: "Ventas delivery", color: "#4D4DFF" },
-    { id: "customerSuccess", name: "Customer success", color: "#FF66FF" },
-    { id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#00E6E6" },
+    { id: "productosVendidos", name: "Productos vendidos", color: "#6366F1" }, // Indigo-500
+    { id: "ventasDelivery", name: "Ventas delivery", color: "#4338CA" }, // Indigo-700
+    { id: "customerSuccess", name: "Customer success", color: "#A78BFA" }, // Violet-400 - complementario
+    { id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#8B5CF6" }, // Violet-500 - complementario
     {
       id: "tiempoEntregaTotal",
       name: "Tiempo entrega total",
-      color: "#B266FF",
+      color: "#7C3AED", // Violet-600 - complementario
     },
-    { id: "kmRecorridos", name: "KMs recorridos", color: "#FF9933" },
-    { id: "ticketPromedio", name: "Ticket promedio", color: "#FF6699" },
-    { id: "ratingPresentacion", name: "Rating Presentación", color: "#FF66FF" },
-    { id: "ratingPagina", name: "Rating Página", color: "#00E6E6" },
+    { id: "kmRecorridos", name: "KMs recorridos", color: "#6D28D9" }, // Violet-700 - complementario
+    { id: "ticketPromedio", name: "Ticket promedio", color: "#5B21B6" }, // Violet-800 - complementario
+    { id: "ratingPresentacion", name: "Rating Presentación", color: "#2563EB" }, // Blue-600 - análogo
+    { id: "ratingPagina", name: "Rating Página", color: "#1D4ED8" }, // Blue-700 - análogo
   ];
 
   // Filtrar los KPIs según los permisos del usuario
