@@ -15,7 +15,7 @@ const TogglePermiso = ({ isOn, onToggle, label, disabled = false }) => (
     <p className="text-xs">{label}</p>
     <div
       className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
-        isOn ? "bg-black" : "bg-gray-200"
+        isOn ? (disabled ? "bg-gray-900" : "bg-black") : "bg-gray-200"
       } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       onClick={!disabled ? onToggle : undefined}
     >
@@ -122,6 +122,11 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       // También incluir el toggle para el dueño/empresario
       if (usuarioId) {
         initialToggles[usuarioId] = updatedAccessIds.includes(usuarioId);
+
+        // Asegurar que el empresario siempre tenga acceso
+        if (!initialToggles[usuarioId]) {
+          initialToggles[usuarioId] = true;
+        }
       }
 
       setAccessToggles(initialToggles);
@@ -181,6 +186,9 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
   // Manejar cambios en los toggles
   const handleToggleAccess = (empleadoId) => {
+    // No permitir cambios en el toggle del empresario
+    if (empleadoId === usuarioId) return;
+
     setAccessToggles((prev) => ({
       ...prev,
       [empleadoId]: !prev[empleadoId],
@@ -204,6 +212,11 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       const newAccessIds = Object.entries(accessToggles)
         .filter(([_, enabled]) => enabled)
         .map(([id]) => id);
+
+      // Asegurar que el usuarioId del empresario está siempre incluido
+      if (usuarioId && !newAccessIds.includes(usuarioId)) {
+        newAccessIds.push(usuarioId);
+      }
 
       // Obtener configuración actual
       const currentConfig = await getKpiConfig(empresaId);
@@ -280,8 +293,9 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                 (empresa as EmpresaProps)?.datosUsuario?.nombreUsuario ||
                 "Dueño"
               }
-              isOn={accessToggles[usuarioId] || false}
-              onToggle={() => handleToggleAccess(usuarioId)}
+              isOn={true} // Siempre activado para el empresario
+              onToggle={() => {}} // No permite cambios
+              disabled={true} // Deshabilitado para no poder interactuar
             />
           )}
 
