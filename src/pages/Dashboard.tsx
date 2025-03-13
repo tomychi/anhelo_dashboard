@@ -702,9 +702,7 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
       <div className="bg-black px-4 pb-4">
         <Calendar />
-        <p className="text-white text-5xl mt-8 font-bold mb-4">
-          Hola {greetingName}
-        </p>
+        <p className="text-gray-100 text-5xl mt-8  mb-4">Hola {greetingName}</p>
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
