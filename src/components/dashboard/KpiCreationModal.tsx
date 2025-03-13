@@ -49,15 +49,15 @@ const AVAILABLE_KPIS = [
 // Componente Toggle reutilizable para selección de empleados
 const ToggleEmpleado = ({ isOn, onToggle, label, disabled = false }) => (
   <div className="flex items-center justify-between w-full py-2 border-b border-gray-200">
-    <p className="text-sm">{label}</p>
+    <p className="text-xs">{label}</p>
     <div
-      className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+      className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
         disabled ? "bg-gray-400" : isOn ? "bg-black" : "bg-gray-200"
       }`}
       onClick={disabled ? undefined : onToggle}
     >
       <div
-        className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+        className={`bg-gray-100 w-8 h-8 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
           isOn ? "translate-x-6" : ""
         }`}
       />
@@ -70,7 +70,10 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   onClose,
   empresaId,
 }) => {
-  const [selectedKpiKey, setSelectedKpiKey] = useState("");
+  // Estado para controlar los pasos (1: Selección de KPIs, 2: Asignación de empleados)
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const [selectedKpis, setSelectedKpis] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmpleados, setSelectedEmpleados] = useState<string[]>([]);
   const [allEmpleados, setAllEmpleados] = useState<any[]>([]);
@@ -94,6 +97,20 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   const auth = useSelector((state: RootState) => state.auth);
   const tipoUsuario = auth?.tipoUsuario;
   const usuarioId = tipoUsuario === "empresa" ? auth?.usuario?.id : "";
+
+  // Evitar comportamiento predeterminado de Ctrl+S
+  useEffect(() => {
+    const preventSave = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("keydown", preventSave);
+    return () => {
+      window.removeEventListener("keydown", preventSave);
+    };
+  }, []);
 
   // Filtrar KPIs según el término de búsqueda
   useEffect(() => {
@@ -177,12 +194,31 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
       loadData();
       setIsAnimating(true);
       setCurrentTranslate(0);
+      // Reiniciar al paso 1 cuando se abre el modal
+      setCurrentStep(1);
     }
   }, [isOpen, empresaId, usuarioId]);
 
+  // Función para continuar al siguiente paso
+  const handleContinue = () => {
+    if (selectedKpis.length === 0) {
+      setError("Por favor selecciona al menos un KPI");
+      return;
+    }
+    setError("");
+    setCurrentStep(2);
+  };
+
+  // Función para volver al paso anterior
+  const handlePrevious = () => {
+    setCurrentStep(1);
+    setError("");
+  };
+
+  // Función para enviar los datos finales
   const handleSubmit = async () => {
-    if (!selectedKpiKey || !empresaId) {
-      setError("Por favor selecciona un KPI");
+    if (selectedKpis.length === 0 || !empresaId) {
+      setError("Por favor selecciona al menos un KPI");
       return;
     }
 
@@ -193,10 +229,16 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
       // Obtener configuración actual de KPIs
       const currentConfig = await getKpiConfig(empresaId);
 
-      // Añadir nuevo KPI a la configuración
+      // Crear un objeto con todas las nuevas configuraciones
+      const newKpiConfigs = {};
+      selectedKpis.forEach((kpiKey) => {
+        newKpiConfigs[kpiKey] = selectedEmpleados;
+      });
+
+      // Añadir nuevos KPIs a la configuración
       const updatedConfig = {
         ...currentConfig,
-        [selectedKpiKey]: selectedEmpleados,
+        ...newKpiConfigs,
       };
 
       // Guardar configuración actualizada
@@ -205,10 +247,19 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
       // Cerrar modal
       handleCloseModal();
     } catch (error) {
-      console.error("Error al añadir KPI:", error);
-      setError("Error al añadir KPI. Intenta nuevamente.");
+      console.error("Error al añadir KPIs:", error);
+      setError("Error al añadir KPIs. Intenta nuevamente.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Usando la misma lógica que en CrearEmpresa
+  const toggleKpi = (kpiKey) => {
+    if (selectedKpis.includes(kpiKey)) {
+      setSelectedKpis(selectedKpis.filter((key) => key !== kpiKey));
+    } else {
+      setSelectedKpis([...selectedKpis, kpiKey]);
     }
   };
 
@@ -254,12 +305,13 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
 
   const handleCloseModal = () => {
     onClose();
-    setSelectedKpiKey("");
+    setSelectedKpis([]);
     setSearchTerm("");
     setSelectedEmpleados(usuarioId ? [usuarioId] : []);
     setError("");
     setCurrentTranslate(0);
     setIsAnimating(false);
+    setCurrentStep(1);
   };
 
   useEffect(() => {
@@ -280,8 +332,34 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Añadir estilos para la animación de la barra de progreso
+  const progressBarStyles = `
+    @keyframes loadingBar {
+      0% {
+        background-position: -200px 0;
+      }
+      100% {
+        background-position: 200px 0;
+      }
+    }
+
+    .animated-loading {
+      background: linear-gradient(
+        to right,
+        #000 0%,
+        #000 40%,
+        #555 100%,
+        #000 60%,
+        #000 100%
+      );
+      background-size: 400% 100%;
+      animation: loadingBar 5s linear infinite;
+    }
+  `;
+
   return (
-    <div className="fixed inset-0 z-50  flex items-end font-coolvetica justify-center">
+    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+      <style>{progressBarStyles}</style>
       <div
         className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
           isAnimating ? "bg-opacity-50" : "bg-opacity-0"
@@ -314,129 +392,191 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
             <div className="w-12 h-1 bg-gray-200 rounded-full" />
           </div>
         </div>
-        <p className="text-2xl text-center">
-          Selecciona las metricas importantes
-        </p>
 
-        <div className="mt-4 flex-col space-y-2 w-full">
-          {/* Buscador de KPIs */}
-          <div className="mb-4">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none text-center focus:outline-none focus:ring-0"
-              placeholder="Buscar por nombre..."
-            />
-          </div>
-
-          {/* Lista de KPIs disponibles */}
-          {isLoading ? (
-            <div className="flex justify-center py-4">
-              <div className="flex flex-row gap-1">
-                <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
-                <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
-              </div>
-            </div>
+        {/* Barra de progreso */}
+        <div className="flex flex-row mx-4 gap-2 justify-center">
+          {currentStep === 1 ? (
+            <>
+              <div className="w-1/6 h-2 rounded-full animated-loading"></div>
+              <div className="w-1/6 border-gray-200 border h-2 rounded-full"></div>
+            </>
           ) : (
-            <div className="relative">
-              <div
-                ref={kpiScrollContainerRef}
-                className=" max-h-60 overflow-y-auto mb-4 "
-                onScroll={handleKpiScroll}
-              >
-                {filteredKpis.length === 0 ? (
-                  <p className="text-center text-gray-500 py-2">
-                    No se encontraron KPIs disponibles
-                  </p>
-                ) : (
-                  filteredKpis.map((kpi) => (
-                    <div
-                      key={kpi.key}
-                      className={`flex items-center flex justify-center items-center p-2 hover:bg-gray-50 rounded cursor-pointer ${
-                        selectedKpiKey === kpi.key
-                          ? "bg-black text-gray-100"
-                          : ""
-                      }`}
-                      onClick={() => setSelectedKpiKey(kpi.key)}
-                    >
-                      <span className="font-medium text-center">
-                        {kpi.title}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Indicador de scroll - solo visible cuando hay suficiente contenido para scrollear y no estamos cerca del final */}
-              {isScrollNeeded && !isNearBottom && (
-                <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
-                  <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
-                    <div className="animate-bounce">
-                      <img
-                        src={arrowIcon}
-                        className="h-2 transform rotate-90 opacity-30"
-                        alt="Desplazar para ver más"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Empleados con acceso */}
-          {selectedKpiKey && (
-            <div>
-              <h3 className="text-lg font-bold mb-2">Empleados con acceso</h3>
-              <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
-                {/* Empresario siempre seleccionado */}
-                <ToggleEmpleado
-                  label="Dueño/Administrador (Tú)"
-                  isOn={true}
-                  onToggle={() => {}}
-                  disabled={true}
-                />
-
-                {/* Lista de empleados */}
-                {allEmpleados.map((empleado) => (
-                  <ToggleEmpleado
-                    key={empleado.id}
-                    label={empleado.datos?.nombre || "Empleado"}
-                    isOn={selectedEmpleados.includes(empleado.id)}
-                    onToggle={() => handleToggleEmpleado(empleado.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Mensaje de error */}
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
-              <p className="text-red-500 text-xs">{error}</p>
-            </div>
+            <>
+              <div className="w-1/6 h-2 rounded-full bg-black"></div>
+              <div className="w-1/6 h-2 rounded-full animated-loading"></div>
+            </>
           )}
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading || !selectedKpiKey}
-          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
-        >
-          {isLoading ? (
-            <div className="flex justify-center w-full items-center">
-              <div className="flex flex-row gap-1">
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-              </div>
+        {/* Título según el paso actual */}
+        <p className="text-2xl mx-4 mt-2 text-center">
+          {currentStep === 1
+            ? "Selecciona las metricas importantes"
+            : "Empleados con acceso"}
+        </p>
+
+        {/* Botón Volver en el paso 2 */}
+        {currentStep === 2 && (
+          <div
+            className="text-gray-400 mt-2 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+            onClick={handlePrevious}
+          >
+            <img
+              src={arrowIcon}
+              className="transform rotate-180 h-2 opacity-30"
+            />
+            Volver
+          </div>
+        )}
+
+        {/* Contenido del paso 1: Seleccionar KPIs */}
+        {currentStep === 1 && (
+          <div className="mt-4 flex-col space-y-2 w-full">
+            {/* Buscador de KPIs */}
+            <div className="mb-4">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none text-center focus:outline-none focus:ring-0"
+                placeholder="Buscar por nombre..."
+              />
             </div>
-          ) : (
-            "Agregar"
-          )}
-        </button>
+
+            {/* Lista de KPIs disponibles */}
+            {isLoading ? (
+              <div className="flex justify-center py-4">
+                <div className="flex flex-row gap-1">
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
+                  <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative">
+                <div
+                  ref={kpiScrollContainerRef}
+                  className="max-h-60 overflow-y-auto flex flex-col gap-1 mb-4"
+                  onScroll={handleKpiScroll}
+                >
+                  {filteredKpis.length === 0 ? (
+                    <p className="text-center text-gray-500 py-2">
+                      No se encontraron KPIs disponibles
+                    </p>
+                  ) : (
+                    filteredKpis.map((kpi) => (
+                      <div
+                        key={kpi.key}
+                        className={`flex items-center flex justify-center items-center p-2 rounded-md cursor-pointer ${
+                          selectedKpis.includes(kpi.key)
+                            ? "bg-black text-gray-100"
+                            : ""
+                        }`}
+                        onClick={() => toggleKpi(kpi.key)}
+                      >
+                        <span className="font-medium text-center">
+                          {kpi.title}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Indicador de scroll */}
+                {isScrollNeeded && !isNearBottom && (
+                  <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                      <div className="animate-bounce">
+                        <img
+                          src={arrowIcon}
+                          className="h-2 transform rotate-90 opacity-30"
+                          alt="Desplazar para ver más"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mensaje de error */}
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+                <p className="text-red-500 text-xs">{error}</p>
+              </div>
+            )}
+
+            {/* Botón Continuar */}
+            <button
+              onClick={handleContinue}
+              disabled={isLoading || selectedKpis.length === 0}
+              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+            >
+              {isLoading ? (
+                <div className="flex justify-center w-full items-center">
+                  <div className="flex flex-row gap-1">
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              ) : (
+                "Continuar"
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Contenido del paso 2: Asignar empleados */}
+        {currentStep === 2 && (
+          <div className="mt-4 flex-col space-y-2 w-full">
+            <div className="bg-gray-100  max-h-72 overflow-y-auto">
+              {/* Empresario siempre seleccionado */}
+              <ToggleEmpleado
+                label="Dueño/Administrador (Tú)"
+                isOn={true}
+                onToggle={() => {}}
+                disabled={true}
+              />
+
+              {/* Lista de empleados */}
+              {allEmpleados.map((empleado) => (
+                <ToggleEmpleado
+                  key={empleado.id}
+                  label={empleado.datos?.nombre || "Empleado"}
+                  isOn={selectedEmpleados.includes(empleado.id)}
+                  onToggle={() => handleToggleEmpleado(empleado.id)}
+                />
+              ))}
+            </div>
+
+            {/* Mensaje de error */}
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+                <p className="text-red-500 text-xs">{error}</p>
+              </div>
+            )}
+
+            {/* Botón Agregar (finalizar) */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+            >
+              {isLoading ? (
+                <div className="flex justify-center w-full items-center">
+                  <div className="flex flex-row gap-1">
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              ) : (
+                "Agregar"
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
