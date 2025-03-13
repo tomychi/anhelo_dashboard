@@ -5,11 +5,7 @@ import { projectAuth } from "../../firebase/config";
 import arrow from "../../assets/arrowIcon.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import {
-  EmpleadoProps,
-  EmpresaProps,
-  updateKpiConfig,
-} from "../../firebase/ClientesAbsolute";
+import { EmpleadoProps, EmpresaProps } from "../../firebase/ClientesAbsolute";
 
 // Importar el modal para configurar acceso
 import KpiAccessModal from "./KpiAccessModal";
