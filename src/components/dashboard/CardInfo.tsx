@@ -5,7 +5,11 @@ import { projectAuth } from "../../firebase/config";
 import arrow from "../../assets/arrowIcon.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import { EmpleadoProps, EmpresaProps } from "../../firebase/ClientesAbsolute";
+import {
+  EmpleadoProps,
+  EmpresaProps,
+  updateKpiConfig,
+} from "../../firebase/ClientesAbsolute";
 
 // Importar el modal para configurar acceso
 import KpiAccessModal from "./KpiAccessModal";
@@ -265,12 +269,12 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     if (!empresaId || !kpiKey) return;
 
     try {
-      // Importar la función updateKpiConfig directamente y no a través de un import dinámico
+      // Importar funciones necesarias
       const { updateKpiConfig } = await import(
         "../../firebase/ClientesAbsolute"
       );
 
-      // Obtener la configuración actual (también puedes usar el estado global si está disponible)
+      // Obtener la configuración actual
       const { getKpiConfig } = await import("../../firebase/ClientesAbsolute");
       const currentConfig = await getKpiConfig(empresaId);
 
@@ -283,7 +287,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       // Guardar la configuración actualizada en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
 
-      // Actualizar la visualización local
+      // Actualizar la visualización local inmediatamente
       const newAccessUsers = [
         // Empleados con acceso
         ...allEmpleados
@@ -309,9 +313,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 
       // Actualizar el estado local
       setAccessUsers(newAccessUsers);
-
-      // Opcional: Mostrar un mensaje de éxito
-      console.log("Configuración de KPI actualizada con éxito");
     } catch (error) {
       console.error("Error al actualizar permisos de KPI:", error);
       alert("Error al guardar los cambios. Intente nuevamente.");
@@ -389,6 +390,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
         {/* Modal de configuración de acceso */}
         {kpiKey && (
           <KpiAccessModal
+            key={`modal-${kpiKey}-${showAccessModal ? "open" : "closed"}`}
             kpiKey={kpiKey}
             kpiTitle={title}
             isOpen={showAccessModal}
@@ -418,6 +420,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       {/* Modal de configuración de acceso */}
       {kpiKey && (
         <KpiAccessModal
+          key={`modal-${kpiKey}-${showAccessModal ? "open" : "closed"}`}
           kpiKey={kpiKey}
           kpiTitle={title}
           isOpen={showAccessModal}

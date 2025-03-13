@@ -3,8 +3,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import {
   obtenerEmpleadosDeEmpresa,
+  updateKpiConfig,
   EmpresaProps,
   EmpleadoProps,
+  getKpiConfig,
 } from "../../firebase/ClientesAbsolute";
 
 // Componente Toggle reutilizable para permisos
@@ -62,30 +64,20 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
   const empresaId = tipoUsuario === "empresa" ? empresa?.id : "";
   const usuarioId = empresa?.id || "";
 
-  // Cargar empleados al abrir el modal
+  // Cargar empleados y configuración actual cuando se abre el modal
   useEffect(() => {
-    if (isOpen && empresaId) {
-      fetchEmpleados();
+    if (isOpen && empresaId && kpiKey) {
+      // Cargar empleados y luego la configuración actual
+      const loadData = async () => {
+        const empleadosData = await fetchEmpleados();
+        await fetchCurrentAccess(empleadosData);
+      };
+
+      loadData();
     }
-  }, [isOpen, empresaId]);
+  }, [isOpen, empresaId, kpiKey]);
 
-  // Inicializar toggles con los valores actuales
-  useEffect(() => {
-    if (isOpen && empleados.length > 0) {
-      const initialToggles = {};
-      empleados.forEach((empleado) => {
-        initialToggles[empleado.id] = currentAccessIds.includes(empleado.id);
-      });
-
-      // También incluir el toggle para el dueño/empresario
-      if (usuarioId) {
-        initialToggles[usuarioId] = currentAccessIds.includes(usuarioId);
-      }
-
-      setAccessToggles(initialToggles);
-    }
-  }, [isOpen, empleados, currentAccessIds, usuarioId]);
-
+  // Configurar animación al abrir
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
@@ -93,6 +85,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
     }
   }, [isOpen]);
 
+  // Cargar empleados activos
   const fetchEmpleados = async () => {
     setLoading(true);
     try {
@@ -102,14 +95,42 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         (emp) => emp.datos?.estado === "activo"
       );
       setEmpleados(empleadosActivos);
+      return empleadosActivos;
     } catch (error) {
       console.error("Error al obtener empleados:", error);
       setError("No se pudieron cargar los empleados.");
+      return [];
     } finally {
       setLoading(false);
     }
   };
 
+  // Cargar configuración actual de KPIs directamente de Firestore
+  const fetchCurrentAccess = async (empleadosData: EmpleadoProps[]) => {
+    try {
+      const config = await getKpiConfig(empresaId);
+
+      // Obtener los IDs actuales directamente de Firestore
+      const updatedAccessIds = config[kpiKey] || [];
+
+      // Inicializar toggles con los valores actuales
+      const initialToggles = {};
+      empleadosData.forEach((empleado) => {
+        initialToggles[empleado.id] = updatedAccessIds.includes(empleado.id);
+      });
+
+      // También incluir el toggle para el dueño/empresario
+      if (usuarioId) {
+        initialToggles[usuarioId] = updatedAccessIds.includes(usuarioId);
+      }
+
+      setAccessToggles(initialToggles);
+    } catch (error) {
+      console.error("Error al obtener configuración actual:", error);
+    }
+  };
+
+  // Gestión de arrastre para el gesto de cierre
   const handleTouchStart = (e) => {
     setDragStart(e.touches[0].clientY);
   };
@@ -158,6 +179,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
     };
   }, [dragStart, currentTranslate]);
 
+  // Manejar cambios en los toggles
   const handleToggleAccess = (empleadoId) => {
     setAccessToggles((prev) => ({
       ...prev,
@@ -165,12 +187,15 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
     }));
   };
 
+  // Cerrar el modal y resetear estado
   const handleClose = () => {
     setIsAnimating(false);
     setCurrentTranslate(0);
+    setAccessToggles({});
     onClose();
   };
 
+  // Guardar cambios en Firestore
   const handleSaveAccess = async () => {
     setLoading(true);
 
@@ -180,10 +205,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         .filter(([_, enabled]) => enabled)
         .map(([id]) => id);
 
-      // Actualizar en Firestore
-      const { getKpiConfig, updateKpiConfig } = await import(
-        "../../firebase/ClientesAbsolute"
-      );
+      // Obtener configuración actual
       const currentConfig = await getKpiConfig(empresaId);
 
       // Crear configuración actualizada
@@ -195,7 +217,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       // Guardar en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
 
-      // Actualizar en el componente padre para reflejar los cambios inmediatamente
+      // Actualizar en el componente padre
       onUpdate(newAccessIds);
 
       // Cerrar el modal
