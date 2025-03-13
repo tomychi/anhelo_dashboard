@@ -242,3 +242,136 @@ export const updateMaterialCost = async (
     throw error;
   }
 };
+
+export interface ProductoProps {
+  name: string;
+  description: string;
+  price: number;
+  materiales: {
+    [key: string]: number;
+  };
+  img?: string;
+  rating?: number;
+  ratingCount?: number;
+  type?: string;
+}
+
+/**
+ * Crea un nuevo producto en la base de datos
+ * @param productoData Datos del producto a crear
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ * @returns Una promesa que se resuelve cuando el producto ha sido creado
+ */
+export const CreateProducto = async (
+  productoData: ProductoProps,
+  isAnhelo: boolean,
+  empresaId?: string
+) => {
+  const firestore = getFirestore();
+  const productoId = uuidv4();
+
+  // Determinar la ruta según la empresa
+  let productoRef;
+
+  if (isAnhelo) {
+    // Ruta original para ANHELO (colección 'burgers')
+    productoRef = doc(firestore, "burgers", productoId);
+
+    console.log(
+      "ANHELO detectado, guardando en ruta legacy: burgers/" + productoId
+    );
+  } else {
+    // Verificar que tengamos un empresaId
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+
+    // Ruta para otras empresas en absoluteClientes (colección 'productos')
+    productoRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "productos",
+      productoId
+    );
+
+    console.log(
+      "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+        empresaId +
+        "/productos/" +
+        productoId
+    );
+  }
+
+  // Crear el producto con valores por defecto para campos opcionales que no se incluyen
+  const dataToSave = {
+    ...productoData,
+    img: productoData.img || "",
+    rating: productoData.rating || 0,
+    ratingCount: productoData.ratingCount || 0,
+    type: productoData.type || "default",
+  };
+
+  // Crear el producto
+  await setDoc(productoRef, dataToSave);
+
+  return productoRef;
+};
+
+/**
+ * Lee todos los productos
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ * @returns Una promesa que se resuelve con la lista de productos
+ */
+export const readProductos = async (
+  isAnhelo: boolean,
+  empresaId?: string
+): Promise<ProductoProps[]> => {
+  const firestore = getFirestore();
+
+  let collections = [];
+
+  if (isAnhelo) {
+    // Ruta original para ANHELO
+    collections = ["burgers"];
+  } else {
+    // Verificar que tengamos un empresaId
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+
+    // Ruta para otras empresas en absoluteClientes
+    collections = [`absoluteClientes/${empresaId}/productos`];
+  }
+
+  const fetchedData = await Promise.all(
+    collections.map(async (collectionPath) => {
+      const collectionRef = collection(firestore, collectionPath);
+      const snapshot = await getDocs(collectionRef);
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        const productoProps: ProductoProps = {
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          materiales: data.materiales || {},
+          img: data.img,
+          rating: data.rating,
+          ratingCount: data.ratingCount,
+          type: data.type,
+        };
+        return productoProps;
+      });
+    })
+  );
+
+  // Aplanar los datos y devolverlos como un array
+  return fetchedData.flat();
+};
