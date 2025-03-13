@@ -659,8 +659,9 @@ export const Dashboard: React.FC = () => {
     .map((card) => {
       const cardKey = card.key as string;
 
-      // Pasar la lista de usuarios con acceso a este KPI
+      // Pasar la clave del KPI y la lista de usuarios con acceso
       return React.cloneElement(card, {
+        kpiKey: cardKey, // Añadir la clave del KPI
         accessUserIds: kpiConfig[cardKey] || [],
       });
     });
@@ -699,6 +700,13 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
+      {/* Mostrar una notificación para el empresario sobre cómo configurar acceso */}
+      {tipoUsuario === "empresa" && (
+        <div className="fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-lg text-sm z-40 shadow-lg opacity-80">
+          Mantén presionado un KPI para configurar quién puede verlo
+        </div>
+      )}
+
       <div className="bg-black px-4 pb-4">
         <Calendar />
         <p className="text-white text-5xl mt-8 font-bold mb-4">
@@ -716,9 +724,9 @@ export const Dashboard: React.FC = () => {
               React.cloneElement(card, {
                 key: index,
                 className: `
-                ${index === 0 ? "rounded-t-lg" : ""}
-                ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
-              `,
+                  ${index === 0 ? "rounded-t-lg" : ""}
+                  ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
+                `,
                 isLoading: isLoading,
               })
             )

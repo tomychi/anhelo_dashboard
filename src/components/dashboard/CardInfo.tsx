@@ -5,7 +5,14 @@ import { projectAuth } from "../../firebase/config";
 import arrow from "../../assets/arrowIcon.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import { EmpleadoProps, EmpresaProps } from "../../firebase/ClientesAbsolute";
+import {
+  EmpleadoProps,
+  EmpresaProps,
+  updateKpiConfig,
+} from "../../firebase/ClientesAbsolute";
+
+// Importar el modal para configurar acceso
+import KpiAccessModal from "./KpiAccessModal";
 
 interface CardInfoProps {
   info: string | number;
@@ -15,8 +22,9 @@ interface CardInfoProps {
   className?: string;
   isLoading?: boolean;
   showAsRatings?: boolean;
-  // Nuevo prop para recibir IDs de usuarios con acceso
+  // Props para IDs de usuarios y clave del KPI
   accessUserIds?: string[];
+  kpiKey?: string;
 }
 
 interface LoadingElementProps {
@@ -27,6 +35,46 @@ interface LoadingElementProps {
 interface UserCircleProps {
   nombre: string;
   color?: string;
+}
+
+// Función para detectar pulsación larga
+function useLongPress(callback = () => {}, ms = 500) {
+  const [startLongPress, setStartLongPress] = useState(false);
+  const [longPressTriggered, setLongPressTriggered] = useState(false);
+
+  useEffect(() => {
+    let timerId;
+    if (startLongPress && !longPressTriggered) {
+      timerId = setTimeout(() => {
+        callback();
+        setLongPressTriggered(true);
+      }, ms);
+    } else {
+      clearTimeout(timerId);
+    }
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [startLongPress, callback, ms, longPressTriggered]);
+
+  const start = () => {
+    setStartLongPress(true);
+    setLongPressTriggered(false);
+  };
+
+  const stop = () => {
+    setStartLongPress(false);
+    setLongPressTriggered(false);
+  };
+
+  return {
+    onMouseDown: start,
+    onMouseUp: stop,
+    onMouseLeave: stop,
+    onTouchStart: start,
+    onTouchEnd: stop,
+  };
 }
 
 // Componente para mostrar una inicial del usuario en un círculo
@@ -72,6 +120,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   isLoading = false,
   showAsRatings = false,
   accessUserIds = [],
+  kpiKey = "",
 }) => {
   const titleRef = useRef<HTMLParagraphElement>(null);
   const infoRef = useRef<HTMLParagraphElement>(null);
@@ -81,6 +130,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   const [accessUsers, setAccessUsers] = useState<
     { id: string; nombre: string }[]
   >([]);
+  const [showAccessModal, setShowAccessModal] = useState(false);
 
   // Obtener empleados y empresa para mostrar nombres de usuarios con acceso
   const auth = useSelector((state: RootState) => state.auth);
@@ -94,6 +144,17 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 
   // Obtener información de todos los empleados
   const [allEmpleados, setAllEmpleados] = useState<EmpleadoProps[]>([]);
+
+  // Verificar si el usuario actual es empresario (administrador)
+  const isEmpresario = tipoUsuario === "empresa";
+
+  // Configurar el detector de pulsación larga
+  const longPressEvent = useLongPress(() => {
+    // Solo permitir configurar acceso si es empresario
+    if (isEmpresario && kpiKey) {
+      setShowAccessModal(true);
+    }
+  }, 800);
 
   useEffect(() => {
     const getEmpleadosInfo = async () => {
@@ -203,8 +264,69 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     return userColors[index];
   };
 
+  // Manejar la actualización de acceso desde el modal
+  const handleUpdateAccess = async (newAccessIds: string[]) => {
+    if (!empresaId || !kpiKey) return;
+
+    try {
+      // Importar la función updateKpiConfig directamente y no a través de un import dinámico
+      const { updateKpiConfig } = await import(
+        "../../firebase/ClientesAbsolute"
+      );
+
+      // Obtener la configuración actual (también puedes usar el estado global si está disponible)
+      const { getKpiConfig } = await import("../../firebase/ClientesAbsolute");
+      const currentConfig = await getKpiConfig(empresaId);
+
+      // Actualizar la configuración con los nuevos IDs
+      const updatedConfig = {
+        ...currentConfig,
+        [kpiKey]: newAccessIds,
+      };
+
+      // Guardar la configuración actualizada en Firestore
+      await updateKpiConfig(empresaId, updatedConfig);
+
+      // Actualizar la visualización local
+      const newAccessUsers = [
+        // Empleados con acceso
+        ...allEmpleados
+          .filter((emp) => newAccessIds.includes(emp.id))
+          .map((emp) => ({
+            id: emp.id,
+            nombre: emp.datos?.nombre || "Usuario",
+          })),
+        // Añadir el empresario si tiene acceso
+        ...(auth?.usuario?.id &&
+        newAccessIds.includes(auth.usuario.id) &&
+        tipoUsuario === "empresa"
+          ? [
+              {
+                id: auth.usuario.id,
+                nombre:
+                  (auth.usuario as EmpresaProps)?.datosUsuario?.nombreUsuario ||
+                  "Dueño",
+              },
+            ]
+          : []),
+      ];
+
+      // Actualizar el estado local
+      setAccessUsers(newAccessUsers);
+
+      // Opcional: Mostrar un mensaje de éxito
+      console.log("Configuración de KPI actualizada con éxito");
+    } catch (error) {
+      console.error("Error al actualizar permisos de KPI:", error);
+      alert("Error al guardar los cambios. Intente nuevamente.");
+    }
+  };
+
   const CardContent = () => (
-    <div className="flex flex-col w-full">
+    <div
+      className="flex flex-col w-full"
+      {...(isEmpresario && kpiKey ? longPressEvent : {})}
+    >
       <div className="flex flex-row items-center justify-between w-full">
         <div className="flex flex-col gap-1">
           {isLoading ? (
@@ -249,6 +371,14 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           )}
         </div>
       )}
+
+      {/* Indicador visual sutil durante la pulsación larga */}
+      {isEmpresario && kpiKey && (
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 bg-black bg-opacity-10 transition-opacity duration-1000 rounded-lg"
+          style={{ opacity: showAccessModal ? 0.2 : 0 }}
+        />
+      )}
     </div>
   );
 
@@ -256,9 +386,21 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   if (isMarketingUser || !link) {
     return (
       <div
-        className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 cursor-default ${className}`}
+        className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 cursor-default ${className} relative`}
       >
         <CardContent />
+
+        {/* Modal de configuración de acceso */}
+        {kpiKey && (
+          <KpiAccessModal
+            kpiKey={kpiKey}
+            kpiTitle={title}
+            isOpen={showAccessModal}
+            onClose={() => setShowAccessModal(false)}
+            currentAccessIds={accessUserIds}
+            onUpdate={handleUpdateAccess}
+          />
+        )}
       </div>
     );
   }
@@ -267,9 +409,27 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   return (
     <NavLink
       to={`/${link}`}
-      className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${className}`}
+      className={`flex-1 bg-gray-100 text-black font-coolvetica border-[0.5px] border-opacity-10 border-black px-4 pt-2 pb-3 ${className} relative`}
+      onClick={(e) => {
+        // Evitar navegación si se está usando longpress
+        if (showAccessModal) {
+          e.preventDefault();
+        }
+      }}
     >
       <CardContent />
+
+      {/* Modal de configuración de acceso */}
+      {kpiKey && (
+        <KpiAccessModal
+          kpiKey={kpiKey}
+          kpiTitle={title}
+          isOpen={showAccessModal}
+          onClose={() => setShowAccessModal(false)}
+          currentAccessIds={accessUserIds}
+          onUpdate={handleUpdateAccess}
+        />
+      )}
     </NavLink>
   );
 };

@@ -1075,28 +1075,34 @@ export const updateKpiConfig = async (
 
   const firestore = getFirestore();
   try {
-    const configRef = doc(
-      firestore,
-      "absoluteClientes",
-      empresaId,
-      "config",
-      "dashboard"
-    );
+    // Obtener referencia al documento principal de la empresa
+    const empresaRef = doc(firestore, "absoluteClientes", empresaId);
 
-    // Actualizar o crear el documento
-    const configDoc = await getDoc(configRef);
+    // Obtener documento actual para actualizar la configuración
+    const empresaDoc = await getDoc(empresaRef);
 
-    if (configDoc.exists()) {
-      await updateDoc(configRef, {
-        kpis: kpiConfig,
-        ultimaActualizacion: new Date(),
-      });
-    } else {
-      await setDoc(configRef, {
-        kpis: kpiConfig,
-        ultimaActualizacion: new Date(),
-      });
+    if (!empresaDoc.exists()) {
+      throw new Error("La empresa no existe");
     }
+
+    // Obtener la configuración actual
+    const currentData = empresaDoc.data();
+    const currentConfig = currentData.config || {};
+
+    // Crear la configuración actualizada
+    const updatedConfig = {
+      ...currentConfig,
+      dashboard: kpiConfig,
+      ultimaActualizacion: new Date(),
+    };
+
+    // Actualizar la configuración en Firestore
+    await updateDoc(empresaRef, {
+      config: updatedConfig,
+      ultimaActualizacion: new Date(),
+    });
+
+    console.log("Configuración de KPIs actualizada correctamente");
   } catch (error) {
     console.error("Error al actualizar configuración de KPIs:", error);
     throw error;
