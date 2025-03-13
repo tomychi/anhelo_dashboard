@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import {
   updateKpiConfig,
   getKpiConfig,
@@ -46,6 +45,25 @@ const AVAILABLE_KPIS = [
   { key: "productos-rating", title: "Productos (Rating)" },
 ];
 
+// Componente Toggle reutilizable para selección de empleados
+const ToggleEmpleado = ({ isOn, onToggle, label, disabled = false }) => (
+  <div className="flex items-center justify-between w-full py-2 border-b border-gray-200">
+    <p className="text-sm">{label}</p>
+    <div
+      className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
+        disabled ? "bg-gray-400" : isOn ? "bg-black" : "bg-gray-200"
+      }`}
+      onClick={disabled ? undefined : onToggle}
+    >
+      <div
+        className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+          isOn ? "translate-x-6" : ""
+        }`}
+      />
+    </div>
+  </div>
+);
+
 const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   isOpen,
   onClose,
@@ -58,6 +76,13 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [existingKpis, setExistingKpis] = useState<string[]>([]);
   const [filteredKpis, setFilteredKpis] = useState(AVAILABLE_KPIS);
+  const [error, setError] = useState("");
+
+  // Estados para el arrastre del modal
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const modalRef = useRef(null);
 
   // Obtener información del usuario para añadirlo automáticamente
   const auth = useSelector((state: RootState) => state.auth);
@@ -81,6 +106,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
       if (!empresaId) return;
 
       setIsLoading(true);
+      setError("");
 
       try {
         // Cargar empleados
@@ -89,15 +115,16 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
 
         // Cargar configuración de KPIs existentes
         const kpiConfig = await getKpiConfig(empresaId);
-        setExistingKpis(Object.keys(kpiConfig));
+        setExistingKpis(Object.keys(kpiConfig || {}));
 
         // Filtrar la lista de KPIs disponibles
         const filtered = AVAILABLE_KPIS.filter(
-          (kpi) => !Object.keys(kpiConfig).includes(kpi.key)
+          (kpi) => !Object.keys(kpiConfig || {}).includes(kpi.key)
         );
         setFilteredKpis(filtered);
       } catch (error) {
         console.error("Error al cargar datos:", error);
+        setError("Error al cargar los datos. Intenta nuevamente.");
       } finally {
         setIsLoading(false);
       }
@@ -110,18 +137,19 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
 
     if (isOpen) {
       loadData();
+      setIsAnimating(true);
+      setCurrentTranslate(0);
     }
   }, [isOpen, empresaId, usuarioId]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!selectedKpiKey || !empresaId) {
-      alert("Por favor selecciona un KPI");
+      setError("Por favor selecciona un KPI");
       return;
     }
 
     setIsLoading(true);
+    setError("");
 
     try {
       // Obtener configuración actual de KPIs
@@ -136,53 +164,143 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
       // Guardar configuración actualizada
       await updateKpiConfig(empresaId, updatedConfig);
 
-      // Mostrar mensaje de éxito y cerrar modal
-      alert("KPI añadido exitosamente. Refresca la página para verlo.");
-      onClose();
+      // Cerrar modal
+      handleCloseModal();
     } catch (error) {
       console.error("Error al añadir KPI:", error);
-      alert("Error al añadir KPI. Intenta nuevamente.");
+      setError("Error al añadir KPI. Intenta nuevamente.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleToggleEmpleado = (empleadoId) => {
+    setSelectedEmpleados((prev) =>
+      prev.includes(empleadoId)
+        ? prev.filter((id) => id !== empleadoId)
+        : [...prev, empleadoId]
+    );
+  };
+
+  const handleTouchStart = (e) => {
+    setDragStart(e.touches[0].clientY);
+  };
+
+  const handleMouseDown = (e) => {
+    setDragStart(e.clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (dragStart === null) return;
+    const currentPosition = e.touches[0].clientY;
+    const difference = currentPosition - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragStart === null) return;
+    const difference = e.clientY - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleDragEnd = () => {
+    if (currentTranslate > 200) {
+      handleCloseModal();
+    } else {
+      setCurrentTranslate(0);
+    }
+    setDragStart(null);
+  };
+
+  const handleCloseModal = () => {
+    onClose();
+    setSelectedKpiKey("");
+    setSearchTerm("");
+    setSelectedEmpleados(usuarioId ? [usuarioId] : []);
+    setError("");
+    setCurrentTranslate(0);
+    setIsAnimating(false);
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (dragStart !== null) {
+        handleDragEnd();
+      }
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleDragEnd);
+
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleDragEnd);
+    };
+  }, [dragStart, currentTranslate]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md mx-4"
-      >
-        <h2 className="text-2xl font-coolvetica font-semibold mb-4">
-          Agregar KPI al dashboard
-        </h2>
+    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+      <div
+        className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
+          isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+        }`}
+        style={{
+          opacity: Math.max(0, 1 - currentTranslate / 400),
+        }}
+        onClick={handleCloseModal}
+      />
 
-        <form onSubmit={handleSubmit}>
+      <div
+        ref={modalRef}
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+          isAnimating ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{
+          transform: `translateY(${currentTranslate}px)`,
+          maxHeight: "90vh",
+          overflowY: "auto",
+        }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+        >
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+            <div className="w-12 h-1 bg-gray-200 rounded-full" />
+          </div>
+        </div>
+
+        <div className="mt-4 flex-col space-y-2 w-full">
           {/* Buscador de KPIs */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Buscar KPI</label>
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
               placeholder="Buscar por nombre..."
             />
           </div>
 
           {/* Lista de KPIs disponibles */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">
-              KPIs disponibles
-            </label>
-            <div className="max-h-48 overflow-y-auto border border-gray-300 rounded p-2">
-              {isLoading ? (
-                <p className="text-center text-gray-500 py-2">Cargando...</p>
-              ) : filteredKpis.length === 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center py-4">
+              <div className="flex flex-row gap-1">
+                <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto mb-4">
+              {filteredKpis.length === 0 ? (
                 <p className="text-center text-gray-500 py-2">
                   No se encontraron KPIs disponibles
                 </p>
@@ -191,7 +309,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
                   <div
                     key={kpi.key}
                     className={`flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer ${
-                      selectedKpiKey === kpi.key ? "bg-gray-100" : ""
+                      selectedKpiKey === kpi.key ? "bg-gray-200" : ""
                     }`}
                     onClick={() => setSelectedKpiKey(kpi.key)}
                   >
@@ -210,78 +328,60 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
                 ))
               )}
             </div>
-          </div>
+          )}
 
           {/* Empleados con acceso */}
           {selectedKpiKey && (
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-1">
-                Empleados con acceso
-              </label>
-              <div className="max-h-40 overflow-y-auto border border-gray-300 rounded p-2">
+            <div>
+              <h3 className="text-lg font-bold mb-2">Empleados con acceso</h3>
+              <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
                 {/* Empresario siempre seleccionado */}
-                <div className="flex items-center p-1 bg-gray-100 rounded mb-1">
-                  <input
-                    type="checkbox"
-                    checked={true}
-                    disabled
-                    className="mr-2"
-                  />
-                  <span className="text-sm">Dueño/Administrador (Tú)</span>
-                </div>
+                <ToggleEmpleado
+                  label="Dueño/Administrador (Tú)"
+                  isOn={true}
+                  onToggle={() => {}}
+                  disabled={true}
+                />
 
                 {/* Lista de empleados */}
                 {allEmpleados.map((empleado) => (
-                  <div
+                  <ToggleEmpleado
                     key={empleado.id}
-                    className="flex items-center p-1 hover:bg-gray-50 rounded"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedEmpleados.includes(empleado.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedEmpleados([
-                            ...selectedEmpleados,
-                            empleado.id,
-                          ]);
-                        } else {
-                          setSelectedEmpleados(
-                            selectedEmpleados.filter((id) => id !== empleado.id)
-                          );
-                        }
-                      }}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">
-                      {empleado.datos?.nombre || "Empleado"}
-                    </span>
-                  </div>
+                    label={empleado.datos?.nombre || "Empleado"}
+                    isOn={selectedEmpleados.includes(empleado.id)}
+                    onToggle={() => handleToggleEmpleado(empleado.id)}
+                  />
                 ))}
               </div>
             </div>
           )}
 
-          {/* Botones */}
-          <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              disabled={isLoading}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-              disabled={isLoading || !selectedKpiKey}
-            >
-              {isLoading ? "Agregando..." : "Agregar KPI"}
-            </button>
-          </div>
-        </form>
-      </motion.div>
+          {/* Mensaje de error */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+              <p className="text-red-500 text-xs">{error}</p>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading || !selectedKpiKey}
+          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+        >
+          {isLoading ? (
+            <div className="flex justify-center w-full items-center">
+              <div className="flex flex-row gap-1">
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+              </div>
+            </div>
+          ) : (
+            "Agregar"
+          )}
+        </button>
+      </div>
     </div>
   );
 };
