@@ -645,16 +645,25 @@ export const Dashboard: React.FC = () => {
   ];
 
   // Filtrar los cards según los permisos del usuario con el nuevo sistema de KPIs
-  const cardsToRender = allCards.filter((card) => {
-    const cardKey = card.key as string;
+  const cardsToRender = allCards
+    .filter((card) => {
+      const cardKey = card.key as string;
 
-    // Si la configuración de KPIs no se ha cargado aún, no mostrar nada
-    if (!kpiConfigLoaded) {
-      return false;
-    }
+      // Si la configuración de KPIs no se ha cargado aún, no mostrar nada
+      if (!kpiConfigLoaded) {
+        return false;
+      }
 
-    return hasKpiPermission(cardKey, kpiConfig, usuarioId);
-  });
+      return hasKpiPermission(cardKey, kpiConfig, usuarioId);
+    })
+    .map((card) => {
+      const cardKey = card.key as string;
+
+      // Pasar la lista de usuarios con acceso a este KPI
+      return React.cloneElement(card, {
+        accessUserIds: kpiConfig[cardKey] || [],
+      });
+    });
 
   const nombreUsuario =
     tipoUsuario === "empresa"
@@ -707,9 +716,9 @@ export const Dashboard: React.FC = () => {
               React.cloneElement(card, {
                 key: index,
                 className: `
-                  ${index === 0 ? "rounded-t-lg" : ""}
-                  ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
-                `,
+                ${index === 0 ? "rounded-t-lg" : ""}
+                ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
+              `,
                 isLoading: isLoading,
               })
             )
