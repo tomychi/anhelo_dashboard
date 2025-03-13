@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
 import { CreateMaterial } from "../firebase/Materiales";
 import { FormProducto } from "../components/materiales/FormProducto";
+import { ListByIcons } from "../components/materiales/ListByIcons";
 
 export interface SimpleMaterialProps {
   nombre: string;
@@ -91,6 +92,7 @@ export const FormMaterial: React.FC = () => {
 
   return (
     <div>
+      <ListByIcons />
       <form
         onSubmit={handleSubmit}
         className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
