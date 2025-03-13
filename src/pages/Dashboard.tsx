@@ -22,6 +22,8 @@ import Swal from "sweetalert2";
 import { Cadete, PedidoProps } from "../types/types"; // Importa PedidoProps
 import KPILineChart from "../components/dashboard/KPILineChart";
 import { EmpresaProps, EmpleadoProps } from "../firebase/ClientesAbsolute";
+import { shouldShowKpi } from "../components/dashboard/dashboardKpiMapping";
+import { getUserPermissions } from "../utils/permissionsUtils";
 
 interface RatingInfo {
   average: string;
@@ -52,8 +54,6 @@ export const Dashboard: React.FC = () => {
     vueltas,
     isLoading,
   } = useSelector((state: RootState) => state.data);
-  const currentUserEmail = projectAuth.currentUser?.email;
-  const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
 
   // Calculate delivery and takeaway counts
   const deliveryCount = orders.filter(
@@ -241,102 +241,12 @@ export const Dashboard: React.FC = () => {
 
   const averageRatings: AverageRatings = calculateAverageRatings(orders);
 
-  const ratingCards = [
-    <CardInfo
-      key="general"
-      info={averageRatings.general.average}
-      title={"Rating general"}
-      cuadrito={averageRatings.general.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="temperatura"
-      info={averageRatings.temperatura.average}
-      title={"Temperatura"}
-      cuadrito={averageRatings.temperatura.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="presentacion"
-      info={averageRatings.presentacion.average}
-      title={"Presentación"}
-      cuadrito={averageRatings.presentacion.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="pagina"
-      info={averageRatings.pagina.average}
-      title={"Página"}
-      cuadrito={averageRatings.pagina.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="tiempo"
-      info={averageRatings.tiempo.average}
-      title={"Tiempo"}
-      cuadrito={averageRatings.tiempo.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="productos"
-      info={averageRatings.productos.average}
-      title={"Productos"}
-      cuadrito={averageRatings.productos.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-  ];
-
-  const marketingCards = [
-    <CardInfo
-      key="productos"
-      info={Math.ceil(totalProductosVendidos.toString() * 2)}
-      link={"productosVendidos"}
-      title={"Productos vendidos"}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="delivery"
-      info={Math.ceil(orders.length.toString() * 2)}
-      link={"ventas"}
-      title={"Ventas delivery"}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="clientes"
-      info={Math.ceil(customers.newCustomers.length.toString() * 1.5)}
-      link={"clientes"}
-      title={"Nuevos clientes"}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="presentacion"
-      info={averageRatings.presentacion.average}
-      title={"Presentación"}
-      cuadrito={averageRatings.presentacion.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-    <CardInfo
-      key="pagina"
-      info={averageRatings.pagina.average}
-      title={"Página"}
-      cuadrito={averageRatings.pagina.count}
-      showAsRatings={true}
-      isLoading={isLoading}
-    />,
-  ];
-
   const expressTotalCount = orders.filter(
     (order) => order.envioExpress && order.envioExpress > 0
   ).length;
 
   const canceledOrders = orders.filter((order) => order.canceled);
+
   const canceledOrdersTotal = canceledOrders.reduce(
     (acc, order) => acc + order.total,
     0
@@ -425,6 +335,13 @@ export const Dashboard: React.FC = () => {
             }))
         : [],
   }));
+
+  // Obtener los permisos del usuario para filtrar los KPIs
+  const auth = useSelector((state: RootState) => state.auth);
+  const userPermissions = getUserPermissions(auth);
+  const tipoUsuario = auth?.tipoUsuario;
+
+  console.log("Permisos del usuario:", userPermissions);
 
   const allCards = [
     <CardInfo
@@ -640,14 +557,63 @@ export const Dashboard: React.FC = () => {
       title={"Ticket promedio"}
       isLoading={isLoading}
     />,
+    <CardInfo
+      key="general"
+      info={averageRatings.general.average}
+      title={"Rating general"}
+      cuadrito={averageRatings.general.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
+    <CardInfo
+      key="temperatura"
+      info={averageRatings.temperatura.average}
+      title={"Temperatura"}
+      cuadrito={averageRatings.temperatura.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
+    <CardInfo
+      key="presentacion"
+      info={averageRatings.presentacion.average}
+      title={"Presentación"}
+      cuadrito={averageRatings.presentacion.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
+    <CardInfo
+      key="pagina"
+      info={averageRatings.pagina.average}
+      title={"Página"}
+      cuadrito={averageRatings.pagina.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
+    <CardInfo
+      key="tiempo"
+      info={averageRatings.tiempo.average}
+      title={"Tiempo"}
+      cuadrito={averageRatings.tiempo.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
+    <CardInfo
+      key="productos-rating"
+      info={averageRatings.productos.average}
+      title={"Productos"}
+      cuadrito={averageRatings.productos.count}
+      showAsRatings={true}
+      isLoading={isLoading}
+    />,
   ];
 
-  const cardsToRender = isMarketingUser
-    ? marketingCards
-    : [...allCards, ...ratingCards];
+  // Filtrar los cards según los permisos del usuario
+  const cardsToRender = allCards.filter((card) => {
+    // Obtener la key del card (que usamos para mapear a los features)
+    const cardKey = card.key as string;
+    return shouldShowKpi(cardKey, userPermissions);
+  });
 
-  const auth = useSelector((state: RootState) => state.auth);
-  const tipoUsuario = auth?.tipoUsuario;
   const nombreUsuario =
     tipoUsuario === "empresa"
       ? (auth?.usuario as EmpresaProps)?.datosUsuario?.nombreUsuario || ""
@@ -690,15 +656,23 @@ export const Dashboard: React.FC = () => {
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
-          {cardsToRender.map((card, index) =>
-            React.cloneElement(card, {
-              key: index,
-              className: `
-                ${index === 0 ? "rounded-t-lg" : ""}
-                ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
-              `,
-              isLoading: isLoading,
-            })
+          {cardsToRender.length > 0 ? (
+            cardsToRender.map((card, index) =>
+              React.cloneElement(card, {
+                key: index,
+                className: `
+                  ${index === 0 ? "rounded-t-lg" : ""}
+                  ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
+                `,
+                isLoading: isLoading,
+              })
+            )
+          ) : (
+            <div className="bg-white p-8 text-center rounded-lg">
+              <p className="text-gray-500">
+                No hay KPIs disponibles para mostrar con tus permisos actuales.
+              </p>
+            </div>
           )}
         </div>
         <KPILineChart orders={orders} />
