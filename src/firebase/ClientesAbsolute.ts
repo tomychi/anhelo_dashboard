@@ -22,6 +22,7 @@ export interface DatosGeneralesEmpresa {
   nombre: string;
   cantidadEmpleados: string;
   formaJuridica: string;
+  rubro: string; // Añadimos el campo rubro
   fechaCreacion: Date;
 }
 
@@ -129,7 +130,8 @@ export const crearEmpresa = async (
   cantidadEmpleados: string,
   formaJuridica: string,
   rolUsuario: string,
-  featuresSeleccionados: string[]
+  featuresSeleccionados: string[],
+  rubro: string // Nuevo parámetro para el rubro
 ): Promise<string> => {
   const firestore = getFirestore();
   const empresaId = uuidv4();
@@ -149,6 +151,7 @@ export const crearEmpresa = async (
       nombre: nombreEmpresa,
       cantidadEmpleados: cantidadEmpleados,
       formaJuridica: formaJuridica,
+      rubro: rubro, // Añadimos el rubro a los datos generales
       fechaCreacion: fechaActual,
     },
     datosUsuario: {
@@ -173,7 +176,6 @@ export const crearEmpresa = async (
 
   return empresaId;
 };
-
 // Función para verificar las credenciales del usuario (login básico)
 export const verificarCredenciales = async (
   telefono: string,

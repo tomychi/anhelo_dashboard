@@ -190,6 +190,26 @@ const products = [
   },
 ];
 
+const rubrosOptions = [
+  "Gastronomía",
+  "Comercio minorista",
+  "Servicios profesionales",
+  "Tecnología",
+  "Educación",
+  "Salud",
+  "Construcción",
+  "Belleza y bienestar",
+  "Turismo y hotelería",
+  "Industria manufacturera",
+  "Transporte y logística",
+  "Agricultura y ganadería",
+  "Entretenimiento",
+  "Inmobiliaria",
+  "Marketing y publicidad",
+  "Servicios financieros",
+  "Otros",
+];
+
 export const CrearEmpresa: React.FC<{}> = () => {
   // Estado para controlar los pasos (1: telefono, 2: datos empresa, 3: features)
   const [currentStep, setCurrentStep] = useState(1);
@@ -203,6 +223,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [rolUsuario, setRolUsuario] = useState("");
   const [nombreEmpresa, setNombreEmpresa] = useState("");
+  const [rubro, setRubro] = useState("");
+  const [isRubroOpen, setIsRubroOpen] = useState(false);
   const [cantidadEmpleados, setCantidadEmpleados] = useState("");
   const [formaJuridica, setFormaJuridica] = useState("");
   const [selectedFeatures, setSelectedFeatures] = useState(["Dashboard"]);
@@ -380,7 +402,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
       !nombreUsuario ||
       !cantidadEmpleados ||
       !formaJuridica ||
-      !rolUsuario
+      !rolUsuario ||
+      !rubro
     ) {
       setError("Por favor, completa todos los datos de la empresa");
       return;
@@ -416,7 +439,8 @@ export const CrearEmpresa: React.FC<{}> = () => {
         cantidadEmpleados,
         formaJuridica,
         rolUsuario,
-        selectedFeatures // Agregar los features seleccionados
+        selectedFeatures,
+        rubro // Añadir el rubro aquí
       );
 
       console.log("Empresa creada con ID:", empresaId);
@@ -428,6 +452,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           nombre: nombreEmpresa,
           cantidadEmpleados: cantidadEmpleados,
           formaJuridica: formaJuridica,
+          rubro: rubro, // Incluir el rubro en los datos generales
           fechaCreacion: new Date(),
         },
         datosUsuario: {
@@ -437,7 +462,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           rolUsuario: rolUsuario,
         },
         features: selectedFeatures,
-        featuresIniciales: selectedFeatures, // Añadimos la nueva propiedad
+        featuresIniciales: selectedFeatures,
         estado: "activo",
         ultimaActualizacion: new Date(),
       };
@@ -528,7 +553,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
           </div>
           {/* Mostrar mensaje de error si existe */}
           {error && (
-            <div className=" mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex  border-red-main mx-4 ">
+            <div className=" mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex  border-red-main mx-4 mb-4">
               {error}
             </div>
           )}
@@ -594,6 +619,32 @@ export const CrearEmpresa: React.FC<{}> = () => {
             </div>
             <div className="relative">
               <select
+                value={rubro}
+                onChange={(e) => setRubro(e.target.value)}
+                onFocus={() => setIsRubroOpen(true)}
+                onBlur={() => setIsRubroOpen(false)}
+                className={`w-full h-10 px-4 text-xs font-light bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0 ${rubro === "" ? "text-opacity-50 text-gray-500" : "text-black"}`}
+                required
+              >
+                <option value="" disabled>
+                  Selecciona rubro al que se dedican
+                </option>
+                {rubrosOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute z-50 inset-y-0 right-4 flex items-center text-black">
+                <img
+                  src={arrowIcon}
+                  className={`transform h-2 ${isRubroOpen ? "-rotate-90" : "rotate-90"} transition-transform duration-300`}
+                  alt=""
+                />
+              </div>
+            </div>
+            <div className="relative">
+              <select
                 value={formaJuridica}
                 onChange={(e) => setFormaJuridica(e.target.value)}
                 onFocus={() => setIsFormaJuridicaOpen(true)}
@@ -652,7 +703,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
 
           {/* Mostrar mensaje de error si existe */}
           {error && (
-            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex text-xs border-red-main mx-4 ">
+            <div className=" mt-4 h-10 px-4 items-center text-red-main border-l-4 flex text-xs border-red-main mx-4 mb-4">
               {error}
             </div>
           )}
@@ -773,7 +824,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
 
           {/* Mostrar mensaje de error si existe */}
           {error && (
-            <div className="mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex border-red-main mx-4">
+            <div className="mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex border-red-main mx-4 mb-4">
               {error}
             </div>
           )}
