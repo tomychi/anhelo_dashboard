@@ -27,7 +27,7 @@ const AddKpiCard = ({ className = "" }) => {
 
   return (
     <div
-      className="bg-indigo-600 flex flex-row gap-2 rounded-b-lg items-center justify-center flex-row  font-coolvetica px-4 h-16  cursor-pointer"
+      className="bg-indigo-600 flex flex-row gap-2 rounded-b-lg items-center justify-center flex-row  font-coolvetica px-4 h-[65px]  cursor-pointer"
       onClick={() => setShowModal(true)}
     >
       <svg
