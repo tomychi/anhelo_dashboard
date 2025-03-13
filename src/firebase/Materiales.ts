@@ -247,6 +247,8 @@ export interface ProductoProps {
   name: string;
   description: string;
   price: number;
+  costo: number;
+  isCompuesto: boolean;
   materiales: {
     [key: string]: number;
   };
