@@ -21,10 +21,10 @@ export interface ProductoProps {
   description: string;
   price: number;
   costo: number;
-  materiales: {
+  materiales?: {
     [key: string]: number;
   };
-  isCompuesto: boolean;
+  img?: string;
 }
 
 export const FormProducto: React.FC = () => {
@@ -47,7 +47,7 @@ export const FormProducto: React.FC = () => {
     description: "",
     price: 0,
     costo: 0,
-    isCompuesto: true,
+    img: "",
   });
 
   // Cargar lista de materiales al iniciar
@@ -121,7 +121,6 @@ export const FormProducto: React.FC = () => {
     setIsCompuesto(!isCompuesto);
     setFormData((prev) => ({
       ...prev,
-      isCompuesto: !isCompuesto,
       costo: !isCompuesto ? totalCosto : prev.costo, // Restaurar el costo calculado si vuelve a compuesto
     }));
 
@@ -226,10 +225,19 @@ export const FormProducto: React.FC = () => {
             : undefined;
 
       // Crear producto completo
-      const productoData: ProductoProps = {
-        ...formData,
-        materiales: isCompuesto ? materialesObj : {},
-      };
+      let productoData: ProductoProps;
+
+      if (isCompuesto) {
+        productoData = {
+          ...formData,
+          materiales: materialesObj,
+        };
+      } else {
+        productoData = {
+          ...formData,
+          // No incluimos materiales para productos simples
+        };
+      }
 
       // Crear el producto
       await CreateProducto(productoData, isAnhelo, empresaId);
@@ -246,7 +254,7 @@ export const FormProducto: React.FC = () => {
         description: "",
         price: 0,
         costo: 0,
-        isCompuesto: true,
+        img: "",
       });
       setMaterialesSeleccionados([]);
       setIsCompuesto(true);

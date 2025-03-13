@@ -248,14 +248,10 @@ export interface ProductoProps {
   description: string;
   price: number;
   costo: number;
-  isCompuesto: boolean;
-  materiales: {
+  materiales?: {
     [key: string]: number;
   };
   img?: string;
-  rating?: number;
-  ratingCount?: number;
-  type?: string;
 }
 
 /**
@@ -312,9 +308,6 @@ export const CreateProducto = async (
   const dataToSave = {
     ...productoData,
     img: productoData.img || "",
-    rating: productoData.rating || 0,
-    ratingCount: productoData.ratingCount || 0,
-    type: productoData.type || "default",
   };
 
   // Crear el producto
@@ -363,12 +356,15 @@ export const readProductos = async (
           name: data.name,
           description: data.description,
           price: data.price,
-          materiales: data.materiales || {},
-          img: data.img,
-          rating: data.rating,
-          ratingCount: data.ratingCount,
-          type: data.type,
+          costo: data.costo,
+          img: data.img || "",
         };
+
+        // Solo incluir materiales si existen en el documento
+        if (data.materiales) {
+          productoProps.materiales = data.materiales;
+        }
+
         return productoProps;
       });
     })
