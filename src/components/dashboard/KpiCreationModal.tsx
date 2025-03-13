@@ -412,7 +412,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
         <p className="text-2xl mx-4 mt-2 text-center">
           {currentStep === 1
             ? "Selecciona las metricas importantes"
-            : "Empleados con acceso"}
+            : "Empleados con visibilidad"}
         </p>
 
         {/* Botón Volver en el paso 2 */}
