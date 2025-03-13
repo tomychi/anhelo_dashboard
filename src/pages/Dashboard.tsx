@@ -50,7 +50,9 @@ export const Dashboard: React.FC = () => {
     {}
   );
   const [kpiConfigLoaded, setKpiConfigLoaded] = useState(false);
-
+  const [isDashboardConfigured, setIsDashboardConfigured] = useState<
+    boolean | null
+  >(null);
   const [totalPaga, setTotalPaga] = useState(0);
   const [totalDirecciones, setTotalDirecciones] = useState(0);
   const {
@@ -104,6 +106,10 @@ export const Dashboard: React.FC = () => {
         const config = await getKpiConfig(empresaId);
         setKpiConfig(config);
         setKpiConfigLoaded(true);
+
+        // Verificar si el dashboard ya ha sido configurado
+        // Si el objeto config existe pero está vacío, o si no existe, consideramos que no está configurado
+        setIsDashboardConfigured(Object.keys(config).length > 0);
       }
     };
 
@@ -719,13 +725,13 @@ export const Dashboard: React.FC = () => {
                 React.cloneElement(card, {
                   key: index,
                   className: `
-                    ${index === 0 ? "rounded-t-lg" : ""}
-                    ${
-                      index === cardsToRender.length - 1 && !isEmpresario
-                        ? "rounded-b-lg"
-                        : ""
-                    }
-                  `,
+          ${index === 0 ? "rounded-t-lg" : ""}
+          ${
+            index === cardsToRender.length - 1 && !isEmpresario
+              ? "rounded-b-lg"
+              : ""
+          }
+        `,
                   isLoading: isLoading,
                 })
               )}
@@ -736,10 +742,19 @@ export const Dashboard: React.FC = () => {
           ) : (
             <div className="flex flex-col rounded-lg">
               <div className="bg-white p-8 text-center rounded-t-lg">
-                <p className="text-gray-500">
-                  No hay KPIs disponibles para mostrar con tus permisos
-                  actuales.
-                </p>
+                {isDashboardConfigured === false && isEmpresario ? (
+                  <>
+                    <p className="text-gray-500 mb-4">
+                      Bienvenido! Configura tu dashboard para comenzar a
+                      visualizar las métricas de negocio.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500">
+                    No hay KPIs disponibles para mostrar con tus permisos
+                    actuales.
+                  </p>
+                )}
               </div>
 
               {/* Mostrar el botón de agregar KPI incluso si no hay KPIs actuales */}
@@ -747,7 +762,7 @@ export const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
-        <KPILineChart orders={orders} />
+        {isDashboardConfigured ? <KPILineChart orders={orders} /> : null}
       </div>
     </div>
   );
