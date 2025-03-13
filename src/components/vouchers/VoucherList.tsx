@@ -513,8 +513,172 @@ export const VoucherList = () => {
     }
   };
 
-  const currentUserEmail = projectAuth.currentUser?.email;
-  const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
+  const isMarketingUser = true;
+
+  const generateMixedVoucherPDF = async () => {
+    if (selectedVoucher && clickPositions.length === numCodes) {
+      setLoading(true);
+      try {
+        const codigosCampana = await obtenerCodigosCampana(selectedVoucher);
+
+        if (codigosCampana.length === 0) {
+          alert("No se encontraron códigos para el voucher seleccionado.");
+          return;
+        }
+
+        // Separar códigos gratuitos y normales
+        const codigosGratis = codigosCampana.filter((c) => c.gratis === true);
+        const codigosNormales = codigosCampana.filter(
+          (c) => c.gratis === undefined
+        );
+
+        // Verificar que tenemos suficientes códigos
+        if (codigosGratis.length === 0 || codigosNormales.length === 0) {
+          alert(
+            "Esta campaña no tiene códigos de ambos tipos (gratis y normales)."
+          );
+          return;
+        }
+
+        const doc = new jsPDF({
+          orientation: "landscape",
+          unit: "mm",
+          format: [320, 450],
+        });
+
+        const numVouchersPerPage = 36;
+        const voucherWidth = 50;
+        const voucherHeight = 80;
+        const margin = 0;
+        const numColumns = 9;
+        const numRows = 4;
+
+        let voucherIndex = 0;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const pdfToCanvasScaleX = voucherWidth / canvas.width;
+        const pdfToCanvasScaleY = voucherHeight / canvas.height;
+
+        // Determinar cuántos vouchers podemos generar
+        // Cada voucher necesita 1 código gratis y 5 normales según el requerimiento
+        const numVouchers = Math.min(
+          codigosGratis.length, // Cuántos vouchers podemos hacer con los códigos gratis
+          Math.floor(codigosNormales.length / 5) // Cuántos vouchers podemos hacer con los códigos normales
+        );
+
+        if (numVouchers === 0) {
+          alert(
+            "No hay suficientes códigos para crear vouchers mixtos (1 gratis + 5 normales)."
+          );
+          return;
+        }
+
+        // Para cada voucher, necesitamos 1 código gratis y 5 códigos normales
+        for (let i = 0; i < numVouchers; i++) {
+          const codigoGratis = codigosGratis[i];
+          const codigosNormalesParaEsteVoucher = codigosNormales.slice(
+            i * 5,
+            (i + 1) * 5
+          );
+
+          if (voucherIndex > 0 && voucherIndex % numVouchersPerPage === 0) {
+            doc.addPage();
+          }
+
+          const x = (voucherIndex % numColumns) * (voucherWidth + margin);
+          const y =
+            (Math.floor(voucherIndex / numColumns) % numRows) *
+            (voucherHeight + margin);
+
+          // Añadir la imagen del voucher
+          doc.addImage(voucherImg, "JPEG", x, y, voucherWidth, voucherHeight);
+
+          // Añadir número de voucher
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(6);
+          doc.setTextColor(255, 255, 255);
+          doc.text(`${i + 1}`, x + voucherWidth - 2, y + 3, { align: "right" });
+
+          // Distribuir las posiciones de los códigos
+          // Posiciones por defecto en caso de que falten posiciones definidas por el usuario
+          const defaultPositions = [
+            { x: canvas.width * 0.3, y: canvas.height * 0.3 }, // Para código gratis
+            { x: canvas.width * 0.3, y: canvas.height * 0.5 }, // Para código normal 1
+            { x: canvas.width * 0.3, y: canvas.height * 0.6 }, // Para código normal 2
+            { x: canvas.width * 0.7, y: canvas.height * 0.3 }, // Para código normal 3
+            { x: canvas.width * 0.7, y: canvas.height * 0.5 }, // Para código normal 4
+            { x: canvas.width * 0.7, y: canvas.height * 0.6 }, // Para código normal 5
+          ];
+
+          // Si el usuario definió menos posiciones que las necesarias, usamos las predeterminadas
+          const positionsToUse =
+            clickPositions.length >= 6
+              ? clickPositions.slice(0, 6)
+              : [
+                  ...clickPositions,
+                  ...defaultPositions.slice(clickPositions.length),
+                ];
+
+          // Añadir el código gratis con un indicador visual
+          const gratisPosition = positionsToUse[0];
+          const gratisPdfX = gratisPosition.x * pdfToCanvasScaleX;
+          const gratisPdfY = gratisPosition.y * pdfToCanvasScaleY;
+
+          // Añadir un círculo de fondo para el código gratis
+          doc.setFillColor(255, 0, 0); // Rojo para destacar que es gratis
+          doc.circle(x + gratisPdfX, y + gratisPdfY, 5, "F");
+
+          doc.setFontSize(8);
+          doc.setTextColor(255, 255, 255); // Texto blanco sobre fondo rojo
+          doc.text(`${codigoGratis.codigo}`, x + gratisPdfX, y + gratisPdfY, {
+            align: "center",
+            baseline: "middle",
+          });
+
+          // Añadir indicador de que es código gratis
+          doc.setFontSize(5);
+          doc.text("GRATIS", x + gratisPdfX, y + gratisPdfY - 6, {
+            align: "center",
+          });
+
+          // Añadir los códigos normales
+          codigosNormalesParaEsteVoucher.forEach((codigoNormal, index) => {
+            if (index + 1 < positionsToUse.length) {
+              const position = positionsToUse[index + 1];
+              const pdfX = position.x * pdfToCanvasScaleX;
+              const pdfY = position.y * pdfToCanvasScaleY;
+
+              doc.setFontSize(8);
+              doc.setTextColor(0, 0, 0); // Texto negro para códigos normales
+              doc.text(`${codigoNormal.codigo}`, x + pdfX, y + pdfY, {
+                align: "center",
+                baseline: "middle",
+              });
+            }
+          });
+
+          voucherIndex++;
+        }
+
+        doc.save(`vouchers_mixtos_${selectedVoucher}.pdf`);
+
+        alert(
+          `Se han generado ${numVouchers} vouchers mixtos (1 código gratis + 5 códigos normales cada uno).`
+        );
+      } catch (error) {
+        console.error("Error al generar el PDF:", error);
+        alert("Hubo un error al generar el PDF. Por favor, intente de nuevo.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert(
+        "Por favor, seleccione un voucher y las posiciones de los códigos antes de generar el PDF."
+      );
+    }
+  };
 
   return (
     <div className="font-coolvetica">

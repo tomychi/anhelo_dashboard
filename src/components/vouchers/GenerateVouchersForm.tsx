@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { crearVoucher } from "../../firebase/voucher";
 import { VoucherList } from "./VoucherList";
+import { crearVoucherMixto } from "../../firebase/voucher"; // Importamos la nueva función
 
 // Componente Toggle reutilizable
 const Toggle = ({ isOn, onToggle }) => (
@@ -24,7 +25,12 @@ export const GenerateVouchersForm = () => {
   const [loading, setLoading] = useState(false);
   const [titulo, setTitulo] = useState("");
   const [fecha, setFecha] = useState("");
-  const [esGratis, setEsGratis] = useState(false); // Nuevo estado para el toggle "Gratis"
+  const [esGratis, setEsGratis] = useState(false);
+
+  // Nuevos estados para la funcionalidad mixta
+  const [esMixto, setEsMixto] = useState(false);
+  const [cantidadGratis, setCantidadGratis] = useState(0);
+  const [cantidadNormales, setCantidadNormales] = useState(0);
 
   // Modal drag states
   const [isAnimating, setIsAnimating] = useState(false);
@@ -90,11 +96,25 @@ export const GenerateVouchersForm = () => {
   const handleCreateVoucher = async () => {
     setLoading(true);
     try {
-      await crearVoucher(titulo, fecha, cantidad, esGratis); // Pasar el nuevo parámetro esGratis
+      if (esMixto) {
+        // Si es una campaña mixta, usamos la nueva función
+        if (cantidadGratis <= 0 || cantidadNormales <= 0) {
+          throw new Error("Ambas cantidades deben ser mayores a cero");
+        }
+        await crearVoucherMixto(
+          titulo,
+          fecha,
+          cantidadGratis,
+          cantidadNormales
+        );
+      } else {
+        // Si no es mixta, usamos la función original
+        await crearVoucher(titulo, fecha, cantidad, esGratis);
+      }
       alert("Voucher creado exitosamente");
       handleCloseForm();
     } catch (error) {
-      alert("Error al crear el voucher");
+      alert(`Error al crear el voucher: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -105,7 +125,10 @@ export const GenerateVouchersForm = () => {
     setTitulo("");
     setFecha("");
     setCantidad(0);
-    setEsGratis(false); // Resetear el valor del toggle al cerrar el formulario
+    setEsGratis(false);
+    setEsMixto(false);
+    setCantidadGratis(0);
+    setCantidadNormales(0);
     setCurrentTranslate(0);
     setIsAnimating(false);
   };
@@ -192,31 +215,107 @@ export const GenerateVouchersForm = () => {
                   onChange={(e) => setFecha(e.target.value)}
                   className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
                 />
-                <input
-                  type="number"
-                  placeholder="Cantidad de códigos a generar"
-                  value={cantidad || ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setCantidad(value === "" ? 0 : parseInt(value, 10));
-                  }}
-                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-                />
 
-                {/* Toggle para Gratis */}
-                <div className="flex flex-row items-center justify-between gap-2 pt-4">
-                  <p className="font-bold text-sm">Gratis</p>
+                {/* Toggle para tipo de campaña */}
+                <div className="flex flex-row items-center justify-between gap-2 pt-2">
+                  <p className="font-bold text-sm">
+                    Campaña mixta (gratis + normal)
+                  </p>
                   <Toggle
-                    isOn={esGratis}
-                    onToggle={() => setEsGratis(!esGratis)}
+                    isOn={esMixto}
+                    onToggle={() => {
+                      setEsMixto(!esMixto);
+                      // Reiniciar el otro toggle si cambiamos de modo
+                      if (!esMixto) {
+                        setEsGratis(false);
+                      }
+                    }}
                   />
                 </div>
+
+                {esMixto ? (
+                  // Campos para campaña mixta
+                  <>
+                    <input
+                      type="number"
+                      placeholder="Cantidad de códigos GRATIS"
+                      value={cantidadGratis || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setCantidadGratis(
+                          value === "" ? 0 : parseInt(value, 10)
+                        );
+                      }}
+                      className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Cantidad de códigos NORMALES"
+                      value={cantidadNormales || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setCantidadNormales(
+                          value === "" ? 0 : parseInt(value, 10)
+                        );
+                      }}
+                      className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                    />
+                    <div className="p-2 bg-gray-100 rounded-md mt-2">
+                      <p className="text-xs font-bold">
+                        Total: {cantidadGratis + cantidadNormales} códigos
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Crearás {cantidadGratis} códigos gratis y{" "}
+                        {cantidadNormales} códigos normales
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  // Campos para campaña regular
+                  <>
+                    <input
+                      type="number"
+                      placeholder="Cantidad de códigos a generar"
+                      value={cantidad || ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setCantidad(value === "" ? 0 : parseInt(value, 10));
+                      }}
+                      className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                    />
+
+                    {/* Toggle para Gratis (solo visible si no es mixto) */}
+                    <div className="flex flex-row items-center justify-between gap-2 pt-2">
+                      <p className="font-bold text-sm">Todos son gratis</p>
+                      <Toggle
+                        isOn={esGratis}
+                        onToggle={() => setEsGratis(!esGratis)}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               <button
                 onClick={handleCreateVoucher}
-                disabled={loading}
-                className="text-gray-100 w-full mt-4 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+                disabled={
+                  loading ||
+                  titulo === "" ||
+                  fecha === "" ||
+                  (esMixto
+                    ? cantidadGratis <= 0 || cantidadNormales <= 0
+                    : cantidad <= 0)
+                }
+                className={`text-gray-100 w-full mt-4 text-4xl h-20 px-4 ${
+                  loading ||
+                  titulo === "" ||
+                  fecha === "" ||
+                  (esMixto
+                    ? cantidadGratis <= 0 || cantidadNormales <= 0
+                    : cantidad <= 0)
+                    ? "bg-gray-400"
+                    : "bg-black"
+                } font-bold rounded-lg outline-none`}
               >
                 {loading ? (
                   <div className="flex justify-center w-full items-center">

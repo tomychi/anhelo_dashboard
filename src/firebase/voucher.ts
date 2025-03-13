@@ -679,3 +679,87 @@ export const moverCodigosARango = async (
     console.error("Error al mover códigos:", error);
   }
 };
+
+export const generarCodigosMixtos = async (
+  cantidadGratis: number,
+  cantidadNormales: number
+): Promise<Codigo[]> => {
+  const codigosGenerados: Codigo[] = [];
+
+  try {
+    // Primero generamos los códigos gratuitos
+    for (let i = 0; i < cantidadGratis; i++) {
+      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const nuevoCodigo: Codigo = {
+        codigo,
+        estado: "disponible",
+        num: i + 1,
+        gratis: true, // Marcamos estos códigos como gratuitos
+      };
+      codigosGenerados.push(nuevoCodigo);
+    }
+
+    // Luego generamos los códigos normales
+    for (let i = 0; i < cantidadNormales; i++) {
+      const codigo = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const nuevoCodigo: Codigo = {
+        codigo,
+        estado: "disponible",
+        num: cantidadGratis + i + 1, // Continuamos la numeración
+        // No incluimos la propiedad gratis para los códigos normales
+      };
+      codigosGenerados.push(nuevoCodigo);
+    }
+
+    return codigosGenerados;
+  } catch (error) {
+    console.error("Error al generar y almacenar los códigos mixtos:", error);
+    throw error;
+  }
+};
+
+// Ahora creemos una función para crear un voucher con códigos mixtos
+export const crearVoucherMixto = async (
+  titulo: string,
+  fecha: string,
+  cantidadGratis: number,
+  cantidadNormales: number
+): Promise<void> => {
+  const firestore = getFirestore();
+  const voucherDocRef = doc(firestore, "vouchers", titulo);
+
+  try {
+    console.log(
+      `Iniciando generación de ${cantidadGratis} códigos gratuitos y ${cantidadNormales} códigos normales...`
+    );
+
+    const codigos = await generarCodigosMixtos(
+      cantidadGratis,
+      cantidadNormales
+    );
+    console.log(`Códigos generados exitosamente: ${codigos.length} en total`);
+
+    const docData = {
+      titulo,
+      fecha,
+      codigos,
+      creados: cantidadGratis + cantidadNormales,
+      usados: 0,
+      tiposCodigos: {
+        gratis: cantidadGratis,
+        normales: cantidadNormales,
+      },
+    };
+
+    console.log(`Intentando guardar en Firestore...`);
+    console.log(
+      `Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
+    );
+
+    await setDoc(voucherDocRef, docData);
+    console.log(`Documento guardado exitosamente`);
+  } catch (error) {
+    console.error("Error detallado al crear voucher mixto:", error);
+    throw new Error(`Error al crear voucher mixto: ${error.message || error}`);
+  }
+};
