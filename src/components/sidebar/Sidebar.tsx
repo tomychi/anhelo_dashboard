@@ -96,8 +96,11 @@ export const Sidebar = ({ scrollContainerRef }) => {
     if (isMenuOpen && menuScrollContainerRef.current) {
       const checkIfScrollNeeded = () => {
         const container = menuScrollContainerRef.current;
-        // Si el contenido es más alto que el contenedor, se necesita scroll
-        setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+        // Verificar que container no sea null antes de acceder a sus propiedades
+        if (container) {
+          // Si el contenido es más alto que el contenedor, se necesita scroll
+          setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+        }
       };
 
       // Verificar inmediatamente al abrir el menú
@@ -114,18 +117,19 @@ export const Sidebar = ({ scrollContainerRef }) => {
       setIsScrollNeeded(false);
       setIsNearBottom(false);
     }
-  }, [isMenuOpen, menuItems]);
+  }, [isMenuOpen, menuItems]); // Dependencias para que se ejecute cuando cambia el menú o los ítems
 
   // Función para manejar el evento de scroll
   const handleMenuScroll = () => {
-    if (!menuScrollContainerRef.current) return;
-
     const container = menuScrollContainerRef.current;
-    const scrollBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight;
+    // Verificar que container no sea null antes de acceder a sus propiedades
+    if (container) {
+      const scrollBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
 
-    // Considerar "cerca del fondo" si estamos a menos de 20px del final
-    setIsNearBottom(scrollBottom < 20);
+      // Considerar "cerca del fondo" si estamos a menos de 20px del final
+      setIsNearBottom(scrollBottom < 20);
+    }
   };
 
   useEffect(() => {
