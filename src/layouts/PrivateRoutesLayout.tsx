@@ -36,8 +36,8 @@ const PrivateRoutesLayout: React.FC<PrivateRoutesLayoutProps> = ({
   if (!hasPermission) {
     // Mostrar mensaje de error de permisos
     return (
-      <div className="flex flex-col items-center justify-center h-[80vh]">
-        <div className="bg-red-50 p-8 rounded-lg shadow-md text-center max-w-md">
+      <div className="flex flex-col font-coolvetica items-center justify-center h-[80vh]">
+        <div className=" p-8  text-center max-w-md">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-16 w-16 text-red-500 mx-auto mb-4"
@@ -60,7 +60,7 @@ const PrivateRoutesLayout: React.FC<PrivateRoutesLayoutProps> = ({
           </p>
           <button
             onClick={() => window.history.back()}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+            className="bg-red-600 text-white px-4 h-10 rounded-full hover:bg-red-700 transition-colors"
           >
             Volver
           </button>
