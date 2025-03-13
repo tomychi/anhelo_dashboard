@@ -48,6 +48,9 @@ export const Sidebar = ({ scrollContainerRef }) => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [noPermissions, setNoPermissions] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isScrollNeeded, setIsScrollNeeded] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
+  const menuScrollContainerRef = useRef(null);
   const menuModalRef = useRef<HTMLDivElement>(null);
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [rolUsuario, setRolUsuario] = useState("");
@@ -85,6 +88,44 @@ export const Sidebar = ({ scrollContainerRef }) => {
     } finally {
       setIsFeatureLoading(false);
     }
+  };
+
+  // Agregar este efecto para detectar si se necesita scroll
+  useEffect(() => {
+    // Solo ejecutar esta lógica cuando el menú está abierto
+    if (isMenuOpen && menuScrollContainerRef.current) {
+      const checkIfScrollNeeded = () => {
+        const container = menuScrollContainerRef.current;
+        // Si el contenido es más alto que el contenedor, se necesita scroll
+        setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+      };
+
+      // Verificar inmediatamente al abrir el menú
+      checkIfScrollNeeded();
+
+      // También verificar cuando cambia el tamaño de la ventana
+      window.addEventListener("resize", checkIfScrollNeeded);
+
+      return () => {
+        window.removeEventListener("resize", checkIfScrollNeeded);
+      };
+    } else {
+      // Resetear el estado cuando el menú se cierra
+      setIsScrollNeeded(false);
+      setIsNearBottom(false);
+    }
+  }, [isMenuOpen, menuItems]);
+
+  // Función para manejar el evento de scroll
+  const handleMenuScroll = () => {
+    if (!menuScrollContainerRef.current) return;
+
+    const container = menuScrollContainerRef.current;
+    const scrollBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+
+    // Considerar "cerca del fondo" si estamos a menos de 20px del final
+    setIsNearBottom(scrollBottom < 20);
   };
 
   useEffect(() => {
@@ -847,11 +888,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
               {/* Área de menús con scroll */}
               <div className="relative">
                 <div
+                  ref={menuScrollContainerRef}
                   className={
                     isMobile
                       ? "max-h-80 overflow-y-auto pb-4 pr-2 menu-scroll-container"
                       : ""
                   }
+                  onScroll={handleMenuScroll}
                 >
                   <ul className="flex pt-8 flex-col gap-4">
                     {renderMenuItems()}
@@ -859,10 +902,10 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 </div>
 
                 {/* Indicador de scroll */}
-                {isMobile && (
+                {isMobile && isScrollNeeded && !isNearBottom && (
                   <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
                     <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
-                      <div className=" animate-bounce ">
+                      <div className="animate-bounce">
                         <img
                           src={arrowIcon}
                           className="h-2 transform rotate-90 opacity-30"
