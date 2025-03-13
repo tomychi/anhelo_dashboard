@@ -353,7 +353,7 @@ const KPILineChart = ({ orders }) => {
     <div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2">
       <div className="md:pt-4">
         <p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-black border-opacity-20">
-          KPIs en el tiempo
+          Metricas en el tiempo
         </p>
         <div className="flex px-4 flex-wrap gap-2 mb-4 mt-4 md:justify-center">
           {availableKPIs.map((kpi) => (
