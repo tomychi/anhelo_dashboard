@@ -138,11 +138,11 @@ export const Login = () => {
         {/* Ingresar */}
         <button
           type="submit"
-          className="text-black w-full mt-4 h-20 rounded-3xl bg-gray-100 font-bold outline-none"
+          className="text-gray-100 bg-indigo-600 w-full mt-4 h-20 rounded-3xl bg-gray-100 font-bold outline-none"
           disabled={loading}
         >
           {loading ? (
-            <LoadingPoints color="text-black" />
+            <LoadingPoints color="text-gray-100" />
           ) : (
             <p className="text-3xl">Ingresar</p>
           )}
