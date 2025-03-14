@@ -624,22 +624,10 @@ export const FormGasto = ({ onSuccess }) => {
       - No es una categoría recurrente (ya tiene nombre automáticamente)
       - No es materia prima (ya tiene materiales y productos) 
       - No tiene nombre seleccionado y necesita uno */}
-                {console.log({
-                  categoriesLoading,
-                  isRecurringCategory,
-                  category: formData.category,
-                  isMateriaprima: formData.category === MATERIAPRIMA_CATEGORY,
-                  name: formData.name,
-                  shouldShowInputs:
-                    !categoriesLoading &&
-                    !isRecurringCategory &&
-                    formData.category !== MATERIAPRIMA_CATEGORY &&
-                    !formData.name,
-                })}
+
                 {!categoriesLoading &&
                   !isRecurringCategory &&
-                  formData.category !== MATERIAPRIMA_CATEGORY &&
-                  !formData.name && (
+                  formData.category !== MATERIAPRIMA_CATEGORY && (
                     <>
                       <input
                         type="text"
