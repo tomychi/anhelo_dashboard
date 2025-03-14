@@ -359,63 +359,18 @@ export const FormGasto = ({ onSuccess }) => {
                 setFormData={setFormData}
               />
 
-              {formData.category === "cocina y produccion" ? (
-                <select
-                  id="name"
-                  name="name"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={formData.name}
-                  onChange={handleNameChange}
-                  required
-                >
-                  <option value="">Seleccionar empleado</option>
-                  {empleados
-                    .filter((emp) => emp.area === "cocina")
-                    .map((empleado, index) => (
-                      <option key={index} value={empleado.name}>
-                        {empleado.name}
-                      </option>
-                    ))}
-                </select>
-              ) : formData.category === "infraestructura" ? (
-                <select
-                  id="name"
-                  name="name"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={formData.name}
-                  onChange={handleNameChange}
-                  required
-                >
-                  <option value="">Seleccionar servicio</option>
-                  <option value="gas">Gas</option>
-                  <option value="wifi">WiFi</option>
-                  <option value="alquiler">Alquiler</option>
-                  <option value="luz">Luz</option>
-                  <option value="agua">Agua</option>
-                </select>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.name}
-                    onChange={handleNameChange}
-                    placeholder="Nombre del item"
-                    list={isMarketingUser ? undefined : "itemNames"}
-                    required
-                    autoComplete="off"
-                  />
-                  {!isMarketingUser && (
-                    <datalist id="itemNames">
-                      {materiales.map((material, index) => (
-                        <option key={index} value={material.nombre} />
-                      ))}
-                    </datalist>
-                  )}
-                </>
-              )}
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                value={formData.name}
+                onChange={handleNameChange}
+                placeholder="Nombre del item"
+                list={isMarketingUser ? undefined : "itemNames"}
+                required
+                autoComplete="off"
+              />
 
               <div className="section w-full relative z-0">
                 <input
@@ -586,7 +541,10 @@ export const FormGasto = ({ onSuccess }) => {
             <button
               type="button" /* Importante: type button para evitar submit */
               onClick={handleNextStep}
-              className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+              disabled={
+                !formData.category
+              } /* Deshabilitar si no hay categoría seleccionada */
+              className={`text-gray-100 w-full h-20 mt-2 rounded-lg ${!formData.category ? "bg-gray-400" : "bg-black"} text-4xl font-bold`}
             >
               Continuar
             </button>

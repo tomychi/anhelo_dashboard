@@ -57,18 +57,11 @@ export const CategoriaSelector = ({
             // Si no está en config, intentamos con el campo gastosCategory
             categoriesFromDB = data.gastosCategory;
           } else {
-            // Si no hay categorías guardadas, usamos las predeterminadas
-            categoriesFromDB = [
-              "materia prima",
-              "cocina y produccion",
-              "extra",
-              "legalidad",
-              "cadeteria",
-              "infraestructura",
-              "marketing",
-            ];
+            // Si no hay categorías guardadas, inicializamos con un array vacío
+            categoriesFromDB = [];
 
-            // Y las guardamos para futuro uso
+            // Y lo guardamos para futuro uso (opcional, puedes comentar estas líneas)
+            // No inicializamos con valores predeterminados para que cada empresa defina sus propias categorías
             await updateDoc(docRef, {
               "config.gastosCategories": categoriesFromDB,
             });
@@ -143,21 +136,16 @@ export const CategoriaSelector = ({
   return (
     <div className="section w-full relative mb-4 z-0">
       <p className="text-2xl mx-4 my-2 text-center">Categoría</p>
-      <div className="flex flex-wrap justify-center gap-2">
-        {categories.map((category) => (
-          <div
-            key={category}
-            onClick={() => {
-              setFormData((prev) => ({
-                ...prev,
-                category: category,
-              }));
-            }}
-            className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center ${
-              formData.category === category
-                ? "bg-black text-gray-100"
-                : "bg-gray-200 text-black"
-            }`}
+
+      {categories.length === 0 ? (
+        // Mensaje cuando no hay categorías
+        <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-300 rounded-lg">
+          <p className="text-gray-500 mb-4 text-center">
+            No hay categorías definidas para esta empresa
+          </p>
+          <button
+            onClick={() => setIsAddingCategory(true)}
+            className="bg-black text-white font-bold py-2 px-4 rounded flex items-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -167,35 +155,70 @@ export const CategoriaSelector = ({
             >
               <path
                 fillRule="evenodd"
-                d="M4.5 2A2.5 2.5 0 0 0 2 4.5v3.879a2.5 2.5 0 0 0 .732 1.767l7.5 7.5a2.5 2.5 0 0 0 3.536 0l3.878-3.878a2.5 2.5 0 0 0 0-3.536l-7.5-7.5A2.5 2.5 0 0 0 8.38 2H4.5ZM5 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
                 clipRule="evenodd"
               />
             </svg>
-
-            {category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}
-          </div>
-        ))}
-
-        {/* Botón para agregar nueva categoría */}
-        <div
-          onClick={() => setIsAddingCategory(true)}
-          className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center bg-gray-100 text-black border border-dashed border-gray-400`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-4 mr-2"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Agregar
+            Crear primera categoría
+          </button>
         </div>
-      </div>
+      ) : (
+        // Lista de categorías existentes
+        <div className="flex flex-wrap justify-center gap-2">
+          {categories.map((category) => (
+            <div
+              key={category}
+              onClick={() => {
+                setFormData((prev) => ({
+                  ...prev,
+                  category: category,
+                }));
+              }}
+              className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center ${
+                formData.category === category
+                  ? "bg-black text-gray-100"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-4 mr-2"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.5 2A2.5 2.5 0 0 0 2 4.5v3.879a2.5 2.5 0 0 0 .732 1.767l7.5 7.5a2.5 2.5 0 0 0 3.536 0l3.878-3.878a2.5 2.5 0 0 0 0-3.536l-7.5-7.5A2.5 2.5 0 0 0 8.38 2H4.5ZM5 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+
+              {category.charAt(0).toUpperCase() +
+                category.slice(1).toLowerCase()}
+            </div>
+          ))}
+
+          {/* Botón para agregar nueva categoría */}
+          <div
+            onClick={() => setIsAddingCategory(true)}
+            className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center bg-gray-100 text-black border border-dashed border-gray-400`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-4 mr-2"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Agregar
+          </div>
+        </div>
+      )}
 
       {/* Modal para agregar nueva categoría */}
       {isAddingCategory && (
