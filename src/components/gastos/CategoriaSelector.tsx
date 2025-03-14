@@ -14,16 +14,19 @@ export const CategoriaSelector = ({
   formData,
   setFormData,
   onAddCategory, // Prop para manejar "Agregar categoría"
-  onCategoryTypeChange, // Nueva prop para informar si la categoría es recurrente
-  onLoadingChange, // Añadimos esta prop explícitamente
-  onShowCustomInputs, // Nueva prop para mostrar/ocultar inputs personalizados
+  onCategoryTypeChange, // Prop para informar si la categoría es recurrente
+  onLoadingChange, // Prop para informar estado de carga
+  onShowCustomInputs, // Prop para mostrar/ocultar inputs personalizados
+  onAddItemToCategory, // Nueva prop para manejar agregar ítems a una categoría
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecurringItems, setSelectedRecurringItems] = useState([]);
   const [showRecurringItems, setShowRecurringItems] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // Añadido para búsqueda
-  const [filteredCategories, setFilteredCategories] = useState([]); // Añadido para búsqueda
+  const [searchTerm, setSearchTerm] = useState(""); // Para búsqueda
+  const [filteredCategories, setFilteredCategories] = useState([]); // Para búsqueda
+  const [newItemName, setNewItemName] = useState(""); // Estado para el nuevo ítem
+  const [showAddItemInput, setShowAddItemInput] = useState(false); // Mostrar input para agregar ítem
 
   const auth = useSelector((state: RootState) => state.auth);
   const empresaId =
@@ -432,11 +435,11 @@ export const CategoriaSelector = ({
     }
   };
 
-  // ELIMINADO: useEffect que guardaba las categorías al cambiar formData.category
-  // Ahora esto será manejado al enviar el formulario en FormGasto
-
   // Manejar selección de categoría
   const handleCategorySelect = (category) => {
+    // Ocultar el input de agregar ítem al cambiar de categoría
+    setShowAddItemInput(false);
+
     // Determinar si es una categoría simple o recurrente
     let categoryName;
     let items = [];
@@ -497,6 +500,98 @@ export const CategoriaSelector = ({
       ...prev,
       name: item,
     }));
+  };
+
+  // Nueva función para mostrar/ocultar el input para agregar ítem
+  const toggleAddItemInput = () => {
+    setShowAddItemInput(!showAddItemInput);
+    setNewItemName("");
+  };
+
+  // Nueva función para agregar un nuevo ítem a la categoría actual
+  const handleAddItemToCategory = async () => {
+    if (!newItemName.trim() || !empresaId || !formData.category) return;
+
+    try {
+      // Primero, encontrar la categoría actual en la lista
+      const currentCategory = categories.find((cat) => {
+        if (typeof cat === "object") {
+          return Object.keys(cat)[0] === formData.category;
+        }
+        return false;
+      });
+
+      if (!currentCategory) {
+        console.error("No se encontró la categoría actual");
+        return;
+      }
+
+      const categoryName = Object.keys(currentCategory)[0];
+      const currentItems = [...currentCategory[categoryName]];
+
+      // Verificar si el ítem ya existe
+      if (currentItems.includes(newItemName.trim().toLowerCase())) {
+        console.log("El ítem ya existe en esta categoría");
+        // Aquí podrías mostrar un mensaje al usuario
+        return;
+      }
+
+      // Agregar el nuevo ítem al principio de la lista
+      const updatedItems = [newItemName.trim().toLowerCase(), ...currentItems];
+
+      // Actualizar el estado local
+      const updatedCategories = categories.map((cat) => {
+        if (typeof cat === "object" && Object.keys(cat)[0] === categoryName) {
+          return { [categoryName]: updatedItems };
+        }
+        return cat;
+      });
+
+      setCategories(updatedCategories);
+      setSelectedRecurringItems(updatedItems);
+
+      // Actualizar en Firestore
+      const firestore = getFirestore();
+      const docRef = doc(firestore, "absoluteClientes", empresaId);
+
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        let gastosCategories = [];
+
+        if (data.config && data.config.gastosCategories) {
+          gastosCategories = [...data.config.gastosCategories];
+
+          // Actualizar la categoría específica en la lista
+          const updatedGastosCategories = gastosCategories.map((cat) => {
+            if (
+              typeof cat === "object" &&
+              Object.keys(cat)[0] === categoryName
+            ) {
+              return { [categoryName]: updatedItems };
+            }
+            return cat;
+          });
+
+          await updateDoc(docRef, {
+            "config.gastosCategories": updatedGastosCategories,
+          });
+
+          console.log(
+            `Ítem "${newItemName}" agregado a la categoría "${categoryName}"`
+          );
+
+          // Limpiar el input y ocultarlo
+          setNewItemName("");
+          setShowAddItemInput(false);
+
+          // Seleccionar automáticamente el nuevo ítem
+          handleRecurringItemSelect(newItemName.trim().toLowerCase());
+        }
+      }
+    } catch (error) {
+      console.error("Error al agregar ítem a la categoría:", error);
+    }
   };
 
   if (loading) {
@@ -629,9 +724,65 @@ export const CategoriaSelector = ({
           </div>
 
           {/* Mostrar ítems recurrentes si la categoría seleccionada tiene ítems */}
-          {showRecurringItems && selectedRecurringItems.length > 0 && (
+          {showRecurringItems && (
             <div className="mt-4">
-              <p className="text-xl my-2 px-4">Selecciona un ítem</p>
+              <div className="flex justify-between items-center px-4">
+                <p className="text-xl my-2">Selecciona un ítem</p>
+
+                {/* Botón para agregar ítem */}
+                {!showAddItemInput && (
+                  <button
+                    onClick={toggleAddItemInput}
+                    className="ml-2 px-3 py-1 rounded-lg text-xs flex items-center justify-center bg-black text-white"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-4 mr-1"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Agregar
+                  </button>
+                )}
+              </div>
+
+              {/* Input para agregar nuevo ítem */}
+              {showAddItemInput && (
+                <div className="flex flex-row px-4 gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={newItemName}
+                    onChange={(e) => setNewItemName(e.target.value)}
+                    placeholder="Nombre del nuevo ítem"
+                    className="w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleAddItemToCategory}
+                    disabled={!newItemName.trim()}
+                    className={`px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap ${
+                      !newItemName.trim()
+                        ? "bg-gray-300 text-gray-500"
+                        : "bg-black text-white"
+                    }`}
+                  >
+                    Agregar
+                  </button>
+                  <button
+                    onClick={toggleAddItemInput}
+                    className="px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap bg-gray-300 text-black"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
+
               <div className="flex flex-row px-4 gap-2 overflow-x-auto">
                 {selectedRecurringItems.map((item, index) => (
                   <div

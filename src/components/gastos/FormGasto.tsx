@@ -114,6 +114,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
     </div>
   );
 };
+
 const formatDateForInput = (dateString) => {
   const [day, month, year] = dateString.split("/");
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
@@ -138,7 +139,7 @@ export const FormGasto = ({ onSuccess }) => {
   const [searchMaterial, setSearchMaterial] = useState("");
   const [isRecurringCategory, setIsRecurringCategory] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [showCustomInputs, setShowCustomInputs] = useState(false); // Nuevo estado para inputs personalizados
+  const [showCustomInputs, setShowCustomInputs] = useState(false); // Estado para inputs personalizados
 
   // Estado para los pasos
   const [currentStep, setCurrentStep] = useState(1);
@@ -161,6 +162,7 @@ export const FormGasto = ({ onSuccess }) => {
     unit: "unidad",
     estado: "pendiente",
   });
+
   const auth = useSelector((state: RootState) => state.auth);
   const empresaId =
     auth?.tipoUsuario === "empresa"
@@ -223,6 +225,7 @@ export const FormGasto = ({ onSuccess }) => {
   const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
   };
+
   const handleNameChange = (e) => {
     const { value } = e.target;
     const selectedMaterial = materiales.find(
@@ -334,6 +337,33 @@ export const FormGasto = ({ onSuccess }) => {
     }
   };
 
+  // Función para manejar la adición de un nuevo ítem a una categoría recurrente
+  const handleAddItemToCategory = async (categoryName, newItem) => {
+    try {
+      // Mostrar un mensaje de éxito
+      Swal.fire({
+        icon: "success",
+        title: "Ítem agregado",
+        text: `Se ha agregado "${newItem}" a la categoría "${categoryName}"`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      // Seleccionar automáticamente el nuevo ítem
+      setFormData((prev) => ({
+        ...prev,
+        name: newItem,
+      }));
+    } catch (error) {
+      console.error("Error al añadir ítem a categoría:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo agregar el ítem a la categoría",
+      });
+    }
+  };
+
   // Nueva función para asegurar que las categorías predeterminadas estén en Firestore
   const saveCategoryToFirestoreIfNeeded = async (categoryName) => {
     if (!empresaId) return;
@@ -433,6 +463,7 @@ export const FormGasto = ({ onSuccess }) => {
       setLoading(false);
     }
   };
+
   return (
     <div className="font-coolvetica text-black">
       {/* Estilos para la barra de progreso animada */}
@@ -637,7 +668,8 @@ export const FormGasto = ({ onSuccess }) => {
                 setIsRecurringCategory(isRecurring)
               }
               onLoadingChange={(isLoading) => setCategoriesLoading(isLoading)}
-              onShowCustomInputs={setShowCustomInputs} // Nueva prop para campos personalizados
+              onShowCustomInputs={setShowCustomInputs}
+              onAddItemToCategory={handleAddItemToCategory} // Nueva prop para manejar agregar ítems
             />
             {console.log(
               "[DEBUG] FormGasto - showCustomInputs cambiado a:",
