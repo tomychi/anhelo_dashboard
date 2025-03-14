@@ -3,8 +3,9 @@ import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 
-// Categoría predeterminada que siempre debe estar disponible
+// Categorías predeterminadas que siempre deben estar disponibles
 const DEFAULT_CATEGORY = "materia prima";
+const OTHERS_CATEGORY = "otros";
 
 // Componente para mostrar y gestionar las categorías
 export const CategoriaSelector = ({
@@ -15,6 +16,7 @@ export const CategoriaSelector = ({
   onAddCategory, // Prop para manejar "Agregar categoría"
   onCategoryTypeChange, // Nueva prop para informar si la categoría es recurrente
   onLoadingChange, // Añadimos esta prop explícitamente
+  onShowCustomInputs, // Nueva prop para mostrar/ocultar inputs personalizados
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,24 +71,42 @@ export const CategoriaSelector = ({
             categoriesFromDB = [];
           }
 
-          // Asegurarnos de que "materia prima" esté siempre incluida
-          // Solo si todas las categorías son strings (no hay objetos de categorías recurrentes)
+          // Creamos una copia para no modificar directamente el array original
+          let updatedCategories = [...categoriesFromDB];
+
+          // Asegurarnos de que ambas categorías predeterminadas estén siempre incluidas
           if (
-            !categoriesFromDB.some((cat) => typeof cat === "object") &&
-            !categoriesFromDB.includes(DEFAULT_CATEGORY)
+            !updatedCategories.includes(OTHERS_CATEGORY) &&
+            !updatedCategories.some(
+              (cat) =>
+                typeof cat === "object" &&
+                Object.keys(cat)[0] === OTHERS_CATEGORY
+            )
           ) {
-            categoriesFromDB = [DEFAULT_CATEGORY, ...categoriesFromDB];
+            updatedCategories.push(OTHERS_CATEGORY);
+            console.log(`Categoría "${OTHERS_CATEGORY}" añadida localmente`);
+          }
+
+          if (
+            !updatedCategories.includes(DEFAULT_CATEGORY) &&
+            !updatedCategories.some(
+              (cat) =>
+                typeof cat === "object" &&
+                Object.keys(cat)[0] === DEFAULT_CATEGORY
+            )
+          ) {
+            updatedCategories.unshift(DEFAULT_CATEGORY);
             console.log(`Categoría "${DEFAULT_CATEGORY}" añadida localmente`);
           }
 
-          setCategories(categoriesFromDB);
+          setCategories(updatedCategories);
 
           // Si la categoría seleccionada no está en la lista, seleccionamos la primera
           if (
-            categoriesFromDB.length > 0 &&
-            !isCategoryInArray(formData.category, categoriesFromDB)
+            updatedCategories.length > 0 &&
+            !isCategoryInArray(formData.category, updatedCategories)
           ) {
-            const firstCategory = categoriesFromDB[0];
+            const firstCategory = updatedCategories[0];
             const categoryValue =
               typeof firstCategory === "object"
                 ? Object.keys(firstCategory)[0]
@@ -105,22 +125,44 @@ export const CategoriaSelector = ({
               if (onCategoryTypeChange) {
                 onCategoryTypeChange(true);
               }
+              if (onShowCustomInputs) {
+                onShowCustomInputs(false);
+              }
             } else {
               if (onCategoryTypeChange) {
                 onCategoryTypeChange(false);
               }
+              // Si es "otros", mostrar inputs personalizados
+              if (categoryValue === OTHERS_CATEGORY && onShowCustomInputs) {
+                onShowCustomInputs(true);
+              } else if (onShowCustomInputs) {
+                onShowCustomInputs(false);
+              }
             }
           } else {
             // Verificar si la categoría seleccionada es recurrente
-            checkAndSetRecurringType(formData.category, categoriesFromDB);
+            checkAndSetRecurringType(formData.category, updatedCategories);
+
+            // Verificar si la categoría seleccionada es "otros"
+            if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+              onShowCustomInputs(true);
+            } else if (onShowCustomInputs) {
+              onShowCustomInputs(false);
+            }
           }
         }
       } catch (error) {
         console.error("Error al cargar categorías:", error);
-        // En caso de error, al menos asegurarnos de que "materia prima" esté disponible
-        setCategories([DEFAULT_CATEGORY]);
+        // En caso de error, al menos asegurarnos de que las categorías predeterminadas estén disponibles
+        setCategories([DEFAULT_CATEGORY, OTHERS_CATEGORY]);
         if (onCategoryTypeChange) {
           onCategoryTypeChange(false);
+        }
+        // Si la categoría seleccionada es "otros", mostrar inputs personalizados
+        if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+          onShowCustomInputs(true);
+        } else if (onShowCustomInputs) {
+          onShowCustomInputs(false);
         }
       } finally {
         setLoading(false);
@@ -134,8 +176,8 @@ export const CategoriaSelector = ({
     if (empresaId) {
       fetchCategories();
     } else {
-      // Si no hay empresaId, al menos ponemos la categoría predeterminada
-      setCategories([DEFAULT_CATEGORY]);
+      // Si no hay empresaId, al menos ponemos las categorías predeterminadas
+      setCategories([DEFAULT_CATEGORY, OTHERS_CATEGORY]);
       setLoading(false);
       // Notificar al componente padre que la carga ha terminado
       if (onLoadingChange) {
@@ -143,6 +185,12 @@ export const CategoriaSelector = ({
       }
       if (onCategoryTypeChange) {
         onCategoryTypeChange(false);
+      }
+      // Si la categoría seleccionada es "otros", mostrar inputs personalizados
+      if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+        onShowCustomInputs(true);
+      } else if (onShowCustomInputs) {
+        onShowCustomInputs(false);
       }
     }
   }, [empresaId, isAnhelo]);
@@ -155,17 +203,27 @@ export const CategoriaSelector = ({
       if (typeof a === "string" && a === DEFAULT_CATEGORY) return -1;
       if (typeof b === "string" && b === DEFAULT_CATEGORY) return 1;
 
-      // Categorías recurrentes (objetos) van después de "materia prima" pero antes que otras
+      // "otros" va después de "materia prima" pero antes que otras categorías regulares
+      if (typeof a === "string" && a === OTHERS_CATEGORY) {
+        return typeof b === "string" && b === DEFAULT_CATEGORY ? 1 : -1;
+      }
+      if (typeof b === "string" && b === OTHERS_CATEGORY) {
+        return typeof a === "string" && a === DEFAULT_CATEGORY ? 1 : 1;
+      }
+
+      // Categorías recurrentes (objetos) van después de categorías predeterminadas pero antes que otras
       if (
         typeof a === "object" &&
         typeof b === "string" &&
-        b !== DEFAULT_CATEGORY
+        b !== DEFAULT_CATEGORY &&
+        b !== OTHERS_CATEGORY
       )
         return -1;
       if (
         typeof b === "object" &&
         typeof a === "string" &&
-        a !== DEFAULT_CATEGORY
+        a !== DEFAULT_CATEGORY &&
+        a !== OTHERS_CATEGORY
       )
         return 1;
 
@@ -189,6 +247,18 @@ export const CategoriaSelector = ({
 
   // Función para verificar si la categoría seleccionada es recurrente
   const checkAndSetRecurringType = (categoryName, categoryArray) => {
+    // Para la categoría "otros", siempre mostrar inputs personalizados
+    if (categoryName === OTHERS_CATEGORY) {
+      setShowRecurringItems(false);
+      if (onCategoryTypeChange) {
+        onCategoryTypeChange(false);
+      }
+      if (onShowCustomInputs) {
+        onShowCustomInputs(true);
+      }
+      return;
+    }
+
     for (const category of categoryArray) {
       if (typeof category === "object") {
         const key = Object.keys(category)[0];
@@ -198,15 +268,21 @@ export const CategoriaSelector = ({
           if (onCategoryTypeChange) {
             onCategoryTypeChange(true);
           }
+          if (onShowCustomInputs) {
+            onShowCustomInputs(false);
+          }
           return;
         }
       }
     }
 
-    // Si llegamos aquí, no es una categoría recurrente
+    // Si llegamos aquí, no es una categoría recurrente ni "otros"
     setShowRecurringItems(false);
     if (onCategoryTypeChange) {
       onCategoryTypeChange(false);
+    }
+    if (onShowCustomInputs) {
+      onShowCustomInputs(false);
     }
   };
 
@@ -222,12 +298,14 @@ export const CategoriaSelector = ({
     });
   };
 
-  // Función para guardar una categoría en la base de datos si no existe
-  const saveDefaultCategoryIfNeeded = async () => {
-    // Solo ejecutamos esto si están usando la categoría predeterminada y no está en la BD
+  // Función para guardar una categoría predeterminada en la base de datos si no existe
+  const saveDefaultCategoryIfNeeded = async (categoryName) => {
+    if (!empresaId) return;
+
+    // Solo ejecutamos esto si están usando una categoría predeterminada y no está en la BD
     if (
-      formData.category === DEFAULT_CATEGORY &&
-      !isCategoryInArray(DEFAULT_CATEGORY, categories)
+      (categoryName === DEFAULT_CATEGORY || categoryName === OTHERS_CATEGORY) &&
+      !isCategoryInArray(categoryName, categories)
     ) {
       try {
         const firestore = getFirestore();
@@ -247,8 +325,8 @@ export const CategoriaSelector = ({
         }
 
         // Añadir la categoría predeterminada si no existe
-        if (!isCategoryInArray(DEFAULT_CATEGORY, existingCategories)) {
-          const updatedCategories = [DEFAULT_CATEGORY, ...existingCategories];
+        if (!isCategoryInArray(categoryName, existingCategories)) {
+          const updatedCategories = [categoryName, ...existingCategories];
 
           // Actualizar en Firestore
           await updateDoc(docRef, {
@@ -256,19 +334,23 @@ export const CategoriaSelector = ({
           });
 
           console.log(
-            `Categoría "${DEFAULT_CATEGORY}" guardada en la base de datos`
+            `Categoría "${categoryName}" guardada en la base de datos`
           );
         }
       } catch (error) {
-        console.error("Error al guardar categoría predeterminada:", error);
+        console.error(`Error al guardar categoría ${categoryName}:`, error);
       }
     }
   };
 
-  // Llamamos a esta función cada vez que la categoría seleccionada cambia a "materia prima"
+  // Llamamos a esta función cada vez que la categoría seleccionada cambia a una predeterminada
   useEffect(() => {
-    if (formData.category === DEFAULT_CATEGORY && empresaId) {
-      saveDefaultCategoryIfNeeded();
+    if (
+      (formData.category === DEFAULT_CATEGORY ||
+        formData.category === OTHERS_CATEGORY) &&
+      empresaId
+    ) {
+      saveDefaultCategoryIfNeeded(formData.category);
     }
   }, [formData.category, empresaId]);
 
@@ -278,9 +360,11 @@ export const CategoriaSelector = ({
     let categoryName;
     let items = [];
     let isRecurring = false;
+    let isOthers = false;
 
     if (typeof category === "string") {
       categoryName = category;
+      isOthers = categoryName === OTHERS_CATEGORY;
       setShowRecurringItems(false);
       isRecurring = false;
     } else if (typeof category === "object") {
@@ -315,6 +399,11 @@ export const CategoriaSelector = ({
     if (onCategoryTypeChange) {
       onCategoryTypeChange(isRecurring);
     }
+
+    // Notificar al componente padre si debe mostrar inputs personalizados
+    if (onShowCustomInputs) {
+      onShowCustomInputs(isOthers);
+    }
   };
 
   // Manejar selección de item recurrente
@@ -333,27 +422,16 @@ export const CategoriaSelector = ({
     );
   }
 
-  // Encontrar la categoría seleccionada en el array (para categorías recurrentes)
-  const getSelectedCategory = () => {
-    for (const category of categories) {
-      if (typeof category === "string" && category === formData.category) {
-        return category;
-      } else if (
-        typeof category === "object" &&
-        Object.keys(category)[0] === formData.category
-      ) {
-        return category;
-      }
-    }
-    return formData.category; // Fallback
-  };
+  // Para debuggear - imprimir las categorías en consola
+  console.log("Categorías disponibles:", categories);
+  console.log("Categorías filtradas:", filteredCategories);
 
   return (
     <div className="section w-full relative mb-4 z-0">
       <p className="text-xl my-2 px-4 ">Categoría</p>
 
       {categories.length === 0 ? (
-        // Mensaje cuando no hay categorías (aunque siempre debería haber al menos DEFAULT_CATEGORY)
+        // Mensaje cuando no hay categorías (aunque siempre debería haber al menos las predeterminadas)
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg">
           <p className="text-gray-500 mb-4 text-center">
             No hay categorías definidas para esta empresa
