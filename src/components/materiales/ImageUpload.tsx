@@ -113,7 +113,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           {isLoading && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white rounded-md">
               <div className="mb-2">Subiendo... {uploadProgress}%</div>
-              <div className="w-2/3 h-2 bg-gray-300 rounded-full overflow-hidden">
+              <div className="w-2/3 h-2 bg-gray-200  rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white transition-all duration-300"
                   style={{ width: `${uploadProgress}%` }}
@@ -171,7 +171,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         </div>
       ) : (
         <div
-          className="w-full h-48 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center cursor-pointer bg-gray-50"
+          className="w-full h-48 border-2 border-dashed border-gray-200  rounded-md flex flex-col items-center justify-center cursor-pointer bg-gray-50"
           onClick={handleBrowseClick}
           onDragOver={handleDragOver}
           onDrop={handleDrop}

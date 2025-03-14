@@ -99,7 +99,7 @@ export const CategoriaSelector = ({
 
       {categories.length === 0 ? (
         // Mensaje cuando no hay categorías
-        <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-300 rounded-lg">
+        <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200  rounded-lg">
           <p className="text-gray-500 mb-4 text-center">
             No hay categorías definidas para esta empresa
           </p>

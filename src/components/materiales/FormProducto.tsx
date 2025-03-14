@@ -339,7 +339,7 @@ export const FormProducto: React.FC = () => {
             />
             <label
               htmlFor="product-type"
-              className="block h-6 overflow-hidden bg-gray-300 rounded-full cursor-pointer"
+              className="block h-6 overflow-hidden bg-gray-200  rounded-full cursor-pointer"
               style={{ backgroundColor: isCompuesto ? "#000" : "#ccc" }}
             ></label>
           </div>
