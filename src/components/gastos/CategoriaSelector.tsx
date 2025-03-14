@@ -306,6 +306,29 @@ export const CategoriaSelector = ({
     return formData.category; // Fallback
   };
 
+  const sortedCategories = [...categories].sort((a, b) => {
+    // "materia prima" siempre va primero
+    if (typeof a === "string" && a === DEFAULT_CATEGORY) return -1;
+    if (typeof b === "string" && b === DEFAULT_CATEGORY) return 1;
+
+    // Categorías recurrentes (objetos) van después de "materia prima" pero antes que otras
+    if (
+      typeof a === "object" &&
+      typeof b === "string" &&
+      b !== DEFAULT_CATEGORY
+    )
+      return -1;
+    if (
+      typeof b === "object" &&
+      typeof a === "string" &&
+      a !== DEFAULT_CATEGORY
+    )
+      return 1;
+
+    // Para el resto, mantener el orden original
+    return 0;
+  });
+
   return (
     <div className="section w-full relative mb-4 z-0">
       <p className="text-xl my-2 px-4 ">Categoría</p>
@@ -359,7 +382,7 @@ export const CategoriaSelector = ({
               Agregar
             </div>
 
-            {categories.map((category, index) => {
+            {sortedCategories.map((category, index) => {
               // Determinar si es una categoría simple o recurrente
               const isObject = typeof category === "object";
               const categoryName = isObject
