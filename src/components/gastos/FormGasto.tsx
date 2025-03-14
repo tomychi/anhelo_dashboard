@@ -367,21 +367,6 @@ export const FormGasto = ({ onSuccess }) => {
       <div className="items-center w-full justify-center rounded-md">
         {/* Nota: cambiamos el form por un div para manejar manualmente el submit */}
         <div className="item-section w-full flex flex-col gap-2">
-          {/* Mostrar botón volver en pasos 2 y 3 */}
-          {currentStep > 1 && (
-            <div
-              className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
-              onClick={handlePreviousStep}
-            >
-              <img
-                src={arrow}
-                className="transform rotate-180 h-2 opacity-30"
-                alt="Volver"
-              />
-              Volver
-            </div>
-          )}
-
           {/* Paso 1: Detalles básicos */}
           {currentStep === 1 && (
             <>
@@ -497,6 +482,19 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 2: Cantidades */}
           {currentStep === 2 && (
             <>
+              <p className="text-2xl mx-4  text-center">Medida</p>
+
+              <div
+                className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+                onClick={handlePreviousStep}
+              >
+                <img
+                  src={arrow}
+                  className="transform rotate-180 h-2 opacity-30"
+                  alt="Volver"
+                />
+                Volver
+              </div>
               <div className="section relative z-0">
                 <input
                   type="number"
@@ -544,6 +542,20 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 3: Estado y fecha */}
           {currentStep === 3 && (
             <>
+              <p className="text-2xl mx-4  text-center">Registro</p>
+
+              <div
+                className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+                onClick={handlePreviousStep}
+              >
+                <img
+                  src={arrow}
+                  className="transform rotate-180 h-2 opacity-30"
+                  alt="Volver"
+                />
+                Volver
+              </div>
+
               <FileUpload onFileSelect={handleFileSelect} />
 
               <div className="section w-full relative z-0">
