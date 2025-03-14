@@ -451,7 +451,7 @@ export const Landing: React.FC<{
           className="fixed bottom-8 left-0 right-0 flex justify-center z-50"
         >
           <motion.button
-            className="text-indigo-600 px-8 gap-2  h-10 rounded-3xl shadow-lg flex items-center justify-center "
+            className="text-indigo-600 px-4 gap-2  h-10 rounded-3xl shadow-lg flex items-center justify-center "
             variants={floatingButtonVariants}
             initial="initial"
             whileHover="hover"
