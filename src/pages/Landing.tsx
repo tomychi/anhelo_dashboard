@@ -364,7 +364,7 @@ export const Landing: React.FC<{
           Absolute
         </p>
         <motion.div
-          className="text-gray-100 text-black gap-2 mx-8 h-20 flex items-center text-center justify-center text-xl rounded-3xl apple-button cursor-pointer"
+          className="text-gray-100 text-black gap-2 mx-4 h-20 flex items-center text-center justify-center text-xl rounded-3xl apple-button cursor-pointer"
           variants={buttonVariants}
           initial="initial"
           whileHover="hover"
