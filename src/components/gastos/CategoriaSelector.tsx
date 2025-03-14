@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import CategoriasModal from "./CategoriasModal"; // Importamos el nuevo modal
 
 // Componente para mostrar y gestionar las categorías
 export const CategoriaSelector = ({
@@ -70,7 +71,10 @@ export const CategoriaSelector = ({
           setCategories(categoriesFromDB);
 
           // Si la categoría seleccionada no está en la lista, seleccionamos la primera
-          if (!categoriesFromDB.includes(formData.category)) {
+          if (
+            categoriesFromDB.length > 0 &&
+            !categoriesFromDB.includes(formData.category)
+          ) {
             setFormData((prev) => ({
               ...prev,
               category: categoriesFromDB[0],
@@ -220,36 +224,15 @@ export const CategoriaSelector = ({
         </div>
       )}
 
-      {/* Modal para agregar nueva categoría */}
-      {isAddingCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold mb-4">Nueva categoría</h2>
-            <input
-              type="text"
-              placeholder="Nombre de la categoría"
-              className="w-full p-2 border border-gray-300 rounded mb-4"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsAddingCategory(false)}
-                className="px-4 py-2 bg-gray-200 rounded"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={saveNewCategory}
-                className="px-4 py-2 bg-black text-white rounded"
-                disabled={!newCategory.trim()}
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Nuevo modal para agregar categoría */}
+      <CategoriasModal
+        isOpen={isAddingCategory}
+        onClose={() => setIsAddingCategory(false)}
+        title="Nueva categoría"
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        onSave={saveNewCategory}
+      />
     </div>
   );
 };
