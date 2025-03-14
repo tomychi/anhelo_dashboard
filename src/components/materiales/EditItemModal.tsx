@@ -168,9 +168,9 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     setUploadProgress(0);
 
     try {
-      // Usar una ruta única y simple para todas las imágenes
-      const path = "productos";
-      console.log("Intentando subir imagen a:", path);
+      // Definir la ruta según el tipo de item
+      const path = itemType === "producto" ? "productos" : "materiales";
+      console.log(`Intentando subir imagen a: ${path}`);
 
       // Simular progreso
       const progressInterval = setInterval(() => {
@@ -335,6 +335,18 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     setMaterialesSeleccionados(updatedMateriales);
   };
 
+  const removeUndefinedFields = (obj: any): any => {
+    const cleanObj = { ...obj };
+    Object.keys(cleanObj).forEach((key) => {
+      if (cleanObj[key] === undefined) {
+        delete cleanObj[key];
+      } else if (typeof cleanObj[key] === "object" && cleanObj[key] !== null) {
+        cleanObj[key] = removeUndefinedFields(cleanObj[key]); // Recursivo para objetos anidados
+      }
+    });
+    return cleanObj;
+  };
+
   // Guardar cambios
   const handleUpdate = async () => {
     setLoading(true);
@@ -345,7 +357,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
       let updatedFormData = { ...formData };
 
       // Subir imagen si se ha seleccionado una
-      if (selectedImage && itemType === "producto") {
+      if (selectedImage) {
         const imageUrl = await uploadSelectedImage();
 
         if (imageUrl) {
@@ -360,7 +372,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
         }
       }
 
-      // Si es un producto compuesto, actualizar los materiales
+      // Lógica específica para productos compuestos
       if (itemType === "producto" && isProductoCompuesto) {
         // Verificar que tenga al menos un material
         if (materialesSeleccionados.length === 0) {
@@ -383,11 +395,37 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
         };
       }
 
+      // Asegurarse de que el campo img exista si no se ha establecido
+      if (!updatedFormData.img) {
+        updatedFormData.img = "";
+      }
+
+      // Si es un material, asegurarse de que todos los campos requeridos existan
+      if (itemType === "material") {
+        // Si no hay categoria, establecer una predeterminada
+        if (updatedFormData.categoria === undefined) {
+          updatedFormData.categoria = "ingredientes";
+        }
+
+        // Si no hay stock, establecer 0
+        if (updatedFormData.stock === undefined) {
+          updatedFormData.stock = 0;
+        }
+
+        // Si no hay unidadPorPrecio, establecer 1
+        if (updatedFormData.unidadPorPrecio === undefined) {
+          updatedFormData.unidadPorPrecio = 1;
+        }
+      }
+
+      // Limpiar campos undefined
+      const cleanedData = removeUndefinedFields(updatedFormData);
+
       // Log para depuración
-      console.log("Datos finales a guardar:", updatedFormData);
+      console.log("Datos finales a guardar (después de limpiar):", cleanedData);
 
       // Guardar los datos actualizados
-      await onUpdate(updatedFormData);
+      await onUpdate(cleanedData);
 
       // Cerrar el modal después de guardar
       handleClose();
@@ -485,6 +523,20 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                     onChange={handleChange}
                     placeholder="Nombre del material"
                     required
+                  />
+                </div>
+
+                {/* Imagen del material */}
+                <div className="section relative z-0">
+                  <p className="text-xs font-medium mb-1">
+                    Imagen del material:
+                  </p>
+                  <ImageUpload
+                    currentImageUrl={formData.img}
+                    onImageSelected={handleImageSelected}
+                    onCancel={handleCancelImage}
+                    isLoading={uploadingImage}
+                    uploadProgress={uploadProgress}
                   />
                 </div>
 

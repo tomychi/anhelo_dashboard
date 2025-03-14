@@ -331,7 +331,15 @@ export const ListByIcons: React.FC = () => {
                   onTouchEnd={handleTouchEnd}
                 >
                   <div className="h-32 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">{material.nombre}</span>
+                    {material.img ? (
+                      <img
+                        src={material.img}
+                        alt={material.nombre}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-gray-400">{material.nombre}</span>
+                    )}
                   </div>
                   <div className="p-3">
                     <h3 className="font-bold text-md mb-1">

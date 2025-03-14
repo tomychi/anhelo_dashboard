@@ -19,10 +19,14 @@ export interface SimpleMaterialProps {
 }
 
 export interface MaterialProps extends SimpleMaterialProps {
-  categoria?: string;
+  nombre: string;
+  costo: number;
+  unit: string;
   stock?: number;
+  categoria?: string;
   unidadPorPrecio?: number;
   id?: string;
+  img?: string; // Nuevo campo para la imagen
 }
 
 /**
@@ -133,6 +137,7 @@ export const readMateriales = async (
           unit: data.unit,
           unidadPorPrecio: data.unidadPorPrecio,
           stock: data.stock,
+          img: data.img || "", // Asegurarse de incluir la imagen
         };
         return materialProps;
       });
@@ -411,10 +416,37 @@ export const updateMaterial = async (
     );
   }
 
-  // Crear una versión sin el ID para actualizar
+  // Crear una versión sin el ID para actualizar y eliminar campos undefined
   const { id, ...dataToUpdate } = materialData;
 
-  await updateDoc(materialRef, dataToUpdate);
+  // Limpiar campos undefined
+  const cleanData: Record<string, any> = {};
+  Object.entries(dataToUpdate).forEach(([key, value]) => {
+    if (value !== undefined) {
+      cleanData[key] = value;
+    }
+  });
+
+  // Asegurar que los campos obligatorios tengan valores predeterminados
+  if (!cleanData.hasOwnProperty("categoria")) {
+    cleanData.categoria = "ingredientes";
+  }
+
+  if (!cleanData.hasOwnProperty("img")) {
+    cleanData.img = "";
+  }
+
+  if (!cleanData.hasOwnProperty("stock")) {
+    cleanData.stock = 0;
+  }
+
+  if (!cleanData.hasOwnProperty("unidadPorPrecio")) {
+    cleanData.unidadPorPrecio = 1;
+  }
+
+  console.log("Datos limpios a actualizar:", cleanData);
+
+  await updateDoc(materialRef, cleanData);
 };
 
 /**
