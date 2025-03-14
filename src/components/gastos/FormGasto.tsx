@@ -360,7 +360,7 @@ export const FormGasto = ({ onSuccess }) => {
         <div className="item-section w-full flex flex-col gap-2">
           {/* Paso 0.5: Crear nueva categoría */}
           {isCreatingCategory && (
-            <>
+            <div className="px-4">
               <p className="text-2xl mx-4 my-2 text-center">Nueva categoría</p>
 
               <div
@@ -472,7 +472,7 @@ export const FormGasto = ({ onSuccess }) => {
                   "Guardar"
                 )}
               </button>
-            </>
+            </div>
           )}
 
           {/* Paso 1: Detalles básicos */}
@@ -489,70 +489,25 @@ export const FormGasto = ({ onSuccess }) => {
                 onAddCategory={() => setIsCreatingCategory(true)}
               />
 
-              {formData.category === "cocina y produccion" ? (
-                <select
+              <div className="px-4 flex flex-col gap-2">
+                <input
+                  type="text"
                   id="name"
                   name="name"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  className="custom-bg  block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
                   value={formData.name}
                   onChange={handleNameChange}
+                  placeholder="Nombre del item"
+                  list={isMarketingUser ? undefined : "itemNames"}
                   required
-                >
-                  <option value="">Seleccionar empleado</option>
-                  {empleados
-                    .filter((emp) => emp.area === "cocina")
-                    .map((empleado, index) => (
-                      <option key={index} value={empleado.name}>
-                        {empleado.name}
-                      </option>
-                    ))}
-                </select>
-              ) : formData.category === "infraestructura" ? (
-                <select
-                  id="name"
-                  name="name"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={formData.name}
-                  onChange={handleNameChange}
-                  required
-                >
-                  <option value="">Seleccionar servicio</option>
-                  <option value="gas">Gas</option>
-                  <option value="wifi">WiFi</option>
-                  <option value="alquiler">Alquiler</option>
-                  <option value="luz">Luz</option>
-                  <option value="agua">Agua</option>
-                </select>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.name}
-                    onChange={handleNameChange}
-                    placeholder="Nombre del item"
-                    list={isMarketingUser ? undefined : "itemNames"}
-                    required
-                    autoComplete="off"
-                  />
-                  {!isMarketingUser && (
-                    <datalist id="itemNames">
-                      {materiales.map((material, index) => (
-                        <option key={index} value={material.nombre} />
-                      ))}
-                    </datalist>
-                  )}
-                </>
-              )}
+                  autoComplete="off"
+                />
 
-              <div className="section w-full relative z-0">
                 <input
                   type="text"
                   id="description"
                   name="description"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  className="custom-bg  block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
                   value={formData.description}
                   placeholder="Descripción del ítem"
                   onChange={handleChange}
@@ -711,40 +666,42 @@ export const FormGasto = ({ onSuccess }) => {
           )}
 
           {/* Botones de navegación */}
-          {isCreatingCategory ? null : currentStep < 3 ? (
-            <button
-              type="button" /* Importante: type button para evitar submit */
-              onClick={handleNextStep}
-              disabled={
-                !formData.category
-              } /* Deshabilitar si no hay categoría seleccionada */
-              className={`text-gray-100 w-full h-20 mt-2 rounded-lg ${!formData.category ? "bg-gray-400" : "bg-black"} text-4xl font-bold`}
-            >
-              Continuar
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSubmit(e);
-              }}
-              className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="flex justify-center w-full items-center">
-                  <div className="flex flex-row gap-1">
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+          <div className="px-4">
+            {isCreatingCategory ? null : currentStep < 3 ? (
+              <button
+                type="button" /* Importante: type button para evitar submit */
+                onClick={handleNextStep}
+                disabled={
+                  !formData.category
+                } /* Deshabilitar si no hay categoría seleccionada */
+                className={`text-gray-100 w-full h-20 mt-2 rounded-lg ${!formData.category ? "bg-gray-400" : "bg-black"} text-4xl font-bold`}
+              >
+                Continuar
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }}
+                className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex justify-center w-full items-center">
+                    <div className="flex flex-row gap-1">
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                "Guardar"
-              )}
-            </button>
-          )}
+                ) : (
+                  "Guardar"
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

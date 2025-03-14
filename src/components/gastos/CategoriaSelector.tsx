@@ -94,8 +94,8 @@ export const CategoriaSelector = ({
   }
 
   return (
-    <div className="section w-full relative mb-4 z-0">
-      <p className="text-2xl mx-4 my-2 text-center">Categoría</p>
+    <div className="section  w-full relative mb-4 z-0">
+      <p className="text-xl  my-2 px-4 ">Categoría</p>
 
       {categories.length === 0 ? (
         // Mensaje cuando no hay categorías
@@ -124,7 +124,7 @@ export const CategoriaSelector = ({
         </div>
       ) : (
         // Lista de categorías existentes
-        <div className="flex flex-row justify-center gap-2 overflow-x-auto">
+        <div className="flex flex-row px-4 gap-2 overflow-x-auto ">
           {/* Botón para agregar nueva categoría */}
           <div
             onClick={onAddCategory}
