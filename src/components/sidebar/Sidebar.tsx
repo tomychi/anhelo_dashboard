@@ -457,7 +457,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         <li key={index}>
           <NavLink
             to="#"
-            className="block text-2xl font-coolvetica font-bold flex items-center text-gray-400"
+            className="block text-xl flex justify-center text-center font-coolvetica font-bold flex items-center text-gray-400"
             onClick={(e) => e.preventDefault()}
           >
             <svg
@@ -492,7 +492,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
               clipRule="evenodd"
             />
           </svg>
-          <h3 className="text-xl font-bold mb-2">
+          <h3 className="text-xl flex justify-center  text-center font-bold mb-2">
             Aún no tienes permisos asignados
           </h3>
           <p className="text-sm text-gray-400 ">
@@ -508,7 +508,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       <li key={index}>
         <NavLink
           to={item.to}
-          className="block text-2xl font-coolvetica font-bold flex items-center"
+          className="flex justify-center text-center text-xl   font-coolvetica font-bold flex items-center"
           onClick={() => setIsMenuOpen(false)}
         >
           {item.text}
@@ -663,7 +663,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       <div className="mr-8">
         <button
           onClick={handleLogout}
-          className="w-full text-xl text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
+          className="w-full text-xl flex justify-center items-center text-center text-red-main h-20 mt-4 font-bold ml-4 rounded-lg text-center mb-4 bg-gray-200"
         >
           Cerrar sesión
         </button>
@@ -789,7 +789,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
         <div className="mx-4">
           <button
             onClick={handleLogout}
-            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-xl text-center bg-gray-200"
+            className="w-full font-coolvetica text-red-main h-20 mb-12 mt-4 font-bold rounded-lg text-xl flex justify-center items-center text-center bg-gray-200"
           >
             Cerrar sesión
           </button>
@@ -924,7 +924,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
               {/* Botón de acción principal y footer siempre visibles */}
               <div className="mt-6">
                 <div
-                  className="w-full h-20 text-gray-100 text-center items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-2xl rounded-3xl cursor-pointer"
+                  className="w-full h-20 text-gray-100 items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-xl flex justify-center text-center rounded-3xl cursor-pointer"
                   onClick={() => {
                     if (isAuth) {
                       setIsFeatureModalOpen(true);
