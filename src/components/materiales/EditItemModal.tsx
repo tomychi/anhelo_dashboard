@@ -127,7 +127,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
 
       setTotalCosto(costoTotal);
 
-      // Actualizar el costo en formData
+      // Actualizar SOLO el costo en formData, sin tocar el precio
       setFormData((prev) => ({
         ...prev,
         costo: costoTotal,
@@ -277,6 +277,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     try {
       // Si es un producto compuesto, actualizar los materiales
       if (itemType === "producto" && isProductoCompuesto) {
+        // Verificar que tenga al menos un material
+        if (materialesSeleccionados.length === 0) {
+          setError("Un producto compuesto debe tener al menos un material.");
+          setLoading(false);
+          return;
+        }
+
         // Convertir lista de materiales al formato requerido
         const materialesObj: { [key: string]: number } = {};
         materialesSeleccionados.forEach((item) => {
