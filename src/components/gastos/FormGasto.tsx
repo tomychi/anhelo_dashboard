@@ -126,7 +126,6 @@ const formatDateForDB = (dateString) => {
 // Componente FormGasto modificado
 export const FormGasto = ({ onSuccess }) => {
   const currentUserEmail = projectAuth.currentUser?.email;
-  const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
   const [unidadPorPrecio, setUnidadPorPrecio] = useState(0);
   const { materiales } = useSelector((state) => state.materials);
   const [file, setFile] = useState(null);
@@ -669,7 +668,6 @@ export const FormGasto = ({ onSuccess }) => {
                   value={formData.name}
                   onChange={handleNameChange}
                   placeholder="Nombre del item"
-                  list={isMarketingUser ? undefined : "itemNames"}
                   required
                   autoComplete="off"
                 />
