@@ -401,7 +401,8 @@ export const FormGasto = ({ onSuccess }) => {
                         />
                       </svg>
 
-                      {category}
+                      {category.charAt(0).toUpperCase() +
+                        category.slice(1).toLowerCase()}
                     </div>
                   ))}
                 </div>
