@@ -391,9 +391,6 @@ export const CategoriaSelector = ({
                   </svg>
                   {categoryName.charAt(0).toUpperCase() +
                     categoryName.slice(1).toLowerCase()}
-                  {isObject && (
-                    <span className="ml-1 text-xs opacity-70">▼</span>
-                  )}
                 </div>
               );
             })}
