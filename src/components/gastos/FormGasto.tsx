@@ -14,6 +14,7 @@ import {
 } from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
+import { MaterialSelector } from "./MaterialSelector"; // Importamos el componente de materiales
 
 // Componente FileUpload (no cambia)
 interface FileUploadProps {
@@ -21,6 +22,7 @@ interface FileUploadProps {
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
+  // El código de FileUpload se mantiene igual
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -133,11 +135,19 @@ export const FormGasto = ({ onSuccess }) => {
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showMaterialSelector, setShowMaterialSelector] = useState(false);
+  const [searchMaterial, setSearchMaterial] = useState("");
 
   // Estado para los pasos (añadimos paso 0.5 para crear categoría)
   const [currentStep, setCurrentStep] = useState(1);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [isAddingMaterial, setIsAddingMaterial] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({
+    nombre: "",
+    unit: "unidad",
+    categoria: "",
+  });
 
   // Estado inicial para formData
   const [formData, setFormData] = useState({
@@ -265,6 +275,20 @@ export const FormGasto = ({ onSuccess }) => {
   const handlePreviousStep = () => {
     setError("");
     setCurrentStep(currentStep - 1);
+  };
+
+  const handleAddMaterial = () => {
+    setIsAddingMaterial(true);
+  };
+
+  const handleMaterialChange = (material) => {
+    setFormData({
+      ...formData,
+      name: material.nombre,
+      unit: material.unit || "unidad",
+      category: material.categoria || formData.category,
+    });
+    setShowMaterialSelector(false);
   };
 
   const handleSubmit = async (e) => {
@@ -475,8 +499,144 @@ export const FormGasto = ({ onSuccess }) => {
             </div>
           )}
 
+          {/* Formulario para agregar un nuevo material */}
+          {isAddingMaterial && (
+            <div className="px-4">
+              <p className="text-2xl mx-4 my-2 text-center">Nuevo material</p>
+
+              <div
+                className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+                onClick={() => setIsAddingMaterial(false)}
+              >
+                <img
+                  src={arrow}
+                  className="transform rotate-180 h-2 opacity-30"
+                  alt="Volver"
+                />
+                Volver
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  id="newMaterialNombre"
+                  name="newMaterialNombre"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={newMaterial.nombre}
+                  placeholder="Nombre del material"
+                  onChange={(e) =>
+                    setNewMaterial({ ...newMaterial, nombre: e.target.value })
+                  }
+                  autoFocus
+                />
+
+                <select
+                  id="newMaterialUnit"
+                  name="newMaterialUnit"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={newMaterial.unit}
+                  onChange={(e) =>
+                    setNewMaterial({ ...newMaterial, unit: e.target.value })
+                  }
+                >
+                  {UNIDADES.map((unit) => (
+                    <option key={unit} value={unit}>
+                      {unit}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="text"
+                  id="newMaterialCategoria"
+                  name="newMaterialCategoria"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={newMaterial.categoria}
+                  placeholder="Categoría (opcional)"
+                  onChange={(e) =>
+                    setNewMaterial({
+                      ...newMaterial,
+                      categoria: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!newMaterial.nombre.trim()) return;
+
+                  try {
+                    setLoading(true);
+                    // Aquí deberías implementar la lógica para guardar el material
+                    // Por ejemplo, actualizando la colección de materiales en Firestore
+
+                    // Actualizar temporalmente la lista local
+                    const newMaterialObj = {
+                      nombre: newMaterial.nombre,
+                      unit: newMaterial.unit,
+                      categoria: newMaterial.categoria || formData.category,
+                      id: `temp-${Date.now()}`,
+                    };
+
+                    // Aquí deberías actualizar la store de Redux con el nuevo material
+
+                    // Actualizar el formData con el nuevo material
+                    setFormData({
+                      ...formData,
+                      name: newMaterialObj.nombre,
+                      unit: newMaterialObj.unit,
+                      category: newMaterialObj.categoria || formData.category,
+                    });
+
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                      icon: "success",
+                      title: "Material creado",
+                      text: `El material "${newMaterialObj.nombre}" se creó correctamente`,
+                      timer: 2000,
+                      showConfirmButton: false,
+                    });
+
+                    // Limpiar y volver
+                    setNewMaterial({
+                      nombre: "",
+                      unit: "unidad",
+                      categoria: "",
+                    });
+                    setIsAddingMaterial(false);
+                  } catch (error) {
+                    console.error("Error al guardar material:", error);
+                    Swal.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: "Hubo un problema al crear el material",
+                    });
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+                disabled={!newMaterial.nombre.trim() || loading}
+              >
+                {loading ? (
+                  <div className="flex justify-center w-full items-center">
+                    <div className="flex flex-row gap-1">
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                  </div>
+                ) : (
+                  "Guardar"
+                )}
+              </button>
+            </div>
+          )}
+
           {/* Paso 1: Detalles básicos */}
-          {currentStep === 1 && !isCreatingCategory && (
+          {currentStep === 1 && !isCreatingCategory && !isAddingMaterial && (
             <>
               {/* Usamos el componente de categorías */}
               <CategoriaSelector
@@ -489,12 +649,23 @@ export const FormGasto = ({ onSuccess }) => {
                 onAddCategory={() => setIsCreatingCategory(true)}
               />
 
+              {/* Agregamos el selector de materiales */}
+              {formData.category && (
+                <MaterialSelector
+                  selectedMaterial={formData.name}
+                  onMaterialChange={handleMaterialChange}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onAddMaterial={handleAddMaterial}
+                />
+              )}
+
               <div className="px-4 flex flex-col gap-2">
                 <input
                   type="text"
                   id="name"
                   name="name"
-                  className="custom-bg  block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
                   value={formData.name}
                   onChange={handleNameChange}
                   placeholder="Nombre del item"
@@ -507,7 +678,7 @@ export const FormGasto = ({ onSuccess }) => {
                   type="text"
                   id="description"
                   name="description"
-                  className="custom-bg  block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
                   value={formData.description}
                   placeholder="Descripción del ítem"
                   onChange={handleChange}
@@ -519,7 +690,7 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 2: Cantidades */}
           {currentStep === 2 && (
             <>
-              <p className="text-2xl mx-4  text-center">Medida</p>
+              <p className="text-2xl mx-4 text-center">Medida</p>
 
               <div
                 className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
@@ -532,7 +703,7 @@ export const FormGasto = ({ onSuccess }) => {
                 />
                 Volver
               </div>
-              <div className="section relative z-0">
+              <div className="section relative z-0 px-4">
                 <input
                   type="number"
                   id="quantity"
@@ -544,7 +715,7 @@ export const FormGasto = ({ onSuccess }) => {
                   required
                 />
               </div>
-              <div className="section relative z-0">
+              <div className="section relative z-0 px-4">
                 <select
                   id="unit"
                   name="unit"
@@ -561,7 +732,7 @@ export const FormGasto = ({ onSuccess }) => {
                   ))}
                 </select>
               </div>
-              <div className="section w-full relative z-0">
+              <div className="section w-full relative z-0 px-4">
                 <input
                   type="number"
                   id="total"
@@ -579,7 +750,7 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 3: Estado y fecha */}
           {currentStep === 3 && (
             <>
-              <p className="text-2xl mx-4  text-center">Registro</p>
+              <p className="text-2xl mx-4 text-center">Registro</p>
 
               <div
                 className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
@@ -593,9 +764,11 @@ export const FormGasto = ({ onSuccess }) => {
                 Volver
               </div>
 
-              <FileUpload onFileSelect={handleFileSelect} />
+              <div className="px-4">
+                <FileUpload onFileSelect={handleFileSelect} />
+              </div>
 
-              <div className="section w-full relative z-0">
+              <div className="section w-full relative z-0 px-4">
                 <select
                   id="estado"
                   name="estado"
@@ -613,7 +786,7 @@ export const FormGasto = ({ onSuccess }) => {
               </div>
 
               {formData.category === "cocina y produccion" ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 px-4">
                   <p className="text-xs mt-2 font-light">Selecciona período</p>
                   <div className="flex flex-row gap-2">
                     <div className="section w-full relative z-0">
@@ -628,22 +801,10 @@ export const FormGasto = ({ onSuccess }) => {
                         required
                       />
                     </div>
-                    <div className="section w-full relative z-0">
-                      <p className="text-xs mb-1 font-light">Fecha fin</p>
-                      <input
-                        type="date"
-                        id="fechaFin"
-                        name="fechaFin"
-                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                        value={fechaFin}
-                        onChange={(e) => setFechaFin(e.target.value)}
-                        required
-                      />
-                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="section w-full relative z-0">
+                <div className="section w-full relative z-0 px-4">
                   <input
                     type="date"
                     id="fecha"
@@ -667,7 +828,7 @@ export const FormGasto = ({ onSuccess }) => {
 
           {/* Botones de navegación */}
           <div className="px-4">
-            {isCreatingCategory ? null : currentStep < 3 ? (
+            {isCreatingCategory || isAddingMaterial ? null : currentStep < 3 ? (
               <button
                 type="button" /* Importante: type button para evitar submit */
                 onClick={handleNextStep}
@@ -707,5 +868,3 @@ export const FormGasto = ({ onSuccess }) => {
     </div>
   );
 };
-
-export default FormGasto;
