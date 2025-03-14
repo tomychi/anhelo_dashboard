@@ -910,7 +910,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
                   }
                   onScroll={handleMenuScroll}
                 >
-                  <ul className="flex pt-8 flex-col gap-4">
+                  <ul className="flex pt-8 flex-col gap-2">
                     {renderMenuItems()}
                   </ul>
                 </div>
