@@ -7,6 +7,7 @@ import {
   updateDoc,
   getDocs,
   query,
+  deleteDoc,
   DocumentData,
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -352,7 +353,8 @@ export const readProductos = async (
 
       return snapshot.docs.map((doc) => {
         const data = doc.data();
-        const productoProps: ProductoProps = {
+        const productoProps: ProductoProps & { id?: string } = {
+          id: doc.id, // Añadir el ID del documento
           name: data.name,
           description: data.description,
           price: data.price,
@@ -372,4 +374,154 @@ export const readProductos = async (
 
   // Aplanar los datos y devolverlos como un array
   return fetchedData.flat();
+};
+
+/**
+ * Actualiza un material existente
+ * @param materialData Datos actualizados del material
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ */
+export const updateMaterial = async (
+  materialData: MaterialProps,
+  isAnhelo: boolean,
+  empresaId?: string
+): Promise<void> => {
+  if (!materialData.id) {
+    throw new Error("ID de material requerido para actualizar");
+  }
+
+  const firestore = getFirestore();
+  let materialRef;
+
+  if (isAnhelo) {
+    materialRef = doc(firestore, "materiales", materialData.id);
+  } else {
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+    materialRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "materiales",
+      materialData.id
+    );
+  }
+
+  // Crear una versión sin el ID para actualizar
+  const { id, ...dataToUpdate } = materialData;
+
+  await updateDoc(materialRef, dataToUpdate);
+};
+
+/**
+ * Elimina un material existente
+ * @param materialId ID del material a eliminar
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ */
+export const deleteMaterial = async (
+  materialId: string,
+  isAnhelo: boolean,
+  empresaId?: string
+): Promise<void> => {
+  const firestore = getFirestore();
+  let materialRef;
+
+  if (isAnhelo) {
+    materialRef = doc(firestore, "materiales", materialId);
+  } else {
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+    materialRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "materiales",
+      materialId
+    );
+  }
+
+  await deleteDoc(materialRef);
+};
+
+/**
+ * Actualiza un producto existente
+ * @param productoData Datos actualizados del producto
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ */
+export const updateProducto = async (
+  productoData: ProductoProps & { id?: string },
+  isAnhelo: boolean,
+  empresaId?: string
+): Promise<void> => {
+  if (!productoData.id) {
+    throw new Error("ID de producto requerido para actualizar");
+  }
+
+  const firestore = getFirestore();
+  let productoRef;
+
+  if (isAnhelo) {
+    productoRef = doc(firestore, "burgers", productoData.id);
+  } else {
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+    productoRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "productos",
+      productoData.id
+    );
+  }
+
+  // Crear una versión sin el ID para actualizar
+  const { id, ...dataToUpdate } = productoData;
+
+  await updateDoc(productoRef, dataToUpdate);
+};
+
+/**
+ * Elimina un producto existente
+ * @param productoId ID del producto a eliminar
+ * @param isAnhelo Indicador si es la empresa ANHELO o no
+ * @param empresaId ID de la empresa (necesario para empresas que no son ANHELO)
+ */
+export const deleteProducto = async (
+  productoId: string,
+  isAnhelo: boolean,
+  empresaId?: string
+): Promise<void> => {
+  const firestore = getFirestore();
+  let productoRef;
+
+  if (isAnhelo) {
+    productoRef = doc(firestore, "burgers", productoId);
+  } else {
+    if (!empresaId) {
+      throw new Error(
+        "ID de empresa requerido para empresas que no son ANHELO"
+      );
+    }
+    productoRef = doc(
+      firestore,
+      "absoluteClientes",
+      empresaId,
+      "productos",
+      productoId
+    );
+  }
+
+  await deleteDoc(productoRef);
 };
