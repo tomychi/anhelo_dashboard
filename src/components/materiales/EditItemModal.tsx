@@ -7,6 +7,8 @@ import {
 import currencyFormat from "../../helpers/currencyFormat";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import ImageUpload from "./ImageUpload";
+import { uploadImage } from "../../firebase/storageService";
 
 interface EditItemModalProps {
   isOpen: boolean;
@@ -51,12 +53,19 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   const [loadingMateriales, setLoadingMateriales] = useState(false);
   const [totalCosto, setTotalCosto] = useState(0);
 
+  // Estados para imágenes
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   // Configurar animación al abrir y cargar datos
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
       setCurrentTranslate(0);
       setFormData(item);
+      setSelectedImage(null);
+      setUploadProgress(0);
 
       // Determinar si es un producto compuesto (tiene materiales)
       if (
@@ -134,6 +143,63 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
       }));
     }
   }, [materialesSeleccionados, isProductoCompuesto]);
+
+  // Funciones para manejo de imágenes
+  const handleImageSelected = (file: File) => {
+    setSelectedImage(file);
+  };
+
+  const handleCancelImage = () => {
+    setSelectedImage(null);
+    // Si queremos eliminar la imagen actual del formData
+    if (itemType === "producto") {
+      setFormData((prev) => ({
+        ...prev,
+        img: "",
+      }));
+    }
+  };
+
+  // Subir imagen a Firebase Storage
+  const uploadSelectedImage = async (): Promise<string | null> => {
+    if (!selectedImage) return null;
+
+    setUploadingImage(true);
+    setUploadProgress(0);
+
+    try {
+      // Usar una ruta única y simple para todas las imágenes
+      const path = "productos";
+      console.log("Intentando subir imagen a:", path);
+
+      // Simular progreso
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 300);
+
+      // Subir imagen
+      const imageUrl = await uploadImage(selectedImage, path);
+      console.log("URL recibida de uploadImage:", imageUrl);
+
+      // Finalizar progreso
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      return imageUrl;
+    } catch (error) {
+      console.error("Error al subir imagen:", error);
+      setError("Error al subir imagen. Por favor, inténtalo de nuevo.");
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   // Gestión de arrastre para el gesto de cierre
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -275,6 +341,25 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     setError("");
 
     try {
+      // Crear una copia del formData que podamos modificar
+      let updatedFormData = { ...formData };
+
+      // Subir imagen si se ha seleccionado una
+      if (selectedImage && itemType === "producto") {
+        const imageUrl = await uploadSelectedImage();
+
+        if (imageUrl) {
+          // Actualizar la URL de la imagen en nuestra copia local
+          updatedFormData = {
+            ...updatedFormData,
+            img: imageUrl,
+          };
+
+          console.log("URL de imagen obtenida:", imageUrl);
+          console.log("FormData actualizado con imagen:", updatedFormData);
+        }
+      }
+
       // Si es un producto compuesto, actualizar los materiales
       if (itemType === "producto" && isProductoCompuesto) {
         // Verificar que tenga al menos un material
@@ -290,18 +375,21 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
           materialesObj[item.nombre] = item.cantidad;
         });
 
-        // Actualizar el formData con los materiales y el costo calculado
-        const updatedData = {
-          ...formData,
+        // Actualizar con los materiales y el costo calculado
+        updatedFormData = {
+          ...updatedFormData,
           materiales: materialesObj,
           costo: totalCosto,
         };
-
-        await onUpdate(updatedData);
-      } else {
-        await onUpdate(formData);
       }
 
+      // Log para depuración
+      console.log("Datos finales a guardar:", updatedFormData);
+
+      // Guardar los datos actualizados
+      await onUpdate(updatedFormData);
+
+      // Cerrar el modal después de guardar
       handleClose();
     } catch (error) {
       console.error("Error al actualizar:", error);
@@ -341,8 +429,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   // Personalizar modal según tipo de item
   const title =
     itemType === "material"
-      ? `Editando ${(item as MaterialProps).nombre}`
-      : `Editando ${(item as ProductoProps).name}`;
+      ? `Editar Material: ${(item as MaterialProps).nombre}`
+      : `Editar Producto: ${(item as ProductoProps).name}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
@@ -467,6 +555,20 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                     onChange={handleChange}
                     placeholder="Descripción"
                     required
+                  />
+                </div>
+
+                {/* Imagen del producto */}
+                <div className="section relative z-0">
+                  <p className="text-xs font-medium mb-1">
+                    Imagen del producto:
+                  </p>
+                  <ImageUpload
+                    currentImageUrl={formData.img}
+                    onImageSelected={handleImageSelected}
+                    onCancel={handleCancelImage}
+                    isLoading={uploadingImage}
+                    uploadProgress={uploadProgress}
                   />
                 </div>
 
