@@ -6,12 +6,17 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
-import { readEmpleados } from "../../firebase/registroEmpleados";
+import {
+  EmpleadosProps,
+  readEmpleados,
+} from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
 import { MaterialSelector } from "./MaterialSelector"; // Importamos el componente de materiales
 import { ProductoSelector } from "./ProductoSelector"; // Importamos el componente de productos
+import { AddCategoryForm } from "./AddCategoryForm"; // Importamos el componente para añadir categorías
 
 // Categoría predeterminada para mostrar los selectores de materiales y productos
 const MATERIAPRIMA_CATEGORY = "materia prima";
@@ -136,10 +141,9 @@ export const FormGasto = ({ onSuccess }) => {
   const [error, setError] = useState("");
   const [searchMaterial, setSearchMaterial] = useState("");
 
-  // Estado para los pasos (añadimos paso 0.5 para crear categoría)
+  // Estado para los pasos
   const [currentStep, setCurrentStep] = useState(1);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
   const [isAddingMaterial, setIsAddingMaterial] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
     nombre: "",
@@ -299,6 +303,30 @@ export const FormGasto = ({ onSuccess }) => {
     });
   };
 
+  const handleCategoryAdded = (newCategory) => {
+    // Actualizar el estado después de crear una nueva categoría
+    setIsCreatingCategory(false);
+
+    // Si es una categoría simple (string)
+    if (typeof newCategory === "string") {
+      setFormData((prev) => ({
+        ...prev,
+        category: newCategory,
+      }));
+    }
+    // Si es una categoría recurrente (objeto)
+    else if (typeof newCategory === "object") {
+      const categoryName = Object.keys(newCategory)[0];
+      const firstItem = newCategory[categoryName][0];
+
+      setFormData((prev) => ({
+        ...prev,
+        category: categoryName,
+        name: firstItem,
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
@@ -393,14 +421,23 @@ export const FormGasto = ({ onSuccess }) => {
 
       <div className="items-center w-full justify-center rounded-md">
         <div className="item-section w-full flex flex-col gap-2">
-          {/* Paso 0.5: Crear nueva categoría */}
+          {/* Formulario para crear nueva categoría */}
           {isCreatingCategory && (
+            <AddCategoryForm
+              onCancel={() => setIsCreatingCategory(false)}
+              onSuccess={handleCategoryAdded}
+              empresaId={empresaId}
+            />
+          )}
+
+          {/* Formulario para agregar un nuevo material */}
+          {isAddingMaterial && (
             <div className="px-4">
-              <p className="text-2xl mx-4 my-2 text-center">Nueva categoría</p>
+              <p className="text-2xl mx-4 my-2 text-center">Nuevo material</p>
 
               <div
                 className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
-                onClick={() => setIsCreatingCategory(false)}
+                onClick={() => setIsAddingMaterial(false)}
               >
                 <img
                   src={arrow}
@@ -574,27 +611,32 @@ export const FormGasto = ({ onSuccess }) => {
               )}
 
               <div className="px-4 flex flex-col gap-2">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={formData.name}
-                  onChange={handleNameChange}
-                  placeholder="Nombre del item"
-                  required
-                  autoComplete="off"
-                />
+                {/* Solo mostrar los campos de nombre y descripción si no es una categoría con ítems recurrentes */}
+                {!formData.name && (
+                  <>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                      value={formData.name}
+                      onChange={handleNameChange}
+                      placeholder="Nombre del item"
+                      required
+                      autoComplete="off"
+                    />
 
-                <input
-                  type="text"
-                  id="description"
-                  name="description"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={formData.description}
-                  placeholder="Descripción del ítem"
-                  onChange={handleChange}
-                />
+                    <input
+                      type="text"
+                      id="description"
+                      name="description"
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                      value={formData.description}
+                      placeholder="Descripción del ítem"
+                      onChange={handleChange}
+                    />
+                  </>
+                )}
               </div>
             </>
           )}
