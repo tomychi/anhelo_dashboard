@@ -402,7 +402,7 @@ export const CategoriaSelector = ({
           {/* Mostrar ítems recurrentes si la categoría seleccionada tiene ítems */}
           {showRecurringItems && selectedRecurringItems.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm my-2 px-4">Selecciona un ítem</p>
+              <p className="text-xl my-2 px-4">Selecciona un ítem</p>
               <div className="flex flex-row px-4 gap-2 overflow-x-auto">
                 {selectedRecurringItems.map((item, index) => (
                   <div
