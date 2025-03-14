@@ -13,6 +13,7 @@ export const CategoriaSelector = ({
   formData,
   setFormData,
   onAddCategory, // Prop para manejar "Agregar categoría"
+  onCategoryTypeChange, // Nueva prop para informar si la categoría es recurrente
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,16 +95,30 @@ export const CategoriaSelector = ({
             }));
 
             // Si es una categoría recurrente, también configuramos el array de items
+            // y notificamos al componente padre
             if (typeof firstCategory === "object") {
               setSelectedRecurringItems(firstCategory[categoryValue]);
               setShowRecurringItems(true);
+              if (onCategoryTypeChange) {
+                onCategoryTypeChange(true);
+              }
+            } else {
+              if (onCategoryTypeChange) {
+                onCategoryTypeChange(false);
+              }
             }
+          } else {
+            // Verificar si la categoría seleccionada es recurrente
+            checkAndSetRecurringType(formData.category, categoriesFromDB);
           }
         }
       } catch (error) {
         console.error("Error al cargar categorías:", error);
         // En caso de error, al menos asegurarnos de que "materia prima" esté disponible
         setCategories([DEFAULT_CATEGORY]);
+        if (onCategoryTypeChange) {
+          onCategoryTypeChange(false);
+        }
       } finally {
         setLoading(false);
       }
@@ -115,8 +130,34 @@ export const CategoriaSelector = ({
       // Si no hay empresaId, al menos ponemos la categoría predeterminada
       setCategories([DEFAULT_CATEGORY]);
       setLoading(false);
+      if (onCategoryTypeChange) {
+        onCategoryTypeChange(false);
+      }
     }
   }, [empresaId, isAnhelo]);
+
+  // Función para verificar si la categoría seleccionada es recurrente
+  const checkAndSetRecurringType = (categoryName, categoryArray) => {
+    for (const category of categoryArray) {
+      if (typeof category === "object") {
+        const key = Object.keys(category)[0];
+        if (key === categoryName) {
+          setSelectedRecurringItems(category[key]);
+          setShowRecurringItems(true);
+          if (onCategoryTypeChange) {
+            onCategoryTypeChange(true);
+          }
+          return;
+        }
+      }
+    }
+
+    // Si llegamos aquí, no es una categoría recurrente
+    setShowRecurringItems(false);
+    if (onCategoryTypeChange) {
+      onCategoryTypeChange(false);
+    }
+  };
 
   // Verificar si una categoría existe en el array (incluyendo objetos)
   const isCategoryInArray = (categoryName, categoryArray) => {
@@ -185,15 +226,18 @@ export const CategoriaSelector = ({
     // Determinar si es una categoría simple o recurrente
     let categoryName;
     let items = [];
+    let isRecurring = false;
 
     if (typeof category === "string") {
       categoryName = category;
       setShowRecurringItems(false);
+      isRecurring = false;
     } else if (typeof category === "object") {
       categoryName = Object.keys(category)[0];
       items = category[categoryName];
       setSelectedRecurringItems(items);
       setShowRecurringItems(true);
+      isRecurring = true;
     }
 
     // Actualizar formData
@@ -208,6 +252,17 @@ export const CategoriaSelector = ({
         ...prev,
         name: items[0], // Seleccionar el primer item por defecto
       }));
+    } else {
+      // Si no es recurrente, limpiar el nombre
+      setFormData((prev) => ({
+        ...prev,
+        name: "",
+      }));
+    }
+
+    // Notificar al componente padre si la categoría es recurrente
+    if (onCategoryTypeChange) {
+      onCategoryTypeChange(isRecurring);
     }
   };
 

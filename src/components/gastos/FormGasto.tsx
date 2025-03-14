@@ -130,16 +130,14 @@ const formatDateForDB = (dateString) => {
 
 // Componente FormGasto modificado
 export const FormGasto = ({ onSuccess }) => {
-  const currentUserEmail = projectAuth.currentUser?.email;
   const [unidadPorPrecio, setUnidadPorPrecio] = useState(0);
   const { materiales } = useSelector((state) => state.materials);
-  const [file, setFile] = useState(null);
-  const [empleados, setEmpleados] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
+  const [isRecurringCategory, setIsRecurringCategory] = useState(false);
+
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchMaterial, setSearchMaterial] = useState("");
 
   // Estado para los pasos
   const [currentStep, setCurrentStep] = useState(1);
@@ -578,6 +576,9 @@ export const FormGasto = ({ onSuccess }) => {
                 formData={formData}
                 setFormData={setFormData}
                 onAddCategory={() => setIsCreatingCategory(true)}
+                onCategoryTypeChange={(isRecurring) =>
+                  setIsRecurringCategory(isRecurring)
+                }
               />
 
               {/* Mostramos los selectores de materiales y productos solo si la categoría es "materia prima" */}
@@ -611,32 +612,37 @@ export const FormGasto = ({ onSuccess }) => {
               )}
 
               <div className="px-4 flex flex-col gap-2">
-                {/* Solo mostrar los campos de nombre y descripción si no es una categoría con ítems recurrentes */}
-                {!formData.name && (
-                  <>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                      value={formData.name}
-                      onChange={handleNameChange}
-                      placeholder="Nombre del item"
-                      required
-                      autoComplete="off"
-                    />
+                {/* Solo mostrar los campos si:
+      - No es una categoría recurrente (ya tiene nombre automáticamente)
+      - No es materia prima (ya tiene materiales y productos) 
+      - O si no tiene nombre seleccionado y necesita uno */}
+                {!isRecurringCategory &&
+                  formData.category !== MATERIAPRIMA_CATEGORY &&
+                  !formData.name && (
+                    <>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                        value={formData.name}
+                        onChange={handleNameChange}
+                        placeholder="Nombre del item"
+                        required
+                        autoComplete="off"
+                      />
 
-                    <input
-                      type="text"
-                      id="description"
-                      name="description"
-                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                      value={formData.description}
-                      placeholder="Descripción del ítem"
-                      onChange={handleChange}
-                    />
-                  </>
-                )}
+                      <input
+                        type="text"
+                        id="description"
+                        name="description"
+                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                        value={formData.description}
+                        placeholder="Descripción del ítem"
+                        onChange={handleChange}
+                      />
+                    </>
+                  )}
               </div>
             </>
           )}
