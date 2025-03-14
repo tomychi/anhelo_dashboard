@@ -385,7 +385,6 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 1: Detalles básicos */}
           {currentStep === 1 && (
             <>
-              <FileUpload onFileSelect={handleFileSelect} />
               {!isMarketingUser && (
                 <div className="section w-full relative mb-4 z-0">
                   <p className="text-xs mb-2 font-light">
@@ -536,6 +535,8 @@ export const FormGasto = ({ onSuccess }) => {
           {/* Paso 3: Estado y fecha */}
           {currentStep === 3 && (
             <>
+              <FileUpload onFileSelect={handleFileSelect} />
+
               <div className="section w-full relative z-0">
                 <select
                   id="estado"
