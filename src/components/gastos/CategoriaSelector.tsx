@@ -20,6 +20,8 @@ export const CategoriaSelector = ({
   const [loading, setLoading] = useState(true);
   const [selectedRecurringItems, setSelectedRecurringItems] = useState([]);
   const [showRecurringItems, setShowRecurringItems] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // Añadido para búsqueda
+  const [filteredCategories, setFilteredCategories] = useState([]); // Añadido para búsqueda
 
   const auth = useSelector((state: RootState) => state.auth);
   const empresaId =
@@ -144,6 +146,46 @@ export const CategoriaSelector = ({
       }
     }
   }, [empresaId, isAnhelo]);
+
+  // Filtrar categorías basadas en término de búsqueda
+  useEffect(() => {
+    // Ordenar categorías antes de filtrar
+    const sortedCats = [...categories].sort((a, b) => {
+      // "materia prima" siempre va primero
+      if (typeof a === "string" && a === DEFAULT_CATEGORY) return -1;
+      if (typeof b === "string" && b === DEFAULT_CATEGORY) return 1;
+
+      // Categorías recurrentes (objetos) van después de "materia prima" pero antes que otras
+      if (
+        typeof a === "object" &&
+        typeof b === "string" &&
+        b !== DEFAULT_CATEGORY
+      )
+        return -1;
+      if (
+        typeof b === "object" &&
+        typeof a === "string" &&
+        a !== DEFAULT_CATEGORY
+      )
+        return 1;
+
+      // Para el resto, mantener el orden original
+      return 0;
+    });
+
+    if (!searchTerm) {
+      // Si no hay término de búsqueda, mostramos todas las categorías ordenadas
+      setFilteredCategories(sortedCats);
+    } else {
+      // Filtrar por término de búsqueda
+      const filtered = sortedCats.filter((category) => {
+        const categoryName =
+          typeof category === "object" ? Object.keys(category)[0] : category;
+        return categoryName.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      setFilteredCategories(filtered);
+    }
+  }, [categories, searchTerm]);
 
   // Función para verificar si la categoría seleccionada es recurrente
   const checkAndSetRecurringType = (categoryName, categoryArray) => {
@@ -306,29 +348,6 @@ export const CategoriaSelector = ({
     return formData.category; // Fallback
   };
 
-  const sortedCategories = [...categories].sort((a, b) => {
-    // "materia prima" siempre va primero
-    if (typeof a === "string" && a === DEFAULT_CATEGORY) return -1;
-    if (typeof b === "string" && b === DEFAULT_CATEGORY) return 1;
-
-    // Categorías recurrentes (objetos) van después de "materia prima" pero antes que otras
-    if (
-      typeof a === "object" &&
-      typeof b === "string" &&
-      b !== DEFAULT_CATEGORY
-    )
-      return -1;
-    if (
-      typeof b === "object" &&
-      typeof a === "string" &&
-      a !== DEFAULT_CATEGORY
-    )
-      return 1;
-
-    // Para el resto, mantener el orden original
-    return 0;
-  });
-
   return (
     <div className="section w-full relative mb-4 z-0">
       <p className="text-xl my-2 px-4 ">Categoría</p>
@@ -360,6 +379,33 @@ export const CategoriaSelector = ({
         </div>
       ) : (
         <div>
+          {/* Buscador de categorías */}
+          <div className="px-4 mb-3">
+            <div className="flex items-center w-full h-10 gap-1 rounded-lg border border-gray-300 focus:ring-0 font-coolvetica text-black text-xs font-light">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="h-6 ml-1.5 mb-0.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar categoría"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-transparent outline-none"
+              />
+            </div>
+          </div>
+
           {/* Lista de categorías existentes */}
           <div className="flex flex-row px-4 gap-2 overflow-x-auto">
             {/* Botón para agregar nueva categoría */}
@@ -382,7 +428,7 @@ export const CategoriaSelector = ({
               Agregar
             </div>
 
-            {sortedCategories.map((category, index) => {
+            {filteredCategories.map((category, index) => {
               // Determinar si es una categoría simple o recurrente
               const isObject = typeof category === "object";
               const categoryName = isObject
