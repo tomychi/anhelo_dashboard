@@ -99,6 +99,7 @@ export const CategoriaSelector = ({
             console.log(`Categoría "${DEFAULT_CATEGORY}" añadida localmente`);
           }
 
+          console.log("[DEBUG] Categorías cargadas:", updatedCategories);
           setCategories(updatedCategories);
 
           // Si la categoría seleccionada no está en la lista, seleccionamos la primera
@@ -112,6 +113,10 @@ export const CategoriaSelector = ({
                 ? Object.keys(firstCategory)[0]
                 : firstCategory;
 
+            console.log(
+              "[DEBUG] Seleccionando primera categoría:",
+              categoryValue
+            );
             setFormData((prev) => ({
               ...prev,
               category: categoryValue,
@@ -134,6 +139,9 @@ export const CategoriaSelector = ({
               }
               // Si es "otros", mostrar inputs personalizados
               if (categoryValue === OTHERS_CATEGORY && onShowCustomInputs) {
+                console.log(
+                  "[DEBUG] Activando inputs personalizados al cargar 'otros'"
+                );
                 onShowCustomInputs(true);
               } else if (onShowCustomInputs) {
                 onShowCustomInputs(false);
@@ -145,6 +153,9 @@ export const CategoriaSelector = ({
 
             // Verificar si la categoría seleccionada es "otros"
             if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+              console.log(
+                "[DEBUG] Activando inputs personalizados porque ya tenía seleccionado 'otros'"
+              );
               onShowCustomInputs(true);
             } else if (onShowCustomInputs) {
               onShowCustomInputs(false);
@@ -249,11 +260,15 @@ export const CategoriaSelector = ({
   const checkAndSetRecurringType = (categoryName, categoryArray) => {
     // Para la categoría "otros", siempre mostrar inputs personalizados
     if (categoryName === OTHERS_CATEGORY) {
+      console.log("[DEBUG] checkAndSetRecurringType: Es categoría 'otros'");
       setShowRecurringItems(false);
       if (onCategoryTypeChange) {
         onCategoryTypeChange(false);
       }
       if (onShowCustomInputs) {
+        console.log(
+          "[DEBUG] checkAndSetRecurringType: Activando inputs personalizados"
+        );
         onShowCustomInputs(true);
       }
       return;
@@ -300,6 +315,16 @@ export const CategoriaSelector = ({
 
   // Función para guardar una categoría predeterminada en la base de datos si no existe
   const saveDefaultCategoryIfNeeded = async (categoryName) => {
+    console.log(
+      "[DEBUG] saveDefaultCategoryIfNeeded llamado con:",
+      categoryName
+    );
+    console.log("[DEBUG] empresaId existe:", !!empresaId);
+    console.log(
+      "[DEBUG] Categoría en categories:",
+      isCategoryInArray(categoryName, categories)
+    );
+
     if (!empresaId) return;
 
     // Solo ejecutamos esto si están usando una categoría predeterminada y no está en la BD
@@ -308,6 +333,7 @@ export const CategoriaSelector = ({
       !isCategoryInArray(categoryName, categories)
     ) {
       try {
+        console.log("[DEBUG] Intentando guardar categoría:", categoryName);
         const firestore = getFirestore();
         const docRef = doc(firestore, "absoluteClientes", empresaId);
 
@@ -328,6 +354,12 @@ export const CategoriaSelector = ({
         if (!isCategoryInArray(categoryName, existingCategories)) {
           const updatedCategories = [categoryName, ...existingCategories];
 
+          console.log("[DEBUG] Intentando guardar en Firestore:", {
+            categoryName,
+            existingCategories,
+            updatedCategories,
+          });
+
           // Actualizar en Firestore
           await updateDoc(docRef, {
             "config.gastosCategories": updatedCategories,
@@ -336,6 +368,10 @@ export const CategoriaSelector = ({
           console.log(
             `Categoría "${categoryName}" guardada en la base de datos`
           );
+        } else {
+          console.log(
+            `[DEBUG] Categoría "${categoryName}" ya existe en la base de datos`
+          );
         }
       } catch (error) {
         console.error(`Error al guardar categoría ${categoryName}:`, error);
@@ -343,16 +379,61 @@ export const CategoriaSelector = ({
     }
   };
 
-  // Llamamos a esta función cada vez que la categoría seleccionada cambia a una predeterminada
-  useEffect(() => {
-    if (
-      (formData.category === DEFAULT_CATEGORY ||
-        formData.category === OTHERS_CATEGORY) &&
-      empresaId
-    ) {
-      saveDefaultCategoryIfNeeded(formData.category);
+  // Añade esta función después de saveDefaultCategoryIfNeeded
+  // Esta función específicamente guarda la categoría "otros" en Firestore
+  const saveOthersCategoryToFirestore = async () => {
+    if (!empresaId) return;
+
+    try {
+      console.log(
+        "[DEBUG] Guardando la categoría 'otros' directamente en Firestore"
+      );
+      const firestore = getFirestore();
+      const docRef = doc(firestore, "absoluteClientes", empresaId);
+
+      // Obtener datos actuales
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        let gastosCategories = [];
+
+        // Obtener la lista actual de categorías
+        if (data.config && data.config.gastosCategories) {
+          gastosCategories = [...data.config.gastosCategories];
+        }
+
+        // Verificar si "otros" ya existe como string simple en la BD
+        const othersExists = gastosCategories.some(
+          (cat) => typeof cat === "string" && cat === OTHERS_CATEGORY
+        );
+
+        if (!othersExists) {
+          console.log(
+            "[DEBUG] La categoría 'otros' no existe en la BD, añadiéndola"
+          );
+          gastosCategories.push(OTHERS_CATEGORY);
+
+          // Actualizar en Firestore
+          await updateDoc(docRef, {
+            "config.gastosCategories": gastosCategories,
+          });
+
+          console.log(
+            "Categoría 'otros' guardada exitosamente en la base de datos"
+          );
+        } else {
+          console.log(
+            "[DEBUG] La categoría 'otros' ya existe en la base de datos, no es necesario guardarla"
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error al guardar categoría 'otros':", error);
     }
-  }, [formData.category, empresaId]);
+  };
+
+  // ELIMINADO: useEffect que guardaba las categorías al cambiar formData.category
+  // Ahora esto será manejado al enviar el formulario en FormGasto
 
   // Manejar selección de categoría
   const handleCategorySelect = (category) => {
@@ -374,6 +455,9 @@ export const CategoriaSelector = ({
       setShowRecurringItems(true);
       isRecurring = true;
     }
+
+    console.log("[DEBUG] Categoría seleccionada:", categoryName);
+    console.log("[DEBUG] Es categoría 'otros':", isOthers);
 
     // Actualizar formData
     setFormData((prev) => ({
@@ -402,6 +486,7 @@ export const CategoriaSelector = ({
 
     // Notificar al componente padre si debe mostrar inputs personalizados
     if (onShowCustomInputs) {
+      console.log("[DEBUG] ShowCustomInputs se estableció a:", isOthers);
       onShowCustomInputs(isOthers);
     }
   };
@@ -423,8 +508,8 @@ export const CategoriaSelector = ({
   }
 
   // Para debuggear - imprimir las categorías en consola
-  console.log("Categorías disponibles:", categories);
-  console.log("Categorías filtradas:", filteredCategories);
+  console.log("[DEBUG] Categorías disponibles:", categories);
+  console.log("[DEBUG] Categorías filtradas:", filteredCategories);
 
   return (
     <div className="section w-full relative mb-4 z-0">

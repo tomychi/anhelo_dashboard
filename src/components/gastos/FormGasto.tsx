@@ -13,6 +13,7 @@ import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el compon
 import { MaterialSelector } from "./MaterialSelector"; // Importamos el componente de materiales
 import { ProductoSelector } from "./ProductoSelector"; // Importamos el componente de productos
 import { AddCategoryForm } from "./AddCategoryForm"; // Importamos el componente para añadir categorías
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
 // Categorías predeterminadas
 const MATERIAPRIMA_CATEGORY = "materia prima";
@@ -298,6 +299,7 @@ export const FormGasto = ({ onSuccess }) => {
       description: producto.description || producto.descripcion || "",
     });
   };
+
   const handleCategoryAdded = (newCategory) => {
     // Actualizar el estado después de crear una nueva categoría
     setIsCreatingCategory(false);
@@ -332,12 +334,65 @@ export const FormGasto = ({ onSuccess }) => {
     }
   };
 
+  // Nueva función para asegurar que las categorías predeterminadas estén en Firestore
+  const saveCategoryToFirestoreIfNeeded = async (categoryName) => {
+    if (!empresaId) return;
+
+    try {
+      const firestore = getFirestore();
+      const docRef = doc(firestore, "absoluteClientes", empresaId);
+
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        let gastosCategories = [];
+
+        if (data.config && data.config.gastosCategories) {
+          gastosCategories = [...data.config.gastosCategories];
+        }
+
+        // Verificar si la categoría ya existe
+        const categoryExists = gastosCategories.some(
+          (cat) => typeof cat === "string" && cat === categoryName
+        );
+
+        if (!categoryExists) {
+          if (categoryName === MATERIAPRIMA_CATEGORY) {
+            gastosCategories.unshift(categoryName); // Al principio para materia prima
+          } else {
+            gastosCategories.push(categoryName); // Al final para otros
+          }
+
+          await updateDoc(docRef, {
+            "config.gastosCategories": gastosCategories,
+          });
+
+          console.log(
+            `Categoría "${categoryName}" guardada en la base de datos`
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error al guardar categoría ${categoryName}:`, error);
+      // No interrumpimos el flujo principal si esto falla
+    }
+  };
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
+      // Primero, asegurarse de que la categoría esté en Firestore si es una predeterminada
+      if (
+        formData.category === OTHERS_CATEGORY ||
+        formData.category === MATERIAPRIMA_CATEGORY
+      ) {
+        await saveCategoryToFirestoreIfNeeded(formData.category);
+      }
+
+      // Continuar con el código original de handleSubmit
       const expenseWithId = { ...formData, id: "" };
       const result = await UploadExpense(
         expenseWithId,
@@ -584,6 +639,10 @@ export const FormGasto = ({ onSuccess }) => {
               onLoadingChange={(isLoading) => setCategoriesLoading(isLoading)}
               onShowCustomInputs={setShowCustomInputs} // Nueva prop para campos personalizados
             />
+            {console.log(
+              "[DEBUG] FormGasto - showCustomInputs cambiado a:",
+              showCustomInputs
+            )}
 
             {/* Mostramos los selectores de materiales y productos solo si la categoría es "materia prima" */}
             {!categoriesLoading &&
