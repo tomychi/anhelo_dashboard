@@ -711,7 +711,7 @@ export const FormGasto = ({ onSuccess }) => {
           )}
 
           {/* Botones de navegación */}
-          {currentStep < 3 ? (
+          {isCreatingCategory ? null : currentStep < 3 ? (
             <button
               type="button" /* Importante: type button para evitar submit */
               onClick={handleNextStep}
@@ -720,7 +720,7 @@ export const FormGasto = ({ onSuccess }) => {
               } /* Deshabilitar si no hay categoría seleccionada */
               className={`text-gray-100 w-full h-20 mt-2 rounded-lg ${!formData.category ? "bg-gray-400" : "bg-black"} text-4xl font-bold`}
             >
-              {!formData.category ? "Selecciona una categoría" : "Continuar"}
+              Continuar
             </button>
           ) : (
             <button
