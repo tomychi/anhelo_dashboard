@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+
+// Categoría predeterminada que siempre debe estar disponible
+const DEFAULT_CATEGORY = "materia prima";
 
 // Componente para mostrar y gestionar las categorías
 export const CategoriaSelector = ({
@@ -9,7 +12,7 @@ export const CategoriaSelector = ({
   onCategoryChange,
   formData,
   setFormData,
-  onAddCategory, // Nuevo prop para manejar "Agregar categoría"
+  onAddCategory, // Prop para manejar "Agregar categoría"
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,6 +63,12 @@ export const CategoriaSelector = ({
             categoriesFromDB = [];
           }
 
+          // Asegurarnos de que "materia prima" esté siempre incluida
+          if (!categoriesFromDB.includes(DEFAULT_CATEGORY)) {
+            categoriesFromDB = [DEFAULT_CATEGORY, ...categoriesFromDB];
+            console.log(`Categoría "${DEFAULT_CATEGORY}" añadida localmente`);
+          }
+
           setCategories(categoriesFromDB);
 
           // Si la categoría seleccionada no está en la lista, seleccionamos la primera
@@ -75,6 +84,8 @@ export const CategoriaSelector = ({
         }
       } catch (error) {
         console.error("Error al cargar categorías:", error);
+        // En caso de error, al menos asegurarnos de que "materia prima" esté disponible
+        setCategories([DEFAULT_CATEGORY]);
       } finally {
         setLoading(false);
       }
@@ -82,8 +93,62 @@ export const CategoriaSelector = ({
 
     if (empresaId) {
       fetchCategories();
+    } else {
+      // Si no hay empresaId, al menos ponemos la categoría predeterminada
+      setCategories([DEFAULT_CATEGORY]);
+      setLoading(false);
     }
   }, [empresaId, isAnhelo]);
+
+  // Función para guardar una categoría en la base de datos si no existe
+  const saveDefaultCategoryIfNeeded = async () => {
+    // Solo ejecutamos esto si están usando la categoría predeterminada y no está en la BD
+    if (
+      formData.category === DEFAULT_CATEGORY &&
+      !categories.includes(DEFAULT_CATEGORY)
+    ) {
+      try {
+        const firestore = getFirestore();
+        const docRef = doc(firestore, "absoluteClientes", empresaId);
+
+        // Obtener las categorías actuales
+        const docSnap = await getDoc(docRef);
+        let existingCategories = [];
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.config && data.config.gastosCategories) {
+            existingCategories = data.config.gastosCategories;
+          } else if (data.gastosCategory && data.gastosCategory.length > 0) {
+            existingCategories = data.gastosCategory;
+          }
+        }
+
+        // Añadir la categoría predeterminada si no existe
+        if (!existingCategories.includes(DEFAULT_CATEGORY)) {
+          const updatedCategories = [DEFAULT_CATEGORY, ...existingCategories];
+
+          // Actualizar en Firestore
+          await updateDoc(docRef, {
+            "config.gastosCategories": updatedCategories,
+          });
+
+          console.log(
+            `Categoría "${DEFAULT_CATEGORY}" guardada en la base de datos`
+          );
+        }
+      } catch (error) {
+        console.error("Error al guardar categoría predeterminada:", error);
+      }
+    }
+  };
+
+  // Llamamos a esta función cada vez que la categoría seleccionada cambia a "materia prima"
+  useEffect(() => {
+    if (formData.category === DEFAULT_CATEGORY && empresaId) {
+      saveDefaultCategoryIfNeeded();
+    }
+  }, [formData.category, empresaId]);
 
   if (loading) {
     return (
@@ -94,12 +159,12 @@ export const CategoriaSelector = ({
   }
 
   return (
-    <div className="section  w-full relative mb-4 z-0">
-      <p className="text-xl  my-2 px-4 ">Categoría</p>
+    <div className="section w-full relative mb-4 z-0">
+      <p className="text-xl my-2 px-4 ">Categoría</p>
 
       {categories.length === 0 ? (
-        // Mensaje cuando no hay categorías
-        <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200  rounded-lg">
+        // Mensaje cuando no hay categorías (aunque siempre debería haber al menos DEFAULT_CATEGORY)
+        <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg">
           <p className="text-gray-500 mb-4 text-center">
             No hay categorías definidas para esta empresa
           </p>
@@ -124,7 +189,7 @@ export const CategoriaSelector = ({
         </div>
       ) : (
         // Lista de categorías existentes
-        <div className="flex flex-row px-4 gap-2 overflow-x-auto ">
+        <div className="flex flex-row px-4 gap-2 overflow-x-auto">
           {/* Botón para agregar nueva categoría */}
           <div
             onClick={onAddCategory}

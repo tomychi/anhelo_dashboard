@@ -6,16 +6,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
-import {
-  EmpleadosProps,
-  readEmpleados,
-} from "../../firebase/registroEmpleados";
+import { readEmpleados } from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
 import { MaterialSelector } from "./MaterialSelector"; // Importamos el componente de materiales
-import ProductoSelector from "./ProductoSelector";
+import { ProductoSelector } from "./ProductoSelector"; // Importamos el componente de productos
+
+// Categoría predeterminada para mostrar los selectores de materiales y productos
+const MATERIAPRIMA_CATEGORY = "materia prima";
 
 // Componente FileUpload (no cambia)
 interface FileUploadProps {
@@ -135,7 +134,6 @@ export const FormGasto = ({ onSuccess }) => {
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showMaterialSelector, setShowMaterialSelector] = useState(false);
   const [searchMaterial, setSearchMaterial] = useState("");
 
   // Estado para los pasos (añadimos paso 0.5 para crear categoría)
@@ -288,7 +286,17 @@ export const FormGasto = ({ onSuccess }) => {
       unit: material.unit || "unidad",
       category: material.categoria || formData.category,
     });
-    setShowMaterialSelector(false);
+  };
+
+  const handleProductoChange = (producto) => {
+    const nombreProducto = producto.name || producto.nombre || "Sin nombre";
+    setFormData({
+      ...formData,
+      name: nombreProducto,
+      unit: producto.unit || "unidad",
+      total: producto.price || producto.precio || 0,
+      description: producto.description || producto.descripcion || "",
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -337,6 +345,9 @@ export const FormGasto = ({ onSuccess }) => {
       setLoading(false);
     }
   };
+
+  // Determinar si se deben mostrar los selectores de materiales y productos
+  const showMaterialesProductos = formData.category === MATERIAPRIMA_CATEGORY;
 
   return (
     <div className="font-coolvetica text-black">
@@ -390,123 +401,6 @@ export const FormGasto = ({ onSuccess }) => {
               <div
                 className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
                 onClick={() => setIsCreatingCategory(false)}
-              >
-                <img
-                  src={arrow}
-                  className="transform rotate-180 h-2 opacity-30"
-                  alt="Volver"
-                />
-                Volver
-              </div>
-
-              <div className="section w-full relative z-0">
-                <input
-                  type="text"
-                  id="newCategory"
-                  name="newCategory"
-                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  value={newCategory}
-                  placeholder="Nombre de la categoría"
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  autoFocus
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!newCategory.trim()) return;
-
-                  try {
-                    setLoading(true);
-                    const firestore = getFirestore();
-                    const docRef = doc(
-                      firestore,
-                      "absoluteClientes",
-                      empresaId
-                    );
-
-                    // Obtener las categorías actuales
-                    const docSnap = await getDoc(docRef);
-                    let existingCategories = [];
-
-                    if (docSnap.exists()) {
-                      const data = docSnap.data();
-                      if (data.config && data.config.gastosCategories) {
-                        existingCategories = data.config.gastosCategories;
-                      } else if (
-                        data.gastosCategory &&
-                        data.gastosCategory.length > 0
-                      ) {
-                        existingCategories = data.gastosCategory;
-                      }
-                    }
-
-                    // Añadir la nueva categoría
-                    const updatedCategories = [
-                      ...existingCategories,
-                      newCategory.toLowerCase(),
-                    ];
-
-                    // Actualizar en Firestore
-                    await updateDoc(docRef, {
-                      "config.gastosCategories": updatedCategories,
-                    });
-
-                    // Actualizar el formulario
-                    setFormData((prev) => ({
-                      ...prev,
-                      category: newCategory.toLowerCase(),
-                    }));
-
-                    // Volver al paso 1
-                    setNewCategory("");
-                    setIsCreatingCategory(false);
-
-                    Swal.fire({
-                      icon: "success",
-                      title: "Categoría creada",
-                      text: `La categoría "${newCategory}" se creó correctamente`,
-                      timer: 2000,
-                      showConfirmButton: false,
-                    });
-                  } catch (error) {
-                    console.error("Error al guardar categoría:", error);
-                    Swal.fire({
-                      icon: "error",
-                      title: "Error",
-                      text: "Hubo un problema al crear la categoría",
-                    });
-                  } finally {
-                    setLoading(false);
-                  }
-                }}
-                className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
-                disabled={!newCategory.trim() || loading}
-              >
-                {loading ? (
-                  <div className="flex justify-center w-full items-center">
-                    <div className="flex flex-row gap-1">
-                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-                    </div>
-                  </div>
-                ) : (
-                  "Guardar"
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* Formulario para agregar un nuevo material */}
-          {isAddingMaterial && (
-            <div className="px-4">
-              <p className="text-2xl mx-4 my-2 text-center">Nuevo material</p>
-
-              <div
-                className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
-                onClick={() => setIsAddingMaterial(false)}
               >
                 <img
                   src={arrow}
@@ -649,40 +543,34 @@ export const FormGasto = ({ onSuccess }) => {
                 onAddCategory={() => setIsCreatingCategory(true)}
               />
 
-              {/* Agregamos el selector de materiales */}
-              {formData.category && (
-                <MaterialSelector
-                  selectedMaterial={formData.name}
-                  onMaterialChange={handleMaterialChange}
-                  formData={formData}
-                  setFormData={setFormData}
-                  onAddMaterial={handleAddMaterial}
-                />
-              )}
+              {/* Mostramos los selectores de materiales y productos solo si la categoría es "materia prima" */}
+              {showMaterialesProductos && (
+                <>
+                  {/* Selector de materiales */}
+                  <MaterialSelector
+                    selectedMaterial={formData.name}
+                    onMaterialChange={handleMaterialChange}
+                    formData={formData}
+                    setFormData={setFormData}
+                    onAddMaterial={handleAddMaterial}
+                  />
 
-              {formData.category && (
-                <ProductoSelector
-                  selectedProducto={formData.name}
-                  onProductoChange={(producto) => {
-                    setFormData({
-                      ...formData,
-                      name: producto.name || producto.nombre,
-                      unit: producto.unit || "unidad",
-                      price: producto.price || 0,
-                      description: producto.description || "",
-                    });
-                  }}
-                  formData={formData}
-                  setFormData={setFormData}
-                  onAddProducto={() => {
-                    // Implementar lógica para añadir producto
-                    Swal.fire({
-                      title: "Función en desarrollo",
-                      text: "La creación de productos se implementará próximamente",
-                      icon: "info",
-                    });
-                  }}
-                />
+                  {/* Selector de productos (no compuestos) */}
+                  <ProductoSelector
+                    selectedProducto={formData.name}
+                    onProductoChange={handleProductoChange}
+                    formData={formData}
+                    setFormData={setFormData}
+                    onAddProducto={() => {
+                      // Implementar lógica para añadir producto
+                      Swal.fire({
+                        title: "Función en desarrollo",
+                        text: "La creación de productos se implementará próximamente",
+                        icon: "info",
+                      });
+                    }}
+                  />
+                </>
               )}
 
               <div className="px-4 flex flex-col gap-2">
@@ -822,6 +710,18 @@ export const FormGasto = ({ onSuccess }) => {
                         className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
                         value={fechaInicio}
                         onChange={(e) => setFechaInicio(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="section w-full relative z-0">
+                      <p className="text-xs mb-1 font-light">Fecha fin</p>
+                      <input
+                        type="date"
+                        id="fechaFin"
+                        name="fechaFin"
+                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                        value={fechaFin}
+                        onChange={(e) => setFechaFin(e.target.value)}
                         required
                       />
                     </div>
