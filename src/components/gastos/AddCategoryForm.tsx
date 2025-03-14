@@ -161,7 +161,8 @@ export const AddCategoryForm = ({ onCancel, onSuccess, empresaId }) => {
         />
         <label htmlFor="isRecurring" className="text-xs">
           Crear categoria con items. Ej: Para Infraestructura siempre pagas luz,
-          alquiler, agua y gas; Armarlo asi te facilitara la gestion.
+          alquiler, agua y gas; Armarlo asi te facilitara la experiencia para
+          registrarlos.
         </label>
       </div>
 
