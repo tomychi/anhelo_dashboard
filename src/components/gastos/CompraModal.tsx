@@ -111,13 +111,7 @@ export const CompraModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        <div className="flex-col space-y-2 w-full">
-          <h2 className="text-2xl mx-8 text-center font-bold mb-4">
-            Nueva Compra
-          </h2>
-
-          <FormGasto onSuccess={handleClose} />
-        </div>
+        <FormGasto onSuccess={handleClose} />
       </div>
     </div>
   );
