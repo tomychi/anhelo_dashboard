@@ -15,6 +15,7 @@ import {
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
 import { MaterialSelector } from "./MaterialSelector"; // Importamos el componente de materiales
+import ProductoSelector from "./ProductoSelector";
 
 // Componente FileUpload (no cambia)
 interface FileUploadProps {
@@ -656,6 +657,31 @@ export const FormGasto = ({ onSuccess }) => {
                   formData={formData}
                   setFormData={setFormData}
                   onAddMaterial={handleAddMaterial}
+                />
+              )}
+
+              {formData.category && (
+                <ProductoSelector
+                  selectedProducto={formData.name}
+                  onProductoChange={(producto) => {
+                    setFormData({
+                      ...formData,
+                      name: producto.name || producto.nombre,
+                      unit: producto.unit || "unidad",
+                      price: producto.price || 0,
+                      description: producto.description || "",
+                    });
+                  }}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onAddProducto={() => {
+                    // Implementar lógica para añadir producto
+                    Swal.fire({
+                      title: "Función en desarrollo",
+                      text: "La creación de productos se implementará próximamente",
+                      icon: "info",
+                    });
+                  }}
                 />
               )}
 

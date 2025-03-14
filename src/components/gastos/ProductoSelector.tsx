@@ -7,6 +7,8 @@ import {
   getDocs,
   query,
   where,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 
 // Componente para mostrar y seleccionar productos
@@ -15,12 +17,13 @@ export const ProductoSelector = ({
   onProductoChange,
   formData,
   setFormData,
-  onAddProducto, // Prop para manejar "Agregar producto"
+  onAddProducto,
 }) => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filteredProductos, setFilteredProductos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProductos, setFilteredProductos] = useState([]);
+  const [error, setError] = useState(null);
 
   const auth = useSelector((state: RootState) => state.auth);
   const empresaId =
@@ -30,24 +33,84 @@ export const ProductoSelector = ({
         ? auth.usuario?.empresaId
         : undefined;
 
-  // Cargar productos desde Firestore
+  // Para depurar: mostrar información sobre la empresa y el usuario
+  useEffect(() => {
+    console.log("Información de autenticación:", {
+      tipoUsuario: auth?.tipoUsuario,
+      usuario: auth?.usuario,
+      empresaId: empresaId,
+    });
+  }, [auth, empresaId]);
+
+  // Cargar productos específicos de esta empresa desde Firestore
   useEffect(() => {
     const fetchProductos = async () => {
       try {
         setLoading(true);
+        setError(null);
+
+        if (!empresaId) {
+          console.error("No se pudo determinar el ID de la empresa");
+          setError("No se pudo determinar la empresa actual");
+          setLoading(false);
+          return;
+        }
+
+        console.log(`Buscando productos para la empresa con ID: ${empresaId}`);
+
         const firestore = getFirestore();
-        const productosRef = collection(firestore, "productos");
-        const q = query(productosRef, where("empresaId", "==", empresaId));
 
-        const querySnapshot = await getDocs(q);
-        const productosData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        // Verificar primero si el documento de la empresa existe
+        const empresaDocRef = doc(firestore, "absoluteClientes", empresaId);
+        const empresaDoc = await getDoc(empresaDocRef);
 
+        if (!empresaDoc.exists()) {
+          console.error(
+            `No se encontró el documento de la empresa con ID: ${empresaId}`
+          );
+          setError("Empresa no encontrada");
+          setLoading(false);
+          return;
+        }
+
+        console.log("Documento de empresa encontrado:", empresaDoc.id);
+
+        // Acceder a la colección de productos dentro del documento de la empresa
+        const productosRef = collection(
+          firestore,
+          "absoluteClientes",
+          empresaId,
+          "productos"
+        );
+
+        console.log(
+          "Intentando acceder a la colección:",
+          `absoluteClientes/${empresaId}/productos`
+        );
+
+        const productosSnapshot = await getDocs(productosRef);
+        console.log("Snapshot de productos:", productosSnapshot);
+
+        if (productosSnapshot.empty) {
+          console.log("No se encontraron productos en la colección");
+          setProductos([]);
+          setLoading(false);
+          return;
+        }
+
+        const productosData = productosSnapshot.docs.map((doc) => {
+          console.log("Datos del producto:", doc.id, doc.data());
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
+
+        console.log(`Encontrados ${productosData.length} productos`);
         setProductos(productosData);
       } catch (error) {
         console.error("Error al cargar productos:", error);
+        setError(`Error: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -60,17 +123,15 @@ export const ProductoSelector = ({
 
   // Filtrar productos basados en término de búsqueda
   useEffect(() => {
-    if (productos && productos.length > 0) {
-      if (!searchTerm) {
-        // Si no hay término de búsqueda, mostrar los primeros 10 productos
-        setFilteredProductos(productos.slice(0, 10));
-      } else {
-        // Filtrar por término de búsqueda
-        const filtered = productos.filter((producto) =>
-          producto.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredProductos(filtered.slice(0, 10)); // Limitar a 10 resultados
-      }
+    if (!searchTerm) {
+      setFilteredProductos(productos);
+    } else {
+      const filtered = productos.filter(
+        (producto) =>
+          producto.name &&
+          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProductos(filtered);
     }
   }, [productos, searchTerm]);
 
@@ -78,6 +139,17 @@ export const ProductoSelector = ({
     return (
       <div className="flex justify-center">
         <div className="w-6 h-6 border-2 border-black rounded-full animate-spin border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="section w-full relative mb-4 z-0">
+        <p className="text-xl my-2 px-4">Productos</p>
+        <div className="px-4 text-red-500">
+          <p>Error al cargar productos: {error}</p>
+        </div>
       </div>
     );
   }
@@ -117,7 +189,7 @@ export const ProductoSelector = ({
         // Mensaje cuando no hay productos
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg mx-4">
           <p className="text-gray-500 mb-4 text-center">
-            No hay productos disponibles
+            No hay productos disponibles para esta empresa
           </p>
           {onAddProducto && (
             <button
@@ -173,9 +245,10 @@ export const ProductoSelector = ({
                 if (setFormData) {
                   setFormData((prev) => ({
                     ...prev,
-                    name: producto.nombre,
-                    precio: producto.precio || 0,
-                    // Puedes agregar más campos según sea necesario
+                    name: producto.name || producto.nombre,
+                    // En tus datos veo que usas "name" en lugar de "nombre"
+                    unit: producto.unit || "unidad",
+                    precio: producto.price || producto.precio || 0,
                   }));
                 }
                 if (onProductoChange) {
@@ -183,7 +256,7 @@ export const ProductoSelector = ({
                 }
               }}
               className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap flex-shrink-0 ${
-                formData?.name === producto.nombre
+                formData?.name === (producto.name || producto.nombre)
                   ? "bg-black text-gray-100"
                   : "bg-gray-200 text-black"
               }`}
@@ -200,8 +273,9 @@ export const ProductoSelector = ({
                   clipRule="evenodd"
                 />
               </svg>
-              {producto.nombre.charAt(0).toUpperCase() +
-                producto.nombre.slice(1).toLowerCase()}
+              {(producto.name || producto.nombre) &&
+                (producto.name || producto.nombre).charAt(0).toUpperCase() +
+                  (producto.name || producto.nombre).slice(1).toLowerCase()}
             </div>
           ))}
         </div>

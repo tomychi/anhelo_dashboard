@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
+import { getFirestore, collection, getDocs, doc } from "firebase/firestore";
 
 // Componente para mostrar y seleccionar materiales
 export const MaterialSelector = ({
@@ -8,29 +9,79 @@ export const MaterialSelector = ({
   onMaterialChange,
   formData,
   setFormData,
-  onAddMaterial, // Prop para manejar "Agregar material"
+  onAddMaterial,
 }) => {
-  const { materiales } = useSelector((state: RootState) => state.materials);
-  const [loading, setLoading] = useState(false);
-  const [filteredMateriales, setFilteredMateriales] = useState([]);
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMaterials, setFilteredMaterials] = useState([]);
+
+  const auth = useSelector((state: RootState) => state.auth);
+  const empresaId =
+    auth?.tipoUsuario === "empresa"
+      ? auth.usuario?.id
+      : auth?.tipoUsuario === "empleado"
+        ? auth.usuario?.empresaId
+        : undefined;
+
+  // Cargar materiales específicos para esta empresa
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        setLoading(true);
+
+        if (!empresaId) {
+          console.error("No se pudo determinar el ID de la empresa");
+          setLoading(false);
+          return;
+        }
+
+        console.log(`Buscando materiales para la empresa: ${empresaId}`);
+
+        const firestore = getFirestore();
+        // Acceder a la colección de materiales dentro del documento de la empresa
+        const materialesRef = collection(
+          firestore,
+          "absoluteClientes",
+          empresaId,
+          "materiales"
+        );
+
+        const materialesSnapshot = await getDocs(materialesRef);
+        const materialesData = materialesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        console.log(`Encontrados ${materialesData.length} materiales`);
+        setMaterials(materialesData);
+      } catch (error) {
+        console.error("Error al cargar materiales:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (empresaId) {
+      fetchMaterials();
+    }
+  }, [empresaId]);
 
   // Filtrar materiales basados en término de búsqueda
   useEffect(() => {
-    if (materiales && materiales.length > 0) {
-      if (!searchTerm) {
-        // Si no hay término de búsqueda, mostrar los primeros 10 materiales
-        setFilteredMateriales(materiales.slice(0, 10));
-      } else {
-        // Filtrar por término de búsqueda
-        const filtered = materiales.filter((material) =>
+    if (!searchTerm) {
+      // Si no hay término de búsqueda, mostramos todos los materiales
+      setFilteredMaterials(materials);
+    } else {
+      // Filtrar por término de búsqueda
+      const filtered = materials.filter(
+        (material) =>
+          material.nombre &&
           material.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredMateriales(filtered.slice(0, 10)); // Limitar a 10 resultados
-      }
-      setLoading(false);
+      );
+      setFilteredMaterials(filtered);
     }
-  }, [materiales, searchTerm]);
+  }, [materials, searchTerm]);
 
   if (loading) {
     return (
@@ -71,11 +122,11 @@ export const MaterialSelector = ({
         </div>
       </div>
 
-      {filteredMateriales.length === 0 ? (
+      {filteredMaterials.length === 0 ? (
         // Mensaje cuando no hay materiales
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg mx-4">
           <p className="text-gray-500 mb-4 text-center">
-            No hay materiales disponibles
+            No hay materiales disponibles para esta empresa
           </p>
           {onAddMaterial && (
             <button
@@ -124,7 +175,7 @@ export const MaterialSelector = ({
           )}
 
           {/* Lista de materiales */}
-          {filteredMateriales.map((material) => (
+          {filteredMaterials.map((material) => (
             <div
               key={material.id || material.nombre}
               onClick={() => {
@@ -162,8 +213,9 @@ export const MaterialSelector = ({
                   clipRule="evenodd"
                 />
               </svg>
-              {material.nombre.charAt(0).toUpperCase() +
-                material.nombre.slice(1).toLowerCase()}
+              {material.nombre &&
+                material.nombre.charAt(0).toUpperCase() +
+                  material.nombre.slice(1).toLowerCase()}
             </div>
           ))}
         </div>
