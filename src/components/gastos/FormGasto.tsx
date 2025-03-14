@@ -866,3 +866,5 @@ export const FormGasto = ({ onSuccess }) => {
     </div>
   );
 };
+
+export default FormGasto;
