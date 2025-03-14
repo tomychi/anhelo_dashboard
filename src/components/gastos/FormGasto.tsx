@@ -6,29 +6,27 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
-import {
-  CATEGORIAS,
-  UNIDADES,
-  ESTADOS,
-  ExpenseProps,
-} from "../../constants/expenses";
+import { UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
 import {
   EmpleadosProps,
   readEmpleados,
 } from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
+import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el nuevo componente
 
+// Componente FileUpload (no cambia)
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
-  const [file, setFile] = useState<File | null>(null);
+  // Contenido igual que antes...
+  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
@@ -37,12 +35,12 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -54,7 +52,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
     }
   };
 
-  const startUpload = (file: File) => {
+  const startUpload = (file) => {
     setUploading(true);
     setError(null);
 
@@ -113,31 +111,41 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
   );
 };
 
-const formatDateForInput = (dateString: string): string => {
+const formatDateForInput = (dateString) => {
   const [day, month, year] = dateString.split("/");
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
-const formatDateForDB = (dateString: string): string => {
+const formatDateForDB = (dateString) => {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
 };
 
-// Añadimos la prop onSuccess para cerrar el modal cuando se complete el formulario
+// Componente FormGasto modificado
 export const FormGasto = ({ onSuccess }) => {
   const currentUserEmail = projectAuth.currentUser?.email;
   const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
-  const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
-  const { materiales } = useSelector((state: RootState) => state.materials);
-  const [file, setFile] = useState<File | null>(null);
-  const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
+  const [unidadPorPrecio, setUnidadPorPrecio] = useState(0);
+  const { materiales } = useSelector((state) => state.materials);
+  const [file, setFile] = useState(null);
+  const [empleados, setEmpleados] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const [error, setError] = useState(""); // Estado para errores
-
-  // Estado para los pasos
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Estado inicial para formData, ahora sin categoría predeterminada
+  const [formData, setFormData] = useState({
+    description: "",
+    total: 0,
+    category: "", // Ahora lo cargaremos dinámicamente
+    fecha: obtenerFechaActual(),
+    name: "",
+    quantity: 0,
+    unit: "unidad",
+    estado: "pendiente",
+  });
 
   useEffect(() => {
     const fetchEmpleados = async () => {
@@ -147,34 +155,11 @@ export const FormGasto = ({ onSuccess }) => {
     fetchEmpleados();
   }, []);
 
-  const [formData, setFormData] = useState<Omit<ExpenseProps, "id">>({
-    description: "",
-    total: 0,
-    category: isMarketingUser ? "marketing" : "ingredientes",
-    fecha: obtenerFechaActual(), // Asumimos que esto devuelve DD/MM/YYYY
-    name: "",
-    quantity: 0,
-    unit: "unidad",
-    estado: "pendiente",
-  });
-
-  // Asegurarnos que siempre hay una categoría seleccionada
-  useEffect(() => {
-    if (!formData.category && CATEGORIAS.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        category: isMarketingUser ? "marketing" : CATEGORIAS[0],
-      }));
-    }
-  }, []);
-
   const [inputDateValue, setInputDateValue] = useState(
     formatDateForInput(obtenerFechaActual())
   );
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "total" || name === "quantity") {
@@ -202,7 +187,7 @@ export const FormGasto = ({ onSuccess }) => {
     }
   };
 
-  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (e) => {
     const inputDate = e.target.value; // Formato YYYY-MM-DD
     setInputDateValue(inputDate);
 
@@ -213,13 +198,11 @@ export const FormGasto = ({ onSuccess }) => {
     }));
   };
 
-  const handleFileSelect = (selectedFile: File) => {
+  const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
   };
 
-  const handleNameChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleNameChange = (e) => {
     const { value } = e.target;
     const selectedMaterial = materiales.find(
       (material) => material.nombre === value
@@ -250,9 +233,7 @@ export const FormGasto = ({ onSuccess }) => {
     }
   };
 
-  // Función para avanzar al siguiente paso
   const handleNextStep = () => {
-    // Validaciones según el paso actual
     if (currentStep === 1) {
       if (!formData.name || !formData.category) {
         setError("Por favor, completa todos los campos requeridos");
@@ -269,13 +250,12 @@ export const FormGasto = ({ onSuccess }) => {
     setCurrentStep(currentStep + 1);
   };
 
-  // Función para retroceder al paso anterior
   const handlePreviousStep = () => {
     setError("");
     setCurrentStep(currentStep - 1);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError("");
@@ -301,7 +281,7 @@ export const FormGasto = ({ onSuccess }) => {
       setFormData({
         description: "",
         total: 0,
-        category: isMarketingUser ? "marketing" : "ingredientes",
+        category: formData.category, // Mantener la categoría seleccionada
         fecha: currentDate,
         name: "",
         quantity: 0,
@@ -365,48 +345,19 @@ export const FormGasto = ({ onSuccess }) => {
       </div>
 
       <div className="items-center w-full justify-center rounded-md">
-        {/* Nota: cambiamos el form por un div para manejar manualmente el submit */}
         <div className="item-section w-full flex flex-col gap-2">
           {/* Paso 1: Detalles básicos */}
           {currentStep === 1 && (
             <>
-              <div className="section w-full relative mb-4 z-0">
-                <p className="text-2xl mx-4 my-2 text-center">Categoría</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {CATEGORIAS.map((category) => (
-                    <div
-                      key={category}
-                      onClick={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          category: category,
-                        }));
-                      }}
-                      className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center ${
-                        formData.category === category
-                          ? "bg-black text-gray-100"
-                          : "bg-gray-200 text-black"
-                      }`}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="h-4 mr-2"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M4.5 2A2.5 2.5 0 0 0 2 4.5v3.879a2.5 2.5 0 0 0 .732 1.767l7.5 7.5a2.5 2.5 0 0 0 3.536 0l3.878-3.878a2.5 2.5 0 0 0 0-3.536l-7.5-7.5A2.5 2.5 0 0 0 8.38 2H4.5ZM5 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-
-                      {category.charAt(0).toUpperCase() +
-                        category.slice(1).toLowerCase()}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Usamos el nuevo componente de categorías */}
+              <CategoriaSelector
+                selectedCategory={formData.category}
+                onCategoryChange={(category) =>
+                  setFormData((prev) => ({ ...prev, category }))
+                }
+                formData={formData}
+                setFormData={setFormData}
+              />
 
               {formData.category === "cocina y produccion" ? (
                 <select
@@ -480,6 +431,7 @@ export const FormGasto = ({ onSuccess }) => {
             </>
           )}
 
+          {/* Resto de los pasos permanecen iguales */}
           {/* Paso 2: Cantidades */}
           {currentStep === 2 && (
             <>
