@@ -76,7 +76,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
 
   return (
     <div
-      className="w-full h-64 border-2 border-dashed border-gray-200  rounded-lg flex flex-col items-center justify-center cursor-pointer"
+      className="w-full h-48 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center cursor-pointer"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onClick={() => document.getElementById("fileInput")?.click()}
@@ -124,7 +124,8 @@ const formatDateForDB = (dateString: string): string => {
   return `${day}/${month}/${year}`;
 };
 
-export const FormGasto = () => {
+// Añadimos la prop onSuccess para cerrar el modal cuando se complete el formulario
+export const FormGasto = ({ onSuccess }) => {
   const currentUserEmail = projectAuth.currentUser?.email;
   const isMarketingUser = currentUserEmail === "marketing@anhelo.com";
   const [unidadPorPrecio, setUnidadPorPrecio] = useState<number>(0);
@@ -133,6 +134,7 @@ export const FormGasto = () => {
   const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
+  const [loading, setLoading] = useState(false); // Añadimos estado de carga
 
   useEffect(() => {
     const fetchEmpleados = async () => {
@@ -236,6 +238,7 @@ export const FormGasto = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const expenseWithId = { ...formData, id: "" };
@@ -268,6 +271,9 @@ export const FormGasto = () => {
       setFechaInicio("");
       setFechaFin("");
       setFile(null);
+
+      // Llamamos a onSuccess para cerrar el modal
+      if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error en el proceso:", error);
       Swal.fire({
@@ -275,13 +281,15 @@ export const FormGasto = () => {
         title: "Error",
         text: `Hubo un error al cargar el gasto: ${error}`,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
+      className="items-center w-full justify-center rounded-md font-coolvetica text-black"
     >
       <div className="item-section w-full flex flex-col gap-2">
         <FileUpload onFileSelect={handleFileSelect} />
@@ -327,7 +335,7 @@ export const FormGasto = () => {
             <select
               id="name"
               name="name"
-              className="custo m-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
               value={formData.name}
               onChange={handleNameChange}
               required
@@ -473,10 +481,23 @@ export const FormGasto = () => {
         <button
           type="submit"
           className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+          disabled={loading}
         >
-          Guardar
+          {loading ? (
+            <div className="flex justify-center w-full items-center">
+              <div className="flex flex-row gap-1">
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+              </div>
+            </div>
+          ) : (
+            "Guardar"
+          )}
         </button>
       </div>
     </form>
   );
 };
+
+export default FormGasto;

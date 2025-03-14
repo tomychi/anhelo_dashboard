@@ -3,10 +3,10 @@ import currencyFormat from "../helpers/currencyFormat";
 import Calendar from "../components/Calendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
-import { NavLink } from "react-router-dom";
 import { projectAuth } from "../firebase/config";
 import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
 import arrow from "../assets/arrowIcon.png";
+import { CompraModal } from "../components/gastos/CompraModal"; // Importamos el modal
 
 export const Gastos: React.FC = () => {
   const { expenseData } = useSelector((state: RootState) => state.data);
@@ -18,7 +18,7 @@ export const Gastos: React.FC = () => {
     : expenseData;
   const [expenses, setExpenses] = useState<ExpenseProps[]>(filteredExpenseData);
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Estado para el modal
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -134,10 +134,10 @@ export const Gastos: React.FC = () => {
       </style>
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
         <p className="text-black font-bold text-4xl mt-1">Gastos</p>
-        <NavLink
+        {/* Modificamos el botón para que abra el modal en lugar de navegar */}
+        <button
           className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
           onClick={toggleModal}
-          to={"/nuevaCompra"}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -148,8 +148,11 @@ export const Gastos: React.FC = () => {
             <path d="M12.378 1.602a.75.75 0 0 0-.756 0L3 6.632l9 5.25 9-5.25-8.622-5.03ZM21.75 7.93l-9 5.25v9l8.628-5.032a.75.75 0 0 0 .372-.648V7.93ZM11.25 22.18v-9l-9-5.25v8.57a.75.75 0 0 0 .372.648l8.628 5.033Z" />
           </svg>
           <p className="font-bold ">Nueva compra</p>
-        </NavLink>
+        </button>
       </div>
+
+      {/* Agregamos el modal de compra */}
+      <CompraModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
       <div className=" px-4 pb-8">
         <Calendar />
