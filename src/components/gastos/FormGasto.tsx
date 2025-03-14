@@ -130,14 +130,18 @@ const formatDateForDB = (dateString) => {
 
 // Componente FormGasto modificado
 export const FormGasto = ({ onSuccess }) => {
+  const currentUserEmail = projectAuth.currentUser?.email;
   const [unidadPorPrecio, setUnidadPorPrecio] = useState(0);
   const { materiales } = useSelector((state) => state.materials);
+  const [file, setFile] = useState(null);
+  const [empleados, setEmpleados] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
-  const [isRecurringCategory, setIsRecurringCategory] = useState(false);
-
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchMaterial, setSearchMaterial] = useState("");
+  const [isRecurringCategory, setIsRecurringCategory] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Estado para los pasos
   const [currentStep, setCurrentStep] = useState(1);
@@ -311,6 +315,7 @@ export const FormGasto = ({ onSuccess }) => {
         ...prev,
         category: newCategory,
       }));
+      setIsRecurringCategory(false);
     }
     // Si es una categoría recurrente (objeto)
     else if (typeof newCategory === "object") {
@@ -322,6 +327,7 @@ export const FormGasto = ({ onSuccess }) => {
         category: categoryName,
         name: firstItem,
       }));
+      setIsRecurringCategory(true);
     }
   };
 
@@ -579,6 +585,7 @@ export const FormGasto = ({ onSuccess }) => {
                 onCategoryTypeChange={(isRecurring) =>
                   setIsRecurringCategory(isRecurring)
                 }
+                onLoadingChange={(isLoading) => setCategoriesLoading(isLoading)}
               />
 
               {/* Mostramos los selectores de materiales y productos solo si la categoría es "materia prima" */}
@@ -613,10 +620,24 @@ export const FormGasto = ({ onSuccess }) => {
 
               <div className="px-4 flex flex-col gap-2">
                 {/* Solo mostrar los campos si:
+      - Las categorías terminaron de cargar
       - No es una categoría recurrente (ya tiene nombre automáticamente)
       - No es materia prima (ya tiene materiales y productos) 
-      - O si no tiene nombre seleccionado y necesita uno */}
-                {!isRecurringCategory &&
+      - No tiene nombre seleccionado y necesita uno */}
+                {console.log({
+                  categoriesLoading,
+                  isRecurringCategory,
+                  category: formData.category,
+                  isMateriaprima: formData.category === MATERIAPRIMA_CATEGORY,
+                  name: formData.name,
+                  shouldShowInputs:
+                    !categoriesLoading &&
+                    !isRecurringCategory &&
+                    formData.category !== MATERIAPRIMA_CATEGORY &&
+                    !formData.name,
+                })}
+                {!categoriesLoading &&
+                  !isRecurringCategory &&
                   formData.category !== MATERIAPRIMA_CATEGORY &&
                   !formData.name && (
                     <>

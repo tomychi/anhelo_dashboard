@@ -14,6 +14,7 @@ export const CategoriaSelector = ({
   setFormData,
   onAddCategory, // Prop para manejar "Agregar categoría"
   onCategoryTypeChange, // Nueva prop para informar si la categoría es recurrente
+  onLoadingChange, // Añadimos esta prop explícitamente
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -121,6 +122,10 @@ export const CategoriaSelector = ({
         }
       } finally {
         setLoading(false);
+        // Notificar al componente padre que la carga ha terminado
+        if (onLoadingChange) {
+          onLoadingChange(false);
+        }
       }
     };
 
@@ -130,6 +135,10 @@ export const CategoriaSelector = ({
       // Si no hay empresaId, al menos ponemos la categoría predeterminada
       setCategories([DEFAULT_CATEGORY]);
       setLoading(false);
+      // Notificar al componente padre que la carga ha terminado
+      if (onLoadingChange) {
+        onLoadingChange(false);
+      }
       if (onCategoryTypeChange) {
         onCategoryTypeChange(false);
       }
