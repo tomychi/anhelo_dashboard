@@ -158,6 +158,16 @@ export const FormGasto = ({ onSuccess }) => {
     estado: "pendiente",
   });
 
+  // Asegurarnos que siempre hay una categoría seleccionada
+  useEffect(() => {
+    if (!formData.category && CATEGORIAS.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        category: isMarketingUser ? "marketing" : CATEGORIAS[0],
+      }));
+    }
+  }, []);
+
   const [inputDateValue, setInputDateValue] = useState(
     formatDateForInput(obtenerFechaActual())
   );
@@ -379,22 +389,30 @@ export const FormGasto = ({ onSuccess }) => {
             <>
               <FileUpload onFileSelect={handleFileSelect} />
               {!isMarketingUser && (
-                <div className="section w-full relative mb-2 z-0">
-                  <select
-                    id="category"
-                    name="category"
-                    className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.category}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Seleccionar categoría</option>
+                <div className="section w-full relative mb-4 z-0">
+                  <p className="text-xs mb-2 font-light">
+                    Selecciona categoría
+                  </p>
+                  <div className="flex flex-wrap gap-2">
                     {CATEGORIAS.map((category) => (
-                      <option key={category} value={category}>
+                      <div
+                        key={category}
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            category: category,
+                          }));
+                        }}
+                        className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center ${
+                          formData.category === category
+                            ? "bg-black text-gray-100"
+                            : "bg-gray-200 text-black"
+                        }`}
+                      >
                         {category}
-                      </option>
+                      </div>
                     ))}
-                  </select>
+                  </div>
                 </div>
               )}
 
@@ -538,32 +556,40 @@ export const FormGasto = ({ onSuccess }) => {
               </div>
 
               {formData.category === "cocina y produccion" ? (
-                <div className="flex flex-row gap-2">
-                  <div className="section w-full relative z-0">
-                    <input
-                      type="date"
-                      id="fechaInicio"
-                      name="fechaInicio"
-                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                      value={fechaInicio}
-                      onChange={(e) => setFechaInicio(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="section w-full relative z-0">
-                    <input
-                      type="date"
-                      id="fechaFin"
-                      name="fechaFin"
-                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                      value={fechaFin}
-                      onChange={(e) => setFechaFin(e.target.value)}
-                      required
-                    />
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs mt-2 font-light">Selecciona período</p>
+                  <div className="flex flex-row gap-2">
+                    <div className="section w-full relative z-0">
+                      <p className="text-xs mb-1 font-light">Fecha inicio</p>
+                      <input
+                        type="date"
+                        id="fechaInicio"
+                        name="fechaInicio"
+                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                        value={fechaInicio}
+                        onChange={(e) => setFechaInicio(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="section w-full relative z-0">
+                      <p className="text-xs mb-1 font-light">Fecha fin</p>
+                      <input
+                        type="date"
+                        id="fechaFin"
+                        name="fechaFin"
+                        className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                        value={fechaFin}
+                        onChange={(e) => setFechaFin(e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
               ) : (
                 <div className="section w-full relative z-0">
+                  <p className="text-xs mt-2 mb-1 font-light">
+                    Fecha del gasto
+                  </p>
                   <input
                     type="date"
                     id="fecha"
