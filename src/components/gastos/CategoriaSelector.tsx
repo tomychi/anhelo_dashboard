@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import CategoriasModal from "./CategoriasModal"; // Importamos el nuevo modal
 
 // Componente para mostrar y gestionar las categorías
 export const CategoriaSelector = ({
@@ -10,10 +9,9 @@ export const CategoriaSelector = ({
   onCategoryChange,
   formData,
   setFormData,
+  onAddCategory, // Nuevo prop para manejar "Agregar categoría"
 }) => {
   const [categories, setCategories] = useState([]);
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
-  const [newCategory, setNewCategory] = useState("");
   const [loading, setLoading] = useState(true);
 
   const auth = useSelector((state: RootState) => state.auth);
@@ -60,12 +58,6 @@ export const CategoriaSelector = ({
           } else {
             // Si no hay categorías guardadas, inicializamos con un array vacío
             categoriesFromDB = [];
-
-            // Y lo guardamos para futuro uso (opcional, puedes comentar estas líneas)
-            // No inicializamos con valores predeterminados para que cada empresa defina sus propias categorías
-            await updateDoc(docRef, {
-              "config.gastosCategories": categoriesFromDB,
-            });
           }
 
           setCategories(categoriesFromDB);
@@ -93,42 +85,6 @@ export const CategoriaSelector = ({
     }
   }, [empresaId, isAnhelo]);
 
-  // Guardar una nueva categoría
-  const saveNewCategory = async () => {
-    if (!newCategory.trim()) return;
-
-    try {
-      setLoading(true);
-      const firestore = getFirestore();
-      const docRef = doc(firestore, "absoluteClientes", empresaId);
-
-      // Añadir la nueva categoría a las existentes
-      const updatedCategories = [...categories, newCategory.toLowerCase()];
-
-      // Actualizar en Firestore
-      await updateDoc(docRef, {
-        "config.gastosCategories": updatedCategories,
-      });
-
-      // Actualizar el estado local
-      setCategories(updatedCategories);
-
-      // Seleccionar la nueva categoría
-      setFormData((prev) => ({
-        ...prev,
-        category: newCategory.toLowerCase(),
-      }));
-
-      // Limpiar el formulario
-      setNewCategory("");
-      setIsAddingCategory(false);
-    } catch (error) {
-      console.error("Error al guardar categoría:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center">
@@ -148,7 +104,7 @@ export const CategoriaSelector = ({
             No hay categorías definidas para esta empresa
           </p>
           <button
-            onClick={() => setIsAddingCategory(true)}
+            onClick={onAddCategory}
             className="bg-black text-white font-bold py-2 px-4 rounded flex items-center"
           >
             <svg
@@ -204,7 +160,7 @@ export const CategoriaSelector = ({
 
           {/* Botón para agregar nueva categoría */}
           <div
-            onClick={() => setIsAddingCategory(true)}
+            onClick={onAddCategory}
             className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center bg-gray-100 text-black border border-dashed border-gray-400`}
           >
             <svg
@@ -223,16 +179,6 @@ export const CategoriaSelector = ({
           </div>
         </div>
       )}
-
-      {/* Nuevo modal para agregar categoría */}
-      <CategoriasModal
-        isOpen={isAddingCategory}
-        onClose={() => setIsAddingCategory(false)}
-        title="Nueva categoría"
-        newCategory={newCategory}
-        setNewCategory={setNewCategory}
-        onSave={saveNewCategory}
-      />
     </div>
   );
 };

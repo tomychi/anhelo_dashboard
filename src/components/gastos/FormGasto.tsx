@@ -6,13 +6,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
 import {
   EmpleadosProps,
   readEmpleados,
 } from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
-import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el nuevo componente
+import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
 
 // Componente FileUpload (no cambia)
 interface FileUploadProps {
@@ -20,7 +21,6 @@ interface FileUploadProps {
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
-  // Contenido igual que antes...
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -133,19 +133,31 @@ export const FormGasto = ({ onSuccess }) => {
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [currentStep, setCurrentStep] = useState(1);
 
-  // Estado inicial para formData, ahora sin categoría predeterminada
+  // Estado para los pasos (añadimos paso 0.5 para crear categoría)
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+
+  // Estado inicial para formData
   const [formData, setFormData] = useState({
     description: "",
     total: 0,
-    category: "", // Ahora lo cargaremos dinámicamente
+    category: "", // Lo cargaremos dinámicamente
     fecha: obtenerFechaActual(),
     name: "",
     quantity: 0,
     unit: "unidad",
     estado: "pendiente",
   });
+
+  const auth = useSelector((state: RootState) => state.auth);
+  const empresaId =
+    auth?.tipoUsuario === "empresa"
+      ? auth.usuario?.id
+      : auth?.tipoUsuario === "empleado"
+        ? auth.usuario?.empresaId
+        : undefined;
 
   useEffect(() => {
     const fetchEmpleados = async () => {
@@ -346,10 +358,127 @@ export const FormGasto = ({ onSuccess }) => {
 
       <div className="items-center w-full justify-center rounded-md">
         <div className="item-section w-full flex flex-col gap-2">
-          {/* Paso 1: Detalles básicos */}
-          {currentStep === 1 && (
+          {/* Paso 0.5: Crear nueva categoría */}
+          {isCreatingCategory && (
             <>
-              {/* Usamos el nuevo componente de categorías */}
+              <p className="text-2xl mx-4 my-2 text-center">Nueva categoría</p>
+
+              <div
+                className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+                onClick={() => setIsCreatingCategory(false)}
+              >
+                <img
+                  src={arrow}
+                  className="transform rotate-180 h-2 opacity-30"
+                  alt="Volver"
+                />
+                Volver
+              </div>
+
+              <div className="section w-full relative z-0">
+                <input
+                  type="text"
+                  id="newCategory"
+                  name="newCategory"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={newCategory}
+                  placeholder="Nombre de la categoría"
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  autoFocus
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!newCategory.trim()) return;
+
+                  try {
+                    setLoading(true);
+                    const firestore = getFirestore();
+                    const docRef = doc(
+                      firestore,
+                      "absoluteClientes",
+                      empresaId
+                    );
+
+                    // Obtener las categorías actuales
+                    const docSnap = await getDoc(docRef);
+                    let existingCategories = [];
+
+                    if (docSnap.exists()) {
+                      const data = docSnap.data();
+                      if (data.config && data.config.gastosCategories) {
+                        existingCategories = data.config.gastosCategories;
+                      } else if (
+                        data.gastosCategory &&
+                        data.gastosCategory.length > 0
+                      ) {
+                        existingCategories = data.gastosCategory;
+                      }
+                    }
+
+                    // Añadir la nueva categoría
+                    const updatedCategories = [
+                      ...existingCategories,
+                      newCategory.toLowerCase(),
+                    ];
+
+                    // Actualizar en Firestore
+                    await updateDoc(docRef, {
+                      "config.gastosCategories": updatedCategories,
+                    });
+
+                    // Actualizar el formulario
+                    setFormData((prev) => ({
+                      ...prev,
+                      category: newCategory.toLowerCase(),
+                    }));
+
+                    // Volver al paso 1
+                    setNewCategory("");
+                    setIsCreatingCategory(false);
+
+                    Swal.fire({
+                      icon: "success",
+                      title: "Categoría creada",
+                      text: `La categoría "${newCategory}" se creó correctamente`,
+                      timer: 2000,
+                      showConfirmButton: false,
+                    });
+                  } catch (error) {
+                    console.error("Error al guardar categoría:", error);
+                    Swal.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: "Hubo un problema al crear la categoría",
+                    });
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+                disabled={!newCategory.trim() || loading}
+              >
+                {loading ? (
+                  <div className="flex justify-center w-full items-center">
+                    <div className="flex flex-row gap-1">
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                  </div>
+                ) : (
+                  "Guardar"
+                )}
+              </button>
+            </>
+          )}
+
+          {/* Paso 1: Detalles básicos */}
+          {currentStep === 1 && !isCreatingCategory && (
+            <>
+              {/* Usamos el componente de categorías */}
               <CategoriaSelector
                 selectedCategory={formData.category}
                 onCategoryChange={(category) =>
@@ -357,20 +486,66 @@ export const FormGasto = ({ onSuccess }) => {
                 }
                 formData={formData}
                 setFormData={setFormData}
+                onAddCategory={() => setIsCreatingCategory(true)}
               />
 
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={formData.name}
-                onChange={handleNameChange}
-                placeholder="Nombre del item"
-                list={isMarketingUser ? undefined : "itemNames"}
-                required
-                autoComplete="off"
-              />
+              {formData.category === "cocina y produccion" ? (
+                <select
+                  id="name"
+                  name="name"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.name}
+                  onChange={handleNameChange}
+                  required
+                >
+                  <option value="">Seleccionar empleado</option>
+                  {empleados
+                    .filter((emp) => emp.area === "cocina")
+                    .map((empleado, index) => (
+                      <option key={index} value={empleado.name}>
+                        {empleado.name}
+                      </option>
+                    ))}
+                </select>
+              ) : formData.category === "infraestructura" ? (
+                <select
+                  id="name"
+                  name="name"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.name}
+                  onChange={handleNameChange}
+                  required
+                >
+                  <option value="">Seleccionar servicio</option>
+                  <option value="gas">Gas</option>
+                  <option value="wifi">WiFi</option>
+                  <option value="alquiler">Alquiler</option>
+                  <option value="luz">Luz</option>
+                  <option value="agua">Agua</option>
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={formData.name}
+                    onChange={handleNameChange}
+                    placeholder="Nombre del item"
+                    list={isMarketingUser ? undefined : "itemNames"}
+                    required
+                    autoComplete="off"
+                  />
+                  {!isMarketingUser && (
+                    <datalist id="itemNames">
+                      {materiales.map((material, index) => (
+                        <option key={index} value={material.nombre} />
+                      ))}
+                    </datalist>
+                  )}
+                </>
+              )}
 
               <div className="section w-full relative z-0">
                 <input
@@ -386,7 +561,6 @@ export const FormGasto = ({ onSuccess }) => {
             </>
           )}
 
-          {/* Resto de los pasos permanecen iguales */}
           {/* Paso 2: Cantidades */}
           {currentStep === 2 && (
             <>
@@ -546,7 +720,7 @@ export const FormGasto = ({ onSuccess }) => {
               } /* Deshabilitar si no hay categoría seleccionada */
               className={`text-gray-100 w-full h-20 mt-2 rounded-lg ${!formData.category ? "bg-gray-400" : "bg-black"} text-4xl font-bold`}
             >
-              Continuar
+              {!formData.category ? "Selecciona una categoría" : "Continuar"}
             </button>
           ) : (
             <button
