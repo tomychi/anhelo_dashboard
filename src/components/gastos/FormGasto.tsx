@@ -414,14 +414,6 @@ export const FormGasto = ({ onSuccess }) => {
                 </div>
               )}
 
-              <p className="text-xs mt-3 mb-1 font-light">
-                {formData.category === "cocina y produccion"
-                  ? "Selecciona empleado"
-                  : formData.category === "infraestructura"
-                    ? "Selecciona servicio"
-                    : "Nombre del item"}
-              </p>
-
               {formData.category === "cocina y produccion" ? (
                 <select
                   id="name"
@@ -481,7 +473,6 @@ export const FormGasto = ({ onSuccess }) => {
               )}
 
               <div className="section w-full relative z-0">
-                <p className="text-xs mt-3 mb-1 font-light">Descripción</p>
                 <input
                   type="text"
                   id="description"
@@ -499,7 +490,6 @@ export const FormGasto = ({ onSuccess }) => {
           {currentStep === 2 && (
             <>
               <div className="section relative z-0">
-                <p className="text-xs mb-1 font-light">Cantidad</p>
                 <input
                   type="number"
                   id="quantity"
@@ -512,7 +502,6 @@ export const FormGasto = ({ onSuccess }) => {
                 />
               </div>
               <div className="section relative z-0">
-                <p className="text-xs mt-3 mb-1 font-light">Unidad</p>
                 <select
                   id="unit"
                   name="unit"
@@ -530,7 +519,6 @@ export const FormGasto = ({ onSuccess }) => {
                 </select>
               </div>
               <div className="section w-full relative z-0">
-                <p className="text-xs mt-3 mb-1 font-light">Precio total</p>
                 <input
                   type="number"
                   id="total"
@@ -549,7 +537,6 @@ export const FormGasto = ({ onSuccess }) => {
           {currentStep === 3 && (
             <>
               <div className="section w-full relative z-0">
-                <p className="text-xs mb-1 font-light">Estado</p>
                 <select
                   id="estado"
                   name="estado"
@@ -598,9 +585,6 @@ export const FormGasto = ({ onSuccess }) => {
                 </div>
               ) : (
                 <div className="section w-full relative z-0">
-                  <p className="text-xs mt-2 mb-1 font-light">
-                    Fecha del gasto
-                  </p>
                   <input
                     type="date"
                     id="fecha"
