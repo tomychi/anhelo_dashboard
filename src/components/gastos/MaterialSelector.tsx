@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import { getFirestore, collection, getDocs, doc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 // Componente para mostrar y seleccionar materiales
 export const MaterialSelector = ({
@@ -24,6 +30,17 @@ export const MaterialSelector = ({
         ? auth.usuario?.empresaId
         : undefined;
 
+  const empresaNombre =
+    auth?.tipoUsuario === "empresa" && auth.usuario?.datosGenerales
+      ? auth.usuario.datosGenerales.nombre || ""
+      : "";
+
+  const isAnhelo = empresaNombre === "ANHELO";
+
+  console.log(
+    `Estado de empresa: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
+  );
+
   // Cargar materiales específicos para esta empresa
   useEffect(() => {
     const fetchMaterials = async () => {
@@ -36,22 +53,37 @@ export const MaterialSelector = ({
           return;
         }
 
-        console.log(`Buscando materiales para la empresa: ${empresaId}`);
-
         const firestore = getFirestore();
-        // Acceder a la colección de materiales dentro del documento de la empresa
-        const materialesRef = collection(
-          firestore,
-          "absoluteClientes",
-          empresaId,
-          "materiales"
-        );
+        let materialesData = [];
 
-        const materialesSnapshot = await getDocs(materialesRef);
-        const materialesData = materialesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        if (isAnhelo) {
+          // Para Anhelo, cargar de la colección raíz "materiales"
+          console.log("Cargando materiales para Anhelo desde colección raíz");
+          const materialesRef = collection(firestore, "materiales");
+          const materialesSnapshot = await getDocs(materialesRef);
+
+          materialesData = materialesSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+        } else {
+          // Para otras empresas, cargar de la subcolección dentro de absoluteClientes
+          console.log(
+            `Cargando materiales para empresa ${empresaId} desde absoluteClientes`
+          );
+          const materialesRef = collection(
+            firestore,
+            "absoluteClientes",
+            empresaId,
+            "materiales"
+          );
+
+          const materialesSnapshot = await getDocs(materialesRef);
+          materialesData = materialesSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+        }
 
         console.log(`Encontrados ${materialesData.length} materiales`);
         setMaterials(materialesData);
@@ -65,7 +97,7 @@ export const MaterialSelector = ({
     if (empresaId) {
       fetchMaterials();
     }
-  }, [empresaId]);
+  }, [empresaId, isAnhelo]);
 
   // Filtrar materiales basados en término de búsqueda
   useEffect(() => {
@@ -126,7 +158,7 @@ export const MaterialSelector = ({
         // Mensaje cuando no hay materiales
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg mx-4">
           <p className="text-gray-500 mb-4 text-center">
-            No hay materiales disponibles para esta empresa
+            No hay materiales disponibles
           </p>
           {onAddMaterial && (
             <button

@@ -33,14 +33,16 @@ export const ProductoSelector = ({
         ? auth.usuario?.empresaId
         : undefined;
 
-  // Para depurar: mostrar información sobre la empresa y el usuario
-  useEffect(() => {
-    console.log("Información de autenticación:", {
-      tipoUsuario: auth?.tipoUsuario,
-      usuario: auth?.usuario,
-      empresaId: empresaId,
-    });
-  }, [auth, empresaId]);
+  const empresaNombre =
+    auth?.tipoUsuario === "empresa" && auth.usuario?.datosGenerales
+      ? auth.usuario.datosGenerales.nombre || ""
+      : "";
+
+  const isAnhelo = empresaNombre === "ANHELO";
+
+  console.log(
+    `Estado de empresa para productos: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
+  );
 
   // Cargar productos específicos de esta empresa desde Firestore
   useEffect(() => {
@@ -56,58 +58,110 @@ export const ProductoSelector = ({
           return;
         }
 
-        console.log(`Buscando productos para la empresa con ID: ${empresaId}`);
+        console.log(`Buscando productos para la empresa: ${empresaId}`);
 
         const firestore = getFirestore();
+        let productosData = [];
 
-        // Verificar primero si el documento de la empresa existe
-        const empresaDocRef = doc(firestore, "absoluteClientes", empresaId);
-        const empresaDoc = await getDoc(empresaDocRef);
+        if (isAnhelo) {
+          // Para Anhelo, cargar de la colección raíz "productos"
+          console.log("Cargando productos para Anhelo desde colección raíz");
 
-        if (!empresaDoc.exists()) {
-          console.error(
-            `No se encontró el documento de la empresa con ID: ${empresaId}`
+          // Verificamos si existe la colección "productos" en la raíz
+          try {
+            const productosRef = collection(firestore, "productos");
+            const productosSnapshot = await getDocs(productosRef);
+
+            productosData = productosSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+          } catch (error) {
+            console.error("Error al cargar productos desde raíz:", error);
+
+            // Intentar con ubicación alternativa (burgers, drinks, etc.)
+            console.log(
+              "Intentando cargar desde colecciones específicas (burgers, drinks, etc.)"
+            );
+
+            // Lista de posibles colecciones de productos para Anhelo
+            const colecciones = [
+              "burgers",
+              "drinks",
+              "desserts",
+              "fries",
+              "toppings",
+            ];
+
+            for (const col of colecciones) {
+              try {
+                const colRef = collection(firestore, col);
+                const colSnapshot = await getDocs(colRef);
+
+                const colData = colSnapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+                  tipo: col, // Añadimos el tipo para identificarlo
+                }));
+
+                productosData = [...productosData, ...colData];
+                console.log(
+                  `Cargados ${colData.length} productos de la colección ${col}`
+                );
+              } catch (e) {
+                console.log(`No se pudieron cargar productos de ${col}:`, e);
+              }
+            }
+          }
+        } else {
+          // Para otras empresas, cargar de la subcolección dentro de absoluteClientes
+          const productosRef = collection(
+            firestore,
+            "absoluteClientes",
+            empresaId,
+            "productos"
           );
-          setError("Empresa no encontrada");
-          setLoading(false);
-          return;
-        }
 
-        console.log("Documento de empresa encontrado:", empresaDoc.id);
-
-        // Acceder a la colección de productos dentro del documento de la empresa
-        const productosRef = collection(
-          firestore,
-          "absoluteClientes",
-          empresaId,
-          "productos"
-        );
-
-        console.log(
-          "Intentando acceder a la colección:",
-          `absoluteClientes/${empresaId}/productos`
-        );
-
-        const productosSnapshot = await getDocs(productosRef);
-        console.log("Snapshot de productos:", productosSnapshot);
-
-        if (productosSnapshot.empty) {
-          console.log("No se encontraron productos en la colección");
-          setProductos([]);
-          setLoading(false);
-          return;
-        }
-
-        const productosData = productosSnapshot.docs.map((doc) => {
-          console.log("Datos del producto:", doc.id, doc.data());
-          return {
+          const productosSnapshot = await getDocs(productosRef);
+          productosData = productosSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          };
+          }));
+        }
+
+        // Filtrar productos que no tienen la propiedad materiales o está vacía
+        const productosFiltrados = productosData.filter((producto) => {
+          // Caso 1: No tiene la propiedad materiales
+          if (!producto.materiales) {
+            return true;
+          }
+
+          // Caso 2: materiales es un objeto vacío (no tiene propiedades)
+          if (
+            typeof producto.materiales === "object" &&
+            Object.keys(producto.materiales).length === 0
+          ) {
+            return true;
+          }
+
+          // Caso 3: materiales es un array vacío
+          if (
+            Array.isArray(producto.materiales) &&
+            producto.materiales.length === 0
+          ) {
+            return true;
+          }
+
+          // En cualquier otro caso, el producto tiene materiales y no lo incluimos
+          return false;
         });
 
-        console.log(`Encontrados ${productosData.length} productos`);
-        setProductos(productosData);
+        console.log(`Encontrados ${productosData.length} productos totales`);
+        console.log(
+          `Filtrados ${productosFiltrados.length} productos sin materiales`
+        );
+
+        setProductos(productosFiltrados);
       } catch (error) {
         console.error("Error al cargar productos:", error);
         setError(`Error: ${error.message}`);
@@ -119,18 +173,19 @@ export const ProductoSelector = ({
     if (empresaId) {
       fetchProductos();
     }
-  }, [empresaId]);
+  }, [empresaId, isAnhelo]);
 
   // Filtrar productos basados en término de búsqueda
   useEffect(() => {
     if (!searchTerm) {
+      // Si no hay término de búsqueda, mostramos todos los productos
       setFilteredProductos(productos);
     } else {
-      const filtered = productos.filter(
-        (producto) =>
-          producto.name &&
-          producto.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      // Filtrar por término de búsqueda
+      const filtered = productos.filter((producto) => {
+        const nombre = producto.name || producto.nombre || "";
+        return nombre.toLowerCase().includes(searchTerm.toLowerCase());
+      });
       setFilteredProductos(filtered);
     }
   }, [productos, searchTerm]);
@@ -156,7 +211,7 @@ export const ProductoSelector = ({
 
   return (
     <div className="section w-full relative mb-4 z-0">
-      <p className="text-xl my-2 px-4">Productos</p>
+      <p className="text-xl my-2 px-4">Productos simples</p>
 
       {/* Buscador de productos */}
       <div className="px-4 mb-3">
@@ -189,7 +244,7 @@ export const ProductoSelector = ({
         // Mensaje cuando no hay productos
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg mx-4">
           <p className="text-gray-500 mb-4 text-center">
-            No hay productos disponibles para esta empresa
+            No hay productos (no compuestos) disponibles
           </p>
           {onAddProducto && (
             <button
@@ -238,46 +293,56 @@ export const ProductoSelector = ({
           )}
 
           {/* Lista de productos */}
-          {filteredProductos.map((producto) => (
-            <div
-              key={producto.id}
-              onClick={() => {
-                if (setFormData) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    name: producto.name || producto.nombre,
-                    // En tus datos veo que usas "name" en lugar de "nombre"
-                    unit: producto.unit || "unidad",
-                    precio: producto.price || producto.precio || 0,
-                  }));
-                }
-                if (onProductoChange) {
-                  onProductoChange(producto);
-                }
-              }}
-              className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap flex-shrink-0 ${
-                formData?.name === (producto.name || producto.nombre)
-                  ? "bg-black text-gray-100"
-                  : "bg-gray-200 text-black"
-              }`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-4 mr-2"
+          {filteredProductos.map((producto) => {
+            // Determinamos el nombre a mostrar (algunos productos usan 'name' y otros 'nombre')
+            const nombreProducto =
+              producto.name || producto.nombre || "Sin nombre";
+            // Si tiene un tipo (de las colecciones específicas de Anhelo), lo añadimos
+            const tipoIndicador = producto.tipo ? ` (${producto.tipo})` : "";
+
+            return (
+              <div
+                key={producto.id}
+                onClick={() => {
+                  if (setFormData) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      name: nombreProducto,
+                      // Intentamos obtener otros campos relevantes
+                      unit: producto.unit || "unidad",
+                      total: producto.price || producto.precio || 0, // Usa total en lugar de precio para coincidir con el formData
+                      description:
+                        producto.description || producto.descripcion || "",
+                    }));
+                  }
+                  if (onProductoChange) {
+                    onProductoChange(producto);
+                  }
+                }}
+                className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap flex-shrink-0 ${
+                  formData?.name === nombreProducto
+                    ? "bg-black text-gray-100"
+                    : "bg-gray-200 text-black"
+                }`}
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10.362 1.093a.75.75 0 00-.724 0L2.523 5.018 10 9.143l7.477-4.125-7.115-3.925zM18 6.443l-7.25 4v8.25l6.862-3.786A.75.75 0 0018 14.25V6.443zm-8.75 12.25v-8.25l-7.25-4v7.807a.75.75 0 00.388.657l6.862 3.786z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              {(producto.name || producto.nombre) &&
-                (producto.name || producto.nombre).charAt(0).toUpperCase() +
-                  (producto.name || producto.nombre).slice(1).toLowerCase()}
-            </div>
-          ))}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="h-4 mr-2"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.362 1.093a.75.75 0 00-.724 0L2.523 5.018 10 9.143l7.477-4.125-7.115-3.925zM18 6.443l-7.25 4v8.25l6.862-3.786A.75.75 0 0018 14.25V6.443zm-8.75 12.25v-8.25l-7.25-4v7.807a.75.75 0 00.388.657l6.862 3.786z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {nombreProducto.charAt(0).toUpperCase() +
+                  nombreProducto.slice(1).toLowerCase()}
+                {tipoIndicador}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
