@@ -341,8 +341,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   // Personalizar modal según tipo de item
   const title =
     itemType === "material"
-      ? `Editar Material: ${(item as MaterialProps).nombre}`
-      : `Editar Producto: ${(item as ProductoProps).name}`;
+      ? `Editando ${(item as MaterialProps).nombre}`
+      : `Editando ${(item as ProductoProps).name}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
