@@ -726,31 +726,7 @@ export const CategoriaSelector = ({
           {/* Mostrar ítems recurrentes si la categoría seleccionada tiene ítems */}
           {showRecurringItems && (
             <div className="mt-4">
-              <div className="flex justify-between items-center px-4">
-                <p className="text-xl my-2">Selecciona un ítem</p>
-
-                {/* Botón para agregar ítem */}
-                {!showAddItemInput && (
-                  <button
-                    onClick={toggleAddItemInput}
-                    className="ml-2 px-3 py-1 rounded-lg text-xs flex items-center justify-center bg-black text-white"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-4 mr-1"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Agregar
-                  </button>
-                )}
-              </div>
+              <p className="text-xl my-2 px-4">Selecciona un ítem</p>
 
               {/* Input para agregar nuevo ítem */}
               {showAddItemInput && (
@@ -784,6 +760,28 @@ export const CategoriaSelector = ({
               )}
 
               <div className="flex flex-row px-4 gap-2 overflow-x-auto">
+                {/* Botón para agregar nuevo ítem (con mismo estilo que el de categorías) */}
+                {!showAddItemInput && (
+                  <div
+                    onClick={toggleAddItemInput}
+                    className="cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center bg-gray-100 text-black border border-dashed border-gray-400 whitespace-nowrap flex-shrink-0"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-4 mr-2"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Agregar
+                  </div>
+                )}
+
                 {selectedRecurringItems.map((item, index) => (
                   <div
                     key={index}
