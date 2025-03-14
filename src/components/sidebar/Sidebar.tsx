@@ -586,8 +586,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
             {(rolUsuario || "NaN").toLowerCase().charAt(0).toUpperCase() +
               (rolUsuario || "NaN").toLowerCase().slice(1)}{" "}
             en{" "}
-            {displayEmpresa.toLowerCase().charAt(0).toUpperCase() +
-              displayEmpresa.toLowerCase().slice(1)}
+            {displayEmpresa
+              .toLowerCase()
+              .split(" ")
+              .map(
+                (palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1)
+              )
+              .join(" ")}
           </div>
         </div>
 
@@ -714,8 +719,13 @@ export const Sidebar = ({ scrollContainerRef }) => {
             {(rolUsuario || "NaN").toLowerCase().charAt(0).toUpperCase() +
               (rolUsuario || "NaN").toLowerCase().slice(1)}{" "}
             en{" "}
-            {displayEmpresa.toLowerCase().charAt(0).toUpperCase() +
-              displayEmpresa.toLowerCase().slice(1)}
+            {displayEmpresa
+              .toLowerCase()
+              .split(" ")
+              .map(
+                (palabra) => palabra.charAt(0).toUpperCase() + palabra.slice(1)
+              )
+              .join(" ")}
           </div>
         </div>
         <div className="grid grid-cols-3 font-bold gap-2 px-4 pb-4 ">
