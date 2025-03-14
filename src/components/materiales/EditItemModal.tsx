@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MaterialProps, ProductoProps } from "../../firebase/Materiales";
+import {
+  MaterialProps,
+  ProductoProps,
+  readMateriales,
+} from "../../firebase/Materiales";
 import currencyFormat from "../../helpers/currencyFormat";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/configureStore";
 
 interface EditItemModalProps {
   isOpen: boolean;
@@ -19,6 +25,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   onUpdate,
   onDelete,
 }) => {
+  const auth = useSelector((state: RootState) => state.auth);
   const [isAnimating, setIsAnimating] = useState(false);
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
@@ -29,14 +36,104 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
   // Estado para formulario de edición
   const [formData, setFormData] = useState<any>(item);
 
-  // Configurar animación al abrir
+  // Estado para distinguir productos compuestos
+  const [isProductoCompuesto, setIsProductoCompuesto] = useState(false);
+
+  // Estados para edición de materiales
+  const [materialesDisponibles, setMaterialesDisponibles] = useState<
+    MaterialProps[]
+  >([]);
+  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
+  const [selectedCantidad, setSelectedCantidad] = useState<number>(1);
+  const [materialesSeleccionados, setMaterialesSeleccionados] = useState<
+    { nombre: string; cantidad: number; costo: number }[]
+  >([]);
+  const [loadingMateriales, setLoadingMateriales] = useState(false);
+  const [totalCosto, setTotalCosto] = useState(0);
+
+  // Configurar animación al abrir y cargar datos
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
       setCurrentTranslate(0);
-      setFormData(item); // Inicializar formulario con datos del item
+      setFormData(item);
+
+      // Determinar si es un producto compuesto (tiene materiales)
+      if (
+        itemType === "producto" &&
+        (item as ProductoProps).materiales &&
+        Object.keys((item as ProductoProps).materiales).length > 0
+      ) {
+        setIsProductoCompuesto(true);
+        loadMaterials();
+      } else {
+        setIsProductoCompuesto(false);
+      }
     }
-  }, [isOpen, item]);
+  }, [isOpen, item, itemType]);
+
+  // Cargar lista de materiales disponibles
+  const loadMaterials = async () => {
+    try {
+      setLoadingMateriales(true);
+
+      // Determinar si es ANHELO u otra empresa
+      const empresaNombre =
+        auth?.tipoUsuario === "empresa" && auth.usuario?.datosGenerales
+          ? auth.usuario.datosGenerales.nombre || ""
+          : "";
+
+      const isAnhelo = empresaNombre === "ANHELO";
+
+      // Determinar el ID de la empresa
+      const empresaId =
+        auth?.tipoUsuario === "empresa"
+          ? auth.usuario?.id
+          : auth?.tipoUsuario === "empleado"
+            ? auth.usuario?.empresaId
+            : undefined;
+
+      const materiales = await readMateriales(isAnhelo, empresaId);
+      setMaterialesDisponibles(materiales);
+
+      // Convertir los materiales del producto a nuestro formato interno
+      if (itemType === "producto" && (item as ProductoProps).materiales) {
+        const materialesActuales = Object.entries(
+          (item as ProductoProps).materiales
+        ).map(([nombre, cantidad]) => {
+          const materialInfo = materiales.find((m) => m.nombre === nombre);
+          return {
+            nombre,
+            cantidad: cantidad as number,
+            costo: materialInfo?.costo || 0,
+          };
+        });
+
+        setMaterialesSeleccionados(materialesActuales);
+      }
+    } catch (error) {
+      console.error("Error al cargar materiales:", error);
+    } finally {
+      setLoadingMateriales(false);
+    }
+  };
+
+  // Calcular costo total cuando cambian los materiales
+  useEffect(() => {
+    if (isProductoCompuesto) {
+      const costoTotal = materialesSeleccionados.reduce((total, material) => {
+        return total + material.costo * material.cantidad;
+      }, 0);
+
+      setTotalCosto(costoTotal);
+
+      // Actualizar el costo en formData
+      setFormData((prev) => ({
+        ...prev,
+        costo: costoTotal,
+      }));
+    }
+  }, [materialesSeleccionados, isProductoCompuesto]);
 
   // Gestión de arrastre para el gesto de cierre
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -117,13 +214,87 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     }
   };
 
+  // Manejar cambios en el selector de material
+  const handleMaterialChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMaterial(e.target.value);
+  };
+
+  // Manejar cambios en la cantidad de material
+  const handleCantidadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cantidad = parseInt(e.target.value);
+    setSelectedCantidad(isNaN(cantidad) ? 1 : Math.max(1, cantidad));
+  };
+
+  // Añadir material a la lista
+  const handleAddMaterial = () => {
+    if (!selectedMaterial) return;
+
+    // Encontrar información del material seleccionado
+    const materialInfo = materialesDisponibles.find(
+      (m) => m.nombre === selectedMaterial
+    );
+    if (!materialInfo) return;
+
+    // Verificar si el material ya existe
+    const existingIndex = materialesSeleccionados.findIndex(
+      (item) => item.nombre === selectedMaterial
+    );
+
+    if (existingIndex >= 0) {
+      // Actualizar cantidad si ya existe
+      const updatedMateriales = [...materialesSeleccionados];
+      updatedMateriales[existingIndex].cantidad += selectedCantidad;
+      setMaterialesSeleccionados(updatedMateriales);
+    } else {
+      // Añadir nuevo material
+      setMaterialesSeleccionados([
+        ...materialesSeleccionados,
+        {
+          nombre: selectedMaterial,
+          cantidad: selectedCantidad,
+          costo: materialInfo.costo || 0,
+        },
+      ]);
+    }
+
+    // Resetear selección
+    setSelectedMaterial("");
+    setSelectedCantidad(1);
+  };
+
+  // Eliminar material de la lista
+  const handleRemoveMaterial = (index: number) => {
+    const updatedMateriales = [...materialesSeleccionados];
+    updatedMateriales.splice(index, 1);
+    setMaterialesSeleccionados(updatedMateriales);
+  };
+
   // Guardar cambios
   const handleUpdate = async () => {
     setLoading(true);
     setError("");
 
     try {
-      await onUpdate(formData);
+      // Si es un producto compuesto, actualizar los materiales
+      if (itemType === "producto" && isProductoCompuesto) {
+        // Convertir lista de materiales al formato requerido
+        const materialesObj: { [key: string]: number } = {};
+        materialesSeleccionados.forEach((item) => {
+          materialesObj[item.nombre] = item.cantidad;
+        });
+
+        // Actualizar el formData con los materiales y el costo calculado
+        const updatedData = {
+          ...formData,
+          materiales: materialesObj,
+          costo: totalCosto,
+        };
+
+        await onUpdate(updatedData);
+      } else {
+        await onUpdate(formData);
+      }
+
       handleClose();
     } catch (error) {
       console.error("Error al actualizar:", error);
@@ -305,40 +476,120 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                   />
                 </div>
 
-                <div className="section relative z-0">
-                  <input
-                    type="number"
-                    id="costo"
-                    name="costo"
-                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.costo || ""}
-                    onChange={handleChange}
-                    placeholder="Costo"
-                    required
-                  />
-                </div>
-
-                {/* Información de materiales (no editable aquí) */}
-                {formData.materiales &&
-                  Object.keys(formData.materiales).length > 0 && (
-                    <div className="mt-4 p-2 bg-gray-100 rounded-md">
-                      <p className="text-xs font-medium mb-1">Materiales:</p>
-                      <ul className="text-xs text-gray-600">
-                        {Object.entries(formData.materiales).map(
-                          ([nombre, cantidad]) => (
-                            <li key={nombre} className="flex justify-between">
-                              <span>{nombre}</span>
-                              <span>Cant: {cantidad}</span>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Para modificar los materiales, usa la pantalla de
-                        creación de productos.
+                {!isProductoCompuesto ? (
+                  // Para productos simples, mostrar campo de costo
+                  <div className="section relative z-0">
+                    <input
+                      type="number"
+                      id="costo"
+                      name="costo"
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                      value={formData.costo || ""}
+                      onChange={handleChange}
+                      placeholder="Costo"
+                      required
+                    />
+                  </div>
+                ) : (
+                  // Para productos compuestos, mostrar editor de materiales
+                  <div className="mt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm font-semibold">Materiales:</p>
+                      <p className="text-xs font-medium">
+                        Costo total: {currencyFormat(totalCosto)}
                       </p>
                     </div>
-                  )}
+
+                    {loadingMateriales ? (
+                      <div className="text-sm text-center py-2">
+                        Cargando materiales...
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex flex-col gap-2 mb-3">
+                          <div className="flex flex-row gap-2">
+                            <div className="w-2/3">
+                              <select
+                                id="material"
+                                className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                                value={selectedMaterial}
+                                onChange={handleMaterialChange}
+                              >
+                                <option value="">Seleccionar material</option>
+                                {materialesDisponibles.map((material) => (
+                                  <option
+                                    key={material.id}
+                                    value={material.nombre}
+                                  >
+                                    {material.nombre} (
+                                    {currencyFormat(material.costo)})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="w-1/3">
+                              <input
+                                type="number"
+                                id="cantidad"
+                                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                                value={selectedCantidad}
+                                onChange={handleCantidadChange}
+                                placeholder="Cantidad"
+                                min="1"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleAddMaterial}
+                            className="text-gray-100 w-full h-10 rounded-lg bg-gray-700 text-sm font-bold"
+                            disabled={!selectedMaterial}
+                          >
+                            Añadir Material
+                          </button>
+                        </div>
+
+                        {materialesSeleccionados.length > 0 ? (
+                          <div className="bg-gray-100 p-2 rounded-md max-h-40 overflow-y-auto">
+                            {materialesSeleccionados.map((material, index) => (
+                              <div
+                                key={index}
+                                className="flex justify-between items-center mb-1 p-1 border-b"
+                              >
+                                <div>
+                                  <span className="font-medium text-xs">
+                                    {material.nombre}
+                                  </span>
+                                  <span className="ml-2 text-xs">
+                                    ({material.cantidad})
+                                  </span>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="text-xs mr-2">
+                                    {currencyFormat(
+                                      material.costo * material.cantidad
+                                    )}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveMaterial(index)}
+                                    className="text-red-500 text-xs"
+                                  >
+                                    Eliminar
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-2 text-xs text-gray-500">
+                            Añade materiales para calcular el costo
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </>
             )}
 
