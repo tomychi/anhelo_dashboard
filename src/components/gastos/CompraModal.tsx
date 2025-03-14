@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import FormGasto from "./FormGasto"; // Asegúrate de usar la ruta correcta
+import FormGasto from "../gastos/FormGasto"; // Asegúrate de usar la ruta correcta
 
 export const CompraModal = ({ isOpen, onClose }) => {
   const [isAnimating, setIsAnimating] = useState(false);

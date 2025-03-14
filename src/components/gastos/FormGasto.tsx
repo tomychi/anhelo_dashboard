@@ -2,8 +2,6 @@ import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { obtenerFechaActual } from "../../helpers/dateToday";
 import { UploadExpense } from "../../firebase/UploadGasto";
 import Swal from "sweetalert2";
-import { updateMaterialCost } from "../../firebase/Materiales";
-import { calculateUnitCost } from "../../helpers/calculator";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
@@ -18,6 +16,7 @@ import {
   EmpleadosProps,
   readEmpleados,
 } from "../../firebase/registroEmpleados";
+import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -134,7 +133,11 @@ export const FormGasto = ({ onSuccess }) => {
   const [empleados, setEmpleados] = useState<EmpleadosProps[]>([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [loading, setLoading] = useState(false); // Añadimos estado de carga
+  const [loading, setLoading] = useState(false); // Estado de carga
+  const [error, setError] = useState(""); // Estado para errores
+
+  // Estado para los pasos
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
     const fetchEmpleados = async () => {
@@ -154,6 +157,7 @@ export const FormGasto = ({ onSuccess }) => {
     unit: "unidad",
     estado: "pendiente",
   });
+
   const [inputDateValue, setInputDateValue] = useState(
     formatDateForInput(obtenerFechaActual())
   );
@@ -236,9 +240,35 @@ export const FormGasto = ({ onSuccess }) => {
     }
   };
 
+  // Función para avanzar al siguiente paso
+  const handleNextStep = () => {
+    // Validaciones según el paso actual
+    if (currentStep === 1) {
+      if (!formData.name || !formData.category) {
+        setError("Por favor, completa todos los campos requeridos");
+        return;
+      }
+    } else if (currentStep === 2) {
+      if (formData.quantity <= 0 || formData.total <= 0) {
+        setError("La cantidad y el total deben ser mayores a cero");
+        return;
+      }
+    }
+
+    setError("");
+    setCurrentStep(currentStep + 1);
+  };
+
+  // Función para retroceder al paso anterior
+  const handlePreviousStep = () => {
+    setError("");
+    setCurrentStep(currentStep - 1);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       const expenseWithId = { ...formData, id: "" };
@@ -276,227 +306,316 @@ export const FormGasto = ({ onSuccess }) => {
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error en el proceso:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `Hubo un error al cargar el gasto: ${error}`,
-      });
+      setError(`Hubo un error al cargar el gasto: ${error}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="items-center w-full justify-center rounded-md font-coolvetica text-black"
-    >
-      <div className="item-section w-full flex flex-col gap-2">
-        <FileUpload onFileSelect={handleFileSelect} />
-        <div className="section relative z-0">
-          {!isMarketingUser && (
-            <div className="section w-full relative mb-2 z-0">
-              <select
-                id="category"
-                name="category"
-                className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={formData.category}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccionar categoría</option>
-                {CATEGORIAS.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+    <div className="font-coolvetica text-black">
+      {/* Estilos para la barra de progreso animada */}
+      <style>
+        {`
+          @keyframes loadingBar {
+            0% {
+              background-position: -200px 0;
+            }
+            100% {
+              background-position: 200px 0;
+            }
+          }
+
+          .animated-loading {
+            background: linear-gradient(
+              to right,
+              #000 0%,
+              #000 40%,
+              #555 100%,
+              #000 60%,
+              #000 100%
+            );
+            background-size: 400% 100%;
+            animation: loadingBar 5s linear infinite;
+          }
+        `}
+      </style>
+
+      {/* Barras de progreso */}
+      <div className="flex flex-row gap-2 justify-center mb-4">
+        <div
+          className={`w-1/6 h-2 rounded-full ${currentStep === 1 ? "animated-loading" : currentStep > 1 ? "bg-black" : "border border-gray-200"}`}
+        ></div>
+        <div
+          className={`w-1/6 h-2 rounded-full ${currentStep === 2 ? "animated-loading" : currentStep > 2 ? "bg-black" : "border border-gray-200"}`}
+        ></div>
+        <div
+          className={`w-1/6 h-2 rounded-full ${currentStep === 3 ? "animated-loading" : "border border-gray-200"}`}
+        ></div>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="items-center w-full justify-center rounded-md"
+      >
+        <div className="item-section w-full flex flex-col gap-2">
+          {/* Mostrar botón volver en pasos 2 y 3 */}
+          {currentStep > 1 && (
+            <div
+              className="text-gray-400 mb-4 flex-row gap-1 text-xs justify-center flex items-center font-light cursor-pointer"
+              onClick={handlePreviousStep}
+            >
+              <img
+                src={arrow}
+                className="transform rotate-180 h-2 opacity-30"
+                alt="Volver"
+              />
+              Volver
             </div>
           )}
-          {formData.category === "cocina y produccion" ? (
-            <select
-              id="name"
-              name="name"
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.name}
-              onChange={handleNameChange}
-              required
-            >
-              <option value="">Seleccionar empleado</option>
-              {empleados
-                .filter((emp) => emp.area === "cocina")
-                .map((empleado, index) => (
-                  <option key={index} value={empleado.name}>
-                    {empleado.name}
-                  </option>
-                ))}
-            </select>
-          ) : formData.category === "infraestructura" ? (
-            <select
-              id="name"
-              name="name"
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.name}
-              onChange={handleNameChange}
-              required
-            >
-              <option value="">Seleccionar servicio</option>
-              <option value="gas">Gas</option>
-              <option value="wifi">WiFi</option>
-              <option value="alquiler">Alquiler</option>
-              <option value="luz">Luz</option>
-              <option value="agua">Agua</option>
-            </select>
-          ) : (
+
+          {/* Paso 1: Detalles básicos */}
+          {currentStep === 1 && (
             <>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={formData.name}
-                onChange={handleNameChange}
-                placeholder="Nombre del item"
-                list={isMarketingUser ? undefined : "itemNames"}
-                required
-                autoComplete="off"
-              />
+              <FileUpload onFileSelect={handleFileSelect} />
               {!isMarketingUser && (
-                <datalist id="itemNames">
-                  {materiales.map((material, index) => (
-                    <option key={index} value={material.nombre} />
+                <div className="section w-full relative mb-2 z-0">
+                  <select
+                    id="category"
+                    name="category"
+                    className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    {CATEGORIAS.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {formData.category === "cocina y produccion" ? (
+                <select
+                  id="name"
+                  name="name"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.name}
+                  onChange={handleNameChange}
+                  required
+                >
+                  <option value="">Seleccionar empleado</option>
+                  {empleados
+                    .filter((emp) => emp.area === "cocina")
+                    .map((empleado, index) => (
+                      <option key={index} value={empleado.name}>
+                        {empleado.name}
+                      </option>
+                    ))}
+                </select>
+              ) : formData.category === "infraestructura" ? (
+                <select
+                  id="name"
+                  name="name"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.name}
+                  onChange={handleNameChange}
+                  required
+                >
+                  <option value="">Seleccionar servicio</option>
+                  <option value="gas">Gas</option>
+                  <option value="wifi">WiFi</option>
+                  <option value="alquiler">Alquiler</option>
+                  <option value="luz">Luz</option>
+                  <option value="agua">Agua</option>
+                </select>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={formData.name}
+                    onChange={handleNameChange}
+                    placeholder="Nombre del item"
+                    list={isMarketingUser ? undefined : "itemNames"}
+                    required
+                    autoComplete="off"
+                  />
+                  {!isMarketingUser && (
+                    <datalist id="itemNames">
+                      {materiales.map((material, index) => (
+                        <option key={index} value={material.nombre} />
+                      ))}
+                    </datalist>
+                  )}
+                </>
+              )}
+
+              <div className="section w-full relative z-0">
+                <input
+                  type="text"
+                  id="description"
+                  name="description"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.description}
+                  placeholder="Descripción"
+                  onChange={handleChange}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Paso 2: Cantidades */}
+          {currentStep === 2 && (
+            <>
+              <div className="section relative z-0">
+                <input
+                  type="number"
+                  id="quantity"
+                  name="quantity"
+                  value={formData.quantity || ""}
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  onChange={handleChange}
+                  placeholder="Cantidad"
+                  required
+                />
+              </div>
+              <div className="section relative z-0">
+                <select
+                  id="unit"
+                  name="unit"
+                  value={formData.unit}
+                  className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar unidad</option>
+                  {UNIDADES.map((unit) => (
+                    <option key={unit} value={unit}>
+                      {unit}
+                    </option>
                   ))}
-                </datalist>
+                </select>
+              </div>
+              <div className="section w-full relative z-0">
+                <input
+                  type="number"
+                  id="total"
+                  name="total"
+                  className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.total || ""}
+                  onChange={handleChange}
+                  placeholder="Total $"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {/* Paso 3: Estado y fecha */}
+          {currentStep === 3 && (
+            <>
+              <div className="section w-full relative z-0">
+                <select
+                  id="estado"
+                  name="estado"
+                  className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  required
+                >
+                  {ESTADOS.map((estado) => (
+                    <option key={estado} value={estado}>
+                      {estado}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {formData.category === "cocina y produccion" ? (
+                <div className="flex flex-row gap-2">
+                  <div className="section w-full relative z-0">
+                    <input
+                      type="date"
+                      id="fechaInicio"
+                      name="fechaInicio"
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                      value={fechaInicio}
+                      onChange={(e) => setFechaInicio(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="section w-full relative z-0">
+                    <input
+                      type="date"
+                      id="fechaFin"
+                      name="fechaFin"
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                      value={fechaFin}
+                      onChange={(e) => setFechaFin(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="section w-full relative z-0">
+                  <input
+                    type="date"
+                    id="fecha"
+                    name="fecha"
+                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={inputDateValue}
+                    onChange={handleDateChange}
+                    required
+                  />
+                </div>
               )}
             </>
           )}
-        </div>
-        <div className="section relative z-0">
-          <input
-            type="number"
-            id="quantity"
-            name="quantity"
-            value={formData.quantity || ""}
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            onChange={handleChange}
-            placeholder="Cantidad"
-            required
-          />
-        </div>
-        <div className="section relative z-0">
-          <select
-            id="unit"
-            name="unit"
-            value={formData.unit}
-            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccionar unidad</option>
-            {UNIDADES.map((unit) => (
-              <option key={unit} value={unit}>
-                {unit}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="section w-full relative z-0">
-          <input
-            type="number"
-            id="total"
-            name="total"
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.total || ""}
-            onChange={handleChange}
-            placeholder="Total $"
-            required
-          />
-        </div>
-        <div className="section w-full relative z-0">
-          <input
-            type="text"
-            id="description"
-            name="description"
-            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.description}
-            placeholder="Descripción"
-            onChange={handleChange}
-          />
-        </div>
-        <div className="section w-full relative z-0">
-          <select
-            id="estado"
-            name="estado"
-            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.estado}
-            onChange={handleChange}
-            required
-          >
-            {ESTADOS.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        {formData.category === "cocina y produccion" ? (
-          <div className=" flex flex-row gap-2">
-            <div className="section w-full relative z-0">
-              <input
-                type="date"
-                id="fechaInicio"
-                name="fechaInicio"
-                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={fechaInicio}
-                onChange={(e) => setFechaInicio(e.target.value)}
-                required
-              />
+          {/* Mostrar mensaje de error si existe */}
+          {error && (
+            <div className="mt-4 h-10 px-4 items-center text-xs text-red-main border-l-4 flex border-red-main mb-4">
+              {error}
             </div>
-            <div className="section w-full relative z-0">
-              <input
-                type="date"
-                id="fechaFin"
-                name="fechaFin"
-                className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={fechaFin}
-                onChange={(e) => setFechaFin(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="section w-full relative z-0">
-            <input
-              type="date"
-              id="fecha"
-              name="fecha"
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={inputDateValue}
-              onChange={handleDateChange}
-              required
-            />
-          </div>
-        )}
-        <button
-          type="submit"
-          className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
-          disabled={loading}
-        >
-          {loading ? (
-            <div className="flex justify-center w-full items-center">
-              <div className="flex flex-row gap-1">
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-              </div>
-            </div>
-          ) : (
-            "Guardar"
           )}
-        </button>
-      </div>
-    </form>
+
+          {/* Botones de navegación */}
+          {currentStep < 3 ? (
+            <button
+              type="button"
+              onClick={handleNextStep}
+              className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+            >
+              Continuar
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex justify-center w-full items-center">
+                  <div className="flex flex-row gap-1">
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                  </div>
+                </div>
+              ) : (
+                "Guardar"
+              )}
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 };
 
