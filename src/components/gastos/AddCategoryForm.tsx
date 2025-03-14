@@ -160,7 +160,8 @@ export const AddCategoryForm = ({ onCancel, onSuccess, empresaId }) => {
           onChange={(e) => setIsRecurring(e.target.checked)}
         />
         <label htmlFor="isRecurring" className="text-xs">
-          Esta categoría tiene gastos recurrentes
+          Crear categoria con items. Ej: Para Infraestructura siempre pagas luz,
+          alquiler, agua y gas; Armarlo asi te facilitara la gestion.
         </label>
       </div>
 
