@@ -27,7 +27,15 @@ export interface ProductoProps {
   img?: string;
 }
 
-export const FormProducto: React.FC = () => {
+interface FormProductoProps {
+  isInModal?: boolean;
+  onSuccess?: () => void;
+}
+
+export const FormProducto: React.FC<FormProductoProps> = ({
+  isInModal = false,
+  onSuccess,
+}) => {
   const auth = useSelector((state: RootState) => state.auth);
   const [materialesDisponibles, setMaterialesDisponibles] = useState<
     MaterialProps[]
@@ -193,11 +201,17 @@ export const FormProducto: React.FC = () => {
 
     // Validar que un producto compuesto tenga materiales
     if (isCompuesto && materialesSeleccionados.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Un producto compuesto debe tener al menos un material/ingrediente",
-      });
+      if (isInModal) {
+        alert(
+          "Un producto compuesto debe tener al menos un material/ingrediente"
+        );
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Un producto compuesto debe tener al menos un material/ingrediente",
+        });
+      }
       return;
     }
 
@@ -242,11 +256,16 @@ export const FormProducto: React.FC = () => {
       // Crear el producto
       await CreateProducto(productoData, isAnhelo, empresaId);
 
-      await Swal.fire({
-        icon: "success",
-        title: "Producto creado",
-        text: `El producto ${formData.name} se ha creado correctamente`,
-      });
+      // Mostrar mensaje de éxito
+      if (isInModal) {
+        alert(`El producto ${formData.name} se ha creado correctamente`);
+      } else {
+        await Swal.fire({
+          icon: "success",
+          title: "Producto creado",
+          text: `El producto ${formData.name} se ha creado correctamente`,
+        });
+      }
 
       // Reiniciar el formulario
       setFormData({
@@ -258,13 +277,22 @@ export const FormProducto: React.FC = () => {
       });
       setMaterialesSeleccionados([]);
       setIsCompuesto(true);
+
+      // Llamar al callback de éxito si existe
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Error al crear el producto:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `Hubo un error al crear el producto: ${error}`,
-      });
+      if (isInModal) {
+        alert(`Hubo un error al crear el producto: ${error}`);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `Hubo un error al crear el producto: ${error}`,
+        });
+      }
     }
   };
 
@@ -273,9 +301,11 @@ export const FormProducto: React.FC = () => {
       onSubmit={handleSubmit}
       className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
     >
-      <div className="flex flex-row justify-between font-coolvetica items-center mb-4">
-        <p className="text-black font-bold text-4xl">Nuevo Producto</p>
-      </div>
+      {!isInModal && (
+        <div className="flex flex-row justify-between font-coolvetica items-center mb-4">
+          <p className="text-black font-bold text-4xl">Nuevo Producto</p>
+        </div>
+      )}
 
       <div className="item-section w-full flex flex-col gap-2">
         <div className="section relative z-0">
@@ -459,3 +489,5 @@ export const FormProducto: React.FC = () => {
     </form>
   );
 };
+
+export default FormProducto;

@@ -13,7 +13,15 @@ export interface SimpleMaterialProps {
   unit: string;
 }
 
-export const FormMaterial: React.FC = () => {
+interface FormMaterialProps {
+  isInModal?: boolean;
+  onSuccess?: () => void;
+}
+
+export const FormMaterial: React.FC<FormMaterialProps> = ({
+  isInModal = false,
+  onSuccess,
+}) => {
   const auth = useSelector((state: RootState) => state.auth);
   const currentUserEmail = projectAuth.currentUser?.email;
 
@@ -68,11 +76,17 @@ export const FormMaterial: React.FC = () => {
       // Crear el material
       await CreateMaterial(formData, isAnhelo, empresaId);
 
-      await Swal.fire({
-        icon: "success",
-        title: "Material creado",
-        text: `El material ${formData.nombre} se ha creado correctamente`,
-      });
+      // Mostrar mensaje de éxito
+      if (!isInModal) {
+        await Swal.fire({
+          icon: "success",
+          title: "Material creado",
+          text: `El material ${formData.nombre} se ha creado correctamente`,
+        });
+      } else {
+        // Alertas más simples si está en un modal
+        alert(`El material ${formData.nombre} se ha creado correctamente`);
+      }
 
       // Reiniciar el formulario
       setFormData({
@@ -80,81 +94,102 @@ export const FormMaterial: React.FC = () => {
         costo: 0,
         unit: "unidad",
       });
+
+      // Llamar al callback de éxito si existe
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error("Error al crear el material:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: `Hubo un error al crear el material: ${error}`,
-      });
+      if (!isInModal) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `Hubo un error al crear el material: ${error}`,
+        });
+      } else {
+        alert(`Hubo un error al crear el material: ${error}`);
+      }
     }
   };
 
-  return (
-    <div>
-      <ListByIcons />
-      <form
-        onSubmit={handleSubmit}
-        className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
-      >
+  const formContent = (
+    <form
+      onSubmit={handleSubmit}
+      className="items-center w-full justify-center p-4 rounded-md font-coolvetica text-black"
+    >
+      {!isInModal && (
         <div className="flex flex-row justify-between font-coolvetica items-center mb-4">
           <p className="text-black font-bold text-4xl">Nuevo Material</p>
         </div>
+      )}
 
-        <div className="item-section w-full flex flex-col gap-2">
-          <div className="section relative z-0">
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.nombre}
-              onChange={handleChange}
-              placeholder="Nombre del material"
-              required
-              autoComplete="off"
-            />
-          </div>
-
-          <div className="section relative z-0">
-            <input
-              type="number"
-              id="costo"
-              name="costo"
-              className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.costo || ""}
-              onChange={handleChange}
-              placeholder="Costo unitario"
-              required
-            />
-          </div>
-
-          <div className="section relative z-0">
-            <select
-              id="unit"
-              name="unit"
-              className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-              value={formData.unit}
-              onChange={handleChange}
-              required
-            >
-              <option value="unidad">unidad</option>
-              <option value="kg">kg</option>
-              <option value="g">g</option>
-              <option value="l">l</option>
-              <option value="ml">ml</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
-          >
-            Guardar
-          </button>
+      <div className="item-section w-full flex flex-col gap-2">
+        <div className="section relative z-0">
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.nombre}
+            onChange={handleChange}
+            placeholder="Nombre del material"
+            required
+            autoComplete="off"
+          />
         </div>
-      </form>
-      <FormProducto />
+
+        <div className="section relative z-0">
+          <input
+            type="number"
+            id="costo"
+            name="costo"
+            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.costo || ""}
+            onChange={handleChange}
+            placeholder="Costo unitario"
+            required
+          />
+        </div>
+
+        <div className="section relative z-0">
+          <select
+            id="unit"
+            name="unit"
+            className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.unit}
+            onChange={handleChange}
+            required
+          >
+            <option value="unidad">unidad</option>
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="l">l</option>
+            <option value="ml">ml</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          className="text-gray-100 w-full h-20 mt-2 rounded-lg bg-black text-4xl font-bold"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  );
+
+  // Si está en un modal, devolver solo el contenido del formulario
+  if (isInModal) {
+    return formContent;
+  }
+
+  // Si no está en un modal, devolver el ListByIcons, el contenido del formulario y el FormProducto
+  return (
+    <div>
+      <ListByIcons />
     </div>
   );
 };
+
+export default FormMaterial;

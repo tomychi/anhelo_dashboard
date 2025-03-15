@@ -12,6 +12,9 @@ import {
   deleteProducto,
 } from "../../firebase/Materiales";
 import EditItemModal from "./EditItemModal";
+import FormModal from "./FormModal";
+import { FormMaterial } from "../../pages/FormMaterial";
+import { FormProducto } from "../materiales/FormProducto";
 import currencyFormat from "../../helpers/currencyFormat";
 
 export const ListByIcons: React.FC = () => {
@@ -20,14 +23,18 @@ export const ListByIcons: React.FC = () => {
   const [productos, setProductos] = useState<ProductoProps[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Estado para el modal
-  const [modalOpen, setModalOpen] = useState(false);
+  // Estado para el modal de edición
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<
     MaterialProps | ProductoProps | null
   >(null);
   const [selectedItemType, setSelectedItemType] = useState<
     "material" | "producto"
   >("material");
+
+  // Estado para los modales de creación
+  const [materialModalOpen, setMaterialModalOpen] = useState(false);
+  const [productoModalOpen, setProductoModalOpen] = useState(false);
 
   // Variables para determinar empresa
   const [isAnhelo, setIsAnhelo] = useState(false);
@@ -82,6 +89,21 @@ export const ListByIcons: React.FC = () => {
 
     fetchData();
   }, [auth]);
+
+  // Función para actualizar las listas después de crear un nuevo elemento
+  const refreshData = async () => {
+    try {
+      if (empresaId) {
+        const materialesData = await readMateriales(isAnhelo, empresaId);
+        const productosData = await readProductos(isAnhelo, empresaId);
+
+        setMateriales(materialesData);
+        setProductos(productosData);
+      }
+    } catch (error) {
+      console.error("Error al actualizar datos:", error);
+    }
+  };
 
   // Función para capitalizar primera letra
   const capitalizeFirstLetter = (string: string = "") => {
@@ -139,7 +161,7 @@ export const ListByIcons: React.FC = () => {
   ) => {
     setSelectedItem(item);
     setSelectedItemType(type);
-    setModalOpen(true);
+    setEditModalOpen(true);
   };
 
   // Actualizar material o producto
@@ -241,6 +263,14 @@ export const ListByIcons: React.FC = () => {
     }
   };
 
+  // Manejar cierre del modal de creación y refrescar datos
+  const handleCreateModalClose = async () => {
+    setMaterialModalOpen(false);
+    setProductoModalOpen(false);
+    // Refrescar datos para mostrar los nuevos elementos
+    await refreshData();
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -253,7 +283,15 @@ export const ListByIcons: React.FC = () => {
     <div className="p-4 font-coolvetica">
       {/* Sección de Productos */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-3">Productos</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-2xl font-bold">Productos</h2>
+          <button
+            onClick={() => setProductoModalOpen(true)}
+            className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold"
+          >
+            +
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <div className="flex space-x-4 pb-2" style={{ overflowX: "auto" }}>
             {productos.length === 0 ? (
@@ -312,7 +350,15 @@ export const ListByIcons: React.FC = () => {
 
       {/* Sección de Materiales */}
       <div>
-        <h2 className="text-2xl font-bold mb-3">Materiales</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-2xl font-bold">Materiales</h2>
+          <button
+            onClick={() => setMaterialModalOpen(true)}
+            className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold"
+          >
+            +
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <div className="flex space-x-4 pb-2" style={{ overflowX: "auto" }}>
             {materiales.length === 0 ? (
@@ -365,14 +411,38 @@ export const ListByIcons: React.FC = () => {
       {/* Modal de edición */}
       {selectedItem && (
         <EditItemModal
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
           item={selectedItem}
           itemType={selectedItemType}
           onUpdate={handleUpdateItem}
           onDelete={handleDeleteItem}
         />
       )}
+
+      {/* Modal para crear material */}
+      <FormModal
+        isOpen={materialModalOpen}
+        onClose={handleCreateModalClose}
+        title="Nuevo Material"
+      >
+        <div className="max-h-70vh overflow-y-auto">
+          <FormMaterial isInModal={true} onSuccess={handleCreateModalClose} />
+        </div>
+      </FormModal>
+
+      {/* Modal para crear producto */}
+      <FormModal
+        isOpen={productoModalOpen}
+        onClose={handleCreateModalClose}
+        title="Nuevo Producto"
+      >
+        <div className="max-h-70vh overflow-y-auto">
+          <FormProducto isInModal={true} onSuccess={handleCreateModalClose} />
+        </div>
+      </FormModal>
     </div>
   );
 };
+
+export default ListByIcons;
