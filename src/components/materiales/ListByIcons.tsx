@@ -393,13 +393,16 @@ export const ListByIcons: React.FC = () => {
                     </h3>
                     <div className="flex justify-between text-xs">
                       <span>Costo: {currencyFormat(material.costo)}</span>
-                      <span>Unidad: {material.unit}</span>
+                      <span>
+                        Unidad: {material.unidadMedida || material.unit}
+                      </span>
                     </div>
-                    {material.stock !== undefined && (
-                      <p className="text-xs mt-2 text-gray-500">
-                        Stock: {material.stock} {material.unit}
+                    <div className="text-xs mt-2 text-gray-500">
+                      <p>
+                        Medida: {material.medida}{" "}
+                        {material.unidadMedida || material.unit}
                       </p>
-                    )}
+                    </div>
                   </div>
                 </div>
               ))

@@ -15,18 +15,17 @@ import { v4 as uuidv4 } from "uuid";
 export interface SimpleMaterialProps {
   nombre: string;
   costo: number;
-  unit: string;
+  medida: number;
+  unidadMedida: string;
 }
 
-export interface MaterialProps extends SimpleMaterialProps {
+export interface MaterialProps {
   nombre: string;
   costo: number;
-  unit: string;
-  stock?: number;
-  categoria?: string;
-  unidadPorPrecio?: number;
+  medida: number;
+  unidadMedida: string;
   id?: string;
-  img?: string; // Nuevo campo para la imagen
+  img?: string;
 }
 
 /**
@@ -80,10 +79,7 @@ export const CreateMaterial = async (
   }
 
   // Crear el material
-  await setDoc(materialRef, {
-    ...materialData,
-    // No incluimos el id aquí ya que sería redundante con el ID del documento
-  });
+  await setDoc(materialRef, materialData);
 
   return materialRef;
 };
@@ -132,12 +128,10 @@ export const readMateriales = async (
         const materialProps: MaterialProps = {
           id: doc.id,
           nombre: data.nombre,
-          categoria: data.categoria,
           costo: data.costo,
-          unit: data.unit,
-          unidadPorPrecio: data.unidadPorPrecio,
-          stock: data.stock,
-          img: data.img || "", // Asegurarse de incluir la imagen
+          medida: data.medida || 0,
+          unidadMedida: data.unidadMedida || "",
+          img: data.img || "",
         };
         return materialProps;
       });
@@ -207,13 +201,6 @@ export const updateMaterialCost = async (
     if (material) {
       console.log("Material encontrado:", material);
 
-      // Calcular nuevo stock
-      const currentStock = material.stock || 0;
-      const newStock = currentStock + cant;
-
-      console.log("Stock actual:", currentStock);
-      console.log("Nuevo stock:", newStock);
-
       // Determinar la referencia correcta según la empresa
       let materialDocRef;
 
@@ -229,10 +216,10 @@ export const updateMaterialCost = async (
         );
       }
 
-      // Actualizar el documento
+      // Actualizar el documento con el nuevo costo
       await updateDoc(materialDocRef, {
         costo: newCost,
-        stock: newStock,
+        medida: material.medida || 0,
       });
 
       console.log("Material actualizado exitosamente");
@@ -416,37 +403,20 @@ export const updateMaterial = async (
     );
   }
 
-  // Crear una versión sin el ID para actualizar y eliminar campos undefined
+  // Crear una versión sin el ID para actualizar
   const { id, ...dataToUpdate } = materialData;
 
-  // Limpiar campos undefined
-  const cleanData: Record<string, any> = {};
-  Object.entries(dataToUpdate).forEach(([key, value]) => {
-    if (value !== undefined) {
-      cleanData[key] = value;
-    }
-  });
+  // Asegurar que los campos tengan valores predeterminados si no existen
+  const updateData = {
+    ...dataToUpdate,
+    nombre: dataToUpdate.nombre || "",
+    costo: dataToUpdate.costo || 0,
+    medida: dataToUpdate.medida || 0,
+    unidadMedida: dataToUpdate.unidadMedida || "",
+    img: dataToUpdate.img || "",
+  };
 
-  // Asegurar que los campos obligatorios tengan valores predeterminados
-  if (!cleanData.hasOwnProperty("categoria")) {
-    cleanData.categoria = "ingredientes";
-  }
-
-  if (!cleanData.hasOwnProperty("img")) {
-    cleanData.img = "";
-  }
-
-  if (!cleanData.hasOwnProperty("stock")) {
-    cleanData.stock = 0;
-  }
-
-  if (!cleanData.hasOwnProperty("unidadPorPrecio")) {
-    cleanData.unidadPorPrecio = 1;
-  }
-
-  console.log("Datos limpios a actualizar:", cleanData);
-
-  await updateDoc(materialRef, cleanData);
+  await updateDoc(materialRef, updateData);
 };
 
 /**

@@ -266,7 +266,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     const { name, value } = e.target;
 
     // Convertir a número si es necesario
-    if (name === "price" || name === "costo" || name === "stock") {
+    if (name === "price" || name === "costo" || name === "medida") {
       const numericValue = parseFloat(value);
       setFormData((prev: any) => ({
         ...prev,
@@ -402,19 +402,13 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
 
       // Si es un material, asegurarse de que todos los campos requeridos existan
       if (itemType === "material") {
-        // Si no hay categoria, establecer una predeterminada
-        if (updatedFormData.categoria === undefined) {
-          updatedFormData.categoria = "ingredientes";
+        // Asegurar campos para la nueva estructura
+        if (updatedFormData.unidadMedida === undefined) {
+          updatedFormData.unidadMedida = "g";
         }
 
-        // Si no hay stock, establecer 0
-        if (updatedFormData.stock === undefined) {
-          updatedFormData.stock = 0;
-        }
-
-        // Si no hay unidadPorPrecio, establecer 1
-        if (updatedFormData.unidadPorPrecio === undefined) {
-          updatedFormData.unidadPorPrecio = 1;
+        if (updatedFormData.medida === undefined) {
+          updatedFormData.medida = 0;
         }
       }
 
@@ -554,32 +548,33 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
                 </div>
 
                 <div className="section relative z-0">
-                  <select
-                    id="unit"
-                    name="unit"
-                    className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.unit || "unidad"}
+                  <input
+                    type="number"
+                    id="medida"
+                    name="medida"
+                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={formData.medida || ""}
                     onChange={handleChange}
+                    placeholder="Cantidad (medida)"
                     required
-                  >
-                    <option value="unidad">unidad</option>
-                    <option value="kg">kg</option>
-                    <option value="g">g</option>
-                    <option value="l">l</option>
-                    <option value="ml">ml</option>
-                  </select>
+                  />
                 </div>
 
                 <div className="section relative z-0">
-                  <input
-                    type="number"
-                    id="stock"
-                    name="stock"
-                    className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                    value={formData.stock || ""}
+                  <select
+                    id="unidadMedida"
+                    name="unidadMedida"
+                    className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    value={formData.unidadMedida || "g"}
                     onChange={handleChange}
-                    placeholder="Stock actual"
-                  />
+                    required
+                  >
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="l">l</option>
+                    <option value="ml">ml</option>
+                    <option value="unidad">unidad</option>
+                  </select>
                 </div>
               </>
             ) : (

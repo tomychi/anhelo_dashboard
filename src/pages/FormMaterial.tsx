@@ -3,15 +3,9 @@ import Swal from "sweetalert2";
 import { projectAuth } from "../firebase/config";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
-import { CreateMaterial } from "../firebase/Materiales";
+import { CreateMaterial, SimpleMaterialProps } from "../firebase/Materiales";
 import { FormProducto } from "../components/materiales/FormProducto";
 import { ListByIcons } from "../components/materiales/ListByIcons";
-
-export interface SimpleMaterialProps {
-  nombre: string;
-  costo: number;
-  unit: string;
-}
 
 interface FormMaterialProps {
   isInModal?: boolean;
@@ -29,7 +23,8 @@ export const FormMaterial: React.FC<FormMaterialProps> = ({
   const [formData, setFormData] = useState<SimpleMaterialProps>({
     nombre: "",
     costo: 0,
-    unit: "unidad",
+    medida: 0,
+    unidadMedida: "g",
   });
 
   // Maneja cambios en los inputs
@@ -38,7 +33,7 @@ export const FormMaterial: React.FC<FormMaterialProps> = ({
   ) => {
     const { name, value } = e.target;
 
-    if (name === "costo") {
+    if (name === "costo" || name === "medida") {
       const numericValue = parseFloat(value);
       setFormData((prev) => ({
         ...prev,
@@ -92,7 +87,8 @@ export const FormMaterial: React.FC<FormMaterialProps> = ({
       setFormData({
         nombre: "",
         costo: 0,
-        unit: "unidad",
+        medida: 0,
+        unidadMedida: "g",
       });
 
       // Llamar al callback de éxito si existe
@@ -153,19 +149,32 @@ export const FormMaterial: React.FC<FormMaterialProps> = ({
         </div>
 
         <div className="section relative z-0">
+          <input
+            type="number"
+            id="medida"
+            name="medida"
+            className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+            value={formData.medida || ""}
+            onChange={handleChange}
+            placeholder="Cantidad (medida)"
+            required
+          />
+        </div>
+
+        <div className="section relative z-0">
           <select
-            id="unit"
-            name="unit"
+            id="unidadMedida"
+            name="unidadMedida"
             className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-            value={formData.unit}
+            value={formData.unidadMedida}
             onChange={handleChange}
             required
           >
-            <option value="unidad">unidad</option>
-            <option value="kg">kg</option>
             <option value="g">g</option>
+            <option value="kg">kg</option>
             <option value="l">l</option>
             <option value="ml">ml</option>
+            <option value="unidad">unidad</option>
           </select>
         </div>
 
