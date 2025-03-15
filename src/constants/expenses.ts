@@ -1,38 +1,29 @@
 // constants/expenses.ts
-
-// Mantenemos los arrays originales por compatibilidad
-export const CATEGORIAS = [
-  "materia prima",
-  "cocina y produccion",
-  "extra",
-  "legalidad",
-  "cadeteria",
-  "infraestructura",
-  "marketing",
-] as const;
-
-export const UNIDADES = [
+export const UNIDADES_BASICAS = [
   "unidad",
-  "kg",
-  "lts",
-  "mts",
-  "x100",
-  "bolsas",
-  "envio",
-  "horas",
+  "kg", // kilogramo
+  "g", // gramo
+  "l", // litro (reemplaza "lts")
+  "ml", // mililitro
+  "m", // metro (reemplaza "mts")
+  "cm", // centímetro
+  "hora", // hora (singular)
 ] as const;
+
+// Para mantener compatibilidad con código existente
+export const UNIDADES = [...UNIDADES_BASICAS] as const;
 
 export const ESTADOS = ["pendiente", "pagado"] as const;
 
 // Tipos originales
-export type OriginalCategoriaType = (typeof CATEGORIAS)[number];
-export type UnidadType = (typeof UNIDADES)[number];
+export type UnidadBasicaType = (typeof UNIDADES_BASICAS)[number];
+export type UnidadType = UnidadBasicaType | string; // Ahora acepta cualquier string para unidades personalizadas
 export type EstadoType = (typeof ESTADOS)[number];
 
-// Nuevo tipo que extiende el tipo original para permitir strings (categorías personalizadas)
-export type CategoriaType = OriginalCategoriaType | string;
+// Tipo para categorías
+export type CategoriaType = string;
 
-// Interface actualizada
+// Interface para gastos
 export interface ExpenseProps {
   // Campos requeridos
   name: string;
@@ -41,7 +32,7 @@ export interface ExpenseProps {
   total: number;
   fecha: string;
   estado: EstadoType;
-  category: CategoriaType; // Ahora acepta cualquier string
+  category: CategoriaType;
 
   // Campo opcional
   description?: string;

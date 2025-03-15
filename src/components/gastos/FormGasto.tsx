@@ -6,7 +6,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 import { uploadFile } from "../../firebase/files";
 import { projectAuth } from "../../firebase/config";
-import { UNIDADES, ESTADOS, ExpenseProps } from "../../constants/expenses";
+import {
+  UNIDADES_BASICAS,
+  ESTADOS,
+  ExpenseProps,
+} from "../../constants/expenses";
 import { readEmpleados } from "../../firebase/registroEmpleados";
 import arrow from "../../assets/arrowIcon.png"; // Importa icono de flecha
 import { CategoriaSelector } from "./CategoriaSelector"; // Importamos el componente
@@ -25,6 +29,7 @@ import {
   convertirUnidades,
   calcularCostoMaterialDerivado,
 } from "../../helpers/unitConverter"; // Importamos funciones de conversión
+import AddUnitModal from "./AddUnitModal";
 
 // Categorías predeterminadas
 const MATERIAPRIMA_CATEGORY = "materia prima";
@@ -459,6 +464,9 @@ export const FormGasto = ({ onSuccess }) => {
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
+  const [customUnits, setCustomUnits] = useState<string[]>([]);
+  const [isAddingUnit, setIsAddingUnit] = useState(false);
+
   const [error, setError] = useState("");
   const [searchMaterial, setSearchMaterial] = useState("");
   const [isRecurringCategory, setIsRecurringCategory] = useState(false);
@@ -522,6 +530,19 @@ export const FormGasto = ({ onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Verificar si se seleccionó "Agregar nueva unidad"
+    if (name === "unit" && value === "__add_new__") {
+      // Restaurar la unidad anterior (para no dejar seleccionado "Agregar nueva unidad")
+      setFormData((prev) => ({
+        ...prev,
+        unit: prev.unit,
+      }));
+
+      // Mostrar el modal para agregar unidad
+      setIsAddingUnit(true);
+      return; // Salir de la función para evitar actualizar el estado
+    }
+
     if (name === "total" || name === "quantity") {
       const numericValue = parseFloat(value);
       setFormData((prev) => ({
@@ -546,6 +567,29 @@ export const FormGasto = ({ onSuccess }) => {
       }));
     }
   };
+
+  useEffect(() => {
+    const fetchCustomUnits = async () => {
+      if (!empresaId) return;
+
+      try {
+        const firestore = getFirestore();
+        const docRef = doc(firestore, "absoluteClientes", empresaId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.config && data.config.gastosUnidades) {
+            setCustomUnits(data.config.gastosUnidades);
+          }
+        }
+      } catch (error) {
+        console.error("Error al cargar unidades personalizadas:", error);
+      }
+    };
+
+    fetchCustomUnits();
+  }, [empresaId]);
 
   const handleDateChange = (e) => {
     const inputDate = e.target.value; // Formato YYYY-MM-DD
@@ -1124,21 +1168,49 @@ export const FormGasto = ({ onSuccess }) => {
               />
             </div>
             <div className="section relative z-0 px-4">
-              <select
-                id="unit"
-                name="unit"
-                value={formData.unit}
-                className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccionar unidad</option>
-                {UNIDADES.map((unit) => (
-                  <option key={unit} value={unit}>
-                    {unit}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col">
+                <select
+                  id="unit"
+                  name="unit"
+                  value={formData.unit}
+                  className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar unidad</option>
+
+                  {/* Unidades básicas */}
+                  <optgroup label="Unidades básicas">
+                    {UNIDADES_BASICAS.map((unit) => (
+                      <option key={`basic-${unit}`} value={unit}>
+                        {unit}
+                      </option>
+                    ))}
+                  </optgroup>
+
+                  {/* Unidades personalizadas */}
+                  {customUnits.length > 0 && (
+                    <optgroup label="Unidades personalizadas">
+                      {customUnits.map((unit) => (
+                        <option key={`custom-${unit}`} value={unit}>
+                          {unit}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+
+                  {/* Opción para agregar nueva unidad */}
+                  <optgroup label="Opciones">
+                    <option value="__add_new__">+ Agregar nueva unidad</option>
+                  </optgroup>
+                </select>
+
+                {/* Mensaje de ayuda para unidades personalizadas */}
+                <div className="mt-1 text-xs text-gray-500">
+                  Si necesitas una unidad que no está en la lista, selecciona
+                  "Agregar nueva unidad".
+                </div>
+              </div>
             </div>
             <div className="section w-full relative z-0 px-4">
               <input
@@ -1313,6 +1385,24 @@ export const FormGasto = ({ onSuccess }) => {
           )}
         </div>
       </div>
+      <AddUnitModal
+        isOpen={isAddingUnit}
+        onClose={() => setIsAddingUnit(false)}
+        onSuccess={(newUnit) => {
+          // Actualizar la lista de unidades personalizadas
+          setCustomUnits((prev) => [...prev, newUnit]);
+
+          // Seleccionar la nueva unidad
+          setFormData((prev) => ({
+            ...prev,
+            unit: newUnit,
+          }));
+
+          // Cerrar el modal
+          setIsAddingUnit(false);
+        }}
+        empresaId={empresaId}
+      />
     </div>
   );
 };

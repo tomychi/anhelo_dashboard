@@ -21,8 +21,13 @@ export const convertirUnidades = (valor, unidadOrigen, unidadDestino) => {
     ml: 1, // Unidad base para volumen
     cl: 10, // 1 cl = 10 ml
 
+    // Unidades de longitud
+    m: 100, // 1 m = 100 cm
+    cm: 1, // Unidad base para longitud
+
     // Unidades individuales
     unidad: 1, // No hay conversión para unidades individuales
+    hora: 1, // Tratamos hora como unidad no convertible
   };
 
   // Verificar que las unidades existan en nuestra tabla
@@ -30,8 +35,14 @@ export const convertirUnidades = (valor, unidadOrigen, unidadDestino) => {
     !factoresDeConversion[unidadOrigen] ||
     !factoresDeConversion[unidadDestino]
   ) {
+    // Si alguna de las unidades no está en nuestra tabla, verificamos si son del mismo tipo
+    if (unidadOrigen === unidadDestino) {
+      return valor; // Si son iguales, retornamos el valor sin cambios
+    }
+
+    // Si son diferentes, asumimos que no se pueden convertir
     throw new Error(
-      `Conversión de ${unidadOrigen} a ${unidadDestino} no soportada`
+      `Conversión de ${unidadOrigen} a ${unidadDestino} no soportada. Las unidades personalizadas solo pueden convertirse a sí mismas.`
     );
   }
 
@@ -52,7 +63,7 @@ export const convertirUnidades = (valor, unidadOrigen, unidadDestino) => {
   return resultado;
 };
 
-// Función para determinar el tipo de unidad (masa, volumen o unidad)
+// Función para determinar el tipo de unidad (masa, volumen, longitud o unidad)
 const getTipoUnidad = (unidad) => {
   unidad = unidad.toLowerCase();
 
@@ -60,11 +71,14 @@ const getTipoUnidad = (unidad) => {
     return "masa";
   } else if (["l", "ml", "cl"].includes(unidad)) {
     return "volumen";
-  } else if (unidad === "unidad") {
+  } else if (["m", "cm"].includes(unidad)) {
+    return "longitud";
+  } else if (["unidad", "hora"].includes(unidad)) {
     return "unidad";
   }
 
-  throw new Error(`Unidad desconocida: ${unidad}`);
+  // Para unidades personalizadas, las tratamos como tipo "personalizada"
+  return "personalizada";
 };
 
 // Función para calcular el costo actualizado de un material derivado
@@ -77,11 +91,26 @@ export const calcularCostoMaterialDerivado = (
 ) => {
   try {
     // Obtener la cantidad total en la unidad del material derivado
-    const cantidadTotalEnUnidadMaterial = convertirUnidades(
-      cantidadCompra,
-      unidadCompra,
-      unidadMaterial
-    );
+    let cantidadTotalEnUnidadMaterial;
+
+    try {
+      // Intentar convertir entre unidades conocidas
+      cantidadTotalEnUnidadMaterial = convertirUnidades(
+        cantidadCompra,
+        unidadCompra,
+        unidadMaterial
+      );
+    } catch (error) {
+      // Si la conversión falla, verificamos si son unidades personalizadas
+      if (unidadCompra !== unidadMaterial) {
+        throw new Error(
+          `No se puede convertir de ${unidadCompra} a ${unidadMaterial}. Para unidades personalizadas, ambas deben ser iguales.`
+        );
+      }
+
+      // Si son la misma unidad personalizada, usamos la cantidad directamente
+      cantidadTotalEnUnidadMaterial = cantidadCompra;
+    }
 
     // Calcular cuántas unidades del material derivado se pueden hacer
     const unidadesMaterialDerivado =
