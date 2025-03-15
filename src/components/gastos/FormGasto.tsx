@@ -30,6 +30,7 @@ import {
   calcularCostoMaterialDerivado,
 } from "../../helpers/unitConverter"; // Importamos funciones de conversión
 import AddUnitModal from "./AddUnitModal";
+import UnidadSelector from "./UnidadSelector";
 
 // Categorías predeterminadas
 const MATERIAPRIMA_CATEGORY = "materia prima";
@@ -1167,51 +1168,18 @@ export const FormGasto = ({ onSuccess }) => {
                 required
               />
             </div>
-            <div className="section relative z-0 px-4">
-              <div className="flex flex-col">
-                <select
-                  id="unit"
-                  name="unit"
-                  value={formData.unit}
-                  className="cursor-pointer custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Seleccionar unidad</option>
 
-                  {/* Unidades básicas */}
-                  <optgroup label="Unidades básicas">
-                    {UNIDADES_BASICAS.map((unit) => (
-                      <option key={`basic-${unit}`} value={unit}>
-                        {unit}
-                      </option>
-                    ))}
-                  </optgroup>
+            {/* Nuevo componente UnidadSelector reemplaza al select anterior */}
+            <UnidadSelector
+              selectedUnit={formData.unit}
+              onUnitChange={(unit) =>
+                setFormData((prev) => ({ ...prev, unit }))
+              }
+              formData={formData}
+              setFormData={setFormData}
+              onAddUnit={() => setIsAddingUnit(true)}
+            />
 
-                  {/* Unidades personalizadas */}
-                  {customUnits.length > 0 && (
-                    <optgroup label="Unidades personalizadas">
-                      {customUnits.map((unit) => (
-                        <option key={`custom-${unit}`} value={unit}>
-                          {unit}
-                        </option>
-                      ))}
-                    </optgroup>
-                  )}
-
-                  {/* Opción para agregar nueva unidad */}
-                  <optgroup label="Opciones">
-                    <option value="__add_new__">+ Agregar nueva unidad</option>
-                  </optgroup>
-                </select>
-
-                {/* Mensaje de ayuda para unidades personalizadas */}
-                <div className="mt-1 text-xs text-gray-500">
-                  Si necesitas una unidad que no está en la lista, selecciona
-                  "Agregar nueva unidad".
-                </div>
-              </div>
-            </div>
             <div className="section w-full relative z-0 px-4">
               <input
                 type="number"
@@ -1389,9 +1357,6 @@ export const FormGasto = ({ onSuccess }) => {
         isOpen={isAddingUnit}
         onClose={() => setIsAddingUnit(false)}
         onSuccess={(newUnit) => {
-          // Actualizar la lista de unidades personalizadas
-          setCustomUnits((prev) => [...prev, newUnit]);
-
           // Seleccionar la nueva unidad
           setFormData((prev) => ({
             ...prev,
