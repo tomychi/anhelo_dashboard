@@ -76,16 +76,14 @@ export const AddCategoryForm = ({ onCancel, onSuccess, empresaId }) => {
         }
       }
 
-      // Preparar la nueva categoría
-      let newCategory;
-      if (isRecurring) {
-        // Para categorías recurrentes, crear un objeto con el nombre como clave y un array de ítems
-        const validItems = recurringItems.filter((item) => item.trim() !== "");
-        newCategory = { [categoryName.toLowerCase()]: validItems };
-      } else {
-        // Para categorías simples, solo guardar el nombre
-        newCategory = categoryName.toLowerCase();
-      }
+      // Preparar la nueva categoría con la estructura requerida
+      const newCategory = {
+        nombre: categoryName.toLowerCase(),
+        periodicidad: 1, // Valor por defecto
+        items: isRecurring
+          ? recurringItems.filter((item) => item.trim() !== "")
+          : [],
+      };
 
       // Añadir la nueva categoría
       const updatedCategories = [...existingCategories, newCategory];
