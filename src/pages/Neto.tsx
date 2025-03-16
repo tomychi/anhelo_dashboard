@@ -788,7 +788,9 @@ export const Neto = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
-        <p className="text-black font-bold text-4xl mt-1">Rentabilidad</p>
+        <p className="text-black font-bold text-2xl mt-1">
+          Estructura de costos
+        </p>
       </div>
 
       <div className="font-coolvetica">

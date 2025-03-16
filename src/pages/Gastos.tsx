@@ -134,7 +134,7 @@ export const Gastos: React.FC = () => {
 				`}
       </style>
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
-        <p className="text-black font-bold text-4xl mt-1">Gastos</p>
+        <p className="text-black font-bold text-2xl mt-1">Gastos</p>
         {/* Modificamos el botón para que abra el modal en lugar de navegar */}
         <button
           className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
