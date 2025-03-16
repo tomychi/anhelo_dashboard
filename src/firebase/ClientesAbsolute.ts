@@ -1224,3 +1224,223 @@ export const subscribeToKpiConfig = (
 
   return unsubscribe;
 };
+
+// Añadir estas funciones al final de ClientesAbsolute.ts
+
+/**
+ * Interfaz para la estructura de las categorías de gastos con periodicidad
+ */
+export interface CategoriaGastoConfig {
+  nombre: string;
+  periodicidad: number; // en días
+  items: string[];
+}
+
+/**
+ * Obtiene la configuración de categorías de gastos para una empresa
+ * @param empresaId ID de la empresa
+ * @returns Array con la configuración de categorías de gastos
+ */
+export const getGastosCategoriesConfig = async (
+  empresaId: string
+): Promise<CategoriaGastoConfig[]> => {
+  if (!empresaId) return [];
+
+  const firestore = getFirestore();
+  try {
+    // Referencia al documento principal de la empresa
+    const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+    const empresaDoc = await getDoc(empresaRef);
+
+    // Verificar si existe y tiene configuración de categorías de gastos
+    if (empresaDoc.exists() && empresaDoc.data()?.config?.gastosCategories) {
+      return empresaDoc.data().config.gastosCategories || [];
+    }
+
+    // Si no existe configuración con la nueva estructura, pero existe la antigua,
+    // convertimos el formato antiguo al nuevo
+    if (empresaDoc.exists() && empresaDoc.data()?.gastosCategories) {
+      const categoriasAntiguas = empresaDoc.data().gastosCategories || [];
+      const categoriasNuevas: CategoriaGastoConfig[] = [];
+
+      // Periodicidades por defecto según tipo de categoría
+      const periodicidadesDefault = {
+        "materia prima": 1,
+        infraestructura: 31,
+        "empleados de cocina y produccion": 15,
+        otros: 1,
+      };
+
+      // Procesar categorías antiguas para convertirlas al nuevo formato
+      let indice = 0;
+      while (indice < categoriasAntiguas.length) {
+        const item = categoriasAntiguas[indice];
+
+        // Si es una cadena, es el nombre de una categoría
+        if (typeof item === "string") {
+          categoriasNuevas.push({
+            nombre: item,
+            periodicidad: periodicidadesDefault[item.toLowerCase()] || 1,
+            items: [],
+          });
+          indice++;
+        }
+        // Si es un objeto y el siguiente elemento es un array, son items de la categoría
+        else if (
+          typeof item === "object" &&
+          indice + 1 < categoriasAntiguas.length &&
+          Array.isArray(categoriasAntiguas[indice + 1])
+        ) {
+          const nombreCategoria = Object.keys(item)[0]; // Asumimos que solo tiene una clave
+          categoriasNuevas.push({
+            nombre: nombreCategoria,
+            periodicidad:
+              periodicidadesDefault[nombreCategoria.toLowerCase()] || 1,
+            items: categoriasAntiguas[indice + 1], // Este es el array de items
+          });
+          indice += 2; // Saltamos el objeto y el array
+        } else {
+          indice++; // Si no sabemos qué es, simplemente avanzamos
+        }
+      }
+
+      // Guardar la nueva estructura en Firebase
+      await updateGastosCategoriesConfig(empresaId, categoriasNuevas);
+
+      return categoriasNuevas;
+    }
+
+    // Si no hay configuración previa, crear una estructura básica
+    const categoriasBasicas: CategoriaGastoConfig[] = [
+      {
+        nombre: "materia prima",
+        periodicidad: 1,
+        items: [],
+      },
+      {
+        nombre: "infraestructura",
+        periodicidad: 31,
+        items: ["Alquiler", "Luz", "Gas", "Agua"],
+      },
+      {
+        nombre: "empleados de cocina y produccion",
+        periodicidad: 15,
+        items: [],
+      },
+      {
+        nombre: "otros",
+        periodicidad: 1,
+        items: [],
+      },
+    ];
+
+    // Guardar las categorías básicas en Firebase
+    await updateGastosCategoriesConfig(empresaId, categoriasBasicas);
+
+    return categoriasBasicas;
+  } catch (error) {
+    console.error(
+      "Error al obtener configuración de categorías de gastos:",
+      error
+    );
+    return [];
+  }
+};
+
+/**
+ * Actualiza la configuración completa de categorías de gastos para una empresa
+ * @param empresaId ID de la empresa
+ * @param categorias Nueva configuración de categorías de gastos
+ */
+export const updateGastosCategoriesConfig = async (
+  empresaId: string,
+  categorias: CategoriaGastoConfig[]
+): Promise<void> => {
+  if (!empresaId) return;
+
+  const firestore = getFirestore();
+  try {
+    // Obtener referencia al documento principal de la empresa
+    const empresaRef = doc(firestore, "absoluteClientes", empresaId);
+
+    // Obtener documento actual para actualizar la configuración
+    const empresaDoc = await getDoc(empresaRef);
+
+    if (!empresaDoc.exists()) {
+      throw new Error("La empresa no existe");
+    }
+
+    // Obtener la configuración actual
+    const currentData = empresaDoc.data();
+    const currentConfig = currentData.config || {};
+
+    // Crear la configuración actualizada
+    const updatedConfig = {
+      ...currentConfig,
+      gastosCategories: categorias,
+      ultimaActualizacion: new Date(),
+    };
+
+    // Actualizar la configuración en Firestore
+    await updateDoc(empresaRef, {
+      config: updatedConfig,
+      ultimaActualizacion: new Date(),
+    });
+
+    console.log(
+      "Configuración de categorías de gastos actualizada correctamente"
+    );
+  } catch (error) {
+    console.error(
+      "Error al actualizar configuración de categorías de gastos:",
+      error
+    );
+    throw error;
+  }
+};
+
+/**
+ * Actualiza la periodicidad de una categoría específica
+ * @param empresaId ID de la empresa
+ * @param categoriaNombre Nombre de la categoría a actualizar
+ * @param nuevaPeriodicidad Nueva periodicidad en días
+ */
+export const updateCategoriaPeriodicidad = async (
+  empresaId: string,
+  categoriaNombre: string,
+  nuevaPeriodicidad: number
+): Promise<void> => {
+  if (!empresaId || !categoriaNombre) return;
+
+  try {
+    // Obtener la configuración actual de categorías
+    const categoriasActuales = await getGastosCategoriesConfig(empresaId);
+
+    // Buscar la categoría específica
+    const categoriaIndex = categoriasActuales.findIndex(
+      (cat) => cat.nombre.toLowerCase() === categoriaNombre.toLowerCase()
+    );
+
+    // Si la categoría no existe, añadirla
+    if (categoriaIndex === -1) {
+      categoriasActuales.push({
+        nombre: categoriaNombre,
+        periodicidad: nuevaPeriodicidad,
+        items: [],
+      });
+    } else {
+      // Actualizar la periodicidad de la categoría existente
+      categoriasActuales[categoriaIndex].periodicidad = nuevaPeriodicidad;
+    }
+
+    // Guardar la configuración actualizada
+    await updateGastosCategoriesConfig(empresaId, categoriasActuales);
+
+    console.log(
+      `Periodicidad de ${categoriaNombre} actualizada a ${nuevaPeriodicidad} días`
+    );
+  } catch (error) {
+    console.error("Error al actualizar periodicidad de categoría:", error);
+    throw error;
+  }
+};

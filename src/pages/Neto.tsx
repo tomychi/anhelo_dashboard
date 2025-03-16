@@ -1,55 +1,103 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/configureStore";
-import Calendar from "../components/Calendar";
 import {
   ReadGastosSinceTwoMonthsAgo,
   ReadMaterials,
 } from "../firebase/ReadData";
-import { Gasto, Cadete, Vuelta } from "../types/types";
-import Tooltip from "../components/Tooltip";
+import { Gasto } from "../types/types";
+import PeriodicidadModal from "../components/gastos/PeriodicidadModal";
+import {
+  getGastosCategoriesConfig,
+  updateCategoriaPeriodicidad,
+  CategoriaGastoConfig,
+} from "../firebase/ClientesAbsolute";
 
-interface Material {
-  id: string;
-  nombre: string;
-  categoria: string;
-  costo: number;
-  stock: number;
-  unidadPorPrecio: number;
-  unit: string;
-}
+// SVG de configuración (engranaje)
+const CogIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-4 h-4"
+  >
+    <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06 .06a2 2 0 0 1 0 2.83a2 2 0 0 1 -2.83 0l-.06 -.06a1.65 1.65 0 0 0 -1.82 -.33a1.65 1.65 0 0 0 -1 1.51v.17a2 2 0 0 1 -2 2a2 2 0 0 1 -2 -2v-.17a1.65 1.65 0 0 0 -1 -1.51a1.65 1.65 0 0 0 -1.82 .33l-.06 .06a2 2 0 0 1 -2.83 0a2 2 0 0 1 0 -2.83l.06 -.06a1.65 1.65 0 0 0 .33 -1.82a1.65 1.65 0 0 0 -1.51 -1H3a2 2 0 0 1 -2 -2a2 2 0 0 1 2 -2h.17a1.65 1.65 0 0 0 1.51 -1a1.65 1.65 0 0 0 -.33 -1.82l-.06 -.06a2 2 0 0 1 0 -2.83a2 2 0 0 1 2.83 0l.06 .06a1.65 1.65 0 0 0 1.82 .33H9a1.65 1.65 0 0 0 1 -1.51V3a2 2 0 0 1 2 -2a2 2 0 0 1 2 2v.17a1.65 1.65 0 0 0 1 1.51a1.65 1.65 0 0 0 1.82 -.33l.06 -.06a2 2 0 0 1 2.83 0a2 2 0 0 1 0 2.83l-.06 .06a1.65 1.65 0 0 0 -.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2a2 2 0 0 1 -2 2h-.17a1.65 1.65 0 0 0 -1.51 1z"></path>
+  </svg>
+);
 
 export const Neto = () => {
-  const {
-    facturacionTotal,
-    neto,
-    expenseData,
-    totalProductosVendidos,
-    vueltas,
-    valueDate,
-  } = useSelector((state: RootState) => state.data);
+  // Obtener datos del Redux store
+  const { facturacionTotal, neto, expenseData, valueDate } = useSelector(
+    (state: RootState) => state.data
+  );
+  const auth = useSelector((state: RootState) => state.auth);
+  const empresaId = auth.usuario?.id;
 
-  const [gastosHaceDosMeses, setGastosHaceDosMeses] = useState<Gasto[]>([]);
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [materials, setMaterials] = useState<Material[]>([]);
+  // Estado para los gastos
+  const [gastosPorCategoria, setGastosPorCategoria] = useState<{
+    [key: string]: number;
+  }>({});
+  const [totalGastos, setTotalGastos] = useState<number>(0);
+  const [excedenteValue, setExcedenteValue] = useState<number>(0);
 
+  // Estado para el modal de configuración de periodicidad
+  const [modalOpen, setModalOpen] = useState(false);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
+  const [periodicidades, setPeriodicidades] = useState<{
+    [key: string]: number;
+  }>({});
+  const [loading, setLoading] = useState(false);
+
+  // Calcular la materia prima (bruto - neto)
+  const materiaPrima = facturacionTotal - neto;
+
+  // Función para formatear números como moneda
+  const formatoMoneda = (valor: number) => {
+    return `$ ${valor.toFixed(0)}`;
+  };
+
+  // Función para calcular el porcentaje respecto a la facturación total
+  const calcularPorcentaje = (valor: number) => {
+    if (facturacionTotal === 0) return "0%";
+    return `${((valor / facturacionTotal) * 100).toFixed(1)}%`;
+  };
+
+  // Cargar configuraciones de periodicidad desde Firebase
   useEffect(() => {
-    const fetchMaterials = async () => {
+    const cargarPeriodicidades = async () => {
+      if (!empresaId) return;
+
+      setLoading(true);
       try {
-        const materialsData = await ReadMaterials();
-        setMaterials(materialsData);
+        const categoriasConfig = await getGastosCategoriesConfig(empresaId);
+
+        // Convertir a objeto de periodicidades para uso más fácil
+        const periodicidadesObj = {};
+        categoriasConfig.forEach((cat) => {
+          periodicidadesObj[cat.nombre] = cat.periodicidad;
+        });
+
+        setPeriodicidades(periodicidadesObj);
+        console.log("Periodicidades cargadas:", periodicidadesObj);
       } catch (error) {
-        console.error("Error fetching materials:", error);
+        console.error("Error al cargar periodicidades:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchMaterials();
-  }, []);
+    cargarPeriodicidades();
+  }, [empresaId]);
 
-  // Función para calcular los días seleccionados en el rango
+  // Calcular cuántos días hay en el período seleccionado
   const calcularDiasSeleccionados = (): number => {
     if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
-      return 0;
+      return 1; // Por defecto, un día
     }
     const startDate = new Date(valueDate.startDate);
     const endDate = new Date(valueDate.endDate);
@@ -57,733 +105,157 @@ export const Neto = () => {
     return Math.ceil(diferenciaTiempo / (1000 * 3600 * 24)) + 1;
   };
 
-  // Función para convertir la fecha de dd/mm/yyyy a yyyy-mm-dd
-  const convertirFecha = (fecha: string): string => {
-    const [dia, mes, año] = fecha.split("/");
-    return `${año}-${mes}-${dia}`;
-  };
-
-  // Función auxiliar general para calcular el total ajustado por días del mes y rango
-  const getGastoAjustadoPorDias = (total: number, fecha: string): number => {
-    const fechaFormateada = convertirFecha(fecha);
-    const fechaGasto = new Date(fechaFormateada);
-    const diasDelMes = new Date(
-      fechaGasto.getFullYear(),
-      fechaGasto.getMonth() + 1,
-      0
-    ).getDate();
-    const gastoDiario = total / diasDelMes;
-    const diasSeleccionados = calcularDiasSeleccionados();
-    return gastoDiario * diasSeleccionados;
-  }; // Nueva función para obtener gastos de infraestructura
-
-  const getMarketingTotal = (): {
-    total: number;
-    items: Array<{
-      name: string;
-      total: number;
-      originalTotal: number;
-      fecha: string;
-      isEstimated: boolean;
-    }>;
-  } => {
-    const marketingExpenses = expenseData.filter(
-      (expense: Gasto) => expense.category === "marketing"
-    );
-
-    if (marketingExpenses.length > 0) {
-      // Gastos del período actual
-      const items = marketingExpenses.map((expense) => ({
-        name: expense.name,
-        total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-        originalTotal: expense.total,
-        fecha: expense.fecha,
-        isEstimated: false,
-      }));
-      const total = items.reduce((acc, item) => acc + item.total, 0);
-      return { total, items };
-    } else {
-      // Buscar en datos históricos
-      const historicalMarketing = gastosHaceDosMeses.filter(
-        (expense) => expense.category === "marketing"
-      );
-
-      if (historicalMarketing.length > 0) {
-        const latestByName = new Map();
-        historicalMarketing.forEach((expense) => {
-          const existing = latestByName.get(expense.name);
-          if (
-            !existing ||
-            new Date(convertirFecha(expense.fecha)) >
-              new Date(convertirFecha(existing.fecha))
-          ) {
-            latestByName.set(expense.name, expense);
-          }
-        });
-
-        const items = Array.from(latestByName.values()).map((expense) => ({
-          name: expense.name,
-          total: getGastoAjustadoPorDias(expense.total, expense.fecha),
-          originalTotal: expense.total,
-          fecha: expense.fecha,
-          isEstimated: true,
-        }));
-
-        const total = items.reduce((acc, item) => acc + item.total, 0);
-        return { total, items };
-      }
-    }
-
-    return { total: 0, items: [] };
-  };
-
+  // Procesar los gastos por categoría
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await ReadGastosSinceTwoMonthsAgo();
-        setGastosHaceDosMeses(data as Gasto[]);
-      } catch (error) {
-        console.error("Error fetching gastos:", error);
-      }
-    };
+    const procesarGastos = () => {
+      // Inicializar objeto para almacenar sumas por categoría
+      const categorias: { [key: string]: number } = {};
+      let sumaTotal = 0;
 
-    fetchData();
-  }, []);
+      // Mostrar datos iniciales
+      console.log("====== DATOS INICIALES ======");
+      console.log("Facturación Total (Bruto):", facturacionTotal);
+      console.log("Neto:", neto);
+      console.log("Materia Prima (calculada):", materiaPrima);
+      console.log("Días seleccionados:", calcularDiasSeleccionados());
+      console.log("Periodicidades configuradas:", periodicidades);
 
-  const cadetePagas = useMemo(() => {
-    const pagas: { [key: string]: number } = {};
-    (vueltas as Cadete[]).forEach((cadete: Cadete) => {
-      if (cadete.name && cadete.vueltas) {
-        const totalPaga = cadete.vueltas.reduce(
-          (sum: number, vuelta: Vuelta) => {
-            return sum + (vuelta.paga || 0);
-          },
-          0
-        );
-        pagas[cadete.name] = totalPaga;
-      }
-    });
-    return pagas;
-  }, [vueltas]);
+      console.log("====== GASTOS POR PROCESAR ======");
+      console.log(expenseData);
 
-  const cadeteTotal: number =
-    expenseData.find((expense: Gasto) => expense.category === "cadetes")
-      ?.total || Object.values(cadetePagas).reduce((acc, val) => acc + val, 0);
+      // Agrupar gastos por categoría para calcular sumas
+      const gastosPorCategoria = {};
 
-  const calcularDiasDelMes = (): number => {
-    if (!valueDate || !valueDate.startDate) {
-      return 0;
-    }
-    const startDate = new Date(valueDate.startDate);
-    return new Date(
-      startDate.getFullYear(),
-      startDate.getMonth() + 1,
-      0
-    ).getDate();
-  };
-
-  const getCocinaYProduccionTotal = () => {
-    if (!valueDate?.startDate) return 0;
-
-    const cocinaExpenses = expenseData.filter(
-      (expense: Gasto) => expense.category === "cocina y produccion"
-    );
-
-    console.log("[Debug] Gastos actuales:", cocinaExpenses);
-
-    if (cocinaExpenses.length > 0) {
-      const total = cocinaExpenses.reduce(
-        (acc, expense) => acc + expense.total,
-        0
-      );
-      console.log("[Debug] Total actual:", total);
-      return total;
-    }
-
-    const selectedDate = new Date(valueDate.startDate);
-    const dayOfWeek = selectedDate.getDay();
-    console.log(
-      "[Debug] Fecha seleccionada:",
-      selectedDate.toISOString(),
-      "día:",
-      dayOfWeek
-    );
-
-    // Filtrar gastos del mismo día de la semana anterior
-    const lastWeekExpenses = gastosHaceDosMeses.filter((expense) => {
-      const expenseDate = new Date(convertirFecha(expense.fecha));
-      const isMatch =
-        expenseDate.getDay() === dayOfWeek &&
-        expense.category === "cocina y produccion";
-
-      if (isMatch) {
-        console.log("[Debug] Encontrado gasto de la semana anterior:", {
-          fecha: expense.fecha,
-          nombre: expense.name,
-          horas: expense.quantity,
-          total: expense.total,
-        });
-      }
-      return isMatch;
-    });
-
-    if (lastWeekExpenses.length === 0) {
-      console.log(
-        "[Debug] No se encontraron gastos del mismo día de la semana anterior"
-      );
-      return 0;
-    }
-
-    const totalHoras = lastWeekExpenses.reduce(
-      (acc, expense) => acc + (expense.quantity || 0),
-      0
-    );
-    const totalGastos = lastWeekExpenses.reduce(
-      (acc, expense) => acc + expense.total,
-      0
-    );
-    const costoPromedioPorHora = totalGastos / totalHoras;
-
-    console.log("[Debug] Resumen:", {
-      totalHoras,
-      totalGastos,
-      costoPromedioPorHora,
-      estimatedTotal: totalHoras * costoPromedioPorHora,
-    });
-
-    return totalHoras * costoPromedioPorHora;
-  };
-
-  const cocinaTotal = getCocinaYProduccionTotal();
-
-  const errorValue: number = facturacionTotal * 0.05;
-  const materiaPrima: number = facturacionTotal - neto;
-  const marketingData = getMarketingTotal();
-
-  const getGastoAjustadoPorDiasPeriodo = (
-    total: number,
-    fecha: string,
-    diasPeriodo: number = 31
-  ): number => {
-    const gastoDiario = total / diasPeriodo;
-    return gastoDiario * calcularDiasSeleccionados();
-  };
-
-  const getHistoricalExpenseTotal = (
-    expenseData: Gasto[],
-    gastosHaceDosMeses: Gasto[],
-    category: string
-  ) => {
-    const historicalExpenses = gastosHaceDosMeses.filter(
-      (expense) => expense.category === category
-    );
-
-    if (historicalExpenses.length > 0) {
-      const latestByName = new Map();
-      historicalExpenses.forEach((expense) => {
-        const existing = latestByName.get(expense.name);
-        if (
-          !existing ||
-          new Date(convertirFecha(expense.fecha)) >
-            new Date(convertirFecha(existing.fecha))
-        ) {
-          latestByName.set(expense.name, expense);
+      // Primero, agrupamos todos los gastos por categoría
+      expenseData.forEach((gasto: Gasto) => {
+        if (!gastosPorCategoria[gasto.category]) {
+          gastosPorCategoria[gasto.category] = [];
         }
+        gastosPorCategoria[gasto.category].push(gasto);
       });
 
-      const items = Array.from(latestByName.values()).map((expense) => ({
-        name: expense.name,
-        total: getGastoAjustadoPorDiasPeriodo(expense.total, expense.fecha, 62),
-        originalTotal: expense.total,
-        fecha: expense.fecha,
-        isEstimated: true,
+      // Calcular la suma para cada categoría teniendo en cuenta la periodicidad
+      Object.entries(gastosPorCategoria).forEach(([categoria, gastos]) => {
+        console.log(`\n--- CATEGORÍA: ${categoria.toUpperCase()} ---`);
+        let sumaCategoria = 0;
+
+        // @ts-ignore - Sabemos que gastos es un array
+        gastos.forEach((gasto) => {
+          // Obtener la periodicidad configurada para esta categoría
+          const periodicidad = periodicidades[categoria] || 1;
+
+          // Ajustar el valor según la periodicidad y días seleccionados
+          const valorAjustado =
+            periodicidad === 1
+              ? gasto.total
+              : (gasto.total / periodicidad) * calcularDiasSeleccionados();
+
+          console.log(
+            `${gasto.name}: Valor original $ ${gasto.total.toFixed(0)}, Ajustado $ ${valorAjustado.toFixed(0)}`
+          );
+          sumaCategoria += valorAjustado;
+        });
+
+        console.log(
+          `TOTAL ${categoria.toUpperCase()}: $ ${sumaCategoria.toFixed(0)}`
+        );
+
+        // Guardar la suma en el objeto de categorías
+        categorias[categoria] = sumaCategoria;
+        sumaTotal += sumaCategoria;
+      });
+
+      // Añadir la materia prima (si no existe como categoría)
+      if (!categorias["materia prima"]) {
+        categorias["materia prima"] = materiaPrima;
+        sumaTotal += materiaPrima;
+        console.log(
+          `\nAñadiendo materia prima calculada: $ ${materiaPrima.toFixed(0)}`
+        );
+      } else {
+        console.log(
+          `\nMateria prima ya existe en categorías, valor total: $ ${categorias["materia prima"].toFixed(0)}`
+        );
+      }
+
+      // Calcular el excedente (facturación total - gastos totales)
+      const excedente = facturacionTotal - sumaTotal;
+
+      console.log("\n====== RESUMEN DE GASTOS AGRUPADOS ======");
+      console.log("Categorías con sus totales:");
+      Object.entries(categorias).forEach(([categoria, total]) => {
+        console.log(
+          `${categoria}: $ ${total.toFixed(0)} (${calcularPorcentaje(total)})`
+        );
+      });
+      console.log(`\nTotal de Gastos: $ ${sumaTotal.toFixed(0)}`);
+      console.log(
+        `Excedente calculado: $ ${excedente.toFixed(0)} (${calcularPorcentaje(excedente)})`
+      );
+
+      // Actualizar estados
+      setGastosPorCategoria(categorias);
+      setTotalGastos(sumaTotal);
+      setExcedenteValue(excedente);
+    };
+
+    procesarGastos();
+  }, [
+    expenseData,
+    facturacionTotal,
+    materiaPrima,
+    neto,
+    periodicidades,
+    valueDate,
+  ]);
+
+  // Manejar la apertura del modal de configuración
+  const handleOpenPeriodicidadModal = (categoria: string) => {
+    setCategoriaSeleccionada(categoria);
+    setModalOpen(true);
+  };
+
+  // Manejar la actualización de la periodicidad
+  const handleUpdatePeriodicidad = async (
+    categoria: string,
+    nuevaPeriodicidad: number
+  ) => {
+    if (!empresaId) return;
+
+    setLoading(true);
+    try {
+      // Actualizar en Firebase
+      await updateCategoriaPeriodicidad(
+        empresaId,
+        categoria,
+        nuevaPeriodicidad
+      );
+
+      // Actualizar el estado local
+      setPeriodicidades((prev) => ({
+        ...prev,
+        [categoria]: nuevaPeriodicidad,
       }));
 
-      return {
-        total: items.reduce((acc, item) => acc + item.total, 0),
-        items,
-      };
+      console.log(
+        `Periodicidad de ${categoria} actualizada a ${nuevaPeriodicidad} días`
+      );
+    } catch (error) {
+      console.error("Error al actualizar periodicidad:", error);
+      alert("Hubo un error al guardar la configuración. Intente nuevamente.");
+    } finally {
+      setLoading(false);
     }
-
-    return { total: 0, items: [] };
   };
 
-  const getLegalTotal = () =>
-    getHistoricalExpenseTotal(expenseData, gastosHaceDosMeses, "legalidad");
-  const getExtraTotal = () =>
-    getHistoricalExpenseTotal(expenseData, gastosHaceDosMeses, "extra");
-
-  const legalData = getLegalTotal();
-  const extraData = getExtraTotal();
-
-  const getInfrastructureTotal = (): {
-    total: number;
-    items: Array<{
-      name: string;
-      total: number;
-      originalTotal: number;
-      fecha: string;
-      isEstimated: boolean;
-    }>;
-  } => {
-    const requiredExpenses = ["alquiler", "gas", "wifi", "luz"];
-    const items: Array<{
-      name: string;
-      total: number;
-      originalTotal: number;
-      fecha: string;
-      isEstimated: boolean;
-    }> = [];
-
-    // Check current period expenses first
-    const currentExpenses = expenseData.filter(
-      (expense: Gasto) => expense.category === "infraestructura"
+  if (loading && Object.keys(periodicidades).length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-600">Cargando configuración...</p>
+      </div>
     );
-
-    // Check historical data
-    const historicalExpenses = gastosHaceDosMeses.filter(
-      (expense) => expense.category === "infraestructura"
-    );
-
-    // Process each required expense type
-    requiredExpenses.forEach((expenseType) => {
-      // Look in current period first
-      const currentExpense = currentExpenses.find((expense) =>
-        expense.name.toLowerCase().includes(expenseType)
-      );
-
-      if (currentExpense) {
-        items.push({
-          name: currentExpense.name,
-          total: getGastoAjustadoPorDias(
-            currentExpense.total,
-            currentExpense.fecha
-          ),
-          originalTotal: currentExpense.total,
-          fecha: currentExpense.fecha,
-          isEstimated: false,
-        });
-      } else {
-        // Look in historical data for the latest expense of this type
-        const historicalExpensesOfType = historicalExpenses
-          .filter((expense) => expense.name.toLowerCase().includes(expenseType))
-          .sort(
-            (a, b) =>
-              new Date(convertirFecha(b.fecha)).getTime() -
-              new Date(convertirFecha(a.fecha)).getTime()
-          );
-
-        if (historicalExpensesOfType.length > 0) {
-          const latestExpense = historicalExpensesOfType[0];
-          const diasDelMes = new Date(
-            new Date(convertirFecha(latestExpense.fecha)).getFullYear(),
-            new Date(convertirFecha(latestExpense.fecha)).getMonth() + 1,
-            0
-          ).getDate();
-
-          items.push({
-            name: latestExpense.name,
-            total: getGastoAjustadoPorDiasPeriodo(
-              latestExpense.total,
-              latestExpense.fecha,
-              diasDelMes
-            ),
-            originalTotal: latestExpense.total,
-            fecha: latestExpense.fecha,
-            isEstimated: true,
-          });
-        }
-      }
-    });
-
-    return {
-      total: items.reduce((acc, item) => acc + item.total, 0),
-      items,
-    };
-  };
-
-  const infrastructureData = getInfrastructureTotal(); // Calcular gastos totales incluyendo infraestructura
-
-  const totalExpenses: number = [
-    materiaPrima,
-    cadeteTotal,
-    cocinaTotal,
-    marketingData.total,
-    infrastructureData.total,
-    legalData.total,
-    extraData.total,
-    errorValue,
-  ].reduce((acc, curr) => acc + curr, 0);
-
-  const excedenteValue: number = facturacionTotal - totalExpenses;
-
-  const calculatePercentage = (value: number): string => {
-    return ((value / facturacionTotal) * 100).toFixed(1) + "%";
-  };
-
-  const data = [
-    {
-      label: "Bruto",
-      value: facturacionTotal,
-      percentage: "100%",
-      estado: "Exacto",
-    },
-    {
-      label: "Materia prima",
-      value: materiaPrima,
-      percentage: calculatePercentage(materiaPrima),
-      estado: "Exacto",
-    },
-    {
-      label: "Legalidad",
-      value: legalData.total,
-      percentage: calculatePercentage(legalData.total),
-      manual: false,
-      estado: "Exacto",
-    },
-    {
-      label: "Cadete",
-      value: cadeteTotal,
-      percentage: calculatePercentage(cadeteTotal),
-      manual: !expenseData.find(
-        (expense: Gasto) => expense.category === "cadetes"
-      ),
-      estado: expenseData.find(
-        (expense: Gasto) => expense.category === "cadetes"
-      )
-        ? "Exacto"
-        : "Estimado",
-    },
-    {
-      label: "Cocina y producción",
-      value: cocinaTotal,
-      percentage: calculatePercentage(cocinaTotal),
-      manual: !expenseData.find(
-        (expense: Gasto) => expense.category === "cocina y produccion"
-      ),
-      estado: expenseData.find(
-        (expense: Gasto) => expense.category === "cocina y produccion"
-      )
-        ? "Exacto"
-        : "Estimado",
-    },
-    {
-      label: "Marketing",
-      value: marketingData.total,
-      percentage: calculatePercentage(marketingData.total),
-      manual: marketingData.isEstimated,
-      estado: marketingData.isEstimated ? "Estimado" : "Exacto",
-    },
-    {
-      label: "Infraestructura",
-      value: infrastructureData.total,
-      percentage: calculatePercentage(infrastructureData.total),
-      manual: infrastructureData.items.some((item) => item.isEstimated),
-      estado: infrastructureData.items.some((item) => item.isEstimated)
-        ? "Estimado"
-        : "Exacto",
-    },
-    {
-      label: "Extra",
-      value: extraData.total,
-      percentage: calculatePercentage(extraData.total),
-      manual: false,
-      estado: "Exacto",
-    },
-    {
-      label: "Error",
-      value: errorValue,
-      percentage: "5.0%",
-      estado: "Estimado",
-    },
-    {
-      label: "Excedente",
-      value: excedenteValue,
-      percentage: calculatePercentage(excedenteValue),
-      estado: "Estimado",
-    },
-  ];
-  const getCalculationDescription = (label: string): string | JSX.Element => {
-    switch (label) {
-      case "Bruto":
-        return `Es la facturación total sin ningún descuento. En este caso es: $ ${facturacionTotal.toFixed(0)}`;
-
-      case "Materia prima": {
-        const ingredientes = materials
-          .filter((material) => material.categoria === "ingredientes")
-          .sort((a, b) => b.costo - a.costo); // Ordenar por costo descendente
-
-        return (
-          <div>
-            <div className="mb-4">
-              <div className="text-sm font-medium text-gray-100">
-                Cálculo base:
-              </div>
-              <div className="ml-4 text-sm text-gray-100">
-                <div>Facturación total: $ {facturacionTotal.toFixed(0)}</div>
-                <div>Neto: $ {neto.toFixed(0)}</div>
-                <div>
-                  Materia prima total: $ {(facturacionTotal - neto).toFixed(0)}
-                </div>
-              </div>
-            </div>
-
-            <div className="text-sm font-medium mb-2 text-gray-100">
-              Desglose de materiales:
-            </div>
-            <div className="flex flex-col gap-2">
-              {ingredientes.map((material) => (
-                <span className="font-medium text-gray-100">
-                  {material.nombre}: {material.costo}
-                </span>
-              ))}
-            </div>
-
-            <div className="mt-4 text-xs text-gray-100">
-              * Los costos mostrados son los registrados en el sistema.
-              Verificar regularmente para mantener actualizado.
-            </div>
-          </div>
-        );
-      }
-
-      case "Cadete": {
-        const manualGasto = expenseData.find(
-          (expense: Gasto) => expense.category === "cadetes"
-        );
-        if (manualGasto) {
-          return `Se está usando el gasto manual ingresado en la categoría 'cadetes': $ ${manualGasto.total.toFixed(0)}`;
-        }
-        const detallesCadetes = Object.entries(cadetePagas)
-          .map(([name, paga]) => `${name}: $ ${paga.toFixed(0)}`)
-          .join("<br>");
-        return `Se calcula sumando las pagas de todos los cadetes:<br>${detallesCadetes}<br>Total: $ ${cadeteTotal.toFixed(0)}`;
-      }
-
-      case "Cocina y producción": {
-        const cocinaExpenses = expenseData.filter(
-          (expense: Gasto) => expense.category === "cocina y produccion"
-        );
-
-        if (cocinaExpenses.length > 0) {
-          const total = cocinaExpenses.reduce(
-            (acc, expense) => acc + expense.total,
-            0
-          );
-          return `Se calcula sumando los gastos actuales:<br> ${cocinaExpenses
-            .map(
-              (expense) =>
-                `- ${expense.name}: ${expense.quantity} horas × $${(expense.total / expense.quantity).toFixed(0)} = $${expense.total.toFixed(0)}`
-            )
-            .join("<br>")}<br>Total: $${total.toFixed(0)}`;
-        }
-
-        const selectedDate = new Date(valueDate.startDate);
-        const dayOfWeek = selectedDate.getDay();
-
-        const lastWeekExpenses = gastosHaceDosMeses.filter((expense) => {
-          const expenseDate = new Date(convertirFecha(expense.fecha));
-          return (
-            expenseDate.getDay() === dayOfWeek &&
-            expense.category === "cocina y produccion"
-          );
-        });
-
-        if (lastWeekExpenses.length > 0) {
-          const totalHoras = lastWeekExpenses.reduce(
-            (acc, expense) => acc + (expense.quantity || 0),
-            0
-          );
-          const totalGastos = lastWeekExpenses.reduce(
-            (acc, expense) => acc + expense.total,
-            0
-          );
-          const costoPromedioPorHora = totalGastos / totalHoras;
-
-          return `Se estima basado en el mismo día de la semana anterior:<br>
-                        ${lastWeekExpenses
-                          .map(
-                            (expense) =>
-                              `- ${expense.name}: ${expense.quantity} horas × $${(expense.total / expense.quantity).toFixed(0)} = $${expense.total}`
-                          )
-                          .join("<br>")}<br>
-                        Total horas: ${totalHoras}<br>
-                        Costo promedio por hora: $${costoPromedioPorHora.toFixed(0)}<br>
-                        Estimación total: ${totalHoras} horas × $${costoPromedioPorHora.toFixed(0)} = $${(totalHoras * costoPromedioPorHora).toFixed(0)}`;
-        }
-
-        return "No hay datos suficientes para calcular el gasto.";
-      }
-
-      case "Legalidad": {
-        const itemDescriptions = legalData.items
-          .map((item) => {
-            return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ 62 días × ${calcularDiasSeleccionados()} días
-                    → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
-                    → Fecha registro: ${item.fecha}`;
-          })
-          .join("<br><br>");
-
-        return `Desglose de gastos legales (basado en datos de los últimos 2 meses dividiendolos por 62 dias):<br><br>${itemDescriptions}<br><br>Total: $ ${legalData.total.toFixed(0)}`;
-      }
-
-      case "Marketing": {
-        const itemDescriptions = marketingData.items
-          .map((item) => {
-            const diasDelMes = new Date(
-              new Date(convertirFecha(item.fecha)).getFullYear(),
-              new Date(convertirFecha(item.fecha)).getMonth() + 1,
-              0
-            ).getDate();
-
-            return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días seleccionados
-                    → Estado: ${item.isEstimated ? "Estimado (usando datos históricos)" : "Exacto (datos actuales)"}
-                    → Fecha del gasto: ${item.fecha}`;
-          })
-          .join("<br><br>");
-
-        return `Desglose detallado de gastos de marketing  (basado en datos de los últimos 2 meses, seleccionando el ultimo en caso de ser un gasto concurrente y dividiendo por 31):<br><br>${itemDescriptions}<br><br>Total de marketing: $ ${marketingData.total.toFixed(0)}`;
-      }
-
-      case "Infraestructura": {
-        const itemDescriptions = infrastructureData.items
-          .map((item) => {
-            const diasDelMes = new Date(
-              new Date(convertirFecha(item.fecha)).getFullYear(),
-              new Date(convertirFecha(item.fecha)).getMonth() + 1,
-              0
-            ).getDate();
-
-            return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-                    → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-                    → Cálculo: $${item.originalTotal.toFixed(0)} ÷ ${diasDelMes} días × ${calcularDiasSeleccionados()} días
-                    → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
-                    → Fecha registro: ${item.fecha}`;
-          })
-          .join("<br><br>");
-
-        return `Desglose de gastos legales (basado en datos de los últimos 2 meses, seleccionando el ultimo en caso de ser un gasto concurrente y dividiendo por 31):<br><br>${itemDescriptions}<br><br>Total: $ ${infrastructureData.total.toFixed(0)}`;
-      }
-
-      case "Error":
-        return `Se calcula como el 5% de la facturación total:<br>$ ${facturacionTotal.toFixed(0)} × 5% = $ ${errorValue.toFixed(0)}`;
-
-      case "Extra": {
-        const itemDescriptions = extraData.items
-          .map((item) => {
-            return `${item.name}: $ ${item.total.toFixed(0)} (${calculatePercentage(item.total)})
-                        → Gasto mensual original: $ ${item.originalTotal.toFixed(0)}
-                        → Cálculo: $${item.originalTotal.toFixed(0)} ÷ 62 días × ${calcularDiasSeleccionados()} días
-                        → Estado: ${item.isEstimated ? "Estimado (histórico)" : "Exacto"}
-                        → Fecha registro: ${item.fecha}`;
-          })
-          .join("<br><br>");
-
-        return `Desglose de gastos extra (basado en datos de los últimos 2 meses dividiendolos por 62 dias):<br><br>${itemDescriptions}<br><br>Total: $ ${extraData.total.toFixed(0)}`;
-      }
-
-      case "Excedente":
-        return `Es la diferencia entre:<br>
-                    Facturación total: $ ${facturacionTotal.toFixed(0)}<br>
-                    - Total gastos: $ ${totalExpenses.toFixed(0)}<br>
-                    = $ ${excedenteValue.toFixed(0)}`;
-
-      default:
-        return "No hay información disponible sobre el cálculo de este gasto";
-    }
-  };
-
-  const renderHistoricalData = (label: string) => {
-    if (label === "Cocina y producción") {
-      const cocinaExpenses = expenseData.filter(
-        (expense: Gasto) => expense.category === "cocina y produccion"
-      );
-
-      return (
-        <tr>
-          <td colSpan={5} className="p-0">
-            <div className="bg-gray-50 px-4 py-3">
-              <div className="space-y-2">
-                {cocinaExpenses.map((expense, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">{expense.name}</span>
-                      <span className="text-sm text-gray-400 ">
-                        {expense.quantity} {expense.unit} - {expense.fecha}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span>${expense.total.toFixed(0)}</span>
-                      <span className="text-sm text-gray-400 ">
-                        {expense.estado}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-    if (
-      label === "Infraestructura" ||
-      label === "Marketing" ||
-      label === "Extra" ||
-      label === "Legalidad"
-    ) {
-      const data =
-        label === "Infraestructura"
-          ? infrastructureData
-          : label === "Marketing"
-            ? marketingData
-            : label === "Extra"
-              ? extraData
-              : legalData;
-      return (
-        <tr>
-          <td colSpan={5} className="p-0">
-            <div className="bg-gray-50 px-4 py-3">
-              <div className="space-y-2">
-                {data.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">{item.name}</span>
-                      <span className="text-sm text-gray-400 ">
-                        {item.fecha}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span>${item.total.toFixed(0)}</span>
-                      <span className="text-gray-400 ">
-                        {calculatePercentage(item.total)}
-                      </span>
-                      <span
-                        className={`text-sm ${item.isEstimated ? "text-red-500" : "text-black"}`}
-                      >
-                        {item.isEstimated ? "Estimado" : "Exacto"}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-    return null;
-  };
+  }
 
   return (
     <div className="flex flex-col">
@@ -794,66 +266,111 @@ export const Neto = () => {
       </div>
 
       <div className="font-coolvetica">
-        <table className="w-full text-xs text-left text-black">
+        <table className="w-full text-sm text-left text-black">
           <thead className="text-black border-b h-10">
             <tr>
               <th scope="col" className="pl-4 h-10 w-2/5">
-                Categoria
+                Categoría
               </th>
               <th scope="col" className="pl-4 h-10 w-1/5">
                 Total
               </th>
-              <th scope="col" className="pl-4 h-10 pr-1 w-1/5">
-                Estado
+              <th scope="col" className="pl-4 h-10 w-1/5">
+                Porcentaje
               </th>
-              <th scope="col" className="pl-4 h-10 pr-8 w-1/5">
-                %
+              <th scope="col" className="pl-4 h-10 w-1/5">
+                Periodicidad
               </th>
-              <th scope="col" className="pl-4 h-10 w-1/5"></th>
             </tr>
           </thead>
           <tbody>
-            {data.map(
-              ({ label, value, percentage, manual = false, estado }, index) => (
-                <React.Fragment key={index}>
-                  <tr
-                    className={`text-black border font-light h-10 border-black border-opacity-20 cursor-pointer hover:bg-gray-50 transition-colors`}
-                    onClick={() => {
-                      setExpandedRow(expandedRow === label ? null : label);
-                    }}
+            {/* Bruto (Facturación total) */}
+            <tr className="border-b h-10">
+              <th scope="row" className="pl-4 font-medium">
+                Bruto
+              </th>
+              <td className="pl-4">{formatoMoneda(facturacionTotal)}</td>
+              <td className="pl-4">100%</td>
+              <td className="pl-4"></td>
+            </tr>
+
+            {/* Neto */}
+            <tr className="border-b h-10">
+              <th scope="row" className="pl-4 font-medium">
+                Neto
+              </th>
+              <td className="pl-4">{formatoMoneda(neto)}</td>
+              <td className="pl-4">{calcularPorcentaje(neto)}</td>
+              <td className="pl-4"></td>
+            </tr>
+
+            {/* Materia Prima */}
+            <tr className="border-b h-10">
+              <th scope="row" className="pl-4 font-medium flex items-center">
+                <span>Materia Prima</span>
+                <button
+                  onClick={() => handleOpenPeriodicidadModal("materia prima")}
+                  className="ml-2 text-gray-500 hover:text-black"
+                >
+                  <CogIcon />
+                </button>
+              </th>
+              <td className="pl-4">{formatoMoneda(materiaPrima)}</td>
+              <td className="pl-4">{calcularPorcentaje(materiaPrima)}</td>
+              <td className="pl-4">
+                {periodicidades["materia prima"] || 1} día(s)
+              </td>
+            </tr>
+
+            {/* Otros gastos por categoría */}
+            {Object.entries(gastosPorCategoria)
+              .filter(([categoria]) => categoria !== "materia prima") // Evitamos duplicar materia prima
+              .sort(([, a], [, b]) => b - a) // Ordenar por valor (mayor a menor)
+              .map(([categoria, total], index) => (
+                <tr key={index} className="border-b h-10">
+                  <th
+                    scope="row"
+                    className="pl-4 font-medium capitalize flex items-center"
                   >
-                    <th scope="row" className="pl-4 h-10 w-2/5 font-light">
-                      {label}
-                    </th>
-                    <td className="pl-4 w-1/5 h-10 font-light">{`$ ${value.toFixed(0)}`}</td>
-                    <td className="pl-4 w-1/5 h-10 pr-1 font-bold">
-                      <div className="bg-gray-200 py-1 px-2 rounded-full">
-                        <p
-                          className={`text-center ${manual ? "text-red-500" : "text-black"}`}
-                        >
-                          {estado}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="pl-4 pr-8 w-1/5 h-10 font-light">
-                      {percentage}
-                    </td>
-                    <td className="pl-4 w-1/5 h-10 font-light relative">
-                      <div className="absolute right-3.5 bottom-2.5">
-                        <Tooltip
-                          text={getCalculationDescription(label)}
-                          position="down"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                  {expandedRow === label && renderHistoricalData(label)}
-                </React.Fragment>
-              )
-            )}
+                    <span>{categoria}</span>
+                    <button
+                      onClick={() => handleOpenPeriodicidadModal(categoria)}
+                      className="ml-2 text-gray-500 hover:text-black"
+                    >
+                      <CogIcon />
+                    </button>
+                  </th>
+                  <td className="pl-4">{formatoMoneda(total)}</td>
+                  <td className="pl-4">{calcularPorcentaje(total)}</td>
+                  <td className="pl-4">
+                    {periodicidades[categoria] || 1} día(s)
+                  </td>
+                </tr>
+              ))}
+
+            {/* Excedente */}
+            <tr className="border-b h-10 bg-gray-50">
+              <th scope="row" className="pl-4 font-medium">
+                Excedente
+              </th>
+              <td className="pl-4">{formatoMoneda(excedenteValue)}</td>
+              <td className="pl-4">{calcularPorcentaje(excedenteValue)}</td>
+              <td className="pl-4"></td>
+            </tr>
           </tbody>
         </table>
       </div>
+
+      {/* Modal de configuración de periodicidad */}
+      <PeriodicidadModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        categoria={categoriaSeleccionada}
+        periodicidadActual={periodicidades[categoriaSeleccionada] || 1}
+        onUpdate={handleUpdatePeriodicidad}
+      />
     </div>
   );
 };
+
+export default Neto;
