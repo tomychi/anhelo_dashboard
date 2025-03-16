@@ -78,7 +78,7 @@ export const Paginator = <T extends unknown>({
     <>
       {content}
       <div
-        className={`flex justify-center font-coolvetica flex-row gap-4 items-center mt-2 ${className}`}
+        className={`flex justify-center font-coolvetica font-black flex-row gap-8 items-center mt-6 ${className}`}
       >
         <img
           onClick={goToPreviousPage}
