@@ -1,4 +1,5 @@
 import React from "react";
+import arrowIcon from "../assets/arrowIcon.png";
 
 interface PaginatorProps<T> {
   items: T[];
@@ -72,59 +73,18 @@ export const Paginator = <T extends unknown>({
   return (
     <>
       {content}
-      <div className={`flex justify-center items-center my-4 ${className}`}>
-        <style>
-          {`
-            .pagination-button {
-              background-color: #f3f4f6;
-              border: 2px solid black;
-              border-radius: 9999px;
-              padding: 0.25rem 0.75rem;
-              margin: 0 0.25rem;
-              cursor: pointer;
-              font-weight: bold;
-            }
-            .pagination-button.active {
-              background-color: black;
-              color: white;
-            }
-            .pagination-button:disabled {
-              opacity: 0.5;
-              cursor: not-allowed;
-            }
-          `}
-        </style>
-        <button
+      <div
+        className={`flex justify-center font-coolvetica flex-row gap-4 items-center mt-2 ${className}`}
+      >
+        <img
           onClick={goToPreviousPage}
-          disabled={currentPage === 1}
-          className="pagination-button"
-          aria-label="Página anterior"
-        >
-          &lt;
-        </button>
+          src={arrowIcon}
+          className="h-2 transform rotate-180"
+        />
 
-        {pageNumbers.map((number) => (
-          <button
-            key={number}
-            onClick={() => handlePageChange(number)}
-            className={`pagination-button ${
-              currentPage === number ? "active" : ""
-            }`}
-            aria-label={`Ir a página ${number}`}
-            aria-current={currentPage === number ? "page" : undefined}
-          >
-            {number}
-          </button>
-        ))}
+        {currentPage}
 
-        <button
-          onClick={goToNextPage}
-          disabled={currentPage === totalPages}
-          className="pagination-button"
-          aria-label="Página siguiente"
-        >
-          &gt;
-        </button>
+        <img onClick={goToNextPage} src={arrowIcon} className="h-2 " />
       </div>
     </>
   );

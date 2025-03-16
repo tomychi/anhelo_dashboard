@@ -261,7 +261,6 @@ export const Gastos: React.FC = () => {
           itemsPerPage={itemsPerPage}
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          className="font-coolvetica"
           renderItems={(paginatedItems) => (
             <table className="w-full text-xs text-left text-black">
               <thead className="text-black border-b h-10">
