@@ -22,7 +22,7 @@ export const Gastos: React.FC = () => {
 
   // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
   const [showModal, setShowModal] = useState(false); // Estado para el modal
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,14 +32,6 @@ export const Gastos: React.FC = () => {
   const [openSelects, setOpenSelects] = useState<{ [key: string]: boolean }>(
     {}
   );
-
-  // Calcular el número total de páginas
-  const totalPages = Math.ceil(expenses.length / itemsPerPage);
-
-  // Obtener los elementos para la página actual
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = expenses.slice(indexOfFirstItem, indexOfLastItem);
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -263,73 +255,78 @@ export const Gastos: React.FC = () => {
       </div>
 
       <div className="font-coolvetica">
-        <table className="w-full text-xs text-left text-black">
-          <thead className="text-black border-b h-10">
-            <tr>
-              <th scope="col" className="pl-4 w-2/5 ">
-                Descripcion
-              </th>
-              <th scope="col" className="pl-4 w-1/6 ">
-                Total
-              </th>
-              <th scope="col" className="pl-4 w-1/6 ">
-                Estado
-              </th>
-              <th scope="col" className="pl-4 w-1/6 "></th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map(({ quantity, name, total, estado, id }) => (
-              <tr
-                key={id}
-                className="text-black border font-light h-10 border-black border-opacity-20"
-              >
-                <th scope="row" className="pl-4 w-1/5 font-light ">
-                  {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()} (
-                  {quantity} u.)
-                </th>
-                <td className="pl-4 w-1/7 font-light ">
-                  {currencyFormat(total)}
-                </td>
-                <td className="pl-4 w-1/7 font-bold">
-                  <div className="select-wrapper ">
-                    <select
-                      className="bg-gray-200  py-1 pl-2   rounded-full"
-                      value={estado}
-                      onChange={(e) =>
-                        handleStatusChange(
-                          id,
-                          e.target.value as "pendiente" | "pagado"
-                        )
-                      }
-                      onClick={() => handleSelectClick(id)}
-                    >
-                      <option value="pendiente">Pendiente</option>
-                      <option value="pagado">Pagado</option>
-                    </select>
-                    <img
-                      src={arrow}
-                      className={`h-2 arrow-down   ${
-                        openSelects[id] ? "open" : ""
-                      }`}
-                      alt=""
-                    />
-                  </div>
-                </td>
-                <td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
-                  <p className="absolute top-[-4px] cursor-pointer">. . .</p>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* Componente Paginator reutilizable */}
+        {/* Usamos Paginator con render props */}
         <Paginator
+          items={expenses}
+          itemsPerPage={itemsPerPage}
           currentPage={currentPage}
-          totalPages={totalPages}
           onPageChange={handlePageChange}
           className="font-coolvetica"
+          renderItems={(paginatedItems) => (
+            <table className="w-full text-xs text-left text-black">
+              <thead className="text-black border-b h-10">
+                <tr>
+                  <th scope="col" className="pl-4 w-2/5 ">
+                    Descripcion
+                  </th>
+                  <th scope="col" className="pl-4 w-1/6 ">
+                    Total
+                  </th>
+                  <th scope="col" className="pl-4 w-1/6 ">
+                    Estado
+                  </th>
+                  <th scope="col" className="pl-4 w-1/6 "></th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedItems.map(({ quantity, name, total, estado, id }) => (
+                  <tr
+                    key={id}
+                    className="text-black border font-light h-10 border-black border-opacity-20"
+                  >
+                    <th scope="row" className="pl-4 w-1/5 font-light ">
+                      {name.charAt(0).toUpperCase() +
+                        name.slice(1).toLowerCase()}{" "}
+                      ({quantity} u.)
+                    </th>
+                    <td className="pl-4 w-1/7 font-light ">
+                      {currencyFormat(total)}
+                    </td>
+                    <td className="pl-4 w-1/7 font-bold">
+                      <div className="select-wrapper ">
+                        <select
+                          className="bg-gray-200  py-1 pl-2   rounded-full"
+                          value={estado}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              id,
+                              e.target.value as "pendiente" | "pagado"
+                            )
+                          }
+                          onClick={() => handleSelectClick(id)}
+                        >
+                          <option value="pendiente">Pendiente</option>
+                          <option value="pagado">Pagado</option>
+                        </select>
+                        <img
+                          src={arrow}
+                          className={`h-2 arrow-down   ${
+                            openSelects[id] ? "open" : ""
+                          }`}
+                          alt=""
+                        />
+                      </div>
+                    </td>
+                    <td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
+                      <p className="absolute top-[-4px] cursor-pointer">
+                        . . .
+                      </p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         />
       </div>
       <Neto />
