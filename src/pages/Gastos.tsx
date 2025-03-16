@@ -6,7 +6,7 @@ import { RootState } from "../redux/configureStore";
 import { projectAuth } from "../firebase/config";
 import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
 import arrow from "../assets/arrowIcon.png";
-import { CompraModal } from "../components/gastos/CompraModal"; // Importamos el modal
+import { CompraModal } from "../components/gastos/CompraModal";
 import { Neto } from "./Neto";
 
 export const Gastos: React.FC = () => {
