@@ -256,60 +256,48 @@ export const Gastos: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {expenses.map(
-              ({
-                quantity,
-                fecha,
-                category,
-                name,
-                total,
-                unit,
-                description,
-                estado,
-                id,
-              }) => (
-                <tr
-                  key={id}
-                  className="text-black border font-light h-10 border-black border-opacity-20"
-                >
-                  <th scope="row" className="pl-4 w-1/5 font-light ">
-                    {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()}{" "}
-                    ({quantity} u.)
-                  </th>
-                  <td className="pl-4 w-1/7 font-light ">
-                    {currencyFormat(total)}
-                  </td>
-                  <td className="pl-4 w-1/7 font-bold">
-                    <div className="select-wrapper ">
-                      <select
-                        className="bg-gray-200  py-1 pl-2   rounded-full"
-                        value={estado}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            id,
-                            e.target.value as "pendiente" | "pagado"
-                          )
-                        }
-                        onClick={() => handleSelectClick(id)}
-                      >
-                        <option value="pendiente">Pendiente</option>
-                        <option value="pagado">Pagado</option>
-                      </select>
-                      <img
-                        src={arrow}
-                        className={`h-2 arrow-down   ${
-                          openSelects[id] ? "open" : ""
-                        }`}
-                        alt=""
-                      />
-                    </div>
-                  </td>
-                  <td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
-                    <p className="absolute top-[-4px] cursor-pointer">. . .</p>
-                  </td>
-                </tr>
-              )
-            )}
+            {expenses.map(({ quantity, name, total, estado, id }) => (
+              <tr
+                key={id}
+                className="text-black border font-light h-10 border-black border-opacity-20"
+              >
+                <th scope="row" className="pl-4 w-1/5 font-light ">
+                  {name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()} (
+                  {quantity} u.)
+                </th>
+                <td className="pl-4 w-1/7 font-light ">
+                  {currencyFormat(total)}
+                </td>
+                <td className="pl-4 w-1/7 font-bold">
+                  <div className="select-wrapper ">
+                    <select
+                      className="bg-gray-200  py-1 pl-2   rounded-full"
+                      value={estado}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          id,
+                          e.target.value as "pendiente" | "pagado"
+                        )
+                      }
+                      onClick={() => handleSelectClick(id)}
+                    >
+                      <option value="pendiente">Pendiente</option>
+                      <option value="pagado">Pagado</option>
+                    </select>
+                    <img
+                      src={arrow}
+                      className={`h-2 arrow-down   ${
+                        openSelects[id] ? "open" : ""
+                      }`}
+                      alt=""
+                    />
+                  </div>
+                </td>
+                <td className="pl-4 pr-4 w-1/7 font-black text-2xl flex items-center justify-end h-full relative">
+                  <p className="absolute top-[-4px] cursor-pointer">. . .</p>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
