@@ -8,6 +8,7 @@ import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
 import arrow from "../assets/arrowIcon.png";
 import { CompraModal } from "../components/gastos/CompraModal";
 import { Neto } from "./Neto";
+import Paginator from "../components/Paginator";
 
 export const Gastos: React.FC = () => {
   const { expenseData } = useSelector((state: RootState) => state.data);
@@ -19,6 +20,10 @@ export const Gastos: React.FC = () => {
     : expenseData;
   const [expenses, setExpenses] = useState<ExpenseProps[]>(filteredExpenseData);
 
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
   const [showModal, setShowModal] = useState(false); // Estado para el modal
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
@@ -27,6 +32,14 @@ export const Gastos: React.FC = () => {
   const [openSelects, setOpenSelects] = useState<{ [key: string]: boolean }>(
     {}
   );
+
+  // Calcular el número total de páginas
+  const totalPages = Math.ceil(expenses.length / itemsPerPage);
+
+  // Obtener los elementos para la página actual
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = expenses.slice(indexOfFirstItem, indexOfLastItem);
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -53,6 +66,11 @@ export const Gastos: React.FC = () => {
     }
   };
 
+  // Función para manejar cambios de página desde el componente Paginator
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   const uniqueCategories = [
     "Todos",
     ...new Set(filteredExpenseData.map((expense) => expense.category)),
@@ -72,6 +90,8 @@ export const Gastos: React.FC = () => {
     );
 
     setExpenses(filtered);
+    // Reset a la primera página cuando cambian los filtros
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory, filteredExpenseData]);
 
   useEffect(() => {
@@ -100,6 +120,8 @@ export const Gastos: React.FC = () => {
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
+
+  // No necesitamos generar pageNumbers aquí ya que lo hará el componente Paginator
 
   return (
     <div className="flex flex-col">
@@ -131,6 +153,7 @@ export const Gastos: React.FC = () => {
 					.select-wrapper .arrow-down.open {
 						transform: translateY(-50%) rotate(-90deg); /* Ajustado para apuntar hacia arriba */
 					}
+                    /* Los estilos de paginación ahora están en el componente Paginator */
 				`}
       </style>
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
@@ -256,7 +279,7 @@ export const Gastos: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {expenses.map(({ quantity, name, total, estado, id }) => (
+            {currentItems.map(({ quantity, name, total, estado, id }) => (
               <tr
                 key={id}
                 className="text-black border font-light h-10 border-black border-opacity-20"
@@ -300,6 +323,14 @@ export const Gastos: React.FC = () => {
             ))}
           </tbody>
         </table>
+
+        {/* Componente Paginator reutilizable */}
+        <Paginator
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          className="font-coolvetica"
+        />
       </div>
       <Neto />
     </div>
