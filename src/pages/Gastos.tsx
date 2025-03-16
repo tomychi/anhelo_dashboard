@@ -7,6 +7,7 @@ import { projectAuth } from "../firebase/config";
 import { ExpenseProps, UpdateExpenseStatus } from "../firebase/UploadGasto";
 import arrow from "../assets/arrowIcon.png";
 import { CompraModal } from "../components/gastos/CompraModal"; // Importamos el modal
+import { Neto } from "./Neto";
 
 export const Gastos: React.FC = () => {
   const { expenseData } = useSelector((state: RootState) => state.data);
@@ -312,6 +313,7 @@ export const Gastos: React.FC = () => {
           </tbody>
         </table>
       </div>
+      <Neto />
     </div>
   );
 };

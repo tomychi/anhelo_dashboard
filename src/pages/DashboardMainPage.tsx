@@ -5,7 +5,6 @@ import {
   Settings,
   Dashboard,
   Gastos,
-  Neto,
   Bruto,
   Seguidores,
   ProductosVendidos,
@@ -132,14 +131,6 @@ export const DashboardMainPage = () => {
               element={
                 <PrivateRoutesLayout>
                   <Stock />
-                </PrivateRoutesLayout>
-              }
-            />
-            <Route
-              path="neto"
-              element={
-                <PrivateRoutesLayout>
-                  <Neto />
                 </PrivateRoutesLayout>
               }
             />

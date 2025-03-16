@@ -788,11 +788,7 @@ export const Neto = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 mb-4">
-        <p className="text-black font-bold text-4xl mt-1">Neto</p>
-      </div>
-
-      <div className="px-4 pb-8">
-        <Calendar />
+        <p className="text-black font-bold text-4xl mt-1">Rentabilidad</p>
       </div>
 
       <div className="font-coolvetica">
@@ -800,7 +796,7 @@ export const Neto = () => {
           <thead className="text-black border-b h-10">
             <tr>
               <th scope="col" className="pl-4 h-10 w-2/5">
-                Estructura
+                Categoria
               </th>
               <th scope="col" className="pl-4 h-10 w-1/5">
                 Total
