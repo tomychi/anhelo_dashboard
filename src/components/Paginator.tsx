@@ -49,15 +49,19 @@ export const Paginator = <T extends unknown>({
     pageNumbers.push(i);
   }
 
+  // Determinar si los botones están deshabilitados
+  const isPrevDisabled = currentPage <= 1;
+  const isNextDisabled = currentPage >= totalPages;
+
   // Funciones para la navegación de páginas
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
+    if (!isNextDisabled) {
       handlePageChange(currentPage + 1);
     }
   };
 
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
+    if (!isPrevDisabled) {
       handlePageChange(currentPage - 1);
     }
   };
@@ -79,12 +83,20 @@ export const Paginator = <T extends unknown>({
         <img
           onClick={goToPreviousPage}
           src={arrowIcon}
-          className="h-2 transform rotate-180"
+          className={`h-2 transform rotate-180 cursor-pointer ${isPrevDisabled ? "opacity-50" : ""}`}
+          style={{ opacity: isPrevDisabled ? 0.5 : 1 }}
+          alt="Página anterior"
         />
 
         {currentPage}
 
-        <img onClick={goToNextPage} src={arrowIcon} className="h-2 " />
+        <img
+          onClick={goToNextPage}
+          src={arrowIcon}
+          className={`h-2 cursor-pointer ${isNextDisabled ? "opacity-50" : ""}`}
+          style={{ opacity: isNextDisabled ? 0.5 : 1 }}
+          alt="Página siguiente"
+        />
       </div>
     </>
   );
