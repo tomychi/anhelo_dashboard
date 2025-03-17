@@ -1311,19 +1311,7 @@ export const getGastosCategoriesConfig = async (
     }
 
     // Si no hay configuración previa, crear una estructura básica
-    const categoriasBasicas: CategoriaGastoConfig[] = [
-      {
-        nombre: "materia prima",
-        periodicidad: 1,
-        items: [],
-      },
-
-      {
-        nombre: "otros",
-        periodicidad: 1,
-        items: [],
-      },
-    ];
+    const categoriasBasicas: CategoriaGastoConfig[] = [];
 
     // Guardar las categorías básicas en Firebase
     await updateGastosCategoriesConfig(empresaId, categoriasBasicas);
