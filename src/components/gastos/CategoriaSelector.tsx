@@ -4,8 +4,18 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
 
 // Categorías predeterminadas que siempre deben estar disponibles
-const DEFAULT_CATEGORY = "materia prima";
-const OTHERS_CATEGORY = "otros";
+const DEFAULT_CATEGORIES = [
+  {
+    nombre: "materia prima",
+    periodicidad: 1,
+    items: [],
+  },
+  {
+    nombre: "otros",
+    periodicidad: 1,
+    items: [],
+  },
+];
 
 // Componente para mostrar y gestionar las categorías
 export const CategoriaSelector = ({
@@ -17,16 +27,16 @@ export const CategoriaSelector = ({
   onCategoryTypeChange, // Prop para informar si la categoría es recurrente
   onLoadingChange, // Prop para informar estado de carga
   onShowCustomInputs, // Prop para mostrar/ocultar inputs personalizados
-  onAddItemToCategory, // Nueva prop para manejar agregar ítems a una categoría
+  onAddItemToCategory, // Prop para manejar agregar ítems a una categoría
 }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecurringItems, setSelectedRecurringItems] = useState([]);
   const [showRecurringItems, setShowRecurringItems] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // Para búsqueda
-  const [filteredCategories, setFilteredCategories] = useState([]); // Para búsqueda
-  const [newItemName, setNewItemName] = useState(""); // Estado para el nuevo ítem
-  const [showAddItemInput, setShowAddItemInput] = useState(false); // Mostrar input para agregar ítem
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [newItemName, setNewItemName] = useState("");
+  const [showAddItemInput, setShowAddItemInput] = useState(false);
 
   const auth = useSelector((state: RootState) => state.auth);
   const empresaId =
@@ -47,60 +57,97 @@ export const CategoriaSelector = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        setLoading(true);
         const firestore = getFirestore();
-        let docRef;
-
-        if (isAnhelo) {
-          // Para Anhelo, podríamos tener una configuración especial
-          docRef = doc(firestore, "absoluteClientes", empresaId);
-        } else {
-          // Para otras empresas
-          docRef = doc(firestore, "absoluteClientes", empresaId);
-        }
+        let docRef = doc(firestore, "absoluteClientes", empresaId);
 
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          // Primero intentamos obtener del campo gastosCategories en config
           const data = docSnap.data();
           let categoriesFromDB = [];
 
+          // Primero verificamos si hay un formato nuevo
           if (data.config && data.config.gastosCategories) {
-            categoriesFromDB = data.config.gastosCategories;
+            // Asegurarse de que todas las categorías tengan la estructura correcta
+            categoriesFromDB = data.config.gastosCategories.map((cat) => {
+              // Si ya tiene la estructura correcta
+              if (cat && typeof cat === "object" && "nombre" in cat) {
+                return {
+                  nombre: cat.nombre || "",
+                  periodicidad: cat.periodicidad || 1,
+                  items: Array.isArray(cat.items) ? cat.items : [],
+                };
+              }
+              // Si es una string (formato antiguo)
+              else if (typeof cat === "string") {
+                return {
+                  nombre: cat,
+                  periodicidad: 1,
+                  items: [],
+                };
+              }
+              // Si es un objeto con otro formato antiguo {key: [items]}
+              else if (cat && typeof cat === "object") {
+                const key = Object.keys(cat)[0];
+                return {
+                  nombre: key || "",
+                  periodicidad: 1,
+                  items: Array.isArray(cat[key]) ? cat[key] : [],
+                };
+              }
+
+              // En caso de formato no reconocido, devolver un objeto válido
+              console.warn("Formato de categoría no reconocido:", cat);
+              return {
+                nombre: "",
+                periodicidad: 1,
+                items: [],
+              };
+            });
           } else if (data.gastosCategory && data.gastosCategory.length > 0) {
-            // Si no está en config, intentamos con el campo gastosCategory
-            categoriesFromDB = data.gastosCategory;
+            // Convertir formato antiguo al nuevo formato si es necesario
+            categoriesFromDB = data.gastosCategory.map((cat) => {
+              if (typeof cat === "string") {
+                return {
+                  nombre: cat,
+                  periodicidad: 1,
+                  items: [],
+                };
+              } else if (cat && typeof cat === "object") {
+                const key = Object.keys(cat)[0];
+                return {
+                  nombre: key || "",
+                  periodicidad: 1,
+                  items: Array.isArray(cat[key]) ? cat[key] : [],
+                };
+              }
+
+              // En caso de formato no reconocido
+              console.warn("Formato de categoría no reconocido:", cat);
+              return {
+                nombre: "",
+                periodicidad: 1,
+                items: [],
+              };
+            });
           } else {
-            // Si no hay categorías guardadas, inicializamos con un array vacío
             categoriesFromDB = [];
           }
 
-          // Creamos una copia para no modificar directamente el array original
+          // Asegurar que las categorías predeterminadas estén incluidas
           let updatedCategories = [...categoriesFromDB];
 
-          // Asegurarnos de que ambas categorías predeterminadas estén siempre incluidas
-          if (
-            !updatedCategories.includes(OTHERS_CATEGORY) &&
-            !updatedCategories.some(
-              (cat) =>
-                typeof cat === "object" &&
-                Object.keys(cat)[0] === OTHERS_CATEGORY
-            )
-          ) {
-            updatedCategories.push(OTHERS_CATEGORY);
-            console.log(`Categoría "${OTHERS_CATEGORY}" añadida localmente`);
-          }
-
-          if (
-            !updatedCategories.includes(DEFAULT_CATEGORY) &&
-            !updatedCategories.some(
-              (cat) =>
-                typeof cat === "object" &&
-                Object.keys(cat)[0] === DEFAULT_CATEGORY
-            )
-          ) {
-            updatedCategories.unshift(DEFAULT_CATEGORY);
-            console.log(`Categoría "${DEFAULT_CATEGORY}" añadida localmente`);
-          }
+          // Verificar y añadir categorías predeterminadas si no existen
+          DEFAULT_CATEGORIES.forEach((defaultCat) => {
+            if (
+              !updatedCategories.some((cat) => cat.nombre === defaultCat.nombre)
+            ) {
+              updatedCategories.push(defaultCat);
+              console.log(
+                `Categoría "${defaultCat.nombre}" añadida localmente`
+              );
+            }
+          });
 
           console.log("[DEBUG] Categorías cargadas:", updatedCategories);
           setCategories(updatedCategories);
@@ -111,24 +158,20 @@ export const CategoriaSelector = ({
             !isCategoryInArray(formData.category, updatedCategories)
           ) {
             const firstCategory = updatedCategories[0];
-            const categoryValue =
-              typeof firstCategory === "object"
-                ? Object.keys(firstCategory)[0]
-                : firstCategory;
 
             console.log(
               "[DEBUG] Seleccionando primera categoría:",
-              categoryValue
+              firstCategory.nombre
             );
+
             setFormData((prev) => ({
               ...prev,
-              category: categoryValue,
+              category: firstCategory.nombre,
             }));
 
-            // Si es una categoría recurrente, también configuramos el array de items
-            // y notificamos al componente padre
-            if (typeof firstCategory === "object") {
-              setSelectedRecurringItems(firstCategory[categoryValue]);
+            // Si es una categoría recurrente, configuramos el array de items
+            if (firstCategory.items && firstCategory.items.length > 0) {
+              setSelectedRecurringItems(firstCategory.items);
               setShowRecurringItems(true);
               if (onCategoryTypeChange) {
                 onCategoryTypeChange(true);
@@ -141,7 +184,7 @@ export const CategoriaSelector = ({
                 onCategoryTypeChange(false);
               }
               // Si es "otros", mostrar inputs personalizados
-              if (categoryValue === OTHERS_CATEGORY && onShowCustomInputs) {
+              if (firstCategory.nombre === "otros" && onShowCustomInputs) {
                 console.log(
                   "[DEBUG] Activando inputs personalizados al cargar 'otros'"
                 );
@@ -155,7 +198,7 @@ export const CategoriaSelector = ({
             checkAndSetRecurringType(formData.category, updatedCategories);
 
             // Verificar si la categoría seleccionada es "otros"
-            if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+            if (formData.category === "otros" && onShowCustomInputs) {
               console.log(
                 "[DEBUG] Activando inputs personalizados porque ya tenía seleccionado 'otros'"
               );
@@ -167,13 +210,13 @@ export const CategoriaSelector = ({
         }
       } catch (error) {
         console.error("Error al cargar categorías:", error);
-        // En caso de error, al menos asegurarnos de que las categorías predeterminadas estén disponibles
-        setCategories([DEFAULT_CATEGORY, OTHERS_CATEGORY]);
+        // En caso de error, asegurar las categorías predeterminadas
+        setCategories(DEFAULT_CATEGORIES);
         if (onCategoryTypeChange) {
           onCategoryTypeChange(false);
         }
         // Si la categoría seleccionada es "otros", mostrar inputs personalizados
-        if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+        if (formData.category === "otros" && onShowCustomInputs) {
           onShowCustomInputs(true);
         } else if (onShowCustomInputs) {
           onShowCustomInputs(false);
@@ -191,7 +234,7 @@ export const CategoriaSelector = ({
       fetchCategories();
     } else {
       // Si no hay empresaId, al menos ponemos las categorías predeterminadas
-      setCategories([DEFAULT_CATEGORY, OTHERS_CATEGORY]);
+      setCategories(DEFAULT_CATEGORIES);
       setLoading(false);
       // Notificar al componente padre que la carga ha terminado
       if (onLoadingChange) {
@@ -201,48 +244,49 @@ export const CategoriaSelector = ({
         onCategoryTypeChange(false);
       }
       // Si la categoría seleccionada es "otros", mostrar inputs personalizados
-      if (formData.category === OTHERS_CATEGORY && onShowCustomInputs) {
+      if (formData.category === "otros" && onShowCustomInputs) {
         onShowCustomInputs(true);
       } else if (onShowCustomInputs) {
         onShowCustomInputs(false);
       }
     }
-  }, [empresaId, isAnhelo]);
-
-  // Filtrar categorías basadas en término de búsqueda
+  }, [empresaId, isAnhelo]); // Filtrar categorías basadas en término de búsqueda
   useEffect(() => {
     // Ordenar categorías antes de filtrar
     const sortedCats = [...categories].sort((a, b) => {
       // "materia prima" siempre va primero
-      if (typeof a === "string" && a === DEFAULT_CATEGORY) return -1;
-      if (typeof b === "string" && b === DEFAULT_CATEGORY) return 1;
+      if (a.nombre === "materia prima") return -1;
+      if (b.nombre === "materia prima") return 1;
 
-      // "otros" va después de "materia prima" pero antes que otras categorías regulares
-      if (typeof a === "string" && a === OTHERS_CATEGORY) {
-        return typeof b === "string" && b === DEFAULT_CATEGORY ? 1 : -1;
+      // "otros" va después de "materia prima" pero antes que otras categorías
+      if (a.nombre === "otros") {
+        return b.nombre === "materia prima" ? 1 : -1;
       }
-      if (typeof b === "string" && b === OTHERS_CATEGORY) {
-        return typeof a === "string" && a === DEFAULT_CATEGORY ? 1 : 1;
+      if (b.nombre === "otros") {
+        return a.nombre === "materia prima" ? 1 : 1;
       }
 
-      // Categorías recurrentes (objetos) van después de categorías predeterminadas pero antes que otras
+      // Categorías con items van después de categorías predeterminadas pero antes que otras
+      const aHasItems = a.items && a.items.length > 0;
+      const bHasItems = b.items && b.items.length > 0;
+
       if (
-        typeof a === "object" &&
-        typeof b === "string" &&
-        b !== DEFAULT_CATEGORY &&
-        b !== OTHERS_CATEGORY
+        aHasItems &&
+        !bHasItems &&
+        b.nombre !== "materia prima" &&
+        b.nombre !== "otros"
       )
         return -1;
       if (
-        typeof b === "object" &&
-        typeof a === "string" &&
-        a !== DEFAULT_CATEGORY &&
-        a !== OTHERS_CATEGORY
+        bHasItems &&
+        !aHasItems &&
+        a.nombre !== "materia prima" &&
+        a.nombre !== "otros"
       )
         return 1;
 
-      // Para el resto, mantener el orden original
-      return 0;
+      // Para el resto, orden alfabético
+      return a.nombre.localeCompare(b.nombre);
     });
 
     if (!searchTerm) {
@@ -251,9 +295,7 @@ export const CategoriaSelector = ({
     } else {
       // Filtrar por término de búsqueda
       const filtered = sortedCats.filter((category) => {
-        const categoryName =
-          typeof category === "object" ? Object.keys(category)[0] : category;
-        return categoryName.toLowerCase().includes(searchTerm.toLowerCase());
+        return category.nombre.toLowerCase().includes(searchTerm.toLowerCase());
       });
       setFilteredCategories(filtered);
     }
@@ -262,7 +304,7 @@ export const CategoriaSelector = ({
   // Función para verificar si la categoría seleccionada es recurrente
   const checkAndSetRecurringType = (categoryName, categoryArray) => {
     // Para la categoría "otros", siempre mostrar inputs personalizados
-    if (categoryName === OTHERS_CATEGORY) {
+    if (categoryName === "otros") {
       console.log("[DEBUG] checkAndSetRecurringType: Es categoría 'otros'");
       setShowRecurringItems(false);
       if (onCategoryTypeChange) {
@@ -277,21 +319,18 @@ export const CategoriaSelector = ({
       return;
     }
 
-    for (const category of categoryArray) {
-      if (typeof category === "object") {
-        const key = Object.keys(category)[0];
-        if (key === categoryName) {
-          setSelectedRecurringItems(category[key]);
-          setShowRecurringItems(true);
-          if (onCategoryTypeChange) {
-            onCategoryTypeChange(true);
-          }
-          if (onShowCustomInputs) {
-            onShowCustomInputs(false);
-          }
-          return;
-        }
+    const category = categoryArray.find((cat) => cat.nombre === categoryName);
+
+    if (category && category.items && category.items.length > 0) {
+      setSelectedRecurringItems(category.items);
+      setShowRecurringItems(true);
+      if (onCategoryTypeChange) {
+        onCategoryTypeChange(true);
       }
+      if (onShowCustomInputs) {
+        onShowCustomInputs(false);
+      }
+      return;
     }
 
     // Si llegamos aquí, no es una categoría recurrente ni "otros"
@@ -304,37 +343,21 @@ export const CategoriaSelector = ({
     }
   };
 
-  // Verificar si una categoría existe en el array (incluyendo objetos)
+  // Verificar si una categoría existe en el array
   const isCategoryInArray = (categoryName, categoryArray) => {
-    return categoryArray.some((item) => {
-      if (typeof item === "string") {
-        return item === categoryName;
-      } else if (typeof item === "object") {
-        return Object.keys(item)[0] === categoryName;
-      }
-      return false;
-    });
+    return categoryArray.some((item) => item.nombre === categoryName);
   };
 
-  // Función para guardar una categoría predeterminada en la base de datos si no existe
+  // Guardar una categoría predeterminada en la base de datos si no existe
   const saveDefaultCategoryIfNeeded = async (categoryName) => {
-    console.log(
-      "[DEBUG] saveDefaultCategoryIfNeeded llamado con:",
-      categoryName
-    );
-    console.log("[DEBUG] empresaId existe:", !!empresaId);
-    console.log(
-      "[DEBUG] Categoría en categories:",
-      isCategoryInArray(categoryName, categories)
-    );
-
     if (!empresaId) return;
 
     // Solo ejecutamos esto si están usando una categoría predeterminada y no está en la BD
-    if (
-      (categoryName === DEFAULT_CATEGORY || categoryName === OTHERS_CATEGORY) &&
-      !isCategoryInArray(categoryName, categories)
-    ) {
+    const isDefault = DEFAULT_CATEGORIES.some(
+      (cat) => cat.nombre === categoryName
+    );
+
+    if (isDefault && !isCategoryInArray(categoryName, categories)) {
       try {
         console.log("[DEBUG] Intentando guardar categoría:", categoryName);
         const firestore = getFirestore();
@@ -348,20 +371,15 @@ export const CategoriaSelector = ({
           const data = docSnap.data();
           if (data.config && data.config.gastosCategories) {
             existingCategories = data.config.gastosCategories;
-          } else if (data.gastosCategory && data.gastosCategory.length > 0) {
-            existingCategories = data.gastosCategory;
           }
         }
 
         // Añadir la categoría predeterminada si no existe
         if (!isCategoryInArray(categoryName, existingCategories)) {
-          const updatedCategories = [categoryName, ...existingCategories];
-
-          console.log("[DEBUG] Intentando guardar en Firestore:", {
-            categoryName,
-            existingCategories,
-            updatedCategories,
-          });
+          const defaultCategory = DEFAULT_CATEGORIES.find(
+            (cat) => cat.nombre === categoryName
+          );
+          const updatedCategories = [defaultCategory, ...existingCategories];
 
           // Actualizar en Firestore
           await updateDoc(docRef, {
@@ -371,67 +389,10 @@ export const CategoriaSelector = ({
           console.log(
             `Categoría "${categoryName}" guardada en la base de datos`
           );
-        } else {
-          console.log(
-            `[DEBUG] Categoría "${categoryName}" ya existe en la base de datos`
-          );
         }
       } catch (error) {
         console.error(`Error al guardar categoría ${categoryName}:`, error);
       }
-    }
-  };
-
-  // Añade esta función después de saveDefaultCategoryIfNeeded
-  // Esta función específicamente guarda la categoría "otros" en Firestore
-  const saveOthersCategoryToFirestore = async () => {
-    if (!empresaId) return;
-
-    try {
-      console.log(
-        "[DEBUG] Guardando la categoría 'otros' directamente en Firestore"
-      );
-      const firestore = getFirestore();
-      const docRef = doc(firestore, "absoluteClientes", empresaId);
-
-      // Obtener datos actuales
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        let gastosCategories = [];
-
-        // Obtener la lista actual de categorías
-        if (data.config && data.config.gastosCategories) {
-          gastosCategories = [...data.config.gastosCategories];
-        }
-
-        // Verificar si "otros" ya existe como string simple en la BD
-        const othersExists = gastosCategories.some(
-          (cat) => typeof cat === "string" && cat === OTHERS_CATEGORY
-        );
-
-        if (!othersExists) {
-          console.log(
-            "[DEBUG] La categoría 'otros' no existe en la BD, añadiéndola"
-          );
-          gastosCategories.push(OTHERS_CATEGORY);
-
-          // Actualizar en Firestore
-          await updateDoc(docRef, {
-            "config.gastosCategories": gastosCategories,
-          });
-
-          console.log(
-            "Categoría 'otros' guardada exitosamente en la base de datos"
-          );
-        } else {
-          console.log(
-            "[DEBUG] La categoría 'otros' ya existe en la base de datos, no es necesario guardarla"
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error al guardar categoría 'otros':", error);
     }
   };
 
@@ -440,24 +401,10 @@ export const CategoriaSelector = ({
     // Ocultar el input de agregar ítem al cambiar de categoría
     setShowAddItemInput(false);
 
-    // Determinar si es una categoría simple o recurrente
-    let categoryName;
-    let items = [];
-    let isRecurring = false;
-    let isOthers = false;
-
-    if (typeof category === "string") {
-      categoryName = category;
-      isOthers = categoryName === OTHERS_CATEGORY;
-      setShowRecurringItems(false);
-      isRecurring = false;
-    } else if (typeof category === "object") {
-      categoryName = Object.keys(category)[0];
-      items = category[categoryName];
-      setSelectedRecurringItems(items);
-      setShowRecurringItems(true);
-      isRecurring = true;
-    }
+    const categoryName = category.nombre;
+    const items = category.items || [];
+    const isRecurring = items.length > 0;
+    const isOthers = categoryName === "otros";
 
     console.log("[DEBUG] Categoría seleccionada:", categoryName);
     console.log("[DEBUG] Es categoría 'otros':", isOthers);
@@ -468,14 +415,20 @@ export const CategoriaSelector = ({
       category: categoryName,
     }));
 
-    // Si es recurrente pero no hay item seleccionado aún, seleccionamos el primero
-    if (items.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        name: items[0], // Seleccionar el primer item por defecto
-      }));
+    // Si es recurrente y hay items, seleccionamos el primero
+    if (isRecurring) {
+      setSelectedRecurringItems(items);
+      setShowRecurringItems(true);
+
+      if (items.length > 0) {
+        setFormData((prev) => ({
+          ...prev,
+          name: items[0], // Seleccionar el primer item por defecto
+        }));
+      }
     } else {
       // Si no es recurrente, limpiar el nombre
+      setShowRecurringItems(false);
       setFormData((prev) => ({
         ...prev,
         name: "",
@@ -502,50 +455,50 @@ export const CategoriaSelector = ({
     }));
   };
 
-  // Nueva función para mostrar/ocultar el input para agregar ítem
+  // Mostrar/ocultar el input para agregar ítem
   const toggleAddItemInput = () => {
     setShowAddItemInput(!showAddItemInput);
     setNewItemName("");
   };
 
-  // Nueva función para agregar un nuevo ítem a la categoría actual
+  // Agregar un nuevo ítem a la categoría actual
   const handleAddItemToCategory = async () => {
     if (!newItemName.trim() || !empresaId || !formData.category) return;
 
     try {
-      // Primero, encontrar la categoría actual en la lista
-      const currentCategory = categories.find((cat) => {
-        if (typeof cat === "object") {
-          return Object.keys(cat)[0] === formData.category;
-        }
-        return false;
-      });
+      // Encontrar la categoría actual
+      const currentCategoryIndex = categories.findIndex(
+        (cat) => cat.nombre === formData.category
+      );
 
-      if (!currentCategory) {
+      if (currentCategoryIndex === -1) {
         console.error("No se encontró la categoría actual");
         return;
       }
 
-      const categoryName = Object.keys(currentCategory)[0];
-      const currentItems = [...currentCategory[categoryName]];
+      const currentCategory = categories[currentCategoryIndex];
 
       // Verificar si el ítem ya existe
-      if (currentItems.includes(newItemName.trim().toLowerCase())) {
+      if (currentCategory.items.includes(newItemName.trim().toLowerCase())) {
         console.log("El ítem ya existe en esta categoría");
-        // Aquí podrías mostrar un mensaje al usuario
         return;
       }
 
       // Agregar el nuevo ítem al principio de la lista
-      const updatedItems = [newItemName.trim().toLowerCase(), ...currentItems];
+      const updatedItems = [
+        newItemName.trim().toLowerCase(),
+        ...currentCategory.items,
+      ];
+
+      // Crear categoría actualizada
+      const updatedCategory = {
+        ...currentCategory,
+        items: updatedItems,
+      };
 
       // Actualizar el estado local
-      const updatedCategories = categories.map((cat) => {
-        if (typeof cat === "object" && Object.keys(cat)[0] === categoryName) {
-          return { [categoryName]: updatedItems };
-        }
-        return cat;
-      });
+      const updatedCategories = [...categories];
+      updatedCategories[currentCategoryIndex] = updatedCategory;
 
       setCategories(updatedCategories);
       setSelectedRecurringItems(updatedItems);
@@ -554,41 +507,20 @@ export const CategoriaSelector = ({
       const firestore = getFirestore();
       const docRef = doc(firestore, "absoluteClientes", empresaId);
 
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        let gastosCategories = [];
+      await updateDoc(docRef, {
+        "config.gastosCategories": updatedCategories,
+      });
 
-        if (data.config && data.config.gastosCategories) {
-          gastosCategories = [...data.config.gastosCategories];
+      console.log(
+        `Ítem "${newItemName}" agregado a la categoría "${formData.category}"`
+      );
 
-          // Actualizar la categoría específica en la lista
-          const updatedGastosCategories = gastosCategories.map((cat) => {
-            if (
-              typeof cat === "object" &&
-              Object.keys(cat)[0] === categoryName
-            ) {
-              return { [categoryName]: updatedItems };
-            }
-            return cat;
-          });
+      // Limpiar el input y ocultarlo
+      setNewItemName("");
+      setShowAddItemInput(false);
 
-          await updateDoc(docRef, {
-            "config.gastosCategories": updatedGastosCategories,
-          });
-
-          console.log(
-            `Ítem "${newItemName}" agregado a la categoría "${categoryName}"`
-          );
-
-          // Limpiar el input y ocultarlo
-          setNewItemName("");
-          setShowAddItemInput(false);
-
-          // Seleccionar automáticamente el nuevo ítem
-          handleRecurringItemSelect(newItemName.trim().toLowerCase());
-        }
-      }
+      // Seleccionar automáticamente el nuevo ítem
+      handleRecurringItemSelect(newItemName.trim().toLowerCase());
     } catch (error) {
       console.error("Error al agregar ítem a la categoría:", error);
     }
@@ -602,16 +534,11 @@ export const CategoriaSelector = ({
     );
   }
 
-  // Para debuggear - imprimir las categorías en consola
-  console.log("[DEBUG] Categorías disponibles:", categories);
-  console.log("[DEBUG] Categorías filtradas:", filteredCategories);
-
   return (
     <div className="section w-full relative mb-4 z-0">
       <p className="text-xl my-2 px-4 ">Categoría</p>
 
       {categories.length === 0 ? (
-        // Mensaje cuando no hay categorías (aunque siempre debería haber al menos las predeterminadas)
         <div className="flex flex-col items-center justify-center p-6 border border-dashed border-gray-200 rounded-lg">
           <p className="text-gray-500 mb-4 text-center">
             No hay categorías definidas para esta empresa
@@ -687,12 +614,9 @@ export const CategoriaSelector = ({
             </div>
 
             {filteredCategories.map((category, index) => {
-              // Determinar si es una categoría simple o recurrente
-              const isObject = typeof category === "object";
-              const categoryName = isObject
-                ? Object.keys(category)[0]
-                : category;
-              const isSelected = formData.category === categoryName;
+              const isSelected = formData.category === category.nombre;
+              // Verificar que category.nombre no sea undefined o null
+              if (!category || !category.nombre) return null;
 
               return (
                 <div
@@ -716,8 +640,11 @@ export const CategoriaSelector = ({
                       clipRule="evenodd"
                     />
                   </svg>
-                  {categoryName.charAt(0).toUpperCase() +
-                    categoryName.slice(1).toLowerCase()}
+                  {typeof category.nombre === "string" &&
+                  category.nombre.length > 0
+                    ? category.nombre.charAt(0).toUpperCase() +
+                      category.nombre.slice(1).toLowerCase()
+                    : "Categoría"}
                 </div>
               );
             })}
@@ -760,7 +687,7 @@ export const CategoriaSelector = ({
               )}
 
               <div className="flex flex-row px-4 gap-2 overflow-x-auto">
-                {/* Botón para agregar nuevo ítem (con mismo estilo que el de categorías) */}
+                {/* Botón para agregar nuevo ítem */}
                 {!showAddItemInput && (
                   <div
                     onClick={toggleAddItemInput}
@@ -782,33 +709,40 @@ export const CategoriaSelector = ({
                   </div>
                 )}
 
-                {selectedRecurringItems.map((item, index) => (
-                  <div
-                    key={index}
-                    onClick={() => handleRecurringItemSelect(item)}
-                    className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap flex-shrink-0 ${
-                      formData.name === item
-                        ? "bg-black text-gray-100"
-                        : "bg-gray-200 text-black"
-                    }`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      class="h-4 mr-2"
-                    >
-                      <path d="M2 3a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H2Z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M2 7.5h16l-.811 7.71a2 2 0 0 1-1.99 1.79H4.802a2 2 0 0 1-1.99-1.79L2 7.5ZM7 11a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H8a1 1 0 0 1-1-1Z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
+                {selectedRecurringItems.map((item, index) => {
+                  // Asegurarse de que item no es undefined o null
+                  if (!item && item !== "") return null;
 
-                    {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
-                  </div>
-                ))}
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => handleRecurringItemSelect(item)}
+                      className={`cursor-pointer px-3 py-2 rounded-lg text-xs flex items-center justify-center whitespace-nowrap flex-shrink-0 ${
+                        formData.name === item
+                          ? "bg-black text-gray-100"
+                          : "bg-gray-200 text-black"
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 mr-2"
+                      >
+                        <path d="M2 3a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H2Z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M2 7.5h16l-.811 7.71a2 2 0 0 1-1.99 1.79H4.802a2 2 0 0 1-1.99-1.79L2 7.5ZM7 11a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H8a1 1 0 0 1-1-1Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {typeof item === "string" && item.length > 0
+                        ? item.charAt(0).toUpperCase() +
+                          item.slice(1).toLowerCase()
+                        : item}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

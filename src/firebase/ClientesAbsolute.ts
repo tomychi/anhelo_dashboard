@@ -1317,16 +1317,7 @@ export const getGastosCategoriesConfig = async (
         periodicidad: 1,
         items: [],
       },
-      {
-        nombre: "infraestructura",
-        periodicidad: 31,
-        items: ["Alquiler", "Luz", "Gas", "Agua"],
-      },
-      {
-        nombre: "empleados de cocina y produccion",
-        periodicidad: 15,
-        items: [],
-      },
+
       {
         nombre: "otros",
         periodicidad: 1,

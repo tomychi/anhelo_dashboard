@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import arrow from "../../assets/arrowIcon.png"; // Asegúrate de importar el mismo icono
 
 const CategoriasModal = ({
   isOpen,
   onClose,
   title = "Nueva categoría",
-  newCategory,
-  setNewCategory,
   onSave,
+  empresaId,
 }) => {
-  const [isAnimating, setIsAnimating] = React.useState(false);
-  const [dragStart, setDragStart] = React.useState(null);
-  const [currentTranslate, setCurrentTranslate] = React.useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const [categoryName, setCategoryName] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringItems, setRecurringItems] = useState([""]);
   const modalRef = React.useRef(null);
 
   // Configurar animación al abrir
@@ -19,6 +21,10 @@ const CategoriasModal = ({
     if (isOpen) {
       setIsAnimating(true);
       setCurrentTranslate(0);
+      // Reset form fields when opening
+      setCategoryName("");
+      setIsRecurring(false);
+      setRecurringItems([""]);
     }
   }, [isOpen]);
 
@@ -80,6 +86,48 @@ const CategoriasModal = ({
     }, 300);
   };
 
+  // Añadir un nuevo campo para ítem recurrente
+  const addRecurringItem = () => {
+    setRecurringItems([...recurringItems, ""]);
+  };
+
+  // Actualizar un ítem recurrente específico
+  const updateRecurringItem = (index, value) => {
+    const newItems = [...recurringItems];
+    newItems[index] = value;
+    setRecurringItems(newItems);
+  };
+
+  // Eliminar un ítem recurrente
+  const removeRecurringItem = (index) => {
+    if (recurringItems.length > 1) {
+      const newItems = [...recurringItems];
+      newItems.splice(index, 1);
+      setRecurringItems(newItems);
+    }
+  };
+
+  // Guardar categoría con la nueva estructura
+  const handleSaveCategory = () => {
+    if (!categoryName.trim()) return;
+
+    // Filtrar ítems vacíos si es recurrente
+    const validItems = isRecurring
+      ? recurringItems.filter((item) => item.trim() !== "")
+      : [];
+
+    // Crear objeto de categoría con la estructura correcta
+    const newCategory = {
+      nombre: categoryName.toLowerCase(),
+      periodicidad: 1,
+      items: validItems,
+    };
+
+    // Llamar al callback de guardado pasando la nueva categoría
+    onSave(newCategory);
+    handleClose();
+  };
+
   // Si está cerrado, no renderizar nada
   if (!isOpen) return null;
 
@@ -124,23 +172,105 @@ const CategoriasModal = ({
 
           {/* Contenido del modal */}
           <div className="p-4">
-            <div className="section w-full relative z-0 mb-6">
+            {/* Nombre de la categoría */}
+            <div className="section w-full relative z-0 mb-4">
               <input
                 type="text"
                 placeholder="Nombre de la categoría"
                 className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
                 autoFocus
               />
             </div>
 
-            {/* Botón grande al estilo del formulario */}
+            {/* Opción para categoría recurrente */}
+            <div className="mb-4 flex items-center">
+              <input
+                type="checkbox"
+                id="isRecurring"
+                name="isRecurring"
+                className="mr-2 h-4 w-4"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+              />
+              <label htmlFor="isRecurring" className="text-xs">
+                Crear categoria con items. Ej: Para Infraestructura siempre
+                pagas luz, alquiler, agua y gas; Armarlo asi te facilitara la
+                experiencia para registrarlos.
+              </label>
+            </div>
+
+            {/* Mostrar campos para ítems recurrentes si se selecciona la opción */}
+            {isRecurring && (
+              <div className="mb-4">
+                <p className="text-xs mb-2">Ítems recurrentes:</p>
+
+                {recurringItems.map((item, index) => (
+                  <div key={index} className="flex items-center mb-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) =>
+                        updateRecurringItem(index, e.target.value)
+                      }
+                      placeholder={`Ítem ${index + 1}`}
+                      className="custom-bg block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-md appearance-none focus:outline-none focus:ring-0"
+                    />
+
+                    {/* Botón para eliminar ítem */}
+                    {recurringItems.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeRecurringItem(index)}
+                        className="ml-2 text-red-500 h-10 w-10 flex items-center justify-center"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                {/* Botón para agregar más ítems */}
+                <button
+                  type="button"
+                  onClick={addRecurringItem}
+                  className="mt-2 text-xs flex items-center text-black bg-gray-200 px-3 py-2 rounded"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="h-4 mr-1"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Agregar ítem
+                </button>
+              </div>
+            )}
+
+            {/* Botón para guardar */}
             <button
-              onClick={onSave}
-              disabled={!newCategory.trim()}
+              onClick={handleSaveCategory}
+              disabled={!categoryName.trim()}
               className={`text-gray-100 w-full h-16 mt-2 rounded-lg ${
-                !newCategory.trim() ? "bg-gray-400" : "bg-black"
+                !categoryName.trim() ? "bg-gray-400" : "bg-black"
               } text-xl font-bold`}
             >
               Guardar
