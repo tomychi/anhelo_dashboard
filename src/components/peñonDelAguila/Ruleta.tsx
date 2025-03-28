@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import RuletaModal from "./RuletaModal";
 import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
+import logo from "../../assets/AGUILA BLANCO-1.png";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -57,7 +58,9 @@ export const Ruleta = () => {
       speed = Math.max(30 * (remainingTime / spinDuration), 0.1); // Velocidad disminuye linealmente
 
       currentRotation += speed;
-      wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
+      // Aplicamos la rotación teniendo en cuenta que la rueda ya tiene un scaleX(-1)
+      // Así que invertimos el sentido de la rotación para mantener la coherencia visual
+      wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotation}deg)`;
 
       if (elapsedTime < spinDuration) {
         animationFrameRef.current = requestAnimationFrame(animate);
@@ -74,11 +77,11 @@ export const Ruleta = () => {
               currentRotation < finalRotation
                 ? adjustmentSpeed
                 : -adjustmentSpeed;
-            wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
+            wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotation}deg)`;
             animationFrameRef.current = requestAnimationFrame(adjustmentStep);
           } else {
             currentRotation = finalRotation;
-            wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+            wheelRef.current.style.transform = `scaleX(-1) rotate(${-finalRotation}deg)`;
             setSpinning(false);
 
             const normalizedRotation = finalRotation % 360;
@@ -109,6 +112,11 @@ export const Ruleta = () => {
   };
 
   useEffect(() => {
+    // Establecer la transformación inicial
+    if (wheelRef.current) {
+      wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotationRef.current}deg)`;
+    }
+
     return () => {
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
@@ -153,6 +161,7 @@ export const Ruleta = () => {
             box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.3);
             animation: ${spinning ? "glow 2s infinite" : "none"};
             bottom: 0; /* Alinea la parte inferior del círculo con el contenedor */
+            transform: scaleX(-1); /* Rota horizontalmente (eje Y) */
           }
           
           .wheel-segment {
@@ -162,6 +171,8 @@ export const Ruleta = () => {
             top: 50%;
             left: 50%;
             transform-origin: 0% 0%;
+            /* No necesitamos modificar estos estilos, ya que la rotación 
+               en el eje Y se aplica al contenedor padre .wheel */
           }
           
           .wheel-label {
@@ -272,6 +283,8 @@ export const Ruleta = () => {
         `}
       </style>
 
+      <img src={logo} className=" h-20" alt="" />
+
       <div className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto mt-8 mb-4 space-x-6">
         <button
           className="config-button"
@@ -366,14 +379,14 @@ export const Ruleta = () => {
                   key={product.id}
                   className="wheel-label"
                   style={{
-                    transform: `rotate(${angle}deg)`,
+                    transform: `rotate(${angle}deg) scaleX(-1)`, // Añadido scaleX(-1) para contrarrestar la rotación de la rueda
                     display: isInUpperHalf ? "block" : "none",
                   }}
                 >
                   <div
                     className="label-text"
                     style={{
-                      transform: `rotate(${textRotation}deg)`,
+                      transform: `rotate(${textRotation}deg) scaleX(-1)`, // Contrarrestamos la rotación para que el texto sea legible
                     }}
                   >
                     {product.name}
