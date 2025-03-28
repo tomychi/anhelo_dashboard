@@ -157,13 +157,23 @@ export const Ruleta: React.FC<{
             top: 0;
             left: 0;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
             font-family: 'Coolvetica', sans-serif;
             font-size: 16px;
             color: #000;
-            padding-top: 20px;
             pointer-events: none;
+          }
+          .label-text {
+            position: absolute;
+            transform-origin: center;
+            width: 120px;
+            top: 15px;
+            left: calc(50% + 8px);
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
           .wheel-pointer {
             position: absolute;
@@ -272,18 +282,7 @@ export const Ruleta: React.FC<{
                   transform: `rotate(${angle}deg)`,
                 }}
               >
-                <span
-                  style={{
-                    display: "inline-block",
-                    maxWidth: "120px",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                  className="bg-red-main"
-                >
-                  {product.name}
-                </span>
+                <div className="label-text ">{product.name}</div>
               </div>
             );
           })}
