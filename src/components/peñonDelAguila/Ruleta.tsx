@@ -35,9 +35,7 @@ export const Ruleta: React.FC<{
 
     const degreesPerItem = 360 / products.length;
     let currentRotation = currentRotationRef.current;
-    let speed = 20; // Velocidad inicial más alta para un giro emocionante
-    const deceleration = 0.985; // Desaceleración más suave para alargar el giro
-    const minSpeed = 0.02; // Velocidad mínima para detenerse
+    let speed = 20; // Velocidad inicial
     const baseDuration = 5000; // 5 segundos base
     const extraDuration = Math.random() * 5000; // Hasta 5 segundos adicionales
     const spinDuration = baseDuration + extraDuration; // Entre 5 y 10 segundos
@@ -47,31 +45,49 @@ export const Ruleta: React.FC<{
       if (!wheelRef.current) return;
 
       const elapsedTime = currentTime - startTime;
-      currentRotation += speed;
-      speed *= deceleration;
+      const progress = elapsedTime / spinDuration; // Progreso de 0 a 1
 
+      // Desaceleración suave basada en el tiempo restante
+      const remainingTime = spinDuration - elapsedTime;
+      speed = Math.max(20 * (remainingTime / spinDuration), 0.1); // Velocidad disminuye linealmente
+
+      currentRotation += speed;
       wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
 
-      if (elapsedTime < spinDuration || speed > minSpeed) {
+      if (elapsedTime < spinDuration) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
+        // Alinear al segmento más cercano sin transición CSS
         const finalRotation =
           Math.round(currentRotation / degreesPerItem) * degreesPerItem;
-        wheelRef.current.style.transition = "transform 1s ease-out";
-        wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+        let adjustmentSpeed = speed;
+        const adjustmentStep = () => {
+          if (!wheelRef.current) return;
 
-        setTimeout(() => {
-          setSpinning(false);
-          const normalizedRotation = finalRotation % 360;
-          const winningIndex =
-            Math.floor((360 - normalizedRotation) / degreesPerItem) %
-            products.length;
-          const winningProduct = products[winningIndex].name;
-          setResult(winningProduct);
-          setHistory((prev) => [winningProduct, ...prev].slice(0, 20));
-          currentRotationRef.current = finalRotation;
-          if (wheelRef.current) wheelRef.current.style.transition = "";
-        }, 1000); // 1 segundo para el ajuste final
+          if (Math.abs(currentRotation - finalRotation) > adjustmentSpeed) {
+            currentRotation +=
+              currentRotation < finalRotation
+                ? adjustmentSpeed
+                : -adjustmentSpeed;
+            wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
+            animationFrameRef.current = requestAnimationFrame(adjustmentStep);
+          } else {
+            currentRotation = finalRotation;
+            wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+            setSpinning(false);
+
+            const normalizedRotation = finalRotation % 360;
+            const winningIndex =
+              Math.floor((360 - normalizedRotation) / degreesPerItem) %
+              products.length;
+            const winningProduct = products[winningIndex].name;
+            setResult(winningProduct);
+            setHistory((prev) => [winningProduct, ...prev].slice(0, 20));
+            currentRotationRef.current = finalRotation;
+          }
+        };
+
+        animationFrameRef.current = requestAnimationFrame(adjustmentStep);
       }
     };
 
