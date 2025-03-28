@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import arrow from "../../assets/arrowIcon.png";
+import RuletaModal from "./RuletaModal";
 
 // Fake DB de ejemplo (puede ser reemplazada por una DB real)
 const fakeDB = Array.from({ length: 30 }, (_, index) => ({
@@ -7,18 +7,17 @@ const fakeDB = Array.from({ length: 30 }, (_, index) => ({
   name: `${index + 1}`,
 }));
 
-export const Ruleta: React.FC<{
-  products?: { id: number; name: string }[];
-}> = ({ products = fakeDB }) => {
+export const Ruleta = ({ products = fakeDB }) => {
   const [spinning, setSpinning] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [history, setHistory] = useState<string[]>([]);
+  const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showResultModal, setShowResultModal] = useState(false);
   const itemsPerPage = 5;
-  const wheelRef = useRef<HTMLDivElement>(null);
+  const wheelRef = useRef(null);
   const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number | null>(null);
+  const dropdownRef = useRef(null);
+  const animationFrameRef = useRef(null);
   const currentRotationRef = useRef(0);
 
   const spinWheel = () => {
@@ -35,7 +34,7 @@ export const Ruleta: React.FC<{
     const spinDuration = baseDuration + extraDuration; // Entre 5 y 10 segundos
     const startTime = performance.now();
 
-    const animate = (currentTime: number) => {
+    const animate = (currentTime) => {
       if (!wheelRef.current) return;
 
       const elapsedTime = currentTime - startTime;
@@ -78,6 +77,9 @@ export const Ruleta: React.FC<{
             setResult(winningProduct);
             setHistory((prev) => [winningProduct, ...prev].slice(0, 20));
             currentRotationRef.current = finalRotation;
+
+            // Mostrar el modal con el resultado
+            setShowResultModal(true);
           }
         };
 
@@ -91,11 +93,8 @@ export const Ruleta: React.FC<{
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowHistoryDropdown(false);
       }
     };
@@ -113,7 +112,7 @@ export const Ruleta: React.FC<{
   const currentHistory = history.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(history.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber: number) => {
+  const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
@@ -183,14 +182,6 @@ export const Ruleta: React.FC<{
             border-top: 30px solid #333;
             z-index: 10;
           }
-          .result-display {
-            margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            font-family: 'Coolvetica', sans-serif;
-            color: #333;
-          }
           .button-spin {
             background-color: #4CAF50;
             color: white;
@@ -236,7 +227,7 @@ export const Ruleta: React.FC<{
 
       <div className="flex flex-row justify-between items-center w-full max-w-md mt-8 mb-4 px-4">
         <p className="text-black font-bold text-2xl font-coolvetica">
-          Ruleta de Sorteo
+          Regalos legendarios
         </p>
         <button className="button-spin" onClick={spinWheel} disabled={spinning}>
           <svg
@@ -285,81 +276,13 @@ export const Ruleta: React.FC<{
         </div>
       </div>
 
-      {result && <div className="result-display">¡Ganaste: {result}!</div>}
-
-      <div className="w-full max-w-md mt-4 px-4">
-        <div
-          ref={dropdownRef}
-          className="relative flex items-center pr-2 w-full h-10 gap-1 rounded-lg border-4 border-[#333] font-coolvetica justify-between text-black text-xs font-light cursor-pointer"
-          onClick={() => setShowHistoryDropdown(!showHistoryDropdown)}
-        >
-          <div className="flex flex-row items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-6 ml-1.5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p>Historial de Resultados</p>
-          </div>
-          <img
-            src={arrow}
-            className={`h-2 arrow-down ${showHistoryDropdown ? "open" : ""}`}
-            alt=""
-          />
-        </div>
-      </div>
-
-      {showHistoryDropdown && (
-        <div className="font-coolvetica w-full max-w-md mx-4 mt-2 bg-white border-4 border-[#333] rounded-lg p-4">
-          <table className="w-full text-xs text-left text-black">
-            <thead className="text-black border-b h-10">
-              <tr>
-                <th scope="col" className="pl-4 w-1/2">
-                  Producto
-                </th>
-                <th scope="col" className="pl-4 w-1/2">
-                  Posición
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentHistory.map((product, index) => (
-                <tr
-                  key={index}
-                  className="text-black border-b h-10 border-[#333] border-opacity-20"
-                >
-                  <td className="pl-4 font-light">{product}</td>
-                  <td className="pl-4 font-light">
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {totalPages > 1 && (
-            <div className="pagination">
-              {pageNumbers.map((number) => (
-                <button
-                  key={number}
-                  onClick={() => handlePageChange(number)}
-                  className={currentPage === number ? "active" : ""}
-                >
-                  {number}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Modal personalizado para mostrar el resultado */}
+      <RuletaModal
+        isOpen={showResultModal}
+        onClose={() => setShowResultModal(false)}
+        title="¡Felicitaciones!"
+        winningPrize={result}
+      />
     </div>
   );
 };
