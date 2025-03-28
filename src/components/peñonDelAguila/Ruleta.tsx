@@ -220,7 +220,7 @@ export const Ruleta = () => {
   }, []);
 
   if (isLoadingConfig) {
-    return <div>Cargando configuración...</div>;
+    return <div></div>;
   }
 
   return (
