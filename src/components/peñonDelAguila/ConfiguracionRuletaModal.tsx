@@ -176,7 +176,7 @@ export const ConfiguracionRuletaModal: React.FC<
 
       <div
         ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-2 pb-4 pt-10 transition-transform duration-300 touch-none ${
           isAnimating ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -199,9 +199,9 @@ export const ConfiguracionRuletaModal: React.FC<
 
         <div className="flex-col space-y-4 w-full">
           {/* Configuración de número total de ítems */}
-          <div className="flex items-center ml-8 mb-4">
-            <div className="flex flex-col w-full max-w-xs">
-              <label className="text-xs ">
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex flex-col   w-full max-w-xs">
+              <label className="text-xs text-center">
                 Cantidad maxima de participantes
               </label>
               <input
@@ -210,7 +210,7 @@ export const ConfiguracionRuletaModal: React.FC<
                 max="100"
                 value={totalItems}
                 onChange={handleTotalItemsChange}
-                className="w-full px-4 h-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 h-10 border border-gray-300 text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ export const ConfiguracionRuletaModal: React.FC<
                   <div className="animate-bounce">
                     <img
                       src={arrowIcon}
-                      className="h-2 transform rotate-90 opacity-30"
+                      className="h-2 transform rotate-90  "
                       alt="Desplazar para ver más"
                     />
                   </div>
