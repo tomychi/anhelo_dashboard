@@ -206,10 +206,7 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <div className="flex flex-row justify-between items-center w-full max-w-md mt-8 mb-4 px-4">
-        <p className="text-black font-bold text-2xl font-coolvetica">
-          Regalos legendarios
-        </p>
+      <div className="flex flex-row  items-center justify-center w-full max-w-md mt-8 ">
         <div className="flex space-x-2">
           <button
             className="config-button"
