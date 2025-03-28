@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import RuletaModal from "./RuletaModal";
 import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
-import logo from "../../assets/AGUILA BLANCO-1.png";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -38,14 +37,11 @@ export const Ruleta = () => {
 
     const degreesPerItem = 360 / products.length;
     let currentRotation = currentRotationRef.current;
-    let speed = 30; // Velocidad inicial aumentada para efecto más épico
+    let speed = 20; // Velocidad inicial
     const baseDuration = 5000; // 5 segundos base
-    const extraDuration = Math.random() * 7000; // Hasta 7 segundos adicionales para mayor expectación
-    const spinDuration = baseDuration + extraDuration; // Entre 5 y 12 segundos
+    const extraDuration = Math.random() * 5000; // Hasta 5 segundos adicionales
+    const spinDuration = baseDuration + extraDuration; // Entre 5 y 10 segundos
     const startTime = performance.now();
-
-    // Efectos de sonido para la experiencia épica
-    // Puedes agregar aquí código para reproducir sonidos
 
     const animate = (currentTime) => {
       if (!wheelRef.current) return;
@@ -55,12 +51,10 @@ export const Ruleta = () => {
 
       // Desaceleración suave basada en el tiempo restante
       const remainingTime = spinDuration - elapsedTime;
-      speed = Math.max(30 * (remainingTime / spinDuration), 0.1); // Velocidad disminuye linealmente
+      speed = Math.max(20 * (remainingTime / spinDuration), 0.1); // Velocidad disminuye linealmente
 
       currentRotation += speed;
-      // Aplicamos la rotación teniendo en cuenta que la rueda ya tiene un scaleX(-1)
-      // Así que invertimos el sentido de la rotación para mantener la coherencia visual
-      wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotation}deg)`;
+      wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
 
       if (elapsedTime < spinDuration) {
         animationFrameRef.current = requestAnimationFrame(animate);
@@ -77,11 +71,11 @@ export const Ruleta = () => {
               currentRotation < finalRotation
                 ? adjustmentSpeed
                 : -adjustmentSpeed;
-            wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotation}deg)`;
+            wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
             animationFrameRef.current = requestAnimationFrame(adjustmentStep);
           } else {
             currentRotation = finalRotation;
-            wheelRef.current.style.transform = `scaleX(-1) rotate(${-finalRotation}deg)`;
+            wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
             setSpinning(false);
 
             const normalizedRotation = finalRotation % 360;
@@ -112,11 +106,6 @@ export const Ruleta = () => {
   };
 
   useEffect(() => {
-    // Establecer la transformación inicial
-    if (wheelRef.current) {
-      wheelRef.current.style.transform = `scaleX(-1) rotate(${-currentRotationRef.current}deg)`;
-    }
-
     return () => {
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
@@ -124,46 +113,24 @@ export const Ruleta = () => {
   }, []);
 
   return (
-    <div className="flex flex-col  h-screen justify-center items-center w-full">
+    <div className="flex flex-col items-center">
       <style>
         {`
-          @keyframes glow {
-            0% { box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.5); }
-            50% { box-shadow: 0 0 40px 15px rgba(255, 215, 0, 0.7); }
-            100% { box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.5); }
-          }
-
-          @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-          }
-
           .wheel-container {
             position: relative;
-            width: 52.5vw; /* 70% del 75vw original */
-            height: 26.25vw; /* 70% del 37.5vw original */
-            max-width: 630px; /* 70% de 900px */
-            max-height: 315px; /* 70% de 450px */
+            width: 350px;
+            height: 350px;
             margin: 20px auto;
-            overflow: hidden; /* Oculta la parte inferior */
           }
-          
           .wheel {
-            position: absolute;
+            position: relative;
             width: 100%;
-            height: 200%; /* El doble de la altura para que se vea completo el círculo */
+            height: 100%;
             border-radius: 50%;
             background: #f5f5f5;
-            border: 8px solid #333; /* Reducido de 10px a 8px (80%) */
+            border: 4px solid #333;
             overflow: hidden;
-            transition: transform 0.3s ease;
-            box-shadow: 0 0 25px 8px rgba(0, 0, 0, 0.3); /* Ajustado ligeramente */
-            animation: ${spinning ? "glow 2s infinite" : "none"};
-            bottom: 0; /* Alinea la parte inferior del círculo con el contenedor */
-            transform: scaleX(-1); /* Rota horizontalmente (eje Y) */
           }
-          
           .wheel-segment {
             position: absolute;
             width: 50%;
@@ -171,10 +138,8 @@ export const Ruleta = () => {
             top: 50%;
             left: 50%;
             transform-origin: 0% 0%;
-            /* No necesitamos modificar estos estilos, ya que la rotación 
-               en el eje Y se aplica al contenedor padre .wheel */
+            background: #e0e0e0;
           }
-          
           .wheel-label {
             position: absolute;
             width: 100%;
@@ -185,154 +150,111 @@ export const Ruleta = () => {
             align-items: center;
             justify-content: center;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(12px + 0.7vw); /* Reducido aproximadamente al 70% */
-            font-weight: bold;
+            font-size: 16px;
             color: #000;
             pointer-events: none;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
           }
-          
           .label-text {
             position: absolute;
-            width: 40%;
-            top: 15%;
-            left: calc(50% + 15px); /* Reducido de 20px a 15px */
-            text-align: center;
-            font-size: calc(12px + 1vw); /* Reducido de 16px + 1.5vw */
-            font-weight: bold;
-            white-space: nowrap;
+            width: 120px;
+            top: 10px;
+            left: calc(50% + 10px);
+            max-width: 120px;
           }
-          
           .wheel-pointer {
             position: absolute;
-            top: -10px; /* Reducido de -15px */
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 21px solid transparent; /* 70% de 30px */
-            border-right: 21px solid transparent; /* 70% de 30px */
-            border-top: 42px solid #cc0000; /* 70% de 60px */
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #333;
             z-index: 10;
-            filter: drop-shadow(0 0 7px rgba(0, 0, 0, 0.5)); /* Reducido ligeramente */
           }
-          
           .button-spin {
-            background: linear-gradient(45deg, #ff4e50, #f9d423);
+            background-color: #4CAF50;
             color: white;
-            padding: 12px 25px; /* Reducido de 15px 30px */
+            padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 25px;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(14px + 0.4vw); /* Reducido de 16px + 0.5vw */
-            font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px; /* Reducido de 12px */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Reducido ligeramente */
-            transition: all 0.3s ease;
-            animation: ${!spinning ? "pulse 2s infinite" : "none"};
+            gap: 8px;
           }
-          
-          .button-spin:hover {
-            transform: translateY(-4px); /* Reducido de -5px */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Reducido ligeramente */
-          }
-          
           .button-spin:disabled {
-            background: linear-gradient(45deg, #cccccc, #999999);
+            background-color: #cccccc;
             cursor: not-allowed;
-            animation: none;
           }
-          
           .config-button {
-            background: linear-gradient(45deg, #3498db, #2980b9);
+            background-color: #3498db;
             color: white;
-            padding: 12px 25px; /* Reducido de 15px 30px */
+            padding: 10px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 25px;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(14px + 0.4vw); /* Reducido de 16px + 0.5vw */
-            font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px; /* Reducido de 12px */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Reducido ligeramente */
-            transition: all 0.3s ease;
-          }
-          
-          .config-button:hover {
-            transform: translateY(-4px); /* Reducido de -5px */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Reducido ligeramente */
-          }
-          
-          .info-text {
-            font-size: calc(12px + 0.4vw); /* Reducido de 14px + 0.5vw */
-            font-weight: bold;
-            color: #555;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-          }
-          
-          .empty-message {
-            font-size: calc(16px + 0.8vw); /* Reducido de 20px + 1vw */
-            color: #888;
-            text-align: center;
-            margin: 40px 0; /* Reducido de 50px */
+            gap: 8px;
           }
         `}
       </style>
-      <img src={logo} className="h-16" alt="" />{" "}
-      {/* Reducido de h-20 a h-16 (80%) */}
-      <div className="flex flex-row items-center justify-center w-full max-w-3xl mx-auto mt-6 mb-3 space-x-4">
-        {/* Reducido max-w-4xl a max-w-3xl, mt-8 a mt-6, mb-4 a mb-3, space-x-6 a space-x-4 */}
-        <button
-          className="config-button"
-          onClick={() => setShowConfigModal(true)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-5 w-5" /* Reducido de h-6 w-6 */
+
+      <div className="flex flex-row  items-center justify-center w-full max-w-md mt-8 ">
+        <div className="flex space-x-2">
+          <button
+            className="config-button"
+            onClick={() => setShowConfigModal(true)}
           >
-            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-            <path
-              fillRule="evenodd"
-              d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Configurar
-        </button>
-        <button
-          className="button-spin"
-          onClick={spinWheel}
-          disabled={spinning || products.length === 0}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-5 w-5" /* Reducido de h-6 w-6 */
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+            >
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+              <path
+                fillRule="evenodd"
+                d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Configurar
+          </button>
+          <button
+            className="button-spin"
+            onClick={spinWheel}
+            disabled={spinning || products.length === 0}
           >
-            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
-          </svg>
-          {spinning ? "¡GIRANDO!" : "¡GIRAR!"}
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+            >
+              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
+            </svg>
+            {spinning ? "Girando..." : "Girar"}
+          </button>
+        </div>
       </div>
       {/* Información sobre la configuración actual */}
-      <div className="mb-6 font-bold font-coolvetica text-gray-500 text-sm">
-        {/* Reducido mb-8 a mb-6 */}
+      <div className="mt-4 mb-12 text-sm text-gray-500 text-center">
         Sorteando entre {products.length} items.
       </div>
+
       {products.length === 0 ? (
-        <div className="my-14 text-center empty-message">
-          {/* Reducido my-20 a my-14 (70%) */}
-          <p>No hay elementos configurados.</p>
-          <p className="mt-3 text-base">
-            {/* Reducido mt-4 a mt-3 */}
+        <div className="my-20 text-center">
+          <p className="text-gray-400 text-xl">
+            No hay elementos configurados.
+          </p>
+          <p className="text-gray-400">
             Haz clic en "Configurar" para añadir elementos a la ruleta.
           </p>
         </div>
@@ -342,26 +264,13 @@ export const Ruleta = () => {
           <div className="wheel" ref={wheelRef}>
             {products.map((product, index) => {
               const angle = (index * 360) / products.length;
-              // Colores alternados más vibrantes para efecto visual mejorado
-              const colors = [
-                "#FF5757",
-                "#5271FF",
-                "#38B6FF",
-                "#8C52FF",
-                "#FFC857",
-                "#66D2D6",
-                "#FF9956",
-                "#5CE1E6",
-              ];
-              const backgroundColor = colors[index % colors.length];
+              const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
               return (
                 <div
                   key={product.id}
                   className="wheel-segment"
                   style={{
-                    transform: `rotate(${angle}deg) skewY(${
-                      90 - 360 / products.length
-                    }deg)`,
+                    transform: `rotate(${angle}deg) skewY(${90 - 360 / products.length}deg)`,
                     backgroundColor,
                   }}
                 />
@@ -369,42 +278,30 @@ export const Ruleta = () => {
             })}
             {products.map((product, index) => {
               const angle = (index * 360) / products.length;
-              // Solo mostrar etiquetas en la mitad superior (ángulos entre 0° y 180°)
-              const isInUpperHalf = angle >= 0 && angle <= 180;
-              const adjustedAngle = (angle + 180) % 360; // Ajustado para mejor legibilidad
-              const textRotation =
-                adjustedAngle > 90 && adjustedAngle < 270 ? 180 : 0;
-
               return (
                 <div
                   key={product.id}
                   className="wheel-label"
                   style={{
-                    transform: `rotate(${angle}deg) scaleX(-1)`, // Añadido scaleX(-1) para contrarrestar la rotación de la rueda
-                    display: isInUpperHalf ? "block" : "none",
+                    transform: `rotate(${angle}deg)`,
                   }}
                 >
-                  <div
-                    className="label-text"
-                    style={{
-                      transform: `rotate(${textRotation}deg) scaleX(-1)`, // Contrarrestamos la rotación para que el texto sea legible
-                    }}
-                  >
-                    {product.name}
-                  </div>
+                  <div className="label-text ">{product.name}</div>
                 </div>
               );
             })}
           </div>
         </div>
       )}
+
       {/* Modal para mostrar el resultado */}
       <RuletaModal
         isOpen={showResultModal}
         onClose={() => setShowResultModal(false)}
-        title="¡GANADOR!"
+        title="¡Felicitaciones!"
         winningPrize={result}
       />
+
       {/* Modal para configurar la ruleta */}
       <ConfiguracionRuletaModal
         isOpen={showConfigModal}
