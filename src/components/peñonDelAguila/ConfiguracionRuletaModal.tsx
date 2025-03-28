@@ -215,13 +215,23 @@ export const ConfiguracionRuletaModal: React.FC<
             </div>
           </div>
 
-          {/* Grid de ítems seleccionables con scroll */}
+          {/* Grid de ítems seleccionables con scroll pero sin barra visible */}
           <div className="relative">
             <div
               ref={scrollContainerRef}
-              className="max-h-60 overflow-y-auto p-2"
+              className="max-h-60 overflow-y-auto p-2 scrollbar-hide"
               onScroll={handleScroll}
+              style={{
+                scrollbarWidth: "none" /* Firefox */,
+                msOverflowStyle: "none" /* IE and Edge */,
+              }}
             >
+              {/* Estilo adicional para ocultar la barra de scroll en WebKit (Chrome, Safari) */}
+              <style jsx>{`
+                .scrollbar-hide::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
               <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
                 {Array.from({ length: totalItems }, (_, i) => i + 1).map(
                   (item) => (
