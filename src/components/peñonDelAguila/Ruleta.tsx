@@ -11,7 +11,7 @@ import {
   EmpleadoProps,
   obtenerDocumento,
   actualizarDocumento,
-} from "../../firebase/ClientesAbsolute"; // Ajusta la ruta según tu estructura
+} from "../../firebase/ClientesAbsolute";
 import { getFirestore, getDoc } from "firebase/firestore";
 
 // Función para generar productos a partir de los números seleccionados
@@ -29,14 +29,13 @@ export const Ruleta = () => {
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [products, setProducts] = useState([]);
-  const [maxParticipantes, setMaxParticipantes] = useState(10); // Valor por defecto
+  const [maxParticipantes, setMaxParticipantes] = useState(10);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
 
   const wheelRef = useRef(null);
   const animationFrameRef = useRef(null);
   const currentRotationRef = useRef(0);
 
-  // Obtener información del usuario autenticado desde Redux
   const auth = useSelector((state: RootState) => state.auth);
   const tipoUsuario = auth?.tipoUsuario;
   const empresaId =
@@ -51,6 +50,32 @@ export const Ruleta = () => {
       : tipoUsuario === "empleado"
         ? "Obteniendo nombre..."
         : "No autenticada";
+
+  // Disable scrolling and touch events
+  useEffect(() => {
+    // Apply styles to body to prevent scrolling
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100vh"; // Ensure body takes full viewport height
+    document.body.style.position = "fixed"; // Fix body position
+    document.body.style.width = "100%"; // Ensure full width
+    document.body.style.touchAction = "none"; // Disable touch scrolling on mobile
+
+    // Prevent default touch behavior
+    const preventTouchMove = (e) => e.preventDefault();
+    document.addEventListener("touchmove", preventTouchMove, {
+      passive: false,
+    });
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "auto";
+      document.body.style.height = "auto";
+      document.body.style.position = "static";
+      document.body.style.width = "auto";
+      document.body.style.touchAction = "auto";
+      document.removeEventListener("touchmove", preventTouchMove);
+    };
+  }, []);
 
   // Cargar configuración inicial desde Firestore
   useEffect(() => {
@@ -72,7 +97,6 @@ export const Ruleta = () => {
             )
         );
       } else {
-        // Configuración por defecto si no existe
         setMaxParticipantes(10);
         setSelectedNumbers(Array.from({ length: 10 }, (_, i) => i + 1));
       }
@@ -89,14 +113,12 @@ export const Ruleta = () => {
     }
   }, [selectedNumbers, isLoadingConfig]);
 
-  // Log de la empresa
   useEffect(() => {
     console.log(
       `Ruleta abierta desde la empresa: ${nombreEmpresa} (ID: ${empresaId})`
     );
   }, [nombreEmpresa, empresaId]);
 
-  // Función para restablecer la ruleta a la posición inicial
   const resetWheelPosition = () => {
     if (!wheelRef.current) return;
 
@@ -184,7 +206,6 @@ export const Ruleta = () => {
     animationFrameRef.current = requestAnimationFrame(animate);
   };
 
-  // Guardar configuración en Firestore
   const handleSaveConfig = async (
     newSelectedNumbers: number[],
     newMaxParticipantes: number
@@ -224,9 +245,15 @@ export const Ruleta = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen justify-center items-center">
+    <div className="flex flex-col h-screen justify-center items-center overflow-hidden">
       <style>
         {`
+          html, body {
+            overflow: hidden; /* Ensure no scrolling at the root level */
+            height: 100%;
+            margin: 0;
+            padding: 0;
+          }
           .wheel-container {
             position: relative;
             width: 784px;
