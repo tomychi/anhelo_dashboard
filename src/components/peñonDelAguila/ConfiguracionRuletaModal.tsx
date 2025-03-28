@@ -191,18 +191,6 @@ export const ConfiguracionRuletaModal: React.FC<
             </div>
           </div>
 
-          {/* Botón para seleccionar/deseleccionar todos */}
-          <div className="flex justify-center mb-2">
-            <button
-              onClick={handleSelectAll}
-              className="bg-gray-200 text-black px-4 py-2 rounded-lg text-sm font-medium"
-            >
-              {selectedItems.length === totalItems
-                ? "Deseleccionar todos"
-                : "Seleccionar todos"}
-            </button>
-          </div>
-
           {/* Grid de ítems seleccionables */}
           <div className="max-h-60 overflow-y-auto p-2">
             <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
@@ -224,9 +212,22 @@ export const ConfiguracionRuletaModal: React.FC<
             </div>
           </div>
 
-          {/* Muestra cuántos elementos están seleccionados */}
-          <div className="text-center text-sm text-gray-500">
-            {selectedItems.length} de {totalItems} participantes seleccionados
+          <div className="flex flex-row items-center gap-4 justify-center">
+            {/* Muestra cuántos elementos están seleccionados */}
+            <div className="text-center text-sm text-gray-500">
+              {selectedItems.length} de {totalItems} participantes seleccionados
+            </div>
+            {/* Botón para seleccionar/deseleccionar todos */}
+            <div className="flex justify-center mb-2">
+              <button
+                onClick={handleSelectAll}
+                className="bg-gray-300 text-black px-4 h-10 rounded-full text-sm font-medium"
+              >
+                {selectedItems.length === totalItems
+                  ? "Deseleccionar todos"
+                  : "Seleccionar todos"}
+              </button>
+            </div>
           </div>
         </div>
 
