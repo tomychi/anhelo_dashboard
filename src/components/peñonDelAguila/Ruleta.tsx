@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import RuletaModal from "./RuletaModal";
 import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
+import logo from "../../assets/AGUILA BLANCO-1.png";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -113,7 +114,7 @@ export const Ruleta = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col h-screen justify-center items-center">
       <style>
         {`
           .wheel-container {
@@ -218,6 +219,8 @@ export const Ruleta = () => {
           }
         `}
       </style>
+
+      <img src={logo} className="h-12" />
 
       <div className="flex flex-row z-50 items-center justify-center w-full max-w-md mt-8  ">
         <div className="flex space-x-2">
