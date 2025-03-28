@@ -14,29 +14,23 @@ const RuletaModal = ({ isOpen, onClose, title, children, winningPrize }) => {
         )}
         <div className="w-full px-4 max-h-[80vh] pt-4 overflow-y-auto">
           {children || (
-            <div className="flex flex-col items-center py-6">
-              <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-4">
+            <div className="flex flex-col items-center ">
+              <div className="flex flex-row items-center ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="white"
-                  className="w-12 h-12"
+                  fill="currentColor"
+                  className="h-10 text-green-500"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
-                    clipRule="evenodd"
-                  />
+                  <path d="M9.375 3a1.875 1.875 0 0 0 0 3.75h1.875v4.5H3.375A1.875 1.875 0 0 1 1.5 9.375v-.75c0-1.036.84-1.875 1.875-1.875h3.193A3.375 3.375 0 0 1 12 2.753a3.375 3.375 0 0 1 5.432 3.997h3.943c1.035 0 1.875.84 1.875 1.875v.75c0 1.036-.84 1.875-1.875 1.875H12.75v-4.5h1.875a1.875 1.875 0 1 0-1.875-1.875V6.75h-1.5V4.875C11.25 3.839 10.41 3 9.375 3ZM11.25 12.75H3v6.75a2.25 2.25 0 0 0 2.25 2.25h6v-9ZM12.75 12.75v9h6.75a2.25 2.25 0 0 0 2.25-2.25v-6.75h-9Z" />
                 </svg>
+
+                <p className="text-8xl ml-4 font-bold text-center  text-green-600 font-coolvetica">
+                  {winningPrize}
+                </p>
               </div>
-              <h2 className="text-3xl font-bold text-center mb-2 font-coolvetica">
-                ¡Ganaste!
-              </h2>
-              <p className="text-4xl font-bold text-center mb-6 text-green-600 font-coolvetica">
-                {winningPrize}
-              </p>
               <p className="text-center text-gray-600 px-4 font-coolvetica">
-                Puedes reclamar tu premio mostrando esta pantalla en la tienda.
+                Podes reclamar tu premio mostrando esta pantalla.
               </p>
             </div>
           )}
