@@ -170,14 +170,12 @@ export const ConfiguracionRuletaModal: React.FC<
         </div>
 
         <div className="flex-col space-y-4 w-full">
-          <h2 className="text-3xl mx-8 text-center font-bold mb-4">
-            Configuración
-          </h2>
+          <h2 className="text-3xl mx-8 font-bold mb-4">Configuración</h2>
 
           {/* Configuración de número total de ítems */}
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center ml-8 mb-4">
             <div className="flex flex-col w-full max-w-xs">
-              <label className="text-xs mb-1 text-center">
+              <label className="text-xs ">
                 Cantidad maxima de participantes
               </label>
               <input
@@ -213,24 +211,8 @@ export const ConfiguracionRuletaModal: React.FC<
           </div>
         </div>
 
-        <div className="flex pt-4 justify-between">
-          <div className="flex  flex-row items-center gap-4 justify-center">
-            {/* Muestra cuántos elementos están seleccionados */}
-            <div className="text-center text-sm text-gray-500">
-              {selectedItems.length} de {totalItems} participantes seleccionados
-            </div>
-            {/* Botón para seleccionar/deseleccionar todos */}
-            <div className="flex justify-center mb-2">
-              <button
-                onClick={handleSelectAll}
-                className="bg-gray-300 text-black px-4 h-10 rounded-full text-sm font-medium"
-              >
-                {selectedItems.length === totalItems
-                  ? "Deseleccionar todos"
-                  : "Seleccionar todos"}
-              </button>
-            </div>
-          </div>
+        {/* bottom */}
+        <div className="flex pt-4 px-8 justify-between">
           <button
             onClick={handleSaveConfig}
             disabled={loading}
@@ -248,6 +230,23 @@ export const ConfiguracionRuletaModal: React.FC<
               "Guardar"
             )}
           </button>
+          <div className="flex  flex-row items-center gap-4 justify-center">
+            {/* Muestra cuántos elementos están seleccionados */}
+            <div className="text-center text-sm text-gray-500">
+              {selectedItems.length} de {totalItems} participantes seleccionados
+            </div>
+            {/* Botón para seleccionar/deseleccionar todos */}
+            <div className="flex justify-center mb-2">
+              <button
+                onClick={handleSelectAll}
+                className="bg-gray-300 text-black px-4 h-10 rounded-full text-sm font-medium"
+              >
+                {selectedItems.length === totalItems
+                  ? "Deseleccionar todos"
+                  : "Seleccionar todos"}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
