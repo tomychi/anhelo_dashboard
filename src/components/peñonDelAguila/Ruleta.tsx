@@ -146,8 +146,8 @@ export const Ruleta = () => {
         {`
           .wheel-container {
             position: relative;
-            width: 560px;
-            height: 560px;
+            width: 784px;
+            height: 784px;
             margin: 20px auto;
             transform: rotate(180deg); /* Flip the entire wheel container */
           }
@@ -157,7 +157,7 @@ export const Ruleta = () => {
             height: 100%;
             border-radius: 50%;
             background: #F3F4F6;
-            border: 4px solid #333;
+            border: 10px solid #333;
             overflow: hidden;
           }
           .wheel-segment {
@@ -225,8 +225,8 @@ export const Ruleta = () => {
           }
           .gray-overlay {
             position: absolute;
-            width: 560px;
-            height: 280px; /* La mitad de la altura de la ruleta */
+            width: 786px;
+            height: 392px; /* La mitad de la altura de la ruleta */
             background-color: #F3F4F6; /* Gray 100 */
             bottom: 0; /* Changed from top to bottom */
             left: 0;
@@ -236,8 +236,8 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <div className="flex flex-col gap-8 z-50 items-center justify-center w-full max-w-md  ">
-        <img src={logo} className="h-24" />
+      <div className="flex flex-col gap-20 z-50 items-center justify-center w-full max-w-md  ">
+        <img src={logo} className="h-40" />
         <div className="flex flex-row">
           <div className="flex space-x-2">
             <button
@@ -286,7 +286,7 @@ export const Ruleta = () => {
       <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
 
       {/* Ruleta */}
-      <div className="mt-[-530px]">
+      <div className="mt-[-700px]">
         {products.length === 0 ? (
           <div className="my-20 text-center">
             <p className="text-gray-400 text-xl">
