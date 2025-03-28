@@ -219,7 +219,7 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <div className="flex flex-row  items-center justify-center w-full max-w-md mt-8 ">
+      <div className="flex flex-row z-50 items-center justify-center w-full max-w-md mt-8  ">
         <div className="flex space-x-2">
           <button
             className="config-button"
@@ -258,56 +258,59 @@ export const Ruleta = () => {
         </div>
       </div>
       {/* Información sobre la configuración actual */}
-      <div className="mt-4 mb-12 text-sm text-gray-500 text-center">
+      <div className="mt-4 mb-12 text-sm text-gray-500 z-50 text-center">
         Sorteando entre {products.length} items.
       </div>
 
-      {products.length === 0 ? (
-        <div className="my-20 text-center">
-          <p className="text-gray-400 text-xl">
-            No hay elementos configurados.
-          </p>
-          <p className="text-gray-400">
-            Haz clic en "Configurar" para añadir elementos a la ruleta.
-          </p>
-        </div>
-      ) : (
-        <div className="wheel-container">
-          <div className="wheel-pointer"></div>
-          <div className="wheel" ref={wheelRef}>
-            {products.map((product, index) => {
-              const angle = (index * 360) / products.length;
-              const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
-              return (
-                <div
-                  key={product.id}
-                  className="wheel-segment"
-                  style={{
-                    transform: `rotate(${angle}deg) skewY(${90 - 360 / products.length}deg)`,
-                    backgroundColor,
-                  }}
-                />
-              );
-            })}
-            {products.map((product, index) => {
-              const angle = (index * 360) / products.length;
-              return (
-                <div
-                  key={product.id}
-                  className="wheel-label"
-                  style={{
-                    transform: `rotate(${angle + 180}deg)` /* Added 180 to adjust for the container flip */,
-                  }}
-                >
-                  <div className="label-text ">{product.name}</div>
-                </div>
-              );
-            })}
+      {/* Ruleta */}
+      <div className="mt-[-150px]">
+        {products.length === 0 ? (
+          <div className="my-20 text-center">
+            <p className="text-gray-400 text-xl">
+              No hay elementos configurados.
+            </p>
+            <p className="text-gray-400">
+              Haz clic en "Configurar" para añadir elementos a la ruleta.
+            </p>
           </div>
-          {/* Rectángulo gris que cubre la mitad inferior de la ruleta (ahora) */}
-          <div className="gray-overlay"></div>
-        </div>
-      )}
+        ) : (
+          <div className="wheel-container">
+            <div className="wheel-pointer"></div>
+            <div className="wheel" ref={wheelRef}>
+              {products.map((product, index) => {
+                const angle = (index * 360) / products.length;
+                const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
+                return (
+                  <div
+                    key={product.id}
+                    className="wheel-segment"
+                    style={{
+                      transform: `rotate(${angle}deg) skewY(${90 - 360 / products.length}deg)`,
+                      backgroundColor,
+                    }}
+                  />
+                );
+              })}
+              {products.map((product, index) => {
+                const angle = (index * 360) / products.length;
+                return (
+                  <div
+                    key={product.id}
+                    className="wheel-label"
+                    style={{
+                      transform: `rotate(${angle + 180}deg)` /* Added 180 to adjust for the container flip */,
+                    }}
+                  >
+                    <div className="label-text ">{product.name}</div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Rectángulo gris que cubre la mitad inferior de la ruleta (ahora) */}
+            <div className="gray-overlay"></div>
+          </div>
+        )}
+      </div>
 
       {/* Modal para mostrar el resultado */}
       <RuletaModal
