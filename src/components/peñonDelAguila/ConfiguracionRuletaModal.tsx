@@ -293,7 +293,7 @@ export const ConfiguracionRuletaModal: React.FC<
           <button
             onClick={handleSaveConfig}
             disabled={loading}
-            className="text-gray-100 text-4xl h-20 w-80 bg-black font-bold rounded-lg outline-none"
+            className="text-gray-100 text-4xl h-20 w-80 bg-black font-bold rounded-3xl outline-none"
           >
             {loading ? (
               <div className="flex justify-center w-full items-center">
