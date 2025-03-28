@@ -244,6 +244,10 @@ export const Ruleta = () => {
           </button>
         </div>
       </div>
+      {/* Información sobre la configuración actual */}
+      <div className="mt-4 text-sm text-gray-500 text-center">
+        {products.length} elementos configurados
+      </div>
 
       {products.length === 0 ? (
         <div className="my-20 text-center">
@@ -289,11 +293,6 @@ export const Ruleta = () => {
           </div>
         </div>
       )}
-
-      {/* Información sobre la configuración actual */}
-      <div className="mt-4 text-sm text-gray-500 text-center">
-        {products.length} elementos configurados
-      </div>
 
       {/* Modal para mostrar el resultado */}
       <RuletaModal
