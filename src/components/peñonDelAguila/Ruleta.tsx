@@ -120,8 +120,8 @@ export const Ruleta = () => {
         {`
           .wheel-container {
             position: relative;
-            width: 350px;
-            height: 350px;
+            width: 700px;
+            height: 700px;
             margin: 20px auto;
             transform: rotate(180deg); /* Flip the entire wheel container */
           }
@@ -199,8 +199,8 @@ export const Ruleta = () => {
           }
           .gray-overlay {
             position: absolute;
-            width: 350px;
-            height: 175px; /* La mitad de la altura de la ruleta */
+            width: 700px;
+            height: 350px; /* La mitad de la altura de la ruleta */
             background-color: #F3F4F6; /* Gray 100 */
             bottom: 0; /* Changed from top to bottom */
             left: 0;
@@ -210,44 +210,45 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <img src={logo} className="h-12" />
-
-      <div className="flex flex-row z-50 items-center justify-center w-full max-w-md mt-8  ">
-        <div className="flex space-x-2">
-          <button
-            className="config-button"
-            onClick={() => setShowConfigModal(true)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-5 w-5"
+      <div className="flex flex-col gap-8 z-50 items-center justify-center w-full max-w-md  ">
+        <img src={logo} className="h-12" />
+        <div className="flex flex-row">
+          <div className="flex space-x-2">
+            <button
+              className="config-button"
+              onClick={() => setShowConfigModal(true)}
             >
-              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-              <path
-                fillRule="evenodd"
-                d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Configurar
-          </button>
-          <button
-            className="button-spin"
-            onClick={spinWheel}
-            disabled={spinning || products.length === 0}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-5 w-5"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                <path
+                  fillRule="evenodd"
+                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Configurar
+            </button>
+            <button
+              className="button-spin"
+              onClick={spinWheel}
+              disabled={spinning || products.length === 0}
             >
-              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
-            </svg>
-            {spinning ? "Girando..." : "Girar"}
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
+              </svg>
+              {spinning ? "Girando..." : "Girar"}
+            </button>
+          </div>
         </div>
       </div>
       {/* Información sobre la configuración actual */}
@@ -258,7 +259,7 @@ export const Ruleta = () => {
       <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
 
       {/* Ruleta */}
-      <div className="mt-[-180px]">
+      <div className="mt-[-350px]">
         {products.length === 0 ? (
           <div className="my-20 text-center">
             <p className="text-gray-400 text-xl">
