@@ -1,29 +1,35 @@
 import React, { useState, useRef, useEffect } from "react";
-import arrowIcon from "../../assets/arrowIcon.png"; // Asegúrate de importar el ícono
+import arrowIcon from "../../assets/arrowIcon.png";
 
 interface ConfiguracionRuletaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSaveConfig: (selectedItems: number[]) => void;
+  onSaveConfig: (selectedItems: number[], maxParticipantes: number) => void;
   initialItems?: number[];
+  initialMaxParticipantes?: number;
 }
 
 export const ConfiguracionRuletaModal: React.FC<
   ConfiguracionRuletaModalProps
-> = ({ isOpen, onClose, onSaveConfig, initialItems = [] }) => {
+> = ({
+  isOpen,
+  onClose,
+  onSaveConfig,
+  initialItems = [],
+  initialMaxParticipantes = 10,
+}) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const modalRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null); // Referencia al contenedor de scroll
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const [totalItems, setTotalItems] = useState(30);
+  const [totalItems, setTotalItems] = useState(initialMaxParticipantes);
   const [selectedItems, setSelectedItems] = useState<number[]>(initialItems);
   const [loading, setLoading] = useState(false);
-  const [isScrollNeeded, setIsScrollNeeded] = useState(false); // Estado para detectar si hay scroll
-  const [isNearBottom, setIsNearBottom] = useState(false); // Estado para detectar si estás cerca del fondo
+  const [isScrollNeeded, setIsScrollNeeded] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
-  // Configurar animación al abrir
   useEffect(() => {
     if (isOpen) {
       setIsAnimating(true);
@@ -31,7 +37,6 @@ export const ConfiguracionRuletaModal: React.FC<
     }
   }, [isOpen]);
 
-  // Detectar si se necesita scroll en la cuadrícula
   useEffect(() => {
     const checkIfScrollNeeded = () => {
       const container = scrollContainerRef.current;
@@ -48,24 +53,20 @@ export const ConfiguracionRuletaModal: React.FC<
     return () => {
       window.removeEventListener("resize", checkIfScrollNeeded);
     };
-  }, [isOpen, totalItems, selectedItems]); // Dependencias para reevaluar cuando cambian los ítems
+  }, [isOpen, totalItems, selectedItems]);
 
-  // Manejar el scroll para actualizar isNearBottom e isNearTop
-  const [isNearTop, setIsNearTop] = useState(true); // Inicializamos en true porque comenzamos en la parte superior
+  const [isNearTop, setIsNearTop] = useState(true);
 
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (container) {
       const scrollBottom =
         container.scrollHeight - container.scrollTop - container.clientHeight;
-      setIsNearBottom(scrollBottom < 20); // Considerar "cerca del fondo" si quedan menos de 20px
-
-      // Determinar si estamos cerca del inicio
-      setIsNearTop(container.scrollTop < 20); // Considerar "cerca del inicio" si hay menos de 20px scrolleados
+      setIsNearBottom(scrollBottom < 20);
+      setIsNearTop(container.scrollTop < 20);
     }
   };
 
-  // Gestión de arrastre para el gesto de cierre
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStart(e.touches[0].clientY);
   };
@@ -114,14 +115,12 @@ export const ConfiguracionRuletaModal: React.FC<
     };
   }, [dragStart, currentTranslate]);
 
-  // Cerrar el modal y resetear estado
   const handleClose = () => {
     setIsAnimating(false);
     setCurrentTranslate(0);
     onClose();
   };
 
-  // Manejar cambio en el número total de elementos
   const handleTotalItemsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value > 0 && value <= 100) {
@@ -130,7 +129,6 @@ export const ConfiguracionRuletaModal: React.FC<
     }
   };
 
-  // Manejar toggle de selección de un elemento
   const handleToggleItem = (item: number) => {
     setSelectedItems((prev) => {
       if (prev.includes(item)) {
@@ -141,7 +139,6 @@ export const ConfiguracionRuletaModal: React.FC<
     });
   };
 
-  // Guardar la configuración
   const handleSaveConfig = () => {
     setLoading(true);
     const configToSave =
@@ -150,13 +147,12 @@ export const ConfiguracionRuletaModal: React.FC<
         : Array.from({ length: totalItems }, (_, i) => i + 1);
 
     setTimeout(() => {
-      onSaveConfig(configToSave);
+      onSaveConfig(configToSave, totalItems);
       setLoading(false);
       handleClose();
     }, 600);
   };
 
-  // Seleccionar/deseleccionar todos
   const handleSelectAll = () => {
     if (selectedItems.length === totalItems) {
       setSelectedItems([]);
@@ -169,6 +165,7 @@ export const ConfiguracionRuletaModal: React.FC<
 
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+      {/* blur */}
       <div
         className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
           isAnimating ? "bg-opacity-50" : "bg-opacity-0"
@@ -179,9 +176,10 @@ export const ConfiguracionRuletaModal: React.FC<
         onClick={handleClose}
       />
 
+      {/* todo */}
       <div
         ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-2 pb-4 pt-10 transition-transform duration-300 touch-none ${
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg  pb-4 pt-10 transition-transform duration-300 touch-none ${
           isAnimating ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -190,6 +188,7 @@ export const ConfiguracionRuletaModal: React.FC<
           overflowY: "auto",
         }}
       >
+        {/* drag */}
         <div
           className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
@@ -202,98 +201,110 @@ export const ConfiguracionRuletaModal: React.FC<
           </div>
         </div>
 
-        <div className="flex-col space-y-4 w-full">
-          {/* Configuración de número total de ítems */}
-          <div className="flex items-center justify-center mb-4">
-            <div className="flex flex-col   w-full max-w-xs">
-              <label className="text-xs text-center">
-                Cantidad maxima de participantes
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                value={totalItems}
-                onChange={handleTotalItemsChange}
-                className="w-full px-4 h-10 border border-gray-300 text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-              />
-            </div>
+        {/* input */}
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex flex-col w-full mx-4 md:mx-0 md:max-w-xs">
+            <label className="text-xs text-center">
+              Cantidad máxima de participantes
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              value={totalItems}
+              onChange={handleTotalItemsChange}
+              className="w-full h-10 border border-gray-300 text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            />
           </div>
+        </div>
 
-          {/* Grid de ítems seleccionables con scroll pero sin barra visible */}
-          <div className="relative">
-            <div
-              ref={scrollContainerRef}
-              className="max-h-60 overflow-y-auto p-2 scrollbar-hide"
-              onScroll={handleScroll}
-              style={{
-                scrollbarWidth: "none" /* Firefox */,
-                msOverflowStyle: "none" /* IE and Edge */,
-              }}
-            >
-              {/* Estilo adicional para ocultar la barra de scroll en WebKit (Chrome, Safari) */}
-              <style jsx>{`
-                .scrollbar-hide::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-              <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
-                {Array.from({ length: totalItems }, (_, i) => i + 1).map(
-                  (item) => (
-                    <div
-                      key={item}
-                      onClick={() => handleToggleItem(item)}
-                      className={`
+        {/* mesas */}
+        <div className="relative">
+          <div
+            ref={scrollContainerRef}
+            className="max-h-60 overflow-y-auto p-2 scrollbar-hide"
+            onScroll={handleScroll}
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            <style jsx>{`
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
+            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
+              {Array.from({ length: totalItems }, (_, i) => i + 1).map(
+                (item) => (
+                  <div
+                    key={item}
+                    onClick={() => handleToggleItem(item)}
+                    className={`
                       w-full aspect-square rounded-lg flex items-center justify-center cursor-pointer
                       transition-colors duration-200 text-white font-bold
                       ${selectedItems.includes(item) ? "bg-green-500" : "bg-red-500"}
                     `}
-                    >
-                      {item}
-                    </div>
-                  )
-                )}
+                  >
+                    {item}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {isScrollNeeded && !isNearBottom && (
+            <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+              <div className="bg-gradient-to-t from-white to-transparent h-20 w-full flex items-end justify-center">
+                <div className="animate-bounce">
+                  <img
+                    src={arrowIcon}
+                    className="h-2 transform rotate-90"
+                    alt="Desplazar para ver más"
+                  />
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Indicador de scroll inferior con flecha y gradiente */}
-            {isScrollNeeded && !isNearBottom && (
-              <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
-                <div className="bg-gradient-to-t from-white to-transparent h-20 w-full flex items-end justify-center ">
-                  <div className="animate-bounce">
-                    <img
-                      src={arrowIcon}
-                      className="h-2 transform rotate-90"
-                      alt="Desplazar para ver más"
-                    />
-                  </div>
+          {isScrollNeeded && !isNearTop && (
+            <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
+              <div className="bg-gradient-to-b from-white to-transparent h-20 w-full flex items-start justify-center">
+                <div className="animate-bounce">
+                  <img
+                    src={arrowIcon}
+                    className="h-2 transform -rotate-90"
+                    alt="Desplazar hacia arriba"
+                  />
                 </div>
               </div>
-            )}
-
-            {/* Indicador de scroll superior con flecha y gradiente */}
-            {isScrollNeeded && !isNearTop && (
-              <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
-                <div className="bg-gradient-to-b from-white to-transparent h-20 w-full flex items-start justify-center ">
-                  <div className="animate-bounce">
-                    <img
-                      src={arrowIcon}
-                      className="h-2 transform -rotate-90"
-                      alt="Desplazar hacia arriba"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Bottom */}
-        <div className="flex pt-4 px-8 justify-between">
+        {/* botones */}
+        <div className="flex pt-4 md:px-8 px-4 md:justify-between flex-col md:flex-row">
+          {/* seleccionar todos */}
+          <div className="flex flex-row items-center md:gap-4 md:justify-center justify-between ">
+            <div className="text-center text-sm text-gray-500">
+              {selectedItems.length} de {totalItems} seleccionados
+            </div>
+            <div className="flex justify-center ">
+              <button
+                onClick={handleSelectAll}
+                className="bg-gray-200 text-black px-4 h-10 rounded-full text-sm font-medium"
+              >
+                {selectedItems.length === totalItems
+                  ? "Deseleccionar todos"
+                  : "Seleccionar todos"}
+              </button>
+            </div>
+          </div>
+          {/* guardar */}
           <button
             onClick={handleSaveConfig}
             disabled={loading}
-            className="text-gray-100 text-4xl h-20 w-80 bg-black font-bold rounded-3xl outline-none"
+            className="text-gray-100 text-4xl h-20 md:w-80 w-full bg-black font-bold rounded-3xl outline-none md:mt-0 mt-8"
           >
             {loading ? (
               <div className="flex justify-center w-full items-center">
@@ -307,21 +318,6 @@ export const ConfiguracionRuletaModal: React.FC<
               "Guardar"
             )}
           </button>
-          <div className="flex flex-row items-center gap-4 justify-center">
-            <div className="text-center text-sm text-gray-500">
-              {selectedItems.length} de {totalItems} participantes seleccionados
-            </div>
-            <div className="flex justify-center mb-2">
-              <button
-                onClick={handleSelectAll}
-                className="bg-gray-300 text-black px-4 h-10 rounded-full text-sm font-medium"
-              >
-                {selectedItems.length === totalItems
-                  ? "Deseleccionar todos"
-                  : "Seleccionar todos"}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

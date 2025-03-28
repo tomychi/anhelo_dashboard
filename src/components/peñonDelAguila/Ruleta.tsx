@@ -1,9 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/configureStore";
 import RuletaModal from "./RuletaModal";
 import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
 import logo from "../../assets/AGUILA BLANCO-1.png";
 import arrowIcon from "../../assets/arrowIcon.png";
 import LoadingPoints from "../LoadingPoints";
+import {
+  EmpresaProps,
+  EmpleadoProps,
+  obtenerDocumento,
+  actualizarDocumento,
+} from "../../firebase/ClientesAbsolute"; // Ajusta la ruta según tu estructura
+import { getFirestore, getDoc } from "firebase/firestore";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -18,30 +27,83 @@ export const Ruleta = () => {
   const [result, setResult] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [showConfigModal, setShowConfigModal] = useState(false);
-  const [selectedNumbers, setSelectedNumbers] = useState(
-    Array.from({ length: 30 }, (_, i) => i + 1)
-  );
-  const [products, setProducts] = useState(generateProducts(selectedNumbers));
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [maxParticipantes, setMaxParticipantes] = useState(10); // Valor por defecto
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
 
   const wheelRef = useRef(null);
   const animationFrameRef = useRef(null);
   const currentRotationRef = useRef(0);
 
+  // Obtener información del usuario autenticado desde Redux
+  const auth = useSelector((state: RootState) => state.auth);
+  const tipoUsuario = auth?.tipoUsuario;
+  const empresaId =
+    tipoUsuario === "empresa"
+      ? (auth?.usuario as EmpresaProps)?.id || ""
+      : tipoUsuario === "empleado"
+        ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
+        : "";
+  const nombreEmpresa =
+    tipoUsuario === "empresa"
+      ? (auth?.usuario as EmpresaProps)?.datosGenerales?.nombre || "Desconocida"
+      : tipoUsuario === "empleado"
+        ? "Obteniendo nombre..."
+        : "No autenticada";
+
+  // Cargar configuración inicial desde Firestore
+  useEffect(() => {
+    const loadConfig = async () => {
+      if (!empresaId) return;
+
+      setIsLoadingConfig(true);
+      const docRef = obtenerDocumento("featuresPropios", "ruleta", empresaId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const settings = docSnap.data().settings || {};
+        setMaxParticipantes(settings.maxParticipantes || 10);
+        setSelectedNumbers(
+          settings.selectedParticipantes ||
+            Array.from(
+              { length: settings.maxParticipantes || 10 },
+              (_, i) => i + 1
+            )
+        );
+      } else {
+        // Configuración por defecto si no existe
+        setMaxParticipantes(10);
+        setSelectedNumbers(Array.from({ length: 10 }, (_, i) => i + 1));
+      }
+      setIsLoadingConfig(false);
+    };
+
+    loadConfig();
+  }, [empresaId]);
+
   // Actualizar productos cuando cambian los números seleccionados
   useEffect(() => {
-    setProducts(generateProducts(selectedNumbers));
-  }, [selectedNumbers]);
+    if (!isLoadingConfig) {
+      setProducts(generateProducts(selectedNumbers));
+    }
+  }, [selectedNumbers, isLoadingConfig]);
 
-  // Función para restablecer la ruleta a la posición inicial (número 1 arriba)
+  // Log de la empresa
+  useEffect(() => {
+    console.log(
+      `Ruleta abierta desde la empresa: ${nombreEmpresa} (ID: ${empresaId})`
+    );
+  }, [nombreEmpresa, empresaId]);
+
+  // Función para restablecer la ruleta a la posición inicial
   const resetWheelPosition = () => {
     if (!wheelRef.current) return;
 
-    // Realizamos una transición suave a la posición inicial
     wheelRef.current.style.transition = "transform 1s ease-in-out";
     currentRotationRef.current = 0;
     wheelRef.current.style.transform = `rotate(0deg)`;
 
-    // Eliminamos la transición después de completarla
     setTimeout(() => {
       if (wheelRef.current) {
         wheelRef.current.style.transition = "";
@@ -49,11 +111,8 @@ export const Ruleta = () => {
     }, 1000);
   };
 
-  // Función para cerrar el modal de resultado y restablecer la ruleta
   const handleCloseResultModal = () => {
     setShowResultModal(false);
-    // Esperamos un breve momento antes de resetear la posición para que
-    // el modal se cierre primero y la animación sea visible
     setTimeout(resetWheelPosition, 300);
   };
 
@@ -65,21 +124,20 @@ export const Ruleta = () => {
 
     const degreesPerItem = 360 / products.length;
     let currentRotation = currentRotationRef.current;
-    let speed = 20; // Velocidad inicial
-    const baseDuration = 5000; // 5 segundos base
-    const extraDuration = Math.random() * 5000; // Hasta 5 segundos adicionales
-    const spinDuration = baseDuration + extraDuration; // Entre 5 y 10 segundos
+    let speed = 20;
+    const baseDuration = 5000;
+    const extraDuration = Math.random() * 5000;
+    const spinDuration = baseDuration + extraDuration;
     const startTime = performance.now();
 
     const animate = (currentTime) => {
       if (!wheelRef.current) return;
 
       const elapsedTime = currentTime - startTime;
-      const progress = elapsedTime / spinDuration; // Progreso de 0 a 1
+      const progress = elapsedTime / spinDuration;
 
-      // Desaceleración suave basada en el tiempo restante
       const remainingTime = spinDuration - elapsedTime;
-      speed = Math.max(20 * (remainingTime / spinDuration), 0.1); // Velocidad disminuye linealmente
+      speed = Math.max(20 * (remainingTime / spinDuration), 0.1);
 
       currentRotation += speed;
       wheelRef.current.style.transform = `rotate(${currentRotation}deg)`;
@@ -87,7 +145,6 @@ export const Ruleta = () => {
       if (elapsedTime < spinDuration) {
         animationFrameRef.current = requestAnimationFrame(animate);
       } else {
-        // Alinear al segmento más cercano sin transición CSS
         const finalRotation =
           Math.round(currentRotation / degreesPerItem) * degreesPerItem;
         let adjustmentSpeed = speed;
@@ -114,7 +171,6 @@ export const Ruleta = () => {
             setResult(winningProduct);
             currentRotationRef.current = finalRotation;
 
-            // Mostrar el modal con el resultado
             setShowResultModal(true);
           }
         };
@@ -128,9 +184,32 @@ export const Ruleta = () => {
     animationFrameRef.current = requestAnimationFrame(animate);
   };
 
-  // Manejar configuración guardada
-  const handleSaveConfig = (newSelectedNumbers) => {
+  // Guardar configuración en Firestore
+  const handleSaveConfig = async (
+    newSelectedNumbers: number[],
+    newMaxParticipantes: number
+  ) => {
+    if (!empresaId) return;
+
     setSelectedNumbers(newSelectedNumbers);
+    setMaxParticipantes(newMaxParticipantes);
+
+    const settings = {
+      maxParticipantes: newMaxParticipantes,
+      selectedParticipantes: newSelectedNumbers,
+    };
+
+    try {
+      await actualizarDocumento(
+        "featuresPropios",
+        "ruleta",
+        { settings },
+        empresaId
+      );
+      console.log("Configuración de ruleta guardada en Firestore");
+    } catch (error) {
+      console.error("Error al guardar configuración:", error);
+    }
   };
 
   useEffect(() => {
@@ -139,6 +218,10 @@ export const Ruleta = () => {
         cancelAnimationFrame(animationFrameRef.current);
     };
   }, []);
+
+  if (isLoadingConfig) {
+    return <div>Cargando configuración...</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen justify-center items-center">
@@ -149,7 +232,7 @@ export const Ruleta = () => {
             width: 784px;
             height: 784px;
             margin: 20px auto;
-            transform: rotate(180deg); /* Flip the entire wheel container */
+            transform: rotate(180deg);
           }
           .wheel {
             position: relative;
@@ -182,17 +265,16 @@ export const Ruleta = () => {
             font-size: 16px;
             color: #000;
             pointer-events: none;
-            transform: rotate(180deg); /* Flip the labels back so they're readable */
+            transform: rotate(180deg);
           }
           .label-text {
             position: absolute;
             width: 120px;
-            bottom: 10px; /* Changed from top to bottom */
-            right: calc(50% + 10px); /* Changed from left to right */
+            bottom: 10px;
+            right: calc(50% + 10px);
             max-width: 120px;
-            text-align: right; /* Align text to the right */
+            text-align: right;
           }
-          
           .button-spin {
             background-color: #4CAF50;
             color: white;
@@ -226,17 +308,17 @@ export const Ruleta = () => {
           .gray-overlay {
             position: absolute;
             width: 786px;
-            height: 392px; /* La mitad de la altura de la ruleta */
-            background-color: #F3F4F6; /* Gray 100 */
-            bottom: 0; /* Changed from top to bottom */
+            height: 392px;
+            background-color: #F3F4F6;
+            bottom: 0;
             left: 0;
             z-index: 5;
-            pointer-events: none; /* Permite que los clics pasen a través del rectángulo */
+            pointer-events: none;
           }
         `}
       </style>
 
-      <div className="flex flex-col gap-20 z-40 items-center justify-center w-full max-w-md  ">
+      <div className="flex flex-col gap-20 z-40 items-center justify-center w-full max-w-md">
         <img src={logo} className="h-40" />
         <div className="flex flex-row">
           <div className="flex space-x-2">
@@ -255,7 +337,7 @@ export const Ruleta = () => {
               Configurar
             </button>
             <button
-              className="h-10 items-center bg-gray-200 rounded-full px-4 font-bold font-coolvetica "
+              className="h-10 items-center bg-gray-200 rounded-full px-4 font-bold font-coolvetica"
               onClick={spinWheel}
               disabled={spinning || products.length === 0}
             >
@@ -278,14 +360,13 @@ export const Ruleta = () => {
           </div>
         </div>
       </div>
-      {/* Información sobre la configuración actual */}
-      <div className="mt-4 mb-12 font-coolvetica  text-sm text-gray-400 font-light z-40 text-center">
+
+      <div className="mt-4 mb-12 font-coolvetica text-sm text-gray-400 font-light z-40 text-center">
         {products.length} participantes.
       </div>
 
       <img src={arrowIcon} className="h-6 z-40 transform rotate-90" alt="" />
 
-      {/* Ruleta */}
       <div className="mt-[-700px]">
         {products.length === 0 ? (
           <div className="my-20 text-center">
@@ -320,21 +401,19 @@ export const Ruleta = () => {
                     key={product.id}
                     className="wheel-label"
                     style={{
-                      transform: `rotate(${angle + 180}deg)` /* Added 180 to adjust for the container flip */,
+                      transform: `rotate(${angle + 180}deg)`,
                     }}
                   >
-                    <div className="label-text ">{product.name}</div>
+                    <div className="label-text">{product.name}</div>
                   </div>
                 );
               })}
             </div>
-            {/* Rectángulo gris que cubre la mitad inferior de la ruleta (ahora) */}
             <div className="gray-overlay"></div>
           </div>
         )}
       </div>
 
-      {/* Modal para mostrar el resultado */}
       <RuletaModal
         isOpen={showResultModal}
         onClose={handleCloseResultModal}
@@ -342,12 +421,12 @@ export const Ruleta = () => {
         winningPrize={result}
       />
 
-      {/* Modal para configurar la ruleta */}
       <ConfiguracionRuletaModal
         isOpen={showConfigModal}
         onClose={() => setShowConfigModal(false)}
         onSaveConfig={handleSaveConfig}
         initialItems={selectedNumbers}
+        initialMaxParticipantes={maxParticipantes}
       />
     </div>
   );
