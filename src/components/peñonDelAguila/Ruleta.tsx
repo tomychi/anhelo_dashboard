@@ -121,6 +121,7 @@ export const Ruleta = () => {
             width: 350px;
             height: 350px;
             margin: 20px auto;
+            transform: rotate(180deg); /* Flip the entire wheel container */
           }
           .wheel {
             position: relative;
@@ -153,19 +154,21 @@ export const Ruleta = () => {
             font-size: 16px;
             color: #000;
             pointer-events: none;
+            transform: rotate(180deg); /* Flip the labels back so they're readable */
           }
           .label-text {
             position: absolute;
             width: 120px;
-            top: 10px;
-            left: calc(50% + 10px);
+            bottom: 10px; /* Changed from top to bottom */
+            right: calc(50% + 10px); /* Changed from left to right */
             max-width: 120px;
+            text-align: right; /* Align text to the right */
           }
           .wheel-pointer {
             position: absolute;
-            top: 130px;
+            bottom: 130px; /* Changed from top to bottom */
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) rotate(180deg); /* Flip the pointer */
             width: 0;
             height: 0;
             border-left: 15px solid transparent;
@@ -208,7 +211,7 @@ export const Ruleta = () => {
             width: 350px;
             height: 175px; /* La mitad de la altura de la ruleta */
             background-color: #f1f1f1; /* Gray 100 */
-            top: 0;
+            bottom: 0; /* Changed from top to bottom */
             left: 0;
             z-index: 5;
             pointer-events: none; /* Permite que los clics pasen a través del rectángulo */
@@ -293,7 +296,7 @@ export const Ruleta = () => {
                   key={product.id}
                   className="wheel-label"
                   style={{
-                    transform: `rotate(${angle}deg)`,
+                    transform: `rotate(${angle + 180}deg)` /* Added 180 to adjust for the container flip */,
                   }}
                 >
                   <div className="label-text ">{product.name}</div>
@@ -301,7 +304,7 @@ export const Ruleta = () => {
               );
             })}
           </div>
-          {/* Rectángulo gris que cubre la mitad superior de la ruleta */}
+          {/* Rectángulo gris que cubre la mitad inferior de la ruleta (ahora) */}
           <div className="gray-overlay"></div>
         </div>
       )}
