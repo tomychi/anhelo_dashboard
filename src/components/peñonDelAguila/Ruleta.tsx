@@ -245,7 +245,7 @@ export const Ruleta = () => {
         </div>
       </div>
       {/* Información sobre la configuración actual */}
-      <div className="mt-4 text-sm text-gray-500 text-center">
+      <div className="mt-4 mb-12 text-sm text-gray-500 text-center">
         Sorteando entre {products.length} items.
       </div>
 
