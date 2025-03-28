@@ -170,8 +170,6 @@ export const ConfiguracionRuletaModal: React.FC<
         </div>
 
         <div className="flex-col space-y-4 w-full">
-          <h2 className="text-3xl mx-8 font-bold mb-4">Configuración</h2>
-
           {/* Configuración de número total de ítems */}
           <div className="flex items-center ml-8 mb-4">
             <div className="flex flex-col w-full max-w-xs">
@@ -184,7 +182,7 @@ export const ConfiguracionRuletaModal: React.FC<
                 max="100"
                 value={totalItems}
                 onChange={handleTotalItemsChange}
-                className="w-full text-center px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full px-4 h-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
           </div>
