@@ -170,21 +170,23 @@ export const ConfiguracionRuletaModal: React.FC<
         </div>
 
         <div className="flex-col space-y-4 w-full">
-          <h2 className="text-2xl mx-8 text-center font-bold mb-4">
-            Configuración de la Ruleta
+          <h2 className="text-3xl mx-8 text-center font-bold mb-4">
+            Configuración
           </h2>
 
           {/* Configuración de número total de ítems */}
           <div className="flex items-center justify-center mb-4">
             <div className="flex flex-col w-full max-w-xs">
-              <label className="text-sm mb-1">Número total de elementos:</label>
+              <label className="text-xs mb-1 text-center">
+                Número total de items
+              </label>
               <input
                 type="number"
                 min="1"
                 max="100"
                 value={totalItems}
                 onChange={handleTotalItemsChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full text-center px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
           </div>
