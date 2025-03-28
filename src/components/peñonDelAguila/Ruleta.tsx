@@ -211,7 +211,7 @@ export const Ruleta = () => {
             position: absolute;
             width: 350px;
             height: 175px; /* La mitad de la altura de la ruleta */
-            background-color: #f1f1f1; /* Gray 100 */
+            background-color: #F3F4F6; /* Gray 100 */
             bottom: 0; /* Changed from top to bottom */
             left: 0;
             z-index: 5;
