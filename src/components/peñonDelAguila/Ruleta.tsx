@@ -32,6 +32,31 @@ export const Ruleta = () => {
     setProducts(generateProducts(selectedNumbers));
   }, [selectedNumbers]);
 
+  // Función para restablecer la ruleta a la posición inicial (número 1 arriba)
+  const resetWheelPosition = () => {
+    if (!wheelRef.current) return;
+
+    // Realizamos una transición suave a la posición inicial
+    wheelRef.current.style.transition = "transform 1s ease-in-out";
+    currentRotationRef.current = 0;
+    wheelRef.current.style.transform = `rotate(0deg)`;
+
+    // Eliminamos la transición después de completarla
+    setTimeout(() => {
+      if (wheelRef.current) {
+        wheelRef.current.style.transition = "";
+      }
+    }, 1000);
+  };
+
+  // Función para cerrar el modal de resultado y restablecer la ruleta
+  const handleCloseResultModal = () => {
+    setShowResultModal(false);
+    // Esperamos un breve momento antes de resetear la posición para que
+    // el modal se cierre primero y la animación sea visible
+    setTimeout(resetWheelPosition, 300);
+  };
+
   const spinWheel = () => {
     if (spinning || !wheelRef.current || products.length === 0) return;
 
@@ -312,7 +337,7 @@ export const Ruleta = () => {
       {/* Modal para mostrar el resultado */}
       <RuletaModal
         isOpen={showResultModal}
-        onClose={() => setShowResultModal(false)}
+        onClose={handleCloseResultModal}
         title="¡Felicitaciones!"
         winningPrize={result}
       />
