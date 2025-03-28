@@ -246,7 +246,7 @@ export const Ruleta = () => {
       </div>
       {/* Información sobre la configuración actual */}
       <div className="mt-4 text-sm text-gray-500 text-center">
-        {products.length} elementos configurados
+        Sorteando entre {products.length} items.
       </div>
 
       {products.length === 0 ? (
