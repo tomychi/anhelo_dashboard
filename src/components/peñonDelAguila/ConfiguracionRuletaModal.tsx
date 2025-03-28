@@ -1,0 +1,253 @@
+import React, { useState, useRef, useEffect } from "react";
+
+interface ConfiguracionRuletaModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSaveConfig: (selectedItems: number[]) => void;
+  initialItems?: number[];
+}
+
+export const ConfiguracionRuletaModal: React.FC<
+  ConfiguracionRuletaModalProps
+> = ({ isOpen, onClose, onSaveConfig, initialItems = [] }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const modalRef = useRef(null);
+
+  const [totalItems, setTotalItems] = useState(30);
+  const [selectedItems, setSelectedItems] = useState<number[]>(initialItems);
+  const [loading, setLoading] = useState(false);
+
+  // Configurar animación al abrir
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+      setCurrentTranslate(0);
+    }
+  }, [isOpen]);
+
+  // Gestión de arrastre para el gesto de cierre
+  const handleTouchStart = (e) => {
+    setDragStart(e.touches[0].clientY);
+  };
+
+  const handleMouseDown = (e) => {
+    setDragStart(e.clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (dragStart === null) return;
+    const currentPosition = e.touches[0].clientY;
+    const difference = currentPosition - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragStart === null) return;
+    const difference = e.clientY - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleDragEnd = () => {
+    if (currentTranslate > 200) {
+      handleClose();
+    } else {
+      setCurrentTranslate(0);
+    }
+    setDragStart(null);
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (dragStart !== null) {
+        handleDragEnd();
+      }
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleDragEnd);
+
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleDragEnd);
+    };
+  }, [dragStart, currentTranslate]);
+
+  // Cerrar el modal y resetear estado
+  const handleClose = () => {
+    setIsAnimating(false);
+    setCurrentTranslate(0);
+    onClose();
+  };
+
+  // Manejar cambio en el número total de elementos
+  const handleTotalItemsChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value) && value > 0 && value <= 100) {
+      setTotalItems(value);
+
+      // Limpiar selecciones que estén fuera del nuevo rango
+      setSelectedItems((prev) => prev.filter((item) => item <= value));
+    }
+  };
+
+  // Manejar toggle de selección de un elemento
+  const handleToggleItem = (item: number) => {
+    setSelectedItems((prev) => {
+      if (prev.includes(item)) {
+        return prev.filter((i) => i !== item);
+      } else {
+        return [...prev, item];
+      }
+    });
+  };
+
+  // Guardar la configuración
+  const handleSaveConfig = () => {
+    setLoading(true);
+
+    // Si no hay elementos seleccionados, por defecto seleccionar todos
+    const configToSave =
+      selectedItems.length > 0
+        ? selectedItems
+        : Array.from({ length: totalItems }, (_, i) => i + 1);
+
+    setTimeout(() => {
+      onSaveConfig(configToSave);
+      setLoading(false);
+      handleClose();
+    }, 600); // Simular una operación asíncrona
+  };
+
+  // Seleccionar/deseleccionar todos
+  const handleSelectAll = () => {
+    if (selectedItems.length === totalItems) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(Array.from({ length: totalItems }, (_, i) => i + 1));
+    }
+  };
+
+  // Si está cerrado, no renderizar nada
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+      <div
+        className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
+          isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+        }`}
+        style={{
+          opacity: Math.max(0, 1 - currentTranslate / 400),
+        }}
+        onClick={handleClose}
+      />
+
+      <div
+        ref={modalRef}
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+          isAnimating ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{
+          transform: `translateY(${currentTranslate}px)`,
+          maxHeight: "90vh",
+          overflowY: "auto",
+        }}
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+        >
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+            <div className="w-12 h-1 bg-gray-200 rounded-full" />
+          </div>
+        </div>
+
+        <div className="flex-col space-y-4 w-full">
+          <h2 className="text-2xl mx-8 text-center font-bold mb-4">
+            Configuración de la Ruleta
+          </h2>
+
+          {/* Configuración de número total de ítems */}
+          <div className="flex items-center justify-center mb-4">
+            <div className="flex flex-col w-full max-w-xs">
+              <label className="text-sm mb-1">Número total de elementos:</label>
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={totalItems}
+                onChange={handleTotalItemsChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+          </div>
+
+          {/* Botón para seleccionar/deseleccionar todos */}
+          <div className="flex justify-center mb-2">
+            <button
+              onClick={handleSelectAll}
+              className="bg-gray-200 text-black px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              {selectedItems.length === totalItems
+                ? "Deseleccionar todos"
+                : "Seleccionar todos"}
+            </button>
+          </div>
+
+          {/* Grid de ítems seleccionables */}
+          <div className="max-h-60 overflow-y-auto p-2">
+            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
+              {Array.from({ length: totalItems }, (_, i) => i + 1).map(
+                (item) => (
+                  <div
+                    key={item}
+                    onClick={() => handleToggleItem(item)}
+                    className={`
+                    w-full aspect-square rounded-lg flex items-center justify-center cursor-pointer
+                    transition-colors duration-200 text-white font-bold
+                    ${selectedItems.includes(item) ? "bg-green-500" : "bg-red-500"}
+                  `}
+                  >
+                    {item}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Muestra cuántos elementos están seleccionados */}
+          <div className="text-center text-sm text-gray-500">
+            {selectedItems.length} de {totalItems} elementos seleccionados
+          </div>
+        </div>
+
+        <button
+          onClick={handleSaveConfig}
+          disabled={loading}
+          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+        >
+          {loading ? (
+            <div className="flex justify-center w-full items-center">
+              <div className="flex flex-row gap-1">
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+              </div>
+            </div>
+          ) : (
+            "Guardar"
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ConfiguracionRuletaModal;

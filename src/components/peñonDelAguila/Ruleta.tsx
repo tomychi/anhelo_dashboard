@@ -1,27 +1,36 @@
 import React, { useState, useRef, useEffect } from "react";
 import RuletaModal from "./RuletaModal";
+import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
 
-// Fake DB de ejemplo (puede ser reemplazada por una DB real)
-const fakeDB = Array.from({ length: 30 }, (_, index) => ({
-  id: index + 1,
-  name: `${index + 1}`,
-}));
+// Función para generar productos a partir de los números seleccionados
+const generateProducts = (selectedNumbers) => {
+  return selectedNumbers.map((number) => ({
+    id: number,
+    name: `${number}`,
+  }));
+};
 
-export const Ruleta = ({ products = fakeDB }) => {
+export const Ruleta = () => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [showResultModal, setShowResultModal] = useState(false);
-  const itemsPerPage = 5;
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [selectedNumbers, setSelectedNumbers] = useState(
+    Array.from({ length: 30 }, (_, i) => i + 1)
+  );
+  const [products, setProducts] = useState(generateProducts(selectedNumbers));
+
   const wheelRef = useRef(null);
-  const [showHistoryDropdown, setShowHistoryDropdown] = useState(false);
-  const dropdownRef = useRef(null);
   const animationFrameRef = useRef(null);
   const currentRotationRef = useRef(0);
 
+  // Actualizar productos cuando cambian los números seleccionados
+  useEffect(() => {
+    setProducts(generateProducts(selectedNumbers));
+  }, [selectedNumbers]);
+
   const spinWheel = () => {
-    if (spinning || !wheelRef.current) return;
+    if (spinning || !wheelRef.current || products.length === 0) return;
 
     setSpinning(true);
     setResult(null);
@@ -75,7 +84,6 @@ export const Ruleta = ({ products = fakeDB }) => {
               products.length;
             const winningProduct = products[winningIndex].name;
             setResult(winningProduct);
-            setHistory((prev) => [winningProduct, ...prev].slice(0, 20));
             currentRotationRef.current = finalRotation;
 
             // Mostrar el modal con el resultado
@@ -92,34 +100,17 @@ export const Ruleta = ({ products = fakeDB }) => {
     animationFrameRef.current = requestAnimationFrame(animate);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowHistoryDropdown(false);
-      }
-    };
+  // Manejar configuración guardada
+  const handleSaveConfig = (newSelectedNumbers) => {
+    setSelectedNumbers(newSelectedNumbers);
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
+  useEffect(() => {
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
     };
   }, []);
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentHistory = history.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(history.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
 
   return (
     <div className="flex flex-col items-center">
@@ -199,28 +190,18 @@ export const Ruleta = ({ products = fakeDB }) => {
             background-color: #cccccc;
             cursor: not-allowed;
           }
-          .arrow-down {
-            transition: transform 0.3s ease;
-            transform: rotate(90deg);
-          }
-          .arrow-down.open {
-            transform: rotate(-90deg);
-          }
-          .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 10px;
-          }
-          .pagination button {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: transparent;
-            cursor: pointer;
-          }
-          .pagination button.active {
-            background-color: #333;
+          .config-button {
+            background-color: #3498db;
             color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Coolvetica', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
           }
         `}
       </style>
@@ -229,59 +210,108 @@ export const Ruleta = ({ products = fakeDB }) => {
         <p className="text-black font-bold text-2xl font-coolvetica">
           Regalos legendarios
         </p>
-        <button className="button-spin" onClick={spinWheel} disabled={spinning}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-5 w-5"
+        <div className="flex space-x-2">
+          <button
+            className="config-button"
+            onClick={() => setShowConfigModal(true)}
           >
-            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
-          </svg>
-          {spinning ? "Girando..." : "Girar"}
-        </button>
-      </div>
-
-      <div className="wheel-container">
-        <div className="wheel-pointer"></div>
-        <div className="wheel" ref={wheelRef}>
-          {products.map((product, index) => {
-            const angle = (index * 360) / products.length;
-            const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
-            return (
-              <div
-                key={product.id}
-                className="wheel-segment"
-                style={{
-                  transform: `rotate(${angle}deg) skewY(${90 - 360 / products.length}deg)`,
-                  backgroundColor,
-                }}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+            >
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+              <path
+                fillRule="evenodd"
+                d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
+                clipRule="evenodd"
               />
-            );
-          })}
-          {products.map((product, index) => {
-            const angle = (index * 360) / products.length;
-            return (
-              <div
-                key={product.id}
-                className="wheel-label"
-                style={{
-                  transform: `rotate(${angle}deg)`,
-                }}
-              >
-                <div className="label-text ">{product.name}</div>
-              </div>
-            );
-          })}
+            </svg>
+            Configurar
+          </button>
+          <button
+            className="button-spin"
+            onClick={spinWheel}
+            disabled={spinning || products.length === 0}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-5 w-5"
+            >
+              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
+            </svg>
+            {spinning ? "Girando..." : "Girar"}
+          </button>
         </div>
       </div>
 
-      {/* Modal personalizado para mostrar el resultado */}
+      {products.length === 0 ? (
+        <div className="my-20 text-center">
+          <p className="text-gray-400 text-xl">
+            No hay elementos configurados.
+          </p>
+          <p className="text-gray-400">
+            Haz clic en "Configurar" para añadir elementos a la ruleta.
+          </p>
+        </div>
+      ) : (
+        <div className="wheel-container">
+          <div className="wheel-pointer"></div>
+          <div className="wheel" ref={wheelRef}>
+            {products.map((product, index) => {
+              const angle = (index * 360) / products.length;
+              const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
+              return (
+                <div
+                  key={product.id}
+                  className="wheel-segment"
+                  style={{
+                    transform: `rotate(${angle}deg) skewY(${90 - 360 / products.length}deg)`,
+                    backgroundColor,
+                  }}
+                />
+              );
+            })}
+            {products.map((product, index) => {
+              const angle = (index * 360) / products.length;
+              return (
+                <div
+                  key={product.id}
+                  className="wheel-label"
+                  style={{
+                    transform: `rotate(${angle}deg)`,
+                  }}
+                >
+                  <div className="label-text ">{product.name}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Información sobre la configuración actual */}
+      <div className="mt-4 text-sm text-gray-500 text-center">
+        {products.length} elementos configurados
+      </div>
+
+      {/* Modal para mostrar el resultado */}
       <RuletaModal
         isOpen={showResultModal}
         onClose={() => setShowResultModal(false)}
         title="¡Felicitaciones!"
         winningPrize={result}
+      />
+
+      {/* Modal para configurar la ruleta */}
+      <ConfiguracionRuletaModal
+        isOpen={showConfigModal}
+        onClose={() => setShowConfigModal(false)}
+        onSaveConfig={handleSaveConfig}
+        initialItems={selectedNumbers}
       />
     </div>
   );
