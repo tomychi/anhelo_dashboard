@@ -212,7 +212,7 @@ export const Ruleta = () => {
       </style>
 
       <div className="flex flex-col gap-8 z-50 items-center justify-center w-full max-w-md  ">
-        <img src={logo} className="h-12" />
+        <img src={logo} className="h-24" />
         <div className="flex flex-row">
           <div className="flex space-x-2">
             <button
