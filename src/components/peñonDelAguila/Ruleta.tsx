@@ -215,7 +215,7 @@ export const Ruleta = () => {
         <div className="flex flex-row">
           <div className="flex space-x-2">
             <button
-              className="h-10 flex flex-row items-center bg-gray-300 rounded-full px-4 font-bold font-coolvetica gap-2 text-xl"
+              className="h-10 flex flex-row items-center bg-gray-200 rounded-full px-4 font-bold font-coolvetica gap-2 text-xl"
               onClick={() => setShowConfigModal(true)}
             >
               <svg
@@ -229,7 +229,7 @@ export const Ruleta = () => {
               Configurar
             </button>
             <button
-              className="h-10 flex flex-row items-center bg-gray-300 rounded-full px-4 font-bold font-coolvetica gap-2 text-xl"
+              className="h-10 flex flex-row items-center bg-gray-200 rounded-full px-4 font-bold font-coolvetica gap-2 text-xl"
               onClick={spinWheel}
               disabled={spinning || products.length === 0}
             >
@@ -248,8 +248,8 @@ export const Ruleta = () => {
         </div>
       </div>
       {/* Información sobre la configuración actual */}
-      <div className="mt-4 mb-12 text-sm text-gray-500 z-50 text-center">
-        Sorteando entre {products.length} items.
+      <div className="mt-4 mb-12 font-coolvetica  text-sm text-gray-400 font-light z-50 text-center">
+        {products.length} items.
       </div>
 
       <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
