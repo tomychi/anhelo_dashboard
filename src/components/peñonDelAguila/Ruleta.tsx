@@ -163,7 +163,7 @@ export const Ruleta = () => {
           }
           .wheel-pointer {
             position: absolute;
-            top: -15px;
+            top: 130px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -202,6 +202,16 @@ export const Ruleta = () => {
             display: flex;
             align-items: center;
             gap: 8px;
+          }
+          .gray-overlay {
+            position: absolute;
+            width: 350px;
+            height: 175px; /* La mitad de la altura de la ruleta */
+            background-color: #f1f1f1; /* Gray 100 */
+            top: 0;
+            left: 0;
+            z-index: 5;
+            pointer-events: none; /* Permite que los clics pasen a través del rectángulo */
           }
         `}
       </style>
@@ -291,6 +301,8 @@ export const Ruleta = () => {
               );
             })}
           </div>
+          {/* Rectángulo gris que cubre la mitad superior de la ruleta */}
+          <div className="gray-overlay"></div>
         </div>
       )}
 
