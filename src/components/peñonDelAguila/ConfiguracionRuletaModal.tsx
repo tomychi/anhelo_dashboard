@@ -50,13 +50,18 @@ export const ConfiguracionRuletaModal: React.FC<
     };
   }, [isOpen, totalItems, selectedItems]); // Dependencias para reevaluar cuando cambian los ítems
 
-  // Manejar el scroll para actualizar isNearBottom
+  // Manejar el scroll para actualizar isNearBottom e isNearTop
+  const [isNearTop, setIsNearTop] = useState(true); // Inicializamos en true porque comenzamos en la parte superior
+
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (container) {
       const scrollBottom =
         container.scrollHeight - container.scrollTop - container.clientHeight;
       setIsNearBottom(scrollBottom < 20); // Considerar "cerca del fondo" si quedan menos de 20px
+
+      // Determinar si estamos cerca del inicio
+      setIsNearTop(container.scrollTop < 20); // Considerar "cerca del inicio" si hay menos de 20px scrolleados
     }
   };
 
@@ -251,15 +256,30 @@ export const ConfiguracionRuletaModal: React.FC<
               </div>
             </div>
 
-            {/* Indicador de scroll con flecha y gradiente */}
+            {/* Indicador de scroll inferior con flecha y gradiente */}
             {isScrollNeeded && !isNearBottom && (
               <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
-                <div className="bg-gradient-to-t from-white to-transparent h-20 w-full flex items-end justify-center pb-1">
+                <div className="bg-gradient-to-t from-white to-transparent h-20 w-full flex items-end justify-center ">
                   <div className="animate-bounce">
                     <img
                       src={arrowIcon}
-                      className="h-2 transform rotate-90  "
+                      className="h-2 transform rotate-90"
                       alt="Desplazar para ver más"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Indicador de scroll superior con flecha y gradiente */}
+            {isScrollNeeded && !isNearTop && (
+              <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
+                <div className="bg-gradient-to-b from-white to-transparent h-20 w-full flex items-start justify-center ">
+                  <div className="animate-bounce">
+                    <img
+                      src={arrowIcon}
+                      className="h-2 transform -rotate-90"
+                      alt="Desplazar hacia arriba"
                     />
                   </div>
                 </div>
