@@ -124,7 +124,7 @@ export const Ruleta = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col  h-screen justify-center items-center w-full">
       <style>
         {`
           @keyframes glow {
@@ -141,10 +141,10 @@ export const Ruleta = () => {
 
           .wheel-container {
             position: relative;
-            width: 75vw;
-            height: 37.5vw; /* Mitad de la altura para mostrar solo semicírculo superior */
-            max-width: 900px;
-            max-height: 450px; /* Mitad de la altura máxima */
+            width: 52.5vw; /* 70% del 75vw original */
+            height: 26.25vw; /* 70% del 37.5vw original */
+            max-width: 630px; /* 70% de 900px */
+            max-height: 315px; /* 70% de 450px */
             margin: 20px auto;
             overflow: hidden; /* Oculta la parte inferior */
           }
@@ -155,10 +155,10 @@ export const Ruleta = () => {
             height: 200%; /* El doble de la altura para que se vea completo el círculo */
             border-radius: 50%;
             background: #f5f5f5;
-            border: 10px solid #333;
+            border: 8px solid #333; /* Reducido de 10px a 8px (80%) */
             overflow: hidden;
             transition: transform 0.3s ease;
-            box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 25px 8px rgba(0, 0, 0, 0.3); /* Ajustado ligeramente */
             animation: ${spinning ? "glow 2s infinite" : "none"};
             bottom: 0; /* Alinea la parte inferior del círculo con el contenedor */
             transform: scaleX(-1); /* Rota horizontalmente (eje Y) */
@@ -185,7 +185,7 @@ export const Ruleta = () => {
             align-items: center;
             justify-content: center;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(14px + 1vw);
+            font-size: calc(12px + 0.7vw); /* Reducido aproximadamente al 70% */
             font-weight: bold;
             color: #000;
             pointer-events: none;
@@ -196,47 +196,48 @@ export const Ruleta = () => {
             position: absolute;
             width: 40%;
             top: 15%;
-            left: calc(50% + 20px);
+            left: calc(50% + 15px); /* Reducido de 20px a 15px */
             text-align: center;
-            font-size: calc(16px + 1.5vw);
+            font-size: calc(12px + 1vw); /* Reducido de 16px + 1.5vw */
             font-weight: bold;
+            white-space: nowrap;
           }
           
           .wheel-pointer {
             position: absolute;
-            top: -15px; /* Ajustado para que se vea mejor */
+            top: -10px; /* Reducido de -15px */
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 30px solid transparent;
-            border-right: 30px solid transparent;
-            border-top: 60px solid #cc0000;
+            border-left: 21px solid transparent; /* 70% de 30px */
+            border-right: 21px solid transparent; /* 70% de 30px */
+            border-top: 42px solid #cc0000; /* 70% de 60px */
             z-index: 10;
-            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(0 0 7px rgba(0, 0, 0, 0.5)); /* Reducido ligeramente */
           }
           
           .button-spin {
             background: linear-gradient(45deg, #ff4e50, #f9d423);
             color: white;
-            padding: 15px 30px;
+            padding: 12px 25px; /* Reducido de 15px 30px */
             border: none;
             border-radius: 50px;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(16px + 0.5vw);
+            font-size: calc(14px + 0.4vw); /* Reducido de 16px + 0.5vw */
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            gap: 10px; /* Reducido de 12px */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Reducido ligeramente */
             transition: all 0.3s ease;
             animation: ${!spinning ? "pulse 2s infinite" : "none"};
           }
           
           .button-spin:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px); /* Reducido de -5px */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Reducido ligeramente */
           }
           
           .button-spin:disabled {
@@ -248,44 +249,44 @@ export const Ruleta = () => {
           .config-button {
             background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
-            padding: 15px 30px;
+            padding: 12px 25px; /* Reducido de 15px 30px */
             border: none;
             border-radius: 50px;
             font-family: 'Coolvetica', sans-serif;
-            font-size: calc(16px + 0.5vw);
+            font-size: calc(14px + 0.4vw); /* Reducido de 16px + 0.5vw */
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            gap: 10px; /* Reducido de 12px */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Reducido ligeramente */
             transition: all 0.3s ease;
           }
           
           .config-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px); /* Reducido de -5px */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Reducido ligeramente */
           }
           
           .info-text {
-            font-size: calc(14px + 0.5vw);
+            font-size: calc(12px + 0.4vw); /* Reducido de 14px + 0.5vw */
             font-weight: bold;
             color: #555;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
           }
           
           .empty-message {
-            font-size: calc(20px + 1vw);
+            font-size: calc(16px + 0.8vw); /* Reducido de 20px + 1vw */
             color: #888;
             text-align: center;
-            margin: 50px 0;
+            margin: 40px 0; /* Reducido de 50px */
           }
         `}
       </style>
-
-      <img src={logo} className=" h-20" alt="" />
-
-      <div className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto mt-8 mb-4 space-x-6">
+      <img src={logo} className="h-16" alt="" />{" "}
+      {/* Reducido de h-20 a h-16 (80%) */}
+      <div className="flex flex-row items-center justify-center w-full max-w-3xl mx-auto mt-6 mb-3 space-x-4">
+        {/* Reducido max-w-4xl a max-w-3xl, mt-8 a mt-6, mb-4 a mb-3, space-x-6 a space-x-4 */}
         <button
           className="config-button"
           onClick={() => setShowConfigModal(true)}
@@ -294,7 +295,7 @@ export const Ruleta = () => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="h-6 w-6"
+            className="h-5 w-5" /* Reducido de h-6 w-6 */
           >
             <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
             <path
@@ -314,23 +315,24 @@ export const Ruleta = () => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="h-6 w-6"
+            className="h-5 w-5" /* Reducido de h-6 w-6 */
           >
             <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-12v5h2V8h-2z" />
           </svg>
           {spinning ? "¡GIRANDO!" : "¡GIRAR!"}
         </button>
       </div>
-
       {/* Información sobre la configuración actual */}
-      <div className="mb-8 font-bold font-coolvetica text-gray-500 text-sm">
+      <div className="mb-6 font-bold font-coolvetica text-gray-500 text-sm">
+        {/* Reducido mb-8 a mb-6 */}
         Sorteando entre {products.length} items.
       </div>
-
       {products.length === 0 ? (
-        <div className="my-20 text-center empty-message">
+        <div className="my-14 text-center empty-message">
+          {/* Reducido my-20 a my-14 (70%) */}
           <p>No hay elementos configurados.</p>
-          <p className="mt-4 text-base">
+          <p className="mt-3 text-base">
+            {/* Reducido mt-4 a mt-3 */}
             Haz clic en "Configurar" para añadir elementos a la ruleta.
           </p>
         </div>
@@ -396,7 +398,6 @@ export const Ruleta = () => {
           </div>
         </div>
       )}
-
       {/* Modal para mostrar el resultado */}
       <RuletaModal
         isOpen={showResultModal}
@@ -404,7 +405,6 @@ export const Ruleta = () => {
         title="¡GANADOR!"
         winningPrize={result}
       />
-
       {/* Modal para configurar la ruleta */}
       <ConfiguracionRuletaModal
         isOpen={showConfigModal}
