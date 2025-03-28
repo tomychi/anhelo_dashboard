@@ -120,8 +120,8 @@ export const Ruleta = () => {
         {`
           .wheel-container {
             position: relative;
-            width: 700px;
-            height: 700px;
+            width: 560px;
+            height: 560px;
             margin: 20px auto;
             transform: rotate(180deg); /* Flip the entire wheel container */
           }
@@ -199,8 +199,8 @@ export const Ruleta = () => {
           }
           .gray-overlay {
             position: absolute;
-            width: 700px;
-            height: 350px; /* La mitad de la altura de la ruleta */
+            width: 560px;
+            height: 280px; /* La mitad de la altura de la ruleta */
             background-color: #F3F4F6; /* Gray 100 */
             bottom: 0; /* Changed from top to bottom */
             left: 0;
