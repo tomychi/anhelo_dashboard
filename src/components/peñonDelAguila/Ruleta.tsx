@@ -134,16 +134,17 @@ export const Ruleta = () => {
           .wheel-container {
             position: relative;
             width: 75vw;
-            height: 75vw;
+            height: 37.5vw; /* Mitad de la altura para mostrar solo semicírculo superior */
             max-width: 900px;
-            max-height: 900px;
+            max-height: 450px; /* Mitad de la altura máxima */
             margin: 20px auto;
+            overflow: hidden; /* Oculta la parte inferior */
           }
           
           .wheel {
-            position: relative;
+            position: absolute;
             width: 100%;
-            height: 100%;
+            height: 200%; /* El doble de la altura para que se vea completo el círculo */
             border-radius: 50%;
             background: #f5f5f5;
             border: 10px solid #333;
@@ -151,6 +152,7 @@ export const Ruleta = () => {
             transition: transform 0.3s ease;
             box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.3);
             animation: ${spinning ? "glow 2s infinite" : "none"};
+            bottom: 0; /* Alinea la parte inferior del círculo con el contenedor */
           }
           
           .wheel-segment {
@@ -185,11 +187,13 @@ export const Ruleta = () => {
             top: 15%;
             left: calc(50% + 20px);
             text-align: center;
+            font-size: calc(16px + 1.5vw);
+            font-weight: bold;
           }
           
           .wheel-pointer {
             position: absolute;
-            top: -35px;
+            top: -15px; /* Ajustado para que se vea mejor */
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -268,7 +272,7 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <div className="flex flex-row items-center justify-center w-full mt-8 mb-4 space-x-6">
+      <div className="flex flex-row items-center justify-center w-full max-w-4xl mx-auto mt-8 mb-4 space-x-6">
         <button
           className="config-button"
           onClick={() => setShowConfigModal(true)}
@@ -351,15 +355,29 @@ export const Ruleta = () => {
             })}
             {products.map((product, index) => {
               const angle = (index * 360) / products.length;
+              // Solo mostrar etiquetas en la mitad superior (ángulos entre 0° y 180°)
+              const isInUpperHalf = angle >= 0 && angle <= 180;
+              const adjustedAngle = (angle + 180) % 360; // Ajustado para mejor legibilidad
+              const textRotation =
+                adjustedAngle > 90 && adjustedAngle < 270 ? 180 : 0;
+
               return (
                 <div
                   key={product.id}
                   className="wheel-label"
                   style={{
                     transform: `rotate(${angle}deg)`,
+                    display: isInUpperHalf ? "block" : "none",
                   }}
                 >
-                  <div className="label-text">{product.name}</div>
+                  <div
+                    className="label-text"
+                    style={{
+                      transform: `rotate(${textRotation}deg)`,
+                    }}
+                  >
+                    {product.name}
+                  </div>
                 </div>
               );
             })}
