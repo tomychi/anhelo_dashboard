@@ -130,7 +130,7 @@ export const Ruleta = () => {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: #f5f5f5;
+            background: #F3F4F6;
             border: 4px solid #333;
             overflow: hidden;
           }
@@ -141,7 +141,7 @@ export const Ruleta = () => {
             top: 50%;
             left: 50%;
             transform-origin: 0% 0%;
-            background: #e0e0e0;
+            background: #F3F4F6;
           }
           .wheel-label {
             position: absolute;
@@ -274,7 +274,7 @@ export const Ruleta = () => {
             <div className="wheel" ref={wheelRef}>
               {products.map((product, index) => {
                 const angle = (index * 360) / products.length;
-                const backgroundColor = index % 2 === 0 ? "#f5f5f5" : "#e0e0e0";
+                const backgroundColor = "#F3F4F6";
                 return (
                   <div
                     key={product.id}
