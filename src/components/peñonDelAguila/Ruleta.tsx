@@ -2,16 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import arrow from "../../assets/arrowIcon.png";
 
 // Fake DB de ejemplo (puede ser reemplazada por una DB real)
-const fakeDB = [
-  { id: 1, name: "Hamburguesa Clásica" },
-  { id: 2, name: "Doble Cheese" },
-  { id: 3, name: "Bacon Lover" },
-  { id: 4, name: "Veggie Burger" },
-  { id: 5, name: "Triple Impacto" },
-  { id: 6, name: "Chicken BBQ" },
-  { id: 7, name: "Spicy Jalapeño" },
-  { id: 8, name: "Mega Combo" },
-];
+const fakeDB = Array.from({ length: 30 }, (_, index) => ({
+  id: index + 1,
+  name: `${index + 1}`,
+}));
 
 export const Ruleta: React.FC<{
   products?: { id: number; name: string }[];
@@ -280,13 +274,13 @@ export const Ruleta: React.FC<{
               >
                 <span
                   style={{
-                    transform: `rotate(-${angle}deg)`,
                     display: "inline-block",
                     maxWidth: "120px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                   }}
+                  className="bg-red-main"
                 >
                   {product.name}
                 </span>
