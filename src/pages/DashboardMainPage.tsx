@@ -27,6 +27,7 @@ import FacturaForm from "../components/facturacion/FacturaForm";
 import Landing from "./Landing";
 import CrearEmpresa from "./CrearEmpresa";
 import PrivateRoutesLayout from "../layouts/PrivateRoutesLayout";
+import { PeñonDelAguila } from "./PeñonDelAguila";
 
 export const DashboardMainPage = () => {
   const scrollContainerRef = useRef(null);
@@ -61,6 +62,7 @@ export const DashboardMainPage = () => {
                 </PrivateRoutesLayout>
               }
             />{" "}
+            <Route path="peñonDelAguila" element={<PeñonDelAguila />} />{" "}
             <Route
               path="paginaDeVentas"
               element={
