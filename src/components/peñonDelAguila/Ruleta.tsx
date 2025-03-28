@@ -323,9 +323,8 @@ export const Ruleta = () => {
       </div>
 
       {/* Información sobre la configuración actual */}
-      <div className="mb-8 info-text">
-        Sorteando entre <span className="text-blue-600">{products.length}</span>{" "}
-        items.
+      <div className="mb-8 font-bold font-coolvetica text-gray-500 text-sm">
+        Sorteando entre {products.length} items.
       </div>
 
       {products.length === 0 ? (
