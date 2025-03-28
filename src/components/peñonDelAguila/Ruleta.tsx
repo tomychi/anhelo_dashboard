@@ -166,18 +166,14 @@ export const Ruleta: React.FC<{
           }
           .label-text {
             position: absolute;
-            transform-origin: center;
             width: 120px;
-            top: 15px;
-            left: calc(50% + 8px);
+            top: 10px;
+            left: calc(50% + 10px);
             max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
           }
           .wheel-pointer {
             position: absolute;
-            top: -25px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
