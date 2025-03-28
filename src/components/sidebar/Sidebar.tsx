@@ -297,7 +297,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       });
 
       // Build menu items based on user type
-      // items.push({ to: "/settings", text: "Configuración" });
+      items.push({ to: "/peñonDelAguila", text: "Regalos legendarios" });
 
       setMenuItems(items);
       setNoPermissions(false);

@@ -236,7 +236,7 @@ export const Ruleta = () => {
         `}
       </style>
 
-      <div className="flex flex-col gap-20 z-50 items-center justify-center w-full max-w-md  ">
+      <div className="flex flex-col gap-20 z-40 items-center justify-center w-full max-w-md  ">
         <img src={logo} className="h-40" />
         <div className="flex flex-row">
           <div className="flex space-x-2">
@@ -279,11 +279,11 @@ export const Ruleta = () => {
         </div>
       </div>
       {/* Información sobre la configuración actual */}
-      <div className="mt-4 mb-12 font-coolvetica  text-sm text-gray-400 font-light z-50 text-center">
+      <div className="mt-4 mb-12 font-coolvetica  text-sm text-gray-400 font-light z-40 text-center">
         {products.length} participantes.
       </div>
 
-      <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
+      <img src={arrowIcon} className="h-6 z-40 transform rotate-90" alt="" />
 
       {/* Ruleta */}
       <div className="mt-[-700px]">
