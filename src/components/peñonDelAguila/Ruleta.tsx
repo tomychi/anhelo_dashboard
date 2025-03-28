@@ -261,7 +261,7 @@ export const Ruleta = () => {
       <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
 
       {/* Ruleta */}
-      <div className="mt-[-390px]">
+      <div className="mt-[-530px]">
         {products.length === 0 ? (
           <div className="my-20 text-center">
             <p className="text-gray-400 text-xl">
