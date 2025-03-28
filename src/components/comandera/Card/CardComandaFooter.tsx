@@ -1,14 +1,14 @@
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import {
   marcarPedidoComoElaborado,
   marcarPedidoComoEmbalado,
   marcarPedidoComoEntregado,
-} from '../../../firebase/ReadData';
-import { obtenerDiferenciaHoraria } from '../../../helpers/dateToday';
-import { useState } from 'react';
-import { Descuento } from '../../Card/Descuento';
-import { PedidoProps } from '../../../types/types';
-import { doc, getFirestore, runTransaction } from 'firebase/firestore';
+} from "../../../firebase/ReadData";
+import { obtenerDiferenciaHoraria } from "../../../helpers/dateToday";
+import { useState } from "react";
+import { Descuento } from "../../Card/Descuento";
+import { PedidoProps } from "../../../types/types";
+import { doc, getFirestore, runTransaction } from "firebase/firestore";
 
 const imprimirTicket = async (
   nuevoPedido: PedidoProps,
@@ -19,10 +19,10 @@ const imprimirTicket = async (
   setBotonDesactivado(true);
 
   try {
-    const response = await fetch('http://localhost:3000/imprimir', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3000/imprimir", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ nuevoPedido }),
     });
@@ -31,19 +31,19 @@ const imprimirTicket = async (
       const tiempo = obtenerDiferenciaHoraria(hora);
       await marcarPedidoComoElaborado(id, tiempo);
     } else {
-      console.error('Error al imprimir');
+      console.error("Error al imprimir");
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un error al imprimir el ticket',
+        icon: "error",
+        title: "Error",
+        text: "Hubo un error al imprimir el ticket",
       });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error);
+    console.error("Error en la solicitud:", error);
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Hubo un error en la solicitud',
+      icon: "error",
+      title: "Error",
+      text: "Hubo un error en la solicitud",
     });
   } finally {
     setTimeout(() => {
@@ -63,12 +63,19 @@ export const CardComandaFooter = ({
   user,
   comanda,
 }: CardComandaFooterProps) => {
-  const { elaborado, id, fecha, tiempoEntregado, hora, pendingOfBeingAccepted } = comanda;
+  const {
+    elaborado,
+    id,
+    fecha,
+    tiempoEntregado,
+    hora,
+    pendingOfBeingAccepted,
+  } = comanda;
 
   const [botonDesactivado, setBotonDesactivado] = useState(false);
   const [mostrarExtras, setMostrarExtras] = useState(false);
 
-  const handleOrderAction = async (action: 'accept' | 'reject') => {
+  const handleOrderAction = async (action: "accept" | "reject") => {
     try {
       const firestore = getFirestore();
       const [dia, mes, anio] = fecha.split("/");
@@ -81,128 +88,42 @@ export const CardComandaFooter = ({
         }
 
         const pedidosDelDia = pedidoDocSnapshot.data()?.pedidos || [];
-        const index = pedidosDelDia.findIndex(
-          (pedido) => pedido.id === id
-        );
+        const index = pedidosDelDia.findIndex((pedido) => pedido.id === id);
 
         if (index !== -1) {
           pedidosDelDia[index].pendingOfBeingAccepted = false;
-          if (action === 'accept') {
+          if (action === "accept") {
             pedidosDelDia[index].aceptado = true;
           } else {
             pedidosDelDia[index].rechazado = true;
           }
           transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-          
+
           Swal.fire({
-            icon: 'success',
-            title: action === 'accept' ? 'Pedido Aceptado' : 'Pedido Rechazado',
-            text: `El pedido con ID ${id} ha sido ${action === 'accept' ? 'aceptado' : 'rechazado'}.`,
+            icon: "success",
+            title: action === "accept" ? "Pedido Aceptado" : "Pedido Rechazado",
+            text: `El pedido con ID ${id} ha sido ${action === "accept" ? "aceptado" : "rechazado"}.`,
           });
         } else {
           throw new Error("Pedido no encontrado");
         }
       });
     } catch (error) {
-      console.error('Error al procesar el pedido:', error);
+      console.error("Error al procesar el pedido:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo procesar el pedido.',
+        icon: "error",
+        title: "Error",
+        text: "No se pudo procesar el pedido.",
       });
     }
   };
 
-  if (user.email === 'cadetes@anhelo.com') {
-    return (
-      <div>
-        {elaborado && tiempoEntregado === undefined && (
-          <button
-            onClick={() => {
-              marcarPedidoComoEntregado(id, fecha)
-                .then(() => {
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'ENTREGADOOOOOOOOOOOOOOOO',
-                    text: `El pedido con ID ${id} ha sido entregado.`,
-                  });
-                })
-                .catch(() => {
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo entregar el pedido.',
-                  });
-                });
-            }}
-            className={`bg-black w-full flex justify-center mt-4 ${
-              elaborado ? 'text-green-500' : 'text-custom-red'
-            } font-black p-4 inline-flex items-center`}
-          >
-            <svg
-              className={`fill-current w-4 h-4 mr-2 ${
-                elaborado ? 'text-green-500' : 'text-custom-red'
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-            >
-              <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-            </svg>
-            <span>ENTREGADO</span>
-          </button>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div>
-      {elaborado && user.email === 'mostrador@anhelo.com' && (
-        <button
-          onClick={() => {
-            marcarPedidoComoEmbalado(id, fecha)
-              .then(() => {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'EMBALADOOOOOOOOOOOOOOOO',
-                  text: `El pedido con ID ${id} ha sido embalado.`,
-                });
-                setBotonDesactivado(true);
-              })
-              .catch(() => {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'No se pudo embalar el pedido.',
-                });
-              })
-              .finally(() => {
-                setTimeout(() => {
-                  setBotonDesactivado(false);
-                }, 3000);
-              });
-          }}
-          className={`bg-black w-full flex justify-center mt-4 ${
-            elaborado ? 'text-green-500' : 'text-custom-red'
-          } font-black p-4 inline-flex items-center`}
-        >
-          <svg
-            className={`fill-current w-4 h-4 mr-2 ${
-              elaborado ? 'text-green-500' : 'text-custom-red'
-            }`}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-          </svg>
-          <span>EMBALADO</span>
-        </button>
-      )}
-
       {pendingOfBeingAccepted ? (
         <div className="flex gap-2 mt-14">
           <button
-            onClick={() => handleOrderAction('accept')}
+            onClick={() => handleOrderAction("accept")}
             className="bg-black w-full flex justify-center text-green-500 font-black p-4 inline-flex items-center"
             disabled={botonDesactivado}
           >
@@ -211,13 +132,13 @@ export const CardComandaFooter = ({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
             >
-              <path d="M0 11l2-2 5 5L18 3l2 2L7 18z"/>
+              <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
             </svg>
             <span>ACEPTAR</span>
           </button>
-          
+
           <button
-            onClick={() => handleOrderAction('reject')}
+            onClick={() => handleOrderAction("reject")}
             className="bg-black w-full flex justify-center text-red-500 font-black p-4 inline-flex items-center"
             disabled={botonDesactivado}
           >
@@ -226,7 +147,7 @@ export const CardComandaFooter = ({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
             >
-              <path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/>
+              <path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" />
             </svg>
             <span>RECHAZAR</span>
           </button>
@@ -235,13 +156,13 @@ export const CardComandaFooter = ({
         <button
           onClick={() => imprimirTicket(comanda, setBotonDesactivado, hora, id)}
           className={`bg-black w-full flex justify-center mt-14 ${
-            elaborado ? 'text-green-500' : 'text-custom-red'
+            elaborado ? "text-green-500" : "text-custom-red"
           } font-black p-4 inline-flex items-center`}
           disabled={botonDesactivado}
         >
           <svg
             className={`fill-current w-4 h-4 mr-2 ${
-              elaborado ? 'text-green-500' : 'text-custom-red'
+              elaborado ? "text-green-500" : "text-custom-red"
             }`}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
@@ -252,22 +173,20 @@ export const CardComandaFooter = ({
         </button>
       )}
 
-      {user.email !== 'cadetes@anhelo.com' && (
-        <div>
-          <button
-            className="font-black text-white w-full cursor-pointer mt-4 border-4 border-white"
-            onClick={() => setMostrarExtras(!mostrarExtras)}
-          >
-            {mostrarExtras ? 'OCULTAR EXTRAS' : 'ACCIONES EXTRAS'}
-          </button>
+      <div>
+        <button
+          className="font-black text-white w-full cursor-pointer mt-4 border-4 border-white"
+          onClick={() => setMostrarExtras(!mostrarExtras)}
+        >
+          {mostrarExtras ? "OCULTAR EXTRAS" : "ACCIONES EXTRAS"}
+        </button>
 
-          {mostrarExtras && (
-            <div className="mt-4">
-              <Descuento fechaPedido={fecha} pedidoId={id} />
-            </div>
-          )}
-        </div>
-      )}
+        {mostrarExtras && (
+          <div className="mt-4">
+            <Descuento fechaPedido={fecha} pedidoId={id} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

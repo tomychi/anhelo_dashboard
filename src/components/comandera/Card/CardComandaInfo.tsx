@@ -22,12 +22,12 @@ interface CardComandaInfoProps {
   updateTiempoElaboradoForOrder: (
     fechaPedido: string,
     pedidoId: string,
-    nuevoTiempo: string,
+    nuevoTiempo: string
   ) => Promise<void>;
   updateTiempoEntregaForOrder: (
     fechaPedido: string,
     pedidoId: string,
-    nuevoTiempo: string,
+    nuevoTiempo: string
   ) => Promise<void>;
   entregado: boolean;
 }
@@ -51,10 +51,6 @@ export const CardComandaInfo = ({
   updateTiempoEntregaForOrder,
   entregado,
 }: CardComandaInfoProps) => {
-
- 
-
-
   const [mostrarInfoCompleta, setMostrarInfoCompleta] = useState(false);
   const [editando, setEditando] = useState(false);
   const [direccion, setDireccion] = useState(initialDireccion);
@@ -64,19 +60,18 @@ export const CardComandaInfo = ({
   const [metodoPago, setMetodoPago] = useState(initialMetodoPago);
   const [total, setTotal] = useState(initialTotal);
   const [efectivoCantidad, setEfectivoCantidad] = useState(
-    initialEfectivoCantidad,
+    initialEfectivoCantidad
   );
 
   const [mercadopagoCantidad, setMercadopagoCantidad] = useState(
-    initalMercadopagoCantidad,
+    initalMercadopagoCantidad
   );
 
   useEffect(() => {
     setTotal(initialTotal);
   }, [initialTotal]);
 
-
-  const canEdit = user.email === "tomas.arcostanzo5@gmail.com";
+  const canEdit = true;
 
   const handleGuardarCambios = async () => {
     try {
@@ -200,7 +195,7 @@ export const CardComandaInfo = ({
                   metodoPago
                 )}
               </p>
-              {user.email === "cadetes@anhelo.com" ? (
+              {user ? (
                 metodoPago === "efectivo" || metodoPago === "ambos" ? (
                   <div className="text-lg font-black">
                     MONTO: {currencyFormat(efectivoCantidad)}

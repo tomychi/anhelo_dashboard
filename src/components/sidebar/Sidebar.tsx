@@ -297,7 +297,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
       });
 
       // Build menu items based on user type
-      items.push({ to: "/settings", text: "Configuración" });
+      // items.push({ to: "/settings", text: "Configuración" });
 
       setMenuItems(items);
       setNoPermissions(false);
