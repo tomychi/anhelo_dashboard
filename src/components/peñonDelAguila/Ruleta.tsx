@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import RuletaModal from "./RuletaModal";
 import ConfiguracionRuletaModal from "./ConfiguracionRuletaModal";
 import logo from "../../assets/AGUILA BLANCO-1.png";
+import arrowIcon from "../../assets/arrowIcon.png";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -165,18 +166,7 @@ export const Ruleta = () => {
             max-width: 120px;
             text-align: right; /* Align text to the right */
           }
-          .wheel-pointer {
-            position: absolute;
-            bottom: 130px; /* Changed from top to bottom */
-            left: 50%;
-            transform: translateX(-50%) rotate(180deg); /* Flip the pointer */
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #333;
-            z-index: 10;
-          }
+          
           .button-spin {
             background-color: #4CAF50;
             color: white;
@@ -265,8 +255,10 @@ export const Ruleta = () => {
         Sorteando entre {products.length} items.
       </div>
 
+      <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
+
       {/* Ruleta */}
-      <div className="mt-[-150px]">
+      <div className="mt-[-180px]">
         {products.length === 0 ? (
           <div className="my-20 text-center">
             <p className="text-gray-400 text-xl">
@@ -278,7 +270,6 @@ export const Ruleta = () => {
           </div>
         ) : (
           <div className="wheel-container">
-            <div className="wheel-pointer"></div>
             <div className="wheel" ref={wheelRef}>
               {products.map((product, index) => {
                 const angle = (index * 360) / products.length;
