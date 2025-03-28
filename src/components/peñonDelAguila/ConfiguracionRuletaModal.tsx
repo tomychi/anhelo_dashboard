@@ -211,8 +211,10 @@ export const ConfiguracionRuletaModal: React.FC<
               )}
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-row items-center gap-4 justify-center">
+        <div className="flex pt-4 justify-between">
+          <div className="flex  flex-row items-center gap-4 justify-center">
             {/* Muestra cuántos elementos están seleccionados */}
             <div className="text-center text-sm text-gray-500">
               {selectedItems.length} de {totalItems} participantes seleccionados
@@ -229,25 +231,24 @@ export const ConfiguracionRuletaModal: React.FC<
               </button>
             </div>
           </div>
-        </div>
-
-        <button
-          onClick={handleSaveConfig}
-          disabled={loading}
-          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
-        >
-          {loading ? (
-            <div className="flex justify-center w-full items-center">
-              <div className="flex flex-row gap-1">
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+          <button
+            onClick={handleSaveConfig}
+            disabled={loading}
+            className="text-gray-100   text-4xl h-20 px-8 bg-black font-bold rounded-lg outline-none"
+          >
+            {loading ? (
+              <div className="flex justify-center w-full items-center">
+                <div className="flex flex-row gap-1">
+                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                  <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                </div>
               </div>
-            </div>
-          ) : (
-            "Guardar"
-          )}
-        </button>
+            ) : (
+              "Guardar"
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
