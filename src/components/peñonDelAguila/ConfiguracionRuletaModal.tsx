@@ -178,7 +178,7 @@ export const ConfiguracionRuletaModal: React.FC<
           <div className="flex items-center justify-center mb-4">
             <div className="flex flex-col w-full max-w-xs">
               <label className="text-xs mb-1 text-center">
-                Número total de items
+                Cantidad maxima de participantes
               </label>
               <input
                 type="number"
@@ -226,7 +226,7 @@ export const ConfiguracionRuletaModal: React.FC<
 
           {/* Muestra cuántos elementos están seleccionados */}
           <div className="text-center text-sm text-gray-500">
-            {selectedItems.length} de {totalItems} elementos seleccionados
+            {selectedItems.length} de {totalItems} participantes seleccionados
           </div>
         </div>
 

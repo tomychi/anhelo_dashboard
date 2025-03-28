@@ -29,7 +29,7 @@ const RuletaModal = ({ isOpen, onClose, title, children, winningPrize }) => {
                   {winningPrize}
                 </p>
               </div>
-              <p className="text-center text-gray-600 px-4 font-coolvetica">
+              <p className="text-center font-light text-gray-400 px-4 text-xs font-coolvetica">
                 Podes reclamar tu premio mostrando esta pantalla.
               </p>
             </div>

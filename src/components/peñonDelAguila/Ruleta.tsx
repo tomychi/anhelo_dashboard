@@ -255,7 +255,7 @@ export const Ruleta = () => {
       </div>
       {/* Información sobre la configuración actual */}
       <div className="mt-4 mb-12 font-coolvetica  text-sm text-gray-400 font-light z-50 text-center">
-        {products.length} items.
+        {products.length} participantes.
       </div>
 
       <img src={arrowIcon} className="h-6 z-50 transform rotate-90" alt="" />
