@@ -12,7 +12,7 @@ import {
   obtenerDocumento,
   actualizarDocumento,
 } from "../../firebase/ClientesAbsolute";
-import { getFirestore, getDoc } from "firebase/firestore";
+import { getFirestore, getDoc, onSnapshot, doc } from "firebase/firestore";
 
 // Función para generar productos a partir de los números seleccionados
 const generateProducts = (selectedNumbers) => {
@@ -31,6 +31,7 @@ export const Ruleta = () => {
   const [products, setProducts] = useState([]);
   const [maxParticipantes, setMaxParticipantes] = useState(10);
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+  const [remoteControl, setRemoteControl] = useState(false);
 
   const wheelRef = useRef(null);
   const animationFrameRef = useRef(null);
@@ -55,10 +56,10 @@ export const Ruleta = () => {
   useEffect(() => {
     // Apply styles to body to prevent scrolling
     document.body.style.overflow = "hidden";
-    document.body.style.height = "100vh"; // Ensure body takes full viewport height
-    document.body.style.position = "fixed"; // Fix body position
-    document.body.style.width = "100%"; // Ensure full width
-    document.body.style.touchAction = "none"; // Disable touch scrolling on mobile
+    document.body.style.height = "100vh";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+    document.body.style.touchAction = "none";
 
     // Prevent default touch behavior
     const preventTouchMove = (e) => e.preventDefault();
@@ -106,6 +107,37 @@ export const Ruleta = () => {
     loadConfig();
   }, [empresaId]);
 
+  // Listener para el control remoto
+  useEffect(() => {
+    if (!empresaId) return;
+
+    // Escuchar cambios en el documento de ruleta
+    // La ruta es: absoluteClientes/{empresaId}/featuresPropios/ruleta
+    const unsubscribe = onSnapshot(
+      doc(
+        getFirestore(),
+        "absoluteClientes",
+        empresaId,
+        "featuresPropios",
+        "ruleta"
+      ),
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const ruletaData = docSnapshot.data();
+          // Si el estado de giro cambió a true y no estamos girando, iniciar giro
+          if (ruletaData.settings?.girar === true && !spinning) {
+            spinWheel();
+          }
+        }
+      },
+      (error) => {
+        console.error("Error al escuchar cambios de control remoto:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [empresaId, spinning, products]);
+
   // Actualizar productos cuando cambian los números seleccionados
   useEffect(() => {
     if (!isLoadingConfig) {
@@ -136,6 +168,26 @@ export const Ruleta = () => {
   const handleCloseResultModal = () => {
     setShowResultModal(false);
     setTimeout(resetWheelPosition, 300);
+  };
+
+  // Reiniciar estado de giro remoto después de completar el giro
+  const resetRemoteControlState = async () => {
+    if (!empresaId) return;
+
+    try {
+      // Actualizar el campo girar a false en el documento settings
+      await actualizarDocumento(
+        "featuresPropios",
+        "ruleta",
+        {
+          "settings.girar": false,
+        },
+        empresaId
+      );
+      console.log("Estado de control remoto reiniciado");
+    } catch (error) {
+      console.error("Error al reiniciar estado de control remoto:", error);
+    }
   };
 
   const spinWheel = () => {
@@ -193,6 +245,9 @@ export const Ruleta = () => {
             setResult(winningProduct);
             currentRotationRef.current = finalRotation;
 
+            // Reiniciar el estado de control remoto
+            resetRemoteControlState();
+
             setShowResultModal(true);
           }
         };
@@ -204,6 +259,26 @@ export const Ruleta = () => {
     if (animationFrameRef.current)
       cancelAnimationFrame(animationFrameRef.current);
     animationFrameRef.current = requestAnimationFrame(animate);
+  };
+
+  // Función para activar el giro desde el control remoto
+  const handleRemoteSpin = async () => {
+    if (!empresaId || spinning) return;
+
+    try {
+      // Actualizar el campo girar a true en el documento settings
+      await actualizarDocumento(
+        "featuresPropios",
+        "ruleta",
+        {
+          "settings.girar": true,
+        },
+        empresaId
+      );
+      console.log("Comando de giro enviado desde control remoto");
+    } catch (error) {
+      console.error("Error al enviar comando de giro:", error);
+    }
   };
 
   const handleSaveConfig = async (
@@ -365,7 +440,7 @@ export const Ruleta = () => {
             </button>
             <button
               className="h-10 items-center bg-gray-200 rounded-full px-4 font-bold font-coolvetica"
-              onClick={spinWheel}
+              onClick={spinning ? null : handleRemoteSpin}
               disabled={spinning || products.length === 0}
             >
               {spinning ? (
