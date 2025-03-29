@@ -1,8 +1,41 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-const RuletaModal = ({ isOpen, onClose, title, children, winningPrize }) => {
+const RuletaModal = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  winningPrize,
+  empresaId,
+  actualizarDocumento,
+}) => {
   if (!isOpen) return null;
+
+  // Función para cerrar el modal remotamente
+  const handleRemoteClose = async () => {
+    if (!empresaId) {
+      onClose();
+      return;
+    }
+
+    try {
+      // Actualizar el campo closeModal a true en el documento settings
+      await actualizarDocumento(
+        "featuresPropios",
+        "ruleta",
+        {
+          "settings.closeModal": true,
+        },
+        empresaId
+      );
+      console.log("Comando de cierre enviado desde control remoto");
+      onClose(); // Cerrar modal en el dispositivo actual
+    } catch (error) {
+      console.error("Error al enviar comando de cierre:", error);
+      onClose(); // Cerrar modal de todos modos en el dispositivo actual
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md px-4">
@@ -38,7 +71,7 @@ const RuletaModal = ({ isOpen, onClose, title, children, winningPrize }) => {
 
         <div className="w-full px-4 mt-8">
           <button
-            onClick={onClose}
+            onClick={handleRemoteClose}
             className="w-full h-20 text-2xl bg-black text-gray-100 rounded-3xl font-bold cursor-pointer hover:bg-opacity-90 transition-all flex items-center justify-center"
           >
             Entendido
@@ -55,12 +88,15 @@ RuletaModal.propTypes = {
   title: PropTypes.string,
   children: PropTypes.node,
   winningPrize: PropTypes.string,
+  empresaId: PropTypes.string,
+  actualizarDocumento: PropTypes.func.isRequired,
 };
 
 RuletaModal.defaultProps = {
   title: "¡Felicitaciones!",
   children: null,
   winningPrize: "",
+  empresaId: "",
 };
 
 export default RuletaModal;

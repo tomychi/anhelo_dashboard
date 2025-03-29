@@ -107,7 +107,6 @@ export const Ruleta = () => {
     loadConfig();
   }, [empresaId]);
 
-  // Listener para el control remoto
   useEffect(() => {
     if (!empresaId) return;
 
@@ -128,6 +127,13 @@ export const Ruleta = () => {
           if (ruletaData.settings?.girar === true && !spinning) {
             spinWheel();
           }
+
+          // Si el estado de cerrar modal cambió a true y el modal está abierto, cerrarlo
+          if (ruletaData.settings?.closeModal === true && showResultModal) {
+            handleCloseResultModal();
+            // Reiniciar el estado de closeModal
+            resetCloseModalState();
+          }
         }
       },
       (error) => {
@@ -136,7 +142,7 @@ export const Ruleta = () => {
     );
 
     return () => unsubscribe();
-  }, [empresaId, spinning, products]);
+  }, [empresaId, spinning, products, showResultModal]);
 
   // Actualizar productos cuando cambian los números seleccionados
   useEffect(() => {
@@ -163,6 +169,26 @@ export const Ruleta = () => {
         wheelRef.current.style.transition = "";
       }
     }, 1000);
+  };
+
+  // Reiniciar estado de cierre modal después de cerrar el modal
+  const resetCloseModalState = async () => {
+    if (!empresaId) return;
+
+    try {
+      // Actualizar el campo closeModal a false en el documento settings
+      await actualizarDocumento(
+        "featuresPropios",
+        "ruleta",
+        {
+          "settings.closeModal": false,
+        },
+        empresaId
+      );
+      console.log("Estado de cierre modal reiniciado");
+    } catch (error) {
+      console.error("Error al reiniciar estado de cierre modal:", error);
+    }
   };
 
   const handleCloseResultModal = () => {
@@ -521,6 +547,8 @@ export const Ruleta = () => {
         onClose={handleCloseResultModal}
         title="¡Felicitaciones!"
         winningPrize={result}
+        empresaId={empresaId}
+        actualizarDocumento={actualizarDocumento}
       />
 
       <ConfiguracionRuletaModal
