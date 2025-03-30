@@ -616,8 +616,8 @@ const FacturaForm = () => {
                   }
               `}</style>
       <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
-        <div className="py-8 flex flex-col  px-4 w-full items-baseline">
-          <div className="flex flex-col">
+        <div className="py-8 flex flex-col   w-full items-baseline">
+          <div className="flex flex-col px-4">
             <h2 className="text-3xl font-bold">Facturación</h2>
             <div className="flex flex-row items-center gap-1">
               <h2 className="text-xs font-bold text-gray-400">
@@ -674,8 +674,9 @@ const FacturaForm = () => {
               </div>
             ) : null}
           </div>
-          <div className="flex flex-row gap-2 mt-4">
-            <button className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10">
+
+          <div className="flex flex-row  gap-2 pl-4   overflow-x-auto pb-2 mt-4">
+            <button className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -684,12 +685,12 @@ const FacturaForm = () => {
               >
                 <path d="M5.566 4.657A4.505 4.505 0 0 1 6.75 4.5h10.5c.41 0 .806.055 1.183.157A3 3 0 0 0 15.75 3h-7.5a3 3 0 0 0-2.684 1.657ZM2.25 12a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3v-6ZM5.25 7.5c-.41 0-.806.055-1.184.157A3 3 0 0 1 6.75 6h10.5a3 3 0 0 1 2.683 1.657A4.505 4.505 0 0 0 18.75 7.5H5.25Z" />
               </svg>
-
               <p>Por pedidos</p>
             </button>
+
             <button
               onClick={toggleFacturarPorMonto}
-              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
+              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -698,17 +699,17 @@ const FacturaForm = () => {
                 className="h-6"
               >
                 <path
-                  fill-rule="evenodd"
-                  d="M3.75 3.375c0-1.036.84-1.875 1.875-1.875H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375Zm10.5 1.875a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25ZM12 10.5a.75.75 0 0 1 .75.75v.028a9.727 9.727 0 0 1 1.687.28.75.75 0 1 1-.374 1.452 8.207 8.207 0 0 0-1.313-.226v1.68l.969.332c.67.23 1.281.85 1.281 1.704 0 .158-.007.314-.02.468-.083.931-.83 1.582-1.669 1.695a9.776 9.776 0 0 1-.561.059v.028a.75.75 0 0 1-1.5 0v-.029a9.724 9.724 0 0 1-1.687-.278.75.75 0 0 1 .374-1.453c.425.11.864.186 1.313.226v-1.68l-.968-.332C9.612 14.974 9 14.354 9 13.5c0-.158.007-.314.02-.468.083-.931.831-1.582 1.67-1.694.185-.025.372-.045.56-.06v-.028a.75.75 0 0 1 .75-.75Zm-1.11 2.324c.119-.016.239-.03.36-.04v1.166l-.482-.165c-.208-.072-.268-.211-.268-.285 0-.113.005-.225.015-.336.013-.146.14-.309.374-.34Zm1.86 4.392V16.05l.482.165c.208.072.268.211.268.285 0 .113-.005.225-.015.336-.012.146-.14.309-.374.34-.12.016-.24.03-.361.04Z"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  d="M3.75 3.375c0-1.036.84-1.875 1.875-1.875H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375Zm10.5 1.875a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25ZM12 10.5a.75.75 0 0 1 .75.75v.028a9.727 9.727 0 0 1 1.687.28.75.75 0 1 1-.374 1.452 8.207 8.207 0 0 0-1.313-.226v1.68l.969.332c.67.23 1.281.85 1.281 1.704 0 .158-.007.314-.02.468-.083.931-.83 1.582-1.669 1.695a9.776 9.776 0 0 1-.561.059v.028a.75.75 0 0 1-1.5 0v-.029a9.724 9.724 0 0 1-1.687-.278.75.75 0 0 1 .374-1.453c.425.11.864.186 1.313.226v-1.68l-.968-.332C9.612 14.974 9 14.354 9 13.5c0-.158.007-.314.02-.468.083-.931.831-1.582 1.67-1.694.185-.025.372-.045.56-.06v-.028a.75.75 0 0 1 .75-.75Z"
+                  clipRule="evenodd"
                 />
               </svg>
-
               <p>Por monto</p>
             </button>
+
             <button
               onClick={toggleIndividualForm}
-              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
+              className="bg-gray-200 gap-2  text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
