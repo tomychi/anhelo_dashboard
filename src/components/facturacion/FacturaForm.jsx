@@ -3,9 +3,9 @@ import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
 import {
   ReadLastThreeDaysOrders,
-  marcarPedidoComoFacturado,
   ReadDataForDateRange,
 } from "../../firebase/ReadData";
+import { facturarPedido, obtenerFacturasPorRango } from "../../firebase/afip";
 import { useSelector } from "react-redux";
 import FacturarPorMonto from "./FacturarPorMonto";
 import Calendar from "../Calendar";
@@ -169,49 +169,38 @@ const FacturaForm = () => {
   }, []);
 
   useEffect(() => {
-    const fetchPedidosFacturados = async () => {
+    const fetchFacturas = async () => {
       if (!valueDate) return;
 
       setIsLoadingFacturas(true);
       try {
-        // Use ReadDataForDateRange to get all orders for the date range
-        const allOrders = await ReadDataForDateRange("pedidos", valueDate);
+        // Usar la nueva función para obtener facturas por rango de fechas
+        const facturas = await obtenerFacturasPorRango(valueDate);
 
-        // Filter only those with datosFacturacion
-        const orderosFacturados = allOrders.filter(
-          (pedido) => pedido.datosFacturacion
-        );
-
-        // Format the data for display
-        const facturasFormateadas = orderosFacturados.map((pedido) => ({
-          id: pedido.id,
-          fecha: pedido.fecha,
-          hora: pedido.hora,
-          cliente: pedido.nombreCliente || "Cliente",
-          telefono: pedido.telefonoCliente || "N/A",
-          total: pedido.total,
-          cae: pedido.datosFacturacion.cae,
-          numeroFactura:
-            pedido.datosFacturacion.numeroComprobante ||
-            pedido.datosFacturacion.numeroFactura,
-          tipoFactura:
-            pedido.datosFacturacion.tipoComprobante ||
-            pedido.datosFacturacion.tipoFactura,
-          fechaEmision: new Date(
-            pedido.datosFacturacion.fechaEmision
-          ).toLocaleDateString(),
+        // Formatear las facturas para mostrarlas en la tabla
+        const facturasFormateadas = facturas.map((factura) => ({
+          id: factura.id,
+          fecha: factura.fecha,
+          hora: factura.hora,
+          cliente: factura.pedidoId ? "Pedido" : "Por monto",
+          telefono: "N/A",
+          total: parseFloat(factura.importeTotal),
+          cae: factura.cae,
+          numeroFactura: factura.numeroComprobante,
+          tipoFactura: factura.tipoComprobante,
+          fechaEmision: factura.fecha,
         }));
 
         setFacturasEmitidas(facturasFormateadas);
       } catch (error) {
-        console.error("Error al obtener los pedidos facturados:", error);
+        console.error("Error al obtener las facturas:", error);
         setError("Error al cargar facturas emitidas");
       } finally {
         setIsLoadingFacturas(false);
       }
     };
 
-    fetchPedidosFacturados();
+    fetchFacturas();
   }, [valueDate]);
 
   const handleGenerateToken = async () => {
@@ -300,21 +289,28 @@ const FacturaForm = () => {
 
         const facturaData = {
           cae: data.data.cae,
-          fechaEmision: new Date().toISOString(),
-          fechaVencimiento: data.data.caeFchVto,
-          tipoFactura: formData.tipoFactura,
-          numeroFactura: data.data.cbteDesde,
+          caeFchVto: data.data.caeFchVto,
+          tipoComprobante: formData.tipoFactura,
+          puntoVenta: formData.puntoVenta,
+          numeroComprobante: data.data.cbteDesde,
           cuit: formData.cuit,
           importeTotal: formData.importeTotal,
+          importeNeto: formData.importeNeto,
+          importeTrib: formData.importeTrib,
+          documentoReceptor: 99,
+          numeroReceptor: 0,
         };
 
         // Si este formulario individual se está usando para facturar un pedido específico
-        // (debería haber alguna referencia al ID del pedido en formData o en algún estado)
         if (formData.pedidoId && formData.fechaPedido) {
-          await marcarPedidoComoFacturado(
+          await facturarPedido(
             formData.pedidoId,
-            formData.fechaPedido
+            formData.fechaPedido,
+            facturaData
           );
+        } else {
+          // Es una factura individual sin pedido asociado
+          await guardarFacturaPorMonto(facturaData);
         }
       } else {
         const errorMsg =
@@ -403,14 +399,12 @@ const FacturaForm = () => {
               numeroComprobante: data.data.cbteDesde,
               documentoReceptor: 99, // Siempre 99
               numeroReceptor: 0, // Siempre 0
+              caeFchVto: data.data.caeFchVto,
             };
 
-            // Actualizar el estado en Firebase
-            await marcarPedidoComoFacturado(
-              venta.id,
-              venta.fecha,
-              datosFacturacion
-            );
+            // Usar la nueva función para guardar el pedido como facturado
+            // Esta función también guarda la información en la colección 'facturas'
+            await facturarPedido(venta.id, venta.fecha, datosFacturacion);
 
             console.log(
               `Factura ${i + 1} procesada con éxito. CAE: ${data.data.cae}`
@@ -619,11 +613,11 @@ const FacturaForm = () => {
   return (
     <>
       <style>{`
-                select:invalid { color: #9CA3AF; }
-                input[type="date"]::-webkit-calendar-picker-indicator {
-                    filter: invert(100%);
-                }
-            `}</style>
+                  select:invalid { color: #9CA3AF; }
+                  input[type="date"]::-webkit-calendar-picker-indicator {
+                      filter: invert(100%);
+                  }
+              `}</style>
       <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
         <div className="py-8 flex flex-col  px-4 w-full items-baseline">
           <div className="flex flex-col">
@@ -1044,8 +1038,7 @@ const FacturaForm = () => {
           </div>
         )}
 
-        {/* Modal para facturas por monto*/}
-
+        {/* Modal para facturas por monto */}
         {showFacturarPorMonto && (
           <FacturarPorMonto
             onClose={handleCloseFacturarPorMonto}

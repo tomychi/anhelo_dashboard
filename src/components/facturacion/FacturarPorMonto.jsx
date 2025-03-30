@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
-import { marcarPedidoComoFacturado } from "../../firebase/ReadData";
+import { guardarFacturaPorMonto } from "../../firebase/afip";
 import currencyFormat from "../../helpers/currencyFormat";
 
 // URL del backend en AWS EC2
@@ -246,10 +246,12 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
         const facturaData = {
           cuit: formData.cuit,
           puntoVenta: formData.puntoVenta,
-          tipoFactura: formData.tipoFactura,
+          tipoComprobante: formData.tipoFactura, // Nota el cambio de tipoFactura a tipoComprobante
           importeNeto: venta.importeNeto,
           importeTrib: venta.importeTrib,
           importeTotal: venta.importeTotal,
+          documentoReceptor: 99, // Consumidor final
+          numeroReceptor: 0, // Consumidor final
         };
 
         try {
@@ -257,7 +259,14 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           const response = await fetch(`${BASE_URL}/api/afip/factura`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(facturaData),
+            body: JSON.stringify({
+              cuit: facturaData.cuit,
+              puntoVenta: facturaData.puntoVenta,
+              tipoFactura: facturaData.tipoComprobante, // Para mantener compatibilidad con la API
+              importeNeto: facturaData.importeNeto,
+              importeTrib: facturaData.importeTrib,
+              importeTotal: facturaData.importeTotal,
+            }),
           });
 
           const data = await response.json();
@@ -275,27 +284,27 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               cbteHasta: data.data.cbteHasta,
             };
 
-            // En este caso no hay un pedido real en Firebase para actualizar
-            // pero podríamos crear un registro si fuera necesario
-            /* 
-            const datosFacturacion = {
-              cuit: formData.cuit,
+            // Crear datos completos para guardar en Firebase
+            const facturaParaGuardar = {
+              ...facturaData,
               cae: data.data.cae,
-              fechaEmision: new Date().toISOString(),
-              tipoComprobante: formData.tipoFactura,
-              puntoVenta: formData.puntoVenta,
+              caeFchVto: data.data.caeFchVto,
               numeroComprobante: data.data.cbteDesde,
-              documentoReceptor: 99,
-              numeroReceptor: 0,
             };
-            
-            // Si quisiéramos guardar en Firebase, podríamos hacer:
-            // await marcarPedidoComoFacturado(venta.id, venta.fecha, datosFacturacion);
-            */
 
-            console.log(
-              `Factura ${i + 1} procesada con éxito. CAE: ${data.data.cae}`
-            );
+            // Guardar la factura en la nueva colección
+            const guardadoExitoso =
+              await guardarFacturaPorMonto(facturaParaGuardar);
+
+            if (!guardadoExitoso) {
+              console.warn(
+                `Factura ${i + 1} emitida con éxito pero no se pudo guardar en Firebase`
+              );
+            } else {
+              console.log(
+                `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
+              );
+            }
           } else {
             // Error al generar la factura
             const errorMsg =
@@ -350,7 +359,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
       setIsSubmitting(false);
     }
   };
-
   // Función para manejar el toggle de facturar
   const handleToggleFacturar = (ventaId) => {
     setVentasGeneradas((prevVentas) =>
