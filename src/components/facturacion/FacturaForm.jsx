@@ -503,6 +503,7 @@ const FacturaForm = () => {
   const handleCloseForm = () => {
     setShowIndividualForm(false);
     setIsAnimating(false);
+    setActiveButton("por-pedidos");
   };
 
   const filteredFacturas = facturasEmitidas.filter(
@@ -609,6 +610,7 @@ const FacturaForm = () => {
 
   const handleCloseFacturarPorMonto = () => {
     setShowFacturarPorMonto(false);
+    setActiveButton("por-pedidos");
   };
 
   const activatePorPedidos = () => {

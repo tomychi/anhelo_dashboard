@@ -75,7 +75,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
     setIsAnimating(false);
     // Damos un poco de tiempo para que la animación termine antes de cerrar completamente
     setTimeout(() => {
-      onClose();
+      onClose(); // Esta llamada invocará a handleCloseFacturarPorMonto en el componente padre
     }, 300);
   };
 
