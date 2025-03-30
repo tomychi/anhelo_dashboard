@@ -31,6 +31,8 @@ const FacturaForm = () => {
   const [facturasEmitidas, setFacturasEmitidas] = useState([]);
   const [isLoadingFacturas, setIsLoadingFacturas] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeButton, setActiveButton] = useState("por-pedidos");
+
   const { valueDate } = useSelector((state) => state.data);
 
   // Modal drag states
@@ -495,6 +497,7 @@ const FacturaForm = () => {
 
   const toggleIndividualForm = () => {
     setShowIndividualForm(!showIndividualForm);
+    setActiveButton("individual");
   };
 
   const handleCloseForm = () => {
@@ -601,10 +604,18 @@ const FacturaForm = () => {
 
   const toggleFacturarPorMonto = () => {
     setShowFacturarPorMonto(!showFacturarPorMonto);
+    setActiveButton("por-monto");
   };
 
   const handleCloseFacturarPorMonto = () => {
     setShowFacturarPorMonto(false);
+  };
+
+  const activatePorPedidos = () => {
+    setActiveButton("por-pedidos");
+    // Cerrar los otros formularios si están abiertos
+    setShowFacturarPorMonto(false);
+    setShowIndividualForm(false);
   };
 
   return (
@@ -675,8 +686,15 @@ const FacturaForm = () => {
             ) : null}
           </div>
 
-          <div className="flex flex-row  gap-2 px-4   overflow-x-auto mb-2 mt-4">
-            <button className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10">
+          <div className="flex flex-row gap-2 px-4 overflow-x-auto mb-2 mt-4">
+            <button
+              onClick={activatePorPedidos}
+              className={`gap-2 font-bold rounded-full flex-shrink-0 flex items-center px-4 h-10 ${
+                activeButton === "por-pedidos"
+                  ? "bg-black text-gray-100"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -690,7 +708,11 @@ const FacturaForm = () => {
 
             <button
               onClick={toggleFacturarPorMonto}
-              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
+              className={`gap-2 font-bold rounded-full flex-shrink-0 flex items-center px-4 h-10 ${
+                activeButton === "por-monto"
+                  ? "bg-black text-gray-100"
+                  : "bg-gray-200 text-black"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -709,7 +731,11 @@ const FacturaForm = () => {
 
             <button
               onClick={toggleIndividualForm}
-              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
+              className={`gap-2 font-bold rounded-full flex-shrink-0 flex items-center px-4 h-10 ${
+                activeButton === "individual"
+                  ? "bg-black text-gray-100"
+                  : "bg-gray-200 text-black"
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
