@@ -759,7 +759,7 @@ const FacturaForm = () => {
 
         <div className="w-full">
           {ventasSinFacturar.length > 0 ? (
-            <div className="flex flex-col mb-8 ">
+            <div className="flex flex-col mb-12 ">
               <SalesCards
                 ventas={ventasSinFacturar}
                 onToggleFacturar={handleToggleFacturar}
