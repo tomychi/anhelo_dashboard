@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
-import {
-  ReadLastThreeDaysOrders,
-  ReadDataForDateRange,
-} from "../../firebase/ReadData";
+import { ReadLastThreeDaysOrders } from "../../firebase/ReadData";
 import { facturarPedido, obtenerFacturasPorRango } from "../../firebase/afip";
 import { useSelector } from "react-redux";
 import FacturarPorMonto from "./FacturarPorMonto";
@@ -678,6 +675,18 @@ const FacturaForm = () => {
             ) : null}
           </div>
           <div className="flex flex-row gap-2 mt-4">
+            <button className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-6"
+              >
+                <path d="M5.566 4.657A4.505 4.505 0 0 1 6.75 4.5h10.5c.41 0 .806.055 1.183.157A3 3 0 0 0 15.75 3h-7.5a3 3 0 0 0-2.684 1.657ZM2.25 12a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3v-6ZM5.25 7.5c-.41 0-.806.055-1.184.157A3 3 0 0 1 6.75 6h10.5a3 3 0 0 1 2.683 1.657A4.505 4.505 0 0 0 18.75 7.5H5.25Z" />
+              </svg>
+
+              <p>Por pedidos</p>
+            </button>
             <button
               onClick={toggleFacturarPorMonto}
               className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
