@@ -7,6 +7,7 @@ import {
   ReadDataForDateRange,
 } from "../../firebase/ReadData";
 import { useSelector } from "react-redux";
+import FacturarPorMonto from "./FacturarPorMonto";
 import Calendar from "../Calendar";
 import currencyFormat from "../../helpers/currencyFormat";
 
@@ -18,6 +19,7 @@ const FacturaForm = () => {
   const [error, setError] = useState(null);
   const [tokenStatus, setTokenStatus] = useState(null);
   const [isLoadingToken, setIsLoadingToken] = useState(false);
+  const [showFacturarPorMonto, setShowFacturarPorMonto] = useState(false);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const [showIndividualForm, setShowIndividualForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -509,36 +511,6 @@ const FacturaForm = () => {
     setIsAnimating(false);
   };
 
-  const copyResultsToClipboard = () => {
-    let textToCopy = "";
-    if (Array.isArray(respuesta)) {
-      textToCopy = respuesta
-        .map((resp, index) => {
-          return (
-            `FACTURA ${index + 1}:\n` +
-            (resp.cae
-              ? `CAE: ${resp.cae}\nVencimiento: ${resp.caeFchVto || "N/A"}\nComprobante número: ${resp.cbteDesde}\n`
-              : `Error: ${resp.error || "No generado"}\n`) +
-            "------------------------\n"
-          );
-        })
-        .join("\n");
-    } else {
-      textToCopy =
-        `CAE: ${respuesta.cae}\n` +
-        `Vencimiento: ${respuesta.fechaVencimiento || respuesta.caeFchVto}\n` +
-        `Número: ${respuesta.cbteDesde}`;
-    }
-
-    navigator.clipboard
-      .writeText(textToCopy)
-      .then(() => alert("Resultados copiados al portapapeles"))
-      .catch((err) => {
-        console.error("Error al copiar: ", err);
-        alert("No se pudo copiar al portapapeles. Error: " + err);
-      });
-  };
-
   const filteredFacturas = facturasEmitidas.filter(
     (factura) =>
       factura.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -636,6 +608,14 @@ const FacturaForm = () => {
       });
   };
 
+  const toggleFacturarPorMonto = () => {
+    setShowFacturarPorMonto(!showFacturarPorMonto);
+  };
+
+  const handleCloseFacturarPorMonto = () => {
+    setShowFacturarPorMonto(false);
+  };
+
   return (
     <>
       <style>{`
@@ -645,7 +625,7 @@ const FacturaForm = () => {
                 }
             `}</style>
       <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
-        <div className="py-8 flex flex-row justify-between px-4 w-full items-baseline">
+        <div className="py-8 flex flex-col  px-4 w-full items-baseline">
           <div className="flex flex-col">
             <h2 className="text-3xl font-bold">Facturación</h2>
             <div className="flex flex-row items-center gap-1">
@@ -703,25 +683,46 @@ const FacturaForm = () => {
               </div>
             ) : null}
           </div>
-          <button
-            onClick={toggleIndividualForm}
-            className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-6"
+          <div className="flex flex-row gap-2 mt-4">
+            <button
+              onClick={toggleFacturarPorMonto}
+              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
             >
-              <path
-                fillRule="evenodd"
-                d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z"
-                clipRule="evenodd"
-              />
-              <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
-            </svg>
-            <p>Individual</p>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-6"
+              >
+                <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 01-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004zM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 01-.921.42z" />
+                <path
+                  fillRule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v.816a3.836 3.836 0 00-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v.841a.75.75 0 001.5 0v-.84a3.836 3.836 0 001.719-.756c.712-.566 1.112-1.35 1.112-2.179 0-.828-.4-1.612-1.112-2.178a3.836 3.836 0 00-1.72-.756V6z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <p>Por Monto</p>
+            </button>
+            <button
+              onClick={toggleIndividualForm}
+              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex items-center py-4 pl-3 pr-4 h-10"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z"
+                  clipRule="evenodd"
+                />
+                <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+              </svg>
+              <p>Individual</p>
+            </button>
+          </div>
         </div>
 
         <div className="w-full">
@@ -1041,6 +1042,16 @@ const FacturaForm = () => {
               </form>
             </div>
           </div>
+        )}
+
+        {/* Modal para facturas por monto*/}
+
+        {showFacturarPorMonto && (
+          <FacturarPorMonto
+            onClose={handleCloseFacturarPorMonto}
+            tokenStatus={tokenStatus}
+            visible={showFacturarPorMonto}
+          />
         )}
       </div>
     </>
