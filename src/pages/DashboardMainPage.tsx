@@ -16,7 +16,7 @@ import {
 } from "../pages";
 import { useRef } from "react";
 import { MonthData } from "./MonthData";
-import RegistroHorario from "./Notificaciones";
+import Notificaciones from "./Notificaciones";
 import { Stock } from "./Stock";
 import RegistroEmpleado from "./Empleados";
 import { GenerateVouchersForm } from "../components/vouchers/GenerateVouchersForm";
@@ -156,7 +156,7 @@ export const DashboardMainPage = () => {
               path="notificaciones"
               element={
                 <PrivateRoutesLayout>
-                  <RegistroHorario />
+                  <Notificaciones />
                 </PrivateRoutesLayout>
               }
             />
@@ -189,14 +189,6 @@ export const DashboardMainPage = () => {
               element={
                 <PrivateRoutesLayout>
                   <ComanderaAutomatizada />
-                </PrivateRoutesLayout>
-              }
-            />
-            <Route
-              path="registroHorario"
-              element={
-                <PrivateRoutesLayout>
-                  <RegistroHorario />
                 </PrivateRoutesLayout>
               }
             />

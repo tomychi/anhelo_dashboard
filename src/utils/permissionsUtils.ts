@@ -71,7 +71,7 @@ export const SYSTEM_FEATURES = [
 
 // Mapeo de características/permisos a rutas (relación 1:1)
 export const featureToRouteMap: PermissionMappings = {
-  Dashboard: ["/dashboard"],
+  Dashboard: ["/dashboard", "/notificaciones"],
   "Facturación automática": ["/facturacion"],
   Operaciones: ["/comanderaAutomatizada"],
   Empleados: ["/empleados"],
