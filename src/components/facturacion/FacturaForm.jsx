@@ -675,7 +675,7 @@ const FacturaForm = () => {
             ) : null}
           </div>
 
-          <div className="flex flex-row  gap-2 pl-4   overflow-x-auto pb-2 mt-4">
+          <div className="flex flex-row  gap-2 px-4   overflow-x-auto mb-2 mt-4">
             <button className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -709,7 +709,7 @@ const FacturaForm = () => {
 
             <button
               onClick={toggleIndividualForm}
-              className="bg-gray-200 gap-2  text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
+              className="bg-gray-200 gap-2 text-black font-bold rounded-full flex-shrink-0 flex items-center px-4  h-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
