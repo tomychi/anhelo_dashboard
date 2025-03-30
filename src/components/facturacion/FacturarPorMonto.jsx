@@ -413,7 +413,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
 
       <div
         ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg  pb-4 pt-10 transition-transform duration-300 touch-none ${
           isAnimating ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -433,27 +433,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
         </div>
 
         <div className="font-coolvetica overflow-hidden flex flex-col w-full">
-          <div className="p-4 flex flex-row justify-between items-center w-full">
-            <h2 className="text-xl font-bold">Facturar por Monto</h2>
-            <button
-              onClick={handleCloseModal}
-              className="bg-gray-100 text-black rounded-full p-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-5 w-5"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-
           <form onSubmit={handleSubmit} className="px-4">
             <div className="space-y-2 mb-4">
               <label className="block text-xs">
@@ -553,7 +532,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               {isGenerating ? (
                 <LoadingPoints color="text-black" />
               ) : (
-                "Generar Ventas"
+                "Ver simulacion"
               )}
             </button>
 
