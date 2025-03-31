@@ -418,7 +418,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           {/* Sección de empleados */}
           <div className="mt-4">
             {empleados.length > 0 ? (
-              <div className="rounded-lg max-h-60 overflow-y-auto">
+              <div className="rounded-lg gap-2 flex flex-col max-h-60 overflow-y-auto">
                 {empleados.map((empleado) => (
                   <div key={empleado.id}>
                     <TogglePermiso
@@ -474,7 +474,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         <button
           onClick={handleSaveAccess}
           disabled={loading}
-          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-3xl outline-none"
         >
           {loading ? (
             <div className="flex justify-center w-full items-center">
@@ -491,7 +491,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         <button
           onClick={handleDeleteKpi}
           disabled={loading}
-          className="text-red-main w-full mt-2 text-4xl h-20 px-4 bg-gray-200 font-bold rounded-lg outline-none"
+          className="text-red-main w-full mt-2 text-4xl h-20 px-4 bg-gray-200 font-bold rounded-3xl outline-none"
         >
           {loading ? (
             <div className="flex justify-center w-full items-center">
