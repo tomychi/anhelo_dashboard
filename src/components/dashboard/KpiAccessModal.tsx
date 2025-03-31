@@ -369,26 +369,32 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         </div>
 
         <div className="flex-col space-y-2 w-full">
-          <h2 className="text-2xl mx-8 text-center font-bold mb-4">
-            Visibilidad de {kpiTitle.toLocaleLowerCase()}
-          </h2>
+          <div className="mb-8">
+            <h2 className="text-2xl mx-8 text-center font-bold mb-4">
+              Visibilidad de {kpiTitle.toLocaleLowerCase()}
+            </h2>
 
-          {/* Toggle para mostrar/ocultar modificadores */}
-          <div className="flex items-center justify-between mb-4 p-2 bg-gray-50 rounded-lg">
-            <span className="text-sm font-medium">
-              Mostrar modificadores de valores
-            </span>
+            {/* Toggle para mostrar/ocultar modificadores */}
             <div
-              className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-                showModifiers ? "bg-black" : "bg-gray-200"
-              }`}
               onClick={() => setShowModifiers(!showModifiers)}
+              className="flex items-center w-fit flex-row px-4 justify-center gap-2   p-2 bg-gray-200 rounded-full"
             >
-              <div
-                className={`bg-gray-100 w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                  showModifiers ? "translate-x-6" : ""
-                }`}
-              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-6"
+              >
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span className="text-sm font-medium">
+                Modificadores de valores
+              </span>
             </div>
           </div>
 
@@ -416,36 +422,34 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           </div>
 
           {/* Sección de empleados */}
-          <div className="mt-4">
-            {empleados.length > 0 ? (
-              <div className="rounded-lg gap-2 flex flex-col max-h-60 overflow-y-auto">
-                {empleados.map((empleado) => (
-                  <div key={empleado.id}>
-                    <TogglePermiso
-                      label={empleado.datos?.nombre || "Sin nombre"}
-                      isOn={accessToggles[empleado.id] || false}
-                      onToggle={() => handleToggleAccess(empleado.id)}
-                    />
+          {empleados.length > 0 ? (
+            <div className="rounded-lg gap-2 flex flex-col max-h-60 overflow-y-auto">
+              {empleados.map((empleado) => (
+                <div key={empleado.id}>
+                  <TogglePermiso
+                    label={empleado.datos?.nombre || "Sin nombre"}
+                    isOn={accessToggles[empleado.id] || false}
+                    onToggle={() => handleToggleAccess(empleado.id)}
+                  />
 
-                    {/* Modificador para el empleado si tiene acceso */}
-                    {showModifiers && accessToggles[empleado.id] && (
-                      <ModifierInput
-                        userId={empleado.id}
-                        userName="Valor personalizado"
-                        value={modifiers[empleado.id] || 1}
-                        onChange={handleModifierChange}
-                        disabled={!accessToggles[empleado.id]}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 rounded-lg text-center text-gray-400 text-xs">
-                No hay empleados activos
-              </div>
-            )}
-          </div>
+                  {/* Modificador para el empleado si tiene acceso */}
+                  {showModifiers && accessToggles[empleado.id] && (
+                    <ModifierInput
+                      userId={empleado.id}
+                      userName="Valor personalizado"
+                      value={modifiers[empleado.id] || 1}
+                      onChange={handleModifierChange}
+                      disabled={!accessToggles[empleado.id]}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 rounded-lg text-center text-gray-400 text-xs">
+              No hay empleados activos
+            </div>
+          )}
 
           {/* Mensaje explicativo de modificadores */}
           {showModifiers && (
@@ -471,6 +475,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           )}
         </div>
 
+        {/* actualizar */}
         <button
           onClick={handleSaveAccess}
           disabled={loading}
@@ -488,6 +493,8 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
             "Actualizar"
           )}
         </button>
+
+        {/* eliminar */}
         <button
           onClick={handleDeleteKpi}
           disabled={loading}
