@@ -236,38 +236,6 @@ export const CrearEmpresa: React.FC<{}> = () => {
   const [loading, setLoading] = useState(false);
 
   // Features disponibles
-  const features = [
-    {
-      id: "feature_dashboard",
-      name: "Dashboard",
-      description: "Visualiza todas tus métricas en un solo lugar",
-    },
-    {
-      id: "feature_empleados",
-      name: "Gestión de empleados",
-      description: "Administra la información de tu equipo",
-    },
-    {
-      id: "feature_ventas",
-      name: "Registro de ventas",
-      description: "Controla tus ingresos y transacciones",
-    },
-    {
-      id: "feature_inventario",
-      name: "Control de inventario",
-      description: "Maneja tu stock y productos",
-    },
-    {
-      id: "feature_finanzas",
-      name: "Finanzas",
-      description: "Administra tus gastos e ingresos",
-    },
-    {
-      id: "feature_reportes",
-      name: "Reportes",
-      description: "Análisis detallado de tu negocio",
-    },
-  ];
 
   const toggleFeature = (productTitle) => {
     // Si intenta deseleccionar Dashboard, mostrar notificación y no hacer nada
