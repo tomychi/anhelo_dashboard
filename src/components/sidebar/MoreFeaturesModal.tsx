@@ -295,7 +295,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
       <div className="mt-4 flex-col w-full font-coolvetica flex flex-col ">
         {/* Sección de funcionalidades */}
         <div className="">
-          <h2 className="text-2xl mx-4 my-8 text-center font-bold">
+          <h2 className="text-xl mx-4 my-8 text-center font-bold">
             Features disponibles
           </h2>
 
