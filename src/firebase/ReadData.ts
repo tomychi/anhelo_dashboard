@@ -315,7 +315,7 @@ export const eliminarDocumento = async (
     }
 
     // Determinar si es ANHELO basado en el nombre de la empresa
-    const isAnhelo = empresaNombre === "ANHELO";
+    const isAnhelo = empresaId === "8497d9a8-b474-41d8-86a9-43a9454927c1";
 
     console.log(
       `Eliminando documento. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
@@ -421,7 +421,7 @@ export const ReadDataForDateRange = <T>(
       }
 
       // Determinar si es ANHELO basado en el nombre de la empresa
-      const isAnhelo = empresaNombre === "ANHELO";
+      const isAnhelo = empresaId === "8497d9a8-b474-41d8-86a9-43a9454927c1";
 
       console.log(
         `Leyendo datos de ${dbName}. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
