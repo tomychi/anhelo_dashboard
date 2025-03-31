@@ -17,6 +17,36 @@ import {
   EmpresaProps,
 } from "../../firebase/ClientesAbsolute";
 
+// Función para aplicar el modificador al valor (reutilizada de CardInfo)
+const applyModifier = (value, modifier = 1) => {
+  if (modifier === 1) return value;
+
+  if (typeof value === "number") {
+    return Math.round(value * modifier);
+  } else if (typeof value === "string") {
+    if (value.includes("$")) {
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        const numStr = numMatch[0];
+        const num = parseFloat(numStr.replace(/,/g, ""));
+        if (!isNaN(num)) {
+          const modifiedNum = Math.round(num * modifier);
+          const prefix = value.substring(0, value.indexOf(numStr));
+          const formattedNum = modifiedNum.toLocaleString("es-AR");
+          return `${prefix}${formattedNum}`;
+        }
+      }
+    } else {
+      const num = parseFloat(value.replace(/,/g, ""));
+      if (!isNaN(num)) {
+        const modifiedNum = Math.round(num * modifier);
+        return modifiedNum.toString();
+      }
+    }
+  }
+  return value;
+};
+
 const KPILineChart = ({ orders }) => {
   const [selectedKPIs, setSelectedKPIs] = useState(["productosVendidos"]);
   const [chartData, setChartData] = useState([]);
@@ -24,7 +54,6 @@ const KPILineChart = ({ orders }) => {
   const [kpiConfig, setKpiConfig] = useState({});
   const [kpiConfigLoaded, setKpiConfigLoaded] = useState(false);
 
-  // Obtener neto del estado global y datos de autenticación
   const { neto, facturacionTotal } = useSelector(
     (state: RootState) => state.data
   );
@@ -32,7 +61,6 @@ const KPILineChart = ({ orders }) => {
   const auth = useSelector((state: RootState) => state.auth);
   const tipoUsuario = auth?.tipoUsuario;
 
-  // Obtener el ID del usuario actual
   const usuarioId =
     tipoUsuario === "empresa"
       ? (auth?.usuario as EmpresaProps)?.id || ""
@@ -40,7 +68,6 @@ const KPILineChart = ({ orders }) => {
         ? (auth?.usuario as EmpleadoProps)?.id || ""
         : "";
 
-  // Obtener el ID de la empresa
   const empresaId =
     tipoUsuario === "empresa"
       ? usuarioId
@@ -48,7 +75,6 @@ const KPILineChart = ({ orders }) => {
         ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
         : "";
 
-  // Cargar configuración de KPIs
   useEffect(() => {
     const fetchKpiConfig = async () => {
       if (!empresaId) return;
@@ -59,14 +85,13 @@ const KPILineChart = ({ orders }) => {
         setKpiConfigLoaded(true);
       } catch (error) {
         console.error("Error al cargar configuración de KPIs:", error);
-        setKpiConfigLoaded(true); // Marcar como cargado incluso en caso de error
+        setKpiConfigLoaded(true);
       }
     };
 
     fetchKpiConfig();
   }, [empresaId]);
 
-  // Nueva función para contar productos considerando 2x1
   const contarProductos = (detallePedido) => {
     return detallePedido.reduce((total, item) => {
       const cantidad = item.quantity || 1;
@@ -76,7 +101,7 @@ const KPILineChart = ({ orders }) => {
   };
 
   useEffect(() => {
-    if (orders.length === 0) return;
+    if (orders.length === 0 || !kpiConfigLoaded) return;
 
     const ordersByDate = orders.reduce((acc, order) => {
       if (!order.fecha) return acc;
@@ -88,23 +113,20 @@ const KPILineChart = ({ orders }) => {
 
     const dailyData = Object.entries(ordersByDate).map(
       ([dateStr, dailyOrders]) => {
-        // Separar órdenes activas y canceladas
         const activeOrders = dailyOrders.filter((order) => !order.canceled);
         const canceledOrders = dailyOrders.filter((order) => order.canceled);
 
-        // Facturación bruta activa
+        // Cálculos originales
         const facturacionBrutaActiva = activeOrders.reduce(
           (sum, order) => sum + (Number(order.total) || 0),
           0
         );
 
-        // Facturación bruta cancelada
         const facturacionBrutaCancelada = canceledOrders.reduce(
           (sum, order) => sum + (Number(order.total) || 0),
           0
         );
 
-        // Calcular costos de órdenes activas
         const costosActivos = activeOrders.reduce((total, order) => {
           return (
             total +
@@ -114,7 +136,6 @@ const KPILineChart = ({ orders }) => {
           );
         }, 0);
 
-        // Calcular costos de órdenes canceladas
         const costosCancelados = canceledOrders.reduce((total, order) => {
           return (
             total +
@@ -124,7 +145,6 @@ const KPILineChart = ({ orders }) => {
           );
         }, 0);
 
-        // Calcular netos
         const facturacionNetaActiva = facturacionBrutaActiva - costosActivos;
         const facturacionNetaCancelada =
           facturacionBrutaCancelada - costosCancelados;
@@ -136,7 +156,6 @@ const KPILineChart = ({ orders }) => {
           0
         );
 
-        // Customer Success
         const pedidosDemorados = activeOrders.filter((order) => {
           if (!order.tiempoEntregado || !order.hora) return false;
           const horaEntrega = order.tiempoEntregado.split(":").map(Number);
@@ -153,7 +172,6 @@ const KPILineChart = ({ orders }) => {
             ? Math.ceil(100 - (pedidosDemorados * 100) / activeOrders.length)
             : 0;
 
-        // Cálculo de tiempos
         const tiemposCoccion = activeOrders
           .filter((order) => order.tiempoElaborado)
           .map((order) => {
@@ -185,13 +203,16 @@ const KPILineChart = ({ orders }) => {
               tiemposEntrega.length
             : 0;
 
-        // Cálculo de KMs
         const kmRecorridos = activeOrders.reduce((total, order) => {
           if (!order.map || order.map.length !== 2) return total;
           return total + 5; // Ejemplo simplificado
         }, 0);
 
-        // Calcular ratings promedios diarios
+        const ticketPromedio =
+          activeOrders.length > 0
+            ? facturacionBrutaActiva / activeOrders.length
+            : 0;
+
         const presentacionRatings = activeOrders
           .filter((order) => order.rating?.presentacion)
           .map((order) => order.rating.presentacion);
@@ -212,24 +233,51 @@ const KPILineChart = ({ orders }) => {
               paginaRatings.length
             : 0;
 
+        // Aplicar modificadores según el usuario actual
+        const kpiMapping = {
+          facturacionBrutaActiva: "bruto",
+          facturacionNetaActiva: "neto",
+          facturacionBrutaCancelada: "canceledAmount",
+          facturacionNetaCancelada: "canceledNetAmount",
+          productosVendidos: "productos",
+          ventasDelivery: "delivery",
+          customerSuccess: "success",
+          tiempoCoccion: "coccion",
+          tiempoEntregaTotal: "entrega",
+          kmRecorridos: "km",
+          ticketPromedio: "ticket",
+          ratingPresentacion: "presentacion",
+          ratingPagina: "pagina",
+        };
+
+        const modifiedData = {};
+        Object.keys(kpiMapping).forEach((kpiId) => {
+          const configKpiKey = kpiMapping[kpiId];
+          const kpiData = kpiConfig[configKpiKey] || { modifiers: {} };
+          const modifier = kpiData.modifiers[usuarioId] || 1;
+
+          const originalValue = {
+            facturacionBrutaActiva,
+            facturacionNetaActiva,
+            facturacionBrutaCancelada,
+            facturacionNetaCancelada,
+            productosVendidos,
+            ventasDelivery: activeOrders.length,
+            customerSuccess,
+            tiempoCoccion,
+            tiempoEntregaTotal,
+            kmRecorridos,
+            ticketPromedio,
+            ratingPresentacion: avgPresentacion,
+            ratingPagina: avgPagina,
+          }[kpiId];
+
+          modifiedData[kpiId] = applyModifier(originalValue, modifier);
+        });
+
         return {
           fecha: dateStr,
-          facturacionBrutaActiva,
-          facturacionNetaActiva,
-          facturacionBrutaCancelada,
-          facturacionNetaCancelada,
-          productosVendidos,
-          ventasDelivery: activeOrders.length,
-          customerSuccess,
-          tiempoCoccion,
-          tiempoEntregaTotal,
-          kmRecorridos,
-          ticketPromedio:
-            activeOrders.length > 0
-              ? facturacionBrutaActiva / activeOrders.length
-              : 0,
-          ratingPresentacion: avgPresentacion,
-          ratingPagina: avgPagina,
+          ...modifiedData,
         };
       }
     );
@@ -243,9 +291,8 @@ const KPILineChart = ({ orders }) => {
     });
 
     setChartData(sortedData);
-  }, [orders, neto, facturacionTotal]);
+  }, [orders, neto, facturacionTotal, kpiConfig, kpiConfigLoaded, usuarioId]);
 
-  // Mapeo de IDs de KPIs del gráfico a IDs de KPIs en la configuración de permisos
   const kpiMapping = {
     facturacionBrutaActiva: "bruto",
     facturacionNetaActiva: "neto",
@@ -266,39 +313,37 @@ const KPILineChart = ({ orders }) => {
     {
       id: "facturacionBrutaActiva",
       name: "Facturación bruta",
-      color: "#4F46E5", // Indigo-600 principal
+      color: "#4F46E5",
     },
-    { id: "facturacionNetaActiva", name: "Facturación neta", color: "#818CF8" }, // Indigo-400
+    { id: "facturacionNetaActiva", name: "Facturación neta", color: "#818CF8" },
     {
       id: "facturacionBrutaCancelada",
       name: "Facturación bruta cancelada",
-      color: "#C7D2FE", // Indigo-200
+      color: "#C7D2FE",
     },
     {
       id: "facturacionNetaCancelada",
       name: "Facturación neta cancelada",
-      color: "#312E81", // Indigo-900
+      color: "#312E81",
     },
-    { id: "productosVendidos", name: "Productos vendidos", color: "#6366F1" }, // Indigo-500
-    { id: "ventasDelivery", name: "Ventas delivery", color: "#4338CA" }, // Indigo-700
-    { id: "customerSuccess", name: "Customer success", color: "#A78BFA" }, // Violet-400 - complementario
-    { id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#8B5CF6" }, // Violet-500 - complementario
+    { id: "productosVendidos", name: "Productos vendidos", color: "#6366F1" },
+    { id: "ventasDelivery", name: "Ventas delivery", color: "#4338CA" },
+    { id: "customerSuccess", name: "Customer success", color: "#A78BFA" },
+    { id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#8B5CF6" },
     {
       id: "tiempoEntregaTotal",
       name: "Tiempo entrega total",
-      color: "#7C3AED", // Violet-600 - complementario
+      color: "#7C3AED",
     },
-    { id: "kmRecorridos", name: "KMs recorridos", color: "#6D28D9" }, // Violet-700 - complementario
-    { id: "ticketPromedio", name: "Ticket promedio", color: "#5B21B6" }, // Violet-800 - complementario
-    { id: "ratingPresentacion", name: "Rating Presentación", color: "#2563EB" }, // Blue-600 - análogo
-    { id: "ratingPagina", name: "Rating Página", color: "#1D4ED8" }, // Blue-700 - análogo
+    { id: "kmRecorridos", name: "KMs recorridos", color: "#6D28D9" },
+    { id: "ticketPromedio", name: "Ticket promedio", color: "#5B21B6" },
+    { id: "ratingPresentacion", name: "Rating Presentación", color: "#2563EB" },
+    { id: "ratingPagina", name: "Rating Página", color: "#1D4ED8" },
   ];
 
-  // Filtrar los KPIs según los permisos del usuario
   useEffect(() => {
     if (!kpiConfigLoaded) return;
 
-    // Filtrar los KPIs a los que el usuario tiene acceso
     const filteredKPIs = allKPIOptions.filter((kpi) => {
       const configKpiKey = kpiMapping[kpi.id];
       return hasKpiPermission(configKpiKey, kpiConfig, usuarioId);
@@ -306,17 +351,13 @@ const KPILineChart = ({ orders }) => {
 
     setAvailableKPIs(filteredKPIs);
 
-    // Resetear los KPIs seleccionados
     setSelectedKPIs((prevSelected) => {
       const newSelected = prevSelected.filter((id) =>
         filteredKPIs.some((kpi) => kpi.id === id)
       );
-
-      // Si no queda ningún KPI seleccionado, seleccionar el primero disponible
       if (newSelected.length === 0 && filteredKPIs.length > 0) {
         return [filteredKPIs[0].id];
       }
-
       return newSelected;
     });
   }, [kpiConfigLoaded, kpiConfig, usuarioId]);
@@ -329,7 +370,6 @@ const KPILineChart = ({ orders }) => {
     );
   };
 
-  // Si la configuración de KPIs no se ha cargado, mostrar un indicador de carga
   if (!kpiConfigLoaded) {
     return (
       <div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2 h-[250px] flex items-center justify-center">
@@ -338,7 +378,6 @@ const KPILineChart = ({ orders }) => {
     );
   }
 
-  // Si no hay KPIs disponibles, mostrar un mensaje
   if (availableKPIs.length === 0) {
     return (
       <div className="bg-white mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2 h-[250px] flex items-center justify-center">
