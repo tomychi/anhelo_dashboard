@@ -429,6 +429,8 @@ export const Sidebar = ({ scrollContainerRef }) => {
     if (isProfileOpen) {
       setIsProfileOpen(false);
     }
+    // Reset feature modal state when toggling the menu
+    setIsFeatureModalOpen(false);
     setIsMenuOpen(!isMenuOpen);
   };
 

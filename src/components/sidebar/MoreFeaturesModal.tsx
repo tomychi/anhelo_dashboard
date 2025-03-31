@@ -138,11 +138,11 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
         )}
       </div>
 
-      <div className="mx-4 mb-12">
+      <div className="mx-4 mb-8">
         <button
           onClick={handleAddFeatures}
           disabled={loading}
-          className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-3xl font-coolvetica outline-none"
+          className="text-gray-100 w-full mt-4 text-4xl h-20 px-4 bg-black font-bold rounded-3xl font-coolvetica outline-none"
         >
           {loading ? (
             <div className="flex justify-center w-full items-center">
@@ -156,7 +156,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
             "Agregar"
           )}
         </button>
-        <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4 mb-8">
+        <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4 ">
           Ⓡ 2023. Absolute, Soluciones Empresariales.
         </p>
       </div>
