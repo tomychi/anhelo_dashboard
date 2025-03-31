@@ -31,6 +31,10 @@ const FacturaForm = () => {
   const [facturasEmitidas, setFacturasEmitidas] = useState([]);
   const [isLoadingFacturas, setIsLoadingFacturas] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [modalError, setModalError] = useState(null);
+  const [modalRespuesta, setModalRespuesta] = useState(null);
+  const [isLoadingModalSubmit, setIsLoadingModalSubmit] = useState(false);
+
   const [activeButton, setActiveButton] = useState("por-pedidos");
 
   const { valueDate } = useSelector((state) => state.data);
@@ -257,10 +261,11 @@ const FacturaForm = () => {
     }
   };
 
-  const handleSubmitSingle = async (e) => {
+  const handleModalSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setRespuesta(null);
+    setModalError(null);
+    setModalRespuesta(null);
+    setIsLoadingModalSubmit(true);
     try {
       const response = await fetch(`${BASE_URL}/api/afip/factura`, {
         method: "POST",
@@ -279,7 +284,7 @@ const FacturaForm = () => {
       }
 
       if (data.success && data.data.resultado === "A") {
-        setRespuesta({
+        setModalRespuesta({
           cae: data.data.cae,
           fechaVencimiento: data.data.caeFchVto,
           cbteDesde: data.data.cbteDesde,
@@ -320,11 +325,13 @@ const FacturaForm = () => {
               data.data?.observaciones?.Msg ||
               data.message ||
               "Error desconocido");
-        setError(errorMsg);
+        setModalError(errorMsg);
       }
     } catch (error) {
-      setError(error.message || "Error de conexión con el servidor");
-      console.error("Error en handleSubmitSingle:", error);
+      setModalError(error.message || "Error de conexión con el servidor");
+      console.error("Error en handleModalSubmit:", error);
+    } finally {
+      setIsLoadingModalSubmit(false);
     }
   };
 
@@ -504,6 +511,9 @@ const FacturaForm = () => {
     setShowIndividualForm(false);
     setIsAnimating(false);
     setActiveButton("por-pedidos");
+    // Limpiar los estados del modal al cerrarlo
+    setModalError(null);
+    setModalRespuesta(null);
   };
 
   const filteredFacturas = facturasEmitidas.filter(
@@ -797,6 +807,7 @@ const FacturaForm = () => {
             <p className="text-red-500 text-sm">{error}</p>
           </div>
         )}
+
         {respuesta && (
           <div className=" p-4 border-l-4 w-full ml-8 mb-8 border-black">
             <h3 className="text-black text-xl font-bold mb-6">Resultados</h3>
@@ -1002,76 +1013,120 @@ const FacturaForm = () => {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmitSingle} className="mt-4">
-                <select
-                  name="tipoFactura"
-                  value={formData.tipoFactura}
-                  onChange={handleChange}
-                  className="w-full text-black bg-transparent text-xs border-gray-200  h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
-                  required
-                >
-                  <option value="" disabled>
-                    Tipo de Factura
-                  </option>
-                  <option value="A">Factura A</option>
-                  <option value="B">Factura B</option>
-                  <option value="C">Factura C</option>
-                </select>
-                <input
-                  type="text"
-                  name="cuit"
-                  value={formData.cuit}
-                  onChange={handleChange}
-                  className="w-full text-black bg-transparent rounded-none text-xs border-gray-200  h-10 px-4 border-x border-t transition-all"
-                  readOnly
-                  placeholder="CUIT Emisor"
-                />
-                <input
-                  type="number"
-                  name="puntoVenta"
-                  value={formData.puntoVenta}
-                  onChange={handleChange}
-                  className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-200  px-4 border-x border-t transition-all"
-                  required
-                  placeholder="Punto de Venta"
-                />
-                <input
-                  type="number"
-                  name="importeTrib"
-                  value={formData.importeTrib}
-                  onChange={handleChange}
-                  className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-200  transition-all"
-                  step="0.01"
-                  min="0"
-                  placeholder="Tasa Municipal"
-                />
-                <input
-                  type="number"
-                  name="importeTotal"
-                  value={formData.importeTotal}
-                  onChange={handleChange}
-                  className="w-full border-gray-200  rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
-                  step="0.01"
-                  min="0"
-                  required
-                  placeholder="Importe Total"
-                />
-                <input
-                  type="number"
-                  name="importeNeto"
-                  value={formData.importeNeto}
-                  className="w-full border-gray-200  bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
-                  readOnly
-                  placeholder="Importe Neto"
-                />
-                <button
-                  type="submit"
-                  disabled={!tokenStatus?.valid}
-                  className="w-full bg-black h-20  mt-4 rounded-3xl"
-                >
-                  <p className="text-gray-100 font-bold text-4xl">Enviar</p>
-                </button>
-              </form>
+              {/* Mostrar resultados o formulario basado en si hay respuesta modal */}
+              {modalRespuesta ? (
+                // Solo mostrar los resultados
+                <div>
+                  <div className="p-4 border-l-4 w-full mt-4 mb-4 border-black">
+                    <h3 className="text-black text-xl font-bold mb-6">
+                      Resultados
+                    </h3>
+
+                    <div className="space-y-1 text-gray-700 text-sm">
+                      <p>
+                        CAE:{" "}
+                        <span className="text-black">{modalRespuesta.cae}</span>
+                      </p>
+                      <p>
+                        Número:{" "}
+                        <span className="text-black">
+                          {modalRespuesta.cbteDesde}
+                        </span>
+                      </p>
+                      <p>
+                        Vencimiento:{" "}
+                        <span className="text-black">
+                          {modalRespuesta.fechaVencimiento}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Mostrar el formulario si no hay respuesta
+                <form onSubmit={handleModalSubmit} className="mt-4">
+                  <select
+                    name="tipoFactura"
+                    value={formData.tipoFactura}
+                    onChange={handleChange}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+                    required
+                  >
+                    <option value="" disabled>
+                      Tipo de Factura
+                    </option>
+                    <option value="A">Factura A</option>
+                    <option value="B">Factura B</option>
+                    <option value="C">Factura C</option>
+                  </select>
+                  <input
+                    type="text"
+                    name="cuit"
+                    value={formData.cuit}
+                    onChange={handleChange}
+                    className="w-full text-black bg-transparent rounded-none text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+                    readOnly
+                    placeholder="CUIT Emisor"
+                  />
+                  <input
+                    type="number"
+                    name="puntoVenta"
+                    value={formData.puntoVenta}
+                    onChange={handleChange}
+                    className="w-full text-black text-xs rounded-none bg-transparent h-10 border-gray-200 px-4 border-x border-t transition-all"
+                    required
+                    placeholder="Punto de Venta"
+                  />
+                  <input
+                    type="number"
+                    name="importeTrib"
+                    value={formData.importeTrib}
+                    onChange={handleChange}
+                    className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-200 transition-all"
+                    step="0.01"
+                    min="0"
+                    placeholder="Tasa Municipal"
+                  />
+                  <input
+                    type="number"
+                    name="importeTotal"
+                    value={formData.importeTotal}
+                    onChange={handleChange}
+                    className="w-full border-gray-200 rounded-none bg-transparent text-black text-xs border-x border-t h-10 px-4 transition-all"
+                    step="0.01"
+                    min="0"
+                    required
+                    placeholder="Importe Total"
+                  />
+                  <input
+                    type="number"
+                    name="importeNeto"
+                    value={formData.importeNeto}
+                    className="w-full border-gray-200 bg-transparent text-black text-xs border-x border-b border-t h-10 px-4 rounded-b-3xl"
+                    readOnly
+                    placeholder="Importe Neto"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!tokenStatus?.valid || isLoadingModalSubmit}
+                    className="w-full bg-black h-20 mt-4 rounded-3xl"
+                  >
+                    <p className="text-gray-100 font-bold text-4xl">
+                      {isLoadingModalSubmit ? (
+                        <LoadingPoints color="text-gray-100" />
+                      ) : (
+                        "Enviar"
+                      )}
+                    </p>
+                  </button>
+                </form>
+              )}
+
+              {modalError && (
+                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
+                  <p className="text-red-500 text-sm">{modalError}</p>
+                </div>
+              )}
             </div>
           </div>
         )}
