@@ -414,6 +414,21 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
               <span className="text-sm font-medium">Alteraciones</span>
             </div>
+            {/* Mensaje explicativo de modificadores */}
+            {showModifiers && (
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 text-xs">
+                <p className="text-blue-700">
+                  Los modificadores permiten personalizar los valores mostrados
+                  a cada usuario. Un modificador de 1 muestra el valor real. Un
+                  modificador de 2 duplicará el valor. Un modificador de 0.5
+                  mostrará la mitad del valor real.
+                </p>
+                <p className="text-blue-700 mt-2 font-bold">
+                  Nota: Los valores modificados son solo visuales y no afectan
+                  los datos reales.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Sección para el dueño/empresario */}
@@ -466,22 +481,6 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           ) : (
             <div className="p-4 rounded-lg text-center text-gray-400 text-xs">
               No hay empleados activos
-            </div>
-          )}
-
-          {/* Mensaje explicativo de modificadores */}
-          {showModifiers && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 text-xs">
-              <p className="text-blue-700">
-                Los modificadores permiten personalizar los valores mostrados a
-                cada usuario. Un modificador de 1 muestra el valor real. Un
-                modificador de 2 duplicará el valor. Un modificador de 0.5
-                mostrará la mitad del valor real.
-              </p>
-              <p className="text-blue-700 mt-2 font-bold">
-                Nota: Los valores modificados son solo visuales y no afectan los
-                datos reales.
-              </p>
             </div>
           )}
 
