@@ -1,6 +1,7 @@
 // components/MoreFeaturesModal.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SYSTEM_FEATURES } from "../../utils/permissionsUtils";
+import arrowIcon from "../../assets/arrowIcon.png";
 
 interface MoreFeaturesModalProps {
   isOpen: boolean;
@@ -23,14 +24,64 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
 
+  // Estados para el indicador de scroll
+  const [isScrollNeeded, setIsScrollNeeded] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
+  const [isNearTop, setIsNearTop] = useState(true);
+  const featuresScrollContainerRef = useRef<HTMLDivElement>(null);
+
   // Inicializar los features seleccionados al abrir el modal
   useEffect(() => {
     if (isOpen) {
       // Iniciar con los features que ya tiene el usuario
       setSelectedFeatures([...currentFeatures]);
       setCurrentTranslate(0);
+
+      // Reset scroll indicators
+      setIsScrollNeeded(false);
+      setIsNearBottom(false);
+      setIsNearTop(true);
     }
   }, [isOpen, currentFeatures]);
+
+  // Check if scrolling is needed for features list
+  useEffect(() => {
+    if (isOpen && featuresScrollContainerRef.current) {
+      const checkIfScrollNeeded = () => {
+        const container = featuresScrollContainerRef.current;
+        if (container) {
+          // If content is taller than container, scroll is needed
+          setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+        }
+      };
+
+      // Check immediately when modal opens
+      checkIfScrollNeeded();
+
+      // Also check when window resizes
+      window.addEventListener("resize", checkIfScrollNeeded);
+
+      return () => {
+        window.removeEventListener("resize", checkIfScrollNeeded);
+      };
+    }
+  }, [isOpen, SYSTEM_FEATURES]);
+
+  // Handle scroll event to detect when near bottom or top
+  const handleFeaturesScroll = () => {
+    const container = featuresScrollContainerRef.current;
+    if (container) {
+      const scrollBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      const scrollTop = container.scrollTop;
+
+      // Consider "near bottom" if we're less than 20px from the end
+      setIsNearBottom(scrollBottom < 20);
+
+      // Consider "near top" if we're less than 20px from the top
+      setIsNearTop(scrollTop < 20);
+    }
+  };
 
   const handleDragEnd = () => {
     if (currentTranslate > 200) {
@@ -299,53 +350,89 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
             Features disponibles
           </h2>
 
-          <div className="mx-4  flex flex-col gap-2 max-h-[50vh] overflow-y-auto">
-            {SYSTEM_FEATURES.map((feature) => {
-              const isAlreadyActive = currentFeatures.includes(feature.id);
-              return (
-                <div
-                  key={feature.id}
-                  onClick={() => toggleFeature(feature.id)}
-                  className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
-                    selectedFeatures.includes(feature.id)
-                      ? "bg-black text-gray-100"
-                      : "bg-gray-100"
-                  } ${isAlreadyActive ? "relative" : ""}`}
-                >
-                  {/* Icono izquierdo */}
-                  <div
-                    className={`${
-                      selectedFeatures.includes(feature.id)
-                        ? "text-gray-100"
-                        : "text-black"
-                    }`}
-                  >
-                    {getFeatureIcon(feature.id)}
+          <div className="relative">
+            {/* Top scroll indicator - only shown when scrolled down and not at top */}
+            {isScrollNeeded && !isNearTop && (
+              <div className="absolute top-0 left-0 right-0 z-10 flex justify-center pointer-events-none">
+                <div className="bg-gradient-to-b from-gray-100 to-transparent h-20 w-full flex items-start justify-center pt-1">
+                  <div className="animate-bounce">
+                    <img
+                      src={arrowIcon}
+                      className="h-2 transform -rotate-90 opacity-30"
+                      alt="Desplazar hacia arriba"
+                    />
                   </div>
+                </div>
+              </div>
+            )}
 
-                  {/* Información del feature */}
-                  <div className="flex flex-col">
-                    <h3 className="font-medium text-lg">{feature.title}</h3>
-                    <p
-                      className={`text-xs font-light ${
+            <div
+              ref={featuresScrollContainerRef}
+              className="mx-4 flex flex-col gap-2 max-h-[50vh] overflow-y-auto"
+              onScroll={handleFeaturesScroll}
+            >
+              {SYSTEM_FEATURES.map((feature) => {
+                const isAlreadyActive = currentFeatures.includes(feature.id);
+                return (
+                  <div
+                    key={feature.id}
+                    onClick={() => toggleFeature(feature.id)}
+                    className={`w-full p-4 h-30 rounded-3xl border border-gray-200 items-center flex flex-row gap-4 cursor-pointer transition-colors ${
+                      selectedFeatures.includes(feature.id)
+                        ? "bg-black text-gray-100"
+                        : "bg-gray-100"
+                    } ${isAlreadyActive ? "relative" : ""}`}
+                  >
+                    {/* Icono izquierdo */}
+                    <div
+                      className={`${
                         selectedFeatures.includes(feature.id)
-                          ? "text-gray-200"
-                          : "text-gray-400"
+                          ? "text-gray-100"
+                          : "text-black"
                       }`}
                     >
-                      {feature.description}
-                    </p>
-                  </div>
-
-                  {/* Indicador para features ya activos */}
-                  {isAlreadyActive && (
-                    <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
-                      Activo
+                      {getFeatureIcon(feature.id)}
                     </div>
-                  )}
+
+                    {/* Información del feature */}
+                    <div className="flex flex-col">
+                      <h3 className="font-medium text-lg">{feature.title}</h3>
+                      <p
+                        className={`text-xs font-light ${
+                          selectedFeatures.includes(feature.id)
+                            ? "text-gray-200"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {feature.description}
+                      </p>
+                    </div>
+
+                    {/* Indicador para features ya activos */}
+                    {isAlreadyActive && (
+                      <div className="absolute top-2 right-2 bg-black text-white text-xs px-2 py-1 rounded-full">
+                        Activo
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom scroll indicator - only shown when scroll is needed and not at bottom */}
+            {isScrollNeeded && !isNearBottom && (
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+                <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                  <div className="animate-bounce">
+                    <img
+                      src={arrowIcon}
+                      className="h-2 transform rotate-90 opacity-30"
+                      alt="Desplazar para ver más"
+                    />
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         </div>
 
