@@ -16,6 +16,8 @@ import {
   EmpleadoProps,
   EmpresaProps,
 } from "../../firebase/ClientesAbsolute";
+import { convertDateFormat } from "../../helpers/dateToday";
+import { cleanPhoneNumber } from "../../helpers/orderByweeks";
 
 // Función para aplicar el modificador al valor
 const applyModifier = (value, modifier = 1) => {
@@ -200,18 +202,57 @@ const KPILineChart = ({ orders }) => {
     const startDate = valueDate?.startDate
       ? new Date(valueDate.startDate)
       : new Date();
-    const customersByDate = telefonos.reduce((acc, telefono) => {
-      const customerOrders = orders.filter((o) => o.telefono === telefono);
-      const firstOrder = customerOrders.reduce(
-        (earliest, curr) =>
-          new Date(curr.fecha) < new Date(earliest.fecha) ? curr : earliest,
-        customerOrders[0]
-      );
-      if (firstOrder && firstOrder.fecha === telefono) {
-        acc[telefono] = (acc[telefono] || 0) + 1;
+
+    console.log("startDate:", startDate);
+    console.log("Total telefonos:", telefonos.length);
+    console.log("Total orders:", orders.length);
+
+    // Crear un mapa para optimizar la búsqueda de teléfonos anteriores
+    // Este mapa contiene todos los teléfonos que realizaron pedidos ANTES de startDate
+    const existingPhoneMap = new Map();
+
+    telefonos.forEach((cliente) => {
+      try {
+        // Si el teléfono ya tiene un registro de fecha anterior al startDate
+        const clienteDate = new Date(convertDateFormat(cliente.fecha));
+        const phoneClean = cleanPhoneNumber(cliente.telefono);
+
+        if (clienteDate < startDate) {
+          existingPhoneMap.set(phoneClean, true);
+        }
+      } catch (error) {
+        console.error("Error procesando teléfono:", cliente, error);
       }
-      return acc;
-    }, {});
+    });
+
+    console.log(
+      "Teléfonos existentes antes de startDate:",
+      existingPhoneMap.size
+    );
+
+    // Procesar órdenes por fecha para contar nuevos clientes
+    const customersByDate = {};
+
+    // Recorrer todas las órdenes agrupadas por fecha
+    Object.entries(ordersByDate).forEach(([dateStr, dailyOrders]) => {
+      // Para esta fecha, contar cuántos clientes son nuevos
+      const newCustomersForDate = dailyOrders.filter((order) => {
+        if (!order.telefono) return false;
+
+        const orderPhone = cleanPhoneNumber(order.telefono);
+        // Un cliente es nuevo si NO está en el mapa de teléfonos existentes
+        return !existingPhoneMap.has(orderPhone);
+      });
+
+      // Guardar el conteo para esta fecha
+      customersByDate[dateStr] = newCustomersForDate.length;
+      console.log(
+        "Fecha:",
+        dateStr,
+        "Nuevos clientes:",
+        newCustomersForDate.length
+      );
+    });
 
     const dailyData = Object.entries(ordersByDate).map(
       ([dateStr, dailyOrders]) => {
@@ -400,7 +441,7 @@ const KPILineChart = ({ orders }) => {
         const totalDirecciones = calculateTotalDirecciones(vueltas);
         const costoKm = totalDirecciones > 0 ? totalPaga / totalDirecciones : 0;
 
-        // Nuevos clientes (simplificado)
+        // Nuevos clientes (usando el cálculo corregido)
         const nuevosClientes = customersByDate[dateStr] || 0;
 
         // Ticket promedio
