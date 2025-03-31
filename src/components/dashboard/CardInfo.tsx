@@ -454,17 +454,9 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           <LoadingElement className="h-8" width={infoWidth} />
         ) : (
           <div className="relative">
-            <p
-              ref={infoRef}
-              className={`text-4xl font-medium ${isModified ? "text-blue-600" : ""}`}
-            >
+            <p ref={infoRef} className="text-4xl font-medium">
               {displayInfo}
             </p>
-            {isModified && (
-              <span className="absolute top-0 right-0 transform translate-x-4 -translate-y-3 bg-blue-100 text-blue-600 text-xs px-1 rounded-sm">
-                ⓘ
-              </span>
-            )}
           </div>
         )}
       </div>
