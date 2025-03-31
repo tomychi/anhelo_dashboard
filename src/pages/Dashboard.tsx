@@ -47,9 +47,12 @@ export const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
 
   // Estado para almacenar la configuración de KPIs
-  const [kpiConfig, setKpiConfig] = useState<{ [kpiKey: string]: string[] }>(
-    {}
-  );
+  const [kpiConfig, setKpiConfig] = useState<{
+    [kpiKey: string]: {
+      accessIds: string[];
+      modifiers: { [userId: string]: number };
+    };
+  }>({});
   const [kpiConfigLoaded, setKpiConfigLoaded] = useState(false);
   const [isDashboardConfigured, setIsDashboardConfigured] = useState<
     boolean | null
@@ -92,6 +95,15 @@ export const Dashboard: React.FC = () => {
 
   // Cargar configuración de KPIs
   useEffect(() => {
+    console.log("AUTH STATE:", {
+      tipoUsuario,
+      usuarioCompleto: auth?.usuario,
+      usuarioId: usuarioId,
+      empresaId:
+        tipoUsuario === "empleado"
+          ? (auth?.usuario as EmpleadoProps)?.empresaId
+          : "N/A",
+    });
     if (!auth?.usuario) return;
 
     // Para empleados, necesitamos obtener el ID de la empresa a la que pertenecen
@@ -677,11 +689,13 @@ export const Dashboard: React.FC = () => {
     })
     .map((card) => {
       const cardKey = card.key as string;
+      const kpiData = kpiConfig[cardKey] || { accessIds: [], modifiers: {} };
 
-      // Pasar la clave del KPI y la lista de usuarios con acceso
+      // Pasar la clave del KPI, la lista de usuarios con acceso y los modificadores
       return React.cloneElement(card, {
         kpiKey: cardKey, // Añadir la clave del KPI
-        accessUserIds: kpiConfig[cardKey] || [],
+        accessUserIds: kpiData.accessIds || [], // IDs de usuarios con acceso
+        valueModifiers: kpiData.modifiers || {}, // Modificadores por usuario
       });
     });
 

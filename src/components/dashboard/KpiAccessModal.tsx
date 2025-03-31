@@ -11,7 +11,7 @@ import {
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label, disabled = false }) => (
-  <div className="flex items-center justify-between w-full  ">
+  <div className="flex items-center justify-between w-full">
     <p className="text-xs">{label}</p>
     <div
       className={`w-16 h-10 flex items-center rounded-full p-1 cursor-pointer ${
@@ -28,13 +28,43 @@ const TogglePermiso = ({ isOn, onToggle, label, disabled = false }) => (
   </div>
 );
 
+// Componente para ajustar el modificador numérico de un KPI
+const ModifierInput = ({
+  userId,
+  userName,
+  value,
+  onChange,
+  disabled = false,
+}) => (
+  <div className="flex items-center justify-between w-full mt-2 mb-2 px-2 py-1 bg-gray-50 rounded">
+    <div className="flex items-center">
+      <p className="text-xs font-medium">{userName}</p>
+      <span className="text-xs text-gray-500 ml-2">× </span>
+    </div>
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(userId, parseFloat(e.target.value) || 1)}
+      min="0.1"
+      max="10"
+      step="0.1"
+      disabled={disabled}
+      className={`w-16 text-right border rounded p-1 text-xs ${disabled ? "bg-gray-100" : "bg-white"}`}
+    />
+  </div>
+);
+
 interface KpiAccessModalProps {
   kpiKey: string;
   kpiTitle: string;
   isOpen: boolean;
   onClose: () => void;
   currentAccessIds: string[];
-  onUpdate: (newAccessIds: string[]) => void;
+  onUpdate: (
+    newAccessIds: string[],
+    modifiers?: { [userId: string]: number }
+  ) => void;
+  currentModifiers?: { [userId: string]: number };
 }
 
 export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
@@ -44,6 +74,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
   onClose,
   currentAccessIds,
   onUpdate,
+  currentModifiers = {},
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [dragStart, setDragStart] = useState(null);
@@ -54,8 +85,12 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
   const [accessToggles, setAccessToggles] = useState<{
     [key: string]: boolean;
   }>({});
+  const [modifiers, setModifiers] = useState<{
+    [key: string]: number;
+  }>(currentModifiers);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showModifiers, setShowModifiers] = useState(false);
 
   // Obtener datos de la empresa del estado de redux
   const auth = useSelector((state: RootState) => state.auth);
@@ -82,8 +117,9 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
     if (isOpen) {
       setIsAnimating(true);
       setCurrentTranslate(0);
+      setModifiers(currentModifiers);
     }
-  }, [isOpen]);
+  }, [isOpen, currentModifiers]);
 
   // Cargar empleados activos
   const fetchEmpleados = async () => {
@@ -108,7 +144,9 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       const config = await getKpiConfig(empresaId);
 
       // Obtener los IDs actuales directamente de Firestore
-      const updatedAccessIds = config[kpiKey] || [];
+      const kpiConfig = config[kpiKey] || {};
+      const updatedAccessIds = kpiConfig.accessIds || [];
+      const updatedModifiers = kpiConfig.modifiers || {};
 
       // Inicializar toggles con los valores actuales
       const initialToggles = {};
@@ -127,9 +165,18 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       }
 
       setAccessToggles(initialToggles);
+      setModifiers(updatedModifiers);
     } catch (error) {
       console.error("Error al obtener configuración actual:", error);
     }
+  };
+
+  // Actualizar el modificador para un usuario específico
+  const handleModifierChange = (userId, value) => {
+    setModifiers((prev) => ({
+      ...prev,
+      [userId]: value,
+    }));
   };
 
   // Gestión de arrastre para el gesto de cierre
@@ -197,6 +244,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
     setIsAnimating(false);
     setCurrentTranslate(0);
     setAccessToggles({});
+    setModifiers({});
     onClose();
   };
 
@@ -216,20 +264,31 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         newAccessIds.push(usuarioId);
       }
 
+      // Filtrar los modificadores para incluir solo los usuarios con acceso
+      const activeModifiers = {};
+      Object.entries(modifiers).forEach(([id, value]) => {
+        if (newAccessIds.includes(id)) {
+          activeModifiers[id] = value;
+        }
+      });
+
       // Obtener configuración actual
       const currentConfig = await getKpiConfig(empresaId);
 
       // Crear configuración actualizada
       const updatedConfig = {
         ...currentConfig,
-        [kpiKey]: newAccessIds,
+        [kpiKey]: {
+          accessIds: newAccessIds,
+          modifiers: activeModifiers,
+        },
       };
 
       // Guardar en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
 
       // Actualizar en el componente padre
-      onUpdate(newAccessIds);
+      onUpdate(newAccessIds, activeModifiers);
 
       // Cerrar el modal
       handleClose();
@@ -238,6 +297,36 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
       setError("Ocurrió un error al guardar los permisos de acceso.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Eliminar el KPI
+  const handleDeleteKpi = async () => {
+    if (
+      window.confirm(`¿Estás seguro que quieres eliminar el KPI "${kpiTitle}"?`)
+    ) {
+      setLoading(true);
+      try {
+        // Obtener configuración actual
+        const currentConfig = await getKpiConfig(empresaId);
+
+        // Crear nueva configuración sin este KPI
+        const { [kpiKey]: removedKpi, ...updatedConfig } = currentConfig;
+
+        // Guardar en Firestore
+        await updateKpiConfig(empresaId, updatedConfig);
+
+        // Cerrar el modal
+        handleClose();
+
+        // Recargar la página para reflejar los cambios
+        window.location.reload();
+      } catch (error) {
+        console.error("Error al eliminar KPI:", error);
+        setError("Ocurrió un error al eliminar el KPI.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -280,12 +369,31 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
         </div>
 
         <div className="flex-col space-y-2 w-full">
-          <h2 className="text-2xl mx-8  text-center font-bold mb-4">
+          <h2 className="text-2xl mx-8 text-center font-bold mb-4">
             Visibilidad de {kpiTitle.toLocaleLowerCase()}
           </h2>
 
+          {/* Toggle para mostrar/ocultar modificadores */}
+          <div className="flex items-center justify-between mb-4 p-2 bg-gray-50 rounded-lg">
+            <span className="text-sm font-medium">
+              Mostrar modificadores de valores
+            </span>
+            <div
+              className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
+                showModifiers ? "bg-black" : "bg-gray-200"
+              }`}
+              onClick={() => setShowModifiers(!showModifiers)}
+            >
+              <div
+                className={`bg-gray-100 w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                  showModifiers ? "translate-x-6" : ""
+                }`}
+              />
+            </div>
+          </div>
+
           {/* Sección para el dueño/empresario */}
-          {usuarioId && (
+          <div>
             <TogglePermiso
               label={
                 (empresa as EmpresaProps)?.datosUsuario?.nombreUsuario ||
@@ -295,27 +403,65 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
               onToggle={() => {}} // No permite cambios
               disabled={true} // Deshabilitado para no poder interactuar
             />
-          )}
+
+            {/* Modificador para el empresario */}
+            {showModifiers && (
+              <ModifierInput
+                userId={usuarioId}
+                userName="Valor personalizado"
+                value={modifiers[usuarioId] || 1}
+                onChange={handleModifierChange}
+              />
+            )}
+          </div>
 
           {/* Sección de empleados */}
           <div className="mt-4">
             {empleados.length > 0 ? (
               <div className="rounded-lg max-h-60 overflow-y-auto">
                 {empleados.map((empleado) => (
-                  <TogglePermiso
-                    key={empleado.id}
-                    label={empleado.datos?.nombre || "Sin nombre"}
-                    isOn={accessToggles[empleado.id] || false}
-                    onToggle={() => handleToggleAccess(empleado.id)}
-                  />
+                  <div key={empleado.id}>
+                    <TogglePermiso
+                      label={empleado.datos?.nombre || "Sin nombre"}
+                      isOn={accessToggles[empleado.id] || false}
+                      onToggle={() => handleToggleAccess(empleado.id)}
+                    />
+
+                    {/* Modificador para el empleado si tiene acceso */}
+                    {showModifiers && accessToggles[empleado.id] && (
+                      <ModifierInput
+                        userId={empleado.id}
+                        userName="Valor personalizado"
+                        value={modifiers[empleado.id] || 1}
+                        onChange={handleModifierChange}
+                        disabled={!accessToggles[empleado.id]}
+                      />
+                    )}
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className=" p-4 rounded-lg text-center text-gray-400 text-xs">
+              <div className="p-4 rounded-lg text-center text-gray-400 text-xs">
                 No hay empleados activos
               </div>
             )}
           </div>
+
+          {/* Mensaje explicativo de modificadores */}
+          {showModifiers && (
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 text-xs">
+              <p className="text-blue-700">
+                Los modificadores permiten personalizar los valores mostrados a
+                cada usuario. Un modificador de 1 muestra el valor real. Un
+                modificador de 2 duplicará el valor. Un modificador de 0.5
+                mostrará la mitad del valor real.
+              </p>
+              <p className="text-blue-700 mt-2 font-bold">
+                Nota: Los valores modificados son solo visuales y no afectan los
+                datos reales.
+              </p>
+            </div>
+          )}
 
           {/* Mensaje de error */}
           {error && (
@@ -343,7 +489,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
           )}
         </button>
         <button
-          onClick={handleSaveAccess}
+          onClick={handleDeleteKpi}
           disabled={loading}
           className="text-red-main w-full mt-2 text-4xl h-20 px-4 bg-gray-200 font-bold rounded-lg outline-none"
         >

@@ -5,14 +5,52 @@ import { projectAuth } from "../../firebase/config";
 import arrow from "../../assets/arrowIcon.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import {
-  EmpleadoProps,
-  EmpresaProps,
-  updateKpiConfig,
-} from "../../firebase/ClientesAbsolute";
+import { EmpleadoProps, EmpresaProps } from "../../firebase/ClientesAbsolute";
 
 // Importar el modal para configurar acceso
 import KpiAccessModal from "./KpiAccessModal";
+
+// Función para aplicar el modificador al valor
+const applyModifier = (value, modifier = 1) => {
+  // Si el modificador es 1, no hay cambios
+  if (modifier === 1) return value;
+
+  if (typeof value === "number") {
+    return value * modifier;
+  } else if (typeof value === "string") {
+    // Casos especiales para valores monetarios
+    if (value.includes("$")) {
+      // Para valores monetarios como "$1,816"
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        const numStr = numMatch[0];
+        // Eliminar comas y convertir a número
+        const num = parseFloat(numStr.replace(/,/g, ""));
+        if (!isNaN(num)) {
+          const modifiedNum = Math.round(num * modifier);
+
+          // Para preservar el formato de moneda original
+          // Primero obtenemos el prefijo ($ o lo que sea)
+          const prefix = value.substring(0, value.indexOf(numStr));
+
+          // Aplicamos el formato de miles con comas
+          const formattedNum = modifiedNum.toLocaleString("es-AR");
+
+          // Reconstruimos el string completo
+          return `${prefix}${formattedNum}`;
+        }
+      }
+    } else {
+      // Para valores no monetarios, intentamos convertir a número
+      const num = parseFloat(value.replace(/,/g, ""));
+      if (!isNaN(num)) {
+        const modifiedNum = Math.round(num * modifier);
+        return modifiedNum.toString();
+      }
+    }
+  }
+  return value;
+};
 
 interface CardInfoProps {
   info: string | number;
@@ -25,6 +63,7 @@ interface CardInfoProps {
   // Props para IDs de usuarios y clave del KPI
   accessUserIds?: string[];
   kpiKey?: string;
+  valueModifiers?: { [userId: string]: number };
 }
 
 interface LoadingElementProps {
@@ -116,6 +155,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   showAsRatings = false,
   accessUserIds = [],
   kpiKey = "",
+  valueModifiers = {},
 }) => {
   const titleRef = useRef<HTMLParagraphElement>(null);
   const infoRef = useRef<HTMLParagraphElement>(null);
@@ -126,6 +166,8 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     { id: string; nombre: string }[]
   >([]);
   const [showAccessModal, setShowAccessModal] = useState(false);
+  const [displayInfo, setDisplayInfo] = useState<string | number>(info);
+  const [isModified, setIsModified] = useState(false);
 
   // Obtener empleados y empresa para mostrar nombres de usuarios con acceso
   const auth = useSelector((state: RootState) => state.auth);
@@ -137,11 +179,47 @@ export const CardInfo: React.FC<CardInfoProps> = ({
         ? (auth?.usuario as EmpleadoProps)?.empresaId
         : "";
 
+  // Obtener ID del usuario actual
+  const currentUserId =
+    tipoUsuario === "empresa"
+      ? (auth?.usuario as EmpresaProps)?.id
+      : tipoUsuario === "empleado"
+        ? (auth?.usuario as EmpleadoProps)?.id
+        : "";
+
   // Obtener información de todos los empleados
   const [allEmpleados, setAllEmpleados] = useState<EmpleadoProps[]>([]);
+  const [modifiers, setModifiers] = useState<{ [userId: string]: number }>(
+    valueModifiers
+  );
 
   // Verificar si el usuario actual es empresario (administrador)
   const isEmpresario = tipoUsuario === "empresa";
+
+  // Aplicar modificador al valor mostrado
+  useEffect(() => {
+    if (!isLoading && currentUserId) {
+      const modifier = modifiers[currentUserId] || 1;
+
+      // Solo aplicar el modificador si es diferente de 1
+      if (modifier !== 1) {
+        const modifiedValue = applyModifier(info, modifier);
+        setDisplayInfo(modifiedValue);
+        setIsModified(true);
+
+        // Log para depuración (se puede quitar en producción)
+        console.log(
+          `KPI ${kpiKey}: Valor original ${info}, modificador ${modifier}, resultado ${modifiedValue}`
+        );
+      } else {
+        setDisplayInfo(info);
+        setIsModified(false);
+      }
+    } else {
+      setDisplayInfo(info);
+      setIsModified(false);
+    }
+  }, [info, currentUserId, modifiers, isLoading, kpiKey]);
 
   // Configurar el detector de pulsación larga
   const longPressEvent = useLongPress(() => {
@@ -242,7 +320,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     if (infoRef.current) {
       setInfoWidth(infoRef.current.offsetWidth);
     }
-  }, [info, title, cuadrito]);
+  }, [displayInfo, title, cuadrito]);
 
   const shouldShowAdditionalInfo = (): boolean => {
     if (cuadrito === undefined) return false;
@@ -265,7 +343,10 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   };
 
   // Manejar la actualización de acceso desde el modal
-  const handleUpdateAccess = async (newAccessIds: string[]) => {
+  const handleUpdateAccess = async (
+    newAccessIds: string[],
+    newModifiers: { [userId: string]: number } = {}
+  ) => {
     if (!empresaId || !kpiKey) return;
 
     try {
@@ -278,14 +359,20 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       const { getKpiConfig } = await import("../../firebase/ClientesAbsolute");
       const currentConfig = await getKpiConfig(empresaId);
 
-      // Actualizar la configuración con los nuevos IDs
+      // Actualizar la configuración con los nuevos IDs y modificadores
       const updatedConfig = {
         ...currentConfig,
-        [kpiKey]: newAccessIds,
+        [kpiKey]: {
+          accessIds: newAccessIds,
+          modifiers: newModifiers,
+        },
       };
 
       // Guardar la configuración actualizada en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
+
+      // Actualizar el estado local de modificadores
+      setModifiers(newModifiers);
 
       // Volver a cargar los usuarios con acceso para reflejar los cambios
       const { obtenerEmpleadosDeEmpresa, obtenerEmpresaPorId } = await import(
@@ -366,9 +453,19 @@ export const CardInfo: React.FC<CardInfoProps> = ({
         {isLoading ? (
           <LoadingElement className="h-8" width={infoWidth} />
         ) : (
-          <p ref={infoRef} className="text-4xl font-medium">
-            {info}
-          </p>
+          <div className="relative">
+            <p
+              ref={infoRef}
+              className={`text-4xl font-medium ${isModified ? "text-blue-600" : ""}`}
+            >
+              {displayInfo}
+            </p>
+            {isModified && (
+              <span className="absolute top-0 right-0 transform translate-x-4 -translate-y-3 bg-blue-100 text-blue-600 text-xs px-1 rounded-sm">
+                ⓘ
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -378,7 +475,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   if (isMarketingUser || !link) {
     return (
       <div
-        className={`flex-1 bg-gray-100 text-black font-coolvetica border-b    border-gray-200   border-b  px-4 pt-2 pb-3 cursor-default ${className} relative`}
+        className={`flex-1 bg-gray-100 text-black font-coolvetica border-b border-gray-200 border-b px-4 pt-2 pb-3 cursor-default ${className} relative`}
       >
         <CardContent />
 
@@ -391,6 +488,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
             currentAccessIds={accessUserIds}
+            currentModifiers={modifiers}
             onUpdate={handleUpdateAccess}
           />
         )}
@@ -402,7 +500,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   return (
     <NavLink
       to={`/${link}`}
-      className={`flex-1 bg-gray-100 text-black font-coolvetica border-b    border-gray-200   border-b  px-4 pt-2 pb-3 ${className} relative`}
+      className={`flex-1 bg-gray-100 text-black font-coolvetica border-b border-gray-200 border-b px-4 pt-2 pb-3 ${className} relative`}
       onClick={(e) => {
         // Evitar navegación si se está usando longpress
         if (showAccessModal) {
@@ -421,11 +519,10 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           isOpen={showAccessModal}
           onClose={() => setShowAccessModal(false)}
           currentAccessIds={accessUserIds}
+          currentModifiers={modifiers}
           onUpdate={handleUpdateAccess}
         />
       )}
     </NavLink>
   );
 };
-
-export default CardInfo;

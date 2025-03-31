@@ -910,7 +910,12 @@ const inicializarColeccionesAdicionales = async (
  */
 export const getKpiConfig = async (
   empresaId: string
-): Promise<{ [kpiKey: string]: string[] }> => {
+): Promise<{
+  [kpiKey: string]: {
+    accessIds: string[];
+    modifiers: { [userId: string]: number };
+  };
+}> => {
   if (!empresaId) return {};
 
   const firestore = getFirestore();
@@ -919,9 +924,26 @@ export const getKpiConfig = async (
     const empresaRef = doc(firestore, "absoluteClientes", empresaId);
     const empresaDoc = await getDoc(empresaRef);
 
-    // Si existe y tiene el campo config.dashboard.kpis, lo devolvemos
+    // Si existe y tiene el campo config.dashboard
     if (empresaDoc.exists() && empresaDoc.data()?.config?.dashboard) {
-      return empresaDoc.data().config.dashboard;
+      const dashboardConfig = empresaDoc.data().config.dashboard;
+      const convertedConfig = {};
+
+      // Convertir formato antiguo a nuevo si es necesario
+      Object.entries(dashboardConfig).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          // Formato antiguo: solo array de IDs
+          convertedConfig[key] = {
+            accessIds: value,
+            modifiers: {},
+          };
+        } else if (typeof value === "object") {
+          // Ya está en formato nuevo
+          convertedConfig[key] = value;
+        }
+      });
+
+      return convertedConfig;
     }
 
     // Si no existe, devolvemos un objeto vacío
@@ -940,16 +962,14 @@ export const getKpiConfig = async (
  */
 export const hasKpiPermission = (
   kpiKey: string,
-  kpiConfig: { [kpiKey: string]: string[] },
+  kpiConfig: { [key: string]: { accessIds: string[]; modifiers: any } },
   usuarioId: string
 ): boolean => {
-  // Si no hay configuración para este KPI, no mostrarlo
-  if (!kpiConfig[kpiKey]) {
-    return false;
-  }
+  // Si no hay configuración para este KPI, permitir acceso (comportamiento predeterminado)
+  if (!kpiConfig[kpiKey]) return true;
 
-  // Verificar si el ID del usuario está en la lista de acceso
-  return kpiConfig[kpiKey].includes(usuarioId);
+  // Si hay configuración, verificar si el usuario está en la lista de acceso
+  return kpiConfig[kpiKey].accessIds?.includes(usuarioId) || false;
 };
 
 /**
@@ -1071,7 +1091,12 @@ export const configureKpisForEmpleado = async (
  */
 export const updateKpiConfig = async (
   empresaId: string,
-  kpiConfig: { [kpiKey: string]: string[] }
+  kpiConfig: {
+    [kpiKey: string]: {
+      accessIds: string[];
+      modifiers: { [userId: string]: number };
+    };
+  }
 ): Promise<void> => {
   if (!empresaId) return;
 
@@ -1197,7 +1222,12 @@ export const getEmpleadoKpis = async (
  */
 export const subscribeToKpiConfig = (
   empresaId: string,
-  callback: (kpiConfig: { [kpiKey: string]: string[] }) => void
+  callback: (kpiConfig: {
+    [kpiKey: string]: {
+      accessIds: string[];
+      modifiers: { [userId: string]: number };
+    };
+  }) => void
 ): (() => void) => {
   if (!empresaId) return () => {};
 
@@ -1210,8 +1240,25 @@ export const subscribeToKpiConfig = (
     (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
-        const kpiConfig = data?.config?.dashboard || {};
-        callback(kpiConfig);
+        const dashboardConfig = data?.config?.dashboard || {};
+
+        // Convertir formato antiguo a nuevo si es necesario
+        const convertedConfig = {};
+
+        Object.entries(dashboardConfig).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            // Formato antiguo: solo array de IDs
+            convertedConfig[key] = {
+              accessIds: value,
+              modifiers: {},
+            };
+          } else if (typeof value === "object") {
+            // Ya está en formato nuevo
+            convertedConfig[key] = value;
+          }
+        });
+
+        callback(convertedConfig);
       } else {
         callback({});
       }
