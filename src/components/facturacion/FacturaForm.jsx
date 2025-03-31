@@ -2,7 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
 import { ReadLastThreeDaysOrders } from "../../firebase/ReadData";
-import { facturarPedido, obtenerFacturasPorRango } from "../../firebase/afip";
+import {
+  facturarPedido,
+  obtenerFacturasPorRango,
+  guardarFacturaPorMonto,
+} from "../../firebase/afip";
 import { useSelector } from "react-redux";
 import FacturarPorMonto from "./FacturarPorMonto";
 import Calendar from "../Calendar";
