@@ -897,7 +897,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
             className="relative bg-gray-100 rounded-b-lg w-full transition-transform duration-300 touch-none "
             style={{
               transform: `translateY(${-menuTranslate}px)`,
-              maxHeight: isMobile ? "80vh" : "auto", // Control de altura
+              maxHeight: isMobile ? "100vh" : "auto", // Control de altura
             }}
           >
             {isFeatureModalOpen ? (
