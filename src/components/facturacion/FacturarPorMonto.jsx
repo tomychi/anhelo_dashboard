@@ -371,6 +371,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   };
 
   // Renderizamos todo el componente incluyendo el modal
+  // Modificar el return del componente FacturarPorMonto
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
       <div
@@ -404,139 +405,13 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 ">
+        {/* Mostrar resultados o formulario basado en si hay respuesta */}
+        {respuesta ? (
+          // Solo mostrar los resultados
           <div className="px-4">
-            <select
-              name="tipoFactura"
-              value={formData.tipoFactura}
-              onChange={handleChange}
-              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
-              required
-            >
-              <option value="" disabled>
-                Tipo de Factura
-              </option>
-              <option value="A">Factura A</option>
-              <option value="B">Factura B</option>
-              <option value="C">Factura C</option>
-            </select>
-
-            <input
-              type="text"
-              name="montoTotal"
-              value={formData.montoTotal}
-              onChange={handleChange}
-              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
-              placeholder="Monto Total"
-              required
-            />
-
-            <input
-              type="number"
-              name="cantidadFacturas"
-              value={formData.cantidadFacturas}
-              onChange={handleChange}
-              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
-              placeholder="Cantidad de Facturas"
-              min="1"
-              required
-            />
-
-            <input
-              type="text"
-              name="montoMinimo"
-              value={formData.montoMinimo}
-              onChange={handleChange}
-              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
-              placeholder="Monto Mínimo"
-              required
-            />
-
-            <input
-              type="text"
-              name="montoMaximo"
-              value={formData.montoMaximo}
-              onChange={handleChange}
-              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-b border-t rounded-b-3xl transition-all"
-              placeholder="Monto Máximo"
-              required
-            />
-
-            <button
-              type="button"
-              onClick={generarVentas}
-              disabled={isGenerating}
-              className="w-full flex flex-row justify-center items-center bg-gray-200 text-black h-20 mt-4 gap-2 rounded-3xl font-bold"
-            >
-              {isGenerating ? (
-                <LoadingPoints color="text-gray-100" />
-              ) : (
-                <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="h-6"
-                  >
-                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                    <path
-                      fill-rule="evenodd"
-                      d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  Ver simulacion
-                </>
-              )}
-            </button>
-
-            {error && (
-              <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
-                <p className="text-red-500 text-sm">{error}</p>
-              </div>
-            )}
-          </div>
-
-          {ventasGeneradas.length > 0 && (
-            <>
-              <div className="mt-4 w-full">
-                <SalesCards
-                  ventas={ventasGeneradas}
-                  onToggleFacturar={handleToggleFacturar}
-                />
-              </div>
-
-              <div className="mx-4">
-                <button
-                  type="submit"
-                  disabled={!tokenStatus?.valid || isSubmitting}
-                  className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
-                >
-                  <p className="text-gray-100 font-bold text-3xl">
-                    {isSubmitting ? (
-                      <LoadingPoints color="text-gray-100" />
-                    ) : (
-                      <div className="flex flex-row items-center justify-center gap-2">
-                        <p className="text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center">
-                          {
-                            ventasGeneradas.filter(
-                              (venta) => venta.quiereFacturarla
-                            ).length
-                          }
-                        </p>
-                        Enviar
-                      </div>
-                    )}
-                  </p>
-                </button>
-              </div>
-            </>
-          )}
-
-          {respuesta && (
-            <div className="p-4 border-l-4 w-full ml-4 mt-4 my-8 border-black">
-              <div className="text-black text-xl font-bold mb-6  items-center mb-2">
-                Resultados
+            <div className="p-4 border-l-4 w-full mt-4 mb-4 border-black">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-black text-xl font-bold">Resultados</h3>
               </div>
 
               <div>
@@ -565,8 +440,139 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                   ))}
               </div>
             </div>
-          )}
-        </form>
+          </div>
+        ) : (
+          // Mostrar el formulario completo si no hay respuesta
+          <form onSubmit={handleSubmit} className="mt-4">
+            <div className="px-4">
+              <select
+                name="tipoFactura"
+                value={formData.tipoFactura}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+                required
+              >
+                <option value="" disabled>
+                  Tipo de Factura
+                </option>
+                <option value="A">Factura A</option>
+                <option value="B">Factura B</option>
+                <option value="C">Factura C</option>
+              </select>
+
+              <input
+                type="text"
+                name="montoTotal"
+                value={formData.montoTotal}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+                placeholder="Monto Total"
+                required
+              />
+
+              <input
+                type="number"
+                name="cantidadFacturas"
+                value={formData.cantidadFacturas}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+                placeholder="Cantidad de Facturas"
+                min="1"
+                required
+              />
+
+              <input
+                type="text"
+                name="montoMinimo"
+                value={formData.montoMinimo}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+                placeholder="Monto Mínimo"
+                required
+              />
+
+              <input
+                type="text"
+                name="montoMaximo"
+                value={formData.montoMaximo}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-b border-t rounded-b-3xl transition-all"
+                placeholder="Monto Máximo"
+                required
+              />
+
+              <button
+                type="button"
+                onClick={generarVentas}
+                disabled={isGenerating}
+                className="w-full flex flex-row justify-center items-center bg-gray-200 text-black h-20 mt-4 gap-2 rounded-3xl font-bold"
+              >
+                {isGenerating ? (
+                  <LoadingPoints color="text-gray-100" />
+                ) : (
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-6"
+                    >
+                      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                      <path
+                        fillRule="evenodd"
+                        d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Ver simulacion
+                  </>
+                )}
+              </button>
+
+              {error && (
+                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
+                  <p className="text-red-500 text-sm">{error}</p>
+                </div>
+              )}
+            </div>
+
+            {ventasGeneradas.length > 0 && (
+              <>
+                <div className="mt-4 w-full">
+                  <SalesCards
+                    ventas={ventasGeneradas}
+                    onToggleFacturar={handleToggleFacturar}
+                  />
+                </div>
+
+                <div className="mx-4">
+                  <button
+                    type="submit"
+                    disabled={!tokenStatus?.valid || isSubmitting}
+                    className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
+                  >
+                    <p className="text-gray-100 font-bold text-3xl">
+                      {isSubmitting ? (
+                        <LoadingPoints color="text-gray-100" />
+                      ) : (
+                        <div className="flex flex-row items-center justify-center gap-2">
+                          <p className="text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center">
+                            {
+                              ventasGeneradas.filter(
+                                (venta) => venta.quiereFacturarla
+                              ).length
+                            }
+                          </p>
+                          Enviar
+                        </div>
+                      )}
+                    </p>
+                  </button>
+                </div>
+              </>
+            )}
+          </form>
+        )}
       </div>
     </div>
   );
