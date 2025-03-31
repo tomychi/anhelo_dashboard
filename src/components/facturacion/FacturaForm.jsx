@@ -1117,16 +1117,6 @@ const FacturaForm = () => {
                   />
                   <input
                     type="number"
-                    name="importeTrib"
-                    value={formData.importeTrib}
-                    onChange={handleChange}
-                    className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-200 transition-all"
-                    step="0.01"
-                    min="0"
-                    placeholder="Tasa Municipal"
-                  />
-                  <input
-                    type="number"
                     name="importeTotal"
                     value={formData.importeTotal}
                     onChange={handleChange}
@@ -1136,6 +1126,17 @@ const FacturaForm = () => {
                     required
                     placeholder="Importe Total"
                   />
+                  <input
+                    type="number"
+                    name="importeTrib"
+                    value={formData.importeTrib}
+                    onChange={handleChange}
+                    className="w-full text-black h-10 px-4 rounded-none bg-transparent text-xs border-x border-t border-gray-200 transition-all"
+                    step="0.01"
+                    min="0"
+                    placeholder="Tasa Municipal"
+                  />
+
                   <input
                     type="number"
                     name="importeNeto"
