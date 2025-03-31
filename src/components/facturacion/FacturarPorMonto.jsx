@@ -12,8 +12,8 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   const [formData, setFormData] = useState({
     montoTotal: "",
     cantidadFacturas: "",
-    montoMinimo: "10000",
-    montoMaximo: "100000",
+    montoMinimo: "",
+    montoMaximo: "",
     cuit: "33718835289",
     puntoVenta: "2",
     tipoFactura: "B",
@@ -391,7 +391,77 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
 
     navigator.clipboard
       .writeText(textToCopy)
-      .then(() => alert("Resultados copiados al portapapeles"))
+      .then(() => {
+        // Mostrar una notificación temporal
+        const notification = document.createElement("div");
+        notification.style.position = "fixed";
+        notification.style.bottom = "20px";
+        notification.style.padding = "0 20px";
+        notification.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+        notification.style.color = "white";
+        notification.style.borderRadius = "9999px";
+        notification.style.left = "0";
+        notification.style.right = "0";
+        notification.style.marginLeft = "1rem";
+        notification.style.marginRight = "1rem";
+        notification.style.width = "calc(100% - 2rem)";
+        notification.style.height = "40px";
+        notification.style.zIndex = "1000";
+        notification.style.textAlign = "center";
+        notification.style.fontFamily = "Coolvetica, sans-serif";
+        notification.style.fontWeight = "bold";
+        notification.style.backdropFilter = "blur(8px)";
+        notification.style.WebkitBackdropFilter = "blur(8px)";
+        notification.style.display = "flex";
+        notification.style.alignItems = "center";
+        notification.style.justifyContent = "center";
+        notification.style.gap = "8px";
+
+        // Crear el SVG
+        const svgIcon = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        svgIcon.setAttribute("viewBox", "0 0 24 24");
+        svgIcon.setAttribute("fill", "currentColor");
+        svgIcon.style.width = "24px";
+        svgIcon.style.height = "24px";
+        svgIcon.style.flexShrink = "0";
+
+        // Crear el path dentro del SVG
+        const svgPath = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path"
+        );
+        svgPath.setAttribute("fill-rule", "evenodd");
+        svgPath.setAttribute("clip-rule", "evenodd");
+        svgPath.setAttribute(
+          "d",
+          "M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z"
+        );
+
+        // Añadir el path al SVG
+        svgIcon.appendChild(svgPath);
+
+        // Crear un span para el texto
+        const textSpan = document.createElement("span");
+        textSpan.textContent = "Resultados copiados al portapapeles";
+
+        // Añadir el SVG y el texto a la notificación
+        notification.appendChild(svgIcon);
+        notification.appendChild(textSpan);
+
+        document.body.appendChild(notification);
+
+        // Desaparecer la notificación después de 2 segundos
+        setTimeout(() => {
+          notification.style.opacity = "0";
+          notification.style.transition = "opacity 0.5s ease";
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 2000);
+      })
       .catch((err) => {
         console.error("Error al copiar: ", err);
         alert("No se pudo copiar al portapapeles. Error: " + err);
@@ -413,7 +483,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
 
       <div
         ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg  pb-4 pt-10 transition-transform duration-300 touch-none ${
+        className={`relative bg-white w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
           isAnimating ? "translate-y-0" : "translate-y-full"
         }`}
         style={{
@@ -432,131 +502,115 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           </div>
         </div>
 
-        <div className="font-coolvetica overflow-hidden flex flex-col w-full">
-          <form onSubmit={handleSubmit} className="px-4">
-            <div className="space-y-2 mb-4">
-              <label className="block text-xs">
+        <form onSubmit={handleSubmit} className="mt-4 ">
+          <div className="px-4">
+            <select
+              name="tipoFactura"
+              value={formData.tipoFactura}
+              onChange={handleChange}
+              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all appearance-none"
+              required
+            >
+              <option value="" disabled>
                 Tipo de Factura
-                <select
-                  name="tipoFactura"
-                  value={formData.tipoFactura}
-                  onChange={handleChange}
-                  className="w-full text-black bg-transparent text-xs h-10 px-4 rounded-lg border border-black mt-1"
-                  required
-                >
-                  <option value="A">Factura A</option>
-                  <option value="B">Factura B</option>
-                  <option value="C">Factura C</option>
-                </select>
-              </label>
+              </option>
+              <option value="A">Factura A</option>
+              <option value="B">Factura B</option>
+              <option value="C">Factura C</option>
+            </select>
 
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block text-xs">
-                  Monto Total a Facturar
-                  <div className="relative mt-1">
-                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      $
-                    </span>
-                    <input
-                      type="text"
-                      name="montoTotal"
-                      value={formData.montoTotal}
-                      onChange={handleChange}
-                      className="w-full text-black bg-transparent text-xs h-10 pl-8 pr-4 rounded-lg border border-black"
-                      placeholder="1.000.000"
-                      required
-                    />
-                  </div>
-                </label>
+            <input
+              type="text"
+              name="montoTotal"
+              value={formData.montoTotal}
+              onChange={handleChange}
+              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+              placeholder="Monto Total"
+              required
+            />
 
-                <label className="block text-xs">
-                  Cantidad de Facturas
-                  <input
-                    type="number"
-                    name="cantidadFacturas"
-                    value={formData.cantidadFacturas}
-                    onChange={handleChange}
-                    className="w-full text-black bg-transparent text-xs h-10 px-4 rounded-lg border border-black mt-1"
-                    placeholder="50"
-                    min="1"
-                    required
-                  />
-                </label>
-              </div>
+            <input
+              type="number"
+              name="cantidadFacturas"
+              value={formData.cantidadFacturas}
+              onChange={handleChange}
+              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+              placeholder="Cantidad de Facturas"
+              min="1"
+              required
+            />
 
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block text-xs">
-                  Monto Mínimo por Factura
-                  <div className="relative mt-1">
-                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      $
-                    </span>
-                    <input
-                      type="text"
-                      name="montoMinimo"
-                      value={formData.montoMinimo}
-                      onChange={handleChange}
-                      className="w-full text-black bg-transparent text-xs h-10 pl-8 pr-4 rounded-lg border border-black"
-                      placeholder="10.000"
-                      required
-                    />
-                  </div>
-                </label>
+            <input
+              type="text"
+              name="montoMinimo"
+              value={formData.montoMinimo}
+              onChange={handleChange}
+              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
+              placeholder="Monto Mínimo"
+              required
+            />
 
-                <label className="block text-xs">
-                  Monto Máximo por Factura
-                  <div className="relative mt-1">
-                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      $
-                    </span>
-                    <input
-                      type="text"
-                      name="montoMaximo"
-                      value={formData.montoMaximo}
-                      onChange={handleChange}
-                      className="w-full text-black bg-transparent text-xs h-10 pl-8 pr-4 rounded-lg border border-black"
-                      placeholder="100.000"
-                      required
-                    />
-                  </div>
-                </label>
-              </div>
-            </div>
+            <input
+              type="text"
+              name="montoMaximo"
+              value={formData.montoMaximo}
+              onChange={handleChange}
+              className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-b border-t rounded-b-3xl transition-all"
+              placeholder="Monto Máximo"
+              required
+            />
 
             <button
               type="button"
               onClick={generarVentas}
               disabled={isGenerating}
-              className="w-full bg-gray-200 text-black h-12 rounded-xl mb-4"
+              className="w-full flex flex-row justify-center items-center bg-gray-200 text-black h-20 mt-4 gap-2 rounded-3xl font-bold"
             >
               {isGenerating ? (
-                <LoadingPoints color="text-black" />
+                <LoadingPoints color="text-gray-100" />
               ) : (
-                "Ver simulacion"
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6"
+                  >
+                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Ver simulacion
+                </>
               )}
             </button>
 
             {error && (
-              <div className="mb-4 p-4 border-l-4 border-red-500">
+              <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
                 <p className="text-red-500 text-sm">{error}</p>
               </div>
             )}
+          </div>
 
-            {ventasGeneradas.length > 0 && (
-              <>
-                <div className="mb-4">
-                  <SalesCards
-                    ventas={ventasGeneradas}
-                    onToggleFacturar={handleToggleFacturar}
-                  />
-                </div>
+          {ventasGeneradas.length > 0 && (
+            <>
+              <div className="mt-4 w-full">
+                <SalesCards
+                  ventas={ventasGeneradas}
+                  onToggleFacturar={handleToggleFacturar}
+                />
+              </div>
 
+              <div className="mx-4">
                 <button
                   type="submit"
                   disabled={!tokenStatus?.valid || isSubmitting}
-                  className="w-full bg-black h-14 mb-4 flex items-center justify-center rounded-xl"
+                  className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
                 >
-                  <p className="text-white font-bold text-lg">
+                  <p className="text-gray-100 font-bold text-3xl">
                     {isSubmitting ? (
                       <LoadingPoints color="text-gray-100" />
                     ) : (
@@ -568,59 +622,58 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                             ).length
                           }
                         </p>
-                        Facturar
+                        Enviar
                       </div>
                     )}
                   </p>
                 </button>
-              </>
-            )}
-
-            {respuesta && (
-              <div className="p-4 border-l-4 border-black mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-black text-xl font-bold">Resultados</h3>
-                  <button
-                    type="button"
-                    onClick={copyResultsToClipboard}
-                    className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md"
-                  >
-                    Copiar
-                  </button>
-                </div>
-
-                <div className="max-h-60 overflow-y-auto">
-                  {Array.isArray(respuesta) &&
-                    respuesta.map((resp, index) => (
-                      <div key={index} className="mb-2 text-gray-400 text-sm">
-                        <p className="text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] mb-1 font-bold text-gray-100">
-                          {index + 1}
-                        </p>
-                        {resp.cae ? (
-                          <>
-                            <p>
-                              CAE:{" "}
-                              <span className="text-black">{resp.cae}</span>
-                            </p>
-                            <p>
-                              Comprobante número:{" "}
-                              <span className="text-black">
-                                {resp.cbteDesde}
-                              </span>
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-red-500">
-                            Error: {resp.error || "No generado"}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                </div>
               </div>
-            )}
-          </form>
-        </div>
+            </>
+          )}
+
+          {respuesta && (
+            <div className="p-4 border-l-4 w-full ml-8 mt-4 mb-8 border-black">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-black text-xl font-bold mb-6">
+                  Resultados
+                </h3>
+                <button
+                  type="button"
+                  onClick={copyResultsToClipboard}
+                  className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md"
+                >
+                  Copiar
+                </button>
+              </div>
+
+              <div>
+                {Array.isArray(respuesta) &&
+                  respuesta.map((resp, index) => (
+                    <div key={index} className="mb-4 text-gray-400 text-sm">
+                      <p className="text-center items-center flex justify-center w-4 h-4 bg-black rounded-full text-[10px] mb-1 font-bold text-gray-100">
+                        {index + 1}
+                      </p>
+                      {resp.cae ? (
+                        <>
+                          <p>
+                            CAE: <span className="text-black">{resp.cae}</span>
+                          </p>
+                          <p>
+                            Comprobante número:{" "}
+                            <span className="text-black">{resp.cbteDesde}</span>
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-red-500">
+                          Error: {resp.error || "No generado"}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   );

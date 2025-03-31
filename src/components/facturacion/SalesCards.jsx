@@ -20,7 +20,7 @@ const SalesCards = ({ ventas, onToggleFacturar }) => {
           <button
             key={venta.id}
             onClick={() => onToggleFacturar(venta.id)}
-            className={`b  w-25 border border-gray-200  flex-shrink-0 rounded-xl 
+            className={` w-20 border border-gray-200  flex-shrink-0 rounded-xl 
                             flex flex-col items-center cursor-pointer transition-colors
                             `}
           >
