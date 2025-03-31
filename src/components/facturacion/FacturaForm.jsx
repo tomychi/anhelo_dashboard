@@ -284,6 +284,7 @@ const FacturaForm = () => {
       }
 
       if (data.success && data.data.resultado === "A") {
+        // Crear objeto con los datos de la respuesta para mostrar
         setModalRespuesta({
           cae: data.data.cae,
           fechaVencimiento: data.data.caeFchVto,
@@ -291,6 +292,7 @@ const FacturaForm = () => {
           cbteHasta: data.data.cbteHasta,
         });
 
+        // Crear objeto facturaData para guardar en Firebase
         const facturaData = {
           cae: data.data.cae,
           caeFchVto: data.data.caeFchVto,
@@ -305,16 +307,18 @@ const FacturaForm = () => {
           numeroReceptor: 0,
         };
 
-        // Si este formulario individual se está usando para facturar un pedido específico
-        if (formData.pedidoId && formData.fechaPedido) {
-          await facturarPedido(
-            formData.pedidoId,
-            formData.fechaPedido,
-            facturaData
+        // Guardar la factura en Firebase usando guardarFacturaPorMonto
+        // que guarda en la colección "facturas" como una factura sin pedido asociado
+        const guardadoExitoso = await guardarFacturaPorMonto(facturaData);
+
+        if (!guardadoExitoso) {
+          console.warn(
+            "Factura emitida con éxito pero no se pudo guardar en Firebase"
           );
         } else {
-          // Es una factura individual sin pedido asociado
-          await guardarFacturaPorMonto(facturaData);
+          console.log(
+            `Factura emitida y guardada con éxito. CAE: ${data.data.cae}`
+          );
         }
       } else {
         const errorMsg =
