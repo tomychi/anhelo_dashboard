@@ -24,8 +24,6 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
   const [error, setError] = useState("");
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   // Inicializar los toggles al abrir el modal
   useEffect(() => {
@@ -37,34 +35,9 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
         initialToggles[feature.id] = currentFeatures.includes(feature.id);
       });
       setFeatureToggles(initialToggles);
-      setIsAnimating(true);
       setCurrentTranslate(0);
     }
   }, [isOpen, currentFeatures]);
-
-  // Manejo de eventos para drag
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setDragStart(e.touches[0].clientY);
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setDragStart(e.clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (dragStart === null) return;
-    const currentPosition = e.touches[0].clientY;
-    const difference = currentPosition - dragStart;
-    if (difference < 0) return;
-    setCurrentTranslate(difference);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (dragStart === null) return;
-    const difference = e.clientY - dragStart;
-    if (difference < 0) return;
-    setCurrentTranslate(difference);
-  };
 
   const handleDragEnd = () => {
     if (currentTranslate > 200) {
@@ -118,94 +91,54 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-gray-100 flex items-end font-coolvetica justify-center">
-      <div
-        className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
-          isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-        }`}
-        style={{
-          opacity: Math.max(0, 1 - currentTranslate / 400),
-        }}
-        onClick={onClose}
-      />
-
-      <div
-        ref={modalRef}
-        className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
-          isAnimating ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{
-          transform: `translateY(${currentTranslate}px)`,
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        {/* Barra de drag */}
-        <div
-          className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-        >
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-12 h-1 bg-gray-200 rounded-full" />
-          </div>
-        </div>
-
-        <div className="mt-4 flex-col space-y-2 w-full">
-          <h2 className="text-2xl font-bold mb-4">Añadir funcionalidades</h2>
-
-          <p className="text-sm text-gray-400  mb-4">
-            Selecciona las funcionalidades adicionales que deseas activar para
-            tu empresa.
-          </p>
-
-          {/* Sección de funcionalidades */}
-          <div className="mt-6">
-            <h3 className="text-lg font-bold mb-2">
-              Funcionalidades disponibles
-            </h3>
-            <div className="bg-gray-200  rounded-lg max-h-60 overflow-y-auto">
-              {SYSTEM_FEATURES.map((feature) => {
-                const isActive = currentFeatures.includes(feature.id);
-                return (
-                  <div
-                    key={feature.id}
-                    className="flex items-center justify-between w-full py-2 border-b border-gray-200"
-                  >
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium">{feature.title}</p>
-                      <p className="text-xs text-gray-400 ">
-                        {feature.description}
-                      </p>
-                    </div>
-                    <div
-                      className={`w-14 h-8 ml-12 flex items-center rounded-full p-1 cursor-pointer ${
-                        featureToggles[feature.id] ? "bg-black" : "bg-gray-200"
-                      } ${isActive ? "opacity-50" : ""}`}
-                      onClick={() => handleToggleFeature(feature.id)}
-                    >
-                      <div
-                        className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                          featureToggles[feature.id] ? "translate-x-6" : ""
-                        }`}
-                      />
-                    </div>
+    <>
+      <div className="mt-4 flex-col space-y-2 w-full font-coolvetica flex flex-col ">
+        {/* Sección de funcionalidades */}
+        <div className="">
+          <h3 className="text-2xl font-bold my-6 text-center">
+            Features disponibles
+          </h3>
+          <div className=" px-4  rounded-lg max-h-60 overflow-y-auto">
+            {SYSTEM_FEATURES.map((feature) => {
+              const isActive = currentFeatures.includes(feature.id);
+              return (
+                <div
+                  key={feature.id}
+                  className="flex items-center justify-between w-full py-2 border-b border-gray-200"
+                >
+                  <div className="flex flex-col">
+                    <p className="text-sm font-medium">{feature.title}</p>
+                    <p className="text-xs text-gray-400 ">
+                      {feature.description}
+                    </p>
                   </div>
-                );
-              })}
-            </div>
+                  <div
+                    className={`w-14 h-8 ml-12 flex items-center rounded-full p-1 cursor-pointer ${
+                      featureToggles[feature.id] ? "bg-black" : "bg-gray-200"
+                    } ${isActive ? "opacity-50" : ""}`}
+                    onClick={() => handleToggleFeature(feature.id)}
+                  >
+                    <div
+                      className={`bg-gray-100 w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                        featureToggles[feature.id] ? "translate-x-6" : ""
+                      }`}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          {/* Mensaje de error */}
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
-              <p className="text-red-500 text-xs">{error}</p>
-            </div>
-          )}
         </div>
 
+        {/* Mensaje de error */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+            <p className="text-red-500 text-xs">{error}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="mx-4 mb-12">
         <button
           onClick={handleAddFeatures}
           disabled={loading}
@@ -224,7 +157,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
           )}
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

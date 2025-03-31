@@ -898,62 +898,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
               maxHeight: isMobile ? "80vh" : "auto", // Control de altura
             }}
           >
-            <nav className="px-4 h-full">
-              {/* Área de menús con scroll */}
-              <div className="relative">
-                <div
-                  ref={menuScrollContainerRef}
-                  className={
-                    isMobile
-                      ? "max-h-80 overflow-y-auto pb-4 pr-2 menu-scroll-container"
-                      : ""
-                  }
-                  onScroll={handleMenuScroll}
-                >
-                  <ul className="flex pt-8 flex-col gap-2">
-                    {renderMenuItems()}
-                  </ul>
-                </div>
-
-                {/* Indicador de scroll */}
-                {isMobile && isScrollNeeded && !isNearBottom && (
-                  <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
-                    <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
-                      <div className="animate-bounce">
-                        <img
-                          src={arrowIcon}
-                          className="h-2 transform rotate-90 opacity-30"
-                          alt="Desplazar para ver más"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Botón de acción principal y footer siempre visibles */}
-              <div className="mt-6">
-                <div
-                  className="w-full h-20 text-gray-100 items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-xl flex justify-center text-center rounded-3xl cursor-pointer"
-                  onClick={() => {
-                    if (isAuth) {
-                      setIsFeatureModalOpen(true);
-                    } else {
-                      setIsMenuOpen(false);
-                      navigate("/crearEmpresa");
-                    }
-                  }}
-                >
-                  {isAuth ? "Más funcionalidades" : "Prueba gratuita"}
-                </div>
-
-                <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4 mb-8">
-                  Ⓡ 2023. Absolute, Soluciones Empresariales.
-                </p>
-              </div>
-            </nav>
-
-            {isFeatureModalOpen && (
+            {isFeatureModalOpen ? (
               <MoreFeaturesModal
                 isOpen={isFeatureModalOpen}
                 onClose={() => setIsFeatureModalOpen(false)}
@@ -961,6 +906,61 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 onAddFeatures={handleAddFeatures}
                 loading={isFeatureLoading}
               />
+            ) : (
+              <nav className="px-4 h-full">
+                {/* Área de menús con scroll */}
+                <div className="relative">
+                  <div
+                    ref={menuScrollContainerRef}
+                    className={
+                      isMobile
+                        ? " overflow-y-auto pb-4 pr-2 menu-scroll-container"
+                        : ""
+                    }
+                    onScroll={handleMenuScroll}
+                  >
+                    <ul className="flex pt-8 flex-col gap-2">
+                      {renderMenuItems()}
+                    </ul>
+                  </div>
+
+                  {/* Indicador de scroll */}
+                  {isMobile && isScrollNeeded && !isNearBottom && (
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-center pointer-events-none">
+                      <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                        <div className="animate-bounce">
+                          <img
+                            src={arrowIcon}
+                            className="h-2 transform rotate-90 opacity-30"
+                            alt="Desplazar para ver más"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Botón de acción principal y footer siempre visibles */}
+                <div className="mt-6">
+                  <div
+                    className="w-full h-20 text-gray-100 items-center flex justify-center bg-indigo-500 font-bold font-coolvetica text-xl flex justify-center text-center rounded-3xl cursor-pointer"
+                    onClick={() => {
+                      if (isAuth) {
+                        setIsFeatureModalOpen(true);
+                      } else {
+                        setIsMenuOpen(false);
+                        navigate("/crearEmpresa");
+                      }
+                    }}
+                  >
+                    {isAuth ? "Más funcionalidades" : "Prueba gratuita"}
+                  </div>
+
+                  <p className="font-medium text-xs opacity-30 font-coolvetica text-center mt-4 mb-8">
+                    Ⓡ 2023. Absolute, Soluciones Empresariales.
+                  </p>
+                </div>
+              </nav>
             )}
 
             {isMobile && (
