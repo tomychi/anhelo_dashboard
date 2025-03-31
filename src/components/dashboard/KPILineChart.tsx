@@ -17,7 +17,7 @@ import {
   EmpresaProps,
 } from "../../firebase/ClientesAbsolute";
 
-// Función para aplicar el modificador al valor (reutilizada de CardInfo)
+// Función para aplicar el modificador al valor
 const applyModifier = (value, modifier = 1) => {
   if (modifier === 1) return value;
 
@@ -48,13 +48,13 @@ const applyModifier = (value, modifier = 1) => {
 };
 
 const KPILineChart = ({ orders }) => {
-  const [selectedKPIs, setSelectedKPIs] = useState(["productosVendidos"]);
+  const [selectedKPIs, setSelectedKPIs] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [availableKPIs, setAvailableKPIs] = useState([]);
   const [kpiConfig, setKpiConfig] = useState({});
   const [kpiConfigLoaded, setKpiConfigLoaded] = useState(false);
 
-  const { neto, facturacionTotal } = useSelector(
+  const { neto, facturacionTotal, vueltas, telefonos, valueDate } = useSelector(
     (state: RootState) => state.data
   );
 
@@ -100,6 +100,92 @@ const KPILineChart = ({ orders }) => {
     }, 0);
   };
 
+  const calculateTotalDirecciones = (vueltas) => {
+    if (!vueltas) return 0;
+    return vueltas.reduce((total, cadete) => {
+      if (cadete.vueltas && Array.isArray(cadete.vueltas)) {
+        return (
+          total +
+          cadete.vueltas.reduce((cadeteTotal, vuelta) => {
+            return cadeteTotal + (vuelta.orders ? vuelta.orders.length : 0);
+          }, 0)
+        );
+      }
+      return total;
+    }, 0);
+  };
+
+  const calculateAverageRatings = (dailyOrders) => {
+    const ordersWithRatings = dailyOrders.filter(
+      (order) =>
+        order.rating &&
+        typeof order.rating === "object" &&
+        Object.keys(order.rating).length > 0
+    );
+
+    const generalRatings = ["presentacion", "tiempo", "temperatura", "pagina"];
+    const initialTotals = {
+      general: { sum: 0, count: 0 },
+      temperatura: { sum: 0, count: 0 },
+      presentacion: { sum: 0, count: 0 },
+      pagina: { sum: 0, count: 0 },
+      tiempo: { sum: 0, count: 0 },
+      productos: { sum: 0, count: 0 },
+    };
+
+    const totals = ordersWithRatings.reduce((acc, order) => {
+      if (order.rating && typeof order.rating === "object") {
+        Object.entries(order.rating).forEach(([key, value]) => {
+          if (typeof value === "number") {
+            const lowerKey = key.toLowerCase();
+            if (!generalRatings.includes(lowerKey)) {
+              acc["productos"].sum += value;
+              acc["productos"].count += 1;
+            } else {
+              if (acc[lowerKey]) {
+                acc[lowerKey].sum += value;
+                acc[lowerKey].count += 1;
+              }
+            }
+          }
+        });
+      }
+      return acc;
+    }, initialTotals);
+
+    const averages = {
+      temperatura:
+        totals.temperatura.count > 0
+          ? totals.temperatura.sum / totals.temperatura.count
+          : 0,
+      presentacion:
+        totals.presentacion.count > 0
+          ? totals.presentacion.sum / totals.presentacion.count
+          : 0,
+      pagina:
+        totals.pagina.count > 0 ? totals.pagina.sum / totals.pagina.count : 0,
+      tiempo:
+        totals.tiempo.count > 0 ? totals.tiempo.sum / totals.tiempo.count : 0,
+      productos:
+        totals.productos.count > 0
+          ? totals.productos.sum / totals.productos.count
+          : 0,
+    };
+
+    const generalAverage =
+      Object.values(averages).reduce((sum, value) => sum + value, 0) /
+      Object.keys(averages).length;
+
+    return {
+      general: generalAverage,
+      temperatura: averages.temperatura,
+      presentacion: averages.presentacion,
+      pagina: averages.pagina,
+      tiempo: averages.tiempo,
+      productos: averages.productos,
+    };
+  };
+
   useEffect(() => {
     if (orders.length === 0 || !kpiConfigLoaded) return;
 
@@ -111,22 +197,34 @@ const KPILineChart = ({ orders }) => {
       return acc;
     }, {});
 
+    const startDate = valueDate?.startDate
+      ? new Date(valueDate.startDate)
+      : new Date();
+    const customersByDate = telefonos.reduce((acc, telefono) => {
+      const customerOrders = orders.filter((o) => o.telefono === telefono);
+      const firstOrder = customerOrders.reduce(
+        (earliest, curr) =>
+          new Date(curr.fecha) < new Date(earliest.fecha) ? curr : earliest,
+        customerOrders[0]
+      );
+      if (firstOrder && firstOrder.fecha === telefono) {
+        acc[telefono] = (acc[telefono] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
     const dailyData = Object.entries(ordersByDate).map(
       ([dateStr, dailyOrders]) => {
         const activeOrders = dailyOrders.filter((order) => !order.canceled);
         const canceledOrders = dailyOrders.filter((order) => order.canceled);
 
-        // Cálculos originales
-        const facturacionBrutaActiva = activeOrders.reduce(
+        // Facturación bruta
+        const facturacionBruta = activeOrders.reduce(
           (sum, order) => sum + (Number(order.total) || 0),
           0
         );
 
-        const facturacionBrutaCancelada = canceledOrders.reduce(
-          (sum, order) => sum + (Number(order.total) || 0),
-          0
-        );
-
+        // Facturación neta
         const costosActivos = activeOrders.reduce((total, order) => {
           return (
             total +
@@ -135,20 +233,9 @@ const KPILineChart = ({ orders }) => {
             }, 0)
           );
         }, 0);
+        const facturacionNeta = facturacionBruta - costosActivos;
 
-        const costosCancelados = canceledOrders.reduce((total, order) => {
-          return (
-            total +
-            (order.detallePedido || []).reduce((subtotal, pedido) => {
-              return subtotal + (pedido.costoBurger || 0);
-            }, 0)
-          );
-        }, 0);
-
-        const facturacionNetaActiva = facturacionBrutaActiva - costosActivos;
-        const facturacionNetaCancelada =
-          facturacionBrutaCancelada - costosCancelados;
-
+        // Productos vendidos
         const productosVendidos = activeOrders.reduce(
           (sum, order) =>
             sum +
@@ -156,6 +243,95 @@ const KPILineChart = ({ orders }) => {
           0
         );
 
+        // Ventas delivery y take away
+        const ventasDelivery = activeOrders.filter(
+          (order) => order.deliveryMethod === "delivery"
+        ).length;
+        const ventasTakeaway = activeOrders.filter(
+          (order) => order.deliveryMethod === "takeaway"
+        ).length;
+
+        // Extra por Dynamic price
+        const ordersWithPriceFactor = activeOrders.filter(
+          (order) => "priceFactor" in order
+        );
+        const extraDynamicPrice = ordersWithPriceFactor.reduce((acc, order) => {
+          const originalAmount = order.total / order.priceFactor;
+          return acc + (order.total - originalAmount);
+        }, 0);
+
+        // Pedidos con extras y productos extra
+        const ordersWithExtra = activeOrders.filter(
+          (order) =>
+            order.detallePedido &&
+            Array.isArray(order.detallePedido) &&
+            order.detallePedido.some((detalle) => detalle.extra === true)
+        );
+        const extraProducts = activeOrders.reduce((total, order) => {
+          if (!order.detallePedido || !Array.isArray(order.detallePedido))
+            return total;
+          return (
+            total +
+            order.detallePedido.reduce((subTotal, producto) => {
+              return producto.extra === true
+                ? subTotal + producto.quantity
+                : subTotal;
+            }, 0)
+          );
+        }, 0);
+        const extraFacturacion = activeOrders.reduce((total, order) => {
+          if (!order.detallePedido || !Array.isArray(order.detallePedido))
+            return total;
+          return (
+            total +
+            order.detallePedido
+              .filter((producto) => producto.extra)
+              .reduce(
+                (subtotal, producto) =>
+                  subtotal + producto.priceBurger * producto.quantity,
+                0
+              )
+          );
+        }, 0);
+
+        // Facturación cancelada
+        const canceledAmount = canceledOrders.reduce(
+          (sum, order) => sum + (Number(order.total) || 0),
+          0
+        );
+        const canceledCostTotal = canceledOrders.reduce((total, order) => {
+          if (!order.detallePedido || !Array.isArray(order.detallePedido))
+            return total;
+          return (
+            total +
+            order.detallePedido.reduce((subtotal, pedido) => {
+              return subtotal + (pedido.costoBurger || 0);
+            }, 0)
+          );
+        }, 0);
+        const canceledNetAmount = canceledAmount - canceledCostTotal;
+        const canceledProducts = canceledOrders.reduce((total, order) => {
+          if (!order.detallePedido || !Array.isArray(order.detallePedido))
+            return total;
+          return (
+            total +
+            order.detallePedido.reduce((accumulator, detail) => {
+              const additionalQuantity =
+                detail.burger && detail.burger.includes("2x1")
+                  ? detail.quantity
+                  : 0;
+              return accumulator + detail.quantity + additionalQuantity;
+            }, 0)
+          );
+        }, 0);
+        const canceledDelivery = canceledOrders.filter(
+          (order) => order.deliveryMethod === "delivery"
+        ).length;
+        const canceledTakeaway = canceledOrders.filter(
+          (order) => order.deliveryMethod === "takeaway"
+        ).length;
+
+        // Customer success
         const pedidosDemorados = activeOrders.filter((order) => {
           if (!order.tiempoEntregado || !order.hora) return false;
           const horaEntrega = order.tiempoEntregado.split(":").map(Number);
@@ -166,19 +342,23 @@ const KPILineChart = ({ orders }) => {
             (horaInicio[0] * 60 + horaInicio[1]);
           return tiempoTotal > 60;
         }).length;
-
         const customerSuccess =
           activeOrders.length > 0
-            ? Math.ceil(100 - (pedidosDemorados * 100) / activeOrders.length)
+            ? 100 - (pedidosDemorados * 100) / activeOrders.length
             : 0;
 
+        // Envío express
+        const express = activeOrders.filter(
+          (order) => order.envioExpress && order.envioExpress > 0
+        ).length;
+
+        // Tiempos
         const tiemposCoccion = activeOrders
           .filter((order) => order.tiempoElaborado)
           .map((order) => {
             const [minutos] = order.tiempoElaborado.split(":").map(Number);
             return minutos;
           });
-
         const tiempoCoccion =
           tiemposCoccion.length > 0
             ? tiemposCoccion.reduce((sum, time) => sum + time, 0) /
@@ -196,83 +376,107 @@ const KPILineChart = ({ orders }) => {
               (horaInicio[0] * 60 + horaInicio[1])
             );
           });
-
         const tiempoEntregaTotal =
           tiemposEntrega.length > 0
             ? tiemposEntrega.reduce((sum, time) => sum + time, 0) /
               tiemposEntrega.length
             : 0;
 
+        // Km recorridos (simplificado, asume lógica en calculateKMS)
         const kmRecorridos = activeOrders.reduce((total, order) => {
           if (!order.map || order.map.length !== 2) return total;
-          return total + 5; // Ejemplo simplificado
+          return total + 5; // Simplificación
         }, 0);
 
+        // Costo promedio delivery
+        const totalPaga = vueltas.reduce((totalCadetes, cadete) => {
+          if (!cadete.vueltas || cadete.vueltas.length === 0)
+            return totalCadetes;
+          const totalCadete = cadete.vueltas.reduce((totalVueltas, vuelta) => {
+            return totalVueltas + (vuelta.paga || 0);
+          }, 0);
+          return totalCadetes + totalCadete;
+        }, 0);
+        const totalDirecciones = calculateTotalDirecciones(vueltas);
+        const costoKm = totalDirecciones > 0 ? totalPaga / totalDirecciones : 0;
+
+        // Nuevos clientes (simplificado)
+        const nuevosClientes = customersByDate[dateStr] || 0;
+
+        // Ticket promedio
         const ticketPromedio =
-          activeOrders.length > 0
-            ? facturacionBrutaActiva / activeOrders.length
-            : 0;
+          activeOrders.length > 0 ? facturacionBruta / activeOrders.length : 0;
 
-        const presentacionRatings = activeOrders
-          .filter((order) => order.rating?.presentacion)
-          .map((order) => order.rating.presentacion);
+        // Ratings
+        const ratings = calculateAverageRatings(activeOrders);
 
-        const paginaRatings = activeOrders
-          .filter((order) => order.rating?.pagina)
-          .map((order) => order.rating.pagina);
-
-        const avgPresentacion =
-          presentacionRatings.length > 0
-            ? presentacionRatings.reduce((sum, rating) => sum + rating, 0) /
-              presentacionRatings.length
-            : 0;
-
-        const avgPagina =
-          paginaRatings.length > 0
-            ? paginaRatings.reduce((sum, rating) => sum + rating, 0) /
-              paginaRatings.length
-            : 0;
-
-        // Aplicar modificadores según el usuario actual
+        // Aplicar modificadores
         const kpiMapping = {
-          facturacionBrutaActiva: "bruto",
-          facturacionNetaActiva: "neto",
-          facturacionBrutaCancelada: "canceledAmount",
-          facturacionNetaCancelada: "canceledNetAmount",
-          productosVendidos: "productos",
-          ventasDelivery: "delivery",
-          customerSuccess: "success",
-          tiempoCoccion: "coccion",
-          tiempoEntregaTotal: "entrega",
-          kmRecorridos: "km",
-          ticketPromedio: "ticket",
-          ratingPresentacion: "presentacion",
-          ratingPagina: "pagina",
+          bruto: "bruto",
+          neto: "neto",
+          productos: "productos",
+          delivery: "delivery",
+          takeaway: "takeaway",
+          priceFactor: "priceFactor",
+          extraOrders: "extraOrders",
+          extraProducts: "extraProducts",
+          extraFacturacion: "extraFacturacion",
+          canceledAmount: "canceledAmount",
+          canceledNetAmount: "canceledNetAmount",
+          canceledProducts: "canceledProducts",
+          canceledDelivery: "canceledDelivery",
+          canceledTakeaway: "canceledTakeaway",
+          success: "success",
+          express: "express",
+          coccion: "coccion",
+          entrega: "entrega",
+          km: "km",
+          costokm: "costokm",
+          clientes: "clientes",
+          ticket: "ticket",
+          general: "general",
+          temperatura: "temperatura",
+          presentacion: "presentacion",
+          pagina: "pagina",
+          tiempo: "tiempo",
+          "productos-rating": "productos-rating",
         };
 
         const modifiedData = {};
-        Object.keys(kpiMapping).forEach((kpiId) => {
+        Object.entries({
+          bruto: facturacionBruta,
+          neto: facturacionNeta,
+          productos: productosVendidos,
+          delivery: ventasDelivery,
+          takeaway: ventasTakeaway,
+          priceFactor: extraDynamicPrice,
+          extraOrders: ordersWithExtra.length,
+          extraProducts: extraProducts,
+          extraFacturacion: extraFacturacion,
+          canceledAmount: canceledAmount,
+          canceledNetAmount: canceledNetAmount,
+          canceledProducts: canceledProducts,
+          canceledDelivery: canceledDelivery,
+          canceledTakeaway: canceledTakeaway,
+          success: customerSuccess,
+          express: express,
+          coccion: tiempoCoccion,
+          entrega: tiempoEntregaTotal,
+          km: kmRecorridos,
+          costokm: costoKm,
+          clientes: nuevosClientes,
+          ticket: ticketPromedio,
+          general: ratings.general,
+          temperatura: ratings.temperatura,
+          presentacion: ratings.presentacion,
+          pagina: ratings.pagina,
+          tiempo: ratings.tiempo,
+          "productos-rating": ratings.productos,
+        }).forEach(([kpiId, value]) => {
           const configKpiKey = kpiMapping[kpiId];
           const kpiData = kpiConfig[configKpiKey] || { modifiers: {} };
           const modifier = kpiData.modifiers[usuarioId] || 1;
-
-          const originalValue = {
-            facturacionBrutaActiva,
-            facturacionNetaActiva,
-            facturacionBrutaCancelada,
-            facturacionNetaCancelada,
-            productosVendidos,
-            ventasDelivery: activeOrders.length,
-            customerSuccess,
-            tiempoCoccion,
-            tiempoEntregaTotal,
-            kmRecorridos,
-            ticketPromedio,
-            ratingPresentacion: avgPresentacion,
-            ratingPagina: avgPagina,
-          }[kpiId];
-
-          modifiedData[kpiId] = applyModifier(originalValue, modifier);
+          modifiedData[kpiId] = applyModifier(value, modifier);
         });
 
         return {
@@ -291,74 +495,82 @@ const KPILineChart = ({ orders }) => {
     });
 
     setChartData(sortedData);
-  }, [orders, neto, facturacionTotal, kpiConfig, kpiConfigLoaded, usuarioId]);
-
-  const kpiMapping = {
-    facturacionBrutaActiva: "bruto",
-    facturacionNetaActiva: "neto",
-    facturacionBrutaCancelada: "canceledAmount",
-    facturacionNetaCancelada: "canceledNetAmount",
-    productosVendidos: "productos",
-    ventasDelivery: "delivery",
-    customerSuccess: "success",
-    tiempoCoccion: "coccion",
-    tiempoEntregaTotal: "entrega",
-    kmRecorridos: "km",
-    ticketPromedio: "ticket",
-    ratingPresentacion: "presentacion",
-    ratingPagina: "pagina",
-  };
+  }, [
+    orders,
+    neto,
+    facturacionTotal,
+    kpiConfig,
+    kpiConfigLoaded,
+    usuarioId,
+    vueltas,
+    telefonos,
+    valueDate,
+  ]);
 
   const allKPIOptions = [
+    { id: "bruto", name: "Facturación bruta", color: "#4F46E5" },
+    { id: "neto", name: "Facturación neta", color: "#818CF8" },
+    { id: "productos", name: "Productos vendidos", color: "#6366F1" },
+    { id: "delivery", name: "Ventas delivery", color: "#4338CA" },
+    { id: "takeaway", name: "Ventas take away", color: "#A78BFA" },
+    { id: "priceFactor", name: "Extra por Dynamic price", color: "#8B5CF6" },
+    { id: "extraOrders", name: "Pedidos con extras", color: "#7C3AED" },
+    { id: "extraProducts", name: "Productos extra", color: "#6D28D9" },
     {
-      id: "facturacionBrutaActiva",
-      name: "Facturación bruta",
-      color: "#4F46E5",
+      id: "extraFacturacion",
+      name: "Facturación por extras",
+      color: "#5B21B6",
     },
-    { id: "facturacionNetaActiva", name: "Facturación neta", color: "#818CF8" },
     {
-      id: "facturacionBrutaCancelada",
+      id: "canceledAmount",
       name: "Facturación bruta cancelada",
       color: "#C7D2FE",
     },
     {
-      id: "facturacionNetaCancelada",
+      id: "canceledNetAmount",
       name: "Facturación neta cancelada",
       color: "#312E81",
     },
-    { id: "productosVendidos", name: "Productos vendidos", color: "#6366F1" },
-    { id: "ventasDelivery", name: "Ventas delivery", color: "#4338CA" },
-    { id: "customerSuccess", name: "Customer success", color: "#A78BFA" },
-    { id: "tiempoCoccion", name: "Tiempo cocción promedio", color: "#8B5CF6" },
+    { id: "canceledProducts", name: "Productos cancelados", color: "#2563EB" },
     {
-      id: "tiempoEntregaTotal",
-      name: "Tiempo entrega total",
-      color: "#7C3AED",
+      id: "canceledDelivery",
+      name: "Ventas delivery canceladas",
+      color: "#1D4ED8",
     },
-    { id: "kmRecorridos", name: "KMs recorridos", color: "#6D28D9" },
-    { id: "ticketPromedio", name: "Ticket promedio", color: "#5B21B6" },
-    { id: "ratingPresentacion", name: "Rating Presentación", color: "#2563EB" },
-    { id: "ratingPagina", name: "Rating Página", color: "#1D4ED8" },
+    {
+      id: "canceledTakeaway",
+      name: "Ventas take away canceladas",
+      color: "#1E40AF",
+    },
+    { id: "success", name: "Customer success", color: "#9333EA" },
+    { id: "express", name: "Envío express", color: "#D946EF" },
+    { id: "coccion", name: "Tiempo cocción promedio", color: "#F472B6" },
+    { id: "entrega", name: "Tiempo total promedio", color: "#FBBF24" },
+    { id: "km", name: "Km recorridos", color: "#F59E0B" },
+    { id: "costokm", name: "Costo promedio delivery", color: "#D97706" },
+    { id: "clientes", name: "Nuevos clientes", color: "#059669" },
+    { id: "ticket", name: "Ticket promedio", color: "#10B981" },
+    { id: "general", name: "Rating general", color: "#22D3EE" },
+    { id: "temperatura", name: "Temperatura", color: "#06B6D4" },
+    { id: "presentacion", name: "Presentación", color: "#0891B2" },
+    { id: "pagina", name: "Página", color: "#0E7490" },
+    { id: "tiempo", name: "Tiempo", color: "#155E75" },
+    { id: "productos-rating", name: "Productos rating", color: "#047857" },
   ];
 
   useEffect(() => {
     if (!kpiConfigLoaded) return;
 
-    const filteredKPIs = allKPIOptions.filter((kpi) => {
-      const configKpiKey = kpiMapping[kpi.id];
-      return hasKpiPermission(configKpiKey, kpiConfig, usuarioId);
-    });
+    const filteredKPIs = allKPIOptions.filter((kpi) =>
+      hasKpiPermission(kpi.id, kpiConfig, usuarioId)
+    );
 
     setAvailableKPIs(filteredKPIs);
 
+    // Seleccionar inicialmente todos los KPIs disponibles
     setSelectedKPIs((prevSelected) => {
-      const newSelected = prevSelected.filter((id) =>
-        filteredKPIs.some((kpi) => kpi.id === id)
-      );
-      if (newSelected.length === 0 && filteredKPIs.length > 0) {
-        return [filteredKPIs[0].id];
-      }
-      return newSelected;
+      const newSelected = filteredKPIs.map((kpi) => kpi.id);
+      return newSelected.length > 0 ? newSelected : prevSelected;
     });
   }, [kpiConfigLoaded, kpiConfig, usuarioId]);
 
@@ -391,8 +603,8 @@ const KPILineChart = ({ orders }) => {
   return (
     <div className="bg-gray-100 mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2">
       <div className="md:pt-4">
-        <p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b  border-gray-200 ">
-          Metricas en el tiempo
+        <p className="md:text-5xl text-2xl font-bold pb-4 mt-2 text-center border-b border-gray-200">
+          Métricas en el tiempo
         </p>
         <div className="flex px-4 flex-wrap gap-2 mb-4 mt-4 md:justify-center">
           {availableKPIs.map((kpi) => (
@@ -430,12 +642,30 @@ const KPILineChart = ({ orders }) => {
             <Tooltip
               formatter={(value, name) => {
                 if (typeof value === "number") {
-                  if (name === "customerSuccess") return `${value.toFixed(1)}%`;
-                  if (name.includes("Tiempo")) return `${value.toFixed(1)} min`;
-                  if (name.includes("KMs")) return `${value.toFixed(1)} km`;
-                  if (name.includes("Facturación") || name.includes("Ticket"))
+                  if (name === "success") return `${value.toFixed(1)}%`;
+                  if (name === "coccion" || name === "entrega")
+                    return `${value.toFixed(1)} min`;
+                  if (name === "km") return `${value.toFixed(1)} km`;
+                  if (
+                    name === "bruto" ||
+                    name === "neto" ||
+                    name === "priceFactor" ||
+                    name === "extraFacturacion" ||
+                    name === "canceledAmount" ||
+                    name === "canceledNetAmount" ||
+                    name === "costokm" ||
+                    name === "ticket"
+                  )
                     return `$${value.toFixed(0)}`;
-                  if (name.includes("Rating")) return `${value.toFixed(1)}/5`;
+                  if (
+                    name === "general" ||
+                    name === "temperatura" ||
+                    name === "presentacion" ||
+                    name === "pagina" ||
+                    name === "tiempo" ||
+                    name === "productos-rating"
+                  )
+                    return `${value.toFixed(1)}/5`;
                   return value.toFixed(0);
                 }
                 return value;
