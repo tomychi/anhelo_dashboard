@@ -370,104 +370,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
     );
   };
 
-  // Función para copiar resultados al portapapeles
-  const copyResultsToClipboard = () => {
-    if (!respuesta) return;
-
-    let textToCopy = "";
-    if (Array.isArray(respuesta)) {
-      textToCopy = respuesta
-        .map((resp, index) => {
-          return (
-            `FACTURA ${index + 1}:\n` +
-            (resp.cae
-              ? `CAE: ${resp.cae}\nVencimiento: ${resp.caeFchVto || "N/A"}\nComprobante número: ${resp.cbteDesde}\n`
-              : `Error: ${resp.error || "No generado"}\n`) +
-            "------------------------\n"
-          );
-        })
-        .join("\n");
-    }
-
-    navigator.clipboard
-      .writeText(textToCopy)
-      .then(() => {
-        // Mostrar una notificación temporal
-        const notification = document.createElement("div");
-        notification.style.position = "fixed";
-        notification.style.bottom = "20px";
-        notification.style.padding = "0 20px";
-        notification.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
-        notification.style.color = "white";
-        notification.style.borderRadius = "9999px";
-        notification.style.left = "0";
-        notification.style.right = "0";
-        notification.style.marginLeft = "1rem";
-        notification.style.marginRight = "1rem";
-        notification.style.width = "calc(100% - 2rem)";
-        notification.style.height = "40px";
-        notification.style.zIndex = "1000";
-        notification.style.textAlign = "center";
-        notification.style.fontFamily = "Coolvetica, sans-serif";
-        notification.style.fontWeight = "bold";
-        notification.style.backdropFilter = "blur(8px)";
-        notification.style.WebkitBackdropFilter = "blur(8px)";
-        notification.style.display = "flex";
-        notification.style.alignItems = "center";
-        notification.style.justifyContent = "center";
-        notification.style.gap = "8px";
-
-        // Crear el SVG
-        const svgIcon = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "svg"
-        );
-        svgIcon.setAttribute("viewBox", "0 0 24 24");
-        svgIcon.setAttribute("fill", "currentColor");
-        svgIcon.style.width = "24px";
-        svgIcon.style.height = "24px";
-        svgIcon.style.flexShrink = "0";
-
-        // Crear el path dentro del SVG
-        const svgPath = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "path"
-        );
-        svgPath.setAttribute("fill-rule", "evenodd");
-        svgPath.setAttribute("clip-rule", "evenodd");
-        svgPath.setAttribute(
-          "d",
-          "M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z"
-        );
-
-        // Añadir el path al SVG
-        svgIcon.appendChild(svgPath);
-
-        // Crear un span para el texto
-        const textSpan = document.createElement("span");
-        textSpan.textContent = "Resultados copiados al portapapeles";
-
-        // Añadir el SVG y el texto a la notificación
-        notification.appendChild(svgIcon);
-        notification.appendChild(textSpan);
-
-        document.body.appendChild(notification);
-
-        // Desaparecer la notificación después de 2 segundos
-        setTimeout(() => {
-          notification.style.opacity = "0";
-          notification.style.transition = "opacity 0.5s ease";
-          setTimeout(() => {
-            document.body.removeChild(notification);
-          }, 500);
-        }, 2000);
-      })
-      .catch((err) => {
-        console.error("Error al copiar: ", err);
-        alert("No se pudo copiar al portapapeles. Error: " + err);
-      });
-  };
-
   // Renderizamos todo el componente incluyendo el modal
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
@@ -632,18 +534,9 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           )}
 
           {respuesta && (
-            <div className="p-4 border-l-4 w-full ml-8 mt-4 mb-8 border-black">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-black text-xl font-bold mb-6">
-                  Resultados
-                </h3>
-                <button
-                  type="button"
-                  onClick={copyResultsToClipboard}
-                  className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md"
-                >
-                  Copiar
-                </button>
+            <div className="p-4 border-l-4 w-full ml-4 mt-4 my-8 border-black">
+              <div className="text-black text-xl font-bold mb-6  items-center mb-2">
+                Resultados
               </div>
 
               <div>
