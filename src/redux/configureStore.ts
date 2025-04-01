@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { thunk } from "redux-thunk";
 
@@ -7,6 +7,7 @@ import dataReducer, { DataState } from "./data/dataReducer";
 import authReducer, { UserState } from "./auth/authReducer";
 import productReducer, { ProductState } from "./products/productReducer";
 import materialsReducer, { MaterialState } from "./materials/materialReducer";
+
 const persistConfig = {
   key: "root",
   storage,
@@ -14,21 +15,35 @@ const persistConfig = {
 };
 
 export interface RootState {
-  data: DataState; // Ajusta esto según la estructura de tu estado de pedidos
-  auth: UserState; // Ajusta esto según la estructura de tu estado de autenticación
-  product: ProductState; // Ajusta esto según la estructura de tu estado de autenticación
+  data: DataState;
+  auth: UserState;
+  product: ProductState;
   materials: MaterialState;
 }
 
-const RootReducer = combineReducers({
+// Primero definimos el appReducer (combinación normal de reducers)
+const appReducer = combineReducers({
   data: dataReducer,
   auth: authReducer,
   product: productReducer,
   materials: materialsReducer,
-  // ACA VAN LOS ESTADOS
 });
 
-const persistedReducer = persistReducer<any, any>(persistConfig, RootReducer);
+// Luego definimos nuestro rootReducer con la lógica de reseteo
+const rootReducer = (state: any, action: any) => {
+  // Cuando ocurre LOGOUT_SUCCESS, limpiamos todo el estado
+  if (action.type === "LOGOUT_SUCCESS") {
+    // Opcional: limpiar el almacenamiento persistente
+    // storage.removeItem('persist:root');
+
+    // Devolvemos el estado inicial llamando a los reducers con state undefined
+    return appReducer(undefined, action);
+  }
+  return appReducer(state, action);
+};
+
+// Persistir el rootReducer modificado
+const persistedReducer = persistReducer<any, any>(persistConfig, rootReducer);
 
 const store = configureStore({
   reducer: persistedReducer,
@@ -39,6 +54,3 @@ const store = configureStore({
 });
 
 export default store;
-// export type RootState = ReturnType<typeof RootReducer>;
-
-// Define el tipo de tu estado global
