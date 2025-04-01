@@ -907,6 +907,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
                 currentFeatures={featuresIniciales}
                 onAddFeatures={handleAddFeatures}
                 loading={isFeatureLoading}
+                tipoUsuario={tipoUsuario} // Agregar la prop tipoUsuario que ya existe en el estado
               />
             ) : (
               <nav className="px-4 h-full">

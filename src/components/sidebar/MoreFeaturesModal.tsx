@@ -9,6 +9,7 @@ interface MoreFeaturesModalProps {
   currentFeatures: string[];
   onAddFeatures: (features: string[]) => void;
   loading: boolean;
+  tipoUsuario?: "empresa" | "empleado"; // Nueva prop opcional
 }
 
 const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
@@ -17,6 +18,7 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
   currentFeatures,
   onAddFeatures,
   loading,
+  tipoUsuario = "empresa", // Por defecto será 'empresa' si no se proporciona
 }) => {
   // Estado para los features seleccionados
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
@@ -197,7 +199,14 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
     }
   };
 
+  const isEmpleado = tipoUsuario === "empleado";
+
   const handleAddFeatures = () => {
+    // Si es empleado, no permitir agregar features
+    if (isEmpleado) {
+      return;
+    }
+
     // Obtener los features seleccionados que no están ya activos
     const newFeatures = selectedFeatures.filter(
       (featureId) => !currentFeatures.includes(featureId)
@@ -477,9 +486,13 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
       <div className="mx-4">
         <button
           onClick={handleAddFeatures}
-          disabled={loading}
-          className={`text-gray-100 w-full mt-4 h-20 rounded-3xl text-3xl justify-center flex items-center bg-black font-bold font-coolvetica ${
-            loading ? "opacity-70" : "cursor-pointer"
+          disabled={loading || isEmpleado}
+          className={`text-gray-100 w-full mt-4 h-20 rounded-3xl text-3xl justify-center flex items-center ${
+            isEmpleado ? "bg-gray-400" : "bg-black"
+          } font-bold font-coolvetica ${
+            loading || isEmpleado
+              ? "opacity-70 cursor-not-allowed"
+              : "cursor-pointer"
           }`}
         >
           {loading ? (
@@ -487,6 +500,22 @@ const MoreFeaturesModal: React.FC<MoreFeaturesModalProps> = ({
               <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
               <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
               <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+            </div>
+          ) : isEmpleado ? (
+            <div className="flex flex-row items-center justify-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="h-4"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <p className="font-bold text-2xl">Sólo administradores</p>
             </div>
           ) : (
             "Agregar"
