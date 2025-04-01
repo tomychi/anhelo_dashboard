@@ -96,14 +96,26 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
   const auth = useSelector((state: RootState) => state.auth);
   const empresa = auth.usuario;
   const tipoUsuario = auth.tipoUsuario;
-  const empresaId = tipoUsuario === "empresa" ? empresa?.id : "";
+  const empresaId =
+    tipoUsuario === "empresa" ? empresa?.id : empresa?.empresaId;
   const usuarioId = empresa?.id || "";
+
+  // Verificar si es ANHELO basado en el ID de la empresa
+  const isAnhelo = empresaId === "8497d9a8-b474-41d8-86a9-43a9454927c1";
+
+  // Para debugging
+  console.log("Empresa ID:", empresaId);
+  console.log("¿Es ANHELO?:", isAnhelo);
+  console.log("Tipo de usuario:", tipoUsuario);
+  console.log("¿Es dueño?:", tipoUsuario === "empresa");
+  console.log("¿Es empleado?:", tipoUsuario === "empleado");
 
   // Cargar empleados y configuración actual cuando se abre el modal
   useEffect(() => {
     if (isOpen && empresaId && kpiKey) {
       // Cargar empleados y luego la configuración actual
       const loadData = async () => {
+        console.log("Modal abierto - IsAnhelo:", isAnhelo);
         const empleadosData = await fetchEmpleados();
         await fetchCurrentAccess(empleadosData);
       };
@@ -374,48 +386,51 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
               Visibilidad de {kpiTitle.toLocaleLowerCase()}
             </h2>
 
-            {/* Toggle para mostrar/ocultar modificadores */}
-            <div
-              onClick={() => setShowModifiers(!showModifiers)}
-              className={`flex items-center w-fit flex-row px-4 justify-center gap-2 p-2 rounded-full ${
-                showModifiers
-                  ? "bg-black text-gray-100"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              {showModifiers ? (
-                /* Eye icon when modifiers are shown */
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6"
-                >
-                  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              ) : (
-                /* Eye-slash icon when modifiers are hidden */
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-6"
-                >
-                  <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
-                  <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
-                  <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
-                </svg>
-              )}
+            {/* Toggle para mostrar/ocultar modificadores - Solo visible si isAnhelo es true y el usuario es empresario */}
+            {isAnhelo && tipoUsuario === "empresa" && (
+              <div
+                onClick={() => setShowModifiers(!showModifiers)}
+                className={`flex items-center w-fit flex-row px-4 justify-center gap-2 p-2 rounded-full ${
+                  showModifiers
+                    ? "bg-black text-gray-100"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {showModifiers ? (
+                  /* Eye icon when modifiers are shown */
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6"
+                  >
+                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                ) : (
+                  /* Eye-slash icon when modifiers are hidden */
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6"
+                  >
+                    <path d="M3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18ZM22.676 12.553a11.249 11.249 0 0 1-2.631 4.31l-3.099-3.099a5.25 5.25 0 0 0-6.71-6.71L7.759 4.577a11.217 11.217 0 0 1 4.242-.827c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113Z" />
+                    <path d="M15.75 12c0 .18-.013.357-.037.53l-4.244-4.243A3.75 3.75 0 0 1 15.75 12ZM12.53 15.713l-4.243-4.244a3.75 3.75 0 0 0 4.244 4.243Z" />
+                    <path d="M6.75 12c0-.619.107-1.213.304-1.764l-3.1-3.1a11.25 11.25 0 0 0-2.63 4.31c-.12.362-.12.752 0 1.114 1.489 4.467 5.704 7.69 10.675 7.69 1.5 0 2.933-.294 4.242-.827l-2.477-2.477A5.25 5.25 0 0 1 6.75 12Z" />
+                  </svg>
+                )}
 
-              <span className="text-sm font-medium">Alteraciones</span>
-            </div>
-            {/* Mensaje explicativo de modificadores */}
-            {showModifiers && (
+                <span className="text-sm font-medium">Alteraciones</span>
+              </div>
+            )}
+
+            {/* Mensaje explicativo de modificadores - Solo visible si isAnhelo es true, es empresario y showModifiers está activo */}
+            {isAnhelo && tipoUsuario === "empresa" && showModifiers && (
               <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 text-xs">
                 <p className="text-blue-700">
                   Los modificadores permiten personalizar los valores mostrados
@@ -443,8 +458,8 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
               disabled={true} // Deshabilitado para no poder interactuar
             />
 
-            {/* Modificador para el empresario */}
-            {showModifiers && (
+            {/* Modificador para el empresario - Solo visible si isAnhelo es true, es empresario y showModifiers está activo */}
+            {isAnhelo && tipoUsuario === "empresa" && showModifiers && (
               <ModifierInput
                 userId={usuarioId}
                 userName="Valor personalizado"
@@ -465,16 +480,19 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                     onToggle={() => handleToggleAccess(empleado.id)}
                   />
 
-                  {/* Modificador para el empleado si tiene acceso */}
-                  {showModifiers && accessToggles[empleado.id] && (
-                    <ModifierInput
-                      userId={empleado.id}
-                      userName="Valor personalizado"
-                      value={modifiers[empleado.id] || 1}
-                      onChange={handleModifierChange}
-                      disabled={!accessToggles[empleado.id]}
-                    />
-                  )}
+                  {/* Modificador para el empleado si tiene acceso - Solo visible si isAnhelo es true y el usuario es empresario */}
+                  {isAnhelo &&
+                    tipoUsuario === "empresa" &&
+                    showModifiers &&
+                    accessToggles[empleado.id] && (
+                      <ModifierInput
+                        userId={empleado.id}
+                        userName="Valor personalizado"
+                        value={modifiers[empleado.id] || 1}
+                        onChange={handleModifierChange}
+                        disabled={!accessToggles[empleado.id]}
+                      />
+                    )}
                 </div>
               ))}
             </div>
