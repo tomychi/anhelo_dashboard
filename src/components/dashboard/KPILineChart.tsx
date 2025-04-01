@@ -686,7 +686,7 @@ const KPILineChart = ({ orders }) => {
             </button>
           ))}
         </div>
-        <div className="text-center text-xs text-gray-500 mb-2">
+        <div className="text-center text-xs text-gray-400 font-light mb-2">
           {selectedKPIs.length === 0
             ? "Selecciona métricas para visualizar"
             : `Mostrando ${selectedKPIs.length} ${selectedKPIs.length === 1 ? "métrica" : "métricas"}`}
@@ -754,7 +754,7 @@ const KPILineChart = ({ orders }) => {
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className="text-gray-400 text-center px-8 font-light">
+        <p className="text-gray-400 text-xs  text-center p-8 font-light">
           No hay datos disponibles para el período seleccionado
         </p>
       )}
