@@ -3,6 +3,7 @@ import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
 import { guardarFacturaPorMonto } from "../../firebase/afip";
 import currencyFormat from "../../helpers/currencyFormat";
+import { obtenerFechaActual, obtenerHoraActual } from "../../helpers/dateToday";
 
 // URL del backend en AWS EC2
 const BASE_URL = "https://backend.onlyanhelo.com";
@@ -17,6 +18,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
     cuit: "33718835289",
     puntoVenta: "2",
     tipoFactura: "B",
+    fechaEmision: obtenerFechaActual(), // Usar la fecha actual como valor predeterminado
   });
   const [ventasGeneradas, setVentasGeneradas] = useState([]);
   const [error, setError] = useState(null);
@@ -29,6 +31,27 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   const [dragStart, setDragStart] = useState(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const modalRef = useRef(null);
+
+  // Función helper para generar fechas válidas (últimos 5 días)
+  const obtenerUltimosCincoDias = () => {
+    const fechas = [];
+    for (let i = 0; i < 5; i++) {
+      const fecha = new Date();
+      fecha.setDate(fecha.getDate() - i);
+
+      // Formatear como DD/MM/YYYY para mantener consistencia con obtenerFechaActual()
+      const dia = fecha.getDate().toString().padStart(2, "0");
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+      const anio = fecha.getFullYear();
+      const fechaFormateada = `${dia}/${mes}/${anio}`;
+
+      fechas.push(fechaFormateada);
+    }
+    return fechas;
+  };
+
+  // Generar el arreglo de fechas disponibles
+  const fechasDisponibles = obtenerUltimosCincoDias();
 
   // Efecto para inicializar animación cuando el modal se hace visible
   useEffect(() => {
@@ -242,7 +265,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
       for (let i = 0; i < ventasAFacturar.length; i++) {
         const venta = ventasAFacturar[i];
 
-        // Datos de facturación para cada venta
+        // Datos de facturación para cada venta, ahora incluyendo la fecha
         const facturaData = {
           cuit: formData.cuit,
           puntoVenta: formData.puntoVenta,
@@ -252,7 +275,14 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           importeTotal: venta.importeTotal,
           documentoReceptor: 99, // Consumidor final
           numeroReceptor: 0, // Consumidor final
+          fechaEmision: formData.fechaEmision, // Enviamos la fecha seleccionada
         };
+
+        // Log para ver lo que se envía al backend
+        console.log(
+          `Factura ${i + 1}: Datos enviados al backend:`,
+          facturaData
+        );
 
         try {
           // Enviar solicitud para una sola factura
@@ -266,11 +296,12 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               importeNeto: facturaData.importeNeto,
               importeTrib: facturaData.importeTrib,
               importeTotal: facturaData.importeTotal,
+              fechaEmision: facturaData.fechaEmision, // Enviamos la fecha al backend
             }),
           });
 
           const data = await response.json();
-          // console.log(`Respuesta de factura ${i + 1}:`, data);
+          console.log(`Respuesta del backend para factura ${i + 1}:`, data);
 
           // Preparar la respuesta para mostrar al usuario
           let respuestaFactura;
@@ -301,9 +332,9 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 `Factura ${i + 1} emitida con éxito pero no se pudo guardar en Firebase`
               );
             } else {
-              // console.log(
-              //   `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
-              // );
+              console.log(
+                `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
+              );
             }
           } else {
             // Error al generar la factura
@@ -321,7 +352,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               cae: "No generado",
             };
 
-            // console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
+            console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
           }
 
           // Agregar esta respuesta al array de todas las respuestas
@@ -459,6 +490,42 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 <option value="B">Factura B</option>
                 <option value="C">Factura C</option>
               </select>
+
+              {/* Selector de fecha */}
+              <div className="relative">
+                <select
+                  name="fechaEmision"
+                  value={formData.fechaEmision}
+                  onChange={handleChange}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all appearance-none"
+                  required
+                >
+                  <option value="" disabled>
+                    Seleccionar fecha de emisión
+                  </option>
+                  {fechasDisponibles.map((fecha) => (
+                    <option key={fecha} value={fecha}>
+                      {fecha}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+              </div>
 
               <input
                 type="text"
