@@ -17,7 +17,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
     cuit: "33718835289",
     puntoVenta: "2",
     tipoFactura: "B",
-    fechaEmision: new Date().toISOString().split("T")[0], // Fecha actual en formato YYYY-MM-DD
   });
   const [ventasGeneradas, setVentasGeneradas] = useState([]);
   const [error, setError] = useState(null);
@@ -171,15 +170,13 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
         );
       }
 
-      // Usamos la fecha seleccionada por el usuario o la fecha actual como respaldo
-      const fechaSeleccionada = new Date(formData.fechaEmision || new Date());
-
       // Creamos las ventas
+      const fechaActual = new Date();
       const ventas = montos.map((monto, index) => {
         // Generamos una ID única y fecha/hora
-        const id = `generated-${fechaSeleccionada.getTime()}-${index}`;
-        const fecha = fechaSeleccionada.toLocaleDateString();
-        const hora = fechaSeleccionada.toLocaleTimeString();
+        const id = `generated-${fechaActual.getTime()}-${index}`;
+        const fecha = fechaActual.toLocaleDateString();
+        const hora = fechaActual.toLocaleTimeString();
 
         return {
           id,
@@ -255,8 +252,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           importeTotal: venta.importeTotal,
           documentoReceptor: 99, // Consumidor final
           numeroReceptor: 0, // Consumidor final
-          // Añadimos la fecha seleccionada para la API (si se necesita)
-          fechaEmision: formData.fechaEmision,
         };
 
         try {
@@ -271,11 +266,11 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               importeNeto: facturaData.importeNeto,
               importeTrib: facturaData.importeTrib,
               importeTotal: facturaData.importeTotal,
-              fechaEmision: facturaData.fechaEmision, // Añadimos la fecha a la solicitud
             }),
           });
 
           const data = await response.json();
+          // console.log(`Respuesta de factura ${i + 1}:`, data);
 
           // Preparar la respuesta para mostrar al usuario
           let respuestaFactura;
@@ -305,6 +300,10 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               console.warn(
                 `Factura ${i + 1} emitida con éxito pero no se pudo guardar en Firebase`
               );
+            } else {
+              // console.log(
+              //   `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
+              // );
             }
           } else {
             // Error al generar la factura
@@ -321,6 +320,8 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               error: errorMsg,
               cae: "No generado",
             };
+
+            // console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
           }
 
           // Agregar esta respuesta al array de todas las respuestas
@@ -370,6 +371,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   };
 
   // Renderizamos todo el componente incluyendo el modal
+  // Modificar el return del componente FacturarPorMonto
   return (
     <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
       <div
@@ -457,16 +459,6 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 <option value="B">Factura B</option>
                 <option value="C">Factura C</option>
               </select>
-
-              {/* Nuevo campo para seleccionar la fecha */}
-              <input
-                type="date"
-                name="fechaEmision"
-                value={formData.fechaEmision}
-                onChange={handleChange}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t transition-all"
-                required
-              />
 
               <input
                 type="text"
