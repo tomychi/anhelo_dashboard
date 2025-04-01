@@ -5,18 +5,29 @@ import { projectAuth } from "../../firebase/config";
 import arrow from "../../assets/arrowIcon.png";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/configureStore";
-import { EmpleadoProps, EmpresaProps } from "../../firebase/ClientesAbsolute";
+import {
+  EmpleadoProps,
+  EmpresaProps,
+  ModifierType,
+  getEffectiveModifier,
+} from "../../firebase/ClientesAbsolute";
 
 // Importar el modal para configurar acceso
 import KpiAccessModal from "./KpiAccessModal";
 
 // Función para aplicar el modificador al valor
-const applyModifier = (value, modifier = 1) => {
+const applyModifier = (value, modifier = 1, currentDate) => {
+  // Obtener el modificador efectivo según la fecha actual
+  const effectiveModifier =
+    typeof modifier === "number"
+      ? modifier
+      : getEffectiveModifier(modifier, currentDate);
+
   // Si el modificador es 1, no hay cambios
-  if (modifier === 1) return value;
+  if (effectiveModifier === 1) return value;
 
   if (typeof value === "number") {
-    return value * modifier;
+    return value * effectiveModifier;
   } else if (typeof value === "string") {
     // Casos especiales para valores monetarios
     if (value.includes("$")) {
@@ -27,7 +38,7 @@ const applyModifier = (value, modifier = 1) => {
         // Eliminar comas y convertir a número
         const num = parseFloat(numStr.replace(/,/g, ""));
         if (!isNaN(num)) {
-          const modifiedNum = Math.round(num * modifier);
+          const modifiedNum = Math.round(num * effectiveModifier);
 
           // Para preservar el formato de moneda original
           // Primero obtenemos el prefijo ($ o lo que sea)
@@ -44,7 +55,7 @@ const applyModifier = (value, modifier = 1) => {
       // Para valores no monetarios, intentamos convertir a número
       const num = parseFloat(value.replace(/,/g, ""));
       if (!isNaN(num)) {
-        const modifiedNum = Math.round(num * modifier);
+        const modifiedNum = Math.round(num * effectiveModifier);
         return modifiedNum.toString();
       }
     }
@@ -63,7 +74,7 @@ interface CardInfoProps {
   // Props para IDs de usuarios y clave del KPI
   accessUserIds?: string[];
   kpiKey?: string;
-  valueModifiers?: { [userId: string]: number };
+  valueModifiers?: { [userId: string]: ModifierType };
 }
 
 interface LoadingElementProps {
@@ -163,11 +174,15 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   const [infoWidth, setInfoWidth] = useState<number | undefined>(undefined);
   const [isMarketingUser, setIsMarketingUser] = useState(false);
   const [accessUsers, setAccessUsers] = useState<
-    { id: string; nombre: string }[]
+    Array<{
+      id: string;
+      nombre: string;
+    }>
   >([]);
   const [showAccessModal, setShowAccessModal] = useState(false);
   const [displayInfo, setDisplayInfo] = useState<string | number>(info);
   const [isModified, setIsModified] = useState(false);
+  const [modifierIndicator, setModifierIndicator] = useState("");
 
   // Obtener empleados y empresa para mostrar nombres de usuarios con acceso
   const auth = useSelector((state: RootState) => state.auth);
@@ -189,9 +204,16 @@ export const CardInfo: React.FC<CardInfoProps> = ({
 
   // Obtener información de todos los empleados
   const [allEmpleados, setAllEmpleados] = useState<EmpleadoProps[]>([]);
-  const [modifiers, setModifiers] = useState<{ [userId: string]: number }>(
-    valueModifiers
-  );
+  const [modifiers, setModifiers] = useState<{
+    [userId: string]: ModifierType;
+  }>(valueModifiers);
+
+  // Obtener la fecha seleccionada del estado global
+  const valueDate = useSelector((state: RootState) => state.data.valueDate);
+  const selectedDate = valueDate?.startDate
+    ? new Date(valueDate.startDate)
+    : new Date();
+  const formattedDate = selectedDate.toISOString().split("T")[0]; // Formato YYYY-MM-DD
 
   // Verificar si el usuario actual es empresario (administrador)
   const isEmpresario = tipoUsuario === "empresa";
@@ -199,27 +221,44 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   // Aplicar modificador al valor mostrado
   useEffect(() => {
     if (!isLoading && currentUserId) {
-      const modifier = modifiers[currentUserId] || 1;
+      const userModifier = modifiers[currentUserId] || 1;
 
-      // Solo aplicar el modificador si es diferente de 1
-      if (modifier !== 1) {
-        const modifiedValue = applyModifier(info, modifier);
+      // Solo aplicar el modificador si se encuentra un valor diferente de 1
+      if (userModifier !== 1) {
+        // Usar la fecha seleccionada para determinar el modificador adecuado
+        const modifiedValue = applyModifier(info, userModifier, formattedDate);
         setDisplayInfo(modifiedValue);
-        setIsModified(true);
+
+        // Determinar el indicador (múltiplo) a mostrar
+        let effectiveModifier =
+          typeof userModifier === "number"
+            ? userModifier
+            : getEffectiveModifier(userModifier, formattedDate);
+
+        // Solo mostrar el indicador si el modificador es diferente de 1
+        if (effectiveModifier !== 1) {
+          setModifierIndicator(`×${effectiveModifier}`);
+          setIsModified(true);
+        } else {
+          setModifierIndicator("");
+          setIsModified(false);
+        }
 
         // Log para depuración (se puede quitar en producción)
         console.log(
-          `KPI ${kpiKey}: Valor original ${info}, modificador ${modifier}, resultado ${modifiedValue}`
+          `KPI ${kpiKey}: Valor original ${info}, modificador ${effectiveModifier}, resultado ${modifiedValue}`
         );
       } else {
         setDisplayInfo(info);
+        setModifierIndicator("");
         setIsModified(false);
       }
     } else {
       setDisplayInfo(info);
+      setModifierIndicator("");
       setIsModified(false);
     }
-  }, [info, currentUserId, modifiers, isLoading, kpiKey]);
+  }, [info, currentUserId, modifiers, isLoading, kpiKey, formattedDate]);
 
   // Configurar el detector de pulsación larga
   const longPressEvent = useLongPress(() => {
@@ -345,7 +384,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   // Manejar la actualización de acceso desde el modal
   const handleUpdateAccess = async (
     newAccessIds: string[],
-    newModifiers: { [userId: string]: number } = {}
+    newModifiers: { [userId: string]: ModifierType } = {}
   ) => {
     if (!empresaId || !kpiKey) return;
 
@@ -456,6 +495,12 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           <div className="relative">
             <p ref={infoRef} className="text-4xl font-medium">
               {displayInfo}
+              {/* Indicador de modificador */}
+              {modifierIndicator && (
+                <span className="absolute text-xs font-light text-gray-500 -right-4 top-0">
+                  {modifierIndicator}
+                </span>
+              )}
             </p>
           </div>
         )}

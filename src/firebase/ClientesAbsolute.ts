@@ -65,6 +65,21 @@ export interface EmpleadoProps {
   };
 }
 
+// Interfaz para el nuevo formato de modificadores con rangos de fechas
+export interface DateRange {
+  startDate: string; // ISO format YYYY-MM-DD
+  endDate: string | null; // ISO format YYYY-MM-DD o null para "hasta el presente"
+  value: number; // Valor multiplicador
+}
+
+export interface ModifierValue {
+  type: string; // "simple" o "date_range"
+  default: number; // Valor por defecto
+  ranges?: DateRange[]; // Rangos de fechas (solo para type="date_range")
+}
+
+export type ModifierType = number | ModifierValue;
+
 // Mapeo de features a las colecciones necesarias
 const FEATURE_A_COLECCIONES = {
   Dashboard: ["pedidos"], //siempre tenemos esto porque en el form no dejamos deseleccionarlo
@@ -913,7 +928,7 @@ export const getKpiConfig = async (
 ): Promise<{
   [kpiKey: string]: {
     accessIds: string[];
-    modifiers: { [userId: string]: number };
+    modifiers: { [userId: string]: ModifierType };
   };
 }> => {
   if (!empresaId) return {};
@@ -953,6 +968,55 @@ export const getKpiConfig = async (
     return {};
   }
 };
+
+/**
+ * Función auxiliar para determinar el modificador efectivo según la fecha
+ * @param modifier Modificador que puede ser simple o basado en rangos
+ * @param date Fecha en formato ISO YYYY-MM-DD o Date
+ * @returns El valor numérico del modificador a aplicar
+ */
+export const getEffectiveModifier = (
+  modifier: ModifierType,
+  date?: string | Date
+): number => {
+  // Si es un número simple, usarlo directamente
+  if (typeof modifier === "number") {
+    return modifier;
+  }
+
+  // Si es un objeto con estructura de rangos de fechas
+  if (
+    typeof modifier === "object" &&
+    modifier !== null &&
+    modifier.type === "date_range" &&
+    Array.isArray(modifier.ranges)
+  ) {
+    // Convertir la fecha a formato YYYY-MM-DD
+    const currentDate = date
+      ? typeof date === "string"
+        ? date
+        : date.toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0];
+
+    // Buscar un rango que contenga la fecha actual
+    for (const range of modifier.ranges) {
+      // Si la fecha está dentro del rango
+      const startInRange = !range.startDate || currentDate >= range.startDate;
+      const endInRange = !range.endDate || currentDate <= range.endDate;
+
+      if (startInRange && endInRange) {
+        return range.value;
+      }
+    }
+
+    // Si no hay rango que aplique, usar el valor por defecto
+    return modifier.default || 1;
+  }
+
+  // Si no se puede determinar, retornar 1 (sin modificación)
+  return 1;
+};
+
 /**
  * Verifica si un usuario tiene permiso para ver un KPI específico
  * @param kpiKey Clave del KPI a verificar
@@ -1094,7 +1158,7 @@ export const updateKpiConfig = async (
   kpiConfig: {
     [kpiKey: string]: {
       accessIds: string[];
-      modifiers: { [userId: string]: number };
+      modifiers: { [userId: string]: ModifierType };
     };
   }
 ): Promise<void> => {
@@ -1201,8 +1265,8 @@ export const getEmpleadoKpis = async (
     const kpiConfig = await getKpiConfig(empresaId);
     const empleadoKpis: string[] = [];
 
-    Object.entries(kpiConfig).forEach(([kpiKey, empleados]) => {
-      if (empleados.includes(empleadoId)) {
+    Object.entries(kpiConfig).forEach(([kpiKey, config]) => {
+      if (config.accessIds?.includes(empleadoId)) {
         empleadoKpis.push(kpiKey);
       }
     });
@@ -1225,7 +1289,7 @@ export const subscribeToKpiConfig = (
   callback: (kpiConfig: {
     [kpiKey: string]: {
       accessIds: string[];
-      modifiers: { [userId: string]: number };
+      modifiers: { [userId: string]: ModifierType };
     };
   }) => void
 ): (() => void) => {
@@ -1271,8 +1335,6 @@ export const subscribeToKpiConfig = (
 
   return unsubscribe;
 };
-
-// Añadir estas funciones al final de ClientesAbsolute.ts
 
 /**
  * Interfaz para la estructura de las categorías de gastos con periodicidad
