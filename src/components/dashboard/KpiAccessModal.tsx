@@ -88,46 +88,31 @@ const DateRangeModifier = ({
   };
 
   return (
-    <div className="flex flex-col w-full mt-2 mb-2 px-2 py-2 bg-gray-50 rounded">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium">Rango {index + 1}</span>
-        {!disabled && (
-          <button
-            onClick={() => onDelete(index)}
-            className="text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded"
-          >
-            Eliminar
-          </button>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between mb-2">
-        <Datepicker
-          useRange={true}
-          asSingle={false}
-          separator="hasta"
-          value={rangeValue}
-          onChange={handleDateChange}
-          disabled={disabled}
-          inputClassName="w-full text-xs p-1 border rounded"
-          displayFormat="DD/MM/YYYY"
-          placeholder="Seleccione rango de fechas"
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500">Multiplicador:</span>
-        <input
-          type="number"
-          value={range.value}
-          onChange={handleValueChange}
-          min="0.1"
-          max="10"
-          step="0.1"
-          disabled={disabled}
-          className={`w-16 text-right border rounded p-1 text-xs ${disabled ? "bg-gray-100" : "bg-white"}`}
-        />
-      </div>
+    <div className="flex flex-row w-full  mb-2  rounded">
+      <Datepicker
+        useRange={true}
+        asSingle={false}
+        separator="hasta"
+        value={rangeValue}
+        onChange={handleDateChange}
+        disabled={disabled}
+        inputClassName="w-full text-xs px-4 h-10  border rounded-full"
+        displayFormat="DD/MM/YYYY"
+        placeholder="Seleccione rango de fechas"
+      />{" "}
+      <p className="text-xs text-gray-400 flex-shrink-0 mx-4 items-center text-center flex">
+        factor de
+      </p>
+      <input
+        type="number"
+        value={range.value}
+        onChange={handleValueChange}
+        min="0.1"
+        max="10"
+        step="0.1"
+        disabled={disabled}
+        className={`text-center border rounded-full p-1 text-xs ${disabled ? "bg-gray-100" : "bg-white"}`}
+      />
     </div>
   );
 };
@@ -220,13 +205,9 @@ const DateRangeModifiers = ({
   };
 
   return (
-    <div className="flex flex-col w-full mt-2 mb-4 border-t pt-2">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-medium">{userName}</p>
-      </div>
-
-      <div className="flex items-center justify-between mb-3 px-2 py-1 bg-gray-50 rounded">
-        <span className="text-xs">Valor por defecto:</span>
+    <div className="flex flex-col w-full mt-2 mb-4  pt-2">
+      <div className="flex flex-row items-center gap-2 mb-2">
+        <p className="text-xs">Factor actual:</p>
         <input
           type="number"
           value={modifierConfig.default}
@@ -235,7 +216,7 @@ const DateRangeModifiers = ({
           max="10"
           step="0.1"
           disabled={disabled}
-          className={`w-16 text-right border rounded p-1 text-xs ${disabled ? "bg-gray-100" : "bg-white"}`}
+          className={` text-center border rounded-full h-10 text-xs ${disabled ? "bg-gray-100" : "bg-white"}`}
         />
       </div>
 
@@ -255,7 +236,7 @@ const DateRangeModifiers = ({
       {!disabled && (
         <button
           onClick={handleAddRange}
-          className="mt-1 text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 py-2 px-3 rounded-lg"
+          className="mt-1 text-xs text-blue-500 bg-gray-200 w-fit px-4 hover:bg-blue-100 h-10  rounded-full"
         >
           + Añadir rango de fechas
         </button>
@@ -634,19 +615,19 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
             {/* Mensaje explicativo de modificadores */}
             {isAnhelo && tipoUsuario === "empresa" && showModifiers && (
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 text-xs">
-                <p className="text-blue-700">
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-3 mt-4 ">
+                <p className="text-blue-700 font-light text-xs">
                   Los modificadores permiten personalizar los valores mostrados
                   a cada usuario. Un modificador de 1 muestra el valor real. Un
                   modificador de 2 duplicará el valor. Un modificador de 0.5
                   mostrará la mitad del valor real.
                 </p>
-                <p className="text-blue-700 mt-2">
+                <p className="text-blue-700 font-light text-xs mt-2">
                   Con rangos de fechas puedes aplicar diferentes modificadores
                   según el periodo seleccionado, facilitando ajustes
                   estacionales o durante promociones específicas.
                 </p>
-                <p className="text-blue-700 mt-2 font-bold">
+                <p className="text-blue-700 mt-2  font-light text-xs">
                   Nota: Los valores modificados son solo visuales y no afectan
                   los datos reales.
                 </p>
