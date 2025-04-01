@@ -301,7 +301,6 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showModifiers, setShowModifiers] = useState(false);
-  const [showDateRanges, setShowDateRanges] = useState(false);
 
   // Obtener datos de la empresa del estado de redux
   const auth = useSelector((state: RootState) => state.auth);
@@ -592,12 +591,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
             {isAnhelo && tipoUsuario === "empresa" && (
               <div className="flex flex-row gap-2">
                 <div
-                  onClick={() => {
-                    setShowModifiers(!showModifiers);
-                    if (showDateRanges && !showModifiers) {
-                      setShowDateRanges(false);
-                    }
-                  }}
+                  onClick={() => setShowModifiers(!showModifiers)}
                   className={`flex items-center w-fit flex-row px-4 justify-center gap-2 p-2 rounded-full ${
                     showModifiers
                       ? "bg-black text-gray-100"
@@ -635,51 +629,6 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
                   <span className="text-sm font-medium">Alteraciones</span>
                 </div>
-
-                {/* Toggle para modificadores por rango de fechas */}
-                {showModifiers && (
-                  <div
-                    onClick={() => setShowDateRanges(!showDateRanges)}
-                    className={`flex items-center w-fit flex-row px-4 justify-center gap-2 p-2 rounded-full ${
-                      showDateRanges
-                        ? "bg-black text-gray-100"
-                        : "bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    {showDateRanges ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="h-6"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="h-6"
-                      >
-                        <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-
-                    <span className="text-sm font-medium">
-                      Rangos de fechas
-                    </span>
-                  </div>
-                )}
               </div>
             )}
 
@@ -692,13 +641,11 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                   modificador de 2 duplicará el valor. Un modificador de 0.5
                   mostrará la mitad del valor real.
                 </p>
-                {showDateRanges && (
-                  <p className="text-blue-700 mt-2">
-                    Con rangos de fechas puedes aplicar diferentes modificadores
-                    según el periodo seleccionado, facilitando ajustes
-                    estacionales o durante promociones específicas.
-                  </p>
-                )}
+                <p className="text-blue-700 mt-2">
+                  Con rangos de fechas puedes aplicar diferentes modificadores
+                  según el periodo seleccionado, facilitando ajustes
+                  estacionales o durante promociones específicas.
+                </p>
                 <p className="text-blue-700 mt-2 font-bold">
                   Nota: Los valores modificados son solo visuales y no afectan
                   los datos reales.
@@ -721,29 +668,12 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
 
             {/* Sistema de modificadores para el dueño */}
             {isAnhelo && tipoUsuario === "empresa" && showModifiers && (
-              <>
-                {showDateRanges ? (
-                  // Mostrar modificadores por rango de fechas para el dueño
-                  <DateRangeModifiers
-                    userId={usuarioId}
-                    userName="Valor personalizado"
-                    modifier={modifiers[usuarioId] || 1}
-                    onChange={handleModifierChange}
-                  />
-                ) : (
-                  // Mostrar modificador simple para el dueño
-                  <ModifierInput
-                    userId={usuarioId}
-                    userName="Valor personalizado"
-                    value={
-                      typeof modifiers[usuarioId] === "number"
-                        ? modifiers[usuarioId]
-                        : modifiers[usuarioId]?.default || 1
-                    }
-                    onChange={(id, value) => handleModifierChange(id, value)}
-                  />
-                )}
-              </>
+              <DateRangeModifiers
+                userId={usuarioId}
+                userName="Valor personalizado"
+                modifier={modifiers[usuarioId] || 1}
+                onChange={handleModifierChange}
+              />
             )}
           </div>
 
@@ -763,32 +693,12 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
                     tipoUsuario === "empresa" &&
                     showModifiers &&
                     accessToggles[empleado.id] && (
-                      <>
-                        {showDateRanges ? (
-                          // Mostrar modificadores por rango de fechas para empleados
-                          <DateRangeModifiers
-                            userId={empleado.id}
-                            userName="Valor personalizado"
-                            modifier={modifiers[empleado.id] || 1}
-                            onChange={handleModifierChange}
-                          />
-                        ) : (
-                          // Mostrar modificador simple para empleados
-                          <ModifierInput
-                            userId={empleado.id}
-                            userName="Valor personalizado"
-                            value={
-                              typeof modifiers[empleado.id] === "number"
-                                ? modifiers[empleado.id]
-                                : modifiers[empleado.id]?.default || 1
-                            }
-                            onChange={(id, value) =>
-                              handleModifierChange(id, value)
-                            }
-                            disabled={!accessToggles[empleado.id]}
-                          />
-                        )}
-                      </>
+                      <DateRangeModifiers
+                        userId={empleado.id}
+                        userName="Valor personalizado"
+                        modifier={modifiers[empleado.id] || 1}
+                        onChange={handleModifierChange}
+                      />
                     )}
                 </div>
               ))}
