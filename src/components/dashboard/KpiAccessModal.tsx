@@ -635,7 +635,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
             )}
           </div>
 
-          {/* Sección para el dueño/empresario */}
+          {/* Sección para el dueño/empresario - sin modificador */}
           <div>
             <TogglePermiso
               label={
@@ -646,16 +646,7 @@ export const KpiAccessModal: React.FC<KpiAccessModalProps> = ({
               onToggle={() => {}} // No permite cambios
               disabled={true} // Deshabilitado para no poder interactuar
             />
-
-            {/* Sistema de modificadores para el dueño */}
-            {isAnhelo && tipoUsuario === "empresa" && showModifiers && (
-              <DateRangeModifiers
-                userId={usuarioId}
-                userName="Valor personalizado"
-                modifier={modifiers[usuarioId] || 1}
-                onChange={handleModifierChange}
-              />
-            )}
+            {/* No mostramos modificador para el empresario */}
           </div>
 
           {/* Sección de empleados */}
