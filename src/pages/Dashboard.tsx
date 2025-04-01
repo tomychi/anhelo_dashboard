@@ -625,6 +625,54 @@ export const Dashboard: React.FC = () => {
   const extrasTotal = extrasData.total;
   const extrasDailyData = extrasData.dailyData;
 
+  const analyzeCustomersData = (customers) => {
+    // console.log("🔍 DEBUGGING CLIENTES =======================");
+    // console.log("📊 Datos completos de customers:", customers);
+
+    if (customers && customers.newCustomers) {
+      // console.log(
+      //   "👥 Cantidad de nuevos clientes:",
+      //   customers.newCustomers.length
+      // );
+
+      // Intentemos agrupar los clientes por fecha
+      const dailyCustomers = {};
+
+      customers.newCustomers.forEach((customer) => {
+        // Verificar si el cliente tiene fecha
+        if (customer.fecha) {
+          // Formatear la fecha al formato ISO YYYY-MM-DD
+          const [dia, mes, anio] = customer.fecha.split("/");
+          const fechaISO = `${anio}-${mes}-${dia}`;
+
+          if (!dailyCustomers[fechaISO]) {
+            dailyCustomers[fechaISO] = 0;
+          }
+
+          dailyCustomers[fechaISO] += 1;
+        } else {
+          // console.log("⚠️ Cliente sin fecha:", customer);
+        }
+      });
+
+      // console.log("📅 Nuevos clientes agrupados por fecha:", dailyCustomers);
+      return {
+        total: customers.newCustomers.length,
+        dailyData: dailyCustomers,
+      };
+    } else {
+      // console.log("❌ No hay datos de nuevos clientes o estructura incorrecta");
+      return {
+        total: 0,
+        dailyData: {},
+      };
+    }
+  };
+
+  // console.log("🚀 Inicializando card de clientes");
+  const clientesData = analyzeCustomersData(customers);
+  // console.log("✅ Datos procesados de clientes:", clientesData);
+
   const allCards = [
     <CardInfo
       key="bruto"
@@ -793,7 +841,8 @@ export const Dashboard: React.FC = () => {
     />,
     <CardInfo
       key="clientes"
-      info={customers.newCustomers.length.toString()}
+      info={clientesData.total.toString()}
+      originalDailyData={clientesData.dailyData}
       link={"clientes"}
       title={"Nuevos clientes"}
       isLoading={isLoading}
