@@ -681,6 +681,7 @@ export const Dashboard: React.FC = () => {
       link={"bruto"}
       title={"Facturación bruta"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="neto"
@@ -691,8 +692,8 @@ export const Dashboard: React.FC = () => {
       }
       title={"Facturación neta"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
-
     <CardInfo
       key="productos"
       info={totalProductosReal.toString()}
@@ -700,6 +701,7 @@ export const Dashboard: React.FC = () => {
       link={"productosVendidos"}
       title={"Productos vendidos"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="delivery"
@@ -708,6 +710,7 @@ export const Dashboard: React.FC = () => {
       link={"ventas"}
       title={"Ventas delivery"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="takeaway"
@@ -716,6 +719,7 @@ export const Dashboard: React.FC = () => {
       link={"ventas"}
       title={"Ventas take away"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="priceFactor"
@@ -728,24 +732,26 @@ export const Dashboard: React.FC = () => {
           : 0
       }
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
-
     <CardInfo
       key="extraOrders"
-      info={ordersWithExtra.length.toString()} // Muestra el número total de pedidos con 'extra: true'
-      title={"Pedidos con extras al final "} // Título del card
-      isLoading={isLoading} // Muestra un indicador de carga si es necesario
+      info={ordersWithExtra.length.toString()}
+      title={"Pedidos con extras al final"}
+      isLoading={isLoading}
       cuadrito={
         facturacionRealTotal > 0
           ? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount)
           : 0
       }
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="extraProducts"
-      info={extraProductsCount.toString()} // Total de productos con 'extra: true'
-      title={"Productos extra al final"} // Título del card
-      isLoading={isLoading} // Indicador de carga
+      info={extraProductsCount.toString()}
+      title={"Productos extra al final"}
+      isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="extraFacturacion"
@@ -753,12 +759,14 @@ export const Dashboard: React.FC = () => {
       originalDailyData={extrasDailyData}
       title={"Facturación por extras"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="canceledAmount"
       info={currencyFormat(Math.round(canceledOrdersTotal))}
       title={"Facturación bruta cancelada"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="canceledNetAmount"
@@ -770,26 +778,29 @@ export const Dashboard: React.FC = () => {
       }
       title={"Facturación neta cancelada"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="canceledProducts"
       info={canceledProducts.toString()}
       title={"Productos cancelados"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="canceledDelivery"
       info={canceledDeliveryOrders.length.toString()}
       title={"Ventas delivery canceladas"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="canceledTakeaway"
       info={canceledTakeawayOrders.length.toString()}
       title={"Ventas take away canceladas"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
-
     <CardInfo
       key="success"
       info={`${Math.ceil(
@@ -799,6 +810,7 @@ export const Dashboard: React.FC = () => {
       )}%`}
       title={"Customer success"}
       isLoading={isLoading}
+      formatType="integer" // Porcentaje como entero
     />,
     <CardInfo
       key="express"
@@ -810,24 +822,28 @@ export const Dashboard: React.FC = () => {
           : "0"
       }
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="coccion"
       info={`${Math.round(calcularPromedioTiempoElaboracion(orders))} M`}
       title={"Tiempo cocción promedio"}
       isLoading={isLoading}
+      formatType="integer" // Tiempos como enteros
     />,
     <CardInfo
       key="entrega"
       info={`${Math.round(promedioTiempoDeEntregaTotal(orders))} M`}
       title={"Tiempo total promedio"}
       isLoading={isLoading}
+      formatType="integer" // Tiempos como enteros
     />,
     <CardInfo
       key="km"
       info={`${Math.round(calculateKMS(orders))} km`}
       title={"Km recorridos"}
       isLoading={isLoading}
+      formatType="integer" // Distancias como enteros
     />,
     <CardInfo
       key="costokm"
@@ -838,6 +854,7 @@ export const Dashboard: React.FC = () => {
       )}
       title={"Costo promedio delivery"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="clientes"
@@ -846,6 +863,7 @@ export const Dashboard: React.FC = () => {
       link={"clientes"}
       title={"Nuevos clientes"}
       isLoading={isLoading}
+      formatType="integer" // Conteos siempre como enteros
     />,
     <CardInfo
       key="ticket"
@@ -856,6 +874,7 @@ export const Dashboard: React.FC = () => {
       }
       title={"Ticket promedio"}
       isLoading={isLoading}
+      formatType="integer" // Moneda como entero
     />,
     <CardInfo
       key="general"
@@ -864,6 +883,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.general.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
     <CardInfo
       key="temperatura"
@@ -872,6 +892,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.temperatura.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
     <CardInfo
       key="presentacion"
@@ -880,6 +901,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.presentacion.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
     <CardInfo
       key="pagina"
@@ -888,6 +910,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.pagina.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
     <CardInfo
       key="tiempo"
@@ -896,6 +919,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.tiempo.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
     <CardInfo
       key="productos-rating"
@@ -904,6 +928,7 @@ export const Dashboard: React.FC = () => {
       cuadrito={averageRatings.productos.count}
       showAsRatings={true}
       isLoading={isLoading}
+      formatType="decimal" // Ratings con un decimal
     />,
   ];
 

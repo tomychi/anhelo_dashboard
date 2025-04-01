@@ -22,17 +22,8 @@ const applyModifierImproved = (
   selectedDateRange,
   originalDailyData = null
 ) => {
-  // console.log(
-  //   "🚀 applyModifierImproved - Iniciando con valor:",
-  //   value,
-  //   "modificador:",
-  //   modifier
-  // );
-  // console.log("📅 Rango de fechas seleccionado:", selectedDateRange);
-
   // Si no tenemos datos diarios o el modificador es 1, simplemente devolvemos el valor original
   if (!originalDailyData || (typeof modifier === "number" && modifier === 1)) {
-    // console.log("⚡ Camino rápido - Sin datos diarios o modificador simple 1");
     return value;
   }
 
@@ -43,42 +34,29 @@ const applyModifierImproved = (
     modifier !== null &&
     modifier.type === "date_range"
   ) {
-    // console.log(
-    //   "📊 Procesando datos diarios con modificadores por rango de fechas"
-    // );
-
     let totalModified = 0;
 
     // Iterar por cada día en los datos originales
     Object.entries(originalDailyData).forEach(([dateKey, dailyValue]) => {
       // Obtener el modificador efectivo para esta fecha específica
       const effectiveModifier = getEffectiveModifier(modifier, dateKey);
-      // console.log(
-      //   `📆 Fecha ${dateKey}: Valor original ${dailyValue}, modificador ${effectiveModifier}`
-      // );
 
       // Aplicar el modificador al valor diario
       const modifiedValue = dailyValue * effectiveModifier;
-      // console.log(`   Valor modificado: ${modifiedValue}`);
 
       // Sumar al total
       totalModified += modifiedValue;
     });
 
-    // console.log(
-    //   `🧮 Total modificado: ${totalModified} (vs. original: ${value})`
-    // );
     return totalModified;
   }
 
   // Si solo tenemos un modificador simple (número)
   if (typeof modifier === "number") {
-    // console.log(`✖️ Aplicando multiplicador simple: ${value} * ${modifier}`);
     return value * modifier;
   }
 
   // Fallback para otros casos (valores de texto, etc.)
-  // console.log("⚠️ Fallback - Aplicando modificador al valor final");
   return applyModifier(value, modifier, selectedDateRange?.startDate);
 };
 
@@ -130,6 +108,155 @@ const applyModifier = (value, modifier = 1, currentDate) => {
   return value;
 };
 
+// Función para formatear el valor según el tipo especificado
+const formatValue = (
+  value: string | number,
+  formatType?: "integer" | "percentage" | "decimal"
+): string | number => {
+  // Si no hay formatType, devolver el valor tal cual
+  if (!formatType) return value;
+
+  // Si es un string, intentamos convertirlo a número si es posible
+  let numericValue: number | null = null;
+
+  if (typeof value === "string") {
+    // Si es un valor monetario (empieza con $)
+    if (value.includes("$")) {
+      // Para valores monetarios como "$1.816" o "$573.150"
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        const numStr = numMatch[0];
+
+        // Necesitamos procesar el string para convertirlo a número correctamente
+        // Detectamos si usa puntos como separador de miles (formato argentino)
+        const usesDotsForThousands =
+          numStr.includes(".") &&
+          (!numStr.includes(",") ||
+            (numStr.includes(",") &&
+              numStr.indexOf(".") < numStr.indexOf(",")));
+
+        // Eliminamos separadores y convertimos a número
+        let cleanNumStr = numStr;
+        if (usesDotsForThousands) {
+          // Si usa puntos como separador de miles, eliminarlos
+          cleanNumStr = cleanNumStr.replace(/\./g, "");
+          // Si además tiene coma decimal, convertirla a punto
+          cleanNumStr = cleanNumStr.replace(",", ".");
+        } else {
+          // Si usa coma como separador de miles, eliminarla
+          cleanNumStr = cleanNumStr.replace(/,/g, "");
+        }
+
+        numericValue = parseFloat(cleanNumStr);
+
+        if (formatType === "integer" && !isNaN(numericValue)) {
+          // Redondear a entero
+          numericValue = Math.round(numericValue);
+
+          // Preservar el formato original (mismo prefijo y formato de miles)
+          // Obtenemos el prefijo ($ o lo que sea)
+          const prefix = value.substring(0, value.indexOf(numStr));
+
+          // Formateamos el número según la configuración regional
+          // En Argentina usamos puntos para miles
+          const formattedNum = numericValue.toLocaleString("es-AR", {
+            maximumFractionDigits: 0, // Sin decimales
+            minimumFractionDigits: 0,
+          });
+
+          return `${prefix}${formattedNum}`;
+        }
+
+        // Para otros tipos, mantenemos el formato original
+        return value;
+      }
+    } else if (value.includes("%")) {
+      // Si es un porcentaje
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        // Convertir a número manejando tanto puntos como comas
+        const numStr = numMatch[0];
+        numericValue = parseFloat(numStr.replace(",", "."));
+
+        if (formatType === "integer") {
+          // Redondear a entero para porcentajes que deben ser enteros
+          numericValue = Math.round(numericValue);
+          return `${numericValue}%`;
+        } else if (formatType === "decimal") {
+          // Mantener un decimal para porcentajes con decimales
+          numericValue = Math.round(numericValue * 10) / 10;
+          return `${numericValue}%`;
+        }
+        // Para otros casos, mantener el formato original
+        return value;
+      }
+    } else if (value.includes("M")) {
+      // Si es un valor con unidad M (minutos)
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        // Convertir a número manejando tanto puntos como comas
+        const numStr = numMatch[0];
+        numericValue = parseFloat(numStr.replace(",", "."));
+
+        if (formatType === "integer") {
+          // Redondear a entero
+          numericValue = Math.round(numericValue);
+          return `${numericValue} M`;
+        }
+        // Para otros tipos, mantener el formato original
+        return value;
+      }
+    } else if (value.includes("km")) {
+      // Si es una distancia en km
+      const numMatch = value.match(/[\d,.]+/);
+      if (numMatch) {
+        // Convertir a número manejando tanto puntos como comas
+        const numStr = numMatch[0];
+        numericValue = parseFloat(numStr.replace(",", "."));
+
+        if (formatType === "integer") {
+          // Redondear a entero
+          numericValue = Math.round(numericValue);
+          return `${numericValue} km`;
+        }
+        // Para otros tipos, mantener el formato original
+        return value;
+      }
+    } else {
+      // Intentar convertir directamente el string a número
+      // Primero reemplazamos comas por puntos para manejar formatos internacionales
+      const numStr = value.includes(",") ? value.replace(",", ".") : value;
+      numericValue = parseFloat(numStr);
+
+      if (!isNaN(numericValue)) {
+        if (formatType === "integer") {
+          return Math.round(numericValue).toString();
+        } else if (formatType === "decimal") {
+          // Mantener un decimal
+          return (Math.round(numericValue * 10) / 10).toString();
+        } else if (formatType === "percentage") {
+          // Mostrar como porcentaje con un decimal
+          return (Math.round(numericValue * 10) / 10).toString() + "%";
+        }
+      }
+    }
+  } else if (typeof value === "number") {
+    // Si ya es un número, aplicar directamente el formato
+    if (formatType === "integer") {
+      return Math.round(value);
+    } else if (formatType === "decimal") {
+      // Mantener un decimal
+      return Math.round(value * 10) / 10;
+    } else if (formatType === "percentage") {
+      // Mostrar como porcentaje con un decimal
+      return Math.round(value * 10) / 10 + "%";
+    }
+  }
+
+  // Si no se pudo convertir o aplicar formato, devolver el valor original
+  return value;
+};
+
 interface CardInfoProps {
   info: string | number;
   title: string;
@@ -144,6 +271,8 @@ interface CardInfoProps {
   valueModifiers?: { [userId: string]: ModifierType };
   // Nueva prop para datos diarios originales
   originalDailyData?: { [date: string]: number };
+  // Nueva prop para tipo de formato
+  formatType?: "integer" | "percentage" | "decimal";
 }
 
 interface LoadingElementProps {
@@ -237,6 +366,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   kpiKey = "",
   valueModifiers = {},
   originalDailyData = null,
+  formatType,
 }) => {
   const titleRef = useRef<HTMLParagraphElement>(null);
   const infoRef = useRef<HTMLParagraphElement>(null);
@@ -293,33 +423,21 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     if (!isLoading && currentUserId) {
       const userModifier = modifiers[currentUserId] || 1;
 
-      // Registrar los datos iniciales para depuración
-      // console.log(
-      //   `🔍 KPI ${kpiKey} - Iniciando cálculo para usuario ${currentUserId}`
-      // );
-      // console.log(`📊 Valor original: ${info}`);
-      // console.log(`🛠️ Modificador: `, userModifier);
-      // console.log(`📅 Rango de fechas: `, valueDate);
-
-      if (originalDailyData) {
-        // console.log(`📋 Datos diarios disponibles:`, originalDailyData);
-      } else {
-        // console.log(`⚠️ No hay datos diarios disponibles para este KPI`);
-      }
-
       // Solo aplicar el modificador si se encuentra un valor diferente de 1
       if (userModifier !== 1) {
-        // AQUÍ ESTÁ EL CAMBIO CLAVE: Usar la nueva función que considera datos diarios
+        // Usar la función que considera datos diarios
         const modifiedValue = applyModifierImproved(
           info,
           userModifier,
           valueDate,
           originalDailyData
         );
-        // console.log(`✅ Valor modificado final: ${modifiedValue}`);
-        setDisplayInfo(modifiedValue);
 
-        // Determinar el indicador (múltiplo) a mostrar - usamos la fecha de inicio como referencia
+        // Aplicar el formateo según el tipo especificado
+        const formattedValue = formatValue(modifiedValue, formatType);
+        setDisplayInfo(formattedValue);
+
+        // Determinar el indicador (múltiplo) a mostrar
         let effectiveModifier =
           typeof userModifier === "number"
             ? userModifier
@@ -334,12 +452,16 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           setIsModified(false);
         }
       } else {
-        setDisplayInfo(info);
+        // Aplicar solo el formateo si no hay modificador
+        const formattedValue = formatValue(info, formatType);
+        setDisplayInfo(formattedValue);
         setModifierIndicator("");
         setIsModified(false);
       }
     } else {
-      setDisplayInfo(info);
+      // Aplicar solo el formateo en caso de estar cargando o sin ID de usuario
+      const formattedValue = formatValue(info, formatType);
+      setDisplayInfo(formattedValue);
       setModifierIndicator("");
       setIsModified(false);
     }
@@ -352,6 +474,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     formattedDate,
     originalDailyData,
     valueDate,
+    formatType, // Añadir formatType a las dependencias
   ]);
 
   // Configurar el detector de pulsación larga
