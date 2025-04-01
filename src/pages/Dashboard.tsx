@@ -998,7 +998,9 @@ export const Dashboard: React.FC = () => {
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
           {!kpiConfigLoaded ? (
             <div className="bg-white p-8 text-center rounded-lg">
-              <p className="text-gray-400 ">Cargando dashboard...</p>
+              <p className="text-gray-400 font-light text-xs ">
+                Cargando dashboard...
+              </p>
             </div>
           ) : cardsToRender.length > 0 ? (
             <>
