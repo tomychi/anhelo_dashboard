@@ -9,7 +9,7 @@ import {
   DocumentData,
   QuerySnapshot,
   getDocs,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
 interface InstagramData {
   username: string;
@@ -24,7 +24,7 @@ export const storeInstagramData = async (
 ): Promise<void> => {
   const { username, date, ...restData } = data;
   const firestore = getFirestore();
-  const docRef = doc(collection(firestore, 'instagramData'), username);
+  const docRef = doc(collection(firestore, "instagramData"), username);
 
   try {
     const userDoc: DocumentSnapshot<DocumentData> = await getDoc(docRef);
@@ -32,7 +32,7 @@ export const storeInstagramData = async (
     if (!userDoc.exists()) {
       // Si el documento para este usuario no existe, lo creamos y agregamos el primer dato
       await setDoc(docRef, { [date]: restData });
-      console.log('Datos guardados con éxito');
+      // console.log('Datos guardados con éxito');
     } else {
       // Si el documento ya existe, actualizamos los datos existentes o añadimos uno nuevo si es un día diferente
       const userData = userDoc.data();
@@ -40,7 +40,7 @@ export const storeInstagramData = async (
       if (userData && userData[date]) {
         // Si ya existe un registro para esta fecha, actualizamos los datos existentes
         await updateDoc(docRef, { [`${date}.followers`]: restData.followers });
-        console.log('Datos actualizados con éxito para el mismo día');
+        // console.log('Datos actualizados con éxito para el mismo día');
       } else {
         // Si no existe un registro para esta fecha, lo añadimos como un nuevo registro
         await setDoc(
@@ -48,23 +48,22 @@ export const storeInstagramData = async (
           { ...userData, [date]: restData },
           { merge: true }
         );
-        console.log('Datos añadidos con éxito para un nuevo día');
+        // console.log('Datos añadidos con éxito para un nuevo día');
       }
     }
   } catch (error) {
-    console.error('Error al guardar los datos:', error);
-    throw new Error('Error al guardar los datos');
+    console.error("Error al guardar los datos:", error);
+    throw new Error("Error al guardar los datos");
   }
 };
 
 export const fetchAllInstagramData = async (): Promise<InstagramData[]> => {
   const firestore = getFirestore();
-  const collectionRef = collection(firestore, 'instagramData');
+  const collectionRef = collection(firestore, "instagramData");
 
   try {
-    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
-      collectionRef
-    );
+    const querySnapshot: QuerySnapshot<DocumentData> =
+      await getDocs(collectionRef);
     const allData: InstagramData[] = [];
 
     querySnapshot.forEach((doc) => {
@@ -82,8 +81,8 @@ export const fetchAllInstagramData = async (): Promise<InstagramData[]> => {
 
     return allData;
   } catch (error) {
-    console.error('Error al obtener los datos:', error);
-    throw new Error('Error al obtener los datos');
+    console.error("Error al obtener los datos:", error);
+    throw new Error("Error al obtener los datos");
   }
 };
 

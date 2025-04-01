@@ -1,17 +1,17 @@
-import { firestore } from './firebaseAdmin';
-import { cleanPhoneNumber, obtenerFechaActual } from './helpers';
-import { OrderDetailProps, PedidoProps, ProductoMaterial } from './types';
+import { firestore } from "./firebaseAdmin";
+import { cleanPhoneNumber, obtenerFechaActual } from "./helpers";
+import { OrderDetailProps, PedidoProps, ProductoMaterial } from "./types";
 
 export const UploadOrder = async (
   orderDetail: OrderDetailProps,
   id: string
 ) => {
   const fechaFormateada = obtenerFechaActual();
-  const [dia, mes, anio] = fechaFormateada.split('/');
+  const [dia, mes, anio] = fechaFormateada.split("/");
 
   // Usa firestore.collection() y firestore.doc()
   const pedidosCollectionRef = firestore
-    .collection('pedidos')
+    .collection("pedidos")
     .doc(anio)
     .collection(mes);
   const pedidoDocRef = pedidosCollectionRef.doc(dia);
@@ -34,16 +34,16 @@ export const UploadOrder = async (
     });
     return id;
   } catch (error) {
-    console.error('Error al subir el pedido:', error);
+    console.error("Error al subir el pedido:", error);
     throw error;
   }
 };
 
 export const updateOrderStatus = async (orderId: string, paid: boolean) => {
   const fechaFormateada = obtenerFechaActual(); // Usa tu función de fecha actual
-  const [dia, mes, anio] = fechaFormateada.split('/');
+  const [dia, mes, anio] = fechaFormateada.split("/");
   const pedidosCollectionRef = firestore
-    .collection('pedidos')
+    .collection("pedidos")
     .doc(anio)
     .collection(mes); // Cambiado para usar firestore.collection()
   const pedidoDocRef = pedidosCollectionRef.doc(dia); // Obtener referencia al documento del día
@@ -53,7 +53,7 @@ export const updateOrderStatus = async (orderId: string, paid: boolean) => {
       // Cambiado para usar firestore.runTransaction()
       const docSnapshot = await transaction.get(pedidoDocRef);
       if (!docSnapshot.exists) {
-        throw new Error('El documento del pedido no existe.');
+        throw new Error("El documento del pedido no existe.");
       }
 
       const existingData = docSnapshot.data();
@@ -74,15 +74,15 @@ export const updateOrderStatus = async (orderId: string, paid: boolean) => {
       });
     });
 
-    console.log(`Pedido con ID ${orderId} actualizado correctamente.`);
+    // console.log(`Pedido con ID ${orderId} actualizado correctamente.`);
   } catch (error) {
-    console.error('Error al actualizar el estado del pedido:', error);
+    console.error("Error al actualizar el estado del pedido:", error);
     throw error;
   }
 };
 
 export const ReadMateriales = async () => {
-  const collections = ['materiales'];
+  const collections = ["materiales"];
 
   const fetchedData = await Promise.all(
     collections.map(async (collectionName) => {
@@ -111,7 +111,7 @@ export const ReadMateriales = async () => {
 };
 
 export const ReadData = async () => {
-  const collections = ['burgers', 'drinks', 'fries', 'toppings'];
+  const collections = ["burgers", "drinks", "fries", "toppings"];
 
   const fetchedData = await Promise.all(
     collections.map(async (collectionName) => {
@@ -156,7 +156,7 @@ export const calcularCostoHamburguesa = (
 };
 
 export const canjearVoucher = async (codigo: string): Promise<boolean> => {
-  const vouchersCollectionRef = firestore.collection('vouchers'); // Referencia a la colección de vouchers
+  const vouchersCollectionRef = firestore.collection("vouchers"); // Referencia a la colección de vouchers
 
   try {
     // Inicia la transacción
@@ -176,13 +176,13 @@ export const canjearVoucher = async (codigo: string): Promise<boolean> => {
 
         if (codigoIndex !== -1) {
           // Si el código ya fue canjeado, retorna false
-          if (codigos[codigoIndex].estado === 'usado') {
-            console.error('El voucher ya ha sido canjeado');
+          if (codigos[codigoIndex].estado === "usado") {
+            console.error("El voucher ya ha sido canjeado");
             return false;
           }
 
           // Si el código es válido, se marca como "usado"
-          codigos[codigoIndex].estado = 'usado';
+          codigos[codigoIndex].estado = "usado";
 
           // Actualiza el documento en Firestore con el código marcado como usado
           const voucherDocRef = vouchersCollectionRef.doc(docSnapshot.id); // Referencia al documento actual
@@ -194,7 +194,7 @@ export const canjearVoucher = async (codigo: string): Promise<boolean> => {
       }
 
       if (!voucherEncontrado) {
-        console.error('No se encontró el voucher con el código proporcionado');
+        console.error("No se encontró el voucher con el código proporcionado");
         return false;
       }
 
@@ -203,7 +203,7 @@ export const canjearVoucher = async (codigo: string): Promise<boolean> => {
 
     return true; // Si la transacción completa fue exitosa, retorna true
   } catch (error) {
-    console.error('Error al canjear el voucher:', error);
+    console.error("Error al canjear el voucher:", error);
     throw error; // Lanza un error si algo falla
   }
 };
@@ -213,9 +213,9 @@ export const addTelefonoFirebase = async (
   fecha: string
 ) => {
   const cleanPhone = cleanPhoneNumber(phoneNumber);
-  const telefonosCollectionRef = firestore.collection('telefonos');
+  const telefonosCollectionRef = firestore.collection("telefonos");
   const querySnapshot = await telefonosCollectionRef
-    .where('telefono', '==', cleanPhone)
+    .where("telefono", "==", cleanPhone)
     .get();
 
   if (querySnapshot.empty) {
@@ -226,11 +226,11 @@ export const addTelefonoFirebase = async (
         fecha: fecha,
         lastOrder: fecha, // Nueva fecha como último pedido al agregar
       });
-      console.log(
-        `Se agregó el número de teléfono ${cleanPhone} a Firebase con el ID: ${docRef.id}. Fecha: ${fecha}`
-      );
+      // console.log(
+      //   `Se agregó el número de teléfono ${cleanPhone} a Firebase con el ID: ${docRef.id}. Fecha: ${fecha}`
+      // );
     } catch (e) {
-      console.error('Error al agregar el número de teléfono a Firebase:', e);
+      console.error("Error al agregar el número de teléfono a Firebase:", e);
     }
   } else {
     // El número de teléfono ya existe en la base de datos, actualizamos el campo lastOrder
@@ -240,11 +240,11 @@ export const addTelefonoFirebase = async (
         await docRef.update({
           lastOrder: fecha, // Actualiza con la nueva fecha del último pedido
         });
-        console.log(
-          `El número de teléfono ${cleanPhone} ya existe en la base de datos. Actualizado lastOrder a: ${fecha}`
-        );
+        // console.log(
+        //   `El número de teléfono ${cleanPhone} ya existe en la base de datos. Actualizado lastOrder a: ${fecha}`
+        // );
       } catch (e) {
-        console.error('Error al actualizar el campo lastOrder en Firebase:', e);
+        console.error("Error al actualizar el campo lastOrder en Firebase:", e);
       }
     });
   }

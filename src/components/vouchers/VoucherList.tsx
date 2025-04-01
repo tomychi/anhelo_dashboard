@@ -71,7 +71,7 @@ export const VoucherList = () => {
           return acc;
         }, {});
 
-        console.log("=== CAMPAÑAS AGRUPADAS ===", groupedCampaigns);
+        // console.log("=== CAMPAÑAS AGRUPADAS ===", groupedCampaigns);
       } catch (error) {
         console.error("Error al obtener los títulos de vouchers:", error);
       } finally {

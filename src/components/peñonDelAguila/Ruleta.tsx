@@ -152,9 +152,9 @@ export const Ruleta = () => {
   }, [selectedNumbers, isLoadingConfig]);
 
   useEffect(() => {
-    console.log(
-      `Ruleta abierta desde la empresa: ${nombreEmpresa} (ID: ${empresaId})`
-    );
+    // console.log(
+    //   `Ruleta abierta desde la empresa: ${nombreEmpresa} (ID: ${empresaId})`
+    // );
   }, [nombreEmpresa, empresaId]);
 
   const resetWheelPosition = () => {
@@ -185,7 +185,7 @@ export const Ruleta = () => {
         },
         empresaId
       );
-      console.log("Estado de cierre modal reiniciado");
+      // console.log("Estado de cierre modal reiniciado");
     } catch (error) {
       console.error("Error al reiniciar estado de cierre modal:", error);
     }
@@ -210,7 +210,7 @@ export const Ruleta = () => {
         },
         empresaId
       );
-      console.log("Estado de control remoto reiniciado");
+      // console.log("Estado de control remoto reiniciado");
     } catch (error) {
       console.error("Error al reiniciar estado de control remoto:", error);
     }
@@ -301,7 +301,7 @@ export const Ruleta = () => {
         },
         empresaId
       );
-      console.log("Comando de giro enviado desde control remoto");
+      // console.log("Comando de giro enviado desde control remoto");
     } catch (error) {
       console.error("Error al enviar comando de giro:", error);
     }
@@ -328,7 +328,7 @@ export const Ruleta = () => {
         { settings },
         empresaId
       );
-      console.log("Configuración de ruleta guardada en Firestore");
+      // console.log("Configuración de ruleta guardada en Firestore");
     } catch (error) {
       console.error("Error al guardar configuración:", error);
     }

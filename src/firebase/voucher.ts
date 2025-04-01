@@ -152,9 +152,9 @@ export const calcularEstadisticasPedidos = (
   todosPedidos: Pedido[],
   pedidosConCupon: Pedido[]
 ) => {
-  console.log("=== DEBUG ESTADÍSTICAS ===");
-  console.log("Total pedidos encontrados:", todosPedidos.length);
-  console.log("Pedidos con cupón:", pedidosConCupon.length);
+  // console.log("=== DEBUG ESTADÍSTICAS ===");
+  // console.log("Total pedidos encontrados:", todosPedidos.length);
+  // console.log("Pedidos con cupón:", pedidosConCupon.length);
 
   // Total de cupones usados
   const totalCupones = pedidosConCupon.reduce(
@@ -191,10 +191,10 @@ export const calcularEstadisticasPedidos = (
         comprasPosteriores: [],
         fechasPedidos: [pedido.fecha],
       });
-      console.log("Nuevo cliente con cupón:", {
-        telefono: pedido.telefono,
-        fecha: pedido.fecha,
-      });
+      // console.log("Nuevo cliente con cupón:", {
+      //   telefono: pedido.telefono,
+      //   fecha: pedido.fecha,
+      // });
     } else {
       // Si ya existe el cliente, actualizamos la primera compra con cupón si esta es anterior
       const cliente = clientesUnicos.get(pedido.telefono)!;
@@ -224,11 +224,11 @@ export const calcularEstadisticasPedidos = (
       // Si el pedido es anterior a la primera compra con cupón
       if (fechaPedido < fechaPrimeraCupon) {
         clienteInfo.comprasAnteriores.push(pedido.fecha);
-        console.log("Compra anterior encontrada:", {
-          telefono: pedido.telefono,
-          fechaPedido: pedido.fecha,
-          fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
-        });
+        // console.log("Compra anterior encontrada:", {
+        //   telefono: pedido.telefono,
+        //   fechaPedido: pedido.fecha,
+        //   fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
+        // });
       }
       // Si el pedido es posterior a la primera compra con cupón y no es un pedido con cupón
       else if (
@@ -238,11 +238,11 @@ export const calcularEstadisticasPedidos = (
         )
       ) {
         clienteInfo.comprasPosteriores.push(pedido.fecha);
-        console.log("Compra posterior encontrada:", {
-          telefono: pedido.telefono,
-          fechaPedido: pedido.fecha,
-          fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
-        });
+        // console.log("Compra posterior encontrada:", {
+        //   telefono: pedido.telefono,
+        //   fechaPedido: pedido.fecha,
+        //   fechaPrimeraCupon: clienteInfo.primeraCompraConCupon,
+        // });
       }
     }
   });
@@ -264,10 +264,10 @@ export const calcularEstadisticasPedidos = (
       recurrentesNoVolvieron++;
     } else if (!eraRecurrente && volvioAComprar) {
       nuevosVolvieron++;
-      console.log("=== DETALLE CLIENTE NUEVO QUE VOLVIÓ ===");
-      console.log(`Cliente ${telefono}:`);
-      console.log("Primera compra (con cupón):", cliente.primeraCompraConCupon);
-      console.log("Compras posteriores:", cliente.comprasPosteriores);
+      // console.log("=== DETALLE CLIENTE NUEVO QUE VOLVIÓ ===");
+      // console.log(`Cliente ${telefono}:`);
+      // console.log("Primera compra (con cupón):", cliente.primeraCompraConCupon);
+      // console.log("Compras posteriores:", cliente.comprasPosteriores);
 
       // Buscamos los pedidos posteriores y sumamos sus totales
       const todosLosPedidosCliente = todosPedidos
@@ -282,40 +282,40 @@ export const calcularEstadisticasPedidos = (
         // Si es un pedido posterior al uso del cupón
         if (cliente.comprasPosteriores.includes(pedido.fecha)) {
           montoTotalRecomprasDeNuevos += pedido.total;
-          console.log(
-            `Sumando recompra: $${pedido.total} (Fecha: ${pedido.fecha})`
-          );
+          // console.log(
+          //   `Sumando recompra: $${pedido.total} (Fecha: ${pedido.fecha})`
+          // );
         }
 
-        console.log("=== PEDIDO ===");
-        console.log({
-          ...pedido,
-          esPedidoConCuponCampaña: pedidosConCupon.some(
-            (p) => p.fecha === pedido.fecha && p.telefono === pedido.telefono
-          ),
-        });
-        console.log("Detalle Items:");
+        // console.log("=== PEDIDO ===");
+        // console.log({
+        //   ...pedido,
+        //   esPedidoConCuponCampaña: pedidosConCupon.some(
+        //     (p) => p.fecha === pedido.fecha && p.telefono === pedido.telefono
+        //   ),
+        // });
+        // console.log("Detalle Items:");
         if (pedido.detallePedido) {
           pedido.detallePedido.forEach((item, index) => {
-            console.log(`Item ${index + 1}:`, item);
+            // console.log(`Item ${index + 1}:`, item);
           });
         }
-        console.log("------------------------");
+        // console.log("------------------------");
       });
-      console.log("===============================");
+      // console.log("===============================");
     } else {
       soloUsaronCupon++;
     }
   });
 
-  console.log("=== ESTADÍSTICAS FINALES ===", {
-    totalClientes: clientesUnicos.size,
-    soloUsaronCupon,
-    recurrentesNoVolvieron,
-    recurrentesVolvieron,
-    nuevosVolvieron,
-    montoTotalRecomprasDeNuevos,
-  });
+  // console.log("=== ESTADÍSTICAS FINALES ===", {
+  //   totalClientes: clientesUnicos.size,
+  //   soloUsaronCupon,
+  //   recurrentesNoVolvieron,
+  //   recurrentesVolvieron,
+  //   nuevosVolvieron,
+  //   montoTotalRecomprasDeNuevos,
+  // });
 
   return {
     totalPedidos: pedidosConCupon.length,
@@ -426,12 +426,12 @@ export const crearVoucher = async (
   const voucherDocRef = doc(firestore, "vouchers", titulo);
 
   try {
-    console.log(
-      `Iniciando generación de ${cant} códigos ${esGratis ? "gratuitos" : "normales"}...`
-    );
+    // console.log(
+    //   `Iniciando generación de ${cant} códigos ${esGratis ? "gratuitos" : "normales"}...`
+    // );
     // Pasar el parámetro esGratis a generarCodigos
     const codigos = await generarCodigos(cant, esGratis);
-    console.log(`Códigos generados exitosamente`);
+    // console.log(`Códigos generados exitosamente`);
 
     const docData = {
       titulo,
@@ -442,13 +442,13 @@ export const crearVoucher = async (
       // No se incluye gratis a nivel de documento
     };
 
-    console.log(`Intentando guardar en Firestore...`);
-    console.log(
-      `Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
-    );
+    // console.log(`Intentando guardar en Firestore...`);
+    // console.log(
+    //   `Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
+    // );
 
     await setDoc(voucherDocRef, docData);
-    console.log(`Documento guardado exitosamente`);
+    // console.log(`Documento guardado exitosamente`);
   } catch (error) {
     console.error("Error detallado al crear voucher:", error);
     // Re-lanzar el error con más información
@@ -729,15 +729,15 @@ export const crearVoucherMixto = async (
   const voucherDocRef = doc(firestore, "vouchers", titulo);
 
   try {
-    console.log(
-      `Iniciando generación de ${cantidadGratis} códigos gratuitos y ${cantidadNormales} códigos normales...`
-    );
+    // console.log(
+    //   `Iniciando generación de ${cantidadGratis} códigos gratuitos y ${cantidadNormales} códigos normales...`
+    // );
 
     const codigos = await generarCodigosMixtos(
       cantidadGratis,
       cantidadNormales
     );
-    console.log(`Códigos generados exitosamente: ${codigos.length} en total`);
+    // console.log(`Códigos generados exitosamente: ${codigos.length} en total`);
 
     const docData = {
       titulo,
@@ -751,13 +751,13 @@ export const crearVoucherMixto = async (
       },
     };
 
-    console.log(`Intentando guardar en Firestore...`);
-    console.log(
-      `Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
-    );
+    // console.log(`Intentando guardar en Firestore...`);
+    // console.log(
+    //   `Tamaño aproximado del documento: ${JSON.stringify(docData).length} bytes`
+    // );
 
     await setDoc(voucherDocRef, docData);
-    console.log(`Documento guardado exitosamente`);
+    // console.log(`Documento guardado exitosamente`);
   } catch (error) {
     console.error("Error detallado al crear voucher mixto:", error);
     throw new Error(`Error al crear voucher mixto: ${error.message || error}`);

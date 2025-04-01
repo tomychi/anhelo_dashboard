@@ -108,7 +108,7 @@ const FacturaForm = () => {
     const fetchLastThreeDaysOrders = async () => {
       try {
         const orders = await ReadLastThreeDaysOrders();
-        console.log("Pedidos de los últimos 3 días:", orders);
+        // console.log("Pedidos de los últimos 3 días:", orders);
       } catch (error) {
         console.error(
           "Error al obtener los pedidos de los últimos 3 días:",
@@ -145,14 +145,14 @@ const FacturaForm = () => {
     const fetchPedidosSinFacturar = async () => {
       try {
         const pedidosSinFacturar = await ReadLastThreeDaysOrders();
-        console.log(
-          "Pedidos sin facturar de los últimos 3 días:",
-          pedidosSinFacturar
-        );
-        console.log(
-          "Cantidad de pedidos sin facturar:",
-          pedidosSinFacturar.length
-        );
+        // console.log(
+        //   "Pedidos sin facturar de los últimos 3 días:",
+        //   pedidosSinFacturar
+        // );
+        // console.log(
+        //   "Cantidad de pedidos sin facturar:",
+        //   pedidosSinFacturar.length
+        // );
 
         // Transforma los pedidos al formato que necesita ventasSinFacturar
         const ventasFormateadas = pedidosSinFacturar.map((pedido) => ({
@@ -219,9 +219,9 @@ const FacturaForm = () => {
 
     if (tokenStatus?.valid) {
       setIsLoadingToken(false);
-      console.log(
-        "El token sigue siendo válido, no se necesita generar uno nuevo."
-      );
+      // console.log(
+      //   "El token sigue siendo válido, no se necesita generar uno nuevo."
+      // );
       return; // Salir sin hacer la petición
     }
 
@@ -279,7 +279,7 @@ const FacturaForm = () => {
       const data = await response.json();
 
       // Console log de la respuesta completa
-      console.log("Respuesta completa del backend (factura individual):", data);
+      // console.log("Respuesta completa del backend (factura individual):", data);
 
       if (!response.ok) {
         throw new Error(
@@ -320,9 +320,9 @@ const FacturaForm = () => {
             "Factura emitida con éxito pero no se pudo guardar en Firebase"
           );
         } else {
-          console.log(
-            `Factura emitida y guardada con éxito. CAE: ${data.data.cae}`
-          );
+          // console.log(
+          //   `Factura emitida y guardada con éxito. CAE: ${data.data.cae}`
+          // );
         }
       } else {
         const errorMsg =
@@ -376,9 +376,9 @@ const FacturaForm = () => {
           importeTotal: venta.importeTotal,
         };
 
-        console.log(
-          `Procesando factura ${i + 1}/${ventasAFacturar.length} para pedido ID: ${venta.id}`
-        );
+        // console.log(
+        //   `Procesando factura ${i + 1}/${ventasAFacturar.length} para pedido ID: ${venta.id}`
+        // );
 
         try {
           // Enviar solicitud para una sola factura
@@ -389,7 +389,7 @@ const FacturaForm = () => {
           });
 
           const data = await response.json();
-          console.log(`Respuesta de factura ${i + 1}:`, data);
+          // console.log(`Respuesta de factura ${i + 1}:`, data);
 
           // Preparar la respuesta para mostrar al usuario
           let respuestaFactura;
@@ -420,9 +420,9 @@ const FacturaForm = () => {
             // Esta función también guarda la información en la colección 'facturas'
             await facturarPedido(venta.id, venta.fecha, datosFacturacion);
 
-            console.log(
-              `Factura ${i + 1} procesada con éxito. CAE: ${data.data.cae}`
-            );
+            // console.log(
+            //   `Factura ${i + 1} procesada con éxito. CAE: ${data.data.cae}`
+            // );
           } else {
             // Error al generar la factura
             const errorMsg =
@@ -439,7 +439,7 @@ const FacturaForm = () => {
               cae: "No generado",
             };
 
-            console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
+            // console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
           }
 
           // Agregar esta respuesta al array de todas las respuestas

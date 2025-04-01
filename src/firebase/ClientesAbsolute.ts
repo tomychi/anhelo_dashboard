@@ -910,9 +910,9 @@ const inicializarColeccionesAdicionales = async (
       _esDocumentoSistema: true,
     });
 
-    console.log(
-      `Colección ${nombreColeccion} inicializada para empresa ${empresaId}`
-    );
+    // console.log(
+    //   `Colección ${nombreColeccion} inicializada para empresa ${empresaId}`
+    // );
   }
 
   return Array.from(coleccionesUnicas);
@@ -1061,7 +1061,7 @@ export const initDashboardConfig = async (
     // Verificar si ya existe configuración
     const configDoc = await getDoc(configRef);
     if (configDoc.exists()) {
-      console.log("La configuración de dashboard ya existe para esta empresa");
+      // console.log("La configuración de dashboard ya existe para esta empresa");
       return;
     }
 
@@ -1082,7 +1082,7 @@ export const initDashboardConfig = async (
       ultimaActualizacion: new Date(),
     });
 
-    console.log("Configuración de dashboard inicializada correctamente");
+    // console.log("Configuración de dashboard inicializada correctamente");
   } catch (error) {
     console.error("Error al inicializar configuración de dashboard:", error);
   }
@@ -1193,7 +1193,7 @@ export const updateKpiConfig = async (
       ultimaActualizacion: new Date(),
     });
 
-    console.log("Configuración de KPIs actualizada correctamente");
+    // console.log("Configuración de KPIs actualizada correctamente");
   } catch (error) {
     console.error("Error al actualizar configuración de KPIs:", error);
     throw error;
@@ -1475,9 +1475,9 @@ export const updateGastosCategoriesConfig = async (
       ultimaActualizacion: new Date(),
     });
 
-    console.log(
-      "Configuración de categorías de gastos actualizada correctamente"
-    );
+    // console.log(
+    //   "Configuración de categorías de gastos actualizada correctamente"
+    // );
   } catch (error) {
     console.error(
       "Error al actualizar configuración de categorías de gastos:",
@@ -1524,9 +1524,9 @@ export const updateCategoriaPeriodicidad = async (
     // Guardar la configuración actualizada
     await updateGastosCategoriesConfig(empresaId, categoriasActuales);
 
-    console.log(
-      `Periodicidad de ${categoriaNombre} actualizada a ${nuevaPeriodicidad} días`
-    );
+    // console.log(
+    //   `Periodicidad de ${categoriaNombre} actualizada a ${nuevaPeriodicidad} días`
+    // );
   } catch (error) {
     console.error("Error al actualizar periodicidad de categoría:", error);
     throw error;

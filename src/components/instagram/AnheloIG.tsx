@@ -6,10 +6,10 @@ export const AnheloIG = () => {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
+      // console.log(data);
     })
     .catch((err) => {
-      console.log('err', err);
+      // console.log('err', err);
     });
 
   return <div>AnheloIG</div>;

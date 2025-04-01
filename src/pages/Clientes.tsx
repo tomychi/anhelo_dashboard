@@ -120,13 +120,13 @@ export const Clientes = () => {
       );
 
       if (clienteEjemploTelefono) {
-        console.log(
-          "Cliente en el grupo Pedido 4:",
-          clienteEjemploTelefono,
-          ordersByPhone[clienteEjemploTelefono]
-        );
+        // console.log(
+        //   "Cliente en el grupo Pedido 4:",
+        //   clienteEjemploTelefono,
+        //   ordersByPhone[clienteEjemploTelefono]
+        // );
       } else {
-        console.log("No se encontró ningún cliente con al menos 4 pedidos.");
+        // console.log("No se encontró ningún cliente con al menos 4 pedidos.");
       }
 
       let evolutionStats = [];
@@ -329,7 +329,7 @@ export const Clientes = () => {
     setPedidosByPhone(pedidos);
 
     // **Añadir console.log para el cliente seleccionado**
-    console.log("Detalles del cliente seleccionado:", phoneNumber, pedidos);
+    // console.log("Detalles del cliente seleccionado:", phoneNumber, pedidos);
   };
 
   const telefonosConPedidos = filteredTelefonos.filter((t) =>

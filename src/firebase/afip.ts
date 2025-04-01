@@ -52,7 +52,7 @@ export const UploadAfip = async (
       );
     });
 
-    console.log("Pedido subido correctamente");
+    // console.log("Pedido subido correctamente");
     return afipId;
   } catch (error) {
     console.error("Error al subir el pedido:", error);
@@ -195,7 +195,7 @@ export const guardarFactura = async (
         );
       }
 
-      console.log("Factura guardada correctamente en la colección 'facturas'");
+      // console.log("Factura guardada correctamente en la colección 'facturas'");
       return true;
     });
   } catch (error) {

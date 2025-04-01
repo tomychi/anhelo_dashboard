@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { RootState } from '../redux/configureStore';
-import { useSelector } from 'react-redux';
+import { useEffect, useMemo, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import { RootState } from "../redux/configureStore";
+import { useSelector } from "react-redux";
 
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN;
 
@@ -24,19 +24,19 @@ export const MapStats = () => {
     ciudadLatitud - radio,
     ciudadLongitud + radio,
     ciudadLatitud + radio,
-  ].join(',');
+  ].join(",");
 
   useEffect(() => {
     mapboxgl.accessToken = accessToken;
 
     const saveMapData = (data: DataMapsProps[]) => {
-      localStorage.setItem('mapData', JSON.stringify(data));
+      localStorage.setItem("mapData", JSON.stringify(data));
     };
 
     const geocodeAddresses = async () => {
       const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/dark-v11',
+        container: "map",
+        style: "mapbox://styles/mapbox/dark-v11",
         center: [tuCiudadCoordinates[0], tuCiudadCoordinates[1]],
         zoom: 9,
       });
@@ -45,14 +45,14 @@ export const MapStats = () => {
 
       for (const item of orders) {
         if (!item.direccion) {
-          console.warn('Pedido sin dirección:', item);
+          console.warn("Pedido sin dirección:", item);
           continue; // Salta a la siguiente iteración del bucle si no hay dirección
         }
         // Si las coordenadas en item.map son válidas, usa esas coordenadas
         if (item.map && item.map[0] !== 0 && item.map[1] !== 0) {
           const coordinates: [number, number] = [item.map[1], item.map[0]]; // Invertir las coordenadas
           new mapboxgl.Marker({
-            color: '#ff0000',
+            color: "#ff0000",
             scale: 0.2,
           })
             .setLngLat(coordinates)
@@ -63,7 +63,7 @@ export const MapStats = () => {
         } else {
           // Si no hay coordenadas válidas en item.map, realiza la geocodificación
           const address = encodeURIComponent(item.direccion);
-          const endpoint = 'mapbox.places';
+          const endpoint = "mapbox.places";
           const proximity = `${tuCiudadCoordinates[0]},${tuCiudadCoordinates[1]}`;
           const url = `https://api.mapbox.com/geocoding/v5/${endpoint}/${address}.json?access_token=${mapboxgl.accessToken}&proximity=${proximity}&bbox=${bbox}`;
 
@@ -85,7 +85,7 @@ export const MapStats = () => {
               });
 
               new mapboxgl.Marker({
-                color: '#ff0000',
+                color: "#ff0000",
                 scale: 0.2,
               })
                 .setLngLat(coordinates)
@@ -94,13 +94,13 @@ export const MapStats = () => {
                 )
                 .addTo(map);
             } else {
-              console.log(
-                'No se encontró geometría para la dirección:',
-                item.direccion
-              );
+              // console.log(
+              //   'No se encontró geometría para la dirección:',
+              //   item.direccion
+              // );
             }
           } catch (error) {
-            console.error('Error al obtener coordenadas:', error);
+            console.error("Error al obtener coordenadas:", error);
           }
         }
       }

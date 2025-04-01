@@ -411,7 +411,7 @@ export const CrearEmpresa: React.FC<{}> = () => {
         rubro // Añadir el rubro aquí
       );
 
-      console.log("Empresa creada con ID:", empresaId);
+      // console.log("Empresa creada con ID:", empresaId);
 
       // Crear objeto de empresa para el login
       const empresaData = {

@@ -242,22 +242,22 @@ export const Sidebar = ({ scrollContainerRef }) => {
         setReclamosCount(pedidosConReclamoNoResuelto.length);
 
         if (pedidosConReclamoNoResuelto.length > 0) {
-          console.log(
-            "Pedidos con reclamo NO resuelto de los últimos 3 días desde Sidebar:",
-            pedidosConReclamoNoResuelto.map((order) => ({
-              id: order.id,
-              fecha: order.fecha,
-              hora: order.hora,
-              total: order.total,
-              reclamo: {
-                alias: order.reclamo?.alias,
-                descripcion: order.reclamo?.descripcion,
-                fecha: order.reclamo?.fecha,
-                resuelto: order.reclamo?.resuelto,
-                gift: order.reclamo?.gift || [],
-              },
-            }))
-          );
+          // console.log(
+          //   "Pedidos con reclamo NO resuelto de los últimos 3 días desde Sidebar:",
+          //   pedidosConReclamoNoResuelto.map((order) => ({
+          //     id: order.id,
+          //     fecha: order.fecha,
+          //     hora: order.hora,
+          //     total: order.total,
+          //     reclamo: {
+          //       alias: order.reclamo?.alias,
+          //       descripcion: order.reclamo?.descripcion,
+          //       fecha: order.reclamo?.fecha,
+          //       resuelto: order.reclamo?.resuelto,
+          //       gift: order.reclamo?.gift || [],
+          //     },
+          //   }))
+          // );
         }
       } catch (error) {
         console.error("Error al obtener pedidos con reclamo:", error);

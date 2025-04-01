@@ -1,32 +1,32 @@
-import axios from 'axios';
+import axios from "axios";
 
 export async function sendTemplateMessage() {
   const response = await axios({
     url: `https://graph.facebook.com/v21.0/${
       import.meta.env.VITE_WA_PHONE_NUMBER_ID
     }/messages`,
-    method: 'post',
+    method: "post",
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_WHATSAPP_TOKEN}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     data: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to: '543582416252',
-      type: 'template',
+      messaging_product: "whatsapp",
+      to: "543582416252",
+      type: "template",
       template: {
-        name: 'inactivos',
+        name: "inactivos",
         language: {
-          code: 'es_AR',
+          code: "es_AR",
         },
         components: [
           {
-            type: 'header',
+            type: "header",
             parameters: [
               {
-                type: 'image',
+                type: "image",
                 image: {
-                  link: 'https://res.cloudinary.com/db2gtt9hk/image/upload/v1730813740/rsehvlnnpe0pj7ksuqgg.jpg',
+                  link: "https://res.cloudinary.com/db2gtt9hk/image/upload/v1730813740/rsehvlnnpe0pj7ksuqgg.jpg",
                 },
               },
             ],
@@ -36,5 +36,5 @@ export async function sendTemplateMessage() {
     }),
   });
 
-  console.log(response.data);
+  // console.log(response.data);
 }

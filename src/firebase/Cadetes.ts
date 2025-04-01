@@ -10,11 +10,11 @@ import {
   runTransaction,
   setDoc,
   where,
-} from 'firebase/firestore';
-import { obtenerFechaActual, obtenerHoraActual } from '../helpers/dateToday';
-import { PedidoProps } from '../types/types';
-import { DateValueType } from 'react-tailwindcss-datepicker';
-import { parseISO, set } from 'date-fns';
+} from "firebase/firestore";
+import { obtenerFechaActual, obtenerHoraActual } from "../helpers/dateToday";
+import { PedidoProps } from "../types/types";
+import { DateValueType } from "react-tailwindcss-datepicker";
+import { parseISO, set } from "date-fns";
 
 export interface VueltaInfo {
   horaSalida: string;
@@ -25,10 +25,10 @@ export interface VueltaInfo {
 
 export const fetchCadetesNames = async () => {
   const firestore = getFirestore();
-  const usersCollectionRef = collection(firestore, 'users');
+  const usersCollectionRef = collection(firestore, "users");
 
   // Hacer una consulta para obtener solo los usuarios con rol 'cadete'
-  const cadetesQuery = query(usersCollectionRef, where('rol', '==', 'cadete'));
+  const cadetesQuery = query(usersCollectionRef, where("rol", "==", "cadete"));
 
   try {
     const querySnapshot = await getDocs(cadetesQuery);
@@ -36,14 +36,14 @@ export const fetchCadetesNames = async () => {
 
     return cadetesNames;
   } catch (error) {
-    console.error('Error obteniendo los nombres de los cadetes:', error);
+    console.error("Error obteniendo los nombres de los cadetes:", error);
     return [];
   }
 };
 
 export const fetchConstants = async () => {
   const firestore = getFirestore();
-  const constDocRef = doc(firestore, 'constantes', 'sueldos');
+  const constDocRef = doc(firestore, "constantes", "sueldos");
   const constDoc = await getDoc(constDocRef);
 
   if (constDoc.exists()) {
@@ -60,22 +60,22 @@ export const UploadVueltaCadete = async (
 ): Promise<VueltaInfo[]> => {
   const firestore = getFirestore();
   const fechaFormateada = obtenerFechaActual();
-  const [dia, mes, anio] = fechaFormateada.split('/');
+  const [dia, mes, anio] = fechaFormateada.split("/");
 
   if (!cadete) {
-    throw new Error('No se ha seleccionado un cadete');
+    throw new Error("No se ha seleccionado un cadete");
   }
 
   try {
     // Crear una referencia al documento del cadete
     const cadeteDocRef = doc(
       firestore,
-      'cadetes',
+      "cadetes",
       cadete
     ) as DocumentReference<DocumentData>;
 
     // Crear una subcolección "vueltas" dentro del documento del cadete
-    const vueltasCollectionRef = collection(cadeteDocRef, 'vueltas');
+    const vueltasCollectionRef = collection(cadeteDocRef, "vueltas");
 
     // Crear un ID único para el documento de vuelta usando la fecha
     const vueltaId = `${anio}-${mes}-${dia}`;
@@ -113,7 +113,7 @@ export const UploadVueltaCadete = async (
           vuelta.horaLlegada &&
           i === vueltas.length - 1
         ) {
-          console.log('nueva vuelta agregada');
+          // console.log('nueva vuelta agregada');
           break; // Terminar el bucle
         }
 
@@ -127,7 +127,7 @@ export const UploadVueltaCadete = async (
 
       // Si no se agregó una nueva vuelta, agregarla al final
       vueltas.push(nuevaVuelta);
-      console.log(vueltas);
+      // console.log(vueltas);
       await setDoc(vueltaDocRef, { vueltas }); // Actualizar las vueltas en el documento
       return vueltas;
     } else {
@@ -137,19 +137,19 @@ export const UploadVueltaCadete = async (
 
     return [nuevaVuelta]; // Devolver la nueva vuelta
   } catch (error) {
-    console.error('Error al subir la vuelta:', error);
+    console.error("Error al subir la vuelta:", error);
     throw error;
   }
 };
 
 export const fetchCadetesVueltasByPeriod = async (valueDate: DateValueType) => {
   if (!valueDate || !valueDate.startDate) {
-    console.error('Fecha inválida proporcionada');
+    console.error("Fecha inválida proporcionada");
     return [];
   }
 
   const parseDate = (date: string | Date): Date => {
-    if (typeof date === 'string') {
+    if (typeof date === "string") {
       return parseISO(date);
     }
     return date;
@@ -183,8 +183,8 @@ export const fetchCadetesVueltasByPeriod = async (valueDate: DateValueType) => {
 
   // ... resto del código ...
   const firestore = getFirestore();
-  const empleadosRef = collection(firestore, 'empleados');
-  const cadetesQuery = query(empleadosRef, where('category', '==', 'cadete'));
+  const empleadosRef = collection(firestore, "empleados");
+  const cadetesQuery = query(empleadosRef, where("category", "==", "cadete"));
 
   try {
     const snapshot = await getDocs(cadetesQuery);
@@ -205,7 +205,7 @@ export const fetchCadetesVueltasByPeriod = async (valueDate: DateValueType) => {
 
     return cadetesConVueltas;
   } catch (error) {
-    console.error('Error al obtener los cadetes:', error);
+    console.error("Error al obtener los cadetes:", error);
     return [];
   }
 };
@@ -216,18 +216,18 @@ export const buscarPedidos = async (ids: string[], fecha: string) => {
     fecha = obtenerFechaActual();
   }
 
-  const [dia, mes, anio] = fecha.split('/');
+  const [dia, mes, anio] = fecha.split("/");
 
   try {
     const firestore = getFirestore();
-    const pedidoDocRef = doc(firestore, 'pedidos', anio, mes, dia);
+    const pedidoDocRef = doc(firestore, "pedidos", anio, mes, dia);
 
     // Ejecutar una transacción para leer los pedidos del día
     const pedidos = await runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
 
       if (!pedidoDocSnapshot.exists()) {
-        console.error('No se encontró el documento del día en Firestore');
+        console.error("No se encontró el documento del día en Firestore");
         return [];
       }
 
@@ -241,7 +241,7 @@ export const buscarPedidos = async (ids: string[], fecha: string) => {
 
     return pedidos;
   } catch (error) {
-    console.error('Error al buscar pedidos en Firestore:', error);
+    console.error("Error al buscar pedidos en Firestore:", error);
     throw error;
   }
 };

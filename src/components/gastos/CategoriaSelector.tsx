@@ -143,13 +143,13 @@ export const CategoriaSelector = ({
               !updatedCategories.some((cat) => cat.nombre === defaultCat.nombre)
             ) {
               updatedCategories.push(defaultCat);
-              console.log(
-                `Categoría "${defaultCat.nombre}" añadida localmente`
-              );
+              // console.log(
+              //   `Categoría "${defaultCat.nombre}" añadida localmente`
+              // );
             }
           });
 
-          console.log("[DEBUG] Categorías cargadas:", updatedCategories);
+          // console.log("[DEBUG] Categorías cargadas:", updatedCategories);
           setCategories(updatedCategories);
 
           // Si la categoría seleccionada no está en la lista, seleccionamos la primera
@@ -159,10 +159,10 @@ export const CategoriaSelector = ({
           ) {
             const firstCategory = updatedCategories[0];
 
-            console.log(
-              "[DEBUG] Seleccionando primera categoría:",
-              firstCategory.nombre
-            );
+            // console.log(
+            //   "[DEBUG] Seleccionando primera categoría:",
+            //   firstCategory.nombre
+            // );
 
             setFormData((prev) => ({
               ...prev,
@@ -185,9 +185,9 @@ export const CategoriaSelector = ({
               }
               // Si es "otros", mostrar inputs personalizados
               if (firstCategory.nombre === "otros" && onShowCustomInputs) {
-                console.log(
-                  "[DEBUG] Activando inputs personalizados al cargar 'otros'"
-                );
+                // console.log(
+                //   "[DEBUG] Activando inputs personalizados al cargar 'otros'"
+                // );
                 onShowCustomInputs(true);
               } else if (onShowCustomInputs) {
                 onShowCustomInputs(false);
@@ -199,9 +199,9 @@ export const CategoriaSelector = ({
 
             // Verificar si la categoría seleccionada es "otros"
             if (formData.category === "otros" && onShowCustomInputs) {
-              console.log(
-                "[DEBUG] Activando inputs personalizados porque ya tenía seleccionado 'otros'"
-              );
+              // console.log(
+              //   "[DEBUG] Activando inputs personalizados porque ya tenía seleccionado 'otros'"
+              // );
               onShowCustomInputs(true);
             } else if (onShowCustomInputs) {
               onShowCustomInputs(false);
@@ -305,15 +305,15 @@ export const CategoriaSelector = ({
   const checkAndSetRecurringType = (categoryName, categoryArray) => {
     // Para la categoría "otros", siempre mostrar inputs personalizados
     if (categoryName === "otros") {
-      console.log("[DEBUG] checkAndSetRecurringType: Es categoría 'otros'");
+      // console.log("[DEBUG] checkAndSetRecurringType: Es categoría 'otros'");
       setShowRecurringItems(false);
       if (onCategoryTypeChange) {
         onCategoryTypeChange(false);
       }
       if (onShowCustomInputs) {
-        console.log(
-          "[DEBUG] checkAndSetRecurringType: Activando inputs personalizados"
-        );
+        // console.log(
+        //   "[DEBUG] checkAndSetRecurringType: Activando inputs personalizados"
+        // );
         onShowCustomInputs(true);
       }
       return;
@@ -359,7 +359,7 @@ export const CategoriaSelector = ({
 
     if (isDefault && !isCategoryInArray(categoryName, categories)) {
       try {
-        console.log("[DEBUG] Intentando guardar categoría:", categoryName);
+        // console.log("[DEBUG] Intentando guardar categoría:", categoryName);
         const firestore = getFirestore();
         const docRef = doc(firestore, "absoluteClientes", empresaId);
 
@@ -386,9 +386,9 @@ export const CategoriaSelector = ({
             "config.gastosCategories": updatedCategories,
           });
 
-          console.log(
-            `Categoría "${categoryName}" guardada en la base de datos`
-          );
+          // console.log(
+          //   `Categoría "${categoryName}" guardada en la base de datos`
+          // );
         }
       } catch (error) {
         console.error(`Error al guardar categoría ${categoryName}:`, error);
@@ -406,8 +406,8 @@ export const CategoriaSelector = ({
     const isRecurring = items.length > 0;
     const isOthers = categoryName === "otros";
 
-    console.log("[DEBUG] Categoría seleccionada:", categoryName);
-    console.log("[DEBUG] Es categoría 'otros':", isOthers);
+    // console.log("[DEBUG] Categoría seleccionada:", categoryName);
+    // console.log("[DEBUG] Es categoría 'otros':", isOthers);
 
     // Actualizar formData
     setFormData((prev) => ({
@@ -442,7 +442,7 @@ export const CategoriaSelector = ({
 
     // Notificar al componente padre si debe mostrar inputs personalizados
     if (onShowCustomInputs) {
-      console.log("[DEBUG] ShowCustomInputs se estableció a:", isOthers);
+      // console.log("[DEBUG] ShowCustomInputs se estableció a:", isOthers);
       onShowCustomInputs(isOthers);
     }
   };
@@ -480,7 +480,7 @@ export const CategoriaSelector = ({
 
       // Verificar si el ítem ya existe
       if (currentCategory.items.includes(newItemName.trim().toLowerCase())) {
-        console.log("El ítem ya existe en esta categoría");
+        // console.log("El ítem ya existe en esta categoría");
         return;
       }
 
@@ -511,9 +511,9 @@ export const CategoriaSelector = ({
         "config.gastosCategories": updatedCategories,
       });
 
-      console.log(
-        `Ítem "${newItemName}" agregado a la categoría "${formData.category}"`
-      );
+      // console.log(
+      //   `Ítem "${newItemName}" agregado a la categoría "${formData.category}"`
+      // );
 
       // Limpiar el input y ocultarlo
       setNewItemName("");

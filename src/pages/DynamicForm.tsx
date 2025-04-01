@@ -380,7 +380,7 @@ export const DynamicForm: React.FC = () => {
 
     UploadOrder(info)
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         Swal.fire({
           icon: "success",
           title: "Pedido guardado",
@@ -580,10 +580,10 @@ export const DynamicForm: React.FC = () => {
                               navigator.clipboard
                                 .writeText(mensaje)
                                 .then(() => {
-                                  console.log(
-                                    "Mensaje copiado al portapapeles:",
-                                    mensaje
-                                  );
+                                  // console.log(
+                                  //   "Mensaje copiado al portapapeles:",
+                                  //   mensaje
+                                  // );
                                 })
                                 .catch((error) => {
                                   console.error(

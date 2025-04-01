@@ -83,13 +83,13 @@ const procesarDetallePedido = (
         });
       } else {
         // Si no se encuentra ninguna coincidencia para la expresión regular
-        console.log(
-          "No se encontró ninguna coincidencia para la expresión regular."
-        );
+        // console.log(
+        //   "No se encontró ninguna coincidencia para la expresión regular."
+        // );
       }
     });
   } else {
-    console.log("No se encontraron bloques en el detalle del pedido.");
+    // console.log("No se encontraron bloques en el detalle del pedido.");
   }
 };
 

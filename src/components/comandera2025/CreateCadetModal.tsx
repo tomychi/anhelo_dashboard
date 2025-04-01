@@ -34,7 +34,7 @@ const CreateCadetModal: React.FC<CreateCadetModalProps> = ({
       // console.log('4. Datos a enviar:', { phoneNumber, name });
 
       await createCadet(phoneNumber, name);
-      console.log("5. Cadete creado exitosamente");
+      // console.log("5. Cadete creado exitosamente");
 
       Swal.fire({
         icon: "success",

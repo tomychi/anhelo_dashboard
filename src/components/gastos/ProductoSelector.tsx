@@ -40,9 +40,9 @@ export const ProductoSelector = ({
 
   const isAnhelo = empresaNombre === "ANHELO";
 
-  console.log(
-    `Estado de empresa para productos: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
-  );
+  // console.log(
+  //   `Estado de empresa para productos: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
+  // );
 
   // Cargar productos específicos de esta empresa desde Firestore
   useEffect(() => {
@@ -58,14 +58,14 @@ export const ProductoSelector = ({
           return;
         }
 
-        console.log(`Buscando productos para la empresa: ${empresaId}`);
+        // console.log(`Buscando productos para la empresa: ${empresaId}`);
 
         const firestore = getFirestore();
         let productosData = [];
 
         if (isAnhelo) {
           // Para Anhelo, cargar de la colección raíz "productos"
-          console.log("Cargando productos para Anhelo desde colección raíz");
+          // console.log("Cargando productos para Anhelo desde colección raíz");
 
           // Verificamos si existe la colección "productos" en la raíz
           try {
@@ -80,9 +80,9 @@ export const ProductoSelector = ({
             console.error("Error al cargar productos desde raíz:", error);
 
             // Intentar con ubicación alternativa (burgers, drinks, etc.)
-            console.log(
-              "Intentando cargar desde colecciones específicas (burgers, drinks, etc.)"
-            );
+            // console.log(
+            //   "Intentando cargar desde colecciones específicas (burgers, drinks, etc.)"
+            // );
 
             // Lista de posibles colecciones de productos para Anhelo
             const colecciones = [
@@ -105,11 +105,11 @@ export const ProductoSelector = ({
                 }));
 
                 productosData = [...productosData, ...colData];
-                console.log(
-                  `Cargados ${colData.length} productos de la colección ${col}`
-                );
+                // console.log(
+                //   `Cargados ${colData.length} productos de la colección ${col}`
+                // );
               } catch (e) {
-                console.log(`No se pudieron cargar productos de ${col}:`, e);
+                // console.log(`No se pudieron cargar productos de ${col}:`, e);
               }
             }
           }
@@ -156,10 +156,10 @@ export const ProductoSelector = ({
           return false;
         });
 
-        console.log(`Encontrados ${productosData.length} productos totales`);
-        console.log(
-          `Filtrados ${productosFiltrados.length} productos sin materiales`
-        );
+        // console.log(`Encontrados ${productosData.length} productos totales`);
+        // console.log(
+        //   `Filtrados ${productosFiltrados.length} productos sin materiales`
+        // );
 
         setProductos(productosFiltrados);
       } catch (error) {

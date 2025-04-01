@@ -34,13 +34,13 @@ export interface EmpleadosProps {
 
 export const handleScan = async (employeeId: string): Promise<void> => {
   const firestore = getFirestore();
-  const employeeRef = doc(firestore, 'empleados', employeeId);
+  const employeeRef = doc(firestore, "empleados", employeeId);
   const employeeDoc = await getDoc(employeeRef);
 
   if (employeeDoc.exists()) {
     const data = employeeDoc.data();
     await updateDoc(employeeRef, {
-      scanned: !data.scanned
+      scanned: !data.scanned,
     });
   }
 };
@@ -53,7 +53,7 @@ export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
   try {
     const registroDocRef = doc(
       collection(firestore, "registros", anio, mes),
-      dia,
+      dia
     );
     const docSnapshot = await getDoc(registroDocRef);
     const registroData = docSnapshot.exists() ? docSnapshot.data() : {};
@@ -69,10 +69,10 @@ export const marcarEntrada = async (nombreEmpleado: string): Promise<void> => {
       ];
       await updateDoc(registroDocRef, { empleados: updatedEmpleados });
     }
-    console.log(
-      "Entrada registrada exitosamente para el día:",
-      fechaFormateada,
-    );
+    // console.log(
+    //   "Entrada registrada exitosamente para el día:",
+    //   fechaFormateada,
+    // );
   } catch (error) {
     console.error("Error al registrar la entrada:", error);
     throw error;
@@ -87,28 +87,28 @@ export const marcarSalida = async (nombreEmpleado: string): Promise<void> => {
   try {
     const registroDocRef = doc(
       collection(firestore, "registros", anio, mes),
-      dia,
+      dia
     );
     const docSnapshot = await getDoc(registroDocRef);
     if (docSnapshot.exists()) {
       const registroData = docSnapshot.data();
       const empleados = registroData.empleados || [];
       const empleadoIndex = empleados.findIndex(
-        (empleado: RegistroProps) => empleado.nombreEmpleado === nombreEmpleado,
+        (empleado: RegistroProps) => empleado.nombreEmpleado === nombreEmpleado
       );
 
       if (empleadoIndex !== -1 && !empleados[empleadoIndex].horaSalida) {
         empleados[empleadoIndex].marcado = false; // Actualizamos la propiedad marcado dentro del empleado
         empleados[empleadoIndex].horaSalida = horaActual;
         await updateDoc(registroDocRef, { empleados }); // Aquí actualizamos marcado a false
-        console.log("Salida registrada exitosamente.");
+        // console.log("Salida registrada exitosamente.");
       } else {
-        console.log(
-          "No se encontró registro de entrada para el empleado en la fecha actual o ya se registró la salida.",
-        );
+        // console.log(
+        //   "No se encontró registro de entrada para el empleado en la fecha actual o ya se registró la salida.",
+        // );
       }
     } else {
-      console.log("No hay registros para el día de hoy");
+      // console.log("No hay registros para el día de hoy");
     }
   } catch (error) {
     console.error("Error al registrar la salida:", error);
@@ -123,7 +123,7 @@ export const obtenerRegistroActual = async (): Promise<RegistroProps[]> => {
   try {
     const registroDocRef = doc(
       collection(firestore, "registros", anio, mes),
-      dia,
+      dia
     );
     const docSnapshot = await getDoc(registroDocRef);
     if (docSnapshot.exists()) {
@@ -175,7 +175,7 @@ export const readEmpleados = async (): Promise<EmpleadosProps[]> => {
 };
 
 export const listenToEmpleadosChanges = (
-  callback: (empleados: EmpleadosProps[]) => void,
+  callback: (empleados: EmpleadosProps[]) => void
 ): Unsubscribe => {
   const firestore = getFirestore();
   const empleadosCollectionRef = collection(firestore, "empleados");
@@ -200,45 +200,49 @@ export const listenToEmpleadosChanges = (
     },
     (error) => {
       console.error("Error al escuchar cambios en empleados:", error);
-    },
+    }
   );
 };
 
-export const handleQRScan = async (currentUserEmail: string | null | undefined): Promise<void> => {
+export const handleQRScan = async (
+  currentUserEmail: string | null | undefined
+): Promise<void> => {
   try {
     if (!currentUserEmail) {
-      throw new Error('Usuario no autenticado');
+      throw new Error("Usuario no autenticado");
     }
 
     const firestore = getFirestore();
-    const empleadosRef = collection(firestore, 'empleados');
-    const q = query(empleadosRef, where('correo', '==', currentUserEmail));
+    const empleadosRef = collection(firestore, "empleados");
+    const q = query(empleadosRef, where("correo", "==", currentUserEmail));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      throw new Error('Empleado no encontrado');
+      throw new Error("Empleado no encontrado");
     }
 
     const employeeDoc = querySnapshot.docs[0];
     const employeeData = employeeDoc.data();
-    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const currentTime = new Date().toLocaleTimeString("en-US", {
+      hour12: false,
+    });
 
     if (employeeData.isWorking) {
       await updateDoc(employeeDoc.ref, {
         isWorking: false,
-        endTime: currentTime
+        endTime: currentTime,
       });
       await marcarSalida(employeeData.name);
     } else {
       await updateDoc(employeeDoc.ref, {
         isWorking: true,
         startTime: currentTime,
-        endTime: null
+        endTime: null,
       });
       await marcarEntrada(employeeData.name);
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     throw error;
   }
 };

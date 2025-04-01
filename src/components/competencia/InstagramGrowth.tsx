@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import LineChart, { FakeDatabase } from '../LineChart';
+import { useEffect, useState } from "react";
+import LineChart, { FakeDatabase } from "../LineChart";
 import {
   fetchAllInstagramData,
   transformData,
-} from '../../firebase/InstagramData';
+} from "../../firebase/InstagramData";
 import {
   Chart,
   PointElement,
@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 Chart.register(
   PointElement,
   LineElement,
@@ -34,14 +34,14 @@ export const InstagramGrowth: React.FC = () => {
         const transformedData = transformData(rawData);
         setData(transformedData);
       } catch (error) {
-        console.error('Error al obtener los datos:', error);
+        console.error("Error al obtener los datos:", error);
       }
     };
 
     fetchData();
   }, []);
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div>

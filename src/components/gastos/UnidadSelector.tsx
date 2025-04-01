@@ -56,7 +56,7 @@ export const UnidadSelector = ({
           // Eliminamos duplicados (por si acaso hay unidades que existan en ambos arrays)
           const uniqueUnits = [...new Set(allUnits)];
 
-          console.log("[DEBUG] Unidades cargadas:", uniqueUnits);
+          // console.log("[DEBUG] Unidades cargadas:", uniqueUnits);
           setUnits(uniqueUnits);
 
           // Si la unidad seleccionada no está en la lista, seleccionamos la primera

@@ -92,10 +92,10 @@ const PriceFactor = () => {
         // Leemos el máximo histórico y lo usamos como base para ventasMaximas
         if (data.maxDailySales?.amount) {
           setVentasMaximas(data.maxDailySales.amount);
-          console.log(
-            "Ventas máximas actualizadas:",
-            data.maxDailySales.amount
-          );
+          // console.log(
+          //   "Ventas máximas actualizadas:",
+          //   data.maxDailySales.amount
+          // );
         }
       }
     } catch (error) {
@@ -139,9 +139,9 @@ const PriceFactor = () => {
           });
         });
 
-      console.log("Ventas diarias últimos 14 días (excluyendo cancelados):");
+      // console.log("Ventas diarias últimos 14 días (excluyendo cancelados):");
       Object.entries(ventasPorDia).forEach(([fecha, total]) => {
-        console.log(`${fecha}: ${total} productos`);
+        // console.log(`${fecha}: ${total} productos`);
       });
       const maxVenta = Object.entries(ventasPorDia).reduce((max, actual) =>
         actual[1] > max[1] ? actual : max
@@ -157,17 +157,17 @@ const PriceFactor = () => {
       await updateMaxDailySales(maxVenta[0], maxVenta[1]);
 
       if (maxVenta[1] !== currentMax) {
-        console.log(
-          "Máximo de ventas diarias actualizado:",
-          maxVenta[1],
-          "productos"
-        );
+        // console.log(
+        //   "Máximo de ventas diarias actualizado:",
+        //   maxVenta[1],
+        //   "productos"
+        // );
       } else {
-        console.log(
-          "Máximo de ventas diarias sin cambios:",
-          currentMax,
-          "productos"
-        );
+        // console.log(
+        //   "Máximo de ventas diarias sin cambios:",
+        //   currentMax,
+        //   "productos"
+        // );
       }
     } catch (error) {
       console.error("Error obteniendo datos históricos:", error);
@@ -192,7 +192,7 @@ const PriceFactor = () => {
         },
       });
 
-      console.log("Máximo histórico actualizado:", date, amount, "productos");
+      // console.log("Máximo histórico actualizado:", date, amount, "productos");
     } catch (error) {
       console.error("Error actualizando máximo histórico:", error);
     }
@@ -263,7 +263,7 @@ const PriceFactor = () => {
     else if (hora === 21 && !hasSetPrediction) {
       // console.log('🎯 Momento de predicción (21:00)');
       const factorPredicho = predecirFactor(productosActuales);
-      console.log(`- Factor predicho: ${factorPredicho}`);
+      // console.log(`- Factor predicho: ${factorPredicho}`);
       updateFirebaseFactor(factorPredicho);
       setCurrentFactor(factorPredicho);
       setHasSetPrediction(true);
@@ -272,15 +272,15 @@ const PriceFactor = () => {
     else if (hora >= 21 && hasSetPrediction) {
       // console.log('📈 Modo post-predicción');
       const factorCalculado = calcularFactor(productosActuales);
-      console.log(`- Factor calculado: ${factorCalculado}`);
-      console.log(`- Factor predicho actual: ${currentFactor}`);
+      // console.log(`- Factor calculado: ${factorCalculado}`);
+      // console.log(`- Factor predicho actual: ${currentFactor}`);
 
       if (factorCalculado > currentFactor) {
-        console.log(`- Actualizando a nuevo factor: ${factorCalculado}`);
+        // console.log(`- Actualizando a nuevo factor: ${factorCalculado}`);
         updateFirebaseFactor(factorCalculado);
         setCurrentFactor(factorCalculado);
       } else {
-        console.log("- Manteniendo factor predicho");
+        // console.log("- Manteniendo factor predicho");
       }
     }
   }, [

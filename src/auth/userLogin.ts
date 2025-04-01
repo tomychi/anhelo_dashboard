@@ -1,4 +1,4 @@
-import { projectAuth } from '../firebase/config';
+import { projectAuth } from "../firebase/config";
 
 let error: string | null = null;
 
@@ -11,13 +11,13 @@ const login = async (email: string, password: string) => {
 
     return res;
   } catch (err) {
-    if (typeof err === 'object' && err !== null && 'message' in err) {
+    if (typeof err === "object" && err !== null && "message" in err) {
       error = (err as Error).message;
     } else {
-      error = 'Error desconocido';
+      error = "Error desconocido";
     }
 
-    console.log(error);
+    // console.log(error);
   }
 };
 

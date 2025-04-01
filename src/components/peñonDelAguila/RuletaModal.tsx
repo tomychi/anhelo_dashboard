@@ -29,7 +29,7 @@ const RuletaModal = ({
         },
         empresaId
       );
-      console.log("Comando de cierre enviado desde control remoto");
+      // console.log("Comando de cierre enviado desde control remoto");
       onClose(); // Cerrar modal en el dispositivo actual
     } catch (error) {
       console.error("Error al enviar comando de cierre:", error);

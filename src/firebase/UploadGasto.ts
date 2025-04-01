@@ -55,15 +55,15 @@ export const UploadExpense = async (
   const isAnhelo = empresaNombre === "ANHELO";
 
   if (fechaInicio && fechaFin) {
-    console.log("Input fechas:", { fechaInicio, fechaFin });
+    // console.log("Input fechas:", { fechaInicio, fechaFin });
 
     const startDate = new Date(fechaInicio + "T00:00:00");
     const endDate = new Date(fechaFin + "T23:59:59");
 
-    console.log("Dates before loop:", {
-      startDate: startDate.toLocaleString(),
-      endDate: endDate.toLocaleString(),
-    });
+    // console.log("Dates before loop:", {
+    //   startDate: startDate.toLocaleString(),
+    //   endDate: endDate.toLocaleString(),
+    // });
 
     const documentRefs: DocumentReference[] = [];
 
@@ -77,13 +77,13 @@ export const UploadExpense = async (
       const anio = date.getFullYear().toString();
 
       const formattedDate = `${dia}/${mes}/${anio}`;
-      console.log("Processing date:", {
-        currentDate: date.toLocaleString(),
-        formattedDate,
-        dia,
-        mes,
-        anio,
-      });
+      // console.log("Processing date:", {
+      //   currentDate: date.toLocaleString(),
+      //   formattedDate,
+      //   dia,
+      //   mes,
+      //   anio,
+      // });
 
       const gastoId = uuidv4();
 
@@ -96,14 +96,14 @@ export const UploadExpense = async (
         gastosCollectionRef = collection(firestore, "gastos", anio, mes);
         gastoDocRef = doc(gastosCollectionRef, dia);
 
-        console.log(
-          "ANHELO detectado, guardando en ruta legacy: gastos/" +
-            anio +
-            "/" +
-            mes +
-            "/" +
-            dia
-        );
+        // console.log(
+        //   "ANHELO detectado, guardando en ruta legacy: gastos/" +
+        //     anio +
+        //     "/" +
+        //     mes +
+        //     "/" +
+        //     dia
+        // );
       } else {
         // Ruta para otras empresas en absoluteClientes
         gastosCollectionRef = collection(
@@ -116,28 +116,28 @@ export const UploadExpense = async (
         );
         gastoDocRef = doc(gastosCollectionRef, dia);
 
-        console.log(
-          "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
-            empresaId +
-            "/gastos/" +
-            anio +
-            "/" +
-            mes +
-            "/" +
-            dia
-        );
+        // console.log(
+        //   "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+        //     empresaId +
+        //     "/gastos/" +
+        //     anio +
+        //     "/" +
+        //     mes +
+        //     "/" +
+        //     dia
+        // );
       }
 
-      console.log("Firebase save:", {
-        path: isAnhelo
-          ? `gastos/${anio}/${mes}/${dia}`
-          : `absoluteClientes/${empresaId}/gastos/${anio}/${mes}/${dia}`,
-        expense: {
-          ...expenseDetail,
-          id: gastoId,
-          fecha: formattedDate,
-        },
-      });
+      // console.log("Firebase save:", {
+      //   path: isAnhelo
+      //     ? `gastos/${anio}/${mes}/${dia}`
+      //     : `absoluteClientes/${empresaId}/gastos/${anio}/${mes}/${dia}`,
+      //   expense: {
+      //     ...expenseDetail,
+      //     id: gastoId,
+      //     fecha: formattedDate,
+      //   },
+      // });
 
       const docSnap = await getDoc(gastoDocRef);
       const existingData = docSnap.exists() ? docSnap.data() : {};
@@ -171,14 +171,14 @@ export const UploadExpense = async (
       gastosCollectionRef = collection(firestore, "gastos", anio, mes);
       gastoDocRef = doc(gastosCollectionRef, dia);
 
-      console.log(
-        "ANHELO detectado, guardando en ruta legacy: gastos/" +
-          anio +
-          "/" +
-          mes +
-          "/" +
-          dia
-      );
+      // console.log(
+      //   "ANHELO detectado, guardando en ruta legacy: gastos/" +
+      //     anio +
+      //     "/" +
+      //     mes +
+      //     "/" +
+      //     dia
+      // );
     } else {
       // Ruta para otras empresas en absoluteClientes
       gastosCollectionRef = collection(
@@ -191,16 +191,16 @@ export const UploadExpense = async (
       );
       gastoDocRef = doc(gastosCollectionRef, dia);
 
-      console.log(
-        "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
-          empresaId +
-          "/gastos/" +
-          anio +
-          "/" +
-          mes +
-          "/" +
-          dia
-      );
+      // console.log(
+      //   "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+      //     empresaId +
+      //     "/gastos/" +
+      //     anio +
+      //     "/" +
+      //     mes +
+      //     "/" +
+      //     dia
+      // );
     }
 
     const docSnap = await getDoc(gastoDocRef);

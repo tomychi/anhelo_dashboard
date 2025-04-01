@@ -170,7 +170,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
     try {
       // Definir la ruta según el tipo de item
       const path = itemType === "producto" ? "productos" : "materiales";
-      console.log(`Intentando subir imagen a: ${path}`);
+      // console.log(`Intentando subir imagen a: ${path}`);
 
       // Simular progreso
       const progressInterval = setInterval(() => {
@@ -185,7 +185,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
 
       // Subir imagen
       const imageUrl = await uploadImage(selectedImage, path);
-      console.log("URL recibida de uploadImage:", imageUrl);
+      // console.log("URL recibida de uploadImage:", imageUrl);
 
       // Finalizar progreso
       clearInterval(progressInterval);
@@ -367,8 +367,8 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
             img: imageUrl,
           };
 
-          console.log("URL de imagen obtenida:", imageUrl);
-          console.log("FormData actualizado con imagen:", updatedFormData);
+          // console.log("URL de imagen obtenida:", imageUrl);
+          // console.log("FormData actualizado con imagen:", updatedFormData);
         }
       }
 
@@ -416,7 +416,7 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({
       const cleanedData = removeUndefinedFields(updatedFormData);
 
       // Log para depuración
-      console.log("Datos finales a guardar (después de limpiar):", cleanedData);
+      // console.log("Datos finales a guardar (después de limpiar):", cleanedData);
 
       // Guardar los datos actualizados
       await onUpdate(cleanedData);

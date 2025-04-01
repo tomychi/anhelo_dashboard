@@ -83,7 +83,7 @@ export const Neto = () => {
         });
 
         setPeriodicidades(periodicidadesObj);
-        console.log("Periodicidades cargadas:", periodicidadesObj);
+        // console.log("Periodicidades cargadas:", periodicidadesObj);
       } catch (error) {
         console.error("Error al cargar periodicidades:", error);
       } finally {
@@ -113,15 +113,15 @@ export const Neto = () => {
       let sumaTotal = 0;
 
       // Mostrar datos iniciales
-      console.log("====== DATOS INICIALES ======");
-      console.log("Facturación Total (Bruto):", facturacionTotal);
-      console.log("Neto:", neto);
-      console.log("Materia Prima (calculada):", materiaPrima);
-      console.log("Días seleccionados:", calcularDiasSeleccionados());
-      console.log("Periodicidades configuradas:", periodicidades);
+      // console.log("====== DATOS INICIALES ======");
+      // console.log("Facturación Total (Bruto):", facturacionTotal);
+      // console.log("Neto:", neto);
+      // console.log("Materia Prima (calculada):", materiaPrima);
+      // console.log("Días seleccionados:", calcularDiasSeleccionados());
+      // console.log("Periodicidades configuradas:", periodicidades);
 
-      console.log("====== GASTOS POR PROCESAR ======");
-      console.log(expenseData);
+      // console.log("====== GASTOS POR PROCESAR ======");
+      // console.log(expenseData);
 
       // Agrupar gastos por categoría para calcular sumas
       const gastosPorCategoria = {};
@@ -136,7 +136,7 @@ export const Neto = () => {
 
       // Calcular la suma para cada categoría teniendo en cuenta la periodicidad
       Object.entries(gastosPorCategoria).forEach(([categoria, gastos]) => {
-        console.log(`\n--- CATEGORÍA: ${categoria.toUpperCase()} ---`);
+        // console.log(`\n--- CATEGORÍA: ${categoria.toUpperCase()} ---`);
         let sumaCategoria = 0;
 
         // @ts-ignore - Sabemos que gastos es un array
@@ -150,15 +150,15 @@ export const Neto = () => {
               ? gasto.total
               : (gasto.total / periodicidad) * calcularDiasSeleccionados();
 
-          console.log(
-            `${gasto.name}: Valor original $ ${gasto.total.toFixed(0)}, Ajustado $ ${valorAjustado.toFixed(0)}`
-          );
+          // console.log(
+          //   `${gasto.name}: Valor original $ ${gasto.total.toFixed(0)}, Ajustado $ ${valorAjustado.toFixed(0)}`
+          // );
           sumaCategoria += valorAjustado;
         });
 
-        console.log(
-          `TOTAL ${categoria.toUpperCase()}: $ ${sumaCategoria.toFixed(0)}`
-        );
+        // console.log(
+        //   `TOTAL ${categoria.toUpperCase()}: $ ${sumaCategoria.toFixed(0)}`
+        // );
 
         // Guardar la suma en el objeto de categorías
         categorias[categoria] = sumaCategoria;
@@ -169,29 +169,29 @@ export const Neto = () => {
       if (!categorias["materia prima"]) {
         categorias["materia prima"] = materiaPrima;
         sumaTotal += materiaPrima;
-        console.log(
-          `\nAñadiendo materia prima calculada: $ ${materiaPrima.toFixed(0)}`
-        );
+        // console.log(
+        //   `\nAñadiendo materia prima calculada: $ ${materiaPrima.toFixed(0)}`
+        // );
       } else {
-        console.log(
-          `\nMateria prima ya existe en categorías, valor total: $ ${categorias["materia prima"].toFixed(0)}`
-        );
+        // console.log(
+        //   `\nMateria prima ya existe en categorías, valor total: $ ${categorias["materia prima"].toFixed(0)}`
+        // );
       }
 
       // Calcular el excedente (facturación total - gastos totales)
       const excedente = facturacionTotal - sumaTotal;
 
-      console.log("\n====== RESUMEN DE GASTOS AGRUPADOS ======");
-      console.log("Categorías con sus totales:");
+      // console.log("\n====== RESUMEN DE GASTOS AGRUPADOS ======");
+      // console.log("Categorías con sus totales:");
       Object.entries(categorias).forEach(([categoria, total]) => {
-        console.log(
-          `${categoria}: $ ${total.toFixed(0)} (${calcularPorcentaje(total)})`
-        );
+        // console.log(
+        //   `${categoria}: $ ${total.toFixed(0)} (${calcularPorcentaje(total)})`
+        // );
       });
-      console.log(`\nTotal de Gastos: $ ${sumaTotal.toFixed(0)}`);
-      console.log(
-        `Excedente calculado: $ ${excedente.toFixed(0)} (${calcularPorcentaje(excedente)})`
-      );
+      // console.log(`\nTotal de Gastos: $ ${sumaTotal.toFixed(0)}`);
+      // console.log(
+      //   `Excedente calculado: $ ${excedente.toFixed(0)} (${calcularPorcentaje(excedente)})`
+      // );
 
       // Actualizar estados
       setGastosPorCategoria(categorias);
@@ -237,9 +237,9 @@ export const Neto = () => {
         [categoria]: nuevaPeriodicidad,
       }));
 
-      console.log(
-        `Periodicidad de ${categoria} actualizada a ${nuevaPeriodicidad} días`
-      );
+      // console.log(
+      //   `Periodicidad de ${categoria} actualizada a ${nuevaPeriodicidad} días`
+      // );
     } catch (error) {
       console.error("Error al actualizar periodicidad:", error);
       alert("Hubo un error al guardar la configuración. Intente nuevamente.");

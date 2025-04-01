@@ -394,7 +394,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
       file,
       (progress) => setUploadProgress(progress),
       (downloadURL) => {
-        console.log("Archivo subido con éxito:", downloadURL);
+        // console.log("Archivo subido con éxito:", downloadURL);
         setUploading(false);
       },
       (uploadError) => {
@@ -778,9 +778,9 @@ export const FormGasto = ({ onSuccess }) => {
             "config.gastosCategories": gastosCategories,
           });
 
-          console.log(
-            `Categoría "${categoryName}" guardada en la base de datos`
-          );
+          // console.log(
+          //   `Categoría "${categoryName}" guardada en la base de datos`
+          // );
         }
       }
     } catch (error) {
@@ -1069,10 +1069,10 @@ export const FormGasto = ({ onSuccess }) => {
               onShowCustomInputs={setShowCustomInputs}
               onAddItemToCategory={handleAddItemToCategory} // Nueva prop para manejar agregar ítems
             />
-            {console.log(
+            {/* {console.log(
               "[DEBUG] FormGasto - showCustomInputs cambiado a:",
               showCustomInputs
-            )}
+            )} */}
 
             {/* Mostramos los selectores de materiales y productos solo si la categoría es "materia prima" */}
             {!categoriesLoading &&

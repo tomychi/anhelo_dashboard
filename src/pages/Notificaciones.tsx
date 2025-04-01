@@ -54,7 +54,7 @@ export const Notificaciones: React.FC = () => {
         );
 
         const reclamos = pedidos.filter((order) => "reclamo" in order);
-        console.log("Pedidos con reclamos:", reclamos);
+        // console.log("Pedidos con reclamos:", reclamos);
 
         setPedidosConReclamo(reclamos);
       } catch (error) {
@@ -109,7 +109,7 @@ export const Notificaciones: React.FC = () => {
             : pedido
         )
       );
-      console.log(`Reclamo del pedido ${pedidoId} marcado como resuelto`);
+      // console.log(`Reclamo del pedido ${pedidoId} marcado como resuelto`);
     } catch (error) {
       console.error("Error al marcar el reclamo como resuelto:", error);
     }

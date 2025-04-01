@@ -41,11 +41,11 @@ export const WhatsappFeatures = () => {
       return 0;
     }
 
-    console.log("Cálculo de semanas:", {
-      fechaPedido: ultimoPedido.toISOString(),
-      fechaHoy: hoy.toISOString(),
-      semanasTranscurridas: diffWeeks,
-    });
+    // console.log("Cálculo de semanas:", {
+    //   fechaPedido: ultimoPedido.toISOString(),
+    //   fechaHoy: hoy.toISOString(),
+    //   semanasTranscurridas: diffWeeks,
+    // });
 
     return diffWeeks;
   };
@@ -60,11 +60,11 @@ export const WhatsappFeatures = () => {
     fecha.setHours(0, 0, 0, 0);
 
     const semanas = calcularSemanasDesdeUltimoPedido(fecha);
-    console.log("Fecha procesada:", {
-      original: dateStr,
-      fecha: fecha.toISOString(),
-      semanasSinPedir: semanas,
-    });
+    // console.log("Fecha procesada:", {
+    //   original: dateStr,
+    //   fecha: fecha.toISOString(),
+    //   semanasSinPedir: semanas,
+    // });
 
     return fecha;
   };
@@ -73,7 +73,7 @@ export const WhatsappFeatures = () => {
     const fetchOrders = async () => {
       try {
         setIsLoading(true);
-        console.log("Iniciando fetchOrders...");
+        // console.log("Iniciando fetchOrders...");
         const orders = await ReadLastThreeMonthsOrders();
 
         const totalOrders = orders.length;
@@ -123,18 +123,18 @@ export const WhatsappFeatures = () => {
           {} as Record<number, number>
         );
 
-        console.log(
-          "Distribución de clientes por semanas:",
-          Object.entries(distribucion)
-            .sort(([a], [b]) => Number(a) - Number(b))
-            .reduce(
-              (acc, [semanas, cantidad]) => {
-                acc[`${semanas} semanas`] = cantidad;
-                return acc;
-              },
-              {} as Record<string, number>
-            )
-        );
+        // console.log(
+        //   "Distribución de clientes por semanas:",
+        //   Object.entries(distribucion)
+        //     .sort(([a], [b]) => Number(a) - Number(b))
+        //     .reduce(
+        //       (acc, [semanas, cantidad]) => {
+        //         acc[`${semanas} semanas`] = cantidad;
+        //         return acc;
+        //       },
+        //       {} as Record<string, number>
+        //     )
+        // );
 
         setClients(clientData);
       } catch (error) {
@@ -154,19 +154,19 @@ export const WhatsappFeatures = () => {
     // Cambiado el orden de clasificación de menor a mayor
     filtered.sort((a, b) => a.semanasSinPedir - b.semanasSinPedir);
 
-    console.log("Clientes filtrados:", {
-      totalClientes: clients.length,
-      semanasFiltro: selectedWeeks,
-      clientesFiltrados: filtered.length,
-      ejemplos: filtered.slice(0, 3),
-      rango:
-        filtered.length > 0
-          ? {
-              minSemanas: Math.min(...filtered.map((c) => c.semanasSinPedir)),
-              maxSemanas: Math.max(...filtered.map((c) => c.semanasSinPedir)),
-            }
-          : null,
-    });
+    // console.log("Clientes filtrados:", {
+    //   totalClientes: clients.length,
+    //   semanasFiltro: selectedWeeks,
+    //   clientesFiltrados: filtered.length,
+    //   ejemplos: filtered.slice(0, 3),
+    //   rango:
+    //     filtered.length > 0
+    //       ? {
+    //           minSemanas: Math.min(...filtered.map((c) => c.semanasSinPedir)),
+    //           maxSemanas: Math.max(...filtered.map((c) => c.semanasSinPedir)),
+    //         }
+    //       : null,
+    // });
 
     setFilteredClients(filtered);
   }, [selectedWeeks, clients]);

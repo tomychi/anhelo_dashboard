@@ -15,7 +15,74 @@ import {
 // Importar el modal para configurar acceso
 import KpiAccessModal from "./KpiAccessModal";
 
-// Función para aplicar el modificador al valor
+// Función mejorada para aplicar modificadores a valores, considerando rangos de fechas
+const applyModifierImproved = (
+  value,
+  modifier = 1,
+  selectedDateRange,
+  originalDailyData = null
+) => {
+  // console.log(
+  //   "🚀 applyModifierImproved - Iniciando con valor:",
+  //   value,
+  //   "modificador:",
+  //   modifier
+  // );
+  // console.log("📅 Rango de fechas seleccionado:", selectedDateRange);
+
+  // Si no tenemos datos diarios o el modificador es 1, simplemente devolvemos el valor original
+  if (!originalDailyData || (typeof modifier === "number" && modifier === 1)) {
+    // console.log("⚡ Camino rápido - Sin datos diarios o modificador simple 1");
+    return value;
+  }
+
+  // Si tenemos datos diarios y es un caso de rangos de fechas
+  if (
+    originalDailyData &&
+    typeof modifier === "object" &&
+    modifier !== null &&
+    modifier.type === "date_range"
+  ) {
+    // console.log(
+    //   "📊 Procesando datos diarios con modificadores por rango de fechas"
+    // );
+
+    let totalModified = 0;
+
+    // Iterar por cada día en los datos originales
+    Object.entries(originalDailyData).forEach(([dateKey, dailyValue]) => {
+      // Obtener el modificador efectivo para esta fecha específica
+      const effectiveModifier = getEffectiveModifier(modifier, dateKey);
+      // console.log(
+      //   `📆 Fecha ${dateKey}: Valor original ${dailyValue}, modificador ${effectiveModifier}`
+      // );
+
+      // Aplicar el modificador al valor diario
+      const modifiedValue = dailyValue * effectiveModifier;
+      // console.log(`   Valor modificado: ${modifiedValue}`);
+
+      // Sumar al total
+      totalModified += modifiedValue;
+    });
+
+    // console.log(
+    //   `🧮 Total modificado: ${totalModified} (vs. original: ${value})`
+    // );
+    return totalModified;
+  }
+
+  // Si solo tenemos un modificador simple (número)
+  if (typeof modifier === "number") {
+    // console.log(`✖️ Aplicando multiplicador simple: ${value} * ${modifier}`);
+    return value * modifier;
+  }
+
+  // Fallback para otros casos (valores de texto, etc.)
+  // console.log("⚠️ Fallback - Aplicando modificador al valor final");
+  return applyModifier(value, modifier, selectedDateRange?.startDate);
+};
+
+// Función original para aplicar el modificador al valor mostrado (mantenerla para compatibilidad)
 const applyModifier = (value, modifier = 1, currentDate) => {
   // Obtener el modificador efectivo según la fecha actual
   const effectiveModifier =
@@ -75,6 +142,8 @@ interface CardInfoProps {
   accessUserIds?: string[];
   kpiKey?: string;
   valueModifiers?: { [userId: string]: ModifierType };
+  // Nueva prop para datos diarios originales
+  originalDailyData?: { [date: string]: number };
 }
 
 interface LoadingElementProps {
@@ -167,6 +236,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   accessUserIds = [],
   kpiKey = "",
   valueModifiers = {},
+  originalDailyData = null,
 }) => {
   const titleRef = useRef<HTMLParagraphElement>(null);
   const infoRef = useRef<HTMLParagraphElement>(null);
@@ -218,18 +288,38 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   // Verificar si el usuario actual es empresario (administrador)
   const isEmpresario = tipoUsuario === "empresa";
 
-  // Aplicar modificador al valor mostrado
+  // Aplicar modificador al valor mostrado - MEJORADO para considerar datos diarios
   useEffect(() => {
     if (!isLoading && currentUserId) {
       const userModifier = modifiers[currentUserId] || 1;
 
+      // Registrar los datos iniciales para depuración
+      // console.log(
+      //   `🔍 KPI ${kpiKey} - Iniciando cálculo para usuario ${currentUserId}`
+      // );
+      // console.log(`📊 Valor original: ${info}`);
+      // console.log(`🛠️ Modificador: `, userModifier);
+      // console.log(`📅 Rango de fechas: `, valueDate);
+
+      if (originalDailyData) {
+        // console.log(`📋 Datos diarios disponibles:`, originalDailyData);
+      } else {
+        // console.log(`⚠️ No hay datos diarios disponibles para este KPI`);
+      }
+
       // Solo aplicar el modificador si se encuentra un valor diferente de 1
       if (userModifier !== 1) {
-        // Usar la fecha seleccionada para determinar el modificador adecuado
-        const modifiedValue = applyModifier(info, userModifier, formattedDate);
+        // AQUÍ ESTÁ EL CAMBIO CLAVE: Usar la nueva función que considera datos diarios
+        const modifiedValue = applyModifierImproved(
+          info,
+          userModifier,
+          valueDate,
+          originalDailyData
+        );
+        // console.log(`✅ Valor modificado final: ${modifiedValue}`);
         setDisplayInfo(modifiedValue);
 
-        // Determinar el indicador (múltiplo) a mostrar
+        // Determinar el indicador (múltiplo) a mostrar - usamos la fecha de inicio como referencia
         let effectiveModifier =
           typeof userModifier === "number"
             ? userModifier
@@ -243,11 +333,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           setModifierIndicator("");
           setIsModified(false);
         }
-
-        // Log para depuración (se puede quitar en producción)
-        console.log(
-          `KPI ${kpiKey}: Valor original ${info}, modificador ${effectiveModifier}, resultado ${modifiedValue}`
-        );
       } else {
         setDisplayInfo(info);
         setModifierIndicator("");
@@ -258,7 +343,16 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       setModifierIndicator("");
       setIsModified(false);
     }
-  }, [info, currentUserId, modifiers, isLoading, kpiKey, formattedDate]);
+  }, [
+    info,
+    currentUserId,
+    modifiers,
+    isLoading,
+    kpiKey,
+    formattedDate,
+    originalDailyData,
+    valueDate,
+  ]);
 
   // Configurar el detector de pulsación larga
   const longPressEvent = useLongPress(() => {
@@ -492,17 +586,9 @@ export const CardInfo: React.FC<CardInfoProps> = ({
         {isLoading ? (
           <LoadingElement className="h-8" width={infoWidth} />
         ) : (
-          <div className="relative">
-            <p ref={infoRef} className="text-4xl font-medium">
-              {displayInfo}
-              {/* Indicador de modificador */}
-              {modifierIndicator && (
-                <span className="absolute text-xs font-light text-gray-500 -right-4 top-0">
-                  {modifierIndicator}
-                </span>
-              )}
-            </p>
-          </div>
+          <p ref={infoRef} className="text-4xl font-medium">
+            {displayInfo}
+          </p>
         )}
       </div>
     </div>

@@ -43,6 +43,104 @@ interface AverageRatings {
   productos: RatingInfo;
 }
 
+// Nueva función para calcular KPIs con soporte para datos diarios
+const calculateKPIWithDailyData = (orders, field, filterFn = null) => {
+  // Agrupar por fecha
+  const dailyData = {};
+
+  orders.forEach((order) => {
+    // Solo considerar las órdenes que cumplan con el filtro (si existe)
+    if (filterFn && !filterFn(order)) {
+      return;
+    }
+
+    const fecha = order.fecha; // Formato DD/MM/YYYY
+
+    // Convertir a formato ISO para ordenación y compatibilidad
+    const [dia, mes, anio] = fecha.split("/");
+    const fechaISO = `${anio}-${mes}-${dia}`; // YYYY-MM-DD
+
+    // Inicializar el contador para esta fecha si no existe
+    if (!dailyData[fechaISO]) {
+      dailyData[fechaISO] = 0;
+    }
+
+    // Incrementar el contador para esta fecha
+    if (field === "count") {
+      // Si solo estamos contando elementos
+      dailyData[fechaISO] += 1;
+    } else if (typeof order[field] === "number") {
+      // Si estamos sumando un campo numérico
+      dailyData[fechaISO] += order[field];
+    } else if (
+      field === "detallePedido" &&
+      Array.isArray(order.detallePedido)
+    ) {
+      // Caso especial para contar productos
+      const additionalQuantity = order.detallePedido.reduce((acc, detail) => {
+        const extraForPromo =
+          detail.burger && detail.burger.includes("2x1") ? detail.quantity : 0;
+        return acc + detail.quantity + extraForPromo;
+      }, 0);
+      dailyData[fechaISO] += additionalQuantity;
+    }
+  });
+
+  // Calcular el total sumando todos los valores diarios
+  const total = Object.values(dailyData).reduce(
+    (sum, value) => sum + (value as number),
+    0
+  );
+
+  return {
+    total,
+    dailyData,
+  };
+};
+
+// Función para calcular costos con datos diarios
+const calculateCostWithDailyData = (orders, filterFn = null) => {
+  const dailyData = {};
+
+  orders.forEach((order) => {
+    // Solo considerar las órdenes que cumplan con el filtro (si existe)
+    if (filterFn && !filterFn(order)) {
+      return;
+    }
+
+    const fecha = order.fecha; // Formato DD/MM/YYYY
+
+    // Convertir a formato ISO
+    const [dia, mes, anio] = fecha.split("/");
+    const fechaISO = `${anio}-${mes}-${dia}`; // YYYY-MM-DD
+
+    // Inicializar el acumulador para esta fecha
+    if (!dailyData[fechaISO]) {
+      dailyData[fechaISO] = 0;
+    }
+
+    // Calcular costo para esta orden
+    if (order.detallePedido && Array.isArray(order.detallePedido)) {
+      const orderCost = order.detallePedido.reduce((subtotal, pedido) => {
+        return subtotal + (pedido.costoBurger || 0);
+      }, 0);
+
+      dailyData[fechaISO] += orderCost;
+    }
+  });
+
+  // Calcular el total
+  const totalCost = Object.values(dailyData).reduce(
+    (sum, value) => sum + (value as number),
+    0
+  );
+
+  return {
+    total: totalCost,
+    dailyData,
+  };
+};
+
 export const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -70,14 +168,58 @@ export const Dashboard: React.FC = () => {
     isLoading,
   } = useSelector((state: RootState) => state.data);
 
-  // Calculate delivery and takeaway counts
-  const deliveryCount = orders.filter(
+  // Calcular los datos diarios para diferentes KPIs
+  const deliveryData = calculateKPIWithDailyData(
+    orders,
+    "count",
     (order) => order.deliveryMethod === "delivery" && !order.canceled
-  ).length;
+  );
+  const deliveryCount = deliveryData.total;
+  const deliveryDailyData = deliveryData.dailyData;
 
-  const takeawayCount = orders.filter(
+  const takeawayData = calculateKPIWithDailyData(
+    orders,
+    "count",
     (order) => order.deliveryMethod === "takeaway" && !order.canceled
-  ).length;
+  );
+  const takeawayCount = takeawayData.total;
+  const takeawayDailyData = takeawayData.dailyData;
+
+  const facturacionData = calculateKPIWithDailyData(
+    orders,
+    "total",
+    (order) => !order.canceled
+  );
+  const facturacionRealTotal = facturacionData.total;
+  const facturacionDailyData = facturacionData.dailyData;
+
+  // Calcular costos para determinar facturación neta
+  const costosData = calculateCostWithDailyData(
+    orders,
+    (order) => !order.canceled
+  );
+  const totalCostos = costosData.total;
+  const costosDailyData = costosData.dailyData;
+
+  // Calcular facturación neta por día
+  const netoDailyData = {};
+  Object.keys(facturacionDailyData).forEach((fecha) => {
+    netoDailyData[fecha] =
+      facturacionDailyData[fecha] - (costosDailyData[fecha] || 0);
+  });
+  const netoTotal = Object.values(netoDailyData).reduce(
+    (sum, value) => sum + (value as number),
+    0
+  );
+
+  // Calcular productos vendidos con datos diarios
+  const productosData = calculateKPIWithDailyData(
+    orders,
+    "detallePedido",
+    (order) => !order.canceled
+  );
+  const totalProductosReal = productosData.total;
+  const productosDailyData = productosData.dailyData;
 
   // Obtener información del usuario autenticado
   const auth = useSelector((state: RootState) => state.auth);
@@ -95,15 +237,6 @@ export const Dashboard: React.FC = () => {
 
   // Cargar configuración de KPIs
   useEffect(() => {
-    console.log("AUTH STATE:", {
-      tipoUsuario,
-      usuarioCompleto: auth?.usuario,
-      usuarioId: usuarioId,
-      empresaId:
-        tipoUsuario === "empleado"
-          ? (auth?.usuario as EmpleadoProps)?.empresaId
-          : "N/A",
-    });
     if (!auth?.usuario) return;
 
     // Para empleados, necesitamos obtener el ID de la empresa a la que pertenecen
@@ -411,26 +544,111 @@ export const Dashboard: React.FC = () => {
         : [],
   }));
 
+  // Calcular dynamic price extra con datos diarios
+  const calculateDynamicPriceExtra = () => {
+    const ordersWithPriceFactor = orders.filter(
+      (order) => "priceFactor" in order
+    );
+
+    const dailyData = {};
+
+    ordersWithPriceFactor.forEach((order) => {
+      const fecha = order.fecha; // Formato DD/MM/YYYY
+      const [dia, mes, anio] = fecha.split("/");
+      const fechaISO = `${anio}-${mes}-${dia}`; // YYYY-MM-DD
+
+      if (!dailyData[fechaISO]) {
+        dailyData[fechaISO] = 0;
+      }
+
+      const originalAmount = order.total / order.priceFactor;
+      const extraAmount = order.total - originalAmount;
+
+      dailyData[fechaISO] += extraAmount;
+    });
+
+    const totalExtraAmount = Object.values(dailyData).reduce(
+      (sum, value) => sum + (value as number),
+      0
+    );
+
+    return {
+      total: totalExtraAmount,
+      dailyData,
+    };
+  };
+
+  const dynamicPriceData = calculateDynamicPriceExtra();
+  const dynamicPriceExtra = dynamicPriceData.total;
+  const dynamicPriceDailyData = dynamicPriceData.dailyData;
+
+  // Calcular extras al final con datos diarios
+  const calculateExtrasAlfinal = () => {
+    const dailyData = {};
+
+    orders.forEach((order) => {
+      if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
+        return;
+      }
+
+      const fecha = order.fecha; // Formato DD/MM/YYYY
+      const [dia, mes, anio] = fecha.split("/");
+      const fechaISO = `${anio}-${mes}-${dia}`; // YYYY-MM-DD
+
+      if (!dailyData[fechaISO]) {
+        dailyData[fechaISO] = 0;
+      }
+
+      const extrasValue = order.detallePedido
+        .filter((producto) => producto.extra)
+        .reduce(
+          (subtotal, producto) =>
+            subtotal + producto.priceBurger * producto.quantity,
+          0
+        );
+
+      dailyData[fechaISO] += extrasValue;
+    });
+
+    const totalExtras = Object.values(dailyData).reduce(
+      (sum, value) => sum + (value as number),
+      0
+    );
+
+    return {
+      total: totalExtras,
+      dailyData,
+    };
+  };
+
+  const extrasData = calculateExtrasAlfinal();
+  const extrasTotal = extrasData.total;
+  const extrasDailyData = extrasData.dailyData;
+
   const allCards = [
     <CardInfo
       key="bruto"
-      info={currencyFormat(Math.ceil(facturacionTotal))}
+      info={currencyFormat(Math.ceil(facturacionRealTotal))}
+      originalDailyData={facturacionDailyData}
       link={"bruto"}
       title={"Facturación bruta"}
       isLoading={isLoading}
     />,
     <CardInfo
       key="neto"
-      info={currencyFormat(Math.ceil(neto))}
-      link={"neto"}
-      cuadrito={facturacionTotal > 0 ? (neto * 100) / facturacionTotal : 0}
+      info={currencyFormat(Math.ceil(netoTotal))}
+      originalDailyData={netoDailyData}
+      cuadrito={
+        facturacionRealTotal > 0 ? (netoTotal * 100) / facturacionRealTotal : 0
+      }
       title={"Facturación neta"}
       isLoading={isLoading}
     />,
 
     <CardInfo
       key="productos"
-      info={totalProductosVendidos.toString()}
+      info={totalProductosReal.toString()}
+      originalDailyData={productosDailyData}
       link={"productosVendidos"}
       title={"Productos vendidos"}
       isLoading={isLoading}
@@ -438,6 +656,7 @@ export const Dashboard: React.FC = () => {
     <CardInfo
       key="delivery"
       info={deliveryCount.toString()}
+      originalDailyData={deliveryDailyData}
       link={"ventas"}
       title={"Ventas delivery"}
       isLoading={isLoading}
@@ -445,40 +664,19 @@ export const Dashboard: React.FC = () => {
     <CardInfo
       key="takeaway"
       info={takeawayCount.toString()}
+      originalDailyData={takeawayDailyData}
       link={"ventas"}
       title={"Ventas take away"}
       isLoading={isLoading}
     />,
     <CardInfo
       key="priceFactor"
-      info={(() => {
-        const ordersWithPriceFactor = orders.filter(
-          (order) => "priceFactor" in order
-        );
-        const extraAmount = ordersWithPriceFactor.reduce((acc, order) => {
-          const originalAmount = order.total / order.priceFactor;
-          return acc + (order.total - originalAmount);
-        }, 0);
-
-        const totalOriginalAmount = facturacionTotal - extraAmount;
-        const originalPercentage =
-          (totalOriginalAmount * 100) / facturacionTotal;
-
-        return currencyFormat(Math.ceil(extraAmount));
-      })()}
+      info={currencyFormat(Math.ceil(dynamicPriceExtra))}
+      originalDailyData={dynamicPriceDailyData}
       title={"Extra por Dynamic price"}
       cuadrito={
-        facturacionTotal > 0
-          ? 100 -
-            ((facturacionTotal -
-              orders
-                .filter((order) => "priceFactor" in order)
-                .reduce((acc, order) => {
-                  const originalAmount = order.total / order.priceFactor;
-                  return acc + (order.total - originalAmount);
-                }, 0)) *
-              100) /
-              facturacionTotal
+        facturacionRealTotal > 0
+          ? (dynamicPriceExtra * 100) / facturacionRealTotal
           : 0
       }
       isLoading={isLoading}
@@ -490,7 +688,7 @@ export const Dashboard: React.FC = () => {
       title={"Pedidos con extras al final "} // Título del card
       isLoading={isLoading} // Muestra un indicador de carga si es necesario
       cuadrito={
-        facturacionTotal > 0
+        facturacionRealTotal > 0
           ? (ordersWithExtra.length * 100) / (deliveryCount + takeawayCount)
           : 0
       }
@@ -503,23 +701,8 @@ export const Dashboard: React.FC = () => {
     />,
     <CardInfo
       key="extraFacturacion"
-      info={currencyFormat(
-        orders.reduce((total, order) => {
-          if (!order.detallePedido || !Array.isArray(order.detallePedido)) {
-            return total;
-          }
-          return (
-            total +
-            order.detallePedido
-              .filter((producto) => producto.extra)
-              .reduce(
-                (subtotal, producto) =>
-                  subtotal + producto.priceBurger * producto.quantity,
-                0
-              )
-          );
-        }, 0)
-      )}
+      info={currencyFormat(extrasTotal)}
+      originalDailyData={extrasDailyData}
       title={"Facturación por extras"}
       isLoading={isLoading}
     />,
@@ -619,7 +802,7 @@ export const Dashboard: React.FC = () => {
       key="ticket"
       info={
         orders.length > 0
-          ? currencyFormat(Math.round(facturacionTotal / orders.length))
+          ? currencyFormat(Math.round(facturacionRealTotal / orders.length))
           : currencyFormat(0)
       }
       title={"Ticket promedio"}
@@ -750,13 +933,13 @@ export const Dashboard: React.FC = () => {
                 React.cloneElement(card, {
                   key: index,
                   className: `
-          ${index === 0 ? "rounded-t-lg" : ""}
-          ${
-            index === cardsToRender.length - 1 && !isEmpresario
-              ? "rounded-b-lg"
-              : ""
-          }
-        `,
+        ${index === 0 ? "rounded-t-lg" : ""}
+        ${
+          index === cardsToRender.length - 1 && !isEmpresario
+            ? "rounded-b-lg"
+            : ""
+        }
+      `,
                   isLoading: isLoading,
                 })
               )}

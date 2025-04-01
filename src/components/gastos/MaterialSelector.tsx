@@ -37,9 +37,9 @@ export const MaterialSelector = ({
 
   const isAnhelo = empresaNombre === "ANHELO";
 
-  console.log(
-    `Estado de empresa: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
-  );
+  // console.log(
+  //   `Estado de empresa: ID=${empresaId}, Nombre=${empresaNombre}, isAnhelo=${isAnhelo}`
+  // );
 
   // Cargar materiales específicos para esta empresa
   useEffect(() => {
@@ -58,7 +58,7 @@ export const MaterialSelector = ({
 
         if (isAnhelo) {
           // Para Anhelo, cargar de la colección raíz "materiales"
-          console.log("Cargando materiales para Anhelo desde colección raíz");
+          // console.log("Cargando materiales para Anhelo desde colección raíz");
           const materialesRef = collection(firestore, "materiales");
           const materialesSnapshot = await getDocs(materialesRef);
 
@@ -68,9 +68,9 @@ export const MaterialSelector = ({
           }));
         } else {
           // Para otras empresas, cargar de la subcolección dentro de absoluteClientes
-          console.log(
-            `Cargando materiales para empresa ${empresaId} desde absoluteClientes`
-          );
+          // console.log(
+          //   `Cargando materiales para empresa ${empresaId} desde absoluteClientes`
+          // );
           const materialesRef = collection(
             firestore,
             "absoluteClientes",
@@ -85,7 +85,7 @@ export const MaterialSelector = ({
           }));
         }
 
-        console.log(`Encontrados ${materialesData.length} materiales`);
+        // console.log(`Encontrados ${materialesData.length} materiales`);
         setMaterials(materialesData);
       } catch (error) {
         console.error("Error al cargar materiales:", error);

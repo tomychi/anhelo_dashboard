@@ -203,9 +203,9 @@ const KPILineChart = ({ orders }) => {
       ? new Date(valueDate.startDate)
       : new Date();
 
-    console.log("startDate:", startDate);
-    console.log("Total telefonos:", telefonos.length);
-    console.log("Total orders:", orders.length);
+    // console.log("startDate:", startDate);
+    // console.log("Total telefonos:", telefonos.length);
+    // console.log("Total orders:", orders.length);
 
     // Crear un mapa para optimizar la búsqueda de teléfonos anteriores
     // Este mapa contiene todos los teléfonos que realizaron pedidos ANTES de startDate
@@ -225,10 +225,10 @@ const KPILineChart = ({ orders }) => {
       }
     });
 
-    console.log(
-      "Teléfonos existentes antes de startDate:",
-      existingPhoneMap.size
-    );
+    // console.log(
+    //   "Teléfonos existentes antes de startDate:",
+    //   existingPhoneMap.size
+    // );
 
     // Procesar órdenes por fecha para contar nuevos clientes
     const customersByDate = {};
@@ -246,12 +246,12 @@ const KPILineChart = ({ orders }) => {
 
       // Guardar el conteo para esta fecha
       customersByDate[dateStr] = newCustomersForDate.length;
-      console.log(
-        "Fecha:",
-        dateStr,
-        "Nuevos clientes:",
-        newCustomersForDate.length
-      );
+      // console.log(
+      //   "Fecha:",
+      //   dateStr,
+      //   "Nuevos clientes:",
+      //   newCustomersForDate.length
+      // );
     });
 
     const dailyData = Object.entries(ordersByDate).map(

@@ -5,12 +5,12 @@ import {
   runTransaction,
   getDocs,
   onSnapshot,
-} from 'firebase/firestore';
-import { DetallePedidoProps } from '../pages/DynamicForm';
-import { obtenerFechaActual } from '../helpers/dateToday';
-import { v4 as uuidv4 } from 'uuid';
-import { PedidoProps } from '../types/types';
-import { cleanPhoneNumber } from '../helpers/orderByweeks';
+} from "firebase/firestore";
+import { DetallePedidoProps } from "../pages/DynamicForm";
+import { obtenerFechaActual } from "../helpers/dateToday";
+import { v4 as uuidv4 } from "uuid";
+import { PedidoProps } from "../types/types";
+import { cleanPhoneNumber } from "../helpers/orderByweeks";
 
 interface OrderDetailProps {
   envio: number;
@@ -32,8 +32,8 @@ export const UploadOrder = async (
   const firestore = getFirestore();
   const pedidoId = uuidv4();
   const fechaFormateada = obtenerFechaActual();
-  const [dia, mes, anio] = fechaFormateada.split('/');
-  const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+  const [dia, mes, anio] = fechaFormateada.split("/");
+  const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
   const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
   try {
@@ -49,7 +49,7 @@ export const UploadOrder = async (
     });
     return pedidoId;
   } catch (error) {
-    console.error('Error al subir el pedido:', error);
+    console.error("Error al subir el pedido:", error);
     throw error;
   }
 };
@@ -62,14 +62,14 @@ export const updateCadeteForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -102,14 +102,14 @@ export const updateDislikeForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -142,14 +142,14 @@ export const updateTotalForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -183,14 +183,14 @@ export const updateCompesasionForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -229,14 +229,14 @@ export const updateTiempoEntregaForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -269,14 +269,14 @@ export const updateTiempoElaboradoForOrder = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -309,14 +309,14 @@ export const updateOrderFields = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -325,7 +325,7 @@ export const updateOrderFields = (
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
-          if (pedido.metodoPago === 'efectivo') {
+          if (pedido.metodoPago === "efectivo") {
             pedido.efectivoCantidad = fields.total ?? pedido.efectivoCantidad;
           }
           return { ...pedido, ...fields };
@@ -352,14 +352,14 @@ export const updateOrderTime = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -404,8 +404,13 @@ export const obtenerUltimaFechaPedido = async (): Promise<
     const mesFin = anio === anioActual ? mesActual : 12;
 
     for (let mes = mesInicio; mes <= mesFin; mes++) {
-      const mesString = mes.toString().padStart(2, '0');
-      const pedidosMensualesRef = collection(firestore, 'pedidos', anio.toString(), mesString);
+      const mesString = mes.toString().padStart(2, "0");
+      const pedidosMensualesRef = collection(
+        firestore,
+        "pedidos",
+        anio.toString(),
+        mesString
+      );
       const diasSnapshot = await getDocs(pedidosMensualesRef);
       for (const diaDoc of diasSnapshot.docs) {
         const pedidosDelDia: Pedido[] = diaDoc.data().pedidos || [];
@@ -430,9 +435,9 @@ export const obtenerUltimaFechaPedido = async (): Promise<
 export async function ejecutarObtenerUltimaFechaPedido() {
   try {
     const ultimasFechas = await obtenerUltimaFechaPedido();
-    console.log('Última fecha de pedido por teléfono:', ultimasFechas);
+    // console.log('Última fecha de pedido por teléfono:', ultimasFechas);
   } catch (error) {
-    console.error('Error al obtener la última fecha de pedido:', error);
+    console.error("Error al obtener la última fecha de pedido:", error);
   }
 }
 
@@ -459,14 +464,14 @@ export const updateOrderCookNow = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -493,18 +498,18 @@ export const updateOrderCookNow = (
 
 export const updateMultipleOrders = async (
   fecha: string,
-  updates: { orderId: string, newCadete: string }[]
+  updates: { orderId: string; newCadete: string }[]
 ): Promise<void> => {
   const firestore = getFirestore();
-  const [dia, mes, anio] = fecha.split('/');
-  const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+  const [dia, mes, anio] = fecha.split("/");
+  const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
   const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
   return new Promise((resolve, reject) => {
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El documento no existe para la fecha especificada.'));
+        reject(new Error("El documento no existe para la fecha especificada."));
         return;
       }
 
@@ -512,7 +517,9 @@ export const updateMultipleOrders = async (
       const pedidosDelDia = existingData.pedidos || [];
 
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
-        const updateInfo = updates.find(update => update.orderId === pedido.id);
+        const updateInfo = updates.find(
+          (update) => update.orderId === pedido.id
+        );
         if (updateInfo && pedido.fecha === fecha) {
           return { ...pedido, cadete: updateInfo.newCadete };
         }
@@ -525,11 +532,11 @@ export const updateMultipleOrders = async (
       });
     })
       .then(() => {
-        console.log('Actualización múltiple completada exitosamente');
+        // console.log('Actualización múltiple completada exitosamente');
         resolve();
       })
       .catch((error) => {
-        console.error('Error en actualización múltiple:', error);
+        console.error("Error en actualización múltiple:", error);
         reject(error);
       });
   });
@@ -543,14 +550,14 @@ export const updateOrderPaymentMethod = (
   const firestore = getFirestore();
 
   return new Promise((resolve, reject) => {
-    const [dia, mes, anio] = fechaPedido.split('/');
-    const pedidosCollectionRef = collection(firestore, 'pedidos', anio, mes);
+    const [dia, mes, anio] = fechaPedido.split("/");
+    const pedidosCollectionRef = collection(firestore, "pedidos", anio, mes);
     const pedidoDocRef = doc(pedidosCollectionRef, dia);
 
     runTransaction(firestore, async (transaction) => {
       const pedidoDocSnapshot = await transaction.get(pedidoDocRef);
       if (!pedidoDocSnapshot.exists()) {
-        reject(new Error('El pedido no existe para la fecha especificada.'));
+        reject(new Error("El pedido no existe para la fecha especificada."));
         return;
       }
 
@@ -560,9 +567,9 @@ export const updateOrderPaymentMethod = (
       const pedidosActualizados = pedidosDelDia.map((pedido: PedidoProps) => {
         if (pedido.fecha === fechaPedido && pedido.id === pedidoId) {
           const updatedPedido = { ...pedido, metodoPago: nuevoMetodoPago };
-          if (nuevoMetodoPago === 'efectivo') {
+          if (nuevoMetodoPago === "efectivo") {
             delete updatedPedido.seFacturo;
-          } else if (nuevoMetodoPago === 'mercadoPago') {
+          } else if (nuevoMetodoPago === "mercadoPago") {
             updatedPedido.seFacturo = false;
           }
           return updatedPedido;
@@ -579,4 +586,3 @@ export const updateOrderPaymentMethod = (
       .catch((error) => reject(error));
   });
 };
-

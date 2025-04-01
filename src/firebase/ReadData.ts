@@ -197,7 +197,7 @@ export const marcarPedidoComoElaborado = async (
         pedidosDelDia[index].elaborado = true;
         pedidosDelDia[index].tiempoElaborado = tiempo;
         transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-        console.log("Pedido marcado como elaborado en Firestore");
+        // console.log("Pedido marcado como elaborado en Firestore");
       } else {
         console.error(
           "El pedido no fue encontrado en el arreglo de pedidos del día"
@@ -236,7 +236,7 @@ export const marcarPedidoComoEntregado = async (
         pedidosDelDia[index].tiempoEntregado = tiempo;
         pedidosDelDia[index].entregado = true;
         transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-        console.log("Pedido marcado como entregado en Firestore");
+        // console.log("Pedido marcado como entregado en Firestore");
       } else {
         console.error(
           "El pedido no fue encontrado en el arreglo de pedidos del día"
@@ -274,7 +274,7 @@ export const marcarPedidoComoEmbalado = async (
       if (index !== -1) {
         pedidosDelDia[index].tiempoEmbalado = tiempo;
         transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-        console.log("Pedido marcado como entregado en Firestore");
+        // console.log("Pedido marcado como entregado en Firestore");
       } else {
         console.error(
           "El pedido no fue encontrado en el arreglo de pedidos del día"
@@ -317,16 +317,16 @@ export const eliminarDocumento = async (
     // Determinar si es ANHELO basado en el nombre de la empresa
     const isAnhelo = empresaId === "8497d9a8-b474-41d8-86a9-43a9454927c1";
 
-    console.log(
-      `Eliminando documento. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
-    );
+    // console.log(
+    //   `Eliminando documento. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
+    // );
 
     // Obtener referencia al documento con la ruta correcta
     let docRef;
     if (isAnhelo) {
       // Ruta original para ANHELO
       docRef = doc(getFirestore(), dbName, anio, mes, dia);
-      console.log(`Eliminando de ruta legacy: ${dbName}/${anio}/${mes}/${dia}`);
+      // console.log(`Eliminando de ruta legacy: ${dbName}/${anio}/${mes}/${dia}`);
     } else {
       // Ruta para otras empresas en absoluteClientes
       docRef = doc(
@@ -338,9 +338,9 @@ export const eliminarDocumento = async (
         mes,
         dia
       );
-      console.log(
-        `Eliminando de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${anio}/${mes}/${dia}`
-      );
+      // console.log(
+      //   `Eliminando de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${anio}/${mes}/${dia}`
+      // );
     }
 
     runTransaction(getFirestore(), async (transaction) => {
@@ -378,7 +378,7 @@ export const eliminarDocumento = async (
       }
     })
       .then(() => {
-        console.log(`${dbName} eliminado de Firestore`);
+        // console.log(`${dbName} eliminado de Firestore`);
       })
       .catch((error) => {
         console.error(`Error al eliminar ${dbName} de Firestore:`, error);
@@ -423,9 +423,9 @@ export const ReadDataForDateRange = <T>(
       // Determinar si es ANHELO basado en el nombre de la empresa
       const isAnhelo = empresaId === "8497d9a8-b474-41d8-86a9-43a9454927c1";
 
-      console.log(
-        `Leyendo datos de ${dbName}. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
-      );
+      // console.log(
+      //   `Leyendo datos de ${dbName}. Es ANHELO: ${isAnhelo}, Empresa: ${empresaNombre}`
+      // );
 
       const allData: { [key: string]: T[] } = {};
 
@@ -441,9 +441,9 @@ export const ReadDataForDateRange = <T>(
         if (isAnhelo) {
           // Ruta original para ANHELO
           docRef = doc(firestore, dbName, year, month, day);
-          console.log(
-            `Leyendo de ruta legacy: ${dbName}/${year}/${month}/${day}`
-          );
+          // console.log(
+          //   `Leyendo de ruta legacy: ${dbName}/${year}/${month}/${day}`
+          // );
         } else {
           // Ruta para otras empresas en absoluteClientes
           docRef = doc(
@@ -455,9 +455,9 @@ export const ReadDataForDateRange = <T>(
             month,
             day
           );
-          console.log(
-            `Leyendo de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${year}/${month}/${day}`
-          );
+          // console.log(
+          //   `Leyendo de ruta de empresa: absoluteClientes/${empresaId}/${dbName}/${year}/${month}/${day}`
+          // );
         }
 
         try {
@@ -500,9 +500,9 @@ export const ReadDataForDateRange = <T>(
             (merged, data) => [...merged, ...data],
             []
           );
-          console.log(
-            `Número total de solicitudes a la base de datos: ${requestCounter}`
-          );
+          // console.log(
+          //   `Número total de solicitudes a la base de datos: ${requestCounter}`
+          // );
           resolve(mergedData);
         })
         .catch((error) => {
@@ -688,7 +688,7 @@ export const updateBurgersRatings = async (orders: PedidoProps[]) => {
     });
 
     await Promise.all(updatePromises);
-    console.log("Ratings actualizados exitosamente");
+    // console.log("Ratings actualizados exitosamente");
     return true;
   } catch (error) {
     console.error("Error al actualizar los ratings:", error);
@@ -796,9 +796,9 @@ export const updatePendingOfBeingAccepted = async (
       if (index !== -1) {
         pedidosDelDia[index].pendingOfBeingAccepted = newValue;
         transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-        console.log(
-          "Estado de pendingOfBeingAccepted actualizado en Firestore"
-        );
+        // console.log(
+        //   "Estado de pendingOfBeingAccepted actualizado en Firestore"
+        // );
       } else {
         console.error(
           "El pedido no fue encontrado en el arreglo de pedidos del día"
@@ -925,9 +925,9 @@ export const marcarPedidoComoFacturado = async (
         pedidosDelDia[index].datosFacturacion = datosFacturacion;
 
         transaction.set(pedidoDocRef, { pedidos: pedidosDelDia });
-        console.log(
-          "Pedido marcado como facturado en Firestore con datos de facturación"
-        );
+        // console.log(
+        //   "Pedido marcado como facturado en Firestore con datos de facturación"
+        // );
       } else {
         console.error(
           "El pedido no fue encontrado en el arreglo de pedidos del día"

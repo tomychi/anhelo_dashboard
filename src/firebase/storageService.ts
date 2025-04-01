@@ -24,11 +24,11 @@ export const uploadImage = async (
     const filePath = `${path}/${fileName}`;
     const storageRef = ref(storage, filePath);
 
-    console.log("Subiendo archivo a:", filePath);
+    // console.log("Subiendo archivo a:", filePath);
 
     // Subir el archivo
     const snapshot = await uploadBytes(storageRef, file);
-    console.log("Archivo subido con éxito:", snapshot.metadata.fullPath);
+    // console.log("Archivo subido con éxito:", snapshot.metadata.fullPath);
 
     // Si se proporciona una función de callback para el progreso
     if (onProgress) {
@@ -37,7 +37,7 @@ export const uploadImage = async (
 
     // Obtener la URL de descarga
     const downloadURL = await getDownloadURL(snapshot.ref);
-    console.log("URL de descarga obtenida:", downloadURL);
+    // console.log("URL de descarga obtenida:", downloadURL);
 
     return downloadURL;
   } catch (error) {

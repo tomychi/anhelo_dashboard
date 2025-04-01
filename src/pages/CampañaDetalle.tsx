@@ -99,14 +99,14 @@ export const CampañaDetalle: React.FC = () => {
   useEffect(() => {
     const cargarPedidos = async () => {
       if (!campaignData?.titulo || !campaignData?.fecha) {
-        console.log("No hay datos de campaña:", { campaignData });
+        // console.log("No hay datos de campaña:", { campaignData });
         return;
       }
 
-      console.log("Iniciando carga de pedidos con datos:", {
-        titulo: campaignData.titulo,
-        fecha: campaignData.fecha,
-      });
+      // console.log("Iniciando carga de pedidos con datos:", {
+      //   titulo: campaignData.titulo,
+      //   fecha: campaignData.fecha,
+      // });
 
       try {
         const { todosPedidos, pedidosConCupon, codigosCampana } =
@@ -115,17 +115,17 @@ export const CampañaDetalle: React.FC = () => {
             campaignData.titulo
           );
 
-        console.log("Pedidos obtenidos:", {
-          total: todosPedidos.length,
-          conCupon: pedidosConCupon.length,
-        });
+        // console.log("Pedidos obtenidos:", {
+        //   total: todosPedidos.length,
+        //   conCupon: pedidosConCupon.length,
+        // });
         setPedidosConCupon(pedidosConCupon);
 
         const stats = calcularEstadisticasPedidos(
           todosPedidos,
           pedidosConCupon
         );
-        console.log("Estadísticas calculadas:", stats);
+        // console.log("Estadísticas calculadas:", stats);
         setEstadisticas(stats);
       } catch (error) {
         console.error("Error al cargar los pedidos:", error);

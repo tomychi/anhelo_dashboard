@@ -306,7 +306,7 @@ export const ComanderaAutomatizada: React.FC = () => {
       if (location.pathname === "/comanderaAutomatizada") {
         // Cambiar esta línea
         unsubscribeOrders = ReadOrdersForToday((pedidos: PedidoProps[]) => {
-          console.log("Nuevos pedidos recibidos:", pedidos);
+          // console.log("Nuevos pedidos recibidos:", pedidos);
           dispatch(readOrdersData(pedidos));
         });
       }
@@ -1549,17 +1549,17 @@ export const ComanderaAutomatizada: React.FC = () => {
   const handleMessageChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log("1. Iniciando handleMessageChange");
-    console.log("2. Valor actual del input:", e.target.value);
-    console.log("3. Estado actual de altaDemanda:", altaDemanda);
+    // console.log("1. Iniciando handleMessageChange");
+    // console.log("2. Valor actual del input:", e.target.value);
+    // console.log("3. Estado actual de altaDemanda:", altaDemanda);
 
     try {
-      console.log("4. Intentando actualizar mensaje...");
+      // console.log("4. Intentando actualizar mensaje...");
       await updateAltaDemandaMessage(e.target.value);
-      console.log("5. Mensaje actualizado correctamente");
+      // console.log("5. Mensaje actualizado correctamente");
 
       setAltaDemandaMessage(e.target.value);
-      console.log("6. Estado local actualizado");
+      // console.log("6. Estado local actualizado");
 
       Swal.fire({
         icon: "success",
@@ -1568,7 +1568,7 @@ export const ComanderaAutomatizada: React.FC = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      console.log("7. Alerta de éxito mostrada");
+      // console.log("7. Alerta de éxito mostrada");
     } catch (error) {
       console.error("8. Error en handleMessageChange:", error);
       Swal.fire({

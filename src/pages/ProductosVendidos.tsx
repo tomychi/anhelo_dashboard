@@ -78,7 +78,7 @@ export const ProductosVendidos = () => {
 
   // Extraer los nombres de las hamburguesas para identificación
   const burgerNames = burgers.map((burger) => burger.data.name.toLowerCase());
-  console.log("Nombres de hamburguesas:", burgerNames);
+  // console.log("Nombres de hamburguesas:", burgerNames);
 
   // Calcular los diferentes tipos de pedidos utilizando useMemo para optimizar
   const {
@@ -115,13 +115,13 @@ export const ProductosVendidos = () => {
       "5+": new Set(),
     };
 
-    console.log("Inicializando contadores de pedidos:", counts);
-    console.log("Inicializando conjuntos de clientes únicos:", uniqueCustomers);
+    // console.log("Inicializando contadores de pedidos:", counts);
+    // console.log("Inicializando conjuntos de clientes únicos:", uniqueCustomers);
 
     // Procesar cada orden para contar los tipos de pedidos y clientes únicos
     orders.forEach((order, index) => {
       const { detallePedido, telefono } = order;
-      console.log(`Procesando orden ${index + 1}:`, order);
+      // console.log(`Procesando orden ${index + 1}:`, order);
 
       // Contar el total de hamburguesas en la orden y verificar si tiene sides
       let totalBurgers = 0;
@@ -131,17 +131,17 @@ export const ProductosVendidos = () => {
         const isBurger = burgerNames.includes(item.burger.toLowerCase());
         if (isBurger) {
           totalBurgers += item.quantity;
-          console.log(`  - Agregado ${item.quantity} de ${item.burger}`);
+          // console.log(`  - Agregado ${item.quantity} de ${item.burger}`);
         } else if (item.quantity > 0) {
           hasSides = true;
-          console.log(
-            `  - Orden incluye side: ${item.burger} x${item.quantity}`
-          );
+          // console.log(
+          //   `  - Orden incluye side: ${item.burger} x${item.quantity}`
+          // );
         }
       });
 
-      console.log(`  - Total hamburguesas en orden: ${totalBurgers}`);
-      console.log(`  - Tiene sides: ${hasSides}`);
+      // console.log(`  - Total hamburguesas en orden: ${totalBurgers}`);
+      // console.log(`  - Tiene sides: ${hasSides}`);
 
       // Determinar la categoría basada en el número de hamburguesas
       let category = "";
@@ -151,51 +151,51 @@ export const ProductosVendidos = () => {
         category = "5+";
       } else {
         // Si no cumple con ninguna categoría, omitir
-        console.log(
-          `  - Orden con ${totalBurgers} hamburguesas no contabilizada (fuera del rango 1-4 y 5+)`
-        );
+        // console.log(
+        //   `  - Orden con ${totalBurgers} hamburguesas no contabilizada (fuera del rango 1-4 y 5+)`
+        // );
         return;
       }
 
       // Incrementar los contadores según la presencia de sides
       if (hasSides) {
         counts[category].withSides += 1;
-        console.log(
-          `  - Incrementando pedidos de ${category} hamburguesa(s) + sides: ${counts[category].withSides}`
-        );
+        // console.log(
+        //   `  - Incrementando pedidos de ${category} hamburguesa(s) + sides: ${counts[category].withSides}`
+        // );
       } else {
         counts[category].noSides += 1;
-        console.log(
-          `  - Incrementando pedidos de ${category} hamburguesa(s) sin sides: ${counts[category].noSides}`
-        );
+        // console.log(
+        //   `  - Incrementando pedidos de ${category} hamburguesa(s) sin sides: ${counts[category].noSides}`
+        // );
       }
 
       // Añadir el teléfono al conjunto correspondiente para contar clientes únicos
       uniqueCustomers[category].add(telefono);
-      console.log(
-        `  - Añadido teléfono ${telefono} a la categoría ${category}`
-      );
+      // console.log(
+      //   `  - Añadido teléfono ${telefono} a la categoría ${category}`
+      // );
     });
 
     // Cálculos adicionales
 
     // 1. Total Orders
     const totalOrders = orders.length;
-    console.log("Total Orders:", totalOrders);
+    // console.log("Total Orders:", totalOrders);
 
     // 2. Total Quantity Originals
     const totalQuantityOriginals = productosPedidos.reduce(
       (total, producto) => total + producto.quantity,
       0
     );
-    console.log("Total Quantity Originals:", totalQuantityOriginals);
+    // console.log("Total Quantity Originals:", totalQuantityOriginals);
 
     // 3. Total Quantity Toppings
     const totalQuantityToppings = toppingsData.reduce(
       (total, topping) => total + topping.quantity,
       0
     );
-    console.log("Total Quantity Toppings:", totalQuantityToppings);
+    // console.log("Total Quantity Toppings:", totalQuantityToppings);
 
     // 4. Total Quantity Toppings Pagos
     const toppingsPagos = [
@@ -212,7 +212,7 @@ export const ProductosVendidos = () => {
       (total, topping) => total + topping.quantity,
       0
     );
-    console.log("Total Quantity Toppings Pagos:", totalQuantityToppingsPagos);
+    // console.log("Total Quantity Toppings Pagos:", totalQuantityToppingsPagos);
 
     // 5. Suma Costo Total
     const toppingsTodos = [
@@ -232,8 +232,8 @@ export const ProductosVendidos = () => {
       (total, material) => total + material.costo,
       0
     );
-    console.log("Materiales filtrados para costo total:", materialesFiltrados);
-    console.log("Suma Costo Total:", sumaCostoTotal);
+    // console.log("Materiales filtrados para costo total:", materialesFiltrados);
+    // console.log("Suma Costo Total:", sumaCostoTotal);
 
     // 6. Hamburguesas Pedidas
     const hamburguesasPedidas = productosPedidos.reduce((total, producto) => {
@@ -246,7 +246,7 @@ export const ProductosVendidos = () => {
         return total;
       }
     }, 0);
-    console.log("Hamburguesas Pedidas:", hamburguesasPedidas);
+    // console.log("Hamburguesas Pedidas:", hamburguesasPedidas);
 
     // 7. Total Medallones Necesarios
     const totalMedallonesNecesarios = productosPedidos.reduce(
@@ -264,7 +264,7 @@ export const ProductosVendidos = () => {
       },
       0
     );
-    console.log("Total Medallones Necesarios:", totalMedallonesNecesarios);
+    // console.log("Total Medallones Necesarios:", totalMedallonesNecesarios);
 
     // 8. Total Bacon Toppings
     const totalBaconToppings = toppingsData.reduce((total, topping) => {
@@ -274,7 +274,7 @@ export const ProductosVendidos = () => {
         return total;
       }
     }, 0);
-    console.log("Total Bacon Toppings:", totalBaconToppings);
+    // console.log("Total Bacon Toppings:", totalBaconToppings);
 
     // 9. Total Bacon Necesario
     const totalBaconNecesario = productosPedidos.reduce((total, producto) => {
@@ -289,7 +289,7 @@ export const ProductosVendidos = () => {
         return total;
       }
     }, 0);
-    console.log("Total Bacon Necesario:", totalBaconNecesario);
+    // console.log("Total Bacon Necesario:", totalBaconNecesario);
 
     // 10. Cantidad de Bolsitas
     const cantBolsitas = productosPedidos.reduce((total, producto) => {
@@ -303,7 +303,7 @@ export const ProductosVendidos = () => {
         return total + producto.quantity;
       }
     }, 0);
-    console.log("Cantidad de Bolsitas:", cantBolsitas);
+    // console.log("Cantidad de Bolsitas:", cantBolsitas);
 
     // 11. Cálculo de Porcentajes por cada clasificación de pedidos (withSides)
     const percentages: { [key: string]: number } = {};
@@ -313,11 +313,11 @@ export const ProductosVendidos = () => {
       const total = noSides + withSides;
       const percentage = total > 0 ? (withSides / total) * 100 : 0;
       percentages[key] = parseFloat(percentage.toFixed(2)); // Limitar a 2 decimales
-      console.log(
-        `Porcentaje de pedidos de ${
-          key === "5+" ? "5 o más" : key
-        } hamburguesa(s) con sides: ${percentages[key]}%`
-      );
+      // console.log(
+      //   `Porcentaje de pedidos de ${
+      //     key === "5+" ? "5 o más" : key
+      //   } hamburguesa(s) con sides: ${percentages[key]}%`
+      // );
     });
 
     // 12. Cálculo de Porcentajes Generales por Categoría
@@ -327,17 +327,17 @@ export const ProductosVendidos = () => {
       const percentage =
         totalOrders > 0 ? (totalPerCategory / totalOrders) * 100 : 0;
       overallPercentages[key] = parseFloat(percentage.toFixed(2)); // Limitar a 2 decimales
-      console.log(
-        `Porcentaje general de pedidos de ${
-          key === "5+" ? "5 o más" : key
-        } hamburguesa(s): ${overallPercentages[key]}%`
-      );
+      // console.log(
+      //   `Porcentaje general de pedidos de ${
+      //     key === "5+" ? "5 o más" : key
+      //   } hamburguesa(s): ${overallPercentages[key]}%`
+      // );
     });
 
     // 13. Cálculo de Clientes Únicos por Categoría
     // Ya se ha llenado durante el procesamiento de órdenes
 
-    console.log("Conjuntos de clientes únicos por categoría:", uniqueCustomers);
+    // console.log("Conjuntos de clientes únicos por categoría:", uniqueCustomers);
 
     return {
       counts,
@@ -368,7 +368,7 @@ export const ProductosVendidos = () => {
       },
     ],
   };
-  console.log("Datos para gráfico de burgers:", dataBurgers);
+  // console.log("Datos para gráfico de burgers:", dataBurgers);
 
   // Definir los datos para los gráficos de toppings
   const dataToppings = {
@@ -381,7 +381,7 @@ export const ProductosVendidos = () => {
       },
     ],
   };
-  console.log("Datos para gráfico de toppings:", dataToppings);
+  // console.log("Datos para gráfico de toppings:", dataToppings);
 
   // Preparar los datos para el gráfico de medallones por minuto
   const chartData = React.useMemo(() => {
@@ -407,13 +407,13 @@ export const ProductosVendidos = () => {
         }
       });
     });
-    console.log("Medallones por minuto:", medallonesPorMinuto);
+    // console.log("Medallones por minuto:", medallonesPorMinuto);
 
     // Convertir los minutos en objetos Date y ordenar
     const minutosOrdenados = Object.keys(medallonesPorMinuto)
       .map(Number)
       .sort((a, b) => a - b);
-    console.log("Minutos ordenados:", minutosOrdenados);
+    // console.log("Minutos ordenados:", minutosOrdenados);
 
     // Convertir los minutos ordenados de nuevo a cadenas de horas
     const horasOrdenadas = minutosOrdenados.map((minutos) => {
@@ -423,7 +423,7 @@ export const ProductosVendidos = () => {
         .toString()
         .padStart(2, "0")}`;
     });
-    console.log("Horas ordenadas:", horasOrdenadas);
+    // console.log("Horas ordenadas:", horasOrdenadas);
 
     // Datos para el gráfico de línea
     const lineData = {
@@ -443,7 +443,7 @@ export const ProductosVendidos = () => {
         },
       ],
     };
-    console.log("Datos para gráfico de medallones por minuto:", lineData);
+    // console.log("Datos para gráfico de medallones por minuto:", lineData);
 
     return lineData;
   }, [orders, burgers]);

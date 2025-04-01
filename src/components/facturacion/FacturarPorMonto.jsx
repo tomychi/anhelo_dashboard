@@ -270,7 +270,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
           });
 
           const data = await response.json();
-          console.log(`Respuesta de factura ${i + 1}:`, data);
+          // console.log(`Respuesta de factura ${i + 1}:`, data);
 
           // Preparar la respuesta para mostrar al usuario
           let respuestaFactura;
@@ -301,9 +301,9 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 `Factura ${i + 1} emitida con éxito pero no se pudo guardar en Firebase`
               );
             } else {
-              console.log(
-                `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
-              );
+              // console.log(
+              //   `Factura ${i + 1} emitida y guardada con éxito. CAE: ${data.data.cae}`
+              // );
             }
           } else {
             // Error al generar la factura
@@ -321,7 +321,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
               cae: "No generado",
             };
 
-            console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
+            // console.log(`Error al procesar factura ${i + 1}: ${errorMsg}`);
           }
 
           // Agregar esta respuesta al array de todas las respuestas

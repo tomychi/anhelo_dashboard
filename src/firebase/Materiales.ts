@@ -50,9 +50,9 @@ export const CreateMaterial = async (
     // Ruta original para ANHELO (colección raíz 'materiales')
     materialRef = doc(firestore, "materiales", materialId);
 
-    console.log(
-      "ANHELO detectado, guardando en ruta legacy: materiales/" + materialId
-    );
+    // console.log(
+    //   "ANHELO detectado, guardando en ruta legacy: materiales/" + materialId
+    // );
   } else {
     // Verificar que tengamos un empresaId
     if (!empresaId) {
@@ -70,12 +70,12 @@ export const CreateMaterial = async (
       materialId
     );
 
-    console.log(
-      "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
-        empresaId +
-        "/materiales/" +
-        materialId
-    );
+    // console.log(
+    //   "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+    //     empresaId +
+    //     "/materiales/" +
+    //     materialId
+    // );
   }
 
   // Crear el material
@@ -182,9 +182,9 @@ export const updateMaterialCost = async (
   }
 
   try {
-    console.log("Buscando material:", materialName);
-    console.log("Nuevo costo:", newCost);
-    console.log("Cantidad:", cant);
+    // console.log("Buscando material:", materialName);
+    // console.log("Nuevo costo:", newCost);
+    // console.log("Cantidad:", cant);
 
     // Primero, obtener todos los materiales para verificar
     const materialesSnapshot = await getDocs(materialesRef);
@@ -199,7 +199,7 @@ export const updateMaterialCost = async (
     );
 
     if (material) {
-      console.log("Material encontrado:", material);
+      // console.log("Material encontrado:", material);
 
       // Determinar la referencia correcta según la empresa
       let materialDocRef;
@@ -222,7 +222,7 @@ export const updateMaterialCost = async (
         medida: material.medida || 0,
       });
 
-      console.log("Material actualizado exitosamente");
+      // console.log("Material actualizado exitosamente");
     } else {
       console.error(
         "Material no encontrado. Materiales disponibles:",
@@ -269,9 +269,9 @@ export const CreateProducto = async (
     // Ruta original para ANHELO (colección 'burgers')
     productoRef = doc(firestore, "burgers", productoId);
 
-    console.log(
-      "ANHELO detectado, guardando en ruta legacy: burgers/" + productoId
-    );
+    // console.log(
+    //   "ANHELO detectado, guardando en ruta legacy: burgers/" + productoId
+    // );
   } else {
     // Verificar que tengamos un empresaId
     if (!empresaId) {
@@ -289,12 +289,12 @@ export const CreateProducto = async (
       productoId
     );
 
-    console.log(
-      "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
-        empresaId +
-        "/productos/" +
-        productoId
-    );
+    // console.log(
+    //   "Empresa normal detectada, guardando en ruta: absoluteClientes/" +
+    //     empresaId +
+    //     "/productos/" +
+    //     productoId
+    // );
   }
 
   // Crear el producto con valores por defecto para campos opcionales que no se incluyen
