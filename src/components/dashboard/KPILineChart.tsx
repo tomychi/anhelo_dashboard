@@ -754,11 +754,9 @@ const KPILineChart = ({ orders }) => {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="h-[175px] md:h-[300px] flex items-center justify-center">
-          <p className="text-gray-400">
-            No hay datos disponibles para el período seleccionado
-          </p>
-        </div>
+        <p className="text-gray-400 text-center px-8 font-light">
+          No hay datos disponibles para el período seleccionado
+        </p>
       )}
     </div>
   );
