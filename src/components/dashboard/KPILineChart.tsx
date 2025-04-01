@@ -15,37 +15,60 @@ import {
   hasKpiPermission,
   EmpleadoProps,
   EmpresaProps,
+  getEffectiveModifier,
 } from "../../firebase/ClientesAbsolute";
 import { convertDateFormat } from "../../helpers/dateToday";
 import { cleanPhoneNumber } from "../../helpers/orderByweeks";
 
-// Función para aplicar el modificador al valor
-const applyModifier = (value, modifier = 1) => {
-  if (modifier === 1) return value;
+// Función mejorada para aplicar modificadores a valores, considerando rangos de fechas
+const applyModifierImproved = (value, modifier = 1, dateKey = null) => {
+  // Si el modificador es 1, no hay cambios
+  if (typeof modifier === "number" && modifier === 1) {
+    return value;
+  }
 
-  if (typeof value === "number") {
-    return Math.round(value * modifier);
-  } else if (typeof value === "string") {
-    if (value.includes("$")) {
-      const numMatch = value.match(/[\d,.]+/);
-      if (numMatch) {
-        const numStr = numMatch[0];
-        const num = parseFloat(numStr.replace(/,/g, ""));
+  // Para modificadores basados en rangos de fecha
+  if (
+    dateKey &&
+    typeof modifier === "object" &&
+    modifier !== null &&
+    modifier.type === "date_range"
+  ) {
+    // Obtener el modificador efectivo para esta fecha específica
+    const effectiveModifier = getEffectiveModifier(modifier, dateKey);
+
+    if (typeof value === "number") {
+      return value * effectiveModifier;
+    }
+  }
+
+  // Para modificadores simples (números)
+  if (typeof modifier === "number") {
+    if (typeof value === "number") {
+      return value * modifier;
+    } else if (typeof value === "string") {
+      if (value.includes("$")) {
+        const numMatch = value.match(/[\d,.]+/);
+        if (numMatch) {
+          const numStr = numMatch[0];
+          const num = parseFloat(numStr.replace(/,/g, ""));
+          if (!isNaN(num)) {
+            const modifiedNum = Math.round(num * modifier);
+            const prefix = value.substring(0, value.indexOf(numStr));
+            const formattedNum = modifiedNum.toLocaleString("es-AR");
+            return `${prefix}${formattedNum}`;
+          }
+        }
+      } else {
+        const num = parseFloat(value.replace(/,/g, ""));
         if (!isNaN(num)) {
           const modifiedNum = Math.round(num * modifier);
-          const prefix = value.substring(0, value.indexOf(numStr));
-          const formattedNum = modifiedNum.toLocaleString("es-AR");
-          return `${prefix}${formattedNum}`;
+          return modifiedNum.toString();
         }
-      }
-    } else {
-      const num = parseFloat(value.replace(/,/g, ""));
-      if (!isNaN(num)) {
-        const modifiedNum = Math.round(num * modifier);
-        return modifiedNum.toString();
       }
     }
   }
+
   return value;
 };
 
@@ -203,10 +226,6 @@ const KPILineChart = ({ orders }) => {
       ? new Date(valueDate.startDate)
       : new Date();
 
-    // console.log("startDate:", startDate);
-    // console.log("Total telefonos:", telefonos.length);
-    // console.log("Total orders:", orders.length);
-
     // Crear un mapa para optimizar la búsqueda de teléfonos anteriores
     // Este mapa contiene todos los teléfonos que realizaron pedidos ANTES de startDate
     const existingPhoneMap = new Map();
@@ -225,11 +244,6 @@ const KPILineChart = ({ orders }) => {
       }
     });
 
-    // console.log(
-    //   "Teléfonos existentes antes de startDate:",
-    //   existingPhoneMap.size
-    // );
-
     // Procesar órdenes por fecha para contar nuevos clientes
     const customersByDate = {};
 
@@ -246,18 +260,16 @@ const KPILineChart = ({ orders }) => {
 
       // Guardar el conteo para esta fecha
       customersByDate[dateStr] = newCustomersForDate.length;
-      // console.log(
-      //   "Fecha:",
-      //   dateStr,
-      //   "Nuevos clientes:",
-      //   newCustomersForDate.length
-      // );
     });
 
     const dailyData = Object.entries(ordersByDate).map(
       ([dateStr, dailyOrders]) => {
         const activeOrders = dailyOrders.filter((order) => !order.canceled);
         const canceledOrders = dailyOrders.filter((order) => order.canceled);
+
+        // Extraer la fecha en formato ISO para uso con modificadores
+        const [dia, mes, anio] = dateStr.split("/");
+        const fechaISO = `${anio}-${mes}-${dia}`; // YYYY-MM-DD
 
         // Facturación bruta
         const facturacionBruta = activeOrders.reduce(
@@ -451,7 +463,7 @@ const KPILineChart = ({ orders }) => {
         // Ratings
         const ratings = calculateAverageRatings(activeOrders);
 
-        // Aplicar modificadores
+        // Mapeo de ID de KPIs a las claves reales en la configuración
         const kpiMapping = {
           bruto: "bruto",
           neto: "neto",
@@ -483,8 +495,8 @@ const KPILineChart = ({ orders }) => {
           "productos-rating": "productos-rating",
         };
 
-        const modifiedData = {};
-        Object.entries({
+        // Recopilar todos los valores base sin modificar
+        const baseData = {
           bruto: facturacionBruta,
           neto: facturacionNeta,
           productos: productosVendidos,
@@ -513,11 +525,21 @@ const KPILineChart = ({ orders }) => {
           pagina: ratings.pagina,
           tiempo: ratings.tiempo,
           "productos-rating": ratings.productos,
-        }).forEach(([kpiId, value]) => {
+        };
+
+        // Aplicar modificadores utilizando la función mejorada
+        const modifiedData = {};
+        Object.entries(baseData).forEach(([kpiId, value]) => {
           const configKpiKey = kpiMapping[kpiId];
           const kpiData = kpiConfig[configKpiKey] || { modifiers: {} };
           const modifier = kpiData.modifiers[usuarioId] || 1;
-          modifiedData[kpiId] = applyModifier(value, modifier);
+
+          // Usar la función mejorada que considera rangos de fechas
+          modifiedData[kpiId] = applyModifierImproved(
+            value,
+            modifier,
+            fechaISO
+          );
         });
 
         return {
@@ -608,11 +630,8 @@ const KPILineChart = ({ orders }) => {
 
     setAvailableKPIs(filteredKPIs);
 
-    // Seleccionar inicialmente todos los KPIs disponibles
-    setSelectedKPIs((prevSelected) => {
-      const newSelected = filteredKPIs.map((kpi) => kpi.id);
-      return newSelected.length > 0 ? newSelected : prevSelected;
-    });
+    // Seleccionar inicialmente TODOS los KPIs disponibles
+    setSelectedKPIs(filteredKPIs.map((kpi) => kpi.id));
   }, [kpiConfigLoaded, kpiConfig, usuarioId]);
 
   const toggleKPI = (kpiId) => {
@@ -667,66 +686,80 @@ const KPILineChart = ({ orders }) => {
             </button>
           ))}
         </div>
+        <div className="text-center text-xs text-gray-500 mb-2">
+          {selectedKPIs.length === 0
+            ? "Selecciona métricas para visualizar"
+            : `Mostrando ${selectedKPIs.length} ${selectedKPIs.length === 1 ? "métrica" : "métricas"}`}
+        </div>
       </div>
-      <div className="h-[175px] pr-4 md:h-[300px] flex w-full">
-        <ResponsiveContainer>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="fecha"
-              tickFormatter={(value) => {
-                const [dia, mes] = value.split("/");
-                return `${dia}/${mes}`;
-              }}
-            />
-            <YAxis />
-            <Tooltip
-              formatter={(value, name) => {
-                if (typeof value === "number") {
-                  if (name === "success") return `${value.toFixed(1)}%`;
-                  if (name === "coccion" || name === "entrega")
-                    return `${value.toFixed(1)} min`;
-                  if (name === "km") return `${value.toFixed(1)} km`;
-                  if (
-                    name === "bruto" ||
-                    name === "neto" ||
-                    name === "priceFactor" ||
-                    name === "extraFacturacion" ||
-                    name === "canceledAmount" ||
-                    name === "canceledNetAmount" ||
-                    name === "costokm" ||
-                    name === "ticket"
+      {chartData.length > 0 ? (
+        <div className="h-[175px] pr-4 md:h-[300px] flex w-full">
+          <ResponsiveContainer>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="fecha"
+                tickFormatter={(value) => {
+                  const [dia, mes] = value.split("/");
+                  return `${dia}/${mes}`;
+                }}
+              />
+              <YAxis />
+              <Tooltip
+                formatter={(value, name) => {
+                  if (typeof value === "number") {
+                    if (name === "success") return `${value.toFixed(1)}%`;
+                    if (name === "coccion" || name === "entrega")
+                      return `${value.toFixed(1)} min`;
+                    if (name === "km") return `${value.toFixed(1)} km`;
+                    if (
+                      name === "bruto" ||
+                      name === "neto" ||
+                      name === "priceFactor" ||
+                      name === "extraFacturacion" ||
+                      name === "canceledAmount" ||
+                      name === "canceledNetAmount" ||
+                      name === "costokm" ||
+                      name === "ticket"
+                    )
+                      return `${value.toFixed(0)}`;
+                    if (
+                      name === "general" ||
+                      name === "temperatura" ||
+                      name === "presentacion" ||
+                      name === "pagina" ||
+                      name === "tiempo" ||
+                      name === "productos-rating"
+                    )
+                      return `${value.toFixed(1)}/5`;
+                    return value.toFixed(0);
+                  }
+                  return value;
+                }}
+                labelFormatter={(label) => `Fecha: ${label}`}
+              />
+              {availableKPIs.map(
+                (kpi) =>
+                  selectedKPIs.includes(kpi.id) && (
+                    <Bar
+                      key={kpi.id}
+                      dataKey={kpi.id}
+                      name={kpi.name}
+                      fill={kpi.color}
+                      barSize={20}
+                    />
                   )
-                    return `$${value.toFixed(0)}`;
-                  if (
-                    name === "general" ||
-                    name === "temperatura" ||
-                    name === "presentacion" ||
-                    name === "pagina" ||
-                    name === "tiempo" ||
-                    name === "productos-rating"
-                  )
-                    return `${value.toFixed(1)}/5`;
-                  return value.toFixed(0);
-                }
-                return value;
-              }}
-            />
-            {availableKPIs.map(
-              (kpi) =>
-                selectedKPIs.includes(kpi.id) && (
-                  <Bar
-                    key={kpi.id}
-                    dataKey={kpi.id}
-                    name={kpi.name}
-                    fill={kpi.color}
-                    barSize={40}
-                  />
-                )
-            )}
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-[175px] md:h-[300px] flex items-center justify-center">
+          <p className="text-gray-400">
+            No hay datos disponibles para el período seleccionado
+          </p>
+        </div>
+      )}
     </div>
   );
 };
