@@ -25,18 +25,17 @@ const ProgressBar = ({
   const safePercent = Math.min(Math.max(percent, 0), 100);
 
   // Mensaje predeterminado si no se proporciona una etiqueta personalizada
-  const defaultLabel =
-    current && total ? `Procesando ${current} de ${total}` : `Progreso`;
+  const defaultLabel = current && total ? `${current} de ${total}` : `Progreso`;
 
   return (
-    <div className="w-full flex flex-col items-center justify-center ">
+    <div className="w-full flex flex-col font-coolvetica  pb-2 ">
       {showLabels && (
-        <div className="flex items-center justify-center text-xs gap-2 mb-2">
-          <span className="text-gray-100 font-light text-center">
-            {label || defaultLabel} :
-          </span>
-          <span className="text-gray-100 font-bold">
+        <div className="flex items-baseline justify-between  gap-2 ">
+          <span className="text-gray-100 text-xl font-bold">
             {Math.round(safePercent)}%
+          </span>
+          <span className="text-gray-100 opacity-10 text-xs font-light text-center">
+            {label || defaultLabel}
           </span>
         </div>
       )}

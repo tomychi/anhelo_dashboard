@@ -663,7 +663,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                           current={currentFactura}
                           total={totalFacturas}
                           fillColor="bg-white"
-                          bgColor="bg-gray-100 opacity-10"
+                          bgColor="bg-gray-100 bg-opacity-10"
                         />
                       </div>
                     ) : (
