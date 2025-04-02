@@ -34,7 +34,7 @@ const ProgressBar = ({
           <span className="text-gray-100 text-xl font-bold">
             {Math.round(safePercent)}%
           </span>
-          <span className="text-gray-100 opacity-10 text-xs font-light text-center">
+          <span className="text-gray-100 text-xs font-light text-center">
             {label || defaultLabel}
           </span>
         </div>
