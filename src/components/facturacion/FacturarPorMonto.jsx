@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import SalesCards from "./SalesCards";
 import LoadingPoints from "../LoadingPoints";
+import ProgressBar from "../ProgressBar "; // Importar el componente de barra de progreso
 import { guardarFacturaPorMonto } from "../../firebase/afip";
 import currencyFormat from "../../helpers/currencyFormat";
 import { obtenerFechaActual, obtenerHoraActual } from "../../helpers/dateToday";
@@ -31,6 +32,11 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   const [dragStart, setDragStart] = useState(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
   const modalRef = useRef(null);
+
+  // Estados nuevos para la barra de progreso
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [currentFactura, setCurrentFactura] = useState(0);
+  const [totalFacturas, setTotalFacturas] = useState(0);
 
   // Función helper para generar fechas válidas (últimos 5 días)
   const obtenerFechasPermitidas = () => {
@@ -260,12 +266,20 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
         throw new Error("No hay ventas seleccionadas para facturar");
       }
 
+      // Inicializar valores para la barra de progreso
+      setTotalFacturas(ventasAFacturar.length);
+      setCurrentFactura(0);
+      setProgressPercent(0);
+
       // Array para almacenar todas las respuestas
       const todasLasRespuestas = [];
 
       // Procesar las facturas una por una
       for (let i = 0; i < ventasAFacturar.length; i++) {
         const venta = ventasAFacturar[i];
+
+        // Actualizar el estado de la factura actual
+        setCurrentFactura(i + 1);
 
         // Datos de facturación para cada venta, ahora incluyendo la fecha
         const facturaData = {
@@ -367,6 +381,12 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
             cae: "No generado",
           });
         }
+
+        // Actualizar el progreso después de procesar cada factura
+        const newProgress = Math.round(
+          ((i + 1) / ventasAFacturar.length) * 100
+        );
+        setProgressPercent(newProgress);
       }
 
       // Mostrar todas las respuestas al usuario
@@ -634,24 +654,30 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                   <button
                     type="submit"
                     disabled={!tokenStatus?.valid || isSubmitting}
-                    className="w-full bg-black h-20 mt-4 flex items-center justify-center rounded-3xl"
+                    className="w-full bg-black h-20 mt-4 flex flex-col items-center justify-center rounded-3xl"
                   >
-                    <p className="text-gray-100 font-bold text-3xl">
-                      {isSubmitting ? (
-                        <LoadingPoints color="text-gray-100" />
-                      ) : (
-                        <div className="flex flex-row items-center justify-center gap-2">
-                          <p className="text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center">
-                            {
-                              ventasGeneradas.filter(
-                                (venta) => venta.quiereFacturarla
-                              ).length
-                            }
-                          </p>
-                          Enviar
-                        </div>
-                      )}
-                    </p>
+                    {isSubmitting ? (
+                      <div className="w-full px-8">
+                        <ProgressBar
+                          percent={progressPercent}
+                          current={currentFactura}
+                          total={totalFacturas}
+                          fillColor="bg-white"
+                          bgColor="bg-gray-700"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-row items-center  justify-center gap-2">
+                        <p className="text-center flex justify-center w-4 h-4 bg-gray-50 rounded-full text-[10px] font-bold text-black items-center">
+                          {
+                            ventasGeneradas.filter(
+                              (venta) => venta.quiereFacturarla
+                            ).length
+                          }
+                        </p>
+                        <p className="text-gray-100 text-3xl">Enviar</p>
+                      </div>
+                    )}
                   </button>
                 </div>
               </>
