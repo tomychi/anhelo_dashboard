@@ -17,7 +17,7 @@ const ProgressBar = ({
   total,
   label,
   height = "h-1",
-  bgColor = "bg-gray-200",
+  bgColor = "bg-gray-100",
   fillColor = "bg-black",
   showLabels = true,
 }) => {

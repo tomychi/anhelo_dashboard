@@ -517,7 +517,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 name="puntoVenta"
                 value={formData.puntoVenta}
                 onChange={handleChange}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all appearance-none rounded-t-3xl"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all appearance-none "
                 required
               >
                 <option value="" disabled>
@@ -663,7 +663,7 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                           current={currentFactura}
                           total={totalFacturas}
                           fillColor="bg-white"
-                          bgColor="bg-gray-700"
+                          bgColor="bg-gray-100 opacity-10"
                         />
                       </div>
                     ) : (
