@@ -33,13 +33,14 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
   const modalRef = useRef(null);
 
   // Función helper para generar fechas válidas (últimos 5 días)
-  const obtenerUltimosCincoDias = () => {
+  const obtenerFechasPermitidas = () => {
     const fechas = [];
-    for (let i = 0; i < 5; i++) {
-      const fecha = new Date();
-      fecha.setDate(fecha.getDate() - i);
+    const rango = 5; // días antes y después
 
-      // Formatear como DD/MM/YYYY para mantener consistencia con obtenerFechaActual()
+    for (let i = -rango; i <= rango; i++) {
+      const fecha = new Date();
+      fecha.setDate(fecha.getDate() + i);
+
       const dia = fecha.getDate().toString().padStart(2, "0");
       const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
       const anio = fecha.getFullYear();
@@ -47,11 +48,12 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
 
       fechas.push(fechaFormateada);
     }
+
     return fechas;
   };
 
   // Generar el arreglo de fechas disponibles
-  const fechasDisponibles = obtenerUltimosCincoDias();
+  const fechasDisponibles = obtenerFechasPermitidas();
 
   // Efecto para inicializar animación cuando el modal se hace visible
   useEffect(() => {
@@ -489,6 +491,22 @@ const FacturarPorMonto = ({ onClose, tokenStatus, visible }) => {
                 <option value="A">Factura A</option>
                 <option value="B">Factura B</option>
                 <option value="C">Factura C</option>
+              </select>
+
+              <select
+                name="puntoVenta"
+                value={formData.puntoVenta}
+                onChange={handleChange}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all appearance-none rounded-t-3xl"
+                required
+              >
+                <option value="" disabled>
+                  Seleccionar punto de venta
+                </option>
+                <option value="1">Punto de Venta 1</option>
+                <option value="2">Punto de Venta 2</option>
+                <option value="3">Punto de Venta 3</option>{" "}
+                {/* ← tu nuevo punto */}
               </select>
 
               {/* Selector de fecha */}
