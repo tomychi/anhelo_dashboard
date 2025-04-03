@@ -1,3 +1,4 @@
+// Versión corregida del componente CardInfo
 import React, { useRef, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -60,7 +61,7 @@ const applyModifierImproved = (
   return applyModifier(value, modifier, selectedDateRange?.startDate);
 };
 
-// Función original para aplicar el modificador al valor mostrado (mantenerla para compatibilidad)
+// Función original para aplicar el modificador al valor mostrado
 const applyModifier = (value, modifier = 1, currentDate) => {
   // Obtener el modificador efectivo según la fecha actual
   const effectiveModifier =
@@ -273,6 +274,9 @@ interface CardInfoProps {
   originalDailyData?: { [date: string]: number };
   // Nueva prop para tipo de formato
   formatType?: "integer" | "percentage" | "decimal";
+  // Nuevas props para simulación
+  effectiveUserId?: string; // ID del usuario que estamos simulando (o el actual)
+  simulatingEmployeeView?: boolean; // Bandera para indicar si estamos en modo simulación
 }
 
 interface LoadingElementProps {
@@ -367,6 +371,8 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   valueModifiers = {},
   originalDailyData = null,
   formatType,
+  effectiveUserId, // Nueva prop para el ID de usuario efectivo
+  simulatingEmployeeView = false, // Nueva prop para indicar si estamos en modo simulación
 }) => {
   const titleRef = useRef<HTMLParagraphElement>(null);
   const infoRef = useRef<HTMLParagraphElement>(null);
@@ -402,11 +408,11 @@ export const CardInfo: React.FC<CardInfoProps> = ({
         ? (auth?.usuario as EmpleadoProps)?.id
         : "";
 
+  // Usar el ID efectivo si está disponible, de lo contrario usar el ID actual
+  const userIdToUse = effectiveUserId || currentUserId;
+
   // Obtener información de todos los empleados
   const [allEmpleados, setAllEmpleados] = useState<EmpleadoProps[]>([]);
-  const [modifiers, setModifiers] = useState<{
-    [userId: string]: ModifierType;
-  }>(valueModifiers);
 
   // Obtener la fecha seleccionada del estado global
   const valueDate = useSelector((state: RootState) => state.data.valueDate);
@@ -418,10 +424,11 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   // Verificar si el usuario actual es empresario (administrador)
   const isEmpresario = tipoUsuario === "empresa";
 
-  // Aplicar modificador al valor mostrado - MEJORADO para considerar datos diarios
+  // CLAVE: Aplicar modificador al valor mostrado utilizando valueModifiers directamente
   useEffect(() => {
-    if (!isLoading && currentUserId) {
-      const userModifier = modifiers[currentUserId] || 1;
+    if (!isLoading && userIdToUse) {
+      // Usar el modificador del ID efectivo (simulado o actual)
+      const userModifier = valueModifiers[userIdToUse] || 1;
 
       // Solo aplicar el modificador si se encuentra un valor diferente de 1
       if (userModifier !== 1) {
@@ -467,14 +474,15 @@ export const CardInfo: React.FC<CardInfoProps> = ({
     }
   }, [
     info,
-    currentUserId,
-    modifiers,
+    userIdToUse,
+    valueModifiers, // ¡Importante! Usar valueModifiers directamente
     isLoading,
-    kpiKey,
     formattedDate,
     originalDailyData,
     valueDate,
-    formatType, // Añadir formatType a las dependencias
+    formatType,
+    effectiveUserId,
+    simulatingEmployeeView,
   ]);
 
   // Configurar el detector de pulsación larga
@@ -627,9 +635,6 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       // Guardar la configuración actualizada en Firestore
       await updateKpiConfig(empresaId, updatedConfig);
 
-      // Actualizar el estado local de modificadores
-      setModifiers(newModifiers);
-
       // Volver a cargar los usuarios con acceso para reflejar los cambios
       const { obtenerEmpleadosDeEmpresa, obtenerEmpresaPorId } = await import(
         "../../firebase/ClientesAbsolute"
@@ -668,13 +673,15 @@ export const CardInfo: React.FC<CardInfoProps> = ({
   const CardContent = () => (
     <div
       className="flex flex-row justify-between items-center w-full"
-      {...(isEmpresario && kpiKey ? longPressEvent : {})}
+      {...(isEmpresario && kpiKey && !simulatingEmployeeView
+        ? longPressEvent
+        : {})}
     >
       {/* letras */}
       <div className="flex flex-col ">
         <div className="flex flex-col ">
-          {/* Círculos de usuarios con acceso */}
-          {!isLoading && accessUsers.length > 0 && (
+          {/* Círculos de usuarios con acceso - solo mostrar si no estamos en simulación */}
+          {!isLoading && !simulatingEmployeeView && accessUsers.length > 0 && (
             <div className="flex flex-row gap-1">
               {accessUsers.slice(0, 6).map((usuario, index) => (
                 <UserCircle key={usuario.id} nombre={usuario.nombre} />
@@ -686,6 +693,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
               )}
             </div>
           )}
+
           {isLoading ? (
             <LoadingElement className="h-4" width={titleWidth} />
           ) : (
@@ -705,13 +713,15 @@ export const CardInfo: React.FC<CardInfoProps> = ({
       </div>
 
       {/* numero */}
-      <div>
+      <div className="relative">
         {isLoading ? (
           <LoadingElement className="h-8" width={infoWidth} />
         ) : (
-          <p ref={infoRef} className="text-4xl font-medium">
-            {displayInfo}
-          </p>
+          <>
+            <p ref={infoRef} className="text-4xl font-medium">
+              {displayInfo}
+            </p>
+          </>
         )}
       </div>
     </div>
@@ -734,7 +744,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
             isOpen={showAccessModal}
             onClose={() => setShowAccessModal(false)}
             currentAccessIds={accessUserIds}
-            currentModifiers={modifiers}
+            currentModifiers={valueModifiers} // Usar valueModifiers directamente
             onUpdate={handleUpdateAccess}
           />
         )}
@@ -765,7 +775,7 @@ export const CardInfo: React.FC<CardInfoProps> = ({
           isOpen={showAccessModal}
           onClose={() => setShowAccessModal(false)}
           currentAccessIds={accessUserIds}
-          currentModifiers={modifiers}
+          currentModifiers={valueModifiers} // Usar valueModifiers directamente
           onUpdate={handleUpdateAccess}
         />
       )}

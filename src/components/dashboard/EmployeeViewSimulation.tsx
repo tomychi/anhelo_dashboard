@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { obtenerEmpleadosDeEmpresa } from "../../firebase/ClientesAbsolute";
 import Swal from "sweetalert2";
-import arrowIcon from "../../assets/arrowIcon.png";
 
-const EmployeeViewSimulation = ({ empresaId }) => {
+const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [dragStart, setDragStart] = useState(null);
@@ -60,11 +59,19 @@ const EmployeeViewSimulation = ({ empresaId }) => {
       return;
     }
 
-    // Handle employee view simulation logic here
+    // Find the selected employee's data
+    const selectedEmployeeData = employees.find(
+      (emp) => emp.id === selectedEmployee
+    );
+
+    // Call the parent component's onSimulateView function
+    onSimulateView(selectedEmployee, selectedEmployeeData);
+
+    // Success notification
     Swal.fire({
       icon: "success",
       title: "Simulación iniciada",
-      text: `Ahora estás viendo el dashboard como ${employees.find((emp) => emp.id === selectedEmployee)?.datos?.nombre || "empleado"}`,
+      text: `Ahora estás viendo el dashboard como ${selectedEmployeeData?.datos?.nombre || "empleado"}`,
       timer: 2000,
       showConfirmButton: false,
     });
@@ -185,7 +192,7 @@ const EmployeeViewSimulation = ({ empresaId }) => {
               </div>
             </div>
 
-            <div className="flex-col  w-full">
+            <div className="flex-col w-full">
               <div className="mb-8">
                 <h2 className="text-2xl mx-8 text-center font-bold mb-4">
                   Simular vista
@@ -213,7 +220,7 @@ const EmployeeViewSimulation = ({ empresaId }) => {
                 </div>
               ) : (
                 <select
-                  className="w-full px-4  h-10 border border-gray-300 rounded-full text-sm"
+                  className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm"
                   value={selectedEmployee}
                   onChange={handleEmployeeChange}
                 >

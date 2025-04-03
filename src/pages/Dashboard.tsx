@@ -156,6 +156,13 @@ export const Dashboard: React.FC = () => {
   const [isDashboardConfigured, setIsDashboardConfigured] = useState<
     boolean | null
   >(null);
+
+  // Estados para la simulación de vista de empleado
+  const [simulatingEmployee, setSimulatingEmployee] = useState(null);
+  const [simulatingEmployeeData, setSimulatingEmployeeData] = useState(null);
+  const [simulationKpiConfig, setSimulationKpiConfig] = useState(null);
+
+  // Resto de los estados
   const [totalPaga, setTotalPaga] = useState(0);
   const [totalDirecciones, setTotalDirecciones] = useState(0);
   const {
@@ -235,6 +242,56 @@ export const Dashboard: React.FC = () => {
         : "";
 
   const isEmpresario = tipoUsuario === "empresa";
+
+  const [effectiveUserId, setEffectiveUserId] = useState(usuarioId);
+
+  // Función para manejar la simulación de vista de empleado
+  const handleSimulateEmployeeView = async (employeeId, employeeData) => {
+    if (!employeeId || !auth?.usuario?.id) return;
+
+    try {
+      // Obtener la ID de la empresa
+      const empresaId = auth?.usuario?.id;
+
+      // Guardar los datos del empleado seleccionado
+      setSimulatingEmployee(employeeId);
+      setSimulatingEmployeeData(employeeData);
+
+      // Establecer el ID de usuario efectivo como el del empleado
+      setEffectiveUserId(employeeId);
+
+      // Obtener la configuración de KPIs para simular la vista del empleado
+      const config = await getKpiConfig(empresaId);
+      setSimulationKpiConfig(config);
+
+      // Notificar al usuario que la simulación está activa
+      console.log(`Simulando vista para: ${employeeData?.datos?.nombre}`);
+    } catch (error) {
+      console.error("Error al simular vista:", error);
+      // Resetear la simulación en caso de error
+      setSimulatingEmployee(null);
+      setSimulatingEmployeeData(null);
+      setSimulationKpiConfig(null);
+      setEffectiveUserId(usuarioId);
+    }
+  };
+
+  // Función para finalizar la simulación
+  const endSimulation = () => {
+    setSimulatingEmployee(null);
+    setSimulatingEmployeeData(null);
+    setSimulationKpiConfig(null);
+    // Restaurar el ID de usuario efectivo al original
+    setEffectiveUserId(usuarioId);
+
+    Swal.fire({
+      icon: "info",
+      title: "Simulación finalizada",
+      text: "Has vuelto a tu vista normal del dashboard",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
 
   // Cargar configuración de KPIs
   useEffect(() => {
@@ -933,7 +990,6 @@ export const Dashboard: React.FC = () => {
     />,
   ];
 
-  // Filtrar los cards según los permisos del usuario con el nuevo sistema de KPIs
   const cardsToRender = allCards
     .filter((card) => {
       const cardKey = card.key as string;
@@ -943,17 +999,39 @@ export const Dashboard: React.FC = () => {
         return false;
       }
 
+      // Si estamos simulando un empleado, usar su ID para determinar permisos
+      if (simulatingEmployee && simulationKpiConfig) {
+        return hasKpiPermission(
+          cardKey,
+          simulationKpiConfig,
+          simulatingEmployee
+        );
+      }
+
+      // Caso normal: usar el ID del usuario actual
       return hasKpiPermission(cardKey, kpiConfig, usuarioId);
     })
     .map((card) => {
       const cardKey = card.key as string;
-      const kpiData = kpiConfig[cardKey] || { accessIds: [], modifiers: {} };
+
+      // Si estamos simulando un empleado, usar la configuración de KPI simulada
+      let kpiData;
+      if (simulatingEmployee && simulationKpiConfig) {
+        kpiData = simulationKpiConfig[cardKey] || {
+          accessIds: [],
+          modifiers: {},
+        };
+      } else {
+        kpiData = kpiConfig[cardKey] || { accessIds: [], modifiers: {} };
+      }
 
       // Pasar la clave del KPI, la lista de usuarios con acceso y los modificadores
       return React.cloneElement(card, {
-        kpiKey: cardKey, // Añadir la clave del KPI
-        accessUserIds: kpiData.accessIds || [], // IDs de usuarios con acceso
-        valueModifiers: kpiData.modifiers || {}, // Modificadores por usuario
+        kpiKey: cardKey,
+        accessUserIds: kpiData.accessIds || [],
+        valueModifiers: kpiData.modifiers || {},
+        effectiveUserId: effectiveUserId, // Pasar el ID de usuario efectivo
+        simulatingEmployeeView: simulatingEmployee !== null, // Indicar si estamos en modo simulación
       });
     });
 
@@ -993,13 +1071,45 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
       <div className="bg-black px-4 pb-4">
         <Calendar />
-        <div className="flex flex-row mt-8  mb-4 gap-2 items-baseline">
-          <p className="text-gray-100 text-5xl ">Hola {greetingName}</p>
+        <div className="flex flex-row mt-8 mb-4 gap-2 items-baseline">
+          <p className="text-gray-100 text-5xl">
+            Hola{" "}
+            {simulatingEmployeeData?.datos?.nombre
+              ? simulatingEmployeeData?.datos?.nombre
+              : greetingName}
+          </p>
+
           {isEmpresario ? (
-            <EmployeeViewSimulation empresaId={auth?.usuario?.id} />
+            <>
+              {simulatingEmployee ? (
+                <div
+                  className="flex items-center cursor-pointer"
+                  onClick={endSimulation}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    className="h-4 text-gray-100"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm2.78-4.22a.75.75 0 0 1-1.06 0L8 9.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 8 5.22 6.28a.75.75 0 0 1 1.06-1.06L8 6.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 8l1.72 1.72a.75.75 0 0 1 0 1.06Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              ) : (
+                <EmployeeViewSimulation
+                  empresaId={auth?.usuario?.id}
+                  onSimulateView={handleSimulateEmployeeView}
+                />
+              )}
+            </>
           ) : null}
         </div>
       </div>
+
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
         <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
           {!kpiConfigLoaded ? (
@@ -1015,32 +1125,46 @@ export const Dashboard: React.FC = () => {
                 React.cloneElement(card, {
                   key: index,
                   className: `
-        ${index === 0 ? "rounded-t-lg" : ""}
-        ${
-          index === cardsToRender.length - 1 && !isEmpresario
-            ? "rounded-b-lg"
-            : ""
-        }
-      `,
+                  ${index === 0 ? "rounded-t-lg" : ""}
+                  ${
+                    index === cardsToRender.length - 1 && !isEmpresario
+                      ? "rounded-b-lg"
+                      : ""
+                  }
+                `,
                   isLoading: isLoading,
                 })
               )}
 
-              {/* Botón para añadir nuevo KPI (solo para empresarios) */}
-              {isEmpresario && <AddKpiCard className={`rounded-b-lg`} />}
+              {/* Botón para añadir nuevo KPI (solo para empresarios y cuando NO está simulando) */}
+              {isEmpresario && !simulatingEmployee && (
+                <AddKpiCard className={`rounded-b-lg`} />
+              )}
             </>
           ) : (
             <div className="flex flex-col rounded-lg">
               <div className="bg-white p-8 text-center rounded-t-lg">
-                {isDashboardConfigured === false && isEmpresario ? (
+                {isDashboardConfigured === false &&
+                isEmpresario &&
+                !simulatingEmployee ? (
                   <>
-                    <p className="text-gray-400  mb-4">
+                    <p className="text-gray-400 mb-4">
                       Bienvenido! Configura tu dashboard para comenzar a
                       visualizar las métricas de negocio.
                     </p>
                   </>
+                ) : simulatingEmployee ? (
+                  <p className="text-gray-400">
+                    Este empleado no tiene acceso a ningún KPI.
+                    <span
+                      className="text-blue-500 cursor-pointer ml-1"
+                      onClick={endSimulation}
+                    >
+                      Volver a tu vista
+                    </span>
+                  </p>
                 ) : (
-                  <p className="text-gray-400 ">
+                  <p className="text-gray-400">
                     No hay KPIs disponibles para mostrar con tus permisos
                     actuales.
                   </p>
