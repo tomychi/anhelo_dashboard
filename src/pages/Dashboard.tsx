@@ -1098,7 +1098,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
-        <div className="flex flex-col shadow-2xl shadow-gray-400 rounded-lg">
+        <div className="flex flex-col shadow-2xl mb-4 shadow-gray-400 rounded-lg">
           {!kpiConfigLoaded ? (
             <div className="bg-white p-8 text-center rounded-lg">
               <p className="text-gray-400 font-light text-xs ">
@@ -1129,7 +1129,7 @@ export const Dashboard: React.FC = () => {
               )}
             </>
           ) : (
-            <div className="flex flex-col rounded-lg">
+            <div className="flex flex-col rounded-lg ">
               <div className="bg-white p-8 text-center rounded-t-lg">
                 {isDashboardConfigured === false &&
                 isEmpresario &&
