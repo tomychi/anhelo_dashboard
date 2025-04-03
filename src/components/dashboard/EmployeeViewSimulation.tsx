@@ -1,19 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { obtenerEmpleadosDeEmpresa } from "../../firebase/ClientesAbsolute";
 import Swal from "sweetalert2";
 
 const EmployeeViewSimulation = ({ empresaId }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [dragStart, setDragStart] = useState(null);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const modalRef = useRef(null);
+
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Fetch employees when the modal opens
   useEffect(() => {
-    if (showModal && empresaId) {
+    if (isOpen && empresaId) {
       fetchEmployees();
     }
-  }, [showModal, empresaId]);
+  }, [isOpen, empresaId]);
+
+  // Configure animation when opening
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+      setCurrentTranslate(0);
+    }
+  }, [isOpen]);
 
   const fetchEmployees = async () => {
     try {
@@ -22,14 +36,11 @@ const EmployeeViewSimulation = ({ empresaId }) => {
       setEmployees(
         employeesList.filter((emp) => emp.datos?.estado === "activo")
       );
+      setError("");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching employees:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudieron cargar los empleados",
-      });
+      setError("No se pudieron cargar los empleados");
       setLoading(false);
     }
   };
@@ -58,16 +69,69 @@ const EmployeeViewSimulation = ({ empresaId }) => {
     });
 
     // Close the modal
-    setShowModal(false);
+    handleClose();
   };
 
-  const handleClick = () => {
-    setShowModal(true);
+  const handleOpen = () => {
+    setIsOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleClose = () => {
+    setIsAnimating(false);
+    setCurrentTranslate(0);
+    setTimeout(() => {
+      setIsOpen(false);
+    }, 300);
   };
+
+  // Drag gesture handling
+  const handleTouchStart = (e) => {
+    setDragStart(e.touches[0].clientY);
+  };
+
+  const handleMouseDown = (e) => {
+    setDragStart(e.clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (dragStart === null) return;
+    const currentPosition = e.touches[0].clientY;
+    const difference = currentPosition - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragStart === null) return;
+    const difference = e.clientY - dragStart;
+    if (difference < 0) return;
+    setCurrentTranslate(difference);
+  };
+
+  const handleDragEnd = () => {
+    if (currentTranslate > 200) {
+      handleClose();
+    } else {
+      setCurrentTranslate(0);
+    }
+    setDragStart(null);
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (dragStart !== null) {
+        handleDragEnd();
+      }
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleDragEnd);
+
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleDragEnd);
+    };
+  }, [dragStart, currentTranslate]);
 
   return (
     <>
@@ -76,7 +140,7 @@ const EmployeeViewSimulation = ({ empresaId }) => {
         viewBox="0 0 16 16"
         fill="currentColor"
         className="h-4 text-gray-100 cursor-pointer hover:text-gray-300"
-        onClick={handleClick}
+        onClick={handleOpen}
       >
         <path
           fillRule="evenodd"
@@ -85,60 +149,106 @@ const EmployeeViewSimulation = ({ empresaId }) => {
         />
       </svg>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Simular vista de empleado</h3>
-              <button
-                className="text-gray-400 hover:text-gray-600"
-                onClick={handleCloseModal}
-              >
-                ✕
-              </button>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
+          <div
+            className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
+              isAnimating ? "bg-opacity-50" : "bg-opacity-0"
+            }`}
+            style={{
+              opacity: Math.max(0, 1 - currentTranslate / 400),
+            }}
+            onClick={handleClose}
+          />
+
+          <div
+            ref={modalRef}
+            className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+              isAnimating ? "translate-y-0" : "translate-y-full"
+            }`}
+            style={{
+              transform: `translateY(${currentTranslate}px)`,
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+            >
+              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+                <div className="w-12 h-1 bg-gray-200 rounded-full" />
+              </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Selecciona un empleado:
-              </label>
+            <div className="flex-col space-y-2 w-full">
+              <div className="mb-8">
+                <h2 className="text-2xl mx-8 text-center font-bold mb-4">
+                  Simular vista de empleado
+                </h2>
+              </div>
 
-              {loading ? (
-                <div className="text-center py-2">Cargando empleados...</div>
-              ) : employees.length === 0 ? (
-                <div className="text-center py-2 text-gray-500">
-                  No hay empleados disponibles
-                </div>
-              ) : (
-                <select
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedEmployee}
-                  onChange={handleEmployeeChange}
-                >
-                  <option value="">Seleccionar empleado</option>
-                  {employees.map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.datos?.nombre || "Sin nombre"} -{" "}
-                      {employee.datos?.rol || "Sin rol"}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
+              {/* Employee selection section */}
+              <div className="rounded-lg border border-gray-200 p-4 mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Selecciona un empleado:
+                </label>
 
-            <div className="flex justify-end space-x-2">
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="flex justify-center w-full items-center">
+                      <div className="flex flex-row gap-1">
+                        <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
+                        <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : error ? (
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                    <p className="text-red-500 text-xs">{error}</p>
+                  </div>
+                ) : employees.length === 0 ? (
+                  <div className="text-center py-4 text-gray-500 text-sm">
+                    No hay empleados disponibles
+                  </div>
+                ) : (
+                  <select
+                    className="w-full p-3 border border-gray-300 rounded-lg text-sm"
+                    value={selectedEmployee}
+                    onChange={handleEmployeeChange}
+                  >
+                    <option value="">Seleccionar empleado</option>
+                    {employees.map((employee) => (
+                      <option key={employee.id} value={employee.id}>
+                        {employee.datos?.nombre || "Sin nombre"} -{" "}
+                        {employee.datos?.rol || "Sin rol"}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* Action buttons */}
               <button
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                onClick={handleCloseModal}
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
                 onClick={handleSimulateView}
                 disabled={loading || !selectedEmployee}
+                className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-3xl outline-none"
               >
-                Simular vista
+                {loading ? (
+                  <div className="flex justify-center w-full items-center">
+                    <div className="flex flex-row gap-1">
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                  </div>
+                ) : (
+                  "Simular vista"
+                )}
               </button>
             </div>
           </div>
