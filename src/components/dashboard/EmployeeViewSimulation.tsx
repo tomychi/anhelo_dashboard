@@ -184,59 +184,53 @@ const EmployeeViewSimulation = ({ empresaId }) => {
               </div>
             </div>
 
-            <div className="flex-col space-y-2 w-full">
+            <div className="flex-col  w-full">
               <div className="mb-8">
                 <h2 className="text-2xl mx-8 text-center font-bold mb-4">
-                  Simular vista de empleado
+                  Simular vista
                 </h2>
               </div>
 
               {/* Employee selection section */}
-              <div className="rounded-lg border border-gray-200 p-4 mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Selecciona un empleado:
-                </label>
-
-                {loading ? (
-                  <div className="text-center py-4">
-                    <div className="flex justify-center w-full items-center">
-                      <div className="flex flex-row gap-1">
-                        <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
-                        <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
-                      </div>
+              {loading ? (
+                <div className="text-center py-4">
+                  <div className="flex justify-center w-full items-center">
+                    <div className="flex flex-row gap-1">
+                      <div className="w-2 h-2 bg-black rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-black rounded-full animate-pulse delay-150"></div>
                     </div>
                   </div>
-                ) : error ? (
-                  <div className="bg-red-50 border-l-4 border-red-500 p-4">
-                    <p className="text-red-500 text-xs">{error}</p>
-                  </div>
-                ) : employees.length === 0 ? (
-                  <div className="text-center py-4 text-gray-500 text-sm">
-                    No hay empleados disponibles
-                  </div>
-                ) : (
-                  <select
-                    className="w-full p-3 border border-gray-300 rounded-lg text-sm"
-                    value={selectedEmployee}
-                    onChange={handleEmployeeChange}
-                  >
-                    <option value="">Seleccionar empleado</option>
-                    {employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.datos?.nombre || "Sin nombre"} -{" "}
-                        {employee.datos?.rol || "Sin rol"}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                  <p className="text-red-500 text-xs">{error}</p>
+                </div>
+              ) : employees.length === 0 ? (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  No hay empleados disponibles
+                </div>
+              ) : (
+                <select
+                  className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm"
+                  value={selectedEmployee}
+                  onChange={handleEmployeeChange}
+                >
+                  <option value="">Seleccionar empleado</option>
+                  {employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.datos?.nombre || "Sin nombre"} -{" "}
+                      {employee.datos?.rol || "Sin rol"}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               {/* Action buttons */}
               <button
                 onClick={handleSimulateView}
                 disabled={loading || !selectedEmployee}
-                className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-3xl outline-none"
+                className="text-gray-100 w-full mt-12 text-4xl h-20 px-4 bg-black font-bold rounded-3xl outline-none"
               >
                 {loading ? (
                   <div className="flex justify-center w-full items-center">
@@ -247,7 +241,7 @@ const EmployeeViewSimulation = ({ empresaId }) => {
                     </div>
                   </div>
                 ) : (
-                  "Simular vista"
+                  "Ver"
                 )}
               </button>
             </div>
