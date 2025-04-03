@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { obtenerEmpleadosDeEmpresa } from "../../firebase/ClientesAbsolute";
 import Swal from "sweetalert2";
+import arrowIcon from "../../assets/arrowIcon.png";
 
 const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -219,19 +220,28 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                   No hay empleados disponibles
                 </div>
               ) : (
-                <select
-                  className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm"
-                  value={selectedEmployee}
-                  onChange={handleEmployeeChange}
-                >
-                  <option value="">Seleccionar empleado</option>
-                  {employees.map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.datos?.nombre || "Sin nombre"} -{" "}
-                      {employee.datos?.rol || "Sin rol"}
-                    </option>
-                  ))}
-                </select>
+                // Use a wrapper div to position both the select and the arrow
+                <div className="relative w-full">
+                  <select
+                    className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm appearance-none"
+                    value={selectedEmployee}
+                    onChange={handleEmployeeChange}
+                  >
+                    <option value="">Seleccionar empleado</option>
+                    {employees.map((employee) => (
+                      <option key={employee.id} value={employee.id}>
+                        {employee.datos?.nombre || "Sin nombre"} -{" "}
+                        {employee.datos?.rol || "Sin rol"}
+                      </option>
+                    ))}
+                  </select>
+                  {/* Position the arrow absolutely within the wrapper */}
+                  <img
+                    src={arrowIcon}
+                    className="absolute right-4 transform rotate-90 h-2 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                    alt="Select arrow"
+                  />
+                </div>
               )}
 
               {/* Action buttons */}
