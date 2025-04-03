@@ -1077,8 +1077,8 @@ export const Dashboard: React.FC = () => {
           >
             Hola{" "}
             {simulatingEmployee
-              ? simulatingEmployeeData?.datos?.nombre
-              : greetingName}
+              ? simulatingEmployeeData?.datos?.nombre.split(" ")[0]
+              : greetingName.split(" ")[0]}
           </p>
 
           {isEmpresario ? (
