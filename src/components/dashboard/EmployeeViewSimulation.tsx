@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { obtenerEmpleadosDeEmpresa } from "../../firebase/ClientesAbsolute";
 import Swal from "sweetalert2";
+import arrowIcon from "../../assets/arrowIcon.png";
 
 const EmployeeViewSimulation = ({ empresaId }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -212,7 +213,7 @@ const EmployeeViewSimulation = ({ empresaId }) => {
                 </div>
               ) : (
                 <select
-                  className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm"
+                  className="w-full px-4  h-10 border border-gray-300 rounded-full text-sm"
                   value={selectedEmployee}
                   onChange={handleEmployeeChange}
                 >
