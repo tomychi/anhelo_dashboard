@@ -1074,7 +1074,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex flex-row mt-8 mb-4 gap-2 items-baseline">
           <p className="text-gray-100 text-5xl">
             Hola{" "}
-            {simulatingEmployeeData?.datos?.nombre
+            {simulatingEmployee
               ? simulatingEmployeeData?.datos?.nombre
               : greetingName}
           </p>
