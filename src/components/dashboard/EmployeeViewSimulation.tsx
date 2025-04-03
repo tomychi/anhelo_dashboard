@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { obtenerEmpleadosDeEmpresa } from "../../firebase/ClientesAbsolute";
-import Swal from "sweetalert2";
 import arrowIcon from "../../assets/arrowIcon.png";
 
 const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
@@ -62,11 +61,6 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
 
   const handleSimulateView = () => {
     if (!selectedEmployee) {
-      Swal.fire({
-        icon: "warning",
-        title: "Selecciona un empleado",
-        text: "Debes seleccionar un empleado para simular su vista",
-      });
       return;
     }
 
@@ -77,15 +71,6 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
 
     // Call the parent component's onSimulateView function
     onSimulateView(selectedEmployee, selectedEmployeeData);
-
-    // Success notification
-    Swal.fire({
-      icon: "success",
-      title: "Simulación iniciada",
-      text: `Ahora estás viendo el dashboard como ${selectedEmployeeData?.datos?.nombre || "empleado"}`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
 
     // Close the modal
     handleClose();
@@ -226,7 +211,7 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                   <p className="text-red-500 text-xs">{error}</p>
                 </div>
               ) : employees.length === 0 ? (
-                <div className="text-center py-4 text-gray-500 text-sm">
+                <div className="text-center  text-gray-400 font-light text-xs">
                   No hay empleados disponibles
                 </div>
               ) : (

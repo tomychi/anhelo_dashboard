@@ -17,7 +17,6 @@ import { readProductsAll } from "../redux/products/productAction";
 import { ReadData } from "../firebase/ReadData";
 import { calcularCostoHamburguesa } from "../helpers/calculator";
 import { ProductStateProps } from "../redux/products/productReducer";
-import Swal from "sweetalert2";
 import { Cadete, PedidoProps } from "../types/types"; // Importa PedidoProps
 import KPILineChart from "../components/dashboard/KPILineChart";
 import AddKpiCard from "../components/dashboard/AddKpiCard";
@@ -283,14 +282,6 @@ export const Dashboard: React.FC = () => {
     setSimulationKpiConfig(null);
     // Restaurar el ID de usuario efectivo al original
     setEffectiveUserId(usuarioId);
-
-    Swal.fire({
-      icon: "info",
-      title: "Simulación finalizada",
-      text: "Has vuelto a tu vista normal del dashboard",
-      timer: 2000,
-      showConfirmButton: false,
-    });
   };
 
   // Cargar configuración de KPIs
@@ -358,13 +349,7 @@ export const Dashboard: React.FC = () => {
         );
 
         dispatch(readProductsAll(formattedData));
-      } catch (error: any) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: `Error al traer datos: ${error.message || error}`,
-        });
-      }
+      } catch (error: any) {}
     };
 
     fetchData();
