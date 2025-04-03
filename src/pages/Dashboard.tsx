@@ -1072,7 +1072,9 @@ export const Dashboard: React.FC = () => {
       <div className="bg-black px-4 pb-4">
         <Calendar />
         <div className="flex flex-row mt-8 mb-4 gap-2 items-baseline">
-          <p className="text-gray-100 text-5xl">
+          <p
+            className={`text-gray-100 ${simulatingEmployee ? "opacity-20" : ""} text-5xl`}
+          >
             Hola{" "}
             {simulatingEmployee
               ? simulatingEmployeeData?.datos?.nombre
