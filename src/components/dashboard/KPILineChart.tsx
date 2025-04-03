@@ -72,7 +72,11 @@ const applyModifierImproved = (value, modifier = 1, dateKey = null) => {
   return value;
 };
 
-const KPILineChart = ({ orders }) => {
+const KPILineChart = ({
+  orders,
+  effectiveUserId = null, // Nuevo prop para recibir el ID del usuario efectivo
+  simulatingEmployeeView = false, // Nuevo prop para indicar si estamos en modo simulación
+}) => {
   const [selectedKPIs, setSelectedKPIs] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [availableKPIs, setAvailableKPIs] = useState([]);
@@ -99,6 +103,9 @@ const KPILineChart = ({ orders }) => {
       : tipoUsuario === "empleado"
         ? (auth?.usuario as EmpleadoProps)?.empresaId || ""
         : "";
+
+  // Determinar qué ID de usuario usar (el simulado o el actual)
+  const userIdToUse = effectiveUserId || usuarioId;
 
   useEffect(() => {
     const fetchKpiConfig = async () => {
@@ -527,12 +534,12 @@ const KPILineChart = ({ orders }) => {
           "productos-rating": ratings.productos,
         };
 
-        // Aplicar modificadores utilizando la función mejorada
+        // Aplicar modificadores utilizando la función mejorada y el ID efectivo
         const modifiedData = {};
         Object.entries(baseData).forEach(([kpiId, value]) => {
           const configKpiKey = kpiMapping[kpiId];
           const kpiData = kpiConfig[configKpiKey] || { modifiers: {} };
-          const modifier = kpiData.modifiers[usuarioId] || 1;
+          const modifier = kpiData.modifiers[userIdToUse] || 1; // Usar userIdToUse
 
           // Usar la función mejorada que considera rangos de fechas
           modifiedData[kpiId] = applyModifierImproved(
@@ -564,10 +571,12 @@ const KPILineChart = ({ orders }) => {
     facturacionTotal,
     kpiConfig,
     kpiConfigLoaded,
-    usuarioId,
+    userIdToUse, // Usar userIdToUse en lugar de usuarioId
     vueltas,
     telefonos,
     valueDate,
+    effectiveUserId, // Añadir como dependencia
+    simulatingEmployeeView, // Añadir como dependencia
   ]);
 
   const allKPIOptions = [
@@ -624,15 +633,16 @@ const KPILineChart = ({ orders }) => {
   useEffect(() => {
     if (!kpiConfigLoaded) return;
 
-    const filteredKPIs = allKPIOptions.filter((kpi) =>
-      hasKpiPermission(kpi.id, kpiConfig, usuarioId)
+    // Filtrar los KPIs disponibles según los permisos del usuario efectivo
+    const filteredKPIs = allKPIOptions.filter(
+      (kpi) => hasKpiPermission(kpi.id, kpiConfig, userIdToUse) // Usar userIdToUse
     );
 
     setAvailableKPIs(filteredKPIs);
 
     // Seleccionar inicialmente TODOS los KPIs disponibles
     setSelectedKPIs(filteredKPIs.map((kpi) => kpi.id));
-  }, [kpiConfigLoaded, kpiConfig, usuarioId]);
+  }, [kpiConfigLoaded, kpiConfig, userIdToUse]); // Usar userIdToUse como dependencia
 
   const toggleKPI = (kpiId) => {
     setSelectedKPIs((prev) =>
