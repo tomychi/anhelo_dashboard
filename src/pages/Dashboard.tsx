@@ -28,6 +28,7 @@ import {
   hasKpiPermission,
   subscribeToKpiConfig,
 } from "../firebase/ClientesAbsolute";
+import EmployeeViewSimulation from "../components/dashboard/EmployeeViewSimulation";
 
 interface RatingInfo {
   average: string;
@@ -994,20 +995,7 @@ export const Dashboard: React.FC = () => {
         <Calendar />
         <div className="flex flex-row mt-8  mb-4 gap-2 items-baseline">
           <p className="text-gray-100 text-5xl ">Hola {greetingName}</p>
-          {isEmpresario ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 text-gray-100 "
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10.47 2.22a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H5.75a.75.75 0 0 1 0-1.5h5.69l-.97-.97a.75.75 0 0 1 0-1.06Zm-4.94 6a.75.75 0 0 1 0 1.06l-.97.97h5.69a.75.75 0 0 1 0 1.5H4.56l.97.97a.75.75 0 1 1-1.06 1.06l-2.25-2.25a.75.75 0 0 1 0-1.06l2.25-2.25a.75.75 0 0 1 1.06 0Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          ) : null}
+          {isEmpresario ? <EmployeeViewSimulation /> : null}
         </div>
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
