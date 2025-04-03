@@ -995,7 +995,9 @@ export const Dashboard: React.FC = () => {
         <Calendar />
         <div className="flex flex-row mt-8  mb-4 gap-2 items-baseline">
           <p className="text-gray-100 text-5xl ">Hola {greetingName}</p>
-          {isEmpresario ? <EmployeeViewSimulation /> : null}
+          {isEmpresario ? (
+            <EmployeeViewSimulation empresaId={auth?.usuario?.id} />
+          ) : null}
         </div>
       </div>
       <div className="absolute left-4 right-4 top-[130px] rounded-lg">
