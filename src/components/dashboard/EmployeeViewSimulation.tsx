@@ -14,6 +14,16 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
+
+  // Add these handlers to toggle the arrow rotation
+  const handleSelectClick = () => {
+    setIsSelectOpen(true);
+  };
+
+  const handleSelectBlur = () => {
+    setIsSelectOpen(false);
+  };
 
   // Fetch employees when the modal opens
   useEffect(() => {
@@ -226,6 +236,8 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                     className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm appearance-none"
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
+                    onClick={handleSelectClick}
+                    onBlur={handleSelectBlur}
                   >
                     <option value="">Seleccionar empleado</option>
                     {employees.map((employee) => (
@@ -235,10 +247,12 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                       </option>
                     ))}
                   </select>
-                  {/* Position the arrow absolutely within the wrapper */}
+                  {/* Arrow with rotation based on isSelectOpen state */}
                   <img
                     src={arrowIcon}
-                    className="absolute right-4 transform rotate-90 h-2 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                    className={`absolute right-4 h-2 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300 ${
+                      isSelectOpen ? "-rotate-90" : "rotate-90"
+                    }`}
                     alt="Select arrow"
                   />
                 </div>
