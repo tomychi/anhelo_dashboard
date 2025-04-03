@@ -233,7 +233,7 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                 // Use a wrapper div to position both the select and the arrow
                 <div className="relative w-full">
                   <select
-                    className="w-full px-4 h-10 border border-gray-300 rounded-full text-sm appearance-none"
+                    className="w-full px-4 h-10 border border-gray-200 rounded-full text-sm appearance-none"
                     value={selectedEmployee}
                     onChange={handleEmployeeChange}
                     onClick={handleSelectClick}
