@@ -242,7 +242,7 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                     <option value="">Seleccionar empleado</option>
                     {employees.map((employee) => (
                       <option key={employee.id} value={employee.id}>
-                        {employee.datos?.nombre || "Sin nombre"} -{" "}
+                        {employee.datos?.nombre || "Sin nombre"}:{" "}
                         {employee.datos?.rol || "Sin rol"}
                       </option>
                     ))}
