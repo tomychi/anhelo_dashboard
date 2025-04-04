@@ -625,7 +625,7 @@ export const Empleados = () => {
                 className="px-4 pt-4 overflow-y-auto flex-grow"
                 style={{
                   maxHeight:
-                    "calc(90vh - 200px)" /* Ajustado para dar espacio a los botones inferiores */,
+                    "calc(40vh - 0px)" /* Ajustado para dar espacio a los botones inferiores */,
                 }}
                 onScroll={handleEditModalScroll}
               >
@@ -709,7 +709,7 @@ export const Empleados = () => {
               {/* Indicador de scroll hacia abajo */}
               {isScrollNeeded && !isNearBottom && (
                 <div
-                  className={`absolute ${isCreatingNew ? "bottom-2" : "bottom-[90px]"} left-0 right-0 flex justify-center pointer-events-none`}
+                  className={`absolute ${isCreatingNew ? "bottom-0" : "bottom-0"} left-0 right-0 flex justify-center pointer-events-none`}
                 >
                   <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
                     <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
