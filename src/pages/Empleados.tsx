@@ -344,12 +344,29 @@ export const Empleados = () => {
   };
 
   const handleDeleteEmpleado = async (empleadoId) => {
-    if (!empresaId || !empleadoId) return;
+    console.log("Intentando eliminar empleado con ID:", empleadoId);
 
-    if (window.confirm("¿Estás seguro de querer desactivar este empleado?")) {
+    if (!empresaId || !empleadoId) {
+      console.log("Error: ID de empresa o empleado faltante", {
+        empresaId,
+        empleadoId,
+      });
+      return;
+    }
+
+    if (
+      window.confirm(
+        "¿Estás seguro de querer desactivar este empleado? No aparecerá en la lista pero se conservará en el sistema."
+      )
+    ) {
       setLoading(true);
       try {
+        console.log("Enviando solicitud de eliminación para:", {
+          empresaId,
+          empleadoId,
+        });
         await eliminarEmpleado(empresaId, empleadoId);
+        console.log("Empleado eliminado exitosamente");
         fetchEmpleados();
       } catch (error) {
         console.error("Error al eliminar empleado:", error);
@@ -445,17 +462,37 @@ export const Empleados = () => {
     }
   };
 
-  // Filtrar empleados según el término de búsqueda
-  const filteredEmpleados = empleados.filter(
-    (empleado) =>
-      (empleado.datos?.nombre || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (empleado.datos?.rol || "")
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (empleado.iniciarSesion?.telefono || "").includes(searchTerm)
-  );
+  // Función para manejar la eliminación desde el modal
+  const handleDeleteFromModal = () => {
+    if (!selectedEmpleado || !selectedEmpleado.id) {
+      console.log("No hay empleado seleccionado para eliminar");
+      return;
+    }
+
+    // Guardar el ID antes de cerrar el modal
+    const empleadoIdToDelete = selectedEmpleado.id;
+    console.log("Guardando ID para eliminar:", empleadoIdToDelete);
+
+    // Cerrar el modal primero
+    handleCloseEditForm();
+
+    // Luego eliminar usando el ID guardado
+    handleDeleteEmpleado(empleadoIdToDelete);
+  };
+
+  // Filtrar empleados: primero excluir los inactivos, luego aplicar el filtro de búsqueda
+  const filteredEmpleados = empleados
+    .filter((empleado) => empleado.datos?.estado !== "inactivo") // Excluir empleados inactivos
+    .filter(
+      (empleado) =>
+        (empleado.datos?.nombre || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (empleado.datos?.rol || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (empleado.iniciarSesion?.telefono || "").includes(searchTerm)
+    );
 
   return (
     <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
@@ -744,7 +781,7 @@ export const Empleados = () => {
               <button
                 onClick={handleSaveEmpleado}
                 disabled={loading}
-                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl "
+                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl mb-3"
               >
                 {loading ? (
                   <LoadingPoints color="text-gray-100" />
@@ -758,14 +795,11 @@ export const Empleados = () => {
               {/* Botón de eliminar (solo visible en modo edición, no en creación) */}
               {!isCreatingNew && (
                 <button
-                  onClick={() => {
-                    handleCloseEditForm();
-                    handleDeleteEmpleado(selectedEmpleado.id);
-                  }}
+                  onClick={handleDeleteFromModal}
                   disabled={loading}
                   className="w-full bg-gray-200 h-20 flex flex-col items-center justify-center rounded-3xl"
                 >
-                  <p className="text-red-main text-3xl">Eliminar</p>
+                  <p className="text-red-main text-3xl">Desactivar</p>
                 </button>
               )}
             </div>
