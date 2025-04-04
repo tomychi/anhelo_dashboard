@@ -680,7 +680,7 @@ export const Empleados = () => {
                   placeholder="Rol o puesto"
                   value={rol}
                   onChange={(e) => setRol(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
                 />
 
                 {/* Sección de permisos */}
