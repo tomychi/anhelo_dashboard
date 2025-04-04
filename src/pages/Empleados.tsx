@@ -565,7 +565,7 @@ export const Empleados = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center text-xs font-light py-8 text-gray-400">
             {searchTerm
               ? "No se encontraron empleados que coincidan con la búsqueda"
               : "No hay empleados registrados"}
@@ -623,7 +623,7 @@ export const Empleados = () => {
                 className="px-4 pt-4 overflow-y-auto"
                 style={{
                   maxHeight: "calc(90vh - 160px)",
-                  paddingBottom: "80px",
+                  paddingBottom: isCreatingNew ? "80px" : "160px",
                 }}
                 onScroll={handleEditModalScroll}
               >
