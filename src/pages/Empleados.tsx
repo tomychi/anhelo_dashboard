@@ -707,7 +707,7 @@ export const Empleados = () => {
               {/* Indicador de scroll hacia abajo */}
               {isScrollNeeded && !isNearBottom && (
                 <div
-                  className={`absolute ${isCreatingNew ? "bottom-12" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
+                  className={`absolute ${isCreatingNew ? "bottom-16" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
                 >
                   <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
                     <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
