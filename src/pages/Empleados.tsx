@@ -505,10 +505,6 @@ export const Empleados = () => {
                     Rol
                   </th>
 
-                  <th scope="col" className="pl-4 py-2">
-                    Teléfono
-                  </th>
-
                   <th scope="col" className="pl-4 py-2"></th>
                 </tr>
               </thead>
@@ -523,10 +519,6 @@ export const Empleados = () => {
                     </td>
                     <td className="pl-4 font-light">
                       {empleado.datos?.rol || "Sin rol"}
-                    </td>
-
-                    <td className="pl-4 font-light">
-                      {empleado.iniciarSesion?.telefono || "-"}
                     </td>
 
                     <td className="pl-4 font-light pr-4">
