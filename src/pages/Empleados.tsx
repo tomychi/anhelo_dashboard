@@ -9,6 +9,7 @@ import {
   EmpleadoProps,
 } from "../firebase/ClientesAbsolute";
 import { SYSTEM_FEATURES } from "../utils/permissionsUtils";
+import LoadingPoints from "../components/LoadingPoints"; // Importando el componente de carga
 
 const PERMISOS_SISTEMA = SYSTEM_FEATURES.map((feature) => feature.id);
 
@@ -31,29 +32,6 @@ const TogglePermiso = ({ isOn, onToggle, label }) => (
   </div>
 );
 
-// Componente para mostrar filas de cargando en la tabla
-const TableLoadingRow = () => {
-  return (
-    <tr className="text-black border font-light h-10 border-black border-opacity-20">
-      <td className="w-3/12 pl-4">
-        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
-      </td>
-      <td className="w-2/12 pl-4">
-        <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
-      </td>
-      <td className="w-2/12 pl-4">
-        <div className="h-4 bg-gray-200 rounded animate-pulse w-8"></div>
-      </td>
-      <td className="w-2/12 pl-4">
-        <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
-      </td>
-      <td className="w-2/12 pl-4 pr-4">
-        <div className="h-6 bg-gray-200 rounded-full animate-pulse w-full"></div>
-      </td>
-    </tr>
-  );
-};
-
 export const Empleados = () => {
   const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -62,14 +40,15 @@ export const Empleados = () => {
   const [contraseña, setContraseña] = useState("");
   const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [rol, setRol] = useState("");
-  const [salario, setSalario] = useState<number | undefined>(undefined);
-  const [permisos, setPermisos] = useState<string[]>([]);
+  const [salario, setSalario] = useState(undefined);
+  const [permisos, setPermisos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [empleados, setEmpleados] = useState<EmpleadoProps[]>([]);
-  const [selectedEmpleado, setSelectedEmpleado] =
-    useState<EmpleadoProps | null>(null);
+  const [empleados, setEmpleados] = useState([]);
+  const [selectedEmpleado, setSelectedEmpleado] = useState(null);
   const [estado, setEstado] = useState("activo");
+  const [searchTerm, setSearchTerm] = useState(""); // Añadido para filtrar empleados
+  const [isLoadingEmpleados, setIsLoadingEmpleados] = useState(false); // Estado de carga específico para la tabla
 
   // Modal drag states
   const [isAnimating, setIsAnimating] = useState(false);
@@ -109,7 +88,7 @@ export const Empleados = () => {
   }, [empresaId]);
 
   const fetchEmpleados = async () => {
-    setLoading(true);
+    setIsLoadingEmpleados(true);
     try {
       const empleadosData = await obtenerEmpleadosDeEmpresa(empresaId);
       setEmpleados(empleadosData);
@@ -117,7 +96,7 @@ export const Empleados = () => {
       console.error("Error al obtener empleados:", error);
       setError("No se pudieron cargar los empleados. Intente nuevamente.");
     } finally {
-      setLoading(false);
+      setIsLoadingEmpleados(false);
     }
   };
 
@@ -284,7 +263,7 @@ export const Empleados = () => {
     setError("");
 
     try {
-      const datosActualizados: any = {
+      const datosActualizados = {
         datos: {
           nombre,
           rol,
@@ -299,7 +278,6 @@ export const Empleados = () => {
       }
 
       // Verificar y actualizar contraseña y teléfono
-
       // Solo actualizar la contraseña si se ingresó una nueva
       if (contraseña) {
         datosActualizados.iniciarSesion = {
@@ -312,7 +290,6 @@ export const Empleados = () => {
         }
       } else if (telefono) {
         // Si no hay contraseña nueva pero sí teléfono nuevo
-
         datosActualizados.iniciarSesion = {
           telefono,
         };
@@ -362,9 +339,6 @@ export const Empleados = () => {
     setRol(empleado.datos?.rol || "");
     setEstado(empleado.datos?.estado || "activo");
     setSalario(empleado.datos?.salario);
-
-    // Log especial para el teléfono
-
     setTelefono(empleado.iniciarSesion?.telefono || "");
 
     // Resetear contraseñas
@@ -447,165 +421,165 @@ export const Empleados = () => {
       case "suspendido":
         return "bg-yellow-500";
       default:
-        return "bg-gray-400 ";
+        return "bg-gray-400";
     }
   };
 
+  // Filtrar empleados según el término de búsqueda
+  const filteredEmpleados = empleados.filter(
+    (empleado) =>
+      (empleado.datos?.nombre || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (empleado.datos?.rol || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (empleado.iniciarSesion?.telefono || "").includes(searchTerm)
+  );
+
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-row justify-between font-coolvetica items-center mt-8 mx-4 pb-8">
-        <p className="text-black font-bold text-4xl mt-1">Equipo</p>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-gray-200 gap-2 text-black rounded-full flex items-center pt-3 pb-4 pl-3 pr-4 h-10"
-        >
+    <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
+      <div className="py-8 flex flex-col  w-full items-baseline">
+        <div className="flex flex-row justify-between w-full px-4">
+          <h2 className="text-3xl font-bold">Equipo</h2>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-gray-200 gap-2 text-black rounded-full flex items-center px-4 h-10 ml-4"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-6"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p className="font-bold">Nuevo miembro</p>
+          </button>
+        </div>
+
+        <div className="flex items-center w-full h-10 gap-1 mt-2 rounded-lg border-4 border-black focus:ring-0 font-coolvetica text-black text-xs font-light">
           <svg
             xmlns="http://www.w3.org/2000/svg"
+            fill="none"
             viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-6"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="h-6 ml-1.5 mb-0.5"
           >
             <path
-              fill-rule="evenodd"
-              d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-              clip-rule="evenodd"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
             />
           </svg>
-
-          <p className="font-bold">Nuevo miembro</p>
-        </button>
+          <input
+            type="text"
+            placeholder="Buscar por nombre, rol o teléfono"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-transparent outline-none"
+          />
+        </div>
       </div>
 
       {/* Lista de empleados */}
-      <div className="mx-4">
-        <table className="w-full text-xs text-left text-black">
-          <thead className="text-black border-b h-10">
-            <tr>
-              <th scope="col" className="pl-4 w-3/12">
-                Nombre
-              </th>
-              <th scope="col" className="pl-4 w-2/12">
-                Rol
-              </th>
-              <th scope="col" className="pl-4 w-2/12">
-                Estado
-              </th>
-              <th scope="col" className="pl-4 w-2/12">
-                Último acceso
-              </th>
-              <th scope="col" className="w-2/12">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              Array.from({ length: 6 }).map((_, index) => (
-                <TableLoadingRow key={index} />
-              ))
-            ) : empleados.length > 0 ? (
-              empleados.map((empleado, index) => (
-                <tr
-                  key={index}
-                  className="text-black border font-light h-10 border-black border-opacity-20"
-                >
-                  <td className="w-3/12 font-light pl-4">
-                    {empleado.datos?.nombre || "Sin nombre"}
-                  </td>
-                  <td className="w-2/12 pl-4 font-light">
-                    {empleado.datos?.rol || "Sin rol"}
-                  </td>
-                  <td className="w-2/12 pl-4 font-light">
-                    <div className="flex flex-row items-center gap-2">
-                      <p
-                        className={`flex flex-row rounded-full h-6 px-2 items-center text-gray-100 font-bold ${getEstadoColor(empleado.datos?.estado)}`}
-                      >
-                        {empleado.datos?.estado || "Desconocido"}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="w-2/12 pl-4 font-light">
-                    {formatearFecha(empleado.datos?.ultimoAcceso) || "-"}
-                  </td>
-                  <td className="w-2/12 pl-4 pr-4 flex justify-end">
-                    <button
-                      className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 mr-2"
-                      onClick={() => handleEditEmpleado(empleado)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="h-4"
-                      >
-                        <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
-                      </svg>
-                    </button>
-                    <button
-                      className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-200"
-                      onClick={() => handleDeleteEmpleado(empleado.id)}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="h-4 text-red-main"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="text-center py-8 bg-gray-100 rounded-lg"
-                >
-                  <p className="text-gray-400 ">No hay empleados registrados</p>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="w-full mb-8 mt-4">
+        {isLoadingEmpleados ? (
+          <div className="flex justify-center items-center py-8">
+            <LoadingPoints color="text-black" />
+          </div>
+        ) : filteredEmpleados.length > 0 ? (
+          <div className="w-full">
+            <table className="w-full text-xs text-left text-black">
+              <thead className="text-black border-b h-10">
+                <tr>
+                  <th scope="col" className="pl-4 py-2">
+                    Nombre
+                  </th>
+                  <th scope="col" className="pl-4 py-2">
+                    Rol
+                  </th>
 
-        {/* Paginación simple */}
-        {empleados.length > 0 && (
-          <div className="flex justify-center items-center gap-8 pt-8 pb-8">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4 transform rotate-180"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <p className="font-bold font-coolvetica text-xs">1</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clipRule="evenodd"
-              />
-            </svg>
+                  <th scope="col" className="pl-4 py-2">
+                    Teléfono
+                  </th>
+
+                  <th scope="col" className="pl-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredEmpleados.map((empleado) => (
+                  <tr
+                    key={empleado.id}
+                    className="text-black border-y font-light h-10 border-gray-200"
+                  >
+                    <td className="pl-4 font-light">
+                      {empleado.datos?.nombre || "Sin nombre"}
+                    </td>
+                    <td className="pl-4 font-light">
+                      {empleado.datos?.rol || "Sin rol"}
+                    </td>
+
+                    <td className="pl-4 font-light">
+                      {empleado.iniciarSesion?.telefono || "-"}
+                    </td>
+
+                    <td className="pl-4 font-light pr-4">
+                      <div className="flex items-center justify-end">
+                        <button
+                          onClick={() => handleEditEmpleado(empleado)}
+                          className="cursor-pointer hover:opacity-75 transition-opacity mr-3"
+                          title="Editar empleado"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="h-6"
+                          >
+                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                          </svg>
+                        </button>
+                        {/* <button
+                          onClick={() => handleDeleteEmpleado(empleado.id)}
+                          className="cursor-pointer hover:opacity-75 transition-opacity"
+                          title="Eliminar empleado"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="h-6 text-red-main"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button> */}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-400">
+            {searchTerm
+              ? "No se encontraron empleados que coincidan con la búsqueda"
+              : "No hay empleados registrados"}
           </div>
         )}
       </div>
 
+      {/* Modal para crear empleado */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
           <div
@@ -713,7 +687,7 @@ export const Empleados = () => {
               {/* Mensaje de error */}
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
-                  <p className="text-red-500 text-xs">{error}</p>
+                  <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
             </div>
@@ -724,13 +698,7 @@ export const Empleados = () => {
               className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
             >
               {loading ? (
-                <div className="flex justify-center w-full items-center">
-                  <div className="flex flex-row gap-1">
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-                  </div>
-                </div>
+                <LoadingPoints color="text-gray-100" />
               ) : (
                 "Crear empleado"
               )}
@@ -863,7 +831,7 @@ export const Empleados = () => {
               {/* Mensaje de error */}
               {error && (
                 <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
-                  <p className="text-red-500 text-xs">{error}</p>
+                  <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
             </div>
@@ -874,13 +842,7 @@ export const Empleados = () => {
               className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
             >
               {loading ? (
-                <div className="flex justify-center w-full items-center">
-                  <div className="flex flex-row gap-1">
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-75"></div>
-                    <div className="w-2 h-2 bg-gray-100 rounded-full animate-pulse delay-150"></div>
-                  </div>
-                </div>
+                <LoadingPoints color="text-gray-100" />
               ) : (
                 "Actualizar empleado"
               )}
