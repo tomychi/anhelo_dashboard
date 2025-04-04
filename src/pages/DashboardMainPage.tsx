@@ -224,6 +224,14 @@ export const DashboardMainPage = () => {
                 </PrivateRoutesLayout>
               }
             />
+            <Route
+              path="puntodeventa"
+              element={
+                // <PrivateRoutesLayout>
+                <DynamicForm />
+                // </PrivateRoutesLayout>
+              }
+            />
           </Route>
         </Routes>
       </div>

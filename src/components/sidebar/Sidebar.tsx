@@ -298,6 +298,7 @@ export const Sidebar = ({ scrollContainerRef }) => {
 
       // Build menu items based on user type
       items.push({ to: "/peñonDelAguila", text: "Regalos legendarios" });
+      items.push({ to: "/puntodeventa", text: "Punto de venta" });
 
       setMenuItems(items);
       setNoPermissions(false);
