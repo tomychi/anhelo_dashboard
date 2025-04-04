@@ -545,7 +545,7 @@ export const Empleados = () => {
                       <div className="flex items-center justify-end">
                         <button
                           onClick={() => handleEditEmpleado(empleado)}
-                          className="cursor-pointer hover:opacity-75 transition-opacity mr-3"
+                          className="cursor-pointer hover:opacity-75 transition-opacity "
                           title="Editar empleado"
                         >
                           <svg
