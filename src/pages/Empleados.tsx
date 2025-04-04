@@ -6,12 +6,9 @@ import {
   obtenerEmpleadosDeEmpresa,
   actualizarEmpleado,
   eliminarEmpleado,
-  EmpleadoProps,
 } from "../firebase/ClientesAbsolute";
 import { SYSTEM_FEATURES } from "../utils/permissionsUtils";
 import LoadingPoints from "../components/LoadingPoints"; // Importando el componente de carga
-
-const PERMISOS_SISTEMA = SYSTEM_FEATURES.map((feature) => feature.id);
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
