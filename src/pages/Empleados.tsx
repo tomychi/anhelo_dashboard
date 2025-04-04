@@ -764,30 +764,8 @@ export const Empleados = () => {
                 placeholder="Rol o puesto"
                 value={rol}
                 onChange={(e) => setRol(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
               />
-
-              <input
-                type="number"
-                placeholder="Salario"
-                value={salario || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSalario(value === "" ? undefined : parseInt(value, 10));
-                }}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
-
-              {/* Selector de estado con estilo acorde al componente FacturarPorMonto */}
-              <select
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all appearance-none"
-              >
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
-                <option value="suspendido">Suspendido</option>
-              </select>
 
               {/* Sección de permisos */}
               <div className="mt-4">
@@ -813,7 +791,7 @@ export const Empleados = () => {
             </div>
 
             {/* Botón fijo al final */}
-            <div className="sticky bottom-0 border-t left-0 right-0 px-4 py-3 bg-white z-10 shadow-md">
+            <div className="sticky bottom-0 border-t left-0 right-0 px-4 py-3  z-10 shadow-md">
               <button
                 onClick={handleUpdateEmpleado}
                 disabled={loading}
