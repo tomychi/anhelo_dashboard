@@ -31,7 +31,6 @@ const TogglePermiso = ({ isOn, onToggle, label }) => (
 );
 
 export const Empleados = () => {
-  const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -44,17 +43,16 @@ export const Empleados = () => {
   const [empleados, setEmpleados] = useState([]);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null);
   const [isScrolledDown, setIsScrolledDown] = useState(false);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   const [estado, setEstado] = useState("activo");
   const [searchTerm, setSearchTerm] = useState(""); // Añadido para filtrar empleados
   const [isLoadingEmpleados, setIsLoadingEmpleados] = useState(false); // Estado de carga específico para la tabla
 
   // Modal drag states
-  const [isAnimating, setIsAnimating] = useState(false);
   const [isEditAnimating, setIsEditAnimating] = useState(false);
   const [dragStart, setDragStart] = useState(null);
   const [currentTranslate, setCurrentTranslate] = useState(0);
-  const modalRef = useRef(null);
   const editModalRef = useRef(null);
 
   // Estados para controlar el indicador de scroll en el modal de edición
@@ -73,7 +71,6 @@ export const Empleados = () => {
     tipoUsuario === "empresa" ? empresa?.featuresIniciales || [] : [];
 
   // Inicializar los toggles de permisos
-  const [permisosToggles, setPermisosToggles] = useState({});
   const [editPermisosToggles, setEditPermisosToggles] = useState({});
 
   useEffect(() => {
@@ -81,7 +78,7 @@ export const Empleados = () => {
     SYSTEM_FEATURES.forEach((feature) => {
       initialToggles[feature.id] = false;
     });
-    setPermisosToggles(initialToggles);
+    setEditPermisosToggles(initialToggles);
   }, []);
 
   // Efecto para cargar empleados al montar el componente
@@ -148,13 +145,6 @@ export const Empleados = () => {
   };
 
   useEffect(() => {
-    if (showForm) {
-      setIsAnimating(true);
-      setCurrentTranslate(0);
-    }
-  }, [showForm]);
-
-  useEffect(() => {
     if (showEditForm) {
       setIsEditAnimating(true);
       setCurrentTranslate(0);
@@ -186,7 +176,6 @@ export const Empleados = () => {
 
   const handleDragEnd = () => {
     if (currentTranslate > 200) {
-      if (showForm) handleCloseForm();
       if (showEditForm) handleCloseEditForm();
     } else {
       setCurrentTranslate(0);
@@ -209,13 +198,6 @@ export const Empleados = () => {
       window.removeEventListener("touchend", handleDragEnd);
     };
   }, [dragStart, currentTranslate]);
-
-  const handleTogglePermiso = (permiso) => {
-    setPermisosToggles((prev) => ({
-      ...prev,
-      [permiso]: !prev[permiso],
-    }));
-  };
 
   const handleToggleEditPermiso = (permiso) => {
     setEditPermisosToggles((prev) => ({
@@ -242,8 +224,8 @@ export const Empleados = () => {
     }
 
     // Obtener los permisos seleccionados
-    const permisosSeleccionados = Object.keys(permisosToggles).filter(
-      (key) => permisosToggles[key]
+    const permisosSeleccionados = Object.keys(editPermisosToggles).filter(
+      (key) => editPermisosToggles[key]
     );
 
     if (permisosSeleccionados.length === 0) {
@@ -266,7 +248,7 @@ export const Empleados = () => {
       );
 
       // Limpiar el formulario y cerrar
-      handleCloseForm();
+      handleCloseEditForm();
 
       // Recargar la lista de empleados
       fetchEmpleados();
@@ -378,8 +360,32 @@ export const Empleados = () => {
     }
   };
 
+  const handleOpenNewEmpleado = () => {
+    // Resetear todos los campos del formulario
+    setNombre("");
+    setTelefono("");
+    setContraseña("");
+    setConfirmarContraseña("");
+    setRol("");
+    setSalario(undefined);
+    setEstado("activo");
+
+    // Resetear los permisos
+    const initialToggles = {};
+    SYSTEM_FEATURES.forEach((feature) => {
+      initialToggles[feature.id] = false;
+    });
+    setEditPermisosToggles(initialToggles);
+
+    // Marcar que estamos creando un nuevo empleado
+    setIsCreatingNew(true);
+    setSelectedEmpleado(null);
+    setShowEditForm(true);
+  };
+
   const handleEditEmpleado = (empleado) => {
     setSelectedEmpleado(empleado);
+    setIsCreatingNew(false);
 
     // Cargar datos del empleado
     setNombre(empleado.datos?.nombre || "");
@@ -414,30 +420,10 @@ export const Empleados = () => {
     setIsNearBottom(false);
   };
 
-  const handleCloseForm = () => {
-    setShowForm(false);
-    setNombre("");
-    setTelefono("");
-    setContraseña("");
-    setConfirmarContraseña("");
-    setRol("");
-    setSalario(undefined);
-
-    // Resetear todos los toggles de permisos
-    const resetToggles = {};
-    Object.keys(permisosToggles).forEach((key) => {
-      resetToggles[key] = false;
-    });
-    setPermisosToggles(resetToggles);
-
-    setError("");
-    setCurrentTranslate(0);
-    setIsAnimating(false);
-  };
-
   const handleCloseEditForm = () => {
     setShowEditForm(false);
     setSelectedEmpleado(null);
+    setIsCreatingNew(false);
     setNombre("");
     setTelefono("");
     setContraseña("");
@@ -449,6 +435,14 @@ export const Empleados = () => {
     setError("");
     setCurrentTranslate(0);
     setIsEditAnimating(false);
+  };
+
+  const handleSaveEmpleado = () => {
+    if (isCreatingNew) {
+      handleCreateEmpleado();
+    } else {
+      handleUpdateEmpleado();
+    }
   };
 
   // Filtrar empleados según el término de búsqueda
@@ -468,7 +462,7 @@ export const Empleados = () => {
       <div className="flex flex-row py-8 justify-between w-full px-4">
         <h2 className="text-3xl font-bold">Equipo</h2>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={handleOpenNewEmpleado}
           className="bg-gray-200 gap-2 text-black rounded-full flex items-center px-4 h-10 ml-4"
         >
           <svg
@@ -579,136 +573,8 @@ export const Empleados = () => {
         )}
       </div>
 
-      {/* Modal para crear empleado */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
-          <div
-            className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
-              isAnimating ? "bg-opacity-50" : "bg-opacity-0"
-            }`}
-            style={{
-              opacity: Math.max(0, 1 - currentTranslate / 400),
-            }}
-            onClick={handleCloseForm}
-          />
-
-          <div
-            ref={modalRef}
-            className={`relative bg-white w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
-              isAnimating ? "translate-y-0" : "translate-y-full"
-            }`}
-            style={{
-              transform: `translateY(${currentTranslate}px)`,
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
-          >
-            <div
-              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-            >
-              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-1 bg-gray-200 rounded-full" />
-              </div>
-            </div>
-
-            <div className="px-4">
-              <h2 className="text-2xl font-bold mb-4">Nuevo empleado</h2>
-
-              <input
-                type="text"
-                placeholder="Nombre y apellido"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
-              />
-
-              <input
-                type="tel"
-                placeholder="Número de teléfono"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
-
-              <input
-                type="password"
-                placeholder="Contraseña"
-                value={contraseña}
-                onChange={(e) => setContraseña(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
-
-              <input
-                type="password"
-                placeholder="Confirmar contraseña"
-                value={confirmarContraseña}
-                onChange={(e) => setConfirmarContraseña(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
-
-              <input
-                type="text"
-                placeholder="Rol o puesto"
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
-
-              <input
-                type="number"
-                placeholder="Salario (opcional)"
-                value={salario || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSalario(value === "" ? undefined : parseInt(value, 10));
-                }}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all"
-              />
-
-              {/* Sección de permisos */}
-              <div className="mt-4">
-                <h3 className="text-lg font-bold mb-2">Permisos</h3>
-                <div className="bg-gray-100 p-4 rounded-3xl max-h-60 overflow-y-auto">
-                  {SYSTEM_FEATURES.map((feature) => (
-                    <TogglePermiso
-                      key={feature.id}
-                      label={feature.title}
-                      isOn={permisosToggles[feature.id] || false}
-                      onToggle={() => handleTogglePermiso(feature.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Mensaje de error */}
-              {error && (
-                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
-                  <p className="text-red-500 text-sm">{error}</p>
-                </div>
-              )}
-
-              <button
-                onClick={handleCreateEmpleado}
-                disabled={loading}
-                className="w-full bg-black h-20 mt-4 flex flex-col items-center justify-center rounded-3xl"
-              >
-                {loading ? (
-                  <LoadingPoints color="text-gray-100" />
-                ) : (
-                  <p className="text-gray-100 text-3xl">Crear empleado</p>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal para editar empleado */}
-      {showEditForm && selectedEmpleado && (
+      {/* Modal para crear o editar empleado */}
+      {showEditForm && (
         <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
           <div
             className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
@@ -745,7 +611,9 @@ export const Empleados = () => {
 
             {/* Encabezado fijo */}
             <div className="sticky top-0 left-0 right-0 z-10 border-b p-4 bg-gray-100">
-              <h2 className="text-2xl text-center font-bold">Editar miembro</h2>
+              <h2 className="text-2xl text-center font-bold">
+                {isCreatingNew ? "Nuevo miembro" : "Editar miembro"}
+              </h2>
             </div>
 
             {/* Contenido scrolleable con indicador de scroll */}
@@ -771,7 +639,11 @@ export const Empleados = () => {
 
                 <input
                   type="tel"
-                  placeholder="Número de teléfono (dejar vacío para no cambiar)"
+                  placeholder={
+                    isCreatingNew
+                      ? "Número de teléfono"
+                      : "Número de teléfono (dejar vacío para no cambiar)"
+                  }
                   value={telefono}
                   onChange={(e) => setTelefono(e.target.value)}
                   className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
@@ -779,7 +651,11 @@ export const Empleados = () => {
 
                 <input
                   type="password"
-                  placeholder="Nueva contraseña (dejar vacío para no cambiar)"
+                  placeholder={
+                    isCreatingNew
+                      ? "Contraseña"
+                      : "Nueva contraseña (dejar vacío para no cambiar)"
+                  }
                   value={contraseña}
                   onChange={(e) => setContraseña(e.target.value)}
                   className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
@@ -787,7 +663,11 @@ export const Empleados = () => {
 
                 <input
                   type="password"
-                  placeholder="Confirmar nueva contraseña"
+                  placeholder={
+                    isCreatingNew
+                      ? "Confirmar contraseña"
+                      : "Confirmar nueva contraseña"
+                  }
                   value={confirmarContraseña}
                   onChange={(e) => setConfirmarContraseña(e.target.value)}
                   className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
@@ -798,7 +678,18 @@ export const Empleados = () => {
                   placeholder="Rol o puesto"
                   value={rol}
                   onChange={(e) => setRol(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                />
+
+                <input
+                  type="number"
+                  placeholder="Salario (opcional)"
+                  value={salario || ""}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSalario(value === "" ? undefined : parseInt(value, 10));
+                  }}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all"
                 />
 
                 {/* Sección de permisos */}
@@ -858,14 +749,16 @@ export const Empleados = () => {
             {/* Botón fijo al final */}
             <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3 z-10 shadow-md">
               <button
-                onClick={handleUpdateEmpleado}
+                onClick={handleSaveEmpleado}
                 disabled={loading}
                 className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl"
               >
                 {loading ? (
                   <LoadingPoints color="text-gray-100" />
                 ) : (
-                  <p className="text-gray-100 text-3xl">Actualizar</p>
+                  <p className="text-gray-100 text-3xl">
+                    {isCreatingNew ? "Crear empleado" : "Actualizar"}
+                  </p>
                 )}
               </button>
             </div>
