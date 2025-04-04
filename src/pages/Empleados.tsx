@@ -537,24 +537,6 @@ export const Empleados = () => {
                             <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
                           </svg>
                         </button>
-                        {/* <button
-                          onClick={() => handleDeleteEmpleado(empleado.id)}
-                          className="cursor-pointer hover:opacity-75 transition-opacity"
-                          title="Eliminar empleado"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="h-6 text-red-main"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -586,7 +568,7 @@ export const Empleados = () => {
 
           <div
             ref={modalRef}
-            className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+            className={`relative bg-white w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
               isAnimating ? "translate-y-0" : "translate-y-full"
             }`}
             style={{
@@ -607,7 +589,7 @@ export const Empleados = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex-col space-y-2 w-full">
+            <div className="px-4">
               <h2 className="text-2xl font-bold mb-4">Nuevo empleado</h2>
 
               <input
@@ -615,7 +597,7 @@ export const Empleados = () => {
                 placeholder="Nombre y apellido"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
               />
 
               <input
@@ -623,7 +605,7 @@ export const Empleados = () => {
                 placeholder="Número de teléfono"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -631,7 +613,7 @@ export const Empleados = () => {
                 placeholder="Contraseña"
                 value={contraseña}
                 onChange={(e) => setContraseña(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -639,7 +621,7 @@ export const Empleados = () => {
                 placeholder="Confirmar contraseña"
                 value={confirmarContraseña}
                 onChange={(e) => setConfirmarContraseña(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -647,7 +629,7 @@ export const Empleados = () => {
                 placeholder="Rol o puesto"
                 value={rol}
                 onChange={(e) => setRol(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -658,13 +640,13 @@ export const Empleados = () => {
                   const value = e.target.value;
                   setSalario(value === "" ? undefined : parseInt(value, 10));
                 }}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all"
               />
 
               {/* Sección de permisos */}
-              <div className="mt-6">
+              <div className="mt-4">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
-                <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
+                <div className="bg-gray-100 p-4 rounded-3xl max-h-60 overflow-y-auto">
                   {SYSTEM_FEATURES.map((feature) => (
                     <TogglePermiso
                       key={feature.id}
@@ -678,23 +660,23 @@ export const Empleados = () => {
 
               {/* Mensaje de error */}
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
                   <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
-            </div>
 
-            <button
-              onClick={handleCreateEmpleado}
-              disabled={loading}
-              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
-            >
-              {loading ? (
-                <LoadingPoints color="text-gray-100" />
-              ) : (
-                "Crear empleado"
-              )}
-            </button>
+              <button
+                onClick={handleCreateEmpleado}
+                disabled={loading}
+                className="w-full bg-black h-20 mt-4 flex flex-col items-center justify-center rounded-3xl"
+              >
+                {loading ? (
+                  <LoadingPoints color="text-gray-100" />
+                ) : (
+                  <p className="text-gray-100 text-3xl">Crear empleado</p>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -714,7 +696,7 @@ export const Empleados = () => {
 
           <div
             ref={editModalRef}
-            className={`relative bg-white w-full max-w-4xl rounded-t-lg px-4 pb-4 pt-10 transition-transform duration-300 touch-none ${
+            className={`relative bg-white w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
               isEditAnimating ? "translate-y-0" : "translate-y-full"
             }`}
             style={{
@@ -735,7 +717,7 @@ export const Empleados = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex-col  w-full">
+            <div className="px-4">
               <h2 className="text-2xl text-center font-bold mb-4">
                 Editar miembro
               </h2>
@@ -745,7 +727,7 @@ export const Empleados = () => {
                 placeholder="Nombre y apellido"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
               />
 
               <input
@@ -753,7 +735,7 @@ export const Empleados = () => {
                 placeholder="Número de teléfono (dejar vacío para no cambiar)"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -761,7 +743,7 @@ export const Empleados = () => {
                 placeholder="Nueva contraseña (dejar vacío para no cambiar)"
                 value={contraseña}
                 onChange={(e) => setContraseña(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -769,7 +751,7 @@ export const Empleados = () => {
                 placeholder="Confirmar nueva contraseña"
                 value={confirmarContraseña}
                 onChange={(e) => setConfirmarContraseña(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
               <input
@@ -777,40 +759,13 @@ export const Empleados = () => {
                 placeholder="Rol o puesto"
                 value={rol}
                 onChange={(e) => setRol(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
-
-              <input
-                type="number"
-                placeholder="Salario"
-                value={salario || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSalario(value === "" ? undefined : parseInt(value, 10));
-                }}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-              />
-
-              {/* Selector de estado */}
-              <div className="w-full">
-                <label className="block text-xs mb-1">
-                  Estado del empleado
-                </label>
-                <select
-                  value={estado}
-                  onChange={(e) => setEstado(e.target.value)}
-                  className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none focus:outline-none focus:ring-0"
-                >
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
-                  <option value="suspendido">Suspendido</option>
-                </select>
-              </div>
 
               {/* Sección de permisos */}
-              <div className="mt-6">
+              <div className="mt-4">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
-                <div className="bg-gray-100 p-4 rounded-lg max-h-60 overflow-y-auto">
+                <div className="bg-gray-100 p-4 rounded-3xl max-h-60 overflow-y-auto">
                   {SYSTEM_FEATURES.map((feature) => (
                     <TogglePermiso
                       key={feature.id}
@@ -824,23 +779,23 @@ export const Empleados = () => {
 
               {/* Mensaje de error */}
               {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mt-4">
+                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
                   <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
-            </div>
 
-            <button
-              onClick={handleUpdateEmpleado}
-              disabled={loading}
-              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
-            >
-              {loading ? (
-                <LoadingPoints color="text-gray-100" />
-              ) : (
-                "Actualizar empleado"
-              )}
-            </button>
+              <button
+                onClick={handleUpdateEmpleado}
+                disabled={loading}
+                className="w-full bg-black h-20 mt-4 flex flex-col items-center justify-center rounded-3xl"
+              >
+                {loading ? (
+                  <LoadingPoints color="text-gray-100" />
+                ) : (
+                  <p className="text-gray-100 text-3xl">Actualizar</p>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
