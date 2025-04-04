@@ -1163,13 +1163,11 @@ export const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
-        {isDashboardConfigured ? (
-          <KPILineChart
-            orders={orders}
-            effectiveUserId={effectiveUserId}
-            simulatingEmployeeView={simulatingEmployee !== null}
-          />
-        ) : null}
+        <KPILineChart
+          orders={orders}
+          effectiveUserId={effectiveUserId}
+          simulatingEmployeeView={simulatingEmployee !== null}
+        />
       </div>
     </div>
   );
