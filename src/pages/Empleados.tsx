@@ -15,7 +15,7 @@ const PERMISOS_SISTEMA = SYSTEM_FEATURES.map((feature) => feature.id);
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
-  <div className="flex items-center justify-between w-full py-2 border-b border-gray-200">
+  <div className="flex items-center justify-between w-full pb-2  ">
     <p className="text-sm">{label}</p>
     <div
       className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer ${
@@ -772,16 +772,14 @@ export const Empleados = () => {
               {/* Sección de permisos */}
               <div className="mt-8">
                 <h3 className="text-lg font-bold mb-2 text-center">Permisos</h3>
-                <div className="bg-gray-100 p-4 rounded-3xl max-h-60 overflow-y-auto">
-                  {SYSTEM_FEATURES.map((feature) => (
-                    <TogglePermiso
-                      key={feature.id}
-                      label={feature.title}
-                      isOn={editPermisosToggles[feature.id] || false}
-                      onToggle={() => handleToggleEditPermiso(feature.id)}
-                    />
-                  ))}
-                </div>
+                {SYSTEM_FEATURES.map((feature) => (
+                  <TogglePermiso
+                    key={feature.id}
+                    label={feature.title}
+                    isOn={editPermisosToggles[feature.id] || false}
+                    onToggle={() => handleToggleEditPermiso(feature.id)}
+                  />
+                ))}
               </div>
 
               {/* Mensaje de error */}
@@ -793,7 +791,7 @@ export const Empleados = () => {
             </div>
 
             {/* Botón fijo al final */}
-            <div className="sticky bottom-0 border-t left-0 right-0 px-4 py-3  z-10 shadow-md">
+            <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3  z-10 shadow-md">
               <button
                 onClick={handleUpdateEmpleado}
                 disabled={loading}
