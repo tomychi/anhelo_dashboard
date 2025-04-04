@@ -696,17 +696,17 @@ export const Empleados = () => {
 
           <div
             ref={editModalRef}
-            className={`relative bg-white w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
+            className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
               isEditAnimating ? "translate-y-0" : "translate-y-full"
             }`}
             style={{
               transform: `translateY(${currentTranslate}px)`,
               maxHeight: "90vh",
-              overflowY: "auto",
             }}
           >
+            {/* Barra para arrastrar */}
             <div
-              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing"
+              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing z-10"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onMouseDown={handleMouseDown}
@@ -717,17 +717,22 @@ export const Empleados = () => {
               </div>
             </div>
 
-            <div className="px-4">
-              <h2 className="text-2xl text-center font-bold mb-4">
-                Editar miembro
-              </h2>
+            {/* Encabezado fijo */}
+            <div className="sticky top-0 left-0 right-0 z-10 border-b    p-4 ">
+              <h2 className="text-2xl text-center font-bold">Editar miembro</h2>
+            </div>
 
+            {/* Contenido scrolleable */}
+            <div
+              className="px-4 pt-4 overflow-y-auto"
+              style={{ maxHeight: "calc(90vh - 160px)", paddingBottom: "80px" }}
+            >
               <input
                 type="text"
                 placeholder="Nombre y apellido"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all "
               />
 
               <input
@@ -762,6 +767,28 @@ export const Empleados = () => {
                 className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
               />
 
+              <input
+                type="number"
+                placeholder="Salario"
+                value={salario || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSalario(value === "" ? undefined : parseInt(value, 10));
+                }}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+              />
+
+              {/* Selector de estado con estilo acorde al componente FacturarPorMonto */}
+              <select
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all appearance-none"
+              >
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="suspendido">Suspendido</option>
+              </select>
+
               {/* Sección de permisos */}
               <div className="mt-4">
                 <h3 className="text-lg font-bold mb-2">Permisos</h3>
@@ -783,11 +810,14 @@ export const Empleados = () => {
                   <p className="text-red-500 text-sm">{error}</p>
                 </div>
               )}
+            </div>
 
+            {/* Botón fijo al final */}
+            <div className="sticky bottom-0 border-t left-0 right-0 px-4 py-3 bg-white z-10 shadow-md">
               <button
                 onClick={handleUpdateEmpleado}
                 disabled={loading}
-                className="w-full bg-black h-20 mt-4 flex flex-col items-center justify-center rounded-3xl"
+                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl"
               >
                 {loading ? (
                   <LoadingPoints color="text-gray-100" />
