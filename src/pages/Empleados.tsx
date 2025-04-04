@@ -494,6 +494,23 @@ export const Empleados = () => {
         (empleado.iniciarSesion?.telefono || "").includes(searchTerm)
     );
 
+  // Crear objeto para el empresario basado en datosUsuario de la empresa
+  const empresarioData = empresa?.datosUsuario
+    ? {
+        id: "empresario",
+        datos: {
+          nombre: empresa.datosUsuario.nombreUsuario || "Empresario",
+          rol: empresa.datosUsuario.rolUsuario || "Dueño",
+          estado: "activo",
+          permisos: empresa?.featuresIniciales || [],
+          esEmpresario: true,
+        },
+        iniciarSesion: {
+          telefono: empresa.datosUsuario.telefono || "",
+        },
+      }
+    : null;
+
   return (
     <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
       <div className="flex flex-row py-8 justify-between w-full px-4">
@@ -566,6 +583,45 @@ export const Empleados = () => {
                 </tr>
               </thead>
               <tbody>
+                {/* Mostrar primero al empresario si existe y coincide con el filtro de búsqueda */}
+                {empresarioData &&
+                  (searchTerm === "" ||
+                    empresarioData.datos.nombre
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    empresarioData.datos.rol
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    (empresarioData.iniciarSesion.telefono || "").includes(
+                      searchTerm
+                    )) && (
+                    <tr
+                      key="empresario"
+                      className="text-black border-y font-light h-10 border-gray-200"
+                    >
+                      <td className="pl-4 font-light">
+                        {empresarioData.datos.nombre}
+                      </td>
+                      <td className="pl-4 font-light">
+                        {empresarioData.datos.rol
+                          ? empresarioData.datos.rol.charAt(0).toUpperCase() +
+                            empresarioData.datos.rol.slice(1).toLowerCase()
+                          : ""}
+                      </td>
+                      <td className="pl-4 font-light pr-4">
+                        <div className="flex items-center justify-end opacity-30">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="h-6"
+                          >
+                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                          </svg>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                 {filteredEmpleados.map((empleado) => (
                   <tr
                     key={empleado.id}
@@ -575,7 +631,10 @@ export const Empleados = () => {
                       {empleado.datos?.nombre || "Sin nombre"}
                     </td>
                     <td className="pl-4 font-light">
-                      {empleado.datos?.rol || "Sin rol"}
+                      {empleado.datos?.rol
+                        ? empleado.datos.rol.charAt(0).toUpperCase() +
+                          empleado.datos.rol.slice(1).toLowerCase()
+                        : "Sin rol"}
                     </td>
 
                     <td className="pl-4 font-light pr-4">
