@@ -10,6 +10,7 @@ import {
 import { SYSTEM_FEATURES } from "../utils/permissionsUtils";
 import LoadingPoints from "../components/LoadingPoints"; // Importando el componente de carga
 import arrowIcon from "../assets/arrowIcon.png"; // Importar el icono de flecha
+import { doc, getFirestore, updateDoc, onSnapshot } from "firebase/firestore"; // Importar Firestore para actualizar el empresario
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
@@ -49,6 +50,18 @@ export const Empleados = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Añadido para filtrar empleados
   const [isLoadingEmpleados, setIsLoadingEmpleados] = useState(false); // Estado de carga específico para la tabla
 
+  // Estados adicionales para el empresario
+  const [editingEmpresario, setEditingEmpresario] = useState(false);
+  const [empresarioNombre, setEmpresarioNombre] = useState("");
+  const [empresarioTelefono, setEmpresarioTelefono] = useState("");
+  const [empresarioContraseña, setEmpresarioContraseña] = useState("");
+  const [empresarioConfirmarContraseña, setEmpresarioConfirmarContraseña] =
+    useState("");
+
+  // Estados para datos en tiempo real
+  const [empresaDatos, setEmpresaDatos] = useState(null);
+  const [empresarioDataLocal, setEmpresarioDataLocal] = useState(null);
+
   // Modal drag states
   const [isEditAnimating, setIsEditAnimating] = useState(false);
   const [dragStart, setDragStart] = useState(null);
@@ -69,6 +82,44 @@ export const Empleados = () => {
   // Obtener los features disponibles para usar como permisos
   const featuresDisponibles =
     tipoUsuario === "empresa" ? empresa?.featuresIniciales || [] : [];
+
+  // Añadir efecto para suscribirse a cambios en tiempo real
+  useEffect(() => {
+    if (empresaId) {
+      // Suscribirse a cambios en tiempo real del documento de la empresa
+      const empresaRef = doc(getFirestore(), "absoluteClientes", empresaId);
+      const unsubscribe = onSnapshot(empresaRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const empresaData = docSnap.data();
+
+          // Actualizar el estado local con los datos más recientes
+          setEmpresaDatos(empresaData);
+
+          // Crear datos del empresario basados en los datos nuevos
+          if (empresaData.datosUsuario) {
+            const nuevoEmpresarioData = {
+              id: "empresario",
+              datos: {
+                nombre: empresaData.datosUsuario.nombreUsuario || "Empresario",
+                rol: empresaData.datosUsuario.rolUsuario || "Dueño",
+                estado: "activo",
+                permisos: empresaData.featuresIniciales || [],
+                esEmpresario: true,
+              },
+              iniciarSesion: {
+                telefono: empresaData.datosUsuario.telefono || "",
+              },
+            };
+
+            setEmpresarioDataLocal(nuevoEmpresarioData);
+          }
+        }
+      });
+
+      // Limpiar la suscripción cuando el componente se desmonte
+      return () => unsubscribe();
+    }
+  }, [empresaId]); // Solo se ejecuta cuando cambia empresaId
 
   // Inicializar los toggles de permisos
   const [editPermisosToggles, setEditPermisosToggles] = useState({});
@@ -403,6 +454,7 @@ export const Empleados = () => {
   const handleEditEmpleado = (empleado) => {
     setSelectedEmpleado(empleado);
     setIsCreatingNew(false);
+    setEditingEmpresario(false);
 
     // Cargar datos del empleado
     setNombre(empleado.datos?.nombre || "");
@@ -437,10 +489,86 @@ export const Empleados = () => {
     setIsNearBottom(false);
   };
 
+  // Función para manejar la edición del empresario
+  const handleEditEmpresario = (empresarioData) => {
+    setEditingEmpresario(true);
+    setIsCreatingNew(false);
+    setSelectedEmpleado(null);
+
+    // Cargar datos del empresario
+    setEmpresarioNombre(empresarioData.datos.nombre || "");
+    setEmpresarioTelefono(empresarioData.iniciarSesion.telefono || "");
+    setEmpresarioContraseña("");
+    setEmpresarioConfirmarContraseña("");
+
+    setShowEditForm(true);
+  };
+
+  // Función para actualizar los datos del empresario
+  const handleUpdateEmpresario = async () => {
+    if (!empresaId) {
+      setError("No se encontró información de la empresa");
+      return;
+    }
+
+    // Validar campos
+    if (!empresarioNombre) {
+      setError("Por favor, completa el nombre");
+      return;
+    }
+
+    // Si se cambió la contraseña, verificar que coincidan
+    if (
+      empresarioContraseña &&
+      empresarioContraseña !== empresarioConfirmarContraseña
+    ) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      // Preparar los datos actualizados
+      const datosActualizados = {
+        "datosUsuario.nombreUsuario": empresarioNombre,
+      };
+
+      // Solo actualizar el teléfono si se modificó
+      if (empresarioTelefono) {
+        datosActualizados["datosUsuario.telefono"] = empresarioTelefono;
+      }
+
+      // Solo actualizar la contraseña si se ingresó una nueva
+      if (empresarioContraseña) {
+        datosActualizados["datosUsuario.contraseña"] = empresarioContraseña;
+      }
+
+      // Actualizar los datos de la empresa
+      await updateDoc(
+        doc(getFirestore(), "absoluteClientes", empresaId),
+        datosActualizados
+      );
+
+      // Ya no necesitamos recargar la página, onSnapshot actualizará automáticamente
+      console.log("Datos del empresario actualizados correctamente");
+
+      // Cerrar el modal
+      handleCloseEditForm();
+    } catch (error) {
+      console.error("Error al actualizar empresario:", error);
+      setError("Error al actualizar los datos. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCloseEditForm = () => {
     setShowEditForm(false);
     setSelectedEmpleado(null);
     setIsCreatingNew(false);
+    setEditingEmpresario(false);
     setNombre("");
     setTelefono("");
     setContraseña("");
@@ -448,6 +576,10 @@ export const Empleados = () => {
     setRol("");
     setSalario(undefined);
     setEstado("activo");
+    setEmpresarioNombre("");
+    setEmpresarioTelefono("");
+    setEmpresarioContraseña("");
+    setEmpresarioConfirmarContraseña("");
 
     setError("");
     setCurrentTranslate(0);
@@ -457,6 +589,8 @@ export const Empleados = () => {
   const handleSaveEmpleado = () => {
     if (isCreatingNew) {
       handleCreateEmpleado();
+    } else if (editingEmpresario) {
+      handleUpdateEmpresario();
     } else {
       handleUpdateEmpleado();
     }
@@ -480,6 +614,25 @@ export const Empleados = () => {
     handleDeleteEmpleado(empleadoIdToDelete);
   };
 
+  // Utilizar los datos en tiempo real, con fallback a los datos de Redux
+  const empresarioData =
+    empresarioDataLocal ||
+    (empresa?.datosUsuario
+      ? {
+          id: "empresario",
+          datos: {
+            nombre: empresa.datosUsuario.nombreUsuario || "Empresario",
+            rol: empresa.datosUsuario.rolUsuario || "Dueño",
+            estado: "activo",
+            permisos: empresa?.featuresIniciales || [],
+            esEmpresario: true,
+          },
+          iniciarSesion: {
+            telefono: empresa.datosUsuario.telefono || "",
+          },
+        }
+      : null);
+
   // Filtrar empleados: primero excluir los inactivos, luego aplicar el filtro de búsqueda
   const filteredEmpleados = empleados
     .filter((empleado) => empleado.datos?.estado !== "inactivo") // Excluir empleados inactivos
@@ -493,23 +646,6 @@ export const Empleados = () => {
           .includes(searchTerm.toLowerCase()) ||
         (empleado.iniciarSesion?.telefono || "").includes(searchTerm)
     );
-
-  // Crear objeto para el empresario basado en datosUsuario de la empresa
-  const empresarioData = empresa?.datosUsuario
-    ? {
-        id: "empresario",
-        datos: {
-          nombre: empresa.datosUsuario.nombreUsuario || "Empresario",
-          rol: empresa.datosUsuario.rolUsuario || "Dueño",
-          estado: "activo",
-          permisos: empresa?.featuresIniciales || [],
-          esEmpresario: true,
-        },
-        iniciarSesion: {
-          telefono: empresa.datosUsuario.telefono || "",
-        },
-      }
-    : null;
 
   return (
     <div className="font-coolvetica overflow-hidden flex flex-col items-center justify-center w-full">
@@ -609,15 +745,21 @@ export const Empleados = () => {
                           : ""}
                       </td>
                       <td className="pl-4 font-light pr-4">
-                        <div className="flex items-center justify-end opacity-30">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="h-6"
+                        <div className="flex items-center justify-end">
+                          <button
+                            onClick={() => handleEditEmpresario(empresarioData)}
+                            className="cursor-pointer hover:opacity-75 transition-opacity"
+                            title="Editar datos del empresario"
                           >
-                            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
-                          </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="h-6"
+                            >
+                              <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.2z" />
+                            </svg>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -710,7 +852,11 @@ export const Empleados = () => {
             {/* Encabezado fijo */}
             <div className="sticky top-0 left-0 right-0 z-10 border-b p-4 bg-gray-100">
               <h2 className="text-2xl text-center font-bold">
-                {isCreatingNew ? "Nuevo miembro" : "Editar miembro"}
+                {isCreatingNew
+                  ? "Nuevo miembro"
+                  : editingEmpresario
+                    ? "Editar empresario"
+                    : "Editar miembro"}
               </h2>
             </div>
 
@@ -727,72 +873,114 @@ export const Empleados = () => {
               >
                 <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
 
-                <input
-                  type="text"
-                  placeholder="Nombre y apellido"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
-                />
-
-                <input
-                  type="tel"
-                  placeholder={
-                    isCreatingNew
-                      ? "Número de teléfono"
-                      : "Número de teléfono (dejar vacío para no cambiar)"
-                  }
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
-
-                <input
-                  type="password"
-                  placeholder={
-                    isCreatingNew
-                      ? "Contraseña"
-                      : "Nueva contraseña (dejar vacío para no cambiar)"
-                  }
-                  value={contraseña}
-                  onChange={(e) => setContraseña(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
-
-                <input
-                  type="password"
-                  placeholder={
-                    isCreatingNew
-                      ? "Confirmar contraseña"
-                      : "Confirmar nueva contraseña"
-                  }
-                  value={confirmarContraseña}
-                  onChange={(e) => setConfirmarContraseña(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Rol o puesto"
-                  value={rol}
-                  onChange={(e) => setRol(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
-                />
-
-                {/* Sección de permisos */}
-                <div className="mt-8">
-                  <h3 className="text-lg font-bold mb-2 text-center">
-                    Permisos
-                  </h3>
-                  {SYSTEM_FEATURES.map((feature) => (
-                    <TogglePermiso
-                      key={feature.id}
-                      label={feature.title}
-                      isOn={editPermisosToggles[feature.id] || false}
-                      onToggle={() => handleToggleEditPermiso(feature.id)}
+                {editingEmpresario ? (
+                  // Formulario para editar empresario
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Nombre"
+                      value={empresarioNombre}
+                      onChange={(e) => setEmpresarioNombre(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
                     />
-                  ))}
-                </div>
+
+                    <input
+                      type="tel"
+                      placeholder="Número de teléfono (dejar vacío para no cambiar)"
+                      value={empresarioTelefono}
+                      onChange={(e) => setEmpresarioTelefono(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder="Nueva contraseña (dejar vacío para no cambiar)"
+                      value={empresarioContraseña}
+                      onChange={(e) => setEmpresarioContraseña(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder="Confirmar nueva contraseña"
+                      value={empresarioConfirmarContraseña}
+                      onChange={(e) =>
+                        setEmpresarioConfirmarContraseña(e.target.value)
+                      }
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black rounded-b-3xl border-black transition-all"
+                    />
+                  </>
+                ) : (
+                  // Formulario para empleados
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Nombre y apellido"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="tel"
+                      placeholder={
+                        isCreatingNew
+                          ? "Número de teléfono"
+                          : "Número de teléfono (dejar vacío para no cambiar)"
+                      }
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder={
+                        isCreatingNew
+                          ? "Contraseña"
+                          : "Nueva contraseña (dejar vacío para no cambiar)"
+                      }
+                      value={contraseña}
+                      onChange={(e) => setContraseña(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="password"
+                      placeholder={
+                        isCreatingNew
+                          ? "Confirmar contraseña"
+                          : "Confirmar nueva contraseña"
+                      }
+                      value={confirmarContraseña}
+                      onChange={(e) => setConfirmarContraseña(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Rol o puesto"
+                      value={rol}
+                      onChange={(e) => setRol(e.target.value)}
+                      className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
+                    />
+
+                    {/* Sección de permisos */}
+                    <div className="mt-8">
+                      <h3 className="text-lg font-bold mb-2 text-center">
+                        Permisos
+                      </h3>
+                      {SYSTEM_FEATURES.map((feature) => (
+                        <TogglePermiso
+                          key={feature.id}
+                          label={feature.title}
+                          isOn={editPermisosToggles[feature.id] || false}
+                          onToggle={() => handleToggleEditPermiso(feature.id)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
 
                 {/* Mensaje de error */}
                 {error && (
@@ -846,13 +1034,17 @@ export const Empleados = () => {
                   <LoadingPoints color="text-gray-100" />
                 ) : (
                   <p className="text-gray-100 text-3xl">
-                    {isCreatingNew ? "Crear" : "Actualizar"}
+                    {isCreatingNew
+                      ? "Crear"
+                      : editingEmpresario
+                        ? "Actualizar"
+                        : "Actualizar"}
                   </p>
                 )}
               </button>
 
-              {/* Botón de eliminar (solo visible en modo edición, no en creación) */}
-              {!isCreatingNew && (
+              {/* Botón de eliminar (solo visible en modo edición, no en creación ni edición de empresario) */}
+              {!isCreatingNew && !editingEmpresario && (
                 <button
                   onClick={handleDeleteFromModal}
                   disabled={loading}
