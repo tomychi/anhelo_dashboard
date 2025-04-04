@@ -735,8 +735,10 @@ export const Empleados = () => {
               </div>
             </div>
 
-            <div className="mt-4 flex-col space-y-2 w-full">
-              <h2 className="text-2xl font-bold mb-4">Editar empleado</h2>
+            <div className="mt-4 flex-col  w-full">
+              <h2 className="text-2xl text-center font-bold mb-4">
+                Editar miembro
+              </h2>
 
               <input
                 type="text"
