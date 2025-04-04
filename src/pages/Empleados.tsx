@@ -576,196 +576,198 @@ export const Empleados = () => {
       {/* Modal para crear o editar empleado */}
       {showEditForm && (
         <div className="fixed inset-0 z-50 flex items-end font-coolvetica justify-center">
-          <div
-            className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
-              isEditAnimating ? "bg-opacity-50" : "bg-opacity-0"
-            }`}
-            style={{
-              opacity: Math.max(0, 1 - currentTranslate / 400),
-            }}
-            onClick={handleCloseEditForm}
-          />
-
-          <div
-            ref={editModalRef}
-            className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
-              isEditAnimating ? "translate-y-0" : "translate-y-full"
-            }`}
-            style={{
-              transform: `translateY(${currentTranslate}px)`,
-              maxHeight: "90vh",
-            }}
-          >
-            {/* Barra para arrastrar */}
+          <div className="max-h-[90vh] w-full">
             <div
-              className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing z-10"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
+              className={`absolute inset-0 backdrop-blur-sm bg-black transition-opacity duration-300 ${
+                isEditAnimating ? "bg-opacity-50" : "bg-opacity-0"
+              }`}
+              style={{
+                opacity: Math.max(0, 1 - currentTranslate / 400),
+              }}
+              onClick={handleCloseEditForm}
+            />
+
+            <div
+              ref={editModalRef}
+              className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
+                isEditAnimating ? "translate-y-0" : "translate-y-full"
+              }`}
+              style={{
+                transform: `translateY(${currentTranslate}px)`,
+                maxHeight: "90vh",
+              }}
             >
-              <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
-                <div className="w-12 h-1 bg-gray-200 rounded-full" />
-              </div>
-            </div>
-
-            {/* Encabezado fijo */}
-            <div className="sticky top-0 left-0 right-0 z-10 border-b p-4 bg-gray-100">
-              <h2 className="text-2xl text-center font-bold">
-                {isCreatingNew ? "Nuevo miembro" : "Editar miembro"}
-              </h2>
-            </div>
-
-            {/* Contenido scrolleable con indicador de scroll */}
-            <div className="relative">
+              {/* Barra para arrastrar */}
               <div
-                ref={editContentRef}
-                className="px-4 pt-4 overflow-y-auto"
-                style={{
-                  maxHeight: "calc(90vh - 160px)",
-                  paddingBottom: isCreatingNew ? "80px" : "160px",
-                }}
-                onScroll={handleEditModalScroll}
+                className="absolute top-0 left-0 right-0 h-12 cursor-grab active:cursor-grabbing z-10"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
               >
-                <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2">
+                  <div className="w-12 h-1 bg-gray-200 rounded-full" />
+                </div>
+              </div>
 
-                <input
-                  type="text"
-                  placeholder="Nombre y apellido"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
-                />
+              {/* Encabezado fijo */}
+              <div className="sticky top-0 left-0 right-0 z-10 border-b p-4 bg-gray-100">
+                <h2 className="text-2xl text-center font-bold">
+                  {isCreatingNew ? "Nuevo miembro" : "Editar miembro"}
+                </h2>
+              </div>
 
-                <input
-                  type="tel"
-                  placeholder={
-                    isCreatingNew
-                      ? "Número de teléfono"
-                      : "Número de teléfono (dejar vacío para no cambiar)"
-                  }
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
+              {/* Contenido scrolleable con indicador de scroll */}
+              <div className="relative">
+                <div
+                  ref={editContentRef}
+                  className="px-4 pt-4 overflow-y-auto"
+                  style={{
+                    maxHeight: "calc(90vh - 160px)",
+                    paddingBottom: isCreatingNew ? "80px" : "160px",
+                  }}
+                  onScroll={handleEditModalScroll}
+                >
+                  <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
 
-                <input
-                  type="password"
-                  placeholder={
-                    isCreatingNew
-                      ? "Contraseña"
-                      : "Nueva contraseña (dejar vacío para no cambiar)"
-                  }
-                  value={contraseña}
-                  onChange={(e) => setContraseña(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
+                  <input
+                    type="text"
+                    placeholder="Nombre y apellido"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
+                  />
 
-                <input
-                  type="password"
-                  placeholder={
-                    isCreatingNew
-                      ? "Confirmar contraseña"
-                      : "Confirmar nueva contraseña"
-                  }
-                  value={confirmarContraseña}
-                  onChange={(e) => setConfirmarContraseña(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
+                  <input
+                    type="tel"
+                    placeholder={
+                      isCreatingNew
+                        ? "Número de teléfono"
+                        : "Número de teléfono (dejar vacío para no cambiar)"
+                    }
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                  />
 
-                <input
-                  type="text"
-                  placeholder="Rol o puesto"
-                  value={rol}
-                  onChange={(e) => setRol(e.target.value)}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-                />
+                  <input
+                    type="password"
+                    placeholder={
+                      isCreatingNew
+                        ? "Contraseña"
+                        : "Nueva contraseña (dejar vacío para no cambiar)"
+                    }
+                    value={contraseña}
+                    onChange={(e) => setContraseña(e.target.value)}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                  />
 
-                {/* Sección de permisos */}
-                <div className="mt-8">
-                  <h3 className="text-lg font-bold mb-2 text-center">
-                    Permisos
-                  </h3>
-                  {SYSTEM_FEATURES.map((feature) => (
-                    <TogglePermiso
-                      key={feature.id}
-                      label={feature.title}
-                      isOn={editPermisosToggles[feature.id] || false}
-                      onToggle={() => handleToggleEditPermiso(feature.id)}
-                    />
-                  ))}
+                  <input
+                    type="password"
+                    placeholder={
+                      isCreatingNew
+                        ? "Confirmar contraseña"
+                        : "Confirmar nueva contraseña"
+                    }
+                    value={confirmarContraseña}
+                    onChange={(e) => setConfirmarContraseña(e.target.value)}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Rol o puesto"
+                    value={rol}
+                    onChange={(e) => setRol(e.target.value)}
+                    className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                  />
+
+                  {/* Sección de permisos */}
+                  <div className="mt-8">
+                    <h3 className="text-lg font-bold mb-2 text-center">
+                      Permisos
+                    </h3>
+                    {SYSTEM_FEATURES.map((feature) => (
+                      <TogglePermiso
+                        key={feature.id}
+                        label={feature.title}
+                        isOn={editPermisosToggles[feature.id] || false}
+                        onToggle={() => handleToggleEditPermiso(feature.id)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Mensaje de error */}
+                  {error && (
+                    <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
+                      <p className="text-red-500 text-sm">{error}</p>
+                    </div>
+                  )}
                 </div>
 
-                {/* Mensaje de error */}
-                {error && (
-                  <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
-                    <p className="text-red-500 text-sm">{error}</p>
+                {/* Indicador de scroll hacia abajo */}
+                {isScrollNeeded && !isNearBottom && (
+                  <div
+                    className={`absolute ${isCreatingNew ? "bottom-16" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
+                  >
+                    <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                      <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
+                        <img
+                          src={arrowIcon}
+                          className="h-2 transform rotate-90 "
+                          alt="Desplazar para ver más"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Indicador de scroll hacia arriba */}
+                {isScrollNeeded && isScrolledDown && (
+                  <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className="bg-gradient-to-b from-gray-100 to-transparent h-20 w-full flex items-start justify-center pt-4">
+                      <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
+                        <img
+                          src={arrowIcon}
+                          className="h-2 transform -rotate-90"
+                          alt="Desplazar hacia arriba"
+                        />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Indicador de scroll hacia abajo */}
-              {isScrollNeeded && !isNearBottom && (
-                <div
-                  className={`absolute ${isCreatingNew ? "bottom-16" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
-                >
-                  <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
-                    <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
-                      <img
-                        src={arrowIcon}
-                        className="h-2 transform rotate-90 "
-                        alt="Desplazar para ver más"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Indicador de scroll hacia arriba */}
-              {isScrollNeeded && isScrolledDown && (
-                <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
-                  <div className="bg-gradient-to-b from-gray-100 to-transparent h-20 w-full flex items-start justify-center pt-4">
-                    <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
-                      <img
-                        src={arrowIcon}
-                        className="h-2 transform -rotate-90"
-                        alt="Desplazar hacia arriba"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Botón fijo al final */}
-            <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3 z-10 shadow-md">
-              <button
-                onClick={handleSaveEmpleado}
-                disabled={loading}
-                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl mb-3"
-              >
-                {loading ? (
-                  <LoadingPoints color="text-gray-100" />
-                ) : (
-                  <p className="text-gray-100 text-3xl">
-                    {isCreatingNew ? "Crear" : "Actualizar"}
-                  </p>
-                )}
-              </button>
-
-              {/* Botón de eliminar (solo visible en modo edición, no en creación) */}
-              {!isCreatingNew && (
+              {/* Botón fijo al final */}
+              <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3 z-10 shadow-md">
                 <button
-                  onClick={() => {
-                    handleCloseEditForm();
-                    handleDeleteEmpleado(selectedEmpleado.id);
-                  }}
+                  onClick={handleSaveEmpleado}
                   disabled={loading}
-                  className="w-full bg-gray-200 h-20 flex flex-col items-center justify-center rounded-3xl"
+                  className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl mb-3"
                 >
-                  <p className="text-red-main text-3xl">Eliminar</p>
+                  {loading ? (
+                    <LoadingPoints color="text-gray-100" />
+                  ) : (
+                    <p className="text-gray-100 text-3xl">
+                      {isCreatingNew ? "Crear" : "Actualizar"}
+                    </p>
+                  )}
                 </button>
-              )}
+
+                {/* Botón de eliminar (solo visible en modo edición, no en creación) */}
+                {!isCreatingNew && (
+                  <button
+                    onClick={() => {
+                      handleCloseEditForm();
+                      handleDeleteEmpleado(selectedEmpleado.id);
+                    }}
+                    disabled={loading}
+                    className="w-full bg-gray-200 h-20 flex flex-col items-center justify-center rounded-3xl"
+                  >
+                    <p className="text-red-main text-3xl">Eliminar</p>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
