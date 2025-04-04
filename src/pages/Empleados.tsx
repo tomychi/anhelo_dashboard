@@ -757,7 +757,7 @@ export const Empleados = () => {
                   <LoadingPoints color="text-gray-100" />
                 ) : (
                   <p className="text-gray-100 text-3xl">
-                    {isCreatingNew ? "Crear empleado" : "Actualizar"}
+                    {isCreatingNew ? "Crear" : "Actualizar"}
                   </p>
                 )}
               </button>
