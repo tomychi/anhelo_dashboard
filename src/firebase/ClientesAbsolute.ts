@@ -1030,7 +1030,7 @@ export const hasKpiPermission = (
   usuarioId: string
 ): boolean => {
   // Si no hay configuración para este KPI, permitir acceso (comportamiento predeterminado)
-  if (!kpiConfig[kpiKey]) return true;
+  if (!kpiConfig[kpiKey]) return false;
 
   // Si hay configuración, verificar si el usuario está en la lista de acceso
   return kpiConfig[kpiKey].accessIds?.includes(usuarioId) || false;
