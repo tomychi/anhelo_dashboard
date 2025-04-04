@@ -727,6 +727,8 @@ export const Empleados = () => {
               className="px-4 pt-4 overflow-y-auto"
               style={{ maxHeight: "calc(90vh - 160px)", paddingBottom: "80px" }}
             >
+              <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
+
               <input
                 type="text"
                 placeholder="Nombre y apellido"
@@ -768,8 +770,8 @@ export const Empleados = () => {
               />
 
               {/* Sección de permisos */}
-              <div className="mt-4">
-                <h3 className="text-lg font-bold mb-2">Permisos</h3>
+              <div className="mt-8">
+                <h3 className="text-lg font-bold mb-2 text-center">Permisos</h3>
                 <div className="bg-gray-100 p-4 rounded-3xl max-h-60 overflow-y-auto">
                   {SYSTEM_FEATURES.map((feature) => (
                     <TogglePermiso
