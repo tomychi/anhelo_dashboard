@@ -706,7 +706,9 @@ export const Empleados = () => {
 
               {/* Indicador de scroll hacia abajo */}
               {isScrollNeeded && !isNearBottom && (
-                <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none ">
+                <div
+                  className={`absolute ${isCreatingNew ? "bottom-12" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
+                >
                   <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
                     <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
                       <img
@@ -740,7 +742,7 @@ export const Empleados = () => {
               <button
                 onClick={handleSaveEmpleado}
                 disabled={loading}
-                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl"
+                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl mb-3"
               >
                 {loading ? (
                   <LoadingPoints color="text-gray-100" />
@@ -750,6 +752,20 @@ export const Empleados = () => {
                   </p>
                 )}
               </button>
+
+              {/* Botón de eliminar (solo visible en modo edición, no en creación) */}
+              {!isCreatingNew && (
+                <button
+                  onClick={() => {
+                    handleCloseEditForm();
+                    handleDeleteEmpleado(selectedEmpleado.id);
+                  }}
+                  disabled={loading}
+                  className="w-full bg-gray-200 h-20 flex flex-col items-center justify-center rounded-3xl"
+                >
+                  <p className="text-red-main text-3xl">Eliminar</p>
+                </button>
+              )}
             </div>
           </div>
         </div>
