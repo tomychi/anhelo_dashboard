@@ -38,7 +38,6 @@ export const Empleados = () => {
   const [confirmarContraseña, setConfirmarContraseña] = useState("");
   const [rol, setRol] = useState("");
   const [salario, setSalario] = useState(undefined);
-  const [permisos, setPermisos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [empleados, setEmpleados] = useState([]);
@@ -395,31 +394,6 @@ export const Empleados = () => {
     setError("");
     setCurrentTranslate(0);
     setIsEditAnimating(false);
-  };
-
-  // Formatear fecha más legible
-  const formatearFecha = (fecha) => {
-    if (!fecha) return "-";
-    const date = fecha.toDate ? fecha.toDate() : new Date(fecha);
-    return date.toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  // Obtener color basado en el estado del empleado
-  const getEstadoColor = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case "activo":
-        return "bg-green-500";
-      case "inactivo":
-        return "bg-red-main";
-      case "suspendido":
-        return "bg-yellow-500";
-      default:
-        return "bg-gray-400";
-    }
   };
 
   // Filtrar empleados según el término de búsqueda
