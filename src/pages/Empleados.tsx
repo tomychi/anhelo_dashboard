@@ -43,6 +43,8 @@ export const Empleados = () => {
   const [error, setError] = useState("");
   const [empleados, setEmpleados] = useState([]);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null);
+  const [isScrolledDown, setIsScrolledDown] = useState(false);
+
   const [estado, setEstado] = useState("activo");
   const [searchTerm, setSearchTerm] = useState(""); // Añadido para filtrar empleados
   const [isLoadingEmpleados, setIsLoadingEmpleados] = useState(false); // Estado de carga específico para la tabla
@@ -126,6 +128,9 @@ export const Empleados = () => {
 
       // Considerar "cerca del fondo" si estamos a menos de 20px del final
       setIsNearBottom(scrollBottom < 20);
+
+      // Considerar "desplazado hacia abajo" si hemos scrolleado más de 20px
+      setIsScrolledDown(container.scrollTop > 20);
     }
   };
 
@@ -819,15 +824,30 @@ export const Empleados = () => {
                 )}
               </div>
 
-              {/* Indicador de scroll */}
+              {/* Indicador de scroll hacia abajo */}
               {isScrollNeeded && !isNearBottom && (
                 <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none ">
                   <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
-                    <div className="animate-bounce bg-white border border-gray-200 w-4 h-4 rounded-full flex items-center justify-center">
+                    <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
                       <img
                         src={arrowIcon}
                         className="h-2 transform rotate-90 "
                         alt="Desplazar para ver más"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Indicador de scroll hacia arriba */}
+              {isScrollNeeded && isScrolledDown && (
+                <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none">
+                  <div className="bg-gradient-to-b from-gray-100 to-transparent h-20 w-full flex items-start justify-center pt-4">
+                    <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
+                      <img
+                        src={arrowIcon}
+                        className="h-2 transform -rotate-90"
+                        alt="Desplazar hacia arriba"
                       />
                     </div>
                   </div>
