@@ -9,6 +9,7 @@ import {
 } from "../firebase/ClientesAbsolute";
 import { SYSTEM_FEATURES } from "../utils/permissionsUtils";
 import LoadingPoints from "../components/LoadingPoints"; // Importando el componente de carga
+import arrowIcon from "../assets/arrowIcon.png"; // Importar el icono de flecha
 
 // Componente Toggle reutilizable para permisos
 const TogglePermiso = ({ isOn, onToggle, label }) => (
@@ -54,6 +55,11 @@ export const Empleados = () => {
   const modalRef = useRef(null);
   const editModalRef = useRef(null);
 
+  // Estados para controlar el indicador de scroll en el modal de edición
+  const [isScrollNeeded, setIsScrollNeeded] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
+  const editContentRef = useRef(null);
+
   // Obtener datos de la empresa del estado de redux
   const auth = useSelector((state: RootState) => state.auth);
   const empresa = auth.usuario;
@@ -82,6 +88,46 @@ export const Empleados = () => {
       fetchEmpleados();
     }
   }, [empresaId]);
+
+  // Efecto para verificar si se necesita scroll en el modal de edición
+  useEffect(() => {
+    // Solo ejecutar esta lógica cuando el modal de edición está abierto
+    if (showEditForm && editContentRef.current) {
+      const checkIfScrollNeeded = () => {
+        const container = editContentRef.current;
+        if (container) {
+          // Si el contenido es más alto que el contenedor, se necesita scroll
+          setIsScrollNeeded(container.scrollHeight > container.clientHeight);
+        }
+      };
+
+      // Verificar inmediatamente al abrir el modal
+      checkIfScrollNeeded();
+
+      // También verificar cuando cambia el tamaño de la ventana
+      window.addEventListener("resize", checkIfScrollNeeded);
+
+      return () => {
+        window.removeEventListener("resize", checkIfScrollNeeded);
+      };
+    } else {
+      // Resetear el estado cuando el modal se cierra
+      setIsScrollNeeded(false);
+      setIsNearBottom(false);
+    }
+  }, [showEditForm, selectedEmpleado]);
+
+  // Función para manejar el evento de scroll en el modal de edición
+  const handleEditModalScroll = () => {
+    const container = editContentRef.current;
+    if (container) {
+      const scrollBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+
+      // Considerar "cerca del fondo" si estamos a menos de 20px del final
+      setIsNearBottom(scrollBottom < 20);
+    }
+  };
 
   const fetchEmpleados = async () => {
     setIsLoadingEmpleados(true);
@@ -357,6 +403,10 @@ export const Empleados = () => {
 
     setEditPermisosToggles(editToggles);
     setShowEditForm(true);
+
+    // Resetear estados de scroll
+    setIsScrollNeeded(false);
+    setIsNearBottom(false);
   };
 
   const handleCloseForm = () => {
@@ -689,80 +739,104 @@ export const Empleados = () => {
             </div>
 
             {/* Encabezado fijo */}
-            <div className="sticky top-0 left-0 right-0 z-10 border-b    p-4 ">
+            <div className="sticky top-0 left-0 right-0 z-10 border-b p-4 bg-gray-100">
               <h2 className="text-2xl text-center font-bold">Editar miembro</h2>
             </div>
 
-            {/* Contenido scrolleable */}
-            <div
-              className="px-4 pt-4 overflow-y-auto"
-              style={{ maxHeight: "calc(90vh - 160px)", paddingBottom: "80px" }}
-            >
-              <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
+            {/* Contenido scrolleable con indicador de scroll */}
+            <div className="relative">
+              <div
+                ref={editContentRef}
+                className="px-4 pt-4 overflow-y-auto"
+                style={{
+                  maxHeight: "calc(90vh - 160px)",
+                  paddingBottom: "80px",
+                }}
+                onScroll={handleEditModalScroll}
+              >
+                <h3 className="text-lg font-bold mb-2 text-center">Datos</h3>
 
-              <input
-                type="text"
-                placeholder="Nombre y apellido"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all "
-              />
+                <input
+                  type="text"
+                  placeholder="Nombre y apellido"
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 rounded-t-3xl border-x border-t border-black transition-all"
+                />
 
-              <input
-                type="tel"
-                placeholder="Número de teléfono (dejar vacío para no cambiar)"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
+                <input
+                  type="tel"
+                  placeholder="Número de teléfono (dejar vacío para no cambiar)"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                />
 
-              <input
-                type="password"
-                placeholder="Nueva contraseña (dejar vacío para no cambiar)"
-                value={contraseña}
-                onChange={(e) => setContraseña(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
+                <input
+                  type="password"
+                  placeholder="Nueva contraseña (dejar vacío para no cambiar)"
+                  value={contraseña}
+                  onChange={(e) => setContraseña(e.target.value)}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                />
 
-              <input
-                type="password"
-                placeholder="Confirmar nueva contraseña"
-                value={confirmarContraseña}
-                onChange={(e) => setConfirmarContraseña(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
-              />
+                <input
+                  type="password"
+                  placeholder="Confirmar nueva contraseña"
+                  value={confirmarContraseña}
+                  onChange={(e) => setConfirmarContraseña(e.target.value)}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
+                />
 
-              <input
-                type="text"
-                placeholder="Rol o puesto"
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-                className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
-              />
+                <input
+                  type="text"
+                  placeholder="Rol o puesto"
+                  value={rol}
+                  onChange={(e) => setRol(e.target.value)}
+                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border rounded-b-3xl border-black transition-all"
+                />
 
-              {/* Sección de permisos */}
-              <div className="mt-8">
-                <h3 className="text-lg font-bold mb-2 text-center">Permisos</h3>
-                {SYSTEM_FEATURES.map((feature) => (
-                  <TogglePermiso
-                    key={feature.id}
-                    label={feature.title}
-                    isOn={editPermisosToggles[feature.id] || false}
-                    onToggle={() => handleToggleEditPermiso(feature.id)}
-                  />
-                ))}
+                {/* Sección de permisos */}
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold mb-2 text-center">
+                    Permisos
+                  </h3>
+                  {SYSTEM_FEATURES.map((feature) => (
+                    <TogglePermiso
+                      key={feature.id}
+                      label={feature.title}
+                      isOn={editPermisosToggles[feature.id] || false}
+                      onToggle={() => handleToggleEditPermiso(feature.id)}
+                    />
+                  ))}
+                </div>
+
+                {/* Mensaje de error */}
+                {error && (
+                  <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
+                    <p className="text-red-500 text-sm">{error}</p>
+                  </div>
+                )}
               </div>
 
-              {/* Mensaje de error */}
-              {error && (
-                <div className="mt-4 mb-4 p-4 border-l-4 border-red-500">
-                  <p className="text-red-500 text-sm">{error}</p>
+              {/* Indicador de scroll */}
+              {isScrollNeeded && !isNearBottom && (
+                <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none ">
+                  <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
+                    <div className="animate-bounce bg-white border border-gray-200 w-4 h-4 rounded-full flex items-center justify-center">
+                      <img
+                        src={arrowIcon}
+                        className="h-2 transform rotate-90 "
+                        alt="Desplazar para ver más"
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Botón fijo al final */}
-            <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3  z-10 shadow-md">
+            <div className="sticky bottom-0 bg-gray-100 border-t left-0 right-0 px-4 py-3 z-10 shadow-md">
               <button
                 onClick={handleUpdateEmpleado}
                 disabled={loading}
