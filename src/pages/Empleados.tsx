@@ -681,17 +681,6 @@ export const Empleados = () => {
                   className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-black transition-all"
                 />
 
-                <input
-                  type="number"
-                  placeholder="Salario (opcional)"
-                  value={salario || ""}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSalario(value === "" ? undefined : parseInt(value, 10));
-                  }}
-                  className="w-full text-black bg-transparent text-xs border-gray-200 h-10 px-4 border-x border-t border-b rounded-b-3xl border-black transition-all"
-                />
-
                 {/* Sección de permisos */}
                 <div className="mt-8">
                   <h3 className="text-lg font-bold mb-2 text-center">
