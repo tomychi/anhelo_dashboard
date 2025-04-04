@@ -588,7 +588,7 @@ export const Empleados = () => {
 
           <div
             ref={editModalRef}
-            className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg pb-4 pt-10 transition-transform duration-300 touch-none ${
+            className={`relative bg-gray-100 w-full max-w-4xl rounded-t-lg p pt-10 transition-transform duration-300 touch-none ${
               isEditAnimating ? "translate-y-0" : "translate-y-full"
             }`}
             style={{
@@ -709,7 +709,7 @@ export const Empleados = () => {
               {/* Indicador de scroll hacia abajo */}
               {isScrollNeeded && !isNearBottom && (
                 <div
-                  className={`absolute ${isCreatingNew ? "bottom-16" : "bottom-36"} left-0 right-0 flex justify-center pointer-events-none`}
+                  className={`absolute ${isCreatingNew ? "bottom-2" : "bottom-[90px]"} left-0 right-0 flex justify-center pointer-events-none`}
                 >
                   <div className="bg-gradient-to-t from-gray-100 to-transparent h-20 w-full flex items-end justify-center pb-1">
                     <div className="animate-bounce bg-white border border-gray-200 w-8 h-8 rounded-full flex items-center justify-center">
@@ -744,7 +744,7 @@ export const Empleados = () => {
               <button
                 onClick={handleSaveEmpleado}
                 disabled={loading}
-                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl mb-3"
+                className="w-full bg-black h-20 flex flex-col items-center justify-center rounded-3xl "
               >
                 {loading ? (
                   <LoadingPoints color="text-gray-100" />
