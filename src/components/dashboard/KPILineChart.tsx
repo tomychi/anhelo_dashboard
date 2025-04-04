@@ -663,7 +663,7 @@ const KPILineChart = ({
   if (availableKPIs.length === 0) {
     return (
       <div className="bg-white mt-4 pt-4 rounded-lg shadow-2xl shadow-gray-400 mb-4 pb-2 h-[250px] flex items-center justify-center">
-        <p className="text-gray-400  px-8 text-center">
+        <p className="text-gray-400 text-xs font-light px-8 text-center">
           No hay gráficos disponibles con tus permisos actuales.
         </p>
       </div>

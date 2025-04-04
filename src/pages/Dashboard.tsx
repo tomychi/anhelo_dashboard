@@ -1130,7 +1130,7 @@ export const Dashboard: React.FC = () => {
             </>
           ) : (
             <div className="flex flex-col rounded-lg ">
-              <div className="bg-white p-8 text-center rounded-t-lg">
+              <div className="bg-white p-8 font-light text-xs text-center rounded-lg">
                 {isDashboardConfigured === false &&
                 isEmpresario &&
                 !simulatingEmployee ? (
