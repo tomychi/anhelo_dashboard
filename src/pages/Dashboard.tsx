@@ -160,6 +160,7 @@ export const Dashboard: React.FC = () => {
   const [simulatingEmployee, setSimulatingEmployee] = useState(null);
   const [simulatingEmployeeData, setSimulatingEmployeeData] = useState(null);
   const [simulationKpiConfig, setSimulationKpiConfig] = useState(null);
+  const [esHoy, setHoy] = useState(null);
 
   // Resto de los estados
   const [totalPaga, setTotalPaga] = useState(0);
@@ -1052,6 +1053,44 @@ export const Dashboard: React.FC = () => {
     }, 0);
   };
 
+  useEffect(() => {
+    if (valueDate?.startDate || valueDate?.endDate) {
+      const today = new Date();
+      const todayString = today.toDateString();
+
+      console.log("📅 Fecha actual:", todayString);
+      console.log("📅 Fecha seleccionada:");
+
+      let startIsToday = false;
+      let endIsToday = false;
+
+      if (valueDate?.startDate) {
+        const [year, month, day] = valueDate.startDate.split("-");
+        const start = new Date(Number(year), Number(month) - 1, Number(day));
+        console.log("🟢 Inicio:", start.toDateString());
+
+        if (start.toDateString() === todayString) {
+          console.log("✅ La fecha de inicio ES hoy");
+          startIsToday = true;
+        }
+      }
+
+      if (valueDate?.endDate) {
+        const [year, month, day] = valueDate.endDate.split("-");
+        const end = new Date(Number(year), Number(month) - 1, Number(day));
+        console.log("🔴 Fin:", end.toDateString());
+
+        if (end.toDateString() === todayString) {
+          console.log("✅ La fecha de fin ES hoy");
+          endIsToday = true;
+        }
+      }
+
+      // ✅ Finalmente, actualizamos el estado esHoy
+      setHoy(startIsToday && endIsToday);
+    }
+  }, [valueDate]);
+
   return (
     <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
       <div className="bg-black px-4 pb-4">
@@ -1093,6 +1132,21 @@ export const Dashboard: React.FC = () => {
                 />
               )}
             </>
+          ) : null}
+
+          {esHoy ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="h-4 text-gray-100"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z"
+                clip-rule="evenodd"
+              />
+            </svg>
           ) : null}
         </div>
       </div>
