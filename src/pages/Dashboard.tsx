@@ -161,6 +161,7 @@ export const Dashboard: React.FC = () => {
   const [simulatingEmployeeData, setSimulatingEmployeeData] = useState(null);
   const [simulationKpiConfig, setSimulationKpiConfig] = useState(null);
   const [esHoy, setHoy] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Resto de los estados
   const [totalPaga, setTotalPaga] = useState(0);
@@ -1091,7 +1092,10 @@ export const Dashboard: React.FC = () => {
   }, [valueDate]);
 
   const handleRefresh = async () => {
-    if (!valueDate) return;
+    if (!valueDate || isRefreshing) return;
+
+    // Activar la animación
+    setIsRefreshing(true);
 
     try {
       // Importar dinámicamente para evitar problemas de importación circular
@@ -1099,138 +1103,169 @@ export const Dashboard: React.FC = () => {
       await refreshDashboardData(valueDate, dispatch);
     } catch (error) {
       console.error("Se produjo un error al actualizar los datos:", error);
+    } finally {
+      // Desactivar la animación después de 2 segundos para asegurar
+      // que la animación complete un ciclo completo incluso si los datos
+      // se cargan más rápido
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 2000);
     }
   };
 
   return (
-    <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
-      <div className="bg-black px-4 pb-4">
-        <Calendar />
-        <div className="flex flex-row mt-8 mb-4 gap-2 items-baseline">
-          <p
-            className={`text-gray-100 ${simulatingEmployee ? "opacity-20" : ""} text-5xl`}
-          >
-            Hola{" "}
-            {simulatingEmployee
-              ? simulatingEmployeeData?.datos?.nombre.split(" ")[0]
-              : greetingName.split(" ")[0]}
-          </p>
+    <>
+      <style jsx>{`
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        .refresh-icon {
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        .refresh-icon:hover {
+          color: #d1d5db; /* Equivalente a hover:text-gray-300 */
+        }
+        .refreshing {
+          animation: spin 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+      `}</style>
 
-          {isEmpresario ? (
-            <>
-              {simulatingEmployee ? (
-                <div
-                  className="flex items-center cursor-pointer"
-                  onClick={endSimulation}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="h-4 text-gray-100"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm2.78-4.22a.75.75 0 0 1-1.06 0L8 9.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 8 5.22 6.28a.75.75 0 0 1 1.06-1.06L8 6.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 8l1.72 1.72a.75.75 0 0 1 0 1.06Z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </div>
-              ) : (
-                <EmployeeViewSimulation
-                  empresaId={auth?.usuario?.id}
-                  onSimulateView={handleSimulateEmployeeView}
-                />
-              )}
-            </>
-          ) : null}
-
-          {esHoy ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 text-gray-100"
-              onClick={handleRefresh}
+      <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
+        <div className="bg-black px-4 pb-4">
+          <Calendar />
+          <div className="flex flex-row mt-8 mb-4 gap-2 items-baseline">
+            <p
+              className={`text-gray-100 ${simulatingEmployee ? "opacity-20" : ""} text-5xl`}
             >
-              <path
-                fill-rule="evenodd"
-                d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          ) : null}
-        </div>
-      </div>
+              Hola{" "}
+              {simulatingEmployee
+                ? simulatingEmployeeData?.datos?.nombre.split(" ")[0]
+                : greetingName.split(" ")[0]}
+            </p>
 
-      <div className="absolute left-4 right-4 top-[130px] rounded-lg">
-        <div className="flex flex-col shadow-2xl mb-4 shadow-gray-400 rounded-lg">
-          {!kpiConfigLoaded ? (
-            <div className="bg-white p-8 text-center rounded-lg">
-              <p className="text-gray-400 font-light text-xs ">
-                Cargando dashboard...
-              </p>
-            </div>
-          ) : cardsToRender.length > 0 ? (
-            <>
-              {/* Renderizar los KPIs existentes */}
-              {cardsToRender.map((card, index) =>
-                React.cloneElement(card, {
-                  key: index,
-                  className: `
+            {isEmpresario ? (
+              <>
+                {simulatingEmployee ? (
+                  <div
+                    className="flex items-center cursor-pointer"
+                    onClick={endSimulation}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="h-4 text-gray-100"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm2.78-4.22a.75.75 0 0 1-1.06 0L8 9.06l-1.72 1.72a.75.75 0 1 1-1.06-1.06L6.94 8 5.22 6.28a.75.75 0 0 1 1.06-1.06L8 6.94l1.72-1.72a.75.75 0 1 1 1.06 1.06L9.06 8l1.72 1.72a.75.75 0 0 1 0 1.06Z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <EmployeeViewSimulation
+                    empresaId={auth?.usuario?.id}
+                    onSimulateView={handleSimulateEmployeeView}
+                  />
+                )}
+              </>
+            ) : null}
+
+            {esHoy ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className={`h-4 text-gray-100 refresh-icon ${isRefreshing ? "refreshing" : ""}`}
+                onClick={handleRefresh}
+                title="Actualizar datos"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="absolute left-4 right-4 top-[130px] rounded-lg">
+          <div className="flex flex-col shadow-2xl mb-4 shadow-gray-400 rounded-lg">
+            {!kpiConfigLoaded ? (
+              <div className="bg-white p-8 text-center rounded-lg">
+                <p className="text-gray-400 font-light text-xs ">
+                  Cargando dashboard...
+                </p>
+              </div>
+            ) : cardsToRender.length > 0 ? (
+              <>
+                {/* Renderizar los KPIs existentes */}
+                {cardsToRender.map((card, index) =>
+                  React.cloneElement(card, {
+                    key: index,
+                    className: `
                   ${index === 0 ? "rounded-t-lg" : ""}
                   ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
                 `,
-                  isLoading: isLoading,
-                })
-              )}
-
-              {/* Botón para añadir nuevo KPI (solo para empresarios y cuando NO está simulando) */}
-              {isEmpresario && !simulatingEmployee && (
-                <AddKpiCard className={`rounded-b-lg`} />
-              )}
-            </>
-          ) : (
-            <div className="flex flex-col rounded-lg ">
-              <div className="bg-white p-8 font-light text-xs text-center rounded-lg">
-                {isDashboardConfigured === false &&
-                isEmpresario &&
-                !simulatingEmployee ? (
-                  <>
-                    <p className="text-gray-400 mb-4">
-                      Bienvenido! Configura tu dashboard para comenzar a
-                      visualizar las métricas de negocio.
-                    </p>
-                  </>
-                ) : simulatingEmployee ? (
-                  <p className="text-gray-400">
-                    Este empleado no tiene acceso a ningún KPI.
-                    <span
-                      className="text-blue-500 cursor-pointer ml-1"
-                      onClick={endSimulation}
-                    >
-                      Volver a tu vista
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-gray-400">
-                    No hay KPIs disponibles para mostrar con tus permisos
-                    actuales.
-                  </p>
+                    isLoading: isLoading,
+                  })
                 )}
-              </div>
 
-              {/* Mostrar el botón de agregar KPI incluso si no hay KPIs actuales */}
-              {isEmpresario && <AddKpiCard className="rounded-b-lg" />}
-            </div>
-          )}
+                {/* Botón para añadir nuevo KPI (solo para empresarios y cuando NO está simulando) */}
+                {isEmpresario && !simulatingEmployee && (
+                  <AddKpiCard className={`rounded-b-lg`} />
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col rounded-lg ">
+                <div className="bg-white p-8 font-light text-xs text-center rounded-lg">
+                  {isDashboardConfigured === false &&
+                  isEmpresario &&
+                  !simulatingEmployee ? (
+                    <>
+                      <p className="text-gray-400 mb-4">
+                        Bienvenido! Configura tu dashboard para comenzar a
+                        visualizar las métricas de negocio.
+                      </p>
+                    </>
+                  ) : simulatingEmployee ? (
+                    <p className="text-gray-400">
+                      Este empleado no tiene acceso a ningún KPI.
+                      <span
+                        className="text-blue-500 cursor-pointer ml-1"
+                        onClick={endSimulation}
+                      >
+                        Volver a tu vista
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="text-gray-400">
+                      No hay KPIs disponibles para mostrar con tus permisos
+                      actuales.
+                    </p>
+                  )}
+                </div>
+
+                {/* Mostrar el botón de agregar KPI incluso si no hay KPIs actuales */}
+                {isEmpresario && <AddKpiCard className="rounded-b-lg" />}
+              </div>
+            )}
+          </div>
+          <KPILineChart
+            orders={orders}
+            effectiveUserId={effectiveUserId}
+            simulatingEmployeeView={simulatingEmployee !== null}
+          />
         </div>
-        <KPILineChart
-          orders={orders}
-          effectiveUserId={effectiveUserId}
-          simulatingEmployeeView={simulatingEmployee !== null}
-        />
       </div>
-    </div>
+    </>
   );
 };
