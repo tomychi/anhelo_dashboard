@@ -438,7 +438,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-lg appearance-none text-center focus:outline-none focus:ring-0"
+                className="block w-full h-10 px-4 text-xs font-light text-black bg-gray-200 border-black rounded-full appearance-none text-center focus:outline-none focus:ring-0"
                 placeholder="Buscar por nombre..."
               />
             </div>
@@ -510,7 +510,7 @@ const KpiCreationModal: React.FC<KpiCreationModalProps> = ({
             <button
               onClick={handleContinue}
               disabled={isLoading || selectedKpis.length === 0}
-              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-lg outline-none"
+              className="text-gray-100 w-full mt-6 text-4xl h-20 px-4 bg-black font-bold rounded-3xl outline-none"
             >
               {isLoading ? (
                 <div className="flex justify-center w-full items-center">
