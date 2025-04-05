@@ -224,7 +224,7 @@ const EmployeeViewSimulation = ({ empresaId, onSimulateView }) => {
                     onClick={handleSelectClick}
                     onBlur={handleSelectBlur}
                   >
-                    <option value="">Seleccionar empleado</option>
+                    <option value="">Seleccionar miembro</option>
                     {employees.map((employee) => (
                       <option key={employee.id} value={employee.id}>
                         {employee.datos?.nombre || "Sin nombre"}:{" "}

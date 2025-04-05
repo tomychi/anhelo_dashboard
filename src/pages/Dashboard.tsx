@@ -1113,11 +1113,7 @@ export const Dashboard: React.FC = () => {
                   key: index,
                   className: `
                   ${index === 0 ? "rounded-t-lg" : ""}
-                  ${
-                    index === cardsToRender.length - 1 && !isEmpresario
-                      ? "rounded-b-lg"
-                      : ""
-                  }
+                  ${index === cardsToRender.length - 1 ? "rounded-b-lg" : ""}
                 `,
                   isLoading: isLoading,
                 })
