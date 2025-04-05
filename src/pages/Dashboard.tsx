@@ -1185,7 +1185,6 @@ export const Dashboard: React.FC = () => {
                 fill="currentColor"
                 className={`h-4 text-gray-100 refresh-icon ${isRefreshing ? "refreshing" : ""}`}
                 onClick={handleRefresh}
-                title="Actualizar datos"
               >
                 <path
                   fillRule="evenodd"
