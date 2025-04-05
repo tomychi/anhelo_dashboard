@@ -1058,8 +1058,7 @@ export const Dashboard: React.FC = () => {
       const today = new Date();
       const todayString = today.toDateString();
 
-      console.log("📅 Fecha actual:", todayString);
-      console.log("📅 Fecha seleccionada:");
+      // console.log("📅 Fecha seleccionada:");
 
       let startIsToday = false;
       let endIsToday = false;
@@ -1067,10 +1066,10 @@ export const Dashboard: React.FC = () => {
       if (valueDate?.startDate) {
         const [year, month, day] = valueDate.startDate.split("-");
         const start = new Date(Number(year), Number(month) - 1, Number(day));
-        console.log("🟢 Inicio:", start.toDateString());
+        // console.log("🟢 Inicio:", start.toDateString());
 
         if (start.toDateString() === todayString) {
-          console.log("✅ La fecha de inicio ES hoy");
+          // console.log("✅ La fecha de inicio ES hoy");
           startIsToday = true;
         }
       }
@@ -1078,10 +1077,10 @@ export const Dashboard: React.FC = () => {
       if (valueDate?.endDate) {
         const [year, month, day] = valueDate.endDate.split("-");
         const end = new Date(Number(year), Number(month) - 1, Number(day));
-        console.log("🔴 Fin:", end.toDateString());
+        // console.log("🔴 Fin:", end.toDateString());
 
         if (end.toDateString() === todayString) {
-          console.log("✅ La fecha de fin ES hoy");
+          // console.log("✅ La fecha de fin ES hoy");
           endIsToday = true;
         }
       }

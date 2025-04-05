@@ -995,9 +995,9 @@ export const refreshDashboardData = async (
     dispatch(readOrdersData(ordersData));
     dispatch(readExpensesData(expensesData));
 
-    console.log("✅ Datos actualizados correctamente");
+    // console.log("✅ Datos actualizados correctamente");
   } catch (error) {
-    console.error("Error al actualizar los datos:", error);
+    // console.error("Error al actualizar los datos:", error);
     throw error;
   } finally {
     dispatch(setLoading(false));
