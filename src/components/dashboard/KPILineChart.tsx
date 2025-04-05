@@ -16,6 +16,7 @@ import {
   EmpleadoProps,
   EmpresaProps,
   getEffectiveModifier,
+  subscribeToKpiConfig,
 } from "../../firebase/ClientesAbsolute";
 import { convertDateFormat } from "../../helpers/dateToday";
 import { cleanPhoneNumber } from "../../helpers/orderByweeks";
@@ -108,20 +109,14 @@ const KPILineChart = ({
   const userIdToUse = effectiveUserId || usuarioId;
 
   useEffect(() => {
-    const fetchKpiConfig = async () => {
-      if (!empresaId) return;
+    if (!empresaId) return;
 
-      try {
-        const config = await getKpiConfig(empresaId);
-        setKpiConfig(config);
-        setKpiConfigLoaded(true);
-      } catch (error) {
-        console.error("Error al cargar configuración de KPIs:", error);
-        setKpiConfigLoaded(true);
-      }
-    };
+    const unsubscribe = subscribeToKpiConfig(empresaId, (newConfig) => {
+      setKpiConfig(newConfig);
+      setKpiConfigLoaded(true);
+    });
 
-    fetchKpiConfig();
+    return () => unsubscribe();
   }, [empresaId]);
 
   const contarProductos = (detallePedido) => {
