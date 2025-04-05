@@ -14,6 +14,18 @@ import { ExpenseProps } from "./UploadGasto";
 import { DateValueType } from "react-tailwindcss-datepicker";
 import { Unsubscribe } from "redux";
 import store from "../redux/configureStore";
+import { Dispatch } from "redux";
+import {
+  readOrdersData,
+  readExpensesData,
+  setTelefonos,
+  setCatedesVueltas,
+  setLoading,
+} from "../redux/data/dataAction";
+import {
+  fetchCadetesVueltasByPeriod,
+  fetchConstants,
+} from "../firebase/Cadetes";
 
 export const ReadData = async () => {
   const firestore = getFirestore();
@@ -939,5 +951,55 @@ export const marcarPedidoComoFacturado = async (
   } catch (error) {
     console.error("Error al marcar pedido como facturado en Firestore:", error);
     return false; // Retorna false si hubo algún error
+  }
+};
+
+/**
+ * Función centralizada para actualizar todos los datos del dashboard basados en un rango de fechas
+ * @param valueDate - Rango de fechas seleccionado
+ * @param dispatch - Función dispatch de Redux
+ * @returns Promise que se resuelve cuando todos los datos han sido cargados
+ */
+export const refreshDashboardData = async (
+  valueDate: DateValueType,
+  dispatch: Dispatch
+): Promise<void> => {
+  if (!valueDate || !valueDate.startDate || !valueDate.endDate) {
+    throw new Error("Fecha de inicio o fin no especificada");
+  }
+
+  dispatch(setLoading(true));
+
+  try {
+    // Cargar pedidos y gastos en paralelo
+    const [ordersData, expensesData] = await Promise.all([
+      ReadDataForDateRange("pedidos", valueDate),
+      ReadDataForDateRange("gastos", valueDate),
+    ]);
+
+    // Cargar teléfonos
+    const telefonos = await readTelefonosFromFirebase();
+    dispatch(setTelefonos(telefonos));
+
+    // Cargar datos de cadetes
+    const cadetesConVueltas = await fetchCadetesVueltasByPeriod(valueDate);
+    const cadetesData = await fetchConstants();
+
+    if (cadetesData) {
+      dispatch(setCatedesVueltas(cadetesConVueltas, cadetesData));
+    } else {
+      console.error("No se pudieron obtener los datos de sueldos");
+    }
+
+    // Actualizar el estado de Redux
+    dispatch(readOrdersData(ordersData));
+    dispatch(readExpensesData(expensesData));
+
+    console.log("✅ Datos actualizados correctamente");
+  } catch (error) {
+    console.error("Error al actualizar los datos:", error);
+    throw error;
+  } finally {
+    dispatch(setLoading(false));
   }
 };

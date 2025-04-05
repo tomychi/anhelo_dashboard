@@ -1091,6 +1091,18 @@ export const Dashboard: React.FC = () => {
     }
   }, [valueDate]);
 
+  const handleRefresh = async () => {
+    if (!valueDate) return;
+
+    try {
+      // Importar dinámicamente para evitar problemas de importación circular
+      const { refreshDashboardData } = await import("../firebase/ReadData");
+      await refreshDashboardData(valueDate, dispatch);
+    } catch (error) {
+      console.error("Se produjo un error al actualizar los datos:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen font-coolvetica bg-gray-100 flex flex-col relative">
       <div className="bg-black px-4 pb-4">
@@ -1140,6 +1152,7 @@ export const Dashboard: React.FC = () => {
               viewBox="0 0 16 16"
               fill="currentColor"
               className="h-4 text-gray-100"
+              onClick={handleRefresh}
             >
               <path
                 fill-rule="evenodd"
